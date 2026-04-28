@@ -45,8 +45,7 @@ def atomic_write_json(data: Any, path: Path | str) -> None:
             json.dump(data, fh, sort_keys=True, indent=2, ensure_ascii=False)
             fh.write("\n")
         os.replace(tmp_path, target)
-    except BaseException:
-        # Clean up the temp file on any failure
+    except Exception:
         try:
             os.unlink(tmp_path)
         except OSError:

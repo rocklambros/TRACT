@@ -129,7 +129,7 @@ class CREHierarchy(BaseModel):
             else:
                 sibling_map[hub_id] = []
 
-        # Detect orphans and log
+        # Log root hubs that are also leaves (no children)
         orphan_ids = [
             hid for hid in roots
             if hid not in children_map or not children_map[hid]

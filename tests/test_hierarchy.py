@@ -119,6 +119,18 @@ class TestCREHierarchyValidation:
         with pytest.raises(ValueError, match="dangling parent_id"):
             bad_h.validate_integrity()
 
+    def test_detects_dangling_child(self, mini_cres_data: dict) -> None:
+        from tract.hierarchy import CREHierarchy
+        cres = mini_cres_data["cres"]
+        h = CREHierarchy.from_opencre(cres, "2026-01-01T00:00:00Z", "test")
+        node = h.hubs["ROOT-A"]
+        bad_node = node.model_copy(update={"children_ids": ["NONEXISTENT"]})
+        bad_hubs = dict(h.hubs)
+        bad_hubs["ROOT-A"] = bad_node
+        bad_h = h.model_copy(update={"hubs": bad_hubs})
+        with pytest.raises(ValueError, match="dangling child_id"):
+            bad_h.validate_integrity()
+
     def test_detects_unsorted_label_space(self, hierarchy) -> None:
         reversed_ls = list(reversed(hierarchy.label_space))
         bad_h = hierarchy.model_copy(update={"label_space": reversed_ls})
@@ -168,6 +180,10 @@ class TestCREHierarchyQueries:
 
     def test_hub_by_name_not_found(self, hierarchy) -> None:
         assert hierarchy.hub_by_name("nonexistent") is None
+
+    def test_get_branch_hub_ids_unknown(self, hierarchy) -> None:
+        with pytest.raises(ValueError, match="Unknown hub ID"):
+            hierarchy.get_branch_hub_ids("NONEXISTENT")
 
 
 class TestCREHierarchySerialization:

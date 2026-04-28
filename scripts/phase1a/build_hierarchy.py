@@ -44,10 +44,9 @@ def main() -> None:
     hierarchy.save(output_path)
 
     logger.info(
-        "Hierarchy saved: %d hubs, %d roots, %d leaves, %d label_space",
+        "Hierarchy saved: %d hubs, %d roots, %d leaves",
         len(hierarchy.hubs),
         len(hierarchy.roots),
-        len(hierarchy.label_space),
         len(hierarchy.label_space),
     )
 

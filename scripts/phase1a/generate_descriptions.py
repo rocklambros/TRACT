@@ -190,10 +190,16 @@ async def _generate_all(
     try:
         generated_count = 0
         tasks = [generate_one(hid) for hid in hub_ids_to_generate]
-        results = await asyncio.gather(*tasks, return_exceptions=False)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
         failures: list[str] = []
-        for hub_id, result in results:
+        for i, item in enumerate(results):
+            if isinstance(item, BaseException):
+                failed_id = hub_ids_to_generate[i]
+                logger.error("Unhandled exception for %s: %s", failed_id, item)
+                failures.append(failed_id)
+                continue
+            hub_id, result = item
             if isinstance(result, Exception):
                 failures.append(hub_id)
                 continue

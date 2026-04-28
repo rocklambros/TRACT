@@ -42,7 +42,7 @@ _HTML_TAG_RE: re.Pattern[str] = re.compile(r"</?[a-zA-Z][^>]*>")
 _WHITESPACE_RE: re.Pattern[str] = re.compile(r"\s+")
 
 _ZERO_WIDTH_RE: re.Pattern[str] = re.compile(
-    "[​‌‍﻿]"
+    "[\u200b\u200c\u200d\ufeff]"
 )
 
 
