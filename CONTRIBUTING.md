@@ -69,4 +69,4 @@ data/training/   # Training data (hub links, etc.)
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the Apache License 2.0.
+By contributing, you agree that your contributions will be licensed under CC0 1.0 Universal.
