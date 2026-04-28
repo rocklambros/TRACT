@@ -168,3 +168,55 @@ class TestCREHierarchyQueries:
 
     def test_hub_by_name_not_found(self, hierarchy) -> None:
         assert hierarchy.hub_by_name("nonexistent") is None
+
+
+class TestCREHierarchySerialization:
+
+    def test_save_and_load_roundtrip(self, hierarchy, tmp_path: Path) -> None:
+        from tract.hierarchy import CREHierarchy
+        out = tmp_path / "hierarchy.json"
+        hierarchy.save(out)
+        loaded = CREHierarchy.load(out)
+        assert loaded.label_space == hierarchy.label_space
+        assert loaded.roots == hierarchy.roots
+        assert len(loaded.hubs) == len(hierarchy.hubs)
+        for hub_id in hierarchy.hubs:
+            assert loaded.hubs[hub_id] == hierarchy.hubs[hub_id]
+
+    def test_load_validates(self, hierarchy, tmp_path: Path) -> None:
+        import json as json_mod
+        from tract.hierarchy import CREHierarchy
+        out = tmp_path / "bad.json"
+        data = hierarchy.model_dump()
+        data["label_space"] = list(reversed(data["label_space"]))
+        with open(out, "w") as f:
+            json_mod.dump(data, f)
+        with pytest.raises(ValueError, match="not sorted"):
+            CREHierarchy.load(out)
+
+
+class TestPhase0Parity:
+
+    def test_leaf_hub_ids_match_phase0(self) -> None:
+        """Phase 1A label_space must match Phase 0 leaf_hub_ids on real data."""
+        import hashlib
+        from scripts.phase0.common import build_hierarchy as phase0_build
+        from tract.hierarchy import CREHierarchy
+        from tract.io import load_json
+
+        opencre_path = Path("data/raw/opencre/opencre_all_cres.json")
+        if not opencre_path.exists():
+            pytest.skip("OpenCRE data not available")
+
+        data = load_json(opencre_path)
+        cres = data["cres"]
+        ts = data.get("fetch_timestamp", "unknown")
+        raw = opencre_path.read_bytes()
+        data_hash = hashlib.sha256(raw).hexdigest()
+
+        phase0_tree = phase0_build(cres)
+        phase0_leaves = sorted(phase0_tree.leaf_hub_ids())
+
+        phase1a_tree = CREHierarchy.from_opencre(cres, ts, data_hash)
+
+        assert phase1a_tree.label_space == phase0_leaves
