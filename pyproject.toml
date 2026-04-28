@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "tract"
+version = "0.1.0"
+description = "Transitive Reconciliation and Assignment of CRE Taxonomies"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0,<3.0",
+    "pyyaml>=6.0",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.10",
+    "types-PyYAML",
+    "types-beautifulsoup4",
+    "types-requests",
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
