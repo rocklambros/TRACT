@@ -138,3 +138,102 @@ def test_bootstrap_ci() -> None:
     assert result["ci_high"] > result["mean"]
     assert result["ci_low"] >= 0.0
     assert result["ci_high"] <= 1.0
+
+
+def test_lofo_integration(mini_cres: dict) -> None:
+    """Full pipeline integration test on mini fixture."""
+    from scripts.phase0.common import (
+        build_hierarchy,
+        extract_hub_standard_links,
+        build_evaluation_corpus,
+        build_lofo_folds,
+        aggregate_lofo_metrics,
+    )
+
+    tree = build_hierarchy(mini_cres["cres"])
+    links = extract_hub_standard_links(mini_cres["cres"])
+    ai_names = {"Framework Alpha", "Framework Beta", "Framework Gamma"}
+    corpus = build_evaluation_corpus(links, ai_names, parsed_controls={})
+
+    assert len(corpus) == 8
+
+    folds = build_lofo_folds(tree, links, corpus, ai_names, template="default")
+    assert len(folds) == 3
+
+    for fold in folds:
+        assert fold.held_out_framework in ai_names
+        for item in fold.eval_items:
+            assert item.framework_name == fold.held_out_framework
+
+    fold_results: list[dict] = []
+    for fold in folds:
+        preds: dict[int, list[str]] = {}
+        for i, item in enumerate(fold.eval_items):
+            preds[i] = [item.ground_truth_hub_id, "WRONG-1", "WRONG-2"]
+        fold_results.append(preds)
+
+    metrics = aggregate_lofo_metrics(fold_results, folds, track_filter=None)
+    assert metrics["hit_at_1"]["mean"] == 1.0
+    assert metrics["hit_at_5"]["mean"] == 1.0
+    assert metrics["mrr"]["mean"] == 1.0
+
+
+def test_lofo_hub_firewall(mini_cres: dict) -> None:
+    """Verify hub firewall excludes held-out framework's linked standards."""
+    from scripts.phase0.common import (
+        build_hierarchy,
+        extract_hub_standard_links,
+        build_hub_texts,
+    )
+
+    tree = build_hierarchy(mini_cres["cres"])
+    links = extract_hub_standard_links(mini_cres["cres"])
+
+    texts_no_firewall = build_hub_texts(tree, links, held_out_framework=None)
+    texts_alpha_out = build_hub_texts(tree, links, held_out_framework="Framework Alpha")
+
+    assert "Alpha Section 1" in texts_no_firewall.get("HUB-A1", "")
+    assert "Alpha Section 1" not in texts_alpha_out.get("HUB-A1", "")
+    assert "Beta Section 1" in texts_alpha_out.get("HUB-A1", "")
+
+
+def test_lofo_wrong_predictions(mini_cres: dict) -> None:
+    """Verify metrics are 0 when all predictions are wrong."""
+    from scripts.phase0.common import (
+        build_hierarchy,
+        extract_hub_standard_links,
+        build_evaluation_corpus,
+        build_lofo_folds,
+        aggregate_lofo_metrics,
+    )
+
+    tree = build_hierarchy(mini_cres["cres"])
+    links = extract_hub_standard_links(mini_cres["cres"])
+    ai_names = {"Framework Alpha", "Framework Beta", "Framework Gamma"}
+    corpus = build_evaluation_corpus(links, ai_names, parsed_controls={})
+    folds = build_lofo_folds(tree, links, corpus, ai_names)
+
+    fold_results: list[dict] = []
+    for fold in folds:
+        preds: dict[int, list[str]] = {}
+        for i in range(len(fold.eval_items)):
+            preds[i] = ["NONEXISTENT-1", "NONEXISTENT-2", "NONEXISTENT-3"]
+        fold_results.append(preds)
+
+    metrics = aggregate_lofo_metrics(fold_results, folds, track_filter=None)
+    assert metrics["hit_at_1"]["mean"] == 0.0
+    assert metrics["hit_at_5"]["mean"] == 0.0
+    assert metrics["mrr"]["mean"] == 0.0
+
+
+def test_path_template(mini_cres: dict) -> None:
+    """Verify path template includes hierarchy path."""
+    from scripts.phase0.common import build_hierarchy, extract_hub_standard_links, build_hub_texts
+
+    tree = build_hierarchy(mini_cres["cres"])
+    links = extract_hub_standard_links(mini_cres["cres"])
+
+    texts = build_hub_texts(tree, links, template="path")
+
+    assert "Root A > Hub A1" in texts["HUB-A1"]
+    assert "|" in texts["HUB-A1"]
