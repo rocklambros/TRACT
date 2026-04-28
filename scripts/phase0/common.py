@@ -15,6 +15,7 @@ import logging
 import math
 import os
 import tempfile
+import unicodedata
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -128,6 +129,31 @@ class EvalItem:
     track: str  # "full-text" or "all"
 
 
+# ── Input Validation ────────────────────────────────────────────────────────
+
+MAX_TEXT_LENGTH: Final[int] = 10_000
+MAX_BOOTSTRAP_ARRAY_SIZE: Final[int] = 100_000
+
+
+def _validate_cre_record(cre: dict, index: int) -> None:
+    """Validate a CRE record has required keys."""
+    for key in ("id", "name", "doctype"):
+        if key not in cre:
+            raise ValueError(
+                f"CRE record at index {index} missing required key '{key}': "
+                f"{str(cre)[:200]}"
+            )
+
+
+def _sanitize_text(text: str, max_length: int = MAX_TEXT_LENGTH) -> str:
+    """Strip null bytes, normalize Unicode NFC, enforce max length."""
+    text = text.replace("\x00", "")
+    text = unicodedata.normalize("NFC", text)
+    if len(text) > max_length:
+        text = text[:max_length]
+    return text
+
+
 # ── Hierarchy Builder ───────────────────────────────────────────────────────
 
 TRAINING_LINK_TYPES: Final[frozenset[str]] = frozenset({
@@ -139,9 +165,10 @@ def build_hierarchy(cres: list[dict]) -> CREHierarchy:
     """Build CRE hierarchy tree from raw OpenCRE CRE list."""
     tree = CREHierarchy()
 
-    for cre in cres:
+    for idx, cre in enumerate(cres):
         if cre.get("doctype") != "CRE":
             continue
+        _validate_cre_record(cre, idx)
         tree.hubs[cre["id"]] = cre["name"]
 
     for cre in cres:
@@ -297,7 +324,7 @@ def build_evaluation_corpus(
             track = "all"
 
         corpus.append(EvalItem(
-            control_text=control_text,
+            control_text=_sanitize_text(control_text),
             ground_truth_hub_id=link.cre_id,
             ground_truth_hub_name=link.cre_name,
             framework_name=link.standard_name,
@@ -322,6 +349,10 @@ def load_opencre_cres(path: Path | None = None) -> list[dict]:
     p = path or OPENCRE_PATH
     with open(p, encoding="utf-8") as f:
         data = json.load(f)
+    if not isinstance(data, dict) or "cres" not in data:
+        raise ValueError(f"Invalid OpenCRE data in {p}: expected dict with 'cres' key")
+    if not isinstance(data["cres"], list):
+        raise ValueError(f"'cres' in {p} is not a list")
     return data["cres"]
 
 
@@ -432,8 +463,12 @@ def bootstrap_ci(
     seed: int = BOOTSTRAP_SEED,
 ) -> dict[str, float]:
     """Compute bootstrap confidence interval for the mean of values."""
-    rng = np.random.default_rng(seed)
     n = len(values)
+    if n == 0:
+        raise ValueError("Cannot bootstrap empty array")
+    if n > MAX_BOOTSTRAP_ARRAY_SIZE:
+        raise ValueError(f"Bootstrap array too large ({n} > {MAX_BOOTSTRAP_ARRAY_SIZE})")
+    rng = np.random.default_rng(seed)
     indices = rng.integers(0, n, size=(n_resamples, n))
     boot_means = values[indices].mean(axis=1)
 
@@ -559,7 +594,11 @@ def aggregate_lofo_metrics(
         for i, item in enumerate(fold.eval_items):
             if track_filter == "full-text" and item.track != "full-text":
                 continue
-            all_predictions.append(results.get(i, []))
+            preds = results.get(i)
+            if preds is None:
+                logger.warning("Missing prediction for fold=%s item=%d", fold.held_out_framework, i)
+                preds = []
+            all_predictions.append(preds)
             all_ground_truth.append(item.ground_truth_hub_id)
 
     if not all_predictions:
@@ -598,8 +637,13 @@ def aggregate_lofo_metrics(
 
 def save_results(results: dict, filename: str) -> Path:
     """Save results dict to results/phase0/ as formatted JSON (atomic write)."""
+    if os.sep in filename or filename.startswith("."):
+        raise ValueError(f"Invalid filename: {filename}")
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     path = RESULTS_DIR / filename
+    resolved = path.resolve()
+    if not str(resolved).startswith(str(RESULTS_DIR.resolve())):
+        raise ValueError(f"Filename escapes results directory: {filename}")
 
     fd, tmp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:

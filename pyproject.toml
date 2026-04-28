@@ -24,13 +24,13 @@ dev = [
     "types-requests",
 ]
 phase0 = [
-    "torch>=2.2",
-    "transformers>=4.40",
-    "sentence-transformers>=3.0",
-    "anthropic>=0.25",
-    "numpy>=1.26",
-    "scipy>=1.12",
-    "scikit-learn>=1.4",
+    "torch>=2.2,<3",
+    "transformers>=4.40,<5",
+    "sentence-transformers>=3.0,<4",
+    "anthropic>=0.25,<1",
+    "numpy>=1.26,<3",
+    "scipy>=1.12,<2",
+    "scikit-learn>=1.4,<2",
 ]
 
 [tool.setuptools.packages.find]

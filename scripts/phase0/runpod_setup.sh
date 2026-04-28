@@ -11,7 +11,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 RESULTS_DIR="$PROJECT_ROOT/results/phase0"
 
-RUNPOD_API_KEY="$(pass runpod/api_key)"
+RUNPOD_API_KEY="$(pass runpod/api_key)" || { echo "ERROR: Failed to retrieve RunPod API key from pass" >&2; exit 1; }
+if [ -z "$RUNPOD_API_KEY" ]; then
+    echo "ERROR: RunPod API key is empty" >&2; exit 1
+fi
 export RUNPOD_API_KEY
 
 GPU_TYPE="NVIDIA A100 80GB PCIe"
@@ -23,6 +26,13 @@ POD_NAMES=("tract-phase0-bge" "tract-phase0-gte" "tract-phase0-deberta")
 POD_IDS_FILE="$SCRIPT_DIR/.pod_ids"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
+
+validate_pod_id() {
+    local pod_id="$1"
+    if [[ ! "$pod_id" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+        echo "ERROR: Invalid pod_id: $pod_id" >&2; exit 1
+    fi
+}
 
 provision() {
     log "Provisioning 3 GPU pods..."
@@ -63,19 +73,20 @@ provision() {
 setup_pod() {
     local pod_id="$1"
     local name="$2"
+    validate_pod_id "$pod_id"
 
     log "Setting up $name ($pod_id)..."
 
-    local ssh_cmd="runpodctl ssh --podId $pod_id"
+    local -a ssh_cmd=(runpodctl ssh --podId "$pod_id")
 
-    $ssh_cmd "pip install -q sentence-transformers transformers torch numpy scipy scikit-learn"
+    "${ssh_cmd[@]}" "pip install -q sentence-transformers transformers torch numpy scipy scikit-learn"
 
     runpodctl send --podId "$pod_id" "$PROJECT_ROOT/scripts/phase0/" /workspace/scripts/phase0/
     runpodctl send --podId "$pod_id" "$PROJECT_ROOT/tract/" /workspace/tract/
     runpodctl send --podId "$pod_id" "$PROJECT_ROOT/data/" /workspace/data/
     runpodctl send --podId "$pod_id" "$PROJECT_ROOT/pyproject.toml" /workspace/pyproject.toml
 
-    $ssh_cmd "cd /workspace && pip install -e '.[phase0]'"
+    "${ssh_cmd[@]}" "cd /workspace && pip install -e '.[phase0]'"
 }
 
 run_experiments() {
@@ -90,11 +101,9 @@ run_experiments() {
         esac
     done < "$POD_IDS_FILE"
 
-    for line in $(cat "$POD_IDS_FILE"); do
-        name="${line%%=*}"
-        pod_id="${line##*=}"
+    while IFS='=' read -r name pod_id; do
         setup_pod "$pod_id" "$name" &
-    done
+    done < "$POD_IDS_FILE"
     wait
 
     log "Phase A: Running baseline experiments in parallel..."
