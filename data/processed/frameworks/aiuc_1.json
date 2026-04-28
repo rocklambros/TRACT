@@ -1,0 +1,2003 @@
+{
+  "controls": [
+    {
+      "control_id": "A001.1",
+      "description": "Define and communicate input data usage policies including how customer data is used for inference and model training, establishing data retention periods, and documenting customer data rights.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Terms of Service",
+          "Privacy Policy",
+          "Data Processing Agreement"
+        ]
+      },
+      "parent_id": "A001",
+      "parent_name": "Establish input data policy",
+      "title": "Establish input data policy"
+    },
+    {
+      "control_id": "A001.2",
+      "description": "Implement technical controls to enforce data retention and deletion policies through automating data deletion based on retention schedules.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Automated deletion implementation"
+        ]
+      },
+      "parent_id": "A001",
+      "parent_name": "Establish input data policy",
+      "title": "Establish input data policy"
+    },
+    {
+      "control_id": "A001.3",
+      "description": "Document processes for handling end-user data subject rights including opt-in/opt-out rights, access, portability, or deletion of input data.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "DPA",
+          "GDPR appendix",
+          "Privacy Policy"
+        ]
+      },
+      "parent_id": "A001",
+      "parent_name": "Establish input data policy",
+      "title": "Establish input data policy"
+    },
+    {
+      "control_id": "A002.1",
+      "description": "Establishing output ownership and usage rights policies, specifying customer ownership of AI-generated outputs, defining permitted uses, documenting usage restrictions, and disclosing opt-out and deletion procedures.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Terms of Service"
+        ]
+      },
+      "parent_id": "A002",
+      "parent_name": "Establish output data policy",
+      "title": "Establish output data policy"
+    },
+    {
+      "control_id": "A003.1",
+      "description": "Configuring data collection limits to reduce data and privacy exposure, limiting data collection to task-relevant information based on context.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Code implementing data collection restrictions"
+        ]
+      },
+      "parent_id": "A003",
+      "parent_name": "Limit AI agent data collection",
+      "title": "Limit AI agent data collection"
+    },
+    {
+      "control_id": "A003.2",
+      "description": "Deploying monitoring mechanisms ensuring AI systems only perform necessary inference and logging deviations from defined operational scope.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Alert/error handling code"
+        ]
+      },
+      "parent_id": "A003",
+      "parent_name": "Limit AI agent data collection",
+      "title": "Limit AI agent data collection"
+    },
+    {
+      "control_id": "A003.3",
+      "description": "Integrating with existing authorization systems to align agent access permissions with organizational policies.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Authorization system code"
+        ]
+      },
+      "parent_id": "A003",
+      "parent_name": "Limit AI agent data collection",
+      "title": "Limit AI agent data collection"
+    },
+    {
+      "control_id": "A004.1",
+      "description": "Providing user guidance on protecting confidential information.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Policy document",
+          "Training materials"
+        ]
+      },
+      "parent_id": "A004",
+      "parent_name": "Protect IP & trade secrets",
+      "title": "Protect IP & trade secrets"
+    },
+    {
+      "control_id": "A004.2",
+      "description": "Leveraging foundation model provider protections with zero data retention policies.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Provider contracts"
+        ]
+      },
+      "parent_id": "A004",
+      "parent_name": "Protect IP & trade secrets",
+      "title": "Protect IP & trade secrets"
+    },
+    {
+      "control_id": "A004.3",
+      "description": "Implementing technical controls to detect proprietary information in outputs.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "IP detection code"
+        ]
+      },
+      "parent_id": "A004",
+      "parent_name": "Protect IP & trade secrets",
+      "title": "Protect IP & trade secrets"
+    },
+    {
+      "control_id": "A004.4",
+      "description": "Establishing output monitoring for high-risk IP scenarios.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Audit trails",
+          "Review workflows"
+        ]
+      },
+      "parent_id": "A004",
+      "parent_name": "Protect IP & trade secrets",
+      "title": "Protect IP & trade secrets"
+    },
+    {
+      "control_id": "A005.1",
+      "description": "Establishing explicit consent and disclosure for combined data usage.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Data Processing Agreement",
+          "Terms of Service"
+        ]
+      },
+      "parent_id": "A005",
+      "parent_name": "Prevent cross-customer data exposure",
+      "title": "Prevent cross-customer data exposure"
+    },
+    {
+      "control_id": "A005.2",
+      "description": "Implementing customer data isolation controls with strict logical and physical separation.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Database schema screenshots"
+        ]
+      },
+      "parent_id": "A005",
+      "parent_name": "Prevent cross-customer data exposure",
+      "title": "Prevent cross-customer data exposure"
+    },
+    {
+      "control_id": "A005.3",
+      "description": "Implementing privacy-enhancing technologies to reduce competitive exposure.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Tokenization",
+          "Differential privacy"
+        ]
+      },
+      "parent_id": "A005",
+      "parent_name": "Prevent cross-customer data exposure",
+      "title": "Prevent cross-customer data exposure"
+    },
+    {
+      "control_id": "A006.1",
+      "description": "Implementing safeguards to prevent personal data leakage through AI system outputs and logs, filtering prompts and outputs for personal identifiers.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "PII filtering code"
+        ]
+      },
+      "parent_id": "A006",
+      "parent_name": "Prevent PII leakage",
+      "title": "Prevent PII leakage"
+    },
+    {
+      "control_id": "A006.2",
+      "description": "Requiring authentication and authorization for PII access with role-based access controls.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "IAM configuration"
+        ]
+      },
+      "parent_id": "A006",
+      "parent_name": "Prevent PII leakage",
+      "title": "Prevent PII leakage"
+    },
+    {
+      "control_id": "A006.3",
+      "description": "Integrating with existing data loss prevention (DLP) systems to monitor and block outputs containing personal data.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "DLP integration code"
+        ]
+      },
+      "parent_id": "A006",
+      "parent_name": "Prevent PII leakage",
+      "title": "Prevent PII leakage"
+    },
+    {
+      "control_id": "A007.1",
+      "description": "Documenting foundation model provider IP protections including indemnification clauses.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "Foundation model provider contract"
+        ]
+      },
+      "parent_id": "A007",
+      "parent_name": "Prevent IP violations",
+      "title": "Prevent IP violations"
+    },
+    {
+      "control_id": "A007.2",
+      "description": "Establishing supplementary content filtering mechanisms for IP screening.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "IP filtering code"
+        ]
+      },
+      "parent_id": "A007",
+      "parent_name": "Prevent IP violations",
+      "title": "Prevent IP violations"
+    },
+    {
+      "control_id": "A007.3",
+      "description": "Implementing user guidance and guardrails to reduce IP risk.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Data & Privacy",
+        "evidence_types": [
+          "UI screenshots"
+        ]
+      },
+      "parent_id": "A007",
+      "parent_name": "Prevent IP violations",
+      "title": "Prevent IP violations"
+    },
+    {
+      "control_id": "B001.1",
+      "description": "Third-party evaluation report demonstrating adversarial robustness testing including risk taxonomy, methodology, findings, and remediation timelines.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Third-party evaluation report"
+        ]
+      },
+      "parent_id": "B001",
+      "parent_name": "Third-party testing of adversarial robustness",
+      "title": "Third-party testing of adversarial robustness"
+    },
+    {
+      "control_id": "B001.2",
+      "description": "Penetration test reports incorporating AI-specific test cases, shared threat models, and testing calendars.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "Engineering Practice"
+        ]
+      },
+      "parent_id": "B001",
+      "parent_name": "Third-party testing of adversarial robustness",
+      "title": "Third-party testing of adversarial robustness"
+    },
+    {
+      "control_id": "B002.1",
+      "description": "Implementing monitoring for prompt injection patterns, jailbreak techniques, adversarial input attempts.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Monitoring system screenshots"
+        ]
+      },
+      "parent_id": "B002",
+      "parent_name": "Detect adversarial input",
+      "title": "Detect adversarial input"
+    },
+    {
+      "control_id": "B002.2",
+      "description": "Logging suspected adversarial attacks with relevant context and escalating based on severity.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Incident management system"
+        ]
+      },
+      "parent_id": "B002",
+      "parent_name": "Detect adversarial input",
+      "title": "Detect adversarial input"
+    },
+    {
+      "control_id": "B002.3",
+      "description": "Updating detection rules based on emerging adversarial techniques quarterly.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Quarterly review documentation"
+        ]
+      },
+      "parent_id": "B002",
+      "parent_name": "Detect adversarial input",
+      "title": "Detect adversarial input"
+    },
+    {
+      "control_id": "B002.4",
+      "description": "Implementing adversarial input detection prior to AI model processing.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "Pre-processing filtering logic"
+        ]
+      },
+      "parent_id": "B002",
+      "parent_name": "Detect adversarial input",
+      "title": "Detect adversarial input"
+    },
+    {
+      "control_id": "B002.5",
+      "description": "Integrating adversarial input detection into existing security operations tooling.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "SIEM platform screenshots"
+        ]
+      },
+      "parent_id": "B002",
+      "parent_name": "Detect adversarial input",
+      "title": "Detect adversarial input"
+    },
+    {
+      "control_id": "B003.1",
+      "description": "Policy document defining limitations and approval requirements for publicly sharing AI system technical details.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Internal policies"
+        ]
+      },
+      "parent_id": "B003",
+      "parent_name": "Manage public release of technical details",
+      "title": "Manage public release of technical details"
+    },
+    {
+      "control_id": "B003.2",
+      "description": "Approval records for public AI communications.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "Internal processes"
+        ]
+      },
+      "parent_id": "B003",
+      "parent_name": "Manage public release of technical details",
+      "title": "Manage public release of technical details"
+    },
+    {
+      "control_id": "B004.1",
+      "description": "Implementing systems distinguishing between high-volume legitimate usage and adversarial behavior.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Anomaly detection system"
+        ]
+      },
+      "parent_id": "B004",
+      "parent_name": "Prevent AI endpoint scraping",
+      "title": "Prevent AI endpoint scraping"
+    },
+    {
+      "control_id": "B004.2",
+      "description": "Implementing rate limiting and query restrictions.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Rate limiting configuration"
+        ]
+      },
+      "parent_id": "B004",
+      "parent_name": "Prevent AI endpoint scraping",
+      "title": "Prevent AI endpoint scraping"
+    },
+    {
+      "control_id": "B004.3",
+      "description": "Conducting simulated external attack testing of AI endpoints.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Penetration test report"
+        ]
+      },
+      "parent_id": "B004",
+      "parent_name": "Prevent AI endpoint scraping",
+      "title": "Prevent AI endpoint scraping"
+    },
+    {
+      "control_id": "B004.4",
+      "description": "Tracking identified vulnerabilities and implementing protective measures.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Issue tracking system"
+        ]
+      },
+      "parent_id": "B004",
+      "parent_name": "Prevent AI endpoint scraping",
+      "title": "Prevent AI endpoint scraping"
+    },
+    {
+      "control_id": "B005.1",
+      "description": "Integration of automated moderation tools to filter inputs before reaching the foundation model.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Configuration screenshots"
+        ]
+      },
+      "parent_id": "B005",
+      "parent_name": "Implement real-time input filtering",
+      "title": "Implement real-time input filtering"
+    },
+    {
+      "control_id": "B005.2",
+      "description": "Documentation explaining moderation approach including tool selection rationale and threshold settings.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Internal documentation"
+        ]
+      },
+      "parent_id": "B005",
+      "parent_name": "Implement real-time input filtering",
+      "title": "Implement real-time input filtering"
+    },
+    {
+      "control_id": "B005.3",
+      "description": "User-facing communication when inputs are blocked.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "UI screenshots"
+        ]
+      },
+      "parent_id": "B005",
+      "parent_name": "Implement real-time input filtering",
+      "title": "Implement real-time input filtering"
+    },
+    {
+      "control_id": "B005.4",
+      "description": "Logging system capturing flagged inputs with metadata tracking.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Logging system screenshots"
+        ]
+      },
+      "parent_id": "B005",
+      "parent_name": "Implement real-time input filtering",
+      "title": "Implement real-time input filtering"
+    },
+    {
+      "control_id": "B005.5",
+      "description": "Analysis of filter performance metrics with documented threshold adjustments.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Performance reports"
+        ]
+      },
+      "parent_id": "B005",
+      "parent_name": "Implement real-time input filtering",
+      "title": "Implement real-time input filtering"
+    },
+    {
+      "control_id": "B006.1",
+      "description": "Restricting agent access to approved backend services and APIs, enforcing network segmentation or API gateway rules.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Agent backend access limits configuration"
+        ]
+      },
+      "parent_id": "B006",
+      "parent_name": "Prevent unauthorized AI agent actions",
+      "title": "Prevent unauthorized AI agent actions"
+    },
+    {
+      "control_id": "B006.2",
+      "description": "Deploying monitoring and alerting for agent actions that exceed security boundaries.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Monitoring configuration"
+        ]
+      },
+      "parent_id": "B006",
+      "parent_name": "Prevent unauthorized AI agent actions",
+      "title": "Prevent unauthorized AI agent actions"
+    },
+    {
+      "control_id": "B007.1",
+      "description": "System-level access controls tailored to AI systems using role-based or attribute-based access.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "IAM platform screenshots"
+        ]
+      },
+      "parent_id": "B007",
+      "parent_name": "Enforce user access privileges to AI systems",
+      "title": "Enforce user access privileges to AI systems"
+    },
+    {
+      "control_id": "B007.2",
+      "description": "Conducting access reviews and updates at least quarterly.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Quarterly access review documentation"
+        ]
+      },
+      "parent_id": "B007",
+      "parent_name": "Enforce user access privileges to AI systems",
+      "title": "Enforce user access privileges to AI systems"
+    },
+    {
+      "control_id": "B008.1",
+      "description": "Restricting access to production AI models based on job function.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "IAM configuration"
+        ]
+      },
+      "parent_id": "B008",
+      "parent_name": "Protect model deployment environment",
+      "title": "Protect model deployment environment"
+    },
+    {
+      "control_id": "B008.2",
+      "description": "Applying scoped API tokens, TLS for all endpoint traffic, schema validation.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "API security configuration"
+        ]
+      },
+      "parent_id": "B008",
+      "parent_name": "Protect model deployment environment",
+      "title": "Protect model deployment environment"
+    },
+    {
+      "control_id": "B008.3",
+      "description": "Securing model hosting environments with minimal container images.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "Container configuration"
+        ]
+      },
+      "parent_id": "B008",
+      "parent_name": "Protect model deployment environment",
+      "title": "Protect model deployment environment"
+    },
+    {
+      "control_id": "B008.4",
+      "description": "Verifying model integrity before deployment using cryptographic checksums.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "Deployment pipeline"
+        ]
+      },
+      "parent_id": "B008",
+      "parent_name": "Protect model deployment environment",
+      "title": "Protect model deployment environment"
+    },
+    {
+      "control_id": "B009.1",
+      "description": "Reducing or limiting the number of results shown in outputs to relevant only.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Output restriction code"
+        ]
+      },
+      "parent_id": "B009",
+      "parent_name": "Limit output over-exposure",
+      "title": "Limit output over-exposure"
+    },
+    {
+      "control_id": "B009.2",
+      "description": "Providing user-facing notices about output limitations.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Security",
+        "evidence_types": [
+          "Product interface screenshots"
+        ]
+      },
+      "parent_id": "B009",
+      "parent_name": "Limit output over-exposure",
+      "title": "Limit output over-exposure"
+    },
+    {
+      "control_id": "B009.3",
+      "description": "Limiting the fidelity of model outputs with rounding, threshold bands, or obfuscation.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Security",
+        "evidence_types": [
+          "Fidelity limitation code"
+        ]
+      },
+      "parent_id": "B009",
+      "parent_name": "Limit output over-exposure",
+      "title": "Limit output over-exposure"
+    },
+    {
+      "control_id": "C001.1",
+      "description": "Internal policy document or risk framework defining AI risk categories with severity levels and examples.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Risk taxonomy document"
+        ]
+      },
+      "parent_id": "C001",
+      "parent_name": "Define AI risk taxonomy",
+      "title": "Define AI risk taxonomy"
+    },
+    {
+      "control_id": "C001.2",
+      "description": "Quarterly reviews of risk taxonomy with review dates, participants, decisions, and version history.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Review documentation"
+        ]
+      },
+      "parent_id": "C001",
+      "parent_name": "Define AI risk taxonomy",
+      "title": "Define AI risk taxonomy"
+    },
+    {
+      "control_id": "C002.1",
+      "description": "Conducting pre-deployment testing with documented results, risk assessments, and approval sign-offs.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Test results",
+          "Risk assessments"
+        ]
+      },
+      "parent_id": "C002",
+      "parent_name": "Conduct pre-deployment testing",
+      "title": "Conduct pre-deployment testing"
+    },
+    {
+      "control_id": "C002.2",
+      "description": "Integrating AI system testing into established SDLC gates.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "CI/CD pipeline configuration"
+        ]
+      },
+      "parent_id": "C002",
+      "parent_name": "Conduct pre-deployment testing",
+      "title": "Conduct pre-deployment testing"
+    },
+    {
+      "control_id": "C002.3",
+      "description": "Implementing pre-deployment vulnerability scanning of AI artifacts and dependencies.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Vulnerability scan results"
+        ]
+      },
+      "parent_id": "C002",
+      "parent_name": "Conduct pre-deployment testing",
+      "title": "Conduct pre-deployment testing"
+    },
+    {
+      "control_id": "C003.1",
+      "description": "Detecting and blocking harmful output types through content filtering systems.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Content filtering rules"
+        ]
+      },
+      "parent_id": "C003",
+      "parent_name": "Prevent harmful outputs",
+      "title": "Prevent harmful outputs"
+    },
+    {
+      "control_id": "C003.2",
+      "description": "Restricting high-risk recommendations in sensitive domains with disclaimers.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "System prompts",
+          "Guardrail rules"
+        ]
+      },
+      "parent_id": "C003",
+      "parent_name": "Prevent harmful outputs",
+      "title": "Prevent harmful outputs"
+    },
+    {
+      "control_id": "C003.3",
+      "description": "Monitoring for discriminatory patterns and implementing fairness checks.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Bias evaluation results"
+        ]
+      },
+      "parent_id": "C003",
+      "parent_name": "Prevent harmful outputs",
+      "title": "Prevent harmful outputs"
+    },
+    {
+      "control_id": "C003.4",
+      "description": "Evaluating harm mitigation controls using performance metrics.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Performance metrics dashboard"
+        ]
+      },
+      "parent_id": "C003",
+      "parent_name": "Prevent harmful outputs",
+      "title": "Prevent harmful outputs"
+    },
+    {
+      "control_id": "C004.1",
+      "description": "Blocking rules, defensive prompting, or filtering for out-of-scope requests.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Technical configuration"
+        ]
+      },
+      "parent_id": "C004",
+      "parent_name": "Prevent out-of-scope outputs",
+      "title": "Prevent out-of-scope outputs"
+    },
+    {
+      "control_id": "C004.2",
+      "description": "Logs showing out-of-scope attempts with frequency data and boundary updates.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Log output"
+        ]
+      },
+      "parent_id": "C004",
+      "parent_name": "Prevent out-of-scope outputs",
+      "title": "Prevent out-of-scope outputs"
+    },
+    {
+      "control_id": "C004.3",
+      "description": "User-facing guidance explaining system capabilities and limitations.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "UI screenshots"
+        ]
+      },
+      "parent_id": "C004",
+      "parent_name": "Prevent out-of-scope outputs",
+      "title": "Prevent out-of-scope outputs"
+    },
+    {
+      "control_id": "C005.1",
+      "description": "Implementing detection and blocking mechanisms aligned with organizational risk taxonomy.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Filtering rules"
+        ]
+      },
+      "parent_id": "C005",
+      "parent_name": "Prevent customer-defined high risk outputs",
+      "title": "Prevent customer-defined high risk outputs"
+    },
+    {
+      "control_id": "C005.2",
+      "description": "Establishing escalation procedures for flagged high-risk content.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Workflow configuration"
+        ]
+      },
+      "parent_id": "C005",
+      "parent_name": "Prevent customer-defined high risk outputs",
+      "title": "Prevent customer-defined high risk outputs"
+    },
+    {
+      "control_id": "C005.3",
+      "description": "Implementing automated real-time interventions.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Automated response configuration"
+        ]
+      },
+      "parent_id": "C005",
+      "parent_name": "Prevent customer-defined high risk outputs",
+      "title": "Prevent customer-defined high risk outputs"
+    },
+    {
+      "control_id": "C006.1",
+      "description": "Establishing output sanitization and validation procedures before presenting content to users.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Output sanitization code"
+        ]
+      },
+      "parent_id": "C006",
+      "parent_name": "Prevent output vulnerabilities",
+      "title": "Prevent output vulnerabilities"
+    },
+    {
+      "control_id": "C006.2",
+      "description": "Implementing security labeling and content handling based on trust level.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Trust-based content handling"
+        ]
+      },
+      "parent_id": "C006",
+      "parent_name": "Prevent output vulnerabilities",
+      "title": "Prevent output vulnerabilities"
+    },
+    {
+      "control_id": "C006.3",
+      "description": "Detecting advanced output-based attack patterns.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Detection rules"
+        ]
+      },
+      "parent_id": "C006",
+      "parent_name": "Prevent output vulnerabilities",
+      "title": "Prevent output vulnerabilities"
+    },
+    {
+      "control_id": "C007.1",
+      "description": "Document or policy defining high-risk outputs requiring human review.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Legal Policies"
+        ]
+      },
+      "parent_id": "C007",
+      "parent_name": "Flag high risk outputs",
+      "title": "Flag high risk outputs"
+    },
+    {
+      "control_id": "C007.2",
+      "description": "Detection code, configuration, or rules engine showing high-risk output filtering.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Technical Implementation"
+        ]
+      },
+      "parent_id": "C007",
+      "parent_name": "Flag high risk outputs",
+      "title": "Flag high risk outputs"
+    },
+    {
+      "control_id": "C007.3",
+      "description": "Workflow documentation for human review process for flagged outputs.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Operational Practices"
+        ]
+      },
+      "parent_id": "C007",
+      "parent_name": "Flag high risk outputs",
+      "title": "Flag high risk outputs"
+    },
+    {
+      "control_id": "C008.1",
+      "description": "Establish ongoing monitoring of AI outputs across risk categories through regular evaluations.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Monitoring dashboard"
+        ]
+      },
+      "parent_id": "C008",
+      "parent_name": "Monitor AI risk categories",
+      "title": "Monitor AI risk categories"
+    },
+    {
+      "control_id": "C008.2",
+      "description": "Maintain documentation recording identified risk scenarios with examples.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Document/change log"
+        ]
+      },
+      "parent_id": "C008",
+      "parent_name": "Monitor AI risk categories",
+      "title": "Monitor AI risk categories"
+    },
+    {
+      "control_id": "C008.4",
+      "description": "Integrate AI output monitoring with existing security tools.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "SIEM integration"
+        ]
+      },
+      "parent_id": "C008",
+      "parent_name": "Monitor AI risk categories",
+      "title": "Monitor AI risk categories"
+    },
+    {
+      "control_id": "C009.1",
+      "description": "Enable user intervention capabilities such as pause, stop, or redirect system behavior.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Intervention controls screenshots"
+        ]
+      },
+      "parent_id": "C009",
+      "parent_name": "Enable real-time feedback and intervention",
+      "title": "Enable real-time feedback and intervention"
+    },
+    {
+      "control_id": "C009.2",
+      "description": "Review user feedback and intervention logs regularly.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Safety",
+        "evidence_types": [
+          "Feedback review reports"
+        ]
+      },
+      "parent_id": "C009",
+      "parent_name": "Enable real-time feedback and intervention",
+      "title": "Enable real-time feedback and intervention"
+    },
+    {
+      "control_id": "C010.1",
+      "description": "Third-party evaluation report showing harmful output testing.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Third-party evaluation report"
+        ]
+      },
+      "parent_id": "C010",
+      "parent_name": "Third-party testing for harmful outputs",
+      "title": "Third-party testing for harmful outputs"
+    },
+    {
+      "control_id": "C011.1",
+      "description": "Third-party evaluation report showing out-of-scope output testing.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Third-party evaluation report"
+        ]
+      },
+      "parent_id": "C011",
+      "parent_name": "Third-party testing for out-of-scope outputs",
+      "title": "Third-party testing for out-of-scope outputs"
+    },
+    {
+      "control_id": "C012.1",
+      "description": "Third-party evaluation report showing testing of customer-defined risk.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Safety",
+        "evidence_types": [
+          "Third-party evaluation report"
+        ]
+      },
+      "parent_id": "C012",
+      "parent_name": "Third-party testing for customer-defined risk",
+      "title": "Third-party testing for customer-defined risk"
+    },
+    {
+      "control_id": "D001.1",
+      "description": "Implementing factual accuracy controls via fact-checking mechanisms, flagging uncertain responses.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Groundedness validation screenshots"
+        ]
+      },
+      "parent_id": "D001",
+      "parent_name": "Prevent hallucinated outputs",
+      "title": "Prevent hallucinated outputs"
+    },
+    {
+      "control_id": "D001.2",
+      "description": "Requiring citations for factual claims, implementing source reliability checks.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "UI citation screenshots"
+        ]
+      },
+      "parent_id": "D001",
+      "parent_name": "Prevent hallucinated outputs",
+      "title": "Prevent hallucinated outputs"
+    },
+    {
+      "control_id": "D001.3",
+      "description": "Maintaining uncertainty communication through confidence levels and disclaimers.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Confidence display screenshots"
+        ]
+      },
+      "parent_id": "D001",
+      "parent_name": "Prevent hallucinated outputs",
+      "title": "Prevent hallucinated outputs"
+    },
+    {
+      "control_id": "D002.1",
+      "description": "Third-party evaluation report showing hallucination testing results.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Third-party evaluation report"
+        ]
+      },
+      "parent_id": "D002",
+      "parent_name": "Third-party testing for hallucinations",
+      "title": "Third-party testing for hallucinations"
+    },
+    {
+      "control_id": "D003.1",
+      "description": "Function call validation and authorization, restricting tool access to approved functions, validating parameters before execution.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Function allowlists",
+          "Parameter validation code"
+        ]
+      },
+      "parent_id": "D003",
+      "parent_name": "Restrict unsafe tool calls",
+      "title": "Restrict unsafe tool calls"
+    },
+    {
+      "control_id": "D003.2",
+      "description": "Enforcing rate limits and transaction caps for autonomous tool use.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Rate limit configuration"
+        ]
+      },
+      "parent_id": "D003",
+      "parent_name": "Restrict unsafe tool calls",
+      "title": "Restrict unsafe tool calls"
+    },
+    {
+      "control_id": "D003.3",
+      "description": "Execution monitoring and logging; tracking all tool calls, monitoring for unauthorized access attempts.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Logging configuration",
+          "Audit logs"
+        ]
+      },
+      "parent_id": "D003",
+      "parent_name": "Restrict unsafe tool calls",
+      "title": "Restrict unsafe tool calls"
+    },
+    {
+      "control_id": "D003.4",
+      "description": "Requiring human approval for sensitive tool operations.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Workflow screenshots"
+        ]
+      },
+      "parent_id": "D003",
+      "parent_name": "Restrict unsafe tool calls",
+      "title": "Restrict unsafe tool calls"
+    },
+    {
+      "control_id": "D003.5",
+      "description": "Reviewing patterns of AI tool usage; identifying anomalies, updating tool permissions.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Usage review reports"
+        ]
+      },
+      "parent_id": "D003",
+      "parent_name": "Restrict unsafe tool calls",
+      "title": "Restrict unsafe tool calls"
+    },
+    {
+      "control_id": "D004.1",
+      "description": "Third-party evaluation report showing tool call testing results.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Reliability",
+        "evidence_types": [
+          "Third-party evaluation report"
+        ]
+      },
+      "parent_id": "D004",
+      "parent_name": "Third-party testing of tool calls",
+      "title": "Third-party testing of tool calls"
+    },
+    {
+      "control_id": "E001.1",
+      "description": "Assign breach response lead and document incident response procedures.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E001",
+      "parent_name": "AI failure plan for security breaches",
+      "title": "AI failure plan for security breaches"
+    },
+    {
+      "control_id": "E001.2",
+      "description": "Define procedures for customer communications, regulatory reporting, and vendor notifications.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E001",
+      "parent_name": "AI failure plan for security breaches",
+      "title": "AI failure plan for security breaches"
+    },
+    {
+      "control_id": "E001.3",
+      "description": "Implement system freeze capabilities, vulnerability fixes, access control updates.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E001",
+      "parent_name": "AI failure plan for security breaches",
+      "title": "AI failure plan for security breaches"
+    },
+    {
+      "control_id": "E001.4",
+      "description": "Establish guidance on preserving evidence for legal review.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E001",
+      "parent_name": "AI failure plan for security breaches",
+      "title": "AI failure plan for security breaches"
+    },
+    {
+      "control_id": "E002.1",
+      "description": "Implementing customer communication protocols and immediate mitigation steps.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E002",
+      "parent_name": "AI failure plan for harmful outputs",
+      "title": "AI failure plan for harmful outputs"
+    },
+    {
+      "control_id": "E002.2",
+      "description": "Defining harmful output category definitions and external support engagement.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E002",
+      "parent_name": "AI failure plan for harmful outputs",
+      "title": "AI failure plan for harmful outputs"
+    },
+    {
+      "control_id": "E003.1",
+      "description": "Establishing compensation assessment procedures and remediation measures.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E003",
+      "parent_name": "AI failure plan for hallucinations",
+      "title": "AI failure plan for hallucinations"
+    },
+    {
+      "control_id": "E003.2",
+      "description": "Defining hallucination incident types and external support coordination.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI failure plan"
+        ]
+      },
+      "parent_id": "E003",
+      "parent_name": "AI failure plan for hallucinations",
+      "title": "AI failure plan for hallucinations"
+    },
+    {
+      "control_id": "E004.1",
+      "description": "Documentation defining which AI system changes require approval with assigned leads, plus approval records.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Change management policies"
+        ]
+      },
+      "parent_id": "E004",
+      "parent_name": "Assign accountability",
+      "title": "Assign accountability"
+    },
+    {
+      "control_id": "E004.2",
+      "description": "Implementing code signing and verification processes for AI models and deployment artifacts.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Code signing configuration"
+        ]
+      },
+      "parent_id": "E004",
+      "parent_name": "Assign accountability",
+      "title": "Assign accountability"
+    },
+    {
+      "control_id": "E005.1",
+      "description": "Risk assessment and decision record evaluating cloud vs. on-premises factors.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Deployment decision memos"
+        ]
+      },
+      "parent_id": "E005",
+      "parent_name": "Assess cloud vs on-prem processing",
+      "title": "Assess cloud vs on-prem processing"
+    },
+    {
+      "control_id": "E006.1",
+      "description": "Vendor assessment records showing evaluation criteria, scoring, verification, and approval decisions.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Vendor assessment documentation"
+        ]
+      },
+      "parent_id": "E006",
+      "parent_name": "Conduct vendor due diligence",
+      "title": "Conduct vendor due diligence"
+    },
+    {
+      "control_id": "E007.1",
+      "description": "RETIRED - merged into E004.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": []
+      },
+      "parent_id": "E007",
+      "parent_name": "Document system change approvals",
+      "title": "Document system change approvals"
+    },
+    {
+      "control_id": "E008.1",
+      "description": "Quarterly reviews of decision processes including AI system changes, foundational model selection.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Meeting notes",
+          "Decision logs"
+        ]
+      },
+      "parent_id": "E008",
+      "parent_name": "Review internal processes",
+      "title": "Review internal processes"
+    },
+    {
+      "control_id": "E008.2",
+      "description": "Collect and implement external feedback on AI systems.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Security advisories",
+          "External input records"
+        ]
+      },
+      "parent_id": "E008",
+      "parent_name": "Review internal processes",
+      "title": "Review internal processes"
+    },
+    {
+      "control_id": "E009.1",
+      "description": "Configuring logging for third-party interactions with captured metadata.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Logging system screenshots"
+        ]
+      },
+      "parent_id": "E009",
+      "parent_name": "Monitor third-party access",
+      "title": "Monitor third-party access"
+    },
+    {
+      "control_id": "E010.1",
+      "description": "Policy document defining acceptable and prohibited AI usage.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Acceptable Use Policy"
+        ]
+      },
+      "parent_id": "E010",
+      "parent_name": "Establish AI acceptable use policy",
+      "title": "Establish AI acceptable use policy"
+    },
+    {
+      "control_id": "E010.2",
+      "description": "Implementation of detection and monitoring systems for AUP violations.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Detection system code"
+        ]
+      },
+      "parent_id": "E010",
+      "parent_name": "Establish AI acceptable use policy",
+      "title": "Establish AI acceptable use policy"
+    },
+    {
+      "control_id": "E010.3",
+      "description": "User-facing alerts when acceptable use policy is violated.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "UI screenshots"
+        ]
+      },
+      "parent_id": "E010",
+      "parent_name": "Establish AI acceptable use policy",
+      "title": "Establish AI acceptable use policy"
+    },
+    {
+      "control_id": "E010.4",
+      "description": "Real-time blocking/alerting capabilities and violation tracking.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Enforcement configuration"
+        ]
+      },
+      "parent_id": "E010",
+      "parent_name": "Establish AI acceptable use policy",
+      "title": "Establish AI acceptable use policy"
+    },
+    {
+      "control_id": "E011.1",
+      "description": "Maintaining AI infrastructure location documentation.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Subprocessor list"
+        ]
+      },
+      "parent_id": "E011",
+      "parent_name": "Record processing locations",
+      "title": "Record processing locations"
+    },
+    {
+      "control_id": "E011.2",
+      "description": "Implementing transfer compliance procedures.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "DPA",
+          "Transfer impact assessments"
+        ]
+      },
+      "parent_id": "E011",
+      "parent_name": "Record processing locations",
+      "title": "Record processing locations"
+    },
+    {
+      "control_id": "E012.1",
+      "description": "Identify applicable regulations, document compliance procedures, and review every 6 months.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Compliance register"
+        ]
+      },
+      "parent_id": "E012",
+      "parent_name": "Document regulatory compliance",
+      "title": "Document regulatory compliance"
+    },
+    {
+      "control_id": "E013.1",
+      "description": "Defining quality objectives, metrics, and risk management approach.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Quality metrics dashboards"
+        ]
+      },
+      "parent_id": "E013",
+      "parent_name": "Implement quality management system",
+      "title": "Implement quality management system"
+    },
+    {
+      "control_id": "E013.2",
+      "description": "Establishing change management, approval processes.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Change approval workflows"
+        ]
+      },
+      "parent_id": "E013",
+      "parent_name": "Implement quality management system",
+      "title": "Implement quality management system"
+    },
+    {
+      "control_id": "E013.3",
+      "description": "Implementing defect tracking, continuous improvement, and post-market monitoring.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Issue trackers"
+        ]
+      },
+      "parent_id": "E013",
+      "parent_name": "Implement quality management system",
+      "title": "Implement quality management system"
+    },
+    {
+      "control_id": "E013.4",
+      "description": "Establishing data management and record-keeping systems.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Data governance policies"
+        ]
+      },
+      "parent_id": "E013",
+      "parent_name": "Implement quality management system",
+      "title": "Implement quality management system"
+    },
+    {
+      "control_id": "E013.5",
+      "description": "Documenting communication procedures with regulatory authorities.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Incident reporting templates"
+        ]
+      },
+      "parent_id": "E013",
+      "parent_name": "Implement quality management system",
+      "title": "Implement quality management system"
+    },
+    {
+      "control_id": "E014.1",
+      "description": "RETIRED - merged into E017.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": []
+      },
+      "parent_id": "E014",
+      "parent_name": "Share transparency reports",
+      "title": "Share transparency reports"
+    },
+    {
+      "control_id": "E015.1",
+      "description": "Capture system activity details including inputs, processing steps, outputs, and metadata.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Logging system screenshots"
+        ]
+      },
+      "parent_id": "E015",
+      "parent_name": "Log model activity",
+      "title": "Log model activity"
+    },
+    {
+      "control_id": "E015.2",
+      "description": "Implement storage with retention policies, access controls, and data sanitation.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Log management platform"
+        ]
+      },
+      "parent_id": "E015",
+      "parent_name": "Log model activity",
+      "title": "Log model activity"
+    },
+    {
+      "control_id": "E015.3",
+      "description": "Ensure logs are tamper-evident and independently verifiable.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "WORM storage",
+          "Cryptographic hashing"
+        ]
+      },
+      "parent_id": "E015",
+      "parent_name": "Log model activity",
+      "title": "Log model activity"
+    },
+    {
+      "control_id": "E016.1",
+      "description": "Display clear notices when users interact with AI chatbots.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Text AI disclosure screenshots"
+        ]
+      },
+      "parent_id": "E016",
+      "parent_name": "Implement AI disclosure mechanisms",
+      "title": "Implement AI disclosure mechanisms"
+    },
+    {
+      "control_id": "E016.2",
+      "description": "Provide audio notifications at the beginning of voice calls.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Voice AI disclosure transcripts"
+        ]
+      },
+      "parent_id": "E016",
+      "parent_name": "Implement AI disclosure mechanisms",
+      "title": "Implement AI disclosure mechanisms"
+    },
+    {
+      "control_id": "E016.3",
+      "description": "Mark AI-generated content with metadata, watermarks, or labels.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Content labeling screenshots"
+        ]
+      },
+      "parent_id": "E016",
+      "parent_name": "Implement AI disclosure mechanisms",
+      "title": "Implement AI disclosure mechanisms"
+    },
+    {
+      "control_id": "E016.4",
+      "description": "Notify users when autonomous AI agents perform actions.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Automation disclosure screenshots"
+        ]
+      },
+      "parent_id": "E016",
+      "parent_name": "Implement AI disclosure mechanisms",
+      "title": "Implement AI disclosure mechanisms"
+    },
+    {
+      "control_id": "E016.5",
+      "description": "Systems respond to user questions about whether they are interacting with AI.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "AI inquiry response screenshots"
+        ]
+      },
+      "parent_id": "E016",
+      "parent_name": "Implement AI disclosure mechanisms",
+      "title": "Implement AI disclosure mechanisms"
+    },
+    {
+      "control_id": "E017.1",
+      "description": "Policy document defining transparency documentation requirements.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Transparency policy"
+        ]
+      },
+      "parent_id": "E017",
+      "parent_name": "Document system transparency policy",
+      "title": "Document system transparency policy"
+    },
+    {
+      "control_id": "E017.2",
+      "description": "Transparency documentation artifacts: model cards, datasheets, interpretability reports, AI Bill of Materials.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Model cards",
+          "AIBOM"
+        ]
+      },
+      "parent_id": "E017",
+      "parent_name": "Document system transparency policy",
+      "title": "Document system transparency policy"
+    },
+    {
+      "control_id": "E017.3",
+      "description": "Policy defining transparency sharing practices with stakeholder categories.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Accountability",
+        "evidence_types": [
+          "Sharing policy"
+        ]
+      },
+      "parent_id": "E017",
+      "parent_name": "Document system transparency policy",
+      "title": "Document system transparency policy"
+    },
+    {
+      "control_id": "F001.1",
+      "description": "Provider model cards and documentation describing offensive cyber capabilities and mitigation strategies.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Society",
+        "evidence_types": [
+          "Vendor documentation"
+        ]
+      },
+      "parent_id": "F001",
+      "parent_name": "Prevent AI cyber misuse",
+      "title": "Prevent AI cyber misuse"
+    },
+    {
+      "control_id": "F001.2",
+      "description": "Deploy content filtering to detect requests for malicious code generation and vulnerability exploitation.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Society",
+        "evidence_types": [
+          "Content filtering rules"
+        ]
+      },
+      "parent_id": "F001",
+      "parent_name": "Prevent AI cyber misuse",
+      "title": "Prevent AI cyber misuse"
+    },
+    {
+      "control_id": "F002.1",
+      "description": "List of foundation models with CBRN capability information and risk evaluations.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Core",
+        "domain": "Society",
+        "evidence_types": [
+          "Vendor documentation"
+        ]
+      },
+      "parent_id": "F002",
+      "parent_name": "Prevent catastrophic misuse",
+      "title": "Prevent catastrophic misuse"
+    },
+    {
+      "control_id": "F002.2",
+      "description": "Monitoring dashboard or alert configuration for catastrophic misuse patterns.",
+      "hierarchy_level": "activity",
+      "metadata": {
+        "category": "Supplemental",
+        "domain": "Society",
+        "evidence_types": [
+          "Monitoring configuration"
+        ]
+      },
+      "parent_id": "F002",
+      "parent_name": "Prevent catastrophic misuse",
+      "title": "Prevent catastrophic misuse"
+    }
+  ],
+  "fetched_date": "2026-04-28",
+  "framework_id": "aiuc_1",
+  "framework_name": "AIUC-1 Standard",
+  "mapping_unit_level": "activity",
+  "source_url": "https://www.aiuc-1.com",
+  "version": "1.0"
+}
