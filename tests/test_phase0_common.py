@@ -80,3 +80,61 @@ def test_build_evaluation_corpus_with_parsed_controls() -> None:
 
     assert corpus[0].control_text == "Full parsed description of Alpha control 1."
     assert corpus[0].track == "full-text"
+
+
+def test_build_hub_texts_with_firewall(mini_cres: dict) -> None:
+    from scripts.phase0.common import build_hierarchy, extract_hub_standard_links, build_hub_texts
+
+    tree = build_hierarchy(mini_cres["cres"])
+    links = extract_hub_standard_links(mini_cres["cres"])
+
+    texts = build_hub_texts(tree, links, held_out_framework="Framework Alpha")
+
+    assert "HUB-A1" in texts
+    assert "Alpha Section 1" not in texts["HUB-A1"]
+    assert "Beta Section 1" in texts["HUB-A1"]
+    assert "Hub A1" in texts["HUB-A1"]
+
+
+def test_build_hub_texts_without_firewall(mini_cres: dict) -> None:
+    from scripts.phase0.common import build_hierarchy, extract_hub_standard_links, build_hub_texts
+
+    tree = build_hierarchy(mini_cres["cres"])
+    links = extract_hub_standard_links(mini_cres["cres"])
+
+    texts = build_hub_texts(tree, links, held_out_framework=None)
+
+    assert "HUB-A1" in texts
+    assert "Alpha Section 1" in texts["HUB-A1"]
+
+
+def test_score_predictions() -> None:
+    from scripts.phase0.common import score_predictions
+
+    predictions = [
+        ["HUB-A", "HUB-B", "HUB-C", "HUB-D", "HUB-E"],
+        ["HUB-X", "HUB-A", "HUB-Y", "HUB-Z", "HUB-W"],
+        ["HUB-P", "HUB-Q", "HUB-R", "HUB-S", "HUB-T"],
+    ]
+    ground_truth = ["HUB-A", "HUB-A", "HUB-U"]
+
+    metrics = score_predictions(predictions, ground_truth)
+
+    assert metrics["hit_at_1"] == pytest.approx(1 / 3)
+    assert metrics["hit_at_5"] == pytest.approx(2 / 3)
+    assert metrics["mrr"] == pytest.approx((1.0 + 0.5 + 0.0) / 3)
+
+
+def test_bootstrap_ci() -> None:
+    import numpy as np
+    from scripts.phase0.common import bootstrap_ci
+
+    values = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0])
+
+    result = bootstrap_ci(values, n_resamples=1000, seed=42)
+
+    assert 0.3 < result["mean"] < 0.9
+    assert result["ci_low"] < result["mean"]
+    assert result["ci_high"] > result["mean"]
+    assert result["ci_low"] >= 0.0
+    assert result["ci_high"] <= 1.0

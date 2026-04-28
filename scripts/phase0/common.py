@@ -12,10 +12,15 @@ from __future__ import annotations
 
 import json
 import logging
-from collections import deque
+import math
+import os
+import tempfile
+from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
+
+import numpy as np
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -318,3 +323,296 @@ def load_opencre_cres(path: Path | None = None) -> list[dict]:
     with open(p, encoding="utf-8") as f:
         data = json.load(f)
     return data["cres"]
+
+
+# ── Hub Text Builder ────────────────────────────────────────────────────────
+
+
+def build_hub_texts(
+    tree: CREHierarchy,
+    links: list[HubStandardLink],
+    held_out_framework: str | None = None,
+    template: str = "default",
+    descriptions: dict[str, str] | None = None,
+) -> dict[str, str]:
+    """Build text representation for each hub.
+
+    Templates:
+      - "default": "{hub_name}: {linked standard names}"
+      - "path": "{hierarchy_path} | {hub_name}: {linked standard names}"
+      - "description": "{hub_name}: {description}. Linked: {linked standard names}"
+
+    The held_out_framework parameter enables LOFO firewall — links from that
+    framework are excluded from hub text construction.
+    """
+    hub_standards: dict[str, list[str]] = defaultdict(list)
+    for link in links:
+        if held_out_framework and link.standard_name == held_out_framework:
+            continue
+        hub_standards[link.cre_id].append(link.section_name or link.section_id)
+
+    texts: dict[str, str] = {}
+    for hub_id, hub_name in tree.hubs.items():
+        standard_names = hub_standards.get(hub_id, [])
+        linked_text = ", ".join(sorted(set(standard_names))) if standard_names else ""
+
+        if template == "path":
+            path = tree.hierarchy_path(hub_id)
+            texts[hub_id] = f"{path} | {hub_name}: {linked_text}" if linked_text else f"{path} | {hub_name}"
+        elif template == "description" and descriptions and hub_id in descriptions:
+            desc = descriptions[hub_id]
+            texts[hub_id] = f"{hub_name}: {desc}. Linked: {linked_text}" if linked_text else f"{hub_name}: {desc}"
+        else:
+            texts[hub_id] = f"{hub_name}: {linked_text}" if linked_text else hub_name
+
+    return texts
+
+
+# ── Scoring Metrics ─────────────────────────────────────────────────────────
+
+
+def _reciprocal_rank(predicted: list[str], truth: str) -> float:
+    """Reciprocal rank of truth in predicted list. 0 if not found."""
+    for i, p in enumerate(predicted):
+        if p == truth:
+            return 1.0 / (i + 1)
+    return 0.0
+
+
+def _ndcg_at_k(predicted: list[str], truth: str, k: int = 10) -> float:
+    """NDCG@k for single-relevant-item retrieval."""
+    dcg = 0.0
+    for i, p in enumerate(predicted[:k]):
+        if p == truth:
+            dcg = 1.0 / math.log2(i + 2)
+            break
+    idcg = 1.0 / math.log2(2)
+    return dcg / idcg
+
+
+def score_predictions(
+    predictions: list[list[str]],
+    ground_truth: list[str],
+) -> dict[str, float]:
+    """Score ranked predictions against ground truth hub IDs.
+
+    Args:
+        predictions: List of ranked hub ID lists (one per eval item).
+        ground_truth: List of correct hub IDs (one per eval item).
+
+    Returns:
+        Dict with hit_at_1, hit_at_5, mrr, ndcg_at_10.
+    """
+    n = len(predictions)
+    if n == 0:
+        raise ValueError("Empty predictions list")
+    if n != len(ground_truth):
+        raise ValueError(f"Prediction count {n} != ground truth count {len(ground_truth)}")
+
+    hit1 = sum(1 for pred, gt in zip(predictions, ground_truth) if pred and pred[0] == gt) / n
+    hit5 = sum(1 for pred, gt in zip(predictions, ground_truth) if gt in pred[:5]) / n
+    mrr = sum(_reciprocal_rank(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
+    ndcg = sum(_ndcg_at_k(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
+
+    return {
+        "hit_at_1": hit1,
+        "hit_at_5": hit5,
+        "mrr": mrr,
+        "ndcg_at_10": ndcg,
+    }
+
+
+# ── Bootstrap Confidence Intervals ──────────────────────────────────────────
+
+
+def bootstrap_ci(
+    values: np.ndarray,
+    n_resamples: int = BOOTSTRAP_N_RESAMPLES,
+    ci_level: float = BOOTSTRAP_CI_LEVEL,
+    seed: int = BOOTSTRAP_SEED,
+) -> dict[str, float]:
+    """Compute bootstrap confidence interval for the mean of values."""
+    rng = np.random.default_rng(seed)
+    n = len(values)
+    indices = rng.integers(0, n, size=(n_resamples, n))
+    boot_means = values[indices].mean(axis=1)
+
+    alpha = (1 - ci_level) / 2
+    ci_low = float(np.percentile(boot_means, 100 * alpha))
+    ci_high = float(np.percentile(boot_means, 100 * (1 - alpha)))
+
+    return {
+        "mean": float(values.mean()),
+        "ci_low": ci_low,
+        "ci_high": ci_high,
+    }
+
+
+def bootstrap_paired_delta(
+    values_a: np.ndarray,
+    values_b: np.ndarray,
+    n_resamples: int = BOOTSTRAP_N_RESAMPLES,
+    ci_level: float = BOOTSTRAP_CI_LEVEL,
+    seed: int = BOOTSTRAP_SEED,
+) -> dict[str, float]:
+    """Compute bootstrap CI for the difference (B - A) on paired samples."""
+    if len(values_a) != len(values_b):
+        raise ValueError("Arrays must have same length for paired bootstrap")
+
+    rng = np.random.default_rng(seed)
+    n = len(values_a)
+    indices = rng.integers(0, n, size=(n_resamples, n))
+
+    boot_a = values_a[indices].mean(axis=1)
+    boot_b = values_b[indices].mean(axis=1)
+    boot_deltas = boot_b - boot_a
+
+    alpha = (1 - ci_level) / 2
+    return {
+        "delta_mean": float((values_b - values_a).mean()),
+        "ci_low": float(np.percentile(boot_deltas, 100 * alpha)),
+        "ci_high": float(np.percentile(boot_deltas, 100 * (1 - alpha))),
+    }
+
+
+# ── LOFO Cross-Validation ──────────────────────────────────────────────────
+
+
+@dataclass
+class LOFOFold:
+    """One fold of LOFO cross-validation."""
+
+    held_out_framework: str
+    eval_items: list[EvalItem]
+    hub_texts: dict[str, str]
+    hub_ids: list[str]
+
+
+def build_lofo_folds(
+    tree: CREHierarchy,
+    links: list[HubStandardLink],
+    corpus: list[EvalItem],
+    ai_framework_names: set[str] | frozenset[str],
+    template: str = "default",
+    descriptions: dict[str, str] | None = None,
+) -> list[LOFOFold]:
+    """Build LOFO folds — one per AI framework.
+
+    For each fold:
+    1. Hold out one AI framework
+    2. Rebuild hub texts excluding that framework's links
+    3. Collect eval items for the held-out framework
+    """
+    folds: list[LOFOFold] = []
+    all_hub_ids = sorted(tree.hubs.keys())
+
+    for framework_name in sorted(ai_framework_names):
+        eval_items = [e for e in corpus if e.framework_name == framework_name]
+        if not eval_items:
+            logger.warning("No eval items for %s, skipping fold", framework_name)
+            continue
+
+        hub_texts = build_hub_texts(
+            tree, links,
+            held_out_framework=framework_name,
+            template=template,
+            descriptions=descriptions,
+        )
+
+        folds.append(LOFOFold(
+            held_out_framework=framework_name,
+            eval_items=eval_items,
+            hub_texts=hub_texts,
+            hub_ids=all_hub_ids,
+        ))
+
+        logger.info(
+            "LOFO fold %s: %d eval items, %d hubs",
+            framework_name, len(eval_items), len(hub_texts),
+        )
+
+    return folds
+
+
+def aggregate_lofo_metrics(
+    fold_results: list[dict],
+    folds: list[LOFOFold],
+    track_filter: str | None = None,
+) -> dict[str, dict[str, float]]:
+    """Aggregate LOFO fold predictions into metrics with bootstrap CIs.
+
+    Args:
+        fold_results: List of dicts, one per fold. Each maps
+            eval item index (int) -> ranked hub ID predictions (list[str]).
+        folds: The LOFO folds (for ground truth and track info).
+        track_filter: If "full-text", only include full-text items.
+            None means include all items (the all-198 track).
+
+    Returns:
+        Dict with hit_at_1, hit_at_5, mrr, ndcg_at_10, each containing
+        mean, ci_low, ci_high from bootstrap.
+    """
+    all_predictions: list[list[str]] = []
+    all_ground_truth: list[str] = []
+
+    for fold, results in zip(folds, fold_results):
+        for i, item in enumerate(fold.eval_items):
+            if track_filter == "full-text" and item.track != "full-text":
+                continue
+            all_predictions.append(results.get(i, []))
+            all_ground_truth.append(item.ground_truth_hub_id)
+
+    if not all_predictions:
+        return {
+            m: {"mean": 0.0, "ci_low": 0.0, "ci_high": 0.0}
+            for m in ["hit_at_1", "hit_at_5", "mrr", "ndcg_at_10"]
+        }
+
+    hit1_arr = np.array([
+        1.0 if pred and pred[0] == gt else 0.0
+        for pred, gt in zip(all_predictions, all_ground_truth)
+    ])
+    hit5_arr = np.array([
+        1.0 if gt in pred[:5] else 0.0
+        for pred, gt in zip(all_predictions, all_ground_truth)
+    ])
+    mrr_arr = np.array([
+        _reciprocal_rank(pred, gt)
+        for pred, gt in zip(all_predictions, all_ground_truth)
+    ])
+    ndcg_arr = np.array([
+        _ndcg_at_k(pred, gt)
+        for pred, gt in zip(all_predictions, all_ground_truth)
+    ])
+
+    return {
+        "hit_at_1": bootstrap_ci(hit1_arr),
+        "hit_at_5": bootstrap_ci(hit5_arr),
+        "mrr": bootstrap_ci(mrr_arr),
+        "ndcg_at_10": bootstrap_ci(ndcg_arr),
+    }
+
+
+# ── Results I/O ─────────────────────────────────────────────────────────────
+
+
+def save_results(results: dict, filename: str) -> Path:
+    """Save results dict to results/phase0/ as formatted JSON (atomic write)."""
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    path = RESULTS_DIR / filename
+
+    fd, tmp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(results, fh, sort_keys=True, indent=2, ensure_ascii=False)
+            fh.write("\n")
+        os.replace(tmp_path, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
+    logger.info("Saved results to %s", path)
+    return path
