@@ -1,0 +1,626 @@
+{
+  "controls": [
+    {
+      "control_id": "nist_ssdf:PO.1.1",
+      "description": "Identify and document all security requirements for the organization’s software development infrastructures and processes, and maintain the requirements over time.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.1.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identify and document all security requirements for the organization’s software development infrastructures and processes, and maintain the requirements over time."
+    },
+    {
+      "control_id": "nist_ssdf:PO.1.2",
+      "description": "Identify and document all security requirements for organization-developed software to meet, and maintain the requirements over time.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.1.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identify and document all security requirements for organization-developed software to meet, and maintain the requirements over time."
+    },
+    {
+      "control_id": "nist_ssdf:PO.1.3",
+      "description": "Communicate requirements to all third parties who will provide commercial software components to the organization for reuse by the organization’s own software. [Formerly PW.3.1]",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.1.3",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Communicate requirements to all third parties who will provide commercial software components to the organization for reuse by the organization’s own software. [Formerly PW.3.1]"
+    },
+    {
+      "control_id": "nist_ssdf:PO.2.1",
+      "description": "Create new roles and alter responsibilities for existing roles as needed to encompass all parts of the SDLC. Periodically review and maintain the defined roles and responsibilities, updating them as needed.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.2.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Create new roles and alter responsibilities for existing roles as needed to encompass all parts of the SDLC. Periodically review and maintain the defined roles and responsibilities, updating them as needed."
+    },
+    {
+      "control_id": "nist_ssdf:PO.2.2",
+      "description": "Provide role-based training for all personnel with responsibilities that contribute to secure development. Periodically review personnel proficiency and role-based training, and update the training as needed.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.2.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Provide role-based training for all personnel with responsibilities that contribute to secure development. Periodically review personnel proficiency and role-based training, and update the training as needed."
+    },
+    {
+      "control_id": "nist_ssdf:PO.2.3",
+      "description": "Obtain upper management or authorizing official commitment to secure development, and convey that commitment to all with development-related roles and responsibilities.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.2.3",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Obtain upper management or authorizing official commitment to secure development, and convey that commitment to all with development-related roles and responsibilities."
+    },
+    {
+      "control_id": "nist_ssdf:PO.3.1",
+      "description": "Specify which tools or tool types must or should be included in each toolchain to mitigate identified risks, as well as how the toolchain components are to be integrated with each other.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.3.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Specify which tools or tool types must or should be included in each toolchain to mitigate identified risks, as well as how the toolchain components are to be integrated with each other."
+    },
+    {
+      "control_id": "nist_ssdf:PO.3.2",
+      "description": "Follow recommended security practices to deploy, operate, and maintain tools and toolchains.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.3.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Follow recommended security practices to deploy, operate, and maintain tools and toolchains."
+    },
+    {
+      "control_id": "nist_ssdf:PO.3.3",
+      "description": "Configure tools to generate artifacts of their support of secure software development practices as defined by the organization.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.3.3",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Configure tools to generate artifacts of their support of secure software development practices as defined by the organization."
+    },
+    {
+      "control_id": "nist_ssdf:PO.4.1",
+      "description": "Define criteria for software security checks and track throughout the SDLC.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.4.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Define criteria for software security checks and track throughout the SDLC."
+    },
+    {
+      "control_id": "nist_ssdf:PO.4.2",
+      "description": "Implement processes, mechanisms, etc. to gather and safeguard the necessary information in support of the criteria.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.4.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Implement processes, mechanisms, etc. to gather and safeguard the necessary information in support of the criteria."
+    },
+    {
+      "control_id": "nist_ssdf:PO.5.1",
+      "description": "Separate and protect each environment involved in software development.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.5.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Separate and protect each environment involved in software development."
+    },
+    {
+      "control_id": "nist_ssdf:PO.5.2",
+      "description": "Secure and harden development endpoints (i.e., endpoints for software designers, developers, testers, builders, etc.) to perform development-related tasks using a risk-based approach.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PO.5.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure and harden development endpoints (i.e., endpoints for software designers, developers, testers, builders, etc.) to perform development-related tasks using a risk-based approach."
+    },
+    {
+      "control_id": "nist_ssdf:PS.1.1",
+      "description": "Store all forms of code – including source",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PS.1.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Store all forms of code – including source"
+    },
+    {
+      "control_id": "nist_ssdf:PS.2.1",
+      "description": "Make software integrity verification information available to software acquirers.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PS.2.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Make software integrity verification information available to software acquirers."
+    },
+    {
+      "control_id": "nist_ssdf:PS.3.1",
+      "description": "Securely archive the necessary files and supporting data (e.g., integrity verification information, provenance data) to be retained for each software release.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PS.3.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Securely archive the necessary files and supporting data (e.g., integrity verification information, provenance data) to be retained for each software release."
+    },
+    {
+      "control_id": "nist_ssdf:PS.3.2",
+      "description": "Collect, safeguard, maintain, and share provenance data for all components of each software release (e.g., in a software bill of materials [SBOM]).",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PS.3.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Collect, safeguard, maintain, and share provenance data for all components of each software release (e.g., in a software bill of materials [SBOM])."
+    },
+    {
+      "control_id": "nist_ssdf:PW.1.1",
+      "description": "Use forms of risk modeling – such as threat modeling, attack modeling, or attack surface mapping – to help assess the security risk for the software.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.1.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use forms of risk modeling – such as threat modeling, attack modeling, or attack surface mapping – to help assess the security risk for the software."
+    },
+    {
+      "control_id": "nist_ssdf:PW.1.2",
+      "description": "Track and maintain the software’s security requirements, risks, and design decisions.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.1.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Track and maintain the software’s security requirements, risks, and design decisions."
+    },
+    {
+      "control_id": "nist_ssdf:PW.1.3",
+      "description": "Where appropriate, build in support for using standardized security features and services (e.g., enabling software to integrate with existing log management, identity management, access control, and vulnerability management systems) instead of creating proprietary implementations of security features and services.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.1.3",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Where appropriate, build in support for using standardized security features and services (e.g., enabling software to integrate with existing log management, identity management, access control, and vulnerability management systems) instead of creating proprietary implementations of security features and services."
+    },
+    {
+      "control_id": "nist_ssdf:PW.2.1",
+      "description": "Have 1) a qualified person (or people) who were not involved with the design and/or 2) automated processes instantiated in the toolchain review the software design to confirm and enforce that it meets all of the security requirements and satisfactorily addresses the identified risk information.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.2.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Have 1) a qualified person (or people) who were not involved with the design and/or 2) automated processes instantiated in the toolchain review the software design to confirm and enforce that it meets all of the security requirements and satisfactorily addresses the identified risk information."
+    },
+    {
+      "control_id": "nist_ssdf:PW.4.1",
+      "description": "Acquire and maintain well-secured software components (e.g., software libraries, modules, middleware, frameworks) from commercial, open- source, and other third-party developers for use by the organization’s software.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.4.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Acquire and maintain well-secured software components (e.g., software libraries, modules, middleware, frameworks) from commercial, open- source, and other third-party developers for use by the organization’s software."
+    },
+    {
+      "control_id": "nist_ssdf:PW.4.2",
+      "description": "Create and maintain well-secured software components in-house following SDLC processes to meet common internal software development needs that cannot be better met by third-party software components.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.4.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Create and maintain well-secured software components in-house following SDLC processes to meet common internal software development needs that cannot be better met by third-party software components."
+    },
+    {
+      "control_id": "nist_ssdf:PW.4.4",
+      "description": "Verify that acquired commercial, open-source, and all other third-party software components comply with the requirements, as defined by the organization, throughout their life cycles",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.4.4",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Verify that acquired commercial, open-source, and all other third-party software components comply with the requirements, as defined by the organization, throughout their life cycles"
+    },
+    {
+      "control_id": "nist_ssdf:PW.5.1",
+      "description": "Follow all secure coding practices that are appropriate to the development languages and environment to meet the organization’s requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.5.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Follow all secure coding practices that are appropriate to the development languages and environment to meet the organization’s requirements"
+    },
+    {
+      "control_id": "nist_ssdf:PW.6.1",
+      "description": "Use compiler, interpreter, and build tools that offer features to improve executable security.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.6.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use compiler, interpreter, and build tools that offer features to improve executable security."
+    },
+    {
+      "control_id": "nist_ssdf:PW.6.2",
+      "description": "Determine which compiler, interpreter, and build tool features should be used and how each should be configured, then implement and use the approved configurations.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.6.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Determine which compiler, interpreter, and build tool features should be used and how each should be configured, then implement and use the approved configurations."
+    },
+    {
+      "control_id": "nist_ssdf:PW.7.1",
+      "description": "Determine whether code review (a person looks directly at the code to find issues) and/or code analysis (tools are used to find issues in code, either in a fully automated way or in conjunction with a person) should be used, as defined by the organization.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.7.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Determine whether code review (a person looks directly at the code to find issues) and/or code analysis (tools are used to find issues in code, either in a fully automated way or in conjunction with a person) should be used, as defined by the organization."
+    },
+    {
+      "control_id": "nist_ssdf:PW.7.2",
+      "description": "Perform the code review and/or code analysis based on the organization’s secure coding standards, and record and triage all discovered issues and recommended remediations in the development team’s workflow or issue tracking system.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.7.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Perform the code review and/or code analysis based on the organization’s secure coding standards, and record and triage all discovered issues and recommended remediations in the development team’s workflow or issue tracking system."
+    },
+    {
+      "control_id": "nist_ssdf:PW.8.1",
+      "description": "Determine whether executable code testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.8.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Determine whether executable code testing"
+    },
+    {
+      "control_id": "nist_ssdf:PW.8.2",
+      "description": "Scope the testing, design the tests, perform the testing, and document the results, including recording and triaging all discovered issues and recommended remediations in the development team’s workflow or issue tracking system.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.8.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Scope the testing, design the tests, perform the testing, and document the results, including recording and triaging all discovered issues and recommended remediations in the development team’s workflow or issue tracking system."
+    },
+    {
+      "control_id": "nist_ssdf:PW.9.1",
+      "description": "Define a secure baseline by determining how to configure each setting that has an effect on security or a security-related setting so that the default settings are secure and do not weaken the security functions provided by the platform, network infrastructure, or services.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.9.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Define a secure baseline by determining how to configure each setting that has an effect on security or a security-related setting so that the default settings are secure and do not weaken the security functions provided by the platform, network infrastructure, or services."
+    },
+    {
+      "control_id": "nist_ssdf:PW.9.2",
+      "description": "Implement the default settings (or groups of default settings, if applicable), and document each setting for software administrators.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "PW.9.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Implement the default settings (or groups of default settings, if applicable), and document each setting for software administrators."
+    },
+    {
+      "control_id": "nist_ssdf:RV.1.1",
+      "description": "Gather information from software acquirers, users, and public sources on potential vulnerabilities in the software and third-party components that the software uses, and investigate all credible reports.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.1.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Gather information from software acquirers, users, and public sources on potential vulnerabilities in the software and third-party components that the software uses, and investigate all credible reports."
+    },
+    {
+      "control_id": "nist_ssdf:RV.1.2",
+      "description": "Review, analyze, and/or test the software’s code to identify or confirm the presence of previously undetected vulnerabilities.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.1.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Review, analyze, and/or test the software’s code to identify or confirm the presence of previously undetected vulnerabilities."
+    },
+    {
+      "control_id": "nist_ssdf:RV.1.3",
+      "description": "Have a policy that addresses vulnerability disclosure and remediation, and implement the roles, responsibilities, and processes needed to support that policy.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.1.3",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Have a policy that addresses vulnerability disclosure and remediation, and implement the roles, responsibilities, and processes needed to support that policy."
+    },
+    {
+      "control_id": "nist_ssdf:RV.2.1",
+      "description": "Analyze each vulnerability to gather sufficient information about risk to plan its remediation or other risk response.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.2.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Analyze each vulnerability to gather sufficient information about risk to plan its remediation or other risk response."
+    },
+    {
+      "control_id": "nist_ssdf:RV.2.2",
+      "description": "Plan and implement risk responses for vulnerabilities.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.2.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Plan and implement risk responses for vulnerabilities."
+    },
+    {
+      "control_id": "nist_ssdf:RV.3.1",
+      "description": "Analyze identified vulnerabilities to determine their root causes.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.3.1",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Analyze identified vulnerabilities to determine their root causes."
+    },
+    {
+      "control_id": "nist_ssdf:RV.3.2",
+      "description": "Analyze the root causes over time to identify patterns, such as a particular secure coding practice not being followed consistently.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.3.2",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Analyze the root causes over time to identify patterns, such as a particular secure coding practice not being followed consistently."
+    },
+    {
+      "control_id": "nist_ssdf:RV.3.3",
+      "description": "Review the software for similar vulnerabilities to eradicate a class of vulnerabilities, and proactively fix them rather than waiting for external reports.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.3.3",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Review the software for similar vulnerabilities to eradicate a class of vulnerabilities, and proactively fix them rather than waiting for external reports."
+    },
+    {
+      "control_id": "nist_ssdf:RV.3.4",
+      "description": "Review the SDLC process, and update it if appropriate to prevent (or reduce the likelihood of) the root cause recurring in updates to the software or in new software that is created.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "RV.3.4",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Review the SDLC process, and update it if appropriate to prevent (or reduce the likelihood of) the root cause recurring in updates to the software or in new software that is created."
+    },
+    {
+      "control_id": "nist_ssdf:code-executable-code-and-configuration-as-code-based-on-the-principle-of-least-p",
+      "description": "code, executable code, and configuration-as-code – based on the principle of least privilege so that only authorized personnel, tools, services, etc. have access.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "code, executable code, and configuration-as-code – based on the principle of least privilege so that only authorized personnel, tools, services, etc. have access."
+    },
+    {
+      "control_id": "nist_ssdf:should-be-performed-to-find-vulnerabilities-not-identified-by-previous-reviews-a",
+      "description": "should be performed to find vulnerabilities not identified by previous reviews, analysis, or testing and, if so, which types of testing should be used.",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST SSDF"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "should be performed to find vulnerabilities not identified by previous reviews, analysis, or testing and, if so, which types of testing should be used."
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "nist_ssdf",
+  "framework_name": "NIST SSDF",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

@@ -1,0 +1,1312 @@
+{
+  "controls": [
+    {
+      "control_id": "iso_27001:5.10",
+      "description": "Policies for information security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.10",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Policies for information security"
+    },
+    {
+      "control_id": "iso_27001:5.10",
+      "description": "Acceptable use of information and other associated assets",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.10",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Acceptable use of information and other associated assets"
+    },
+    {
+      "control_id": "iso_27001:5.11",
+      "description": "Return of assets",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.11",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Return of assets"
+    },
+    {
+      "control_id": "iso_27001:5.12",
+      "description": "Classification of information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.12",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Classification of information"
+    },
+    {
+      "control_id": "iso_27001:5.13",
+      "description": "Labelling of information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.13",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Labelling of information"
+    },
+    {
+      "control_id": "iso_27001:5.14",
+      "description": "Information transfer",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.14",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information transfer"
+    },
+    {
+      "control_id": "iso_27001:5.15",
+      "description": "Access control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.15",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Access control"
+    },
+    {
+      "control_id": "iso_27001:5.16",
+      "description": "Identity management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.16",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identity management"
+    },
+    {
+      "control_id": "iso_27001:5.17",
+      "description": "Authentication information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.17",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authentication information"
+    },
+    {
+      "control_id": "iso_27001:5.18",
+      "description": "Access rights",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.18",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Access rights"
+    },
+    {
+      "control_id": "iso_27001:5.19",
+      "description": "Information security in supplier relationships",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.19",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security in supplier relationships"
+    },
+    {
+      "control_id": "iso_27001:5.2",
+      "description": "Information security roles and responsibilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.2",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security roles and responsibilities"
+    },
+    {
+      "control_id": "iso_27001:5.20",
+      "description": "Addressing information security within supplier agreements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.20",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Addressing information security within supplier agreements"
+    },
+    {
+      "control_id": "iso_27001:5.21",
+      "description": "Managing information security in the information and communication technology (ICT) supply chain",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.21",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Managing information security in the information and communication technology (ICT) supply chain"
+    },
+    {
+      "control_id": "iso_27001:5.22",
+      "description": "Monitoring, review and change management of supplier services",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.22",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Monitoring, review and change management of supplier services"
+    },
+    {
+      "control_id": "iso_27001:5.23",
+      "description": "Information security for use of cloud services",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.23",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security for use of cloud services"
+    },
+    {
+      "control_id": "iso_27001:5.24",
+      "description": "Information security incident management planning and preparation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.24",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security incident management planning and preparation"
+    },
+    {
+      "control_id": "iso_27001:5.25",
+      "description": "Assessment and decision on information security events",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.25",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Assessment and decision on information security events"
+    },
+    {
+      "control_id": "iso_27001:5.26",
+      "description": "Response to information security incidents",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.26",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Response to information security incidents"
+    },
+    {
+      "control_id": "iso_27001:5.27",
+      "description": "Learning from information security incidents",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.27",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Learning from information security incidents"
+    },
+    {
+      "control_id": "iso_27001:5.28",
+      "description": "Collection of evidence",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.28",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Collection of evidence"
+    },
+    {
+      "control_id": "iso_27001:5.29",
+      "description": "Information security during disruption",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.29",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security during disruption"
+    },
+    {
+      "control_id": "iso_27001:5.3",
+      "description": "Segregation of duties",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.3",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Segregation of duties"
+    },
+    {
+      "control_id": "iso_27001:5.30",
+      "description": "ICT readiness for business continuity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.30",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICT readiness for business continuity"
+    },
+    {
+      "control_id": "iso_27001:5.31",
+      "description": "Legal, statutory, regulatory and contractual requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.31",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Legal, statutory, regulatory and contractual requirements"
+    },
+    {
+      "control_id": "iso_27001:5.32",
+      "description": "Intellectual property rights",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.32",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Intellectual property rights"
+    },
+    {
+      "control_id": "iso_27001:5.33",
+      "description": "Protection of records",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.33",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Protection of records"
+    },
+    {
+      "control_id": "iso_27001:5.34",
+      "description": "Privacy and protection of personal identifiable information (PII)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.34",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Privacy and protection of personal identifiable information (PII)"
+    },
+    {
+      "control_id": "iso_27001:5.35",
+      "description": "Independent review of information security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.35",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Independent review of information security"
+    },
+    {
+      "control_id": "iso_27001:5.36",
+      "description": "Compliance with policies, rules and standards for information security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.36",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Compliance with policies, rules and standards for information security"
+    },
+    {
+      "control_id": "iso_27001:5.37",
+      "description": "Documented operating procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.37",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Documented operating procedures"
+    },
+    {
+      "control_id": "iso_27001:5.4",
+      "description": "Management responsibilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.4",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Management responsibilities"
+    },
+    {
+      "control_id": "iso_27001:5.5",
+      "description": "Contact with authorities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.5",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Contact with authorities"
+    },
+    {
+      "control_id": "iso_27001:5.6",
+      "description": "Contact with special interest groups",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.6",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Contact with special interest groups"
+    },
+    {
+      "control_id": "iso_27001:5.7",
+      "description": "Threat intelligence",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.7",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Threat intelligence"
+    },
+    {
+      "control_id": "iso_27001:5.8",
+      "description": "Information security in project management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.8",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security in project management"
+    },
+    {
+      "control_id": "iso_27001:5.9",
+      "description": "Inventory of information and other associated assets",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.9",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inventory of information and other associated assets"
+    },
+    {
+      "control_id": "iso_27001:6.1",
+      "description": "Screening",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.1",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Screening"
+    },
+    {
+      "control_id": "iso_27001:6.2",
+      "description": "Terms and conditions of employment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Terms and conditions of employment"
+    },
+    {
+      "control_id": "iso_27001:6.3",
+      "description": "Information security awareness, education and training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.3",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security awareness, education and training"
+    },
+    {
+      "control_id": "iso_27001:6.4",
+      "description": "Disciplinary process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Disciplinary process"
+    },
+    {
+      "control_id": "iso_27001:6.5",
+      "description": "Responsibilities after termination or change of employment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.5",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Responsibilities after termination or change of employment"
+    },
+    {
+      "control_id": "iso_27001:6.6",
+      "description": "Confidentiality or non-disclosure agreements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.6",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Confidentiality or non-disclosure agreements"
+    },
+    {
+      "control_id": "iso_27001:6.7",
+      "description": "Remote working",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.7",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Remote working"
+    },
+    {
+      "control_id": "iso_27001:6.8",
+      "description": "Information security event reporting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.8",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information security event reporting"
+    },
+    {
+      "control_id": "iso_27001:7.1",
+      "description": "Physical security perimeters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.1",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Physical security perimeters"
+    },
+    {
+      "control_id": "iso_27001:7.10",
+      "description": "Storage media",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.10",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Storage media"
+    },
+    {
+      "control_id": "iso_27001:7.11",
+      "description": "Supporting utilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.11",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Supporting utilities"
+    },
+    {
+      "control_id": "iso_27001:7.12",
+      "description": "Cabling security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.12",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cabling security"
+    },
+    {
+      "control_id": "iso_27001:7.13",
+      "description": "Equipment maintenance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.13",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Equipment maintenance"
+    },
+    {
+      "control_id": "iso_27001:7.14",
+      "description": "Secure disposal or re-use of equipment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.14",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure disposal or re-use of equipment"
+    },
+    {
+      "control_id": "iso_27001:7.2",
+      "description": "Physical entry",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.2",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Physical entry"
+    },
+    {
+      "control_id": "iso_27001:7.3",
+      "description": "Securing offices, rooms and facilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.3",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Securing offices, rooms and facilities"
+    },
+    {
+      "control_id": "iso_27001:7.4",
+      "description": "Physical security monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.4",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Physical security monitoring"
+    },
+    {
+      "control_id": "iso_27001:7.5",
+      "description": "Protecting against physical and environmental threats",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.5",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Protecting against physical and environmental threats"
+    },
+    {
+      "control_id": "iso_27001:7.6",
+      "description": "Working in secure areas",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.6",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Working in secure areas"
+    },
+    {
+      "control_id": "iso_27001:7.7",
+      "description": "Clear desk and clear screen",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.7",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Clear desk and clear screen"
+    },
+    {
+      "control_id": "iso_27001:7.8",
+      "description": "Equipment siting and protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.8",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Equipment siting and protection"
+    },
+    {
+      "control_id": "iso_27001:7.9",
+      "description": "Security of assets off-premises",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "7.9",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Security of assets off-premises"
+    },
+    {
+      "control_id": "iso_27001:8.1",
+      "description": "User end point devices",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.1",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "User end point devices"
+    },
+    {
+      "control_id": "iso_27001:8.10",
+      "description": "Information deletion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.10",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information deletion"
+    },
+    {
+      "control_id": "iso_27001:8.11",
+      "description": "Data masking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.11",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data masking"
+    },
+    {
+      "control_id": "iso_27001:8.12",
+      "description": "Data leakage prevention",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.12",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data leakage prevention"
+    },
+    {
+      "control_id": "iso_27001:8.13",
+      "description": "Information backup",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.13",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information backup"
+    },
+    {
+      "control_id": "iso_27001:8.14",
+      "description": "Redundancy of information processing facilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.14",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Redundancy of information processing facilities"
+    },
+    {
+      "control_id": "iso_27001:8.15",
+      "description": "Logging",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.15",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Logging"
+    },
+    {
+      "control_id": "iso_27001:8.16",
+      "description": "Monitoring activities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.16",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Monitoring activities"
+    },
+    {
+      "control_id": "iso_27001:8.17",
+      "description": "Clock synchronization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.17",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Clock synchronization"
+    },
+    {
+      "control_id": "iso_27001:8.18",
+      "description": "Use of privileged utility programs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.18",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of privileged utility programs"
+    },
+    {
+      "control_id": "iso_27001:8.19",
+      "description": "Installation of software on operational systems",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.19",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Installation of software on operational systems"
+    },
+    {
+      "control_id": "iso_27001:8.2",
+      "description": "Privileged access rights",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.2",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Privileged access rights"
+    },
+    {
+      "control_id": "iso_27001:8.20",
+      "description": "Networks security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.20",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Networks security"
+    },
+    {
+      "control_id": "iso_27001:8.21",
+      "description": "Security of network services",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.21",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Security of network services"
+    },
+    {
+      "control_id": "iso_27001:8.22",
+      "description": "Segregation of networks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.22",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Segregation of networks"
+    },
+    {
+      "control_id": "iso_27001:8.23",
+      "description": "Web filtering",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.23",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Web filtering"
+    },
+    {
+      "control_id": "iso_27001:8.24",
+      "description": "Use of cryptography",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.24",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of cryptography"
+    },
+    {
+      "control_id": "iso_27001:8.25",
+      "description": "Secure development life cycle",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.25",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure development life cycle"
+    },
+    {
+      "control_id": "iso_27001:8.26",
+      "description": "Application security requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.26",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application security requirements"
+    },
+    {
+      "control_id": "iso_27001:8.27",
+      "description": "Secure system architecture and engineering principles",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.27",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure system architecture and engineering principles"
+    },
+    {
+      "control_id": "iso_27001:8.28",
+      "description": "Secure coding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.28",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure coding"
+    },
+    {
+      "control_id": "iso_27001:8.29",
+      "description": "Security testing in development and acceptance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.29",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Security testing in development and acceptance"
+    },
+    {
+      "control_id": "iso_27001:8.3",
+      "description": "Information access restriction",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.3",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Information access restriction"
+    },
+    {
+      "control_id": "iso_27001:8.30",
+      "description": "Outsourced development",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.30",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Outsourced development"
+    },
+    {
+      "control_id": "iso_27001:8.31",
+      "description": "Separation of development, test and production environments",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.31",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Separation of development, test and production environments"
+    },
+    {
+      "control_id": "iso_27001:8.32",
+      "description": "Change management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.32",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Change management"
+    },
+    {
+      "control_id": "iso_27001:8.33",
+      "description": "Test information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.33",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Test information"
+    },
+    {
+      "control_id": "iso_27001:8.34",
+      "description": "Protection of information systems during audit testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.34",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Protection of information systems during audit testing"
+    },
+    {
+      "control_id": "iso_27001:8.4",
+      "description": "Access to source code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.4",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Access to source code"
+    },
+    {
+      "control_id": "iso_27001:8.5",
+      "description": "Secure authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.5",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure authentication"
+    },
+    {
+      "control_id": "iso_27001:8.6",
+      "description": "Capacity management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.6",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Capacity management"
+    },
+    {
+      "control_id": "iso_27001:8.7",
+      "description": "Protection against malware",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.7",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Protection against malware"
+    },
+    {
+      "control_id": "iso_27001:8.8",
+      "description": "Management of technical vulnerabilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.8",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Management of technical vulnerabilities"
+    },
+    {
+      "control_id": "iso_27001:8.9",
+      "description": "Configuration management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "8.9",
+        "opencre_standard_name": "ISO 27001"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Configuration management"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "iso_27001",
+  "framework_name": "ISO 27001",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

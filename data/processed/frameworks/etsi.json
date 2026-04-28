@@ -1,0 +1,388 @@
+{
+  "controls": [
+    {
+      "control_id": "etsi:5.1",
+      "description": "Poisoning attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Poisoning attacks"
+    },
+    {
+      "control_id": "etsi:5.2",
+      "description": "Backdoor attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Backdoor attacks"
+    },
+    {
+      "control_id": "etsi:5.2.2",
+      "description": "Enhance data quality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.2.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Enhance data quality"
+    },
+    {
+      "control_id": "etsi:5.2.2",
+      "description": "Data sanitisation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.2.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data sanitisation"
+    },
+    {
+      "control_id": "etsi:5.3",
+      "description": "Mitigating backdoor attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Mitigating backdoor attacks"
+    },
+    {
+      "control_id": "etsi:5.3.2",
+      "description": "Fine-pruning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "5.3.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fine-pruning"
+    },
+    {
+      "control_id": "etsi:6.1",
+      "description": "Model stealing attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model stealing attacks"
+    },
+    {
+      "control_id": "etsi:6.1",
+      "description": "Evasion attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Evasion attacks"
+    },
+    {
+      "control_id": "etsi:6.1",
+      "description": "Data extraction attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data extraction attacks"
+    },
+    {
+      "control_id": "etsi:6.2.2",
+      "description": "Model hardening",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model hardening"
+    },
+    {
+      "control_id": "etsi:6.2.2",
+      "description": "Distillation network",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Distillation network"
+    },
+    {
+      "control_id": "etsi:6.2.2",
+      "description": "Adversarial training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Adversarial training"
+    },
+    {
+      "control_id": "etsi:6.2.2",
+      "description": "Robustness evaluation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Robustness evaluation"
+    },
+    {
+      "control_id": "etsi:6.2.3",
+      "description": "Adversarial example detection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Adversarial example detection"
+    },
+    {
+      "control_id": "etsi:6.2.3",
+      "description": "Input restoration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Input restoration"
+    },
+    {
+      "control_id": "etsi:6.2.3",
+      "description": "Ensemble",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.2.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensemble"
+    },
+    {
+      "control_id": "etsi:6.3.1",
+      "description": "Mitigating model stealing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.3.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Mitigating model stealing"
+    },
+    {
+      "control_id": "etsi:6.3.2",
+      "description": "Watermarking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.3.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Watermarking"
+    },
+    {
+      "control_id": "etsi:6.3.3",
+      "description": "Limit the number of queries",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.3.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Limit the number of queries"
+    },
+    {
+      "control_id": "etsi:6.4.1",
+      "description": "Model inversion attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model inversion attacks"
+    },
+    {
+      "control_id": "etsi:6.4.1",
+      "description": "Membership inference attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4.1",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Membership inference attacks"
+    },
+    {
+      "control_id": "etsi:6.4.2",
+      "description": "Embedding privacy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Embedding privacy"
+    },
+    {
+      "control_id": "etsi:6.4.2",
+      "description": "Membership inference attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4.2",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Membership inference attacks"
+    },
+    {
+      "control_id": "etsi:6.4.3",
+      "description": "Obfuscating confidence scores",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Obfuscating confidence scores"
+    },
+    {
+      "control_id": "etsi:6.4.3",
+      "description": "Model inversion attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "6.4.3",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model inversion attacks"
+    },
+    {
+      "control_id": "etsi:data-sanitisation",
+      "description": "Data sanitisation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data sanitisation"
+    },
+    {
+      "control_id": "etsi:retraining",
+      "description": "Retraining",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ETSI"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Retraining"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "etsi",
+  "framework_name": "ETSI",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

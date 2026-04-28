@@ -1,0 +1,836 @@
+{
+  "controls": [
+    {
+      "control_id": "wstg:wstg-appe-d",
+      "description": "WSTG-APPE-D",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-APPE-D"
+    },
+    {
+      "control_id": "wstg:wstg-athn-01",
+      "description": "WSTG-ATHN-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-01"
+    },
+    {
+      "control_id": "wstg:wstg-athn-02",
+      "description": "WSTG-ATHN-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-02"
+    },
+    {
+      "control_id": "wstg:wstg-athn-03",
+      "description": "WSTG-ATHN-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-03"
+    },
+    {
+      "control_id": "wstg:wstg-athn-06",
+      "description": "WSTG-ATHN-06",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-06"
+    },
+    {
+      "control_id": "wstg:wstg-athn-07",
+      "description": "WSTG-ATHN-07",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-07"
+    },
+    {
+      "control_id": "wstg:wstg-athn-08",
+      "description": "WSTG-ATHN-08",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-08"
+    },
+    {
+      "control_id": "wstg:wstg-athn-09",
+      "description": "WSTG-ATHN-09",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHN-09"
+    },
+    {
+      "control_id": "wstg:wstg-athz-01",
+      "description": "WSTG-ATHZ-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHZ-01"
+    },
+    {
+      "control_id": "wstg:wstg-athz-02",
+      "description": "WSTG-ATHZ-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHZ-02"
+    },
+    {
+      "control_id": "wstg:wstg-athz-03",
+      "description": "WSTG-ATHZ-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHZ-03"
+    },
+    {
+      "control_id": "wstg:wstg-athz-04",
+      "description": "WSTG-ATHZ-04",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ATHZ-04"
+    },
+    {
+      "control_id": "wstg:wstg-busl",
+      "description": "WSTG-BUSL-$$",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-BUSL-$$"
+    },
+    {
+      "control_id": "wstg:wstg-busl-03",
+      "description": "WSTG-BUSL-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-BUSL-03"
+    },
+    {
+      "control_id": "wstg:wstg-busl-08",
+      "description": "WSTG-BUSL-08",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-BUSL-08"
+    },
+    {
+      "control_id": "wstg:wstg-busl-09",
+      "description": "WSTG-BUSL-09",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-BUSL-09"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-01",
+      "description": "WSTG-CLNT-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-01"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-02",
+      "description": "WSTG-CLNT-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-02"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-03",
+      "description": "WSTG-CLNT-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-03"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-04",
+      "description": "WSTG-CLNT-04",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-04"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-05",
+      "description": "WSTG-CLNT-05",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-05"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-07",
+      "description": "WSTG-CLNT-07",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-07"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-09",
+      "description": "WSTG-CLNT-09",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-09"
+    },
+    {
+      "control_id": "wstg:wstg-clnt-12",
+      "description": "WSTG-CLNT-12",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CLNT-12"
+    },
+    {
+      "control_id": "wstg:wstg-conf-02",
+      "description": "WSTG-CONF-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CONF-02"
+    },
+    {
+      "control_id": "wstg:wstg-conf-03",
+      "description": "WSTG-CONF-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CONF-03"
+    },
+    {
+      "control_id": "wstg:wstg-conf-04",
+      "description": "WSTG-CONF-04",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CONF-04"
+    },
+    {
+      "control_id": "wstg:wstg-conf-06",
+      "description": "WSTG-CONF-06",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CONF-06"
+    },
+    {
+      "control_id": "wstg:wstg-conf-07",
+      "description": "WSTG-CONF-07",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CONF-07"
+    },
+    {
+      "control_id": "wstg:wstg-conf-10",
+      "description": "WSTG-CONF-10",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CONF-10"
+    },
+    {
+      "control_id": "wstg:wstg-cryp-01",
+      "description": "WSTG-CRYP-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CRYP-01"
+    },
+    {
+      "control_id": "wstg:wstg-cryp-02",
+      "description": "WSTG-CRYP-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CRYP-02"
+    },
+    {
+      "control_id": "wstg:wstg-cryp-03",
+      "description": "WSTG-CRYP-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CRYP-03"
+    },
+    {
+      "control_id": "wstg:wstg-cryp-04",
+      "description": "WSTG-CRYP-04",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-CRYP-04"
+    },
+    {
+      "control_id": "wstg:wstg-errh-01",
+      "description": "WSTG-ERRH-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ERRH-01"
+    },
+    {
+      "control_id": "wstg:wstg-errh-02",
+      "description": "WSTG-ERRH-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-ERRH-02"
+    },
+    {
+      "control_id": "wstg:wstg-idnt-01",
+      "description": "WSTG-IDNT-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-IDNT-01"
+    },
+    {
+      "control_id": "wstg:wstg-info",
+      "description": "WSTG-INFO-##",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INFO-##"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-00",
+      "description": "WSTG-INPV-00",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-00"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-01",
+      "description": "WSTG-INPV-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-01"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-02",
+      "description": "WSTG-INPV-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-02"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-03",
+      "description": "WSTG-INPV-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-03"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-04",
+      "description": "WSTG-INPV-04",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-04"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-05",
+      "description": "WSTG-INPV-05",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-05"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-06",
+      "description": "WSTG-INPV-06",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-06"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-07",
+      "description": "WSTG-INPV-07",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-07"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-09",
+      "description": "WSTG-INPV-09",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-09"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-10",
+      "description": "WSTG-INPV-10",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-10"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-11",
+      "description": "WSTG-INPV-11",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-11"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-12",
+      "description": "WSTG-INPV-12",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-12"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-13",
+      "description": "WSTG-INPV-13",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-13"
+    },
+    {
+      "control_id": "wstg:wstg-inpv-18",
+      "description": "WSTG-INPV-18",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-INPV-18"
+    },
+    {
+      "control_id": "wstg:wstg-sess-01",
+      "description": "WSTG-SESS-01",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-01"
+    },
+    {
+      "control_id": "wstg:wstg-sess-02",
+      "description": "WSTG-SESS-02",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-02"
+    },
+    {
+      "control_id": "wstg:wstg-sess-03",
+      "description": "WSTG-SESS-03",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-03"
+    },
+    {
+      "control_id": "wstg:wstg-sess-04",
+      "description": "WSTG-SESS-04",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-04"
+    },
+    {
+      "control_id": "wstg:wstg-sess-05",
+      "description": "WSTG-SESS-05",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-05"
+    },
+    {
+      "control_id": "wstg:wstg-sess-06",
+      "description": "WSTG-SESS-06",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-06"
+    },
+    {
+      "control_id": "wstg:wstg-sess-07",
+      "description": "WSTG-SESS-07",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Web Security Testing Guide (WSTG)"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSTG-SESS-07"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "wstg",
+  "framework_name": "WSTG",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

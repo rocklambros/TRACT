@@ -1,0 +1,542 @@
+{
+  "controls": [
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Poisoning"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Compromise of ML application components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Compromise of ML application components"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Data disclosure",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data disclosure"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Model disclosure",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model disclosure"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Model or data disclosure",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model or data disclosure"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Evasion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Evasion"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Oracle",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Oracle"
+    },
+    {
+      "control_id": "enisa:Table 3:",
+      "description": "Denial of service due to inconsistent data or a sponge example",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 3:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Denial of service due to inconsistent data or a sponge example"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Define and monitor indicators for proper functioning of the model",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Define and monitor indicators for proper functioning of the model"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Implement processes to maintain security levels of ML components over time",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Implement processes to maintain security levels of ML components over time"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Ensure ML applications comply with identity management, authentication, and access control policies",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure ML applications comply with identity management, authentication, and access control policies"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Implement tools to detect if a data point is an adversarial example or not",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Implement tools to detect if a data point is an adversarial example or not"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Apply modifications on inputs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Apply modifications on inputs"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Reduce the information given by the model",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reduce the information given by the model"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Choose and define a more resilient model design",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Choose and define a more resilient model design"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Ensure reliable sources are used",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure reliable sources are used"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Control all data used by the ML model",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Control all data used by the ML model"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Ensure ML applications comply with third parties' security requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure ML applications comply with third parties' security requirements"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Use less easily transferable models",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use less easily transferable models"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Add some adversarial examples to the training dataset",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Add some adversarial examples to the training dataset"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Use methods to clean the training dataset from suspicious samples",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use methods to clean the training dataset from suspicious samples"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Integrate poisoning control after the \"model evaluation\" phase",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Integrate poisoning control after the \"model evaluation\" phase"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Enlarge the training dataset",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Enlarge the training dataset"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Reduce the available information about the model",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reduce the available information about the model"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Ensure that models respect differential privacy to a sufficient degree",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure that models respect differential privacy to a sufficient degree"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Use federated learning to minimize risk of data breaches",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use federated learning to minimize risk of data breaches"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Apply a RBAC model, respecting the least privileged principle",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Apply a RBAC model, respecting the least privileged principle"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Ensure ML applications comply with data security requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure ML applications comply with data security requirements"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Assess the regulations and laws the ML application must comply with",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Assess the regulations and laws the ML application must comply with"
+    },
+    {
+      "control_id": "enisa:Table 5:",
+      "description": "Integrate ML specificities to awareness strategy and ensure all ML stakeholders are receiving it",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Table 5:",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Integrate ML specificities to awareness strategy and ensure all ML stakeholders are receiving it"
+    },
+    {
+      "control_id": "enisa:apply-modifications-on-inputs",
+      "description": "Apply modifications on inputs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Apply modifications on inputs"
+    },
+    {
+      "control_id": "enisa:control-all-data-used-by-the-ml-model",
+      "description": "Control all data used by the ML model",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Control all data used by the ML model"
+    },
+    {
+      "control_id": "enisa:ensure-ml-applications-comply-with-third-parties-security-requirements",
+      "description": "Ensure ML applications comply with third parties' security requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure ML applications comply with third parties' security requirements"
+    },
+    {
+      "control_id": "enisa:ensure-reliable-sources-are-used",
+      "description": "Ensure reliable sources are used",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure reliable sources are used"
+    },
+    {
+      "control_id": "enisa:ensure-that-models-are-unbiased",
+      "description": "Ensure that models are unbiased",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Ensure that models are unbiased"
+    },
+    {
+      "control_id": "enisa:implement-tools-to-detect-if-a-data-point-is-an-adversarial-example-or-not",
+      "description": "Implement tools to detect if a data point is an adversarial example or not",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Implement tools to detect if a data point is an adversarial example or not"
+    },
+    {
+      "control_id": "enisa:label-modification",
+      "description": "Label modification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Label modification"
+    },
+    {
+      "control_id": "enisa:use-of-adversarial-examples-crafted-in-white-or-grey-box-conditions-e-g-fgsm",
+      "description": "Use of adversarial examples crafted in white or grey box conditions (e.g. FGSM...)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "ENISA"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of adversarial examples crafted in white or grey box conditions (e.g. FGSM...)"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "enisa",
+  "framework_name": "ENISA",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

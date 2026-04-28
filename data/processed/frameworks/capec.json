@@ -1,0 +1,4896 @@
+{
+  "controls": [
+    {
+      "control_id": "capec:1",
+      "description": "Accessing Functionality Not Properly Constrained by ACLs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Accessing Functionality Not Properly Constrained by ACLs"
+    },
+    {
+      "control_id": "capec:10",
+      "description": "Buffer Overflow via Environment Variables",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "10",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Buffer Overflow via Environment Variables"
+    },
+    {
+      "control_id": "capec:100",
+      "description": "Overflow Buffers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "100",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Overflow Buffers"
+    },
+    {
+      "control_id": "capec:101",
+      "description": "Server Side Include (SSI) Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "101",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Server Side Include (SSI) Injection"
+    },
+    {
+      "control_id": "capec:102",
+      "description": "Session Sidejacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "102",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Sidejacking"
+    },
+    {
+      "control_id": "capec:103",
+      "description": "Clickjacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "103",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Clickjacking"
+    },
+    {
+      "control_id": "capec:104",
+      "description": "Cross Zone Scripting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "104",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross Zone Scripting"
+    },
+    {
+      "control_id": "capec:105",
+      "description": "HTTP Request Splitting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "105",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP Request Splitting"
+    },
+    {
+      "control_id": "capec:108",
+      "description": "Command Line Execution through SQL Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "108",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Command Line Execution through SQL Injection"
+    },
+    {
+      "control_id": "capec:109",
+      "description": "Object Relational Mapping Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "109",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Object Relational Mapping Injection"
+    },
+    {
+      "control_id": "capec:110",
+      "description": "SQL Injection through SOAP Parameter Tampering",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "110",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SQL Injection through SOAP Parameter Tampering"
+    },
+    {
+      "control_id": "capec:111",
+      "description": "JSON Hijacking (aka JavaScript Hijacking)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "111",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "JSON Hijacking (aka JavaScript Hijacking)"
+    },
+    {
+      "control_id": "capec:112",
+      "description": "Brute Force",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "112",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Brute Force"
+    },
+    {
+      "control_id": "capec:114",
+      "description": "Authentication Abuse",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "114",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authentication Abuse"
+    },
+    {
+      "control_id": "capec:115",
+      "description": "Authentication Bypass",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "115",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authentication Bypass"
+    },
+    {
+      "control_id": "capec:116",
+      "description": "Excavation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "116",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Excavation"
+    },
+    {
+      "control_id": "capec:117",
+      "description": "Interception",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "117",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Interception"
+    },
+    {
+      "control_id": "capec:12",
+      "description": "Choosing Message Identifier",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "12",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Choosing Message Identifier"
+    },
+    {
+      "control_id": "capec:120",
+      "description": "Double Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "120",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Double Encoding"
+    },
+    {
+      "control_id": "capec:121",
+      "description": "Exploit Non-Production Interfaces",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "121",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploit Non-Production Interfaces"
+    },
+    {
+      "control_id": "capec:122",
+      "description": "Privilege Abuse",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "122",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Privilege Abuse"
+    },
+    {
+      "control_id": "capec:125",
+      "description": "Flooding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "125",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Flooding"
+    },
+    {
+      "control_id": "capec:126",
+      "description": "Path Traversal",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "126",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Path Traversal"
+    },
+    {
+      "control_id": "capec:127",
+      "description": "Directory Indexing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "127",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Directory Indexing"
+    },
+    {
+      "control_id": "capec:13",
+      "description": "Subverting Environment Variable Values",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "13",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Subverting Environment Variable Values"
+    },
+    {
+      "control_id": "capec:130",
+      "description": "Excessive Allocation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "130",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Excessive Allocation"
+    },
+    {
+      "control_id": "capec:134",
+      "description": "Email Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "134",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Email Injection"
+    },
+    {
+      "control_id": "capec:135",
+      "description": "Format String Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "135",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Format String Injection"
+    },
+    {
+      "control_id": "capec:136",
+      "description": "LDAP Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "136",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "LDAP Injection"
+    },
+    {
+      "control_id": "capec:14",
+      "description": "Client-side Injection-induced Buffer Overflow",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "14",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Client-side Injection-induced Buffer Overflow"
+    },
+    {
+      "control_id": "capec:141",
+      "description": "Cache Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "141",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cache Poisoning"
+    },
+    {
+      "control_id": "capec:142",
+      "description": "DNS Cache Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "142",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DNS Cache Poisoning"
+    },
+    {
+      "control_id": "capec:147",
+      "description": "XML Ping of the Death",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "147",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XML Ping of the Death"
+    },
+    {
+      "control_id": "capec:148",
+      "description": "Content Spoofing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "148",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Content Spoofing"
+    },
+    {
+      "control_id": "capec:15",
+      "description": "Command Delimiters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "15",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Command Delimiters"
+    },
+    {
+      "control_id": "capec:150",
+      "description": "Collect Data from Common Resource Locations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "150",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Collect Data from Common Resource Locations"
+    },
+    {
+      "control_id": "capec:151",
+      "description": "Identity Spoofing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "151",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identity Spoofing"
+    },
+    {
+      "control_id": "capec:153",
+      "description": "Input Data Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "153",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Input Data Manipulation"
+    },
+    {
+      "control_id": "capec:157",
+      "description": "Sniffing Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "157",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sniffing Attacks"
+    },
+    {
+      "control_id": "capec:158",
+      "description": "Sniffing Network Traffic",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "158",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sniffing Network Traffic"
+    },
+    {
+      "control_id": "capec:16",
+      "description": "Dictionary-based Password Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "16",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Dictionary-based Password Attack"
+    },
+    {
+      "control_id": "capec:160",
+      "description": "Exploit Script-Based APIs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "160",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploit Script-Based APIs"
+    },
+    {
+      "control_id": "capec:161",
+      "description": "Infrastructure Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "161",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Infrastructure Manipulation"
+    },
+    {
+      "control_id": "capec:162",
+      "description": "Manipulating Hidden Fields",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "162",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Manipulating Hidden Fields"
+    },
+    {
+      "control_id": "capec:166",
+      "description": "Force the System to Reset Values",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "166",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Force the System to Reset Values"
+    },
+    {
+      "control_id": "capec:167",
+      "description": "White Box Reverse Engineering",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "167",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "White Box Reverse Engineering"
+    },
+    {
+      "control_id": "capec:168",
+      "description": "Windows ::DATA Alternate Data Stream",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "168",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Windows ::DATA Alternate Data Stream"
+    },
+    {
+      "control_id": "capec:169",
+      "description": "Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "169",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Footprinting"
+    },
+    {
+      "control_id": "capec:17",
+      "description": "Using Malicious Files",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "17",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Malicious Files"
+    },
+    {
+      "control_id": "capec:170",
+      "description": "Web Application Fingerprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "170",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Web Application Fingerprinting"
+    },
+    {
+      "control_id": "capec:175",
+      "description": "Code Inclusion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "175",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Code Inclusion"
+    },
+    {
+      "control_id": "capec:178",
+      "description": "Cross-Site Flashing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "178",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross-Site Flashing"
+    },
+    {
+      "control_id": "capec:18",
+      "description": "XSS Targeting Non-Script Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "18",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Targeting Non-Script Elements"
+    },
+    {
+      "control_id": "capec:180",
+      "description": "Exploiting Incorrectly Configured Access Control Security Levels",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "180",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploiting Incorrectly Configured Access Control Security Levels"
+    },
+    {
+      "control_id": "capec:181",
+      "description": "Flash File Overlay",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "181",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Flash File Overlay"
+    },
+    {
+      "control_id": "capec:182",
+      "description": "Flash Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "182",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Flash Injection"
+    },
+    {
+      "control_id": "capec:184",
+      "description": "Software Integrity Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "184",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Software Integrity Attack"
+    },
+    {
+      "control_id": "capec:185",
+      "description": "Malicious Software Download",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "185",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Software Download"
+    },
+    {
+      "control_id": "capec:186",
+      "description": "Malicious Software Update",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "186",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Software Update"
+    },
+    {
+      "control_id": "capec:187",
+      "description": "Malicious Automated Software Update via Redirection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "187",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Automated Software Update via Redirection"
+    },
+    {
+      "control_id": "capec:19",
+      "description": "Embedding Scripts within Scripts",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "19",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Embedding Scripts within Scripts"
+    },
+    {
+      "control_id": "capec:191",
+      "description": "Read Sensitive Constants Within an Executable",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "191",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Read Sensitive Constants Within an Executable"
+    },
+    {
+      "control_id": "capec:192",
+      "description": "Protocol Analysis",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "192",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Protocol Analysis"
+    },
+    {
+      "control_id": "capec:193",
+      "description": "PHP Remote File Inclusion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "193",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PHP Remote File Inclusion"
+    },
+    {
+      "control_id": "capec:194",
+      "description": "Fake the Source of Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "194",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fake the Source of Data"
+    },
+    {
+      "control_id": "capec:196",
+      "description": "Session Credential Falsification through Forging",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "196",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Credential Falsification through Forging"
+    },
+    {
+      "control_id": "capec:197",
+      "description": "Exponential Data Expansion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "197",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exponential Data Expansion"
+    },
+    {
+      "control_id": "capec:199",
+      "description": "XSS Using Alternate Syntax",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "199",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Using Alternate Syntax"
+    },
+    {
+      "control_id": "capec:2",
+      "description": "Inducing Account Lockout",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "2",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inducing Account Lockout"
+    },
+    {
+      "control_id": "capec:20",
+      "description": "Encryption Brute Forcing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "20",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Encryption Brute Forcing"
+    },
+    {
+      "control_id": "capec:201",
+      "description": "Serialized Data External Linking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "201",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Serialized Data External Linking"
+    },
+    {
+      "control_id": "capec:202",
+      "description": "Create Malicious Client",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "202",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Create Malicious Client"
+    },
+    {
+      "control_id": "capec:204",
+      "description": "Lifting Sensitive Data Embedded in Cache",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "204",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Lifting Sensitive Data Embedded in Cache"
+    },
+    {
+      "control_id": "capec:206",
+      "description": "Signing Malicious Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "206",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signing Malicious Code"
+    },
+    {
+      "control_id": "capec:207",
+      "description": "Removing Important Client Functionality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "207",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Removing Important Client Functionality"
+    },
+    {
+      "control_id": "capec:208",
+      "description": "Removing/short-circuiting 'Purse' logic: removing/mutating 'cash' decrements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "208",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Removing/short-circuiting 'Purse' logic: removing/mutating 'cash' decrements"
+    },
+    {
+      "control_id": "capec:209",
+      "description": "XSS Using MIME Type Mismatch",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "209",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Using MIME Type Mismatch"
+    },
+    {
+      "control_id": "capec:21",
+      "description": "Exploitation of Trusted Identifiers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "21",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploitation of Trusted Identifiers"
+    },
+    {
+      "control_id": "capec:212",
+      "description": "Functionality Misuse",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "212",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Functionality Misuse"
+    },
+    {
+      "control_id": "capec:215",
+      "description": "Fuzzing for application mapping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "215",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fuzzing for application mapping"
+    },
+    {
+      "control_id": "capec:216",
+      "description": "Communication Channel Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "216",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Communication Channel Manipulation"
+    },
+    {
+      "control_id": "capec:218",
+      "description": "Spoofing of UDDI/ebXML Messages",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "218",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Spoofing of UDDI/ebXML Messages"
+    },
+    {
+      "control_id": "capec:22",
+      "description": "Exploiting Trust in Client",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "22",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploiting Trust in Client"
+    },
+    {
+      "control_id": "capec:221",
+      "description": "Data Serialization External Entities Blowup",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "221",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Serialization External Entities Blowup"
+    },
+    {
+      "control_id": "capec:222",
+      "description": "iFrame Overlay",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "222",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "iFrame Overlay"
+    },
+    {
+      "control_id": "capec:224",
+      "description": "Fingerprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "224",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fingerprinting"
+    },
+    {
+      "control_id": "capec:227",
+      "description": "Sustained Client Engagement",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "227",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sustained Client Engagement"
+    },
+    {
+      "control_id": "capec:228",
+      "description": "DTD Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "228",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DTD Injection"
+    },
+    {
+      "control_id": "capec:229",
+      "description": "Serialized Data Parameter Blowup",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "229",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Serialized Data Parameter Blowup"
+    },
+    {
+      "control_id": "capec:23",
+      "description": "File Content Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "23",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "File Content Injection"
+    },
+    {
+      "control_id": "capec:230",
+      "description": "Serialized Data with Nested Payloads",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "230",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Serialized Data with Nested Payloads"
+    },
+    {
+      "control_id": "capec:231",
+      "description": "Oversized Serialized Data Payloads",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "231",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Oversized Serialized Data Payloads"
+    },
+    {
+      "control_id": "capec:233",
+      "description": "Privilege Escalation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "233",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Privilege Escalation"
+    },
+    {
+      "control_id": "capec:234",
+      "description": "Hijacking a privileged process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "234",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hijacking a privileged process"
+    },
+    {
+      "control_id": "capec:24",
+      "description": "Filter Failure through Buffer Overflow",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "24",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Filter Failure through Buffer Overflow"
+    },
+    {
+      "control_id": "capec:242",
+      "description": "Code Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "242",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Code Injection"
+    },
+    {
+      "control_id": "capec:243",
+      "description": "XSS Targeting HTML Attributes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "243",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Targeting HTML Attributes"
+    },
+    {
+      "control_id": "capec:244",
+      "description": "XSS Targeting URI Placeholders",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "244",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Targeting URI Placeholders"
+    },
+    {
+      "control_id": "capec:250",
+      "description": "XML Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "250",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XML Injection"
+    },
+    {
+      "control_id": "capec:251",
+      "description": "Local Code Inclusion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "251",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Local Code Inclusion"
+    },
+    {
+      "control_id": "capec:252",
+      "description": "PHP Local File Inclusion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "252",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PHP Local File Inclusion"
+    },
+    {
+      "control_id": "capec:253",
+      "description": "Remote Code Inclusion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "253",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Remote Code Inclusion"
+    },
+    {
+      "control_id": "capec:26",
+      "description": "Leveraging Race Conditions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "26",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Leveraging Race Conditions"
+    },
+    {
+      "control_id": "capec:261",
+      "description": "Fuzzing for garnering other adjacent user/sensitive data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "261",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fuzzing for garnering other adjacent user/sensitive data"
+    },
+    {
+      "control_id": "capec:263",
+      "description": "Force Use of Corrupted Files",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "263",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Force Use of Corrupted Files"
+    },
+    {
+      "control_id": "capec:267",
+      "description": "Leverage Alternate Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "267",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Leverage Alternate Encoding"
+    },
+    {
+      "control_id": "capec:268",
+      "description": "Audit Log Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "268",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Audit Log Manipulation"
+    },
+    {
+      "control_id": "capec:27",
+      "description": "Leveraging Race Conditions via Symbolic Links",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "27",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Leveraging Race Conditions via Symbolic Links"
+    },
+    {
+      "control_id": "capec:273",
+      "description": "HTTP Response Smuggling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "273",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP Response Smuggling"
+    },
+    {
+      "control_id": "capec:275",
+      "description": "DNS Rebinding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "275",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DNS Rebinding"
+    },
+    {
+      "control_id": "capec:276",
+      "description": "Inter-component Protocol Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "276",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inter-component Protocol Manipulation"
+    },
+    {
+      "control_id": "capec:277",
+      "description": "Data Interchange Protocol Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "277",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Interchange Protocol Manipulation"
+    },
+    {
+      "control_id": "capec:278",
+      "description": "Web Services Protocol Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "278",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Web Services Protocol Manipulation"
+    },
+    {
+      "control_id": "capec:279",
+      "description": "SOAP Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "279",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SOAP Manipulation"
+    },
+    {
+      "control_id": "capec:28",
+      "description": "Fuzzing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "28",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fuzzing"
+    },
+    {
+      "control_id": "capec:285",
+      "description": "ICMP Echo Request Ping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "285",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Echo Request Ping"
+    },
+    {
+      "control_id": "capec:287",
+      "description": "TCP SYN Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "287",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP SYN Scan"
+    },
+    {
+      "control_id": "capec:29",
+      "description": "Leveraging Time-of-Check and Time-of-Use (TOCTOU) Race Conditions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "29",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Leveraging Time-of-Check and Time-of-Use (TOCTOU) Race Conditions"
+    },
+    {
+      "control_id": "capec:290",
+      "description": "Enumerate Mail Exchange (MX) Records",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "290",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Enumerate Mail Exchange (MX) Records"
+    },
+    {
+      "control_id": "capec:291",
+      "description": "DNS Zone Transfers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "291",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DNS Zone Transfers"
+    },
+    {
+      "control_id": "capec:292",
+      "description": "Host Discovery",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "292",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Host Discovery"
+    },
+    {
+      "control_id": "capec:293",
+      "description": "Traceroute Route Enumeration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "293",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Traceroute Route Enumeration"
+    },
+    {
+      "control_id": "capec:294",
+      "description": "ICMP Address Mask Request",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "294",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Address Mask Request"
+    },
+    {
+      "control_id": "capec:295",
+      "description": "Timestamp Request",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "295",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Timestamp Request"
+    },
+    {
+      "control_id": "capec:296",
+      "description": "ICMP Information Request",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "296",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Information Request"
+    },
+    {
+      "control_id": "capec:297",
+      "description": "TCP ACK Ping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "297",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP ACK Ping"
+    },
+    {
+      "control_id": "capec:298",
+      "description": "UDP Ping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "298",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "UDP Ping"
+    },
+    {
+      "control_id": "capec:299",
+      "description": "TCP SYN Ping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "299",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP SYN Ping"
+    },
+    {
+      "control_id": "capec:3",
+      "description": "Using Leading 'Ghost' Character Sequences to Bypass Input Filters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "3",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Leading 'Ghost' Character Sequences to Bypass Input Filters"
+    },
+    {
+      "control_id": "capec:300",
+      "description": "Port Scanning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "300",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Port Scanning"
+    },
+    {
+      "control_id": "capec:301",
+      "description": "TCP Connect Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "301",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Connect Scan"
+    },
+    {
+      "control_id": "capec:302",
+      "description": "TCP FIN Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "302",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP FIN Scan"
+    },
+    {
+      "control_id": "capec:303",
+      "description": "TCP Xmas Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "303",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Xmas Scan"
+    },
+    {
+      "control_id": "capec:304",
+      "description": "TCP Null Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "304",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Null Scan"
+    },
+    {
+      "control_id": "capec:305",
+      "description": "TCP ACK Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "305",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP ACK Scan"
+    },
+    {
+      "control_id": "capec:306",
+      "description": "TCP Window Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "306",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Window Scan"
+    },
+    {
+      "control_id": "capec:307",
+      "description": "TCP RPC Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "307",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP RPC Scan"
+    },
+    {
+      "control_id": "capec:308",
+      "description": "UDP Scan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "308",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "UDP Scan"
+    },
+    {
+      "control_id": "capec:309",
+      "description": "Network Topology Mapping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "309",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Network Topology Mapping"
+    },
+    {
+      "control_id": "capec:31",
+      "description": "Accessing/Intercepting/Modifying HTTP Cookies",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "31",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Accessing/Intercepting/Modifying HTTP Cookies"
+    },
+    {
+      "control_id": "capec:310",
+      "description": "Scanning for Vulnerable Software",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "310",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Scanning for Vulnerable Software"
+    },
+    {
+      "control_id": "capec:312",
+      "description": "Active OS Fingerprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "312",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Active OS Fingerprinting"
+    },
+    {
+      "control_id": "capec:313",
+      "description": "Passive OS Fingerprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "313",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Passive OS Fingerprinting"
+    },
+    {
+      "control_id": "capec:317",
+      "description": "IP ID Sequencing Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "317",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IP ID Sequencing Probe"
+    },
+    {
+      "control_id": "capec:318",
+      "description": "IP 'ID' Echoed Byte-Order Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "318",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IP 'ID' Echoed Byte-Order Probe"
+    },
+    {
+      "control_id": "capec:319",
+      "description": "IP (DF) 'Don't Fragment Bit' Echoing Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "319",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IP (DF) 'Don't Fragment Bit' Echoing Probe"
+    },
+    {
+      "control_id": "capec:32",
+      "description": "XSS Through HTTP Query Strings",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "32",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Through HTTP Query Strings"
+    },
+    {
+      "control_id": "capec:320",
+      "description": "TCP Timestamp Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "320",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Timestamp Probe"
+    },
+    {
+      "control_id": "capec:321",
+      "description": "TCP Sequence Number Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "321",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Sequence Number Probe"
+    },
+    {
+      "control_id": "capec:322",
+      "description": "TCP (ISN) Greatest Common Divisor Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "322",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP (ISN) Greatest Common Divisor Probe"
+    },
+    {
+      "control_id": "capec:323",
+      "description": "TCP (ISN) Counter Rate Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "323",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP (ISN) Counter Rate Probe"
+    },
+    {
+      "control_id": "capec:324",
+      "description": "TCP (ISN) Sequence Predictability Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "324",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP (ISN) Sequence Predictability Probe"
+    },
+    {
+      "control_id": "capec:325",
+      "description": "TCP Congestion Control Flag (ECN) Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "325",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Congestion Control Flag (ECN) Probe"
+    },
+    {
+      "control_id": "capec:326",
+      "description": "TCP Initial Window Size Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "326",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Initial Window Size Probe"
+    },
+    {
+      "control_id": "capec:327",
+      "description": "TCP Options Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "327",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Options Probe"
+    },
+    {
+      "control_id": "capec:328",
+      "description": "TCP 'RST' Flag Checksum Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "328",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP 'RST' Flag Checksum Probe"
+    },
+    {
+      "control_id": "capec:329",
+      "description": "ICMP Error Message Quoting Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "329",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Error Message Quoting Probe"
+    },
+    {
+      "control_id": "capec:330",
+      "description": "ICMP Error Message Echoing Integrity Probe",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "330",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Error Message Echoing Integrity Probe"
+    },
+    {
+      "control_id": "capec:34",
+      "description": "HTTP Response Splitting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "34",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP Response Splitting"
+    },
+    {
+      "control_id": "capec:35",
+      "description": "Leverage Executable Code in Non-Executable Files",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "35",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Leverage Executable Code in Non-Executable Files"
+    },
+    {
+      "control_id": "capec:36",
+      "description": "Using Unpublished Interfaces or Functionality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "36",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Unpublished Interfaces or Functionality"
+    },
+    {
+      "control_id": "capec:37",
+      "description": "Retrieve Embedded Sensitive Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "37",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Retrieve Embedded Sensitive Data"
+    },
+    {
+      "control_id": "capec:383",
+      "description": "Harvesting Information via API Event Monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "383",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Harvesting Information via API Event Monitoring"
+    },
+    {
+      "control_id": "capec:384",
+      "description": "Application API Message Manipulation via Man-in-the-Middle",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "384",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application API Message Manipulation via Man-in-the-Middle"
+    },
+    {
+      "control_id": "capec:385",
+      "description": "Transaction or Event Tampering via Application API Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "385",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Transaction or Event Tampering via Application API Manipulation"
+    },
+    {
+      "control_id": "capec:386",
+      "description": "Application API Navigation Remapping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "386",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application API Navigation Remapping"
+    },
+    {
+      "control_id": "capec:387",
+      "description": "Navigation Remapping To Propagate Malicious Content",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "387",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Navigation Remapping To Propagate Malicious Content"
+    },
+    {
+      "control_id": "capec:388",
+      "description": "Application API Button Hijacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "388",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application API Button Hijacking"
+    },
+    {
+      "control_id": "capec:389",
+      "description": "Content Spoofing Via Application API Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "389",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Content Spoofing Via Application API Manipulation"
+    },
+    {
+      "control_id": "capec:39",
+      "description": "Manipulating Opaque Client-based Data Tokens",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "39",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Manipulating Opaque Client-based Data Tokens"
+    },
+    {
+      "control_id": "capec:4",
+      "description": "Using Alternative IP Address Encodings",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "4",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Alternative IP Address Encodings"
+    },
+    {
+      "control_id": "capec:402",
+      "description": "Bypassing ATA Password Security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "402",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Bypassing ATA Password Security"
+    },
+    {
+      "control_id": "capec:41",
+      "description": "Using Meta-characters in E-mail Headers to Inject Malicious Payloads",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "41",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Meta-characters in E-mail Headers to Inject Malicious Payloads"
+    },
+    {
+      "control_id": "capec:42",
+      "description": "MIME Conversion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "42",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MIME Conversion"
+    },
+    {
+      "control_id": "capec:43",
+      "description": "Exploiting Multiple Input Interpretation Layers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "43",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploiting Multiple Input Interpretation Layers"
+    },
+    {
+      "control_id": "capec:44",
+      "description": "Overflow Binary Resource File",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "44",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Overflow Binary Resource File"
+    },
+    {
+      "control_id": "capec:441",
+      "description": "Malicious Logic Insertion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "441",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Logic Insertion"
+    },
+    {
+      "control_id": "capec:45",
+      "description": "Buffer Overflow via Symbolic Links",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "45",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Buffer Overflow via Symbolic Links"
+    },
+    {
+      "control_id": "capec:456",
+      "description": "Infected Memory",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "456",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Infected Memory"
+    },
+    {
+      "control_id": "capec:459",
+      "description": "Creating a Rogue Certification Authority Certificate",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "459",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Creating a Rogue Certification Authority Certificate"
+    },
+    {
+      "control_id": "capec:46",
+      "description": "Overflow Variables and Tags",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "46",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Overflow Variables and Tags"
+    },
+    {
+      "control_id": "capec:460",
+      "description": "HTTP Parameter Pollution (HPP)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "460",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP Parameter Pollution (HPP)"
+    },
+    {
+      "control_id": "capec:461",
+      "description": "Web Services API Signature Forgery Leveraging Hash Function Extension Weakness",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "461",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Web Services API Signature Forgery Leveraging Hash Function Extension Weakness"
+    },
+    {
+      "control_id": "capec:462",
+      "description": "Cross-Domain Search Timing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "462",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross-Domain Search Timing"
+    },
+    {
+      "control_id": "capec:463",
+      "description": "Padding Oracle Crypto Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "463",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Padding Oracle Crypto Attack"
+    },
+    {
+      "control_id": "capec:464",
+      "description": "Evercookie",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "464",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Evercookie"
+    },
+    {
+      "control_id": "capec:466",
+      "description": "Leveraging Active Adversary in the Middle Attacks to Bypass Same Origin Policy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "466",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Leveraging Active Adversary in the Middle Attacks to Bypass Same Origin Policy"
+    },
+    {
+      "control_id": "capec:467",
+      "description": "Cross Site Identification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "467",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross Site Identification"
+    },
+    {
+      "control_id": "capec:468",
+      "description": "Generic Cross-Browser Cross-Domain Theft",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "468",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Generic Cross-Browser Cross-Domain Theft"
+    },
+    {
+      "control_id": "capec:469",
+      "description": "HTTP DoS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "469",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP DoS"
+    },
+    {
+      "control_id": "capec:47",
+      "description": "Buffer Overflow via Parameter Expansion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "47",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Buffer Overflow via Parameter Expansion"
+    },
+    {
+      "control_id": "capec:470",
+      "description": "Expanding Control over the Operating System from the Database",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "470",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Expanding Control over the Operating System from the Database"
+    },
+    {
+      "control_id": "capec:472",
+      "description": "Browser Fingerprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "472",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Browser Fingerprinting"
+    },
+    {
+      "control_id": "capec:473",
+      "description": "Signature Spoof",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "473",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signature Spoof"
+    },
+    {
+      "control_id": "capec:474",
+      "description": "Signature Spoofing by Key Theft",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "474",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signature Spoofing by Key Theft"
+    },
+    {
+      "control_id": "capec:475",
+      "description": "Signature Spoofing by Improper Validation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "475",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signature Spoofing by Improper Validation"
+    },
+    {
+      "control_id": "capec:476",
+      "description": "Signature Spoofing by Misrepresentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "476",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signature Spoofing by Misrepresentation"
+    },
+    {
+      "control_id": "capec:477",
+      "description": "Signature Spoofing by Mixing Signed and Unsigned Content",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "477",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signature Spoofing by Mixing Signed and Unsigned Content"
+    },
+    {
+      "control_id": "capec:478",
+      "description": "Modification of Windows Service Configuration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "478",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Modification of Windows Service Configuration"
+    },
+    {
+      "control_id": "capec:479",
+      "description": "Malicious Root Certificate",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "479",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Root Certificate"
+    },
+    {
+      "control_id": "capec:481",
+      "description": "Contradictory Destinations in Traffic Routing Schemes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "481",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Contradictory Destinations in Traffic Routing Schemes"
+    },
+    {
+      "control_id": "capec:482",
+      "description": "TCP Flood",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "482",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Flood"
+    },
+    {
+      "control_id": "capec:485",
+      "description": "Signature Spoofing by Key Recreation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "485",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Signature Spoofing by Key Recreation"
+    },
+    {
+      "control_id": "capec:486",
+      "description": "UDP Flood",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "486",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "UDP Flood"
+    },
+    {
+      "control_id": "capec:487",
+      "description": "ICMP Flood",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "487",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Flood"
+    },
+    {
+      "control_id": "capec:488",
+      "description": "HTTP Flood",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "488",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP Flood"
+    },
+    {
+      "control_id": "capec:489",
+      "description": "SSL Flood",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "489",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SSL Flood"
+    },
+    {
+      "control_id": "capec:49",
+      "description": "Password Brute Forcing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "49",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Password Brute Forcing"
+    },
+    {
+      "control_id": "capec:490",
+      "description": "Amplification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "490",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Amplification"
+    },
+    {
+      "control_id": "capec:491",
+      "description": "Quadratic Data Expansion",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "491",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Quadratic Data Expansion"
+    },
+    {
+      "control_id": "capec:492",
+      "description": "Regular Expression Exponential Blowup",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "492",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Regular Expression Exponential Blowup"
+    },
+    {
+      "control_id": "capec:493",
+      "description": "SOAP Array Blowup",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "493",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SOAP Array Blowup"
+    },
+    {
+      "control_id": "capec:494",
+      "description": "TCP Fragmentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "494",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TCP Fragmentation"
+    },
+    {
+      "control_id": "capec:495",
+      "description": "UDP Fragmentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "495",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "UDP Fragmentation"
+    },
+    {
+      "control_id": "capec:496",
+      "description": "ICMP Fragmentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "496",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "ICMP Fragmentation"
+    },
+    {
+      "control_id": "capec:497",
+      "description": "File Discovery",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "497",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "File Discovery"
+    },
+    {
+      "control_id": "capec:498",
+      "description": "Probe iOS Screenshots",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "498",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Probe iOS Screenshots"
+    },
+    {
+      "control_id": "capec:50",
+      "description": "Password Recovery Exploitation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "50",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Password Recovery Exploitation"
+    },
+    {
+      "control_id": "capec:500",
+      "description": "WebView Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "500",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WebView Injection"
+    },
+    {
+      "control_id": "capec:501",
+      "description": "Android Activity Hijack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "501",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Android Activity Hijack"
+    },
+    {
+      "control_id": "capec:502",
+      "description": "Intent Spoof",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "502",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Intent Spoof"
+    },
+    {
+      "control_id": "capec:503",
+      "description": "WebView Exposure",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "503",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WebView Exposure"
+    },
+    {
+      "control_id": "capec:504",
+      "description": "Task Impersonation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "504",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Task Impersonation"
+    },
+    {
+      "control_id": "capec:506",
+      "description": "Tapjacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "506",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Tapjacking"
+    },
+    {
+      "control_id": "capec:508",
+      "description": "Shoulder Surfing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "508",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Shoulder Surfing"
+    },
+    {
+      "control_id": "capec:509",
+      "description": "Kerberoasting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "509",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Kerberoasting"
+    },
+    {
+      "control_id": "capec:51",
+      "description": "Poison Web Service Registry",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "51",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Poison Web Service Registry"
+    },
+    {
+      "control_id": "capec:510",
+      "description": "SaaS User Request Forgery",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "510",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SaaS User Request Forgery"
+    },
+    {
+      "control_id": "capec:52",
+      "description": "Embedding NULL Bytes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "52",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Embedding NULL Bytes"
+    },
+    {
+      "control_id": "capec:528",
+      "description": "XML Flood",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "528",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XML Flood"
+    },
+    {
+      "control_id": "capec:53",
+      "description": "Postfix, Null Terminate, and Backslash",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "53",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Postfix, Null Terminate, and Backslash"
+    },
+    {
+      "control_id": "capec:533",
+      "description": "Malicious Manual Software Update",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "533",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Manual Software Update"
+    },
+    {
+      "control_id": "capec:536",
+      "description": "Data Injected During Configuration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "536",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Injected During Configuration"
+    },
+    {
+      "control_id": "capec:538",
+      "description": "Open-Source Library Manipulation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "538",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Open-Source Library Manipulation"
+    },
+    {
+      "control_id": "capec:545",
+      "description": "Pull Data from System Resources",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "545",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Pull Data from System Resources"
+    },
+    {
+      "control_id": "capec:546",
+      "description": "Incomplete Data Deletion in a Multi-Tenant Environment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "546",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incomplete Data Deletion in a Multi-Tenant Environment"
+    },
+    {
+      "control_id": "capec:549",
+      "description": "Local Execution of Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "549",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Local Execution of Code"
+    },
+    {
+      "control_id": "capec:55",
+      "description": "Rainbow Table Password Cracking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "55",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Rainbow Table Password Cracking"
+    },
+    {
+      "control_id": "capec:550",
+      "description": "Install New Service",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "550",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Install New Service"
+    },
+    {
+      "control_id": "capec:551",
+      "description": "Modify Existing Service",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "551",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Modify Existing Service"
+    },
+    {
+      "control_id": "capec:552",
+      "description": "Install Rootkit",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "552",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Install Rootkit"
+    },
+    {
+      "control_id": "capec:555",
+      "description": "Remote Services with Stolen Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "555",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Remote Services with Stolen Credentials"
+    },
+    {
+      "control_id": "capec:556",
+      "description": "Replace File Extension Handlers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "556",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Replace File Extension Handlers"
+    },
+    {
+      "control_id": "capec:558",
+      "description": "Replace Trusted Executable",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "558",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Replace Trusted Executable"
+    },
+    {
+      "control_id": "capec:560",
+      "description": "Use of Known Domain Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "560",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Known Domain Credentials"
+    },
+    {
+      "control_id": "capec:561",
+      "description": "Windows Admin Shares with Stolen Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "561",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Windows Admin Shares with Stolen Credentials"
+    },
+    {
+      "control_id": "capec:562",
+      "description": "Modify Shared File",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "562",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Modify Shared File"
+    },
+    {
+      "control_id": "capec:563",
+      "description": "Add Malicious File to Shared Webroot",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "563",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Add Malicious File to Shared Webroot"
+    },
+    {
+      "control_id": "capec:564",
+      "description": "Run Software at Logon",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "564",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Run Software at Logon"
+    },
+    {
+      "control_id": "capec:565",
+      "description": "Password Spraying",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "565",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Password Spraying"
+    },
+    {
+      "control_id": "capec:57",
+      "description": "Utilizing REST's Trust in the System Resource to Obtain Sensitive Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "57",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Utilizing REST's Trust in the System Resource to Obtain Sensitive Data"
+    },
+    {
+      "control_id": "capec:573",
+      "description": "Process Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "573",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Process Footprinting"
+    },
+    {
+      "control_id": "capec:574",
+      "description": "Services Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "574",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Services Footprinting"
+    },
+    {
+      "control_id": "capec:575",
+      "description": "Account Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "575",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Account Footprinting"
+    },
+    {
+      "control_id": "capec:576",
+      "description": "Group Permission Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "576",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Group Permission Footprinting"
+    },
+    {
+      "control_id": "capec:577",
+      "description": "Owner Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "577",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Owner Footprinting"
+    },
+    {
+      "control_id": "capec:578",
+      "description": "Disable Security Software",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "578",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Disable Security Software"
+    },
+    {
+      "control_id": "capec:58",
+      "description": "Restful Privilege Elevation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "58",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Restful Privilege Elevation"
+    },
+    {
+      "control_id": "capec:586",
+      "description": "Object Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "586",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Object Injection"
+    },
+    {
+      "control_id": "capec:587",
+      "description": "Cross Frame Scripting (XFS)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "587",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross Frame Scripting (XFS)"
+    },
+    {
+      "control_id": "capec:588",
+      "description": "DOM-Based XSS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "588",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DOM-Based XSS"
+    },
+    {
+      "control_id": "capec:589",
+      "description": "DNS Blocking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "589",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DNS Blocking"
+    },
+    {
+      "control_id": "capec:59",
+      "description": "Session Credential Falsification through Prediction",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "59",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Credential Falsification through Prediction"
+    },
+    {
+      "control_id": "capec:590",
+      "description": "IP Address Blocking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "590",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IP Address Blocking"
+    },
+    {
+      "control_id": "capec:591",
+      "description": "Reflected XSS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "591",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reflected XSS"
+    },
+    {
+      "control_id": "capec:592",
+      "description": "Stored XSS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "592",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Stored XSS"
+    },
+    {
+      "control_id": "capec:593",
+      "description": "Session Hijacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "593",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Hijacking"
+    },
+    {
+      "control_id": "capec:6",
+      "description": "Argument Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "6",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Argument Injection"
+    },
+    {
+      "control_id": "capec:60",
+      "description": "Reusing Session IDs (aka Session Replay)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "60",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reusing Session IDs (aka Session Replay)"
+    },
+    {
+      "control_id": "capec:600",
+      "description": "Credential Stuffing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "600",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Credential Stuffing"
+    },
+    {
+      "control_id": "capec:608",
+      "description": "Cryptanalysis of Cellular Encryption",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "608",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cryptanalysis of Cellular Encryption"
+    },
+    {
+      "control_id": "capec:609",
+      "description": "Cellular Traffic Intercept",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "609",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cellular Traffic Intercept"
+    },
+    {
+      "control_id": "capec:61",
+      "description": "Session Fixation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "61",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Fixation"
+    },
+    {
+      "control_id": "capec:612",
+      "description": "WiFi MAC Address Tracking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "612",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WiFi MAC Address Tracking"
+    },
+    {
+      "control_id": "capec:613",
+      "description": "WiFi SSID Tracking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "613",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WiFi SSID Tracking"
+    },
+    {
+      "control_id": "capec:614",
+      "description": "Rooting SIM Cards",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "614",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Rooting SIM Cards"
+    },
+    {
+      "control_id": "capec:615",
+      "description": "Evil Twin Wi-Fi Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "615",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Evil Twin Wi-Fi Attack"
+    },
+    {
+      "control_id": "capec:616",
+      "description": "Establish Rogue Location",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "616",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Establish Rogue Location"
+    },
+    {
+      "control_id": "capec:62",
+      "description": "Cross Site Request Forgery",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "62",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross Site Request Forgery"
+    },
+    {
+      "control_id": "capec:624",
+      "description": "Hardware Fault Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "624",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hardware Fault Injection"
+    },
+    {
+      "control_id": "capec:625",
+      "description": "Mobile Device Fault Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "625",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Mobile Device Fault Injection"
+    },
+    {
+      "control_id": "capec:63",
+      "description": "Cross-Site Scripting (XSS)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "63",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross-Site Scripting (XSS)"
+    },
+    {
+      "control_id": "capec:633",
+      "description": "Token Impersonation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "633",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Token Impersonation"
+    },
+    {
+      "control_id": "capec:635",
+      "description": "Alternative Execution Due to Deceptive Filenames",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "635",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Alternative Execution Due to Deceptive Filenames"
+    },
+    {
+      "control_id": "capec:639",
+      "description": "Probe System Files",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "639",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Probe System Files"
+    },
+    {
+      "control_id": "capec:64",
+      "description": "Using Slashes and URL Encoding Combined to Bypass Validation Logic",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "64",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Slashes and URL Encoding Combined to Bypass Validation Logic"
+    },
+    {
+      "control_id": "capec:640",
+      "description": "Inclusion of Code in Existing Process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "640",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inclusion of Code in Existing Process"
+    },
+    {
+      "control_id": "capec:642",
+      "description": "Replace Binaries",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "642",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Replace Binaries"
+    },
+    {
+      "control_id": "capec:643",
+      "description": "Identify Shared Files/Directories on System",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "643",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identify Shared Files/Directories on System"
+    },
+    {
+      "control_id": "capec:644",
+      "description": "Use of Captured Hashes (Pass The Hash)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "644",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Captured Hashes (Pass The Hash)"
+    },
+    {
+      "control_id": "capec:645",
+      "description": "Use of Captured Tickets (Pass The Ticket)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "645",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Captured Tickets (Pass The Ticket)"
+    },
+    {
+      "control_id": "capec:646",
+      "description": "Peripheral Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "646",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Peripheral Footprinting"
+    },
+    {
+      "control_id": "capec:647",
+      "description": "Collect Data from Registries",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "647",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Collect Data from Registries"
+    },
+    {
+      "control_id": "capec:65",
+      "description": "Sniff Application Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "65",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sniff Application Code"
+    },
+    {
+      "control_id": "capec:650",
+      "description": "Upload a Web Shell to a Web Server",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "650",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Upload a Web Shell to a Web Server"
+    },
+    {
+      "control_id": "capec:651",
+      "description": "Eavesdropping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "651",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Eavesdropping"
+    },
+    {
+      "control_id": "capec:652",
+      "description": "Use of Known Kerberos Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "652",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Known Kerberos Credentials"
+    },
+    {
+      "control_id": "capec:653",
+      "description": "Use of Known Operating System Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "653",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Known Operating System Credentials"
+    },
+    {
+      "control_id": "capec:654",
+      "description": "Credential Prompt Impersonation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "654",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Credential Prompt Impersonation"
+    },
+    {
+      "control_id": "capec:657",
+      "description": "Malicious Automated Software Update via Spoofing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "657",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Malicious Automated Software Update via Spoofing"
+    },
+    {
+      "control_id": "capec:66",
+      "description": "SQL Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "66",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SQL Injection"
+    },
+    {
+      "control_id": "capec:660",
+      "description": "Root/Jailbreak Detection Evasion via Hooking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "660",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Root/Jailbreak Detection Evasion via Hooking"
+    },
+    {
+      "control_id": "capec:662",
+      "description": "Adversary in the Browser (AiTB)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "662",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Adversary in the Browser (AiTB)"
+    },
+    {
+      "control_id": "capec:664",
+      "description": "Server Side Request Forgery",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "664",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Server Side Request Forgery"
+    },
+    {
+      "control_id": "capec:665",
+      "description": "Exploitation of Thunderbolt Protection Flaws",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "665",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploitation of Thunderbolt Protection Flaws"
+    },
+    {
+      "control_id": "capec:667",
+      "description": "Bluetooth Impersonation AttackS (BIAS)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "667",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Bluetooth Impersonation AttackS (BIAS)"
+    },
+    {
+      "control_id": "capec:668",
+      "description": "Key Negotiation of Bluetooth Attack (KNOB)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "668",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Key Negotiation of Bluetooth Attack (KNOB)"
+    },
+    {
+      "control_id": "capec:67",
+      "description": "String Format Overflow in syslog()",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "67",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "String Format Overflow in syslog()"
+    },
+    {
+      "control_id": "capec:676",
+      "description": "NoSQL Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "676",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "NoSQL Injection"
+    },
+    {
+      "control_id": "capec:679",
+      "description": "Exploitation of Improperly Configured or Implemented Memory Protections",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "679",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploitation of Improperly Configured or Implemented Memory Protections"
+    },
+    {
+      "control_id": "capec:680",
+      "description": "Exploitation of Improperly Controlled Registers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "680",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploitation of Improperly Controlled Registers"
+    },
+    {
+      "control_id": "capec:681",
+      "description": "Exploitation of Improperly Controlled Hardware Security Identifiers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "681",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploitation of Improperly Controlled Hardware Security Identifiers"
+    },
+    {
+      "control_id": "capec:69",
+      "description": "Target Programs with Elevated Privileges",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "69",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Target Programs with Elevated Privileges"
+    },
+    {
+      "control_id": "capec:691",
+      "description": "Spoof Open-Source Software Metadata",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "691",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Spoof Open-Source Software Metadata"
+    },
+    {
+      "control_id": "capec:692",
+      "description": "Spoof Version Control System Commit Metadata",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "692",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Spoof Version Control System Commit Metadata"
+    },
+    {
+      "control_id": "capec:693",
+      "description": "StarJacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "693",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "StarJacking"
+    },
+    {
+      "control_id": "capec:694",
+      "description": "System Location Discovery",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "694",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "System Location Discovery"
+    },
+    {
+      "control_id": "capec:695",
+      "description": "Repo Jacking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "695",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Repo Jacking"
+    },
+    {
+      "control_id": "capec:697",
+      "description": "DHCP Spoofing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "697",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DHCP Spoofing"
+    },
+    {
+      "control_id": "capec:698",
+      "description": "Install Malicious Extension",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "698",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Install Malicious Extension"
+    },
+    {
+      "control_id": "capec:7",
+      "description": "Blind SQL Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "7",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Blind SQL Injection"
+    },
+    {
+      "control_id": "capec:70",
+      "description": "Try Common or Default Usernames and Passwords",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "70",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Try Common or Default Usernames and Passwords"
+    },
+    {
+      "control_id": "capec:701",
+      "description": "Browser in the Middle (BiTM)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "701",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Browser in the Middle (BiTM)"
+    },
+    {
+      "control_id": "capec:702",
+      "description": "Exploiting Incorrect Chaining or Granularity of Hardware Debug Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "702",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exploiting Incorrect Chaining or Granularity of Hardware Debug Components"
+    },
+    {
+      "control_id": "capec:71",
+      "description": "Using Unicode Encoding to Bypass Validation Logic",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "71",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Unicode Encoding to Bypass Validation Logic"
+    },
+    {
+      "control_id": "capec:72",
+      "description": "URL Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "72",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "URL Encoding"
+    },
+    {
+      "control_id": "capec:73",
+      "description": "User-Controlled Filename",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "73",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "User-Controlled Filename"
+    },
+    {
+      "control_id": "capec:74",
+      "description": "Manipulating State",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "74",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Manipulating State"
+    },
+    {
+      "control_id": "capec:75",
+      "description": "Manipulating Writeable Configuration Files",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "75",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Manipulating Writeable Configuration Files"
+    },
+    {
+      "control_id": "capec:76",
+      "description": "Manipulating Web Input to File System Calls",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "76",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Manipulating Web Input to File System Calls"
+    },
+    {
+      "control_id": "capec:77",
+      "description": "Manipulating User-Controlled Variables",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "77",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Manipulating User-Controlled Variables"
+    },
+    {
+      "control_id": "capec:78",
+      "description": "Using Escaped Slashes in Alternate Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "78",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Escaped Slashes in Alternate Encoding"
+    },
+    {
+      "control_id": "capec:79",
+      "description": "Using Slashes in Alternate Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "79",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Slashes in Alternate Encoding"
+    },
+    {
+      "control_id": "capec:8",
+      "description": "Buffer Overflow in an API Call",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "8",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Buffer Overflow in an API Call"
+    },
+    {
+      "control_id": "capec:80",
+      "description": "Using UTF-8 Encoding to Bypass Validation Logic",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "80",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using UTF-8 Encoding to Bypass Validation Logic"
+    },
+    {
+      "control_id": "capec:81",
+      "description": "Web Server Logs Tampering",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "81",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Web Server Logs Tampering"
+    },
+    {
+      "control_id": "capec:83",
+      "description": "XPath Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "83",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XPath Injection"
+    },
+    {
+      "control_id": "capec:84",
+      "description": "XQuery Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "84",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XQuery Injection"
+    },
+    {
+      "control_id": "capec:85",
+      "description": "AJAX Footprinting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "85",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AJAX Footprinting"
+    },
+    {
+      "control_id": "capec:86",
+      "description": "XSS Through HTTP Headers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "86",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XSS Through HTTP Headers"
+    },
+    {
+      "control_id": "capec:87",
+      "description": "Forceful Browsing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "87",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Forceful Browsing"
+    },
+    {
+      "control_id": "capec:88",
+      "description": "OS Command Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "88",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "OS Command Injection"
+    },
+    {
+      "control_id": "capec:89",
+      "description": "Pharming",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "89",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Pharming"
+    },
+    {
+      "control_id": "capec:9",
+      "description": "Buffer Overflow in Local Command-Line Utilities",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "9",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Buffer Overflow in Local Command-Line Utilities"
+    },
+    {
+      "control_id": "capec:92",
+      "description": "Forced Integer Overflow",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "92",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Forced Integer Overflow"
+    },
+    {
+      "control_id": "capec:93",
+      "description": "Log Injection-Tampering-Forging",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "93",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Log Injection-Tampering-Forging"
+    },
+    {
+      "control_id": "capec:94",
+      "description": "Adversary in the Middle (AiTM)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "94",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Adversary in the Middle (AiTM)"
+    },
+    {
+      "control_id": "capec:95",
+      "description": "WSDL Scanning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "95",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "WSDL Scanning"
+    },
+    {
+      "control_id": "capec:97",
+      "description": "Cryptanalysis",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "97",
+        "opencre_standard_name": "CAPEC"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cryptanalysis"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "capec",
+  "framework_name": "CAPEC",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

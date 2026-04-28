@@ -1,0 +1,108 @@
+{
+  "controls": [
+    {
+      "control_id": "owasp_ml_top10:ML01:2023",
+      "description": "Input Manipulation Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML01:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Input Manipulation Attack"
+    },
+    {
+      "control_id": "owasp_ml_top10:ML02:2023",
+      "description": "Data Poisoning Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML02:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Poisoning Attack"
+    },
+    {
+      "control_id": "owasp_ml_top10:ML03:2023",
+      "description": "Model Inversion Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML03:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model Inversion Attack"
+    },
+    {
+      "control_id": "owasp_ml_top10:ML04:2023",
+      "description": "Membership Inference Attack",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML04:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Membership Inference Attack"
+    },
+    {
+      "control_id": "owasp_ml_top10:ML05:2023",
+      "description": "Model Theft",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML05:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model Theft"
+    },
+    {
+      "control_id": "owasp_ml_top10:ML06:2023",
+      "description": "AI Supply Chain Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML06:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AI Supply Chain Attacks"
+    },
+    {
+      "control_id": "owasp_ml_top10:ML10:2023",
+      "description": "Model Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "ML10:2023",
+        "opencre_standard_name": "OWASP Top10 for ML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model Poisoning"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "owasp_ml_top10",
+  "framework_name": "OWASP Top10 for ML",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

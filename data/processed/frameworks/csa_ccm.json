@@ -1,0 +1,416 @@
+{
+  "controls": [
+    {
+      "control_id": "csa_ccm:A&A",
+      "description": "Audit & Assurance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A&A",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Audit & Assurance"
+    },
+    {
+      "control_id": "csa_ccm:AIS-01",
+      "description": "Application and Interface Security Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-01",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application and Interface Security Policy and Procedures"
+    },
+    {
+      "control_id": "csa_ccm:AIS-02",
+      "description": "Application Security Baseline Requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-02",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application Security Baseline Requirements"
+    },
+    {
+      "control_id": "csa_ccm:AIS-03",
+      "description": "Application Security Metrics",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-03",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application Security Metrics"
+    },
+    {
+      "control_id": "csa_ccm:AIS-04",
+      "description": "Secure Application Design and Development",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-04",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secure Application Design and Development"
+    },
+    {
+      "control_id": "csa_ccm:AIS-05",
+      "description": "Automated Application Security Testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-05",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Automated Application Security Testing"
+    },
+    {
+      "control_id": "csa_ccm:AIS-06",
+      "description": "Automated Secure Application Deployment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-06",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Automated Secure Application Deployment"
+    },
+    {
+      "control_id": "csa_ccm:AIS-07",
+      "description": "Application Vulnerability Remediation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "AIS-07",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application Vulnerability Remediation"
+    },
+    {
+      "control_id": "csa_ccm:BCR",
+      "description": "Business Continuity Management and Operational Resilience",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BCR",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Business Continuity Management and Operational Resilience"
+    },
+    {
+      "control_id": "csa_ccm:CCC",
+      "description": "Change Control and Configuration Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "CCC",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Change Control and Configuration Management"
+    },
+    {
+      "control_id": "csa_ccm:CEK",
+      "description": "Cryptography, Encryption & Key Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "CEK",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cryptography, Encryption & Key Management"
+    },
+    {
+      "control_id": "csa_ccm:DCS",
+      "description": "Datacenter security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "DCS",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Datacenter security"
+    },
+    {
+      "control_id": "csa_ccm:DSP",
+      "description": "Data Security and Privacy Lifecycle Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "DSP",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Security and Privacy Lifecycle Management"
+    },
+    {
+      "control_id": "csa_ccm:GRC",
+      "description": "Governance, Risk and Compliance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "GRC",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Governance, Risk and Compliance"
+    },
+    {
+      "control_id": "csa_ccm:HRS",
+      "description": "Human Resources",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "HRS",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Human Resources"
+    },
+    {
+      "control_id": "csa_ccm:IAM",
+      "description": "Identity & Access Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IAM",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identity & Access Management"
+    },
+    {
+      "control_id": "csa_ccm:IPY",
+      "description": "Interoperability and portability policy and procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IPY",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Interoperability and portability policy and procedures"
+    },
+    {
+      "control_id": "csa_ccm:IVS-01",
+      "description": "Infrastructure and Virtualization Security Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-01",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Infrastructure and Virtualization Security Policy and Procedures"
+    },
+    {
+      "control_id": "csa_ccm:IVS-02",
+      "description": "Capacity and Resource Planning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-02",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Capacity and Resource Planning"
+    },
+    {
+      "control_id": "csa_ccm:IVS-04",
+      "description": "OS Hardening and Base Controls",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-04",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "OS Hardening and Base Controls"
+    },
+    {
+      "control_id": "csa_ccm:IVS-05",
+      "description": "Production and Non-Production Environments",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-05",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Production and Non-Production Environments"
+    },
+    {
+      "control_id": "csa_ccm:IVS-06",
+      "description": "Segmentation and Segregation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-06",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Segmentation and Segregation"
+    },
+    {
+      "control_id": "csa_ccm:IVS-08",
+      "description": "Network Architecture Documentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-08",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Network Architecture Documentation"
+    },
+    {
+      "control_id": "csa_ccm:IVS-09",
+      "description": "Network Defense",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "IVS-09",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Network Defense"
+    },
+    {
+      "control_id": "csa_ccm:LOG",
+      "description": "Logging and Monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "LOG",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Logging and Monitoring"
+    },
+    {
+      "control_id": "csa_ccm:SEF",
+      "description": "Security Incident Management, E-Discovery, & Cloud Forensics",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "SEF",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Security Incident Management, E-Discovery, & Cloud Forensics"
+    },
+    {
+      "control_id": "csa_ccm:STA",
+      "description": "Supply Chain Management, Transparency, and Accountability",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "STA",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Supply Chain Management, Transparency, and Accountability"
+    },
+    {
+      "control_id": "csa_ccm:TVM",
+      "description": "Threat & Vulnerability Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "TVM",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Threat & Vulnerability Management"
+    },
+    {
+      "control_id": "csa_ccm:UEM",
+      "description": "Universal Endpoint Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "UEM",
+        "opencre_standard_name": "Cloud Controls Matrix"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Universal Endpoint Management"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "csa_ccm",
+  "framework_name": "Cloud Controls Matrix",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

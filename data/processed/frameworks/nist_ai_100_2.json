@@ -1,0 +1,402 @@
+{
+  "controls": [
+    {
+      "control_id": "nist_ai_100_2:Sec 2.4.2",
+      "description": "Membership Inference",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec 2.4.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Membership Inference"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.2",
+      "description": "Evasion Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Evasion Attacks"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.2.4",
+      "description": "Randomized smoothing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.2.4",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Randomized smoothing"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.2.4",
+      "description": "Adversarial training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.2.4",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Adversarial training"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.2.4",
+      "description": "Formal verification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.2.4",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Formal verification"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.3.1",
+      "description": "Availability Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.3.1",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Availability Poisoning"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.3.2",
+      "description": "Targeted Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.3.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Targeted Poisoning"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.3.3",
+      "description": "Backdoor Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.3.3",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Backdoor Poisoning"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.3.4",
+      "description": "Model Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.3.4",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model Poisoning"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.4",
+      "description": "Privacy Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.4",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Privacy Attacks"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.4.1",
+      "description": "Data Reconstruction",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.4.1",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Reconstruction"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.4.3",
+      "description": "Model Extraction",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.4.3",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Model Extraction"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.4.5",
+      "description": "Limiting user queries",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.4.5",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Limiting user queries"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 2.4.5",
+      "description": "Differential privacy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 2.4.5",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Differential privacy"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.2",
+      "description": "AI Supply Chain Attacks and Mitigations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AI Supply Chain Attacks and Mitigations"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.2.2",
+      "description": "AI Supply Chain - Poisoning Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.2.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AI Supply Chain - Poisoning Attacks"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.2.2",
+      "description": "Poisoning Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.2.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Poisoning Attacks"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.2.3",
+      "description": "AI Supply Chain Mitigations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.2.3",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AI Supply Chain Mitigations"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.3",
+      "description": "Direct Prompt Injection Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.3",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Direct Prompt Injection Attacks"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.3.2",
+      "description": "Detection techniques",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.3.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Detection techniques"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.3.2",
+      "description": "Training for alignment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.3.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Training for alignment"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.3.2",
+      "description": "Prompt instruction and formatting techniques",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.3.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Prompt instruction and formatting techniques"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.4",
+      "description": "Indirect Prompt Injection Attacks",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.4",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Indirect Prompt Injection Attacks"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.4.1",
+      "description": "Availability Violations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.4.1",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Availability Violations"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.4.2",
+      "description": "Integrity Violations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.4.2",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Integrity Violations"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.4.5",
+      "description": "Filtering retrieved inputs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.4.5",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Filtering retrieved inputs"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.4.5",
+      "description": "An LLM moderator",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.4.5",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "An LLM moderator"
+    },
+    {
+      "control_id": "nist_ai_100_2:Sec. 3.4.5",
+      "description": "Reinforcement learning from human feedback (RLHF)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "Sec. 3.4.5",
+        "opencre_standard_name": "NIST AI 100-2"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reinforcement learning from human feedback (RLHF)"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "nist_ai_100_2",
+  "framework_name": "NIST AI 100-2",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

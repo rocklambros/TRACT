@@ -1,0 +1,4210 @@
+{
+  "controls": [
+    {
+      "control_id": "nist_800_53:ac-1-policy-and-procedures",
+      "description": "AC-1 POLICY AND PROCEDURES",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-1 POLICY AND PROCEDURES"
+    },
+    {
+      "control_id": "nist_800_53:ac-10-concurrent-session-control",
+      "description": "AC-10 CONCURRENT SESSION CONTROL",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-10 CONCURRENT SESSION CONTROL"
+    },
+    {
+      "control_id": "nist_800_53:ac-11-device-lock",
+      "description": "AC-11 DEVICE LOCK",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-11 DEVICE LOCK"
+    },
+    {
+      "control_id": "nist_800_53:ac-12-session-termination",
+      "description": "AC-12 SESSION TERMINATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-12 SESSION TERMINATION"
+    },
+    {
+      "control_id": "nist_800_53:ac-14-permitted-actions-without-identification-or-authentication",
+      "description": "AC-14 PERMITTED ACTIONS WITHOUT IDENTIFICATION OR AUTHENTICATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-14 PERMITTED ACTIONS WITHOUT IDENTIFICATION OR AUTHENTICATION"
+    },
+    {
+      "control_id": "nist_800_53:ac-16-security-and-privacy-attributes",
+      "description": "AC-16 Security and Privacy Attributes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-16 Security and Privacy Attributes"
+    },
+    {
+      "control_id": "nist_800_53:ac-17-remote-access",
+      "description": "AC-17 Remote Access",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-17 Remote Access"
+    },
+    {
+      "control_id": "nist_800_53:ac-18-wireless-access",
+      "description": "AC-18 Wireless Access",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-18 Wireless Access"
+    },
+    {
+      "control_id": "nist_800_53:ac-19-access-control-for-mobile-devices",
+      "description": "AC-19 Access Control for Mobile Devices",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-19 Access Control for Mobile Devices"
+    },
+    {
+      "control_id": "nist_800_53:ac-2-account-management",
+      "description": "AC-2 ACCOUNT MANAGEMENT",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-2 ACCOUNT MANAGEMENT"
+    },
+    {
+      "control_id": "nist_800_53:ac-20-use-of-external-systems",
+      "description": "AC-20 Use of External Systems",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-20 Use of External Systems"
+    },
+    {
+      "control_id": "nist_800_53:ac-21-information-sharing",
+      "description": "AC-21 Information Sharing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-21 Information Sharing"
+    },
+    {
+      "control_id": "nist_800_53:ac-22-publicly-accessible-content",
+      "description": "AC-22 Publicly Accessible Content",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-22 Publicly Accessible Content"
+    },
+    {
+      "control_id": "nist_800_53:ac-23-data-mining-protection",
+      "description": "AC-23 Data Mining Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-23 Data Mining Protection"
+    },
+    {
+      "control_id": "nist_800_53:ac-24-access-control-decisions",
+      "description": "AC-24 Access Control Decisions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-24 Access Control Decisions"
+    },
+    {
+      "control_id": "nist_800_53:ac-25-reference-monitor",
+      "description": "AC-25 Reference Monitor",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-25 Reference Monitor"
+    },
+    {
+      "control_id": "nist_800_53:ac-3-access-enforcement",
+      "description": "AC-3 ACCESS ENFORCEMENT",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-3 ACCESS ENFORCEMENT"
+    },
+    {
+      "control_id": "nist_800_53:ac-4-information-flow-enforcement",
+      "description": "AC-4 Information Flow Enforcement",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-4 Information Flow Enforcement"
+    },
+    {
+      "control_id": "nist_800_53:ac-5-separation-of-duties",
+      "description": "AC-5 SEPARATION OF DUTIES",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-5 SEPARATION OF DUTIES"
+    },
+    {
+      "control_id": "nist_800_53:ac-6-least-privilege",
+      "description": "AC-6 LEAST PRIVILEGE",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-6 LEAST PRIVILEGE"
+    },
+    {
+      "control_id": "nist_800_53:ac-7-unsuccessful-logon-attempts",
+      "description": "AC-7 UNSUCCESSFUL LOGON ATTEMPTS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-7 UNSUCCESSFUL LOGON ATTEMPTS"
+    },
+    {
+      "control_id": "nist_800_53:ac-8-system-use-notification",
+      "description": "AC-8 SYSTEM USE NOTIFICATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-8 SYSTEM USE NOTIFICATION"
+    },
+    {
+      "control_id": "nist_800_53:ac-9-previous-logon-notification",
+      "description": "AC-9 PREVIOUS LOGON NOTIFICATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AC-9 PREVIOUS LOGON NOTIFICATION"
+    },
+    {
+      "control_id": "nist_800_53:at-1-policy-and-procedures",
+      "description": "AT-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AT-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:at-2-literacy-training-and-awareness",
+      "description": "AT-2 Literacy Training and Awareness",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AT-2 Literacy Training and Awareness"
+    },
+    {
+      "control_id": "nist_800_53:at-3-role-based-training",
+      "description": "AT-3 Role-based Training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AT-3 Role-based Training"
+    },
+    {
+      "control_id": "nist_800_53:at-4-training-records",
+      "description": "AT-4 Training Records",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AT-4 Training Records"
+    },
+    {
+      "control_id": "nist_800_53:at-6-training-feedback",
+      "description": "AT-6 Training Feedback",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AT-6 Training Feedback"
+    },
+    {
+      "control_id": "nist_800_53:au-1-policy-and-procedures",
+      "description": "AU-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:au-10-non-repudiation",
+      "description": "AU-10 Non-repudiation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-10 Non-repudiation"
+    },
+    {
+      "control_id": "nist_800_53:au-11-audit-record-retention",
+      "description": "AU-11 Audit Record Retention",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-11 Audit Record Retention"
+    },
+    {
+      "control_id": "nist_800_53:au-12-audit-record-generation",
+      "description": "AU-12 Audit Record Generation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-12 Audit Record Generation"
+    },
+    {
+      "control_id": "nist_800_53:au-13-monitoring-for-information-disclosure",
+      "description": "AU-13 Monitoring for Information Disclosure",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-13 Monitoring for Information Disclosure"
+    },
+    {
+      "control_id": "nist_800_53:au-14-session-audit",
+      "description": "AU-14 Session Audit",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-14 Session Audit"
+    },
+    {
+      "control_id": "nist_800_53:au-16-cross-organizational-audit-logging",
+      "description": "AU-16 Cross-organizational Audit Logging",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-16 Cross-organizational Audit Logging"
+    },
+    {
+      "control_id": "nist_800_53:au-2-event-logging",
+      "description": "AU-2 Event Logging",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-2 Event Logging"
+    },
+    {
+      "control_id": "nist_800_53:au-3-content-of-audit-records",
+      "description": "AU-3 Content of Audit Records",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-3 Content of Audit Records"
+    },
+    {
+      "control_id": "nist_800_53:au-4-audit-log-storage-capacity",
+      "description": "AU-4 Audit Log Storage Capacity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-4 Audit Log Storage Capacity"
+    },
+    {
+      "control_id": "nist_800_53:au-5-response-to-audit-logging-process-failures",
+      "description": "AU-5 Response to Audit Logging Process Failures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-5 Response to Audit Logging Process Failures"
+    },
+    {
+      "control_id": "nist_800_53:au-6-audit-record-review-analysis-and-reporting",
+      "description": "AU-6 Audit Record Review, Analysis, and Reporting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-6 Audit Record Review, Analysis, and Reporting"
+    },
+    {
+      "control_id": "nist_800_53:au-7-audit-record-reduction-and-report-generation",
+      "description": "AU-7 Audit Record Reduction and Report Generation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-7 Audit Record Reduction and Report Generation"
+    },
+    {
+      "control_id": "nist_800_53:au-8-time-stamps",
+      "description": "AU-8 Time Stamps",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-8 Time Stamps"
+    },
+    {
+      "control_id": "nist_800_53:au-9-protection-of-audit-information",
+      "description": "AU-9 Protection of Audit Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "AU-9 Protection of Audit Information"
+    },
+    {
+      "control_id": "nist_800_53:ca-1-policy-and-procedures",
+      "description": "CA-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:ca-2-control-assessments",
+      "description": "CA-2 Control Assessments",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-2 Control Assessments"
+    },
+    {
+      "control_id": "nist_800_53:ca-3-information-exchange",
+      "description": "CA-3 Information Exchange",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-3 Information Exchange"
+    },
+    {
+      "control_id": "nist_800_53:ca-5-plan-of-action-and-milestones",
+      "description": "CA-5 Plan of Action and Milestones",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-5 Plan of Action and Milestones"
+    },
+    {
+      "control_id": "nist_800_53:ca-6-authorization",
+      "description": "CA-6 Authorization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-6 Authorization"
+    },
+    {
+      "control_id": "nist_800_53:ca-7-continuous-monitoring",
+      "description": "CA-7 Continuous Monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-7 Continuous Monitoring"
+    },
+    {
+      "control_id": "nist_800_53:ca-8-penetration-testing",
+      "description": "CA-8 Penetration Testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-8 Penetration Testing"
+    },
+    {
+      "control_id": "nist_800_53:ca-9-internal-system-connections",
+      "description": "CA-9 Internal System Connections",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CA-9 Internal System Connections"
+    },
+    {
+      "control_id": "nist_800_53:cm-1-policy-and-procedures",
+      "description": "CM-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:cm-10-software-usage-restrictions",
+      "description": "CM-10 Software Usage Restrictions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-10 Software Usage Restrictions"
+    },
+    {
+      "control_id": "nist_800_53:cm-11-user-installed-software",
+      "description": "CM-11 User-installed Software",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-11 User-installed Software"
+    },
+    {
+      "control_id": "nist_800_53:cm-12-information-location",
+      "description": "CM-12 Information Location",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-12 Information Location"
+    },
+    {
+      "control_id": "nist_800_53:cm-13-data-action-mapping",
+      "description": "CM-13 Data Action Mapping",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-13 Data Action Mapping"
+    },
+    {
+      "control_id": "nist_800_53:cm-14-signed-components",
+      "description": "CM-14 Signed Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-14 Signed Components"
+    },
+    {
+      "control_id": "nist_800_53:cm-2-baseline-configuration",
+      "description": "CM-2 BASELINE CONFIGURATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-2 BASELINE CONFIGURATION"
+    },
+    {
+      "control_id": "nist_800_53:cm-3-configuration-change-control",
+      "description": "CM-3 Configuration Change Control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-3 Configuration Change Control"
+    },
+    {
+      "control_id": "nist_800_53:cm-4-impact-analyses",
+      "description": "CM-4 Impact Analyses",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-4 Impact Analyses"
+    },
+    {
+      "control_id": "nist_800_53:cm-5-access-restrictions-for-change",
+      "description": "CM-5 Access Restrictions for Change",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-5 Access Restrictions for Change"
+    },
+    {
+      "control_id": "nist_800_53:cm-6-configuration-settings",
+      "description": "CM-6 Configuration Settings",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-6 Configuration Settings"
+    },
+    {
+      "control_id": "nist_800_53:cm-7-least-functionality",
+      "description": "CM-7 Least Functionality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-7 Least Functionality"
+    },
+    {
+      "control_id": "nist_800_53:cm-8-system-component-inventory",
+      "description": "CM-8 System Component Inventory",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-8 System Component Inventory"
+    },
+    {
+      "control_id": "nist_800_53:cm-9-configuration-management-plan",
+      "description": "CM-9 Configuration Management Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CM-9 Configuration Management Plan"
+    },
+    {
+      "control_id": "nist_800_53:cp-1-policy-and-procedures",
+      "description": "CP-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:cp-10-system-recovery-and-reconstitution",
+      "description": "CP-10 System Recovery and Reconstitution",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-10 System Recovery and Reconstitution"
+    },
+    {
+      "control_id": "nist_800_53:cp-11-alternate-communications-protocols",
+      "description": "CP-11 Alternate Communications Protocols",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-11 Alternate Communications Protocols"
+    },
+    {
+      "control_id": "nist_800_53:cp-12-safe-mode",
+      "description": "CP-12 Safe Mode",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-12 Safe Mode"
+    },
+    {
+      "control_id": "nist_800_53:cp-13-alternative-security-mechanisms",
+      "description": "CP-13 Alternative Security Mechanisms",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-13 Alternative Security Mechanisms"
+    },
+    {
+      "control_id": "nist_800_53:cp-2-contingency-plan",
+      "description": "CP-2 Contingency Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-2 Contingency Plan"
+    },
+    {
+      "control_id": "nist_800_53:cp-3-contingency-training",
+      "description": "CP-3 Contingency Training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-3 Contingency Training"
+    },
+    {
+      "control_id": "nist_800_53:cp-4-contingency-plan-testing",
+      "description": "CP-4 Contingency Plan Testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-4 Contingency Plan Testing"
+    },
+    {
+      "control_id": "nist_800_53:cp-6-alternate-storage-site",
+      "description": "CP-6 Alternate Storage Site",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-6 Alternate Storage Site"
+    },
+    {
+      "control_id": "nist_800_53:cp-7-alternate-processing-site",
+      "description": "CP-7 Alternate Processing Site",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-7 Alternate Processing Site"
+    },
+    {
+      "control_id": "nist_800_53:cp-8-telecommunications-services",
+      "description": "CP-8 Telecommunications Services",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-8 Telecommunications Services"
+    },
+    {
+      "control_id": "nist_800_53:cp-9-system-backup",
+      "description": "CP-9 System Backup",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CP-9 System Backup"
+    },
+    {
+      "control_id": "nist_800_53:ia-1-policy-and-procedures",
+      "description": "IA-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:ia-10-adaptive-authentication",
+      "description": "IA-10 Adaptive Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-10 Adaptive Authentication"
+    },
+    {
+      "control_id": "nist_800_53:ia-11-re-authentication",
+      "description": "IA-11 RE-AUTHENTICATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-11 RE-AUTHENTICATION"
+    },
+    {
+      "control_id": "nist_800_53:ia-12-identity-proofing",
+      "description": "IA-12 Identity Proofing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-12 Identity Proofing"
+    },
+    {
+      "control_id": "nist_800_53:ia-2-identification-and-authentication-organizational-users",
+      "description": "IA-2 Identification and Authentication (organizational Users)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-2 Identification and Authentication (organizational Users)"
+    },
+    {
+      "control_id": "nist_800_53:ia-3-device-identification-and-authentication",
+      "description": "IA-3 Device Identification and Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-3 Device Identification and Authentication"
+    },
+    {
+      "control_id": "nist_800_53:ia-4-identifier-management",
+      "description": "IA-4 Identifier Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-4 Identifier Management"
+    },
+    {
+      "control_id": "nist_800_53:ia-5-authenticator-management",
+      "description": "IA-5 AUTHENTICATOR MANAGEMENT",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-5 AUTHENTICATOR MANAGEMENT"
+    },
+    {
+      "control_id": "nist_800_53:ia-6-authentication-feedback",
+      "description": "IA-6 Authentication Feedback",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-6 Authentication Feedback"
+    },
+    {
+      "control_id": "nist_800_53:ia-7-cryptographic-module-authentication",
+      "description": "IA-7 Cryptographic Module Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-7 Cryptographic Module Authentication"
+    },
+    {
+      "control_id": "nist_800_53:ia-8-identification-and-authentication-non-organizational-users",
+      "description": "IA-8 Identification and Authentication (non-organizational Users)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-8 Identification and Authentication (non-organizational Users)"
+    },
+    {
+      "control_id": "nist_800_53:ia-9-service-identification-and-authentication",
+      "description": "IA-9 Service Identification and Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IA-9 Service Identification and Authentication"
+    },
+    {
+      "control_id": "nist_800_53:ir-1-policy-and-procedures",
+      "description": "IR-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:ir-2-incident-response-training",
+      "description": "IR-2 Incident Response Training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-2 Incident Response Training"
+    },
+    {
+      "control_id": "nist_800_53:ir-3-incident-response-testing",
+      "description": "IR-3 Incident Response Testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-3 Incident Response Testing"
+    },
+    {
+      "control_id": "nist_800_53:ir-4-incident-handling",
+      "description": "IR-4 Incident Handling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-4 Incident Handling"
+    },
+    {
+      "control_id": "nist_800_53:ir-5-incident-monitoring",
+      "description": "IR-5 Incident Monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-5 Incident Monitoring"
+    },
+    {
+      "control_id": "nist_800_53:ir-6-incident-reporting",
+      "description": "IR-6 Incident Reporting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-6 Incident Reporting"
+    },
+    {
+      "control_id": "nist_800_53:ir-7-incident-response-assistance",
+      "description": "IR-7 Incident Response Assistance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-7 Incident Response Assistance"
+    },
+    {
+      "control_id": "nist_800_53:ir-8-incident-response-plan",
+      "description": "IR-8 Incident Response Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-8 Incident Response Plan"
+    },
+    {
+      "control_id": "nist_800_53:ir-9-information-spillage-response",
+      "description": "IR-9 Information Spillage Response",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "IR-9 Information Spillage Response"
+    },
+    {
+      "control_id": "nist_800_53:ma-1-policy-and-procedures",
+      "description": "MA-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:ma-2-controlled-maintenance",
+      "description": "MA-2 Controlled Maintenance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-2 Controlled Maintenance"
+    },
+    {
+      "control_id": "nist_800_53:ma-3-maintenance-tools",
+      "description": "MA-3 Maintenance Tools",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-3 Maintenance Tools"
+    },
+    {
+      "control_id": "nist_800_53:ma-4-nonlocal-maintenance",
+      "description": "MA-4 Nonlocal Maintenance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-4 Nonlocal Maintenance"
+    },
+    {
+      "control_id": "nist_800_53:ma-5-maintenance-personnel",
+      "description": "MA-5 Maintenance Personnel",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-5 Maintenance Personnel"
+    },
+    {
+      "control_id": "nist_800_53:ma-6-timely-maintenance",
+      "description": "MA-6 Timely Maintenance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-6 Timely Maintenance"
+    },
+    {
+      "control_id": "nist_800_53:ma-7-field-maintenance",
+      "description": "MA-7 Field Maintenance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MA-7 Field Maintenance"
+    },
+    {
+      "control_id": "nist_800_53:mp-1-policy-and-procedures",
+      "description": "MP-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:mp-2-media-access",
+      "description": "MP-2 Media Access",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-2 Media Access"
+    },
+    {
+      "control_id": "nist_800_53:mp-3-media-marking",
+      "description": "MP-3 Media Marking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-3 Media Marking"
+    },
+    {
+      "control_id": "nist_800_53:mp-4-media-storage",
+      "description": "MP-4 Media Storage",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-4 Media Storage"
+    },
+    {
+      "control_id": "nist_800_53:mp-5-media-transport",
+      "description": "MP-5 Media Transport",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-5 Media Transport"
+    },
+    {
+      "control_id": "nist_800_53:mp-6-media-sanitization",
+      "description": "MP-6 Media Sanitization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-6 Media Sanitization"
+    },
+    {
+      "control_id": "nist_800_53:mp-7-media-use",
+      "description": "MP-7 Media Use",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-7 Media Use"
+    },
+    {
+      "control_id": "nist_800_53:mp-8-media-downgrading",
+      "description": "MP-8 Media Downgrading",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "MP-8 Media Downgrading"
+    },
+    {
+      "control_id": "nist_800_53:pe-1-policy-and-procedures",
+      "description": "PE-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:pe-10-emergency-shutoff",
+      "description": "PE-10 Emergency Shutoff",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-10 Emergency Shutoff"
+    },
+    {
+      "control_id": "nist_800_53:pe-11-emergency-power",
+      "description": "PE-11 Emergency Power",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-11 Emergency Power"
+    },
+    {
+      "control_id": "nist_800_53:pe-12-emergency-lighting",
+      "description": "PE-12 Emergency Lighting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-12 Emergency Lighting"
+    },
+    {
+      "control_id": "nist_800_53:pe-13-fire-protection",
+      "description": "PE-13 Fire Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-13 Fire Protection"
+    },
+    {
+      "control_id": "nist_800_53:pe-14-environmental-controls",
+      "description": "PE-14 Environmental Controls",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-14 Environmental Controls"
+    },
+    {
+      "control_id": "nist_800_53:pe-15-water-damage-protection",
+      "description": "PE-15 Water Damage Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-15 Water Damage Protection"
+    },
+    {
+      "control_id": "nist_800_53:pe-16-delivery-and-removal",
+      "description": "PE-16 Delivery and Removal",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-16 Delivery and Removal"
+    },
+    {
+      "control_id": "nist_800_53:pe-17-alternate-work-site",
+      "description": "PE-17 Alternate Work Site",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-17 Alternate Work Site"
+    },
+    {
+      "control_id": "nist_800_53:pe-18-location-of-system-components",
+      "description": "PE-18 Location of System Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-18 Location of System Components"
+    },
+    {
+      "control_id": "nist_800_53:pe-19-information-leakage",
+      "description": "PE-19 Information Leakage",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-19 Information Leakage"
+    },
+    {
+      "control_id": "nist_800_53:pe-2-physical-access-authorizations",
+      "description": "PE-2 Physical Access Authorizations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-2 Physical Access Authorizations"
+    },
+    {
+      "control_id": "nist_800_53:pe-20-asset-monitoring-and-tracking",
+      "description": "PE-20 Asset Monitoring and Tracking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-20 Asset Monitoring and Tracking"
+    },
+    {
+      "control_id": "nist_800_53:pe-21-electromagnetic-pulse-protection",
+      "description": "PE-21 Electromagnetic Pulse Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-21 Electromagnetic Pulse Protection"
+    },
+    {
+      "control_id": "nist_800_53:pe-22-component-marking",
+      "description": "PE-22 Component Marking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-22 Component Marking"
+    },
+    {
+      "control_id": "nist_800_53:pe-23-facility-location",
+      "description": "PE-23 Facility Location",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-23 Facility Location"
+    },
+    {
+      "control_id": "nist_800_53:pe-3-physical-access-control",
+      "description": "PE-3 Physical Access Control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-3 Physical Access Control"
+    },
+    {
+      "control_id": "nist_800_53:pe-4-access-control-for-transmission",
+      "description": "PE-4 Access Control for Transmission",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-4 Access Control for Transmission"
+    },
+    {
+      "control_id": "nist_800_53:pe-5-access-control-for-output-devices",
+      "description": "PE-5 Access Control for Output Devices",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-5 Access Control for Output Devices"
+    },
+    {
+      "control_id": "nist_800_53:pe-6-monitoring-physical-access",
+      "description": "PE-6 Monitoring Physical Access",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-6 Monitoring Physical Access"
+    },
+    {
+      "control_id": "nist_800_53:pe-8-visitor-access-records",
+      "description": "PE-8 Visitor Access Records",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-8 Visitor Access Records"
+    },
+    {
+      "control_id": "nist_800_53:pe-9-power-equipment-and-cabling",
+      "description": "PE-9 Power Equipment and Cabling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PE-9 Power Equipment and Cabling"
+    },
+    {
+      "control_id": "nist_800_53:pl-1-policy-and-procedures",
+      "description": "PL-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:pl-10-baseline-selection",
+      "description": "PL-10 Baseline Selection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-10 Baseline Selection"
+    },
+    {
+      "control_id": "nist_800_53:pl-11-baseline-tailoring",
+      "description": "PL-11 Baseline Tailoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-11 Baseline Tailoring"
+    },
+    {
+      "control_id": "nist_800_53:pl-2-system-security-and-privacy-plans",
+      "description": "PL-2 System Security and Privacy Plans",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-2 System Security and Privacy Plans"
+    },
+    {
+      "control_id": "nist_800_53:pl-4-rules-of-behavior",
+      "description": "PL-4 Rules of Behavior",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-4 Rules of Behavior"
+    },
+    {
+      "control_id": "nist_800_53:pl-7-concept-of-operations",
+      "description": "PL-7 CONCEPT OF OPERATIONS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-7 CONCEPT OF OPERATIONS"
+    },
+    {
+      "control_id": "nist_800_53:pl-8-security-and-privacy-architectures",
+      "description": "PL-8 SECURITY AND PRIVACY ARCHITECTURES",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-8 SECURITY AND PRIVACY ARCHITECTURES"
+    },
+    {
+      "control_id": "nist_800_53:pl-9-central-management",
+      "description": "PL-9 Central Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PL-9 Central Management"
+    },
+    {
+      "control_id": "nist_800_53:pm-1-information-security-program-plan",
+      "description": "PM-1 Information Security Program Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-1 Information Security Program Plan"
+    },
+    {
+      "control_id": "nist_800_53:pm-10-authorization-process",
+      "description": "PM-10 Authorization Process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-10 Authorization Process"
+    },
+    {
+      "control_id": "nist_800_53:pm-11-mission-and-business-process-definition",
+      "description": "PM-11 Mission and Business Process Definition",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-11 Mission and Business Process Definition"
+    },
+    {
+      "control_id": "nist_800_53:pm-12-insider-threat-program",
+      "description": "PM-12 Insider Threat Program",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-12 Insider Threat Program"
+    },
+    {
+      "control_id": "nist_800_53:pm-13-security-and-privacy-workforce",
+      "description": "PM-13 Security and Privacy Workforce",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-13 Security and Privacy Workforce"
+    },
+    {
+      "control_id": "nist_800_53:pm-14-testing-training-and-monitoring",
+      "description": "PM-14 Testing, Training, and Monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-14 Testing, Training, and Monitoring"
+    },
+    {
+      "control_id": "nist_800_53:pm-15-security-and-privacy-groups-and-associations",
+      "description": "PM-15 Security and Privacy Groups and Associations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-15 Security and Privacy Groups and Associations"
+    },
+    {
+      "control_id": "nist_800_53:pm-16-threat-awareness-program",
+      "description": "PM-16 Threat Awareness Program",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-16 Threat Awareness Program"
+    },
+    {
+      "control_id": "nist_800_53:pm-17-protecting-controlled-unclassified-information-on-external-systems",
+      "description": "PM-17 Protecting Controlled Unclassified Information on External Systems",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-17 Protecting Controlled Unclassified Information on External Systems"
+    },
+    {
+      "control_id": "nist_800_53:pm-18-privacy-program-plan",
+      "description": "PM-18 Privacy Program Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-18 Privacy Program Plan"
+    },
+    {
+      "control_id": "nist_800_53:pm-19-privacy-program-leadership-role",
+      "description": "PM-19 Privacy Program Leadership Role",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-19 Privacy Program Leadership Role"
+    },
+    {
+      "control_id": "nist_800_53:pm-2-information-security-program-leadership-role",
+      "description": "PM-2 Information Security Program Leadership Role",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-2 Information Security Program Leadership Role"
+    },
+    {
+      "control_id": "nist_800_53:pm-20-dissemination-of-privacy-program-information",
+      "description": "PM-20 Dissemination of Privacy Program Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-20 Dissemination of Privacy Program Information"
+    },
+    {
+      "control_id": "nist_800_53:pm-21-accounting-of-disclosures",
+      "description": "PM-21 Accounting of Disclosures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-21 Accounting of Disclosures"
+    },
+    {
+      "control_id": "nist_800_53:pm-22-personally-identifiable-information-quality-management",
+      "description": "PM-22 Personally Identifiable Information Quality Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-22 Personally Identifiable Information Quality Management"
+    },
+    {
+      "control_id": "nist_800_53:pm-23-data-governance-body",
+      "description": "PM-23 Data Governance Body",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-23 Data Governance Body"
+    },
+    {
+      "control_id": "nist_800_53:pm-24-data-integrity-board",
+      "description": "PM-24 Data Integrity Board",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-24 Data Integrity Board"
+    },
+    {
+      "control_id": "nist_800_53:pm-25-minimization-of-personally-identifiable-information-used-in-testing-traini",
+      "description": "PM-25 Minimization of Personally Identifiable Information Used in Testing, Training, and Research",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-25 Minimization of Personally Identifiable Information Used in Testing, Training, and Research"
+    },
+    {
+      "control_id": "nist_800_53:pm-26-complaint-management",
+      "description": "PM-26 Complaint Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-26 Complaint Management"
+    },
+    {
+      "control_id": "nist_800_53:pm-27-privacy-reporting",
+      "description": "PM-27 Privacy Reporting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-27 Privacy Reporting"
+    },
+    {
+      "control_id": "nist_800_53:pm-28-risk-framing",
+      "description": "PM-28 Risk Framing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-28 Risk Framing"
+    },
+    {
+      "control_id": "nist_800_53:pm-29-risk-management-program-leadership-roles",
+      "description": "PM-29 Risk Management Program Leadership Roles",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-29 Risk Management Program Leadership Roles"
+    },
+    {
+      "control_id": "nist_800_53:pm-3-information-security-and-privacy-resources",
+      "description": "PM-3 Information Security and Privacy Resources",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-3 Information Security and Privacy Resources"
+    },
+    {
+      "control_id": "nist_800_53:pm-30-supply-chain-risk-management-strategy",
+      "description": "PM-30 Supply Chain Risk Management Strategy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-30 Supply Chain Risk Management Strategy"
+    },
+    {
+      "control_id": "nist_800_53:pm-31-continuous-monitoring-strategy",
+      "description": "PM-31 Continuous Monitoring Strategy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-31 Continuous Monitoring Strategy"
+    },
+    {
+      "control_id": "nist_800_53:pm-32-purposing",
+      "description": "PM-32 Purposing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-32 Purposing"
+    },
+    {
+      "control_id": "nist_800_53:pm-4-plan-of-action-and-milestones-process",
+      "description": "PM-4 Plan of Action and Milestones Process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-4 Plan of Action and Milestones Process"
+    },
+    {
+      "control_id": "nist_800_53:pm-5-system-inventory",
+      "description": "PM-5 System Inventory",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-5 System Inventory"
+    },
+    {
+      "control_id": "nist_800_53:pm-6-measures-of-performance",
+      "description": "PM-6 Measures of Performance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-6 Measures of Performance"
+    },
+    {
+      "control_id": "nist_800_53:pm-7-enterprise-architecture",
+      "description": "PM-7 Enterprise Architecture",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-7 Enterprise Architecture"
+    },
+    {
+      "control_id": "nist_800_53:pm-8-critical-infrastructure-plan",
+      "description": "PM-8 Critical Infrastructure Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-8 Critical Infrastructure Plan"
+    },
+    {
+      "control_id": "nist_800_53:pm-9-risk-management-strategy",
+      "description": "PM-9 Risk Management Strategy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PM-9 Risk Management Strategy"
+    },
+    {
+      "control_id": "nist_800_53:ps-1-policy-and-procedures",
+      "description": "PS-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:ps-2-position-risk-designation",
+      "description": "PS-2 Position Risk Designation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-2 Position Risk Designation"
+    },
+    {
+      "control_id": "nist_800_53:ps-3-personnel-screening",
+      "description": "PS-3 Personnel Screening",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-3 Personnel Screening"
+    },
+    {
+      "control_id": "nist_800_53:ps-4-personnel-termination",
+      "description": "PS-4 Personnel Termination",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-4 Personnel Termination"
+    },
+    {
+      "control_id": "nist_800_53:ps-5-personnel-transfer",
+      "description": "PS-5 Personnel Transfer",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-5 Personnel Transfer"
+    },
+    {
+      "control_id": "nist_800_53:ps-6-access-agreements",
+      "description": "PS-6 Access Agreements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-6 Access Agreements"
+    },
+    {
+      "control_id": "nist_800_53:ps-7-external-personnel-security",
+      "description": "PS-7 External Personnel Security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-7 External Personnel Security"
+    },
+    {
+      "control_id": "nist_800_53:ps-8-personnel-sanctions",
+      "description": "PS-8 Personnel Sanctions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-8 Personnel Sanctions"
+    },
+    {
+      "control_id": "nist_800_53:ps-9-position-descriptions",
+      "description": "PS-9 Position Descriptions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PS-9 Position Descriptions"
+    },
+    {
+      "control_id": "nist_800_53:pt-1-policy-and-procedures",
+      "description": "PT-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:pt-2-authority-to-process-personally-identifiable-information",
+      "description": "PT-2 Authority to Process Personally Identifiable Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-2 Authority to Process Personally Identifiable Information"
+    },
+    {
+      "control_id": "nist_800_53:pt-3-personally-identifiable-information-processing-purposes",
+      "description": "PT-3 Personally Identifiable Information Processing Purposes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-3 Personally Identifiable Information Processing Purposes"
+    },
+    {
+      "control_id": "nist_800_53:pt-4-consent",
+      "description": "PT-4 Consent",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-4 Consent"
+    },
+    {
+      "control_id": "nist_800_53:pt-5-privacy-notice",
+      "description": "PT-5 Privacy Notice",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-5 Privacy Notice"
+    },
+    {
+      "control_id": "nist_800_53:pt-6-system-of-records-notice",
+      "description": "PT-6 System of Records Notice",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-6 System of Records Notice"
+    },
+    {
+      "control_id": "nist_800_53:pt-7-specific-categories-of-personally-identifiable-information",
+      "description": "PT-7 Specific Categories of Personally Identifiable Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-7 Specific Categories of Personally Identifiable Information"
+    },
+    {
+      "control_id": "nist_800_53:pt-8-computer-matching-requirements",
+      "description": "PT-8 Computer Matching Requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "PT-8 Computer Matching Requirements"
+    },
+    {
+      "control_id": "nist_800_53:ra-1-policy-and-procedures",
+      "description": "RA-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:ra-10-threat-hunting",
+      "description": "RA-10 Threat Hunting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-10 Threat Hunting"
+    },
+    {
+      "control_id": "nist_800_53:ra-2-security-categorization",
+      "description": "RA-2 Security Categorization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-2 Security Categorization"
+    },
+    {
+      "control_id": "nist_800_53:ra-3-risk-assessment",
+      "description": "RA-3 Risk Assessment",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-3 Risk Assessment"
+    },
+    {
+      "control_id": "nist_800_53:ra-5-vulnerability-monitoring-and-scanning",
+      "description": "RA-5 Vulnerability Monitoring and Scanning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-5 Vulnerability Monitoring and Scanning"
+    },
+    {
+      "control_id": "nist_800_53:ra-6-technical-surveillance-countermeasures-survey",
+      "description": "RA-6 Technical Surveillance Countermeasures Survey",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-6 Technical Surveillance Countermeasures Survey"
+    },
+    {
+      "control_id": "nist_800_53:ra-7-risk-response",
+      "description": "RA-7 Risk Response",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-7 Risk Response"
+    },
+    {
+      "control_id": "nist_800_53:ra-8-privacy-impact-assessments",
+      "description": "RA-8 Privacy Impact Assessments",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-8 Privacy Impact Assessments"
+    },
+    {
+      "control_id": "nist_800_53:ra-9-criticality-analysis",
+      "description": "RA-9 Criticality Analysis",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "RA-9 Criticality Analysis"
+    },
+    {
+      "control_id": "nist_800_53:sa-1-policy-and-procedures",
+      "description": "SA-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:sa-10-developer-configuration-management",
+      "description": "SA-10 Developer Configuration Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-10 Developer Configuration Management"
+    },
+    {
+      "control_id": "nist_800_53:sa-11-developer-testing-and-evaluation",
+      "description": "SA-11 Developer Testing and Evaluation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-11 Developer Testing and Evaluation"
+    },
+    {
+      "control_id": "nist_800_53:sa-15-development-process-standards-and-tools",
+      "description": "SA-15 Development Process, Standards, and Tools",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-15 Development Process, Standards, and Tools"
+    },
+    {
+      "control_id": "nist_800_53:sa-16-developer-provided-training",
+      "description": "SA-16 Developer-provided Training",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-16 Developer-provided Training"
+    },
+    {
+      "control_id": "nist_800_53:sa-17-developer-security-and-privacy-architecture-and-design",
+      "description": "SA-17 Developer Security and Privacy Architecture and Design",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-17 Developer Security and Privacy Architecture and Design"
+    },
+    {
+      "control_id": "nist_800_53:sa-2-allocation-of-resources",
+      "description": "SA-2 Allocation of Resources",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-2 Allocation of Resources"
+    },
+    {
+      "control_id": "nist_800_53:sa-20-customized-development-of-critical-components",
+      "description": "SA-20 Customized Development of Critical Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-20 Customized Development of Critical Components"
+    },
+    {
+      "control_id": "nist_800_53:sa-21-developer-screening",
+      "description": "SA-21 Developer Screening",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-21 Developer Screening"
+    },
+    {
+      "control_id": "nist_800_53:sa-22-unsupported-system-components",
+      "description": "SA-22 Unsupported System Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-22 Unsupported System Components"
+    },
+    {
+      "control_id": "nist_800_53:sa-23-specialization",
+      "description": "SA-23 Specialization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-23 Specialization"
+    },
+    {
+      "control_id": "nist_800_53:sa-3-system-development-life-cycle",
+      "description": "SA-3 System Development Life Cycle",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-3 System Development Life Cycle"
+    },
+    {
+      "control_id": "nist_800_53:sa-4-acquisition-process",
+      "description": "SA-4 Acquisition Process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-4 Acquisition Process"
+    },
+    {
+      "control_id": "nist_800_53:sa-5-system-documentation",
+      "description": "SA-5 System Documentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-5 System Documentation"
+    },
+    {
+      "control_id": "nist_800_53:sa-8-security-and-privacy-engineering-principles",
+      "description": "SA-8 Security and Privacy Engineering Principles",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-8 Security and Privacy Engineering Principles"
+    },
+    {
+      "control_id": "nist_800_53:sa-9-external-system-services",
+      "description": "SA-9 External System Services",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SA-9 External System Services"
+    },
+    {
+      "control_id": "nist_800_53:sc-1-policy-and-procedures",
+      "description": "SC-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:sc-10-network-disconnect",
+      "description": "SC-10 NETWORK DISCONNECT",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-10 NETWORK DISCONNECT"
+    },
+    {
+      "control_id": "nist_800_53:sc-11-trusted-path",
+      "description": "SC-11 Trusted Path",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-11 Trusted Path"
+    },
+    {
+      "control_id": "nist_800_53:sc-12-cryptographic-key-establishment-and-management",
+      "description": "SC-12 CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-12 CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT"
+    },
+    {
+      "control_id": "nist_800_53:sc-13-cryptographic-protection",
+      "description": "SC-13 Cryptographic Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-13 Cryptographic Protection"
+    },
+    {
+      "control_id": "nist_800_53:sc-15-collaborative-computing-devices-and-applications",
+      "description": "SC-15 Collaborative Computing Devices and Applications",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-15 Collaborative Computing Devices and Applications"
+    },
+    {
+      "control_id": "nist_800_53:sc-16-transmission-of-security-and-privacy-attributes",
+      "description": "SC-16 Transmission of Security and Privacy Attributes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-16 Transmission of Security and Privacy Attributes"
+    },
+    {
+      "control_id": "nist_800_53:sc-17-public-key-infrastructure-certificates",
+      "description": "SC-17 Public Key Infrastructure Certificates",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-17 Public Key Infrastructure Certificates"
+    },
+    {
+      "control_id": "nist_800_53:sc-18-mobile-code",
+      "description": "SC-18 Mobile Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-18 Mobile Code"
+    },
+    {
+      "control_id": "nist_800_53:sc-2-separation-of-system-and-user-functionality",
+      "description": "SC-2 Separation of System and User Functionality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-2 Separation of System and User Functionality"
+    },
+    {
+      "control_id": "nist_800_53:sc-20-secure-name-address-resolution-service-authoritative-source",
+      "description": "SC-20 Secure Name/address Resolution Service (authoritative Source)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-20 Secure Name/address Resolution Service (authoritative Source)"
+    },
+    {
+      "control_id": "nist_800_53:sc-21-secure-name-address-resolution-service-recursive-or-caching-resolver",
+      "description": "SC-21 Secure Name/address Resolution Service (recursive or Caching Resolver)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-21 Secure Name/address Resolution Service (recursive or Caching Resolver)"
+    },
+    {
+      "control_id": "nist_800_53:sc-22-architecture-and-provisioning-for-name-address-resolution-service",
+      "description": "SC-22 Architecture and Provisioning for Name/address Resolution Service",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-22 Architecture and Provisioning for Name/address Resolution Service"
+    },
+    {
+      "control_id": "nist_800_53:sc-23-1",
+      "description": "SC-23(1)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-23(1)"
+    },
+    {
+      "control_id": "nist_800_53:sc-23-3",
+      "description": "SC-23(3)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-23(3)"
+    },
+    {
+      "control_id": "nist_800_53:sc-23-session-authenticity",
+      "description": "SC-23 SESSION AUTHENTICITY",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-23 SESSION AUTHENTICITY"
+    },
+    {
+      "control_id": "nist_800_53:sc-24-fail-in-known-state",
+      "description": "SC-24 Fail in Known State",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-24 Fail in Known State"
+    },
+    {
+      "control_id": "nist_800_53:sc-25-thin-nodes",
+      "description": "SC-25 Thin Nodes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-25 Thin Nodes"
+    },
+    {
+      "control_id": "nist_800_53:sc-26-decoys",
+      "description": "SC-26 Decoys",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-26 Decoys"
+    },
+    {
+      "control_id": "nist_800_53:sc-27-platform-independent-applications",
+      "description": "SC-27 Platform-independent Applications",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-27 Platform-independent Applications"
+    },
+    {
+      "control_id": "nist_800_53:sc-28-protection-of-information-at-rest",
+      "description": "SC-28 PROTECTION OF INFORMATION AT REST",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-28 PROTECTION OF INFORMATION AT REST"
+    },
+    {
+      "control_id": "nist_800_53:sc-29-heterogeneity",
+      "description": "SC-29 Heterogeneity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-29 Heterogeneity"
+    },
+    {
+      "control_id": "nist_800_53:sc-3-security-function-isolation",
+      "description": "SC-3 Security Function Isolation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-3 Security Function Isolation"
+    },
+    {
+      "control_id": "nist_800_53:sc-30-concealment-and-misdirection",
+      "description": "SC-30 Concealment and Misdirection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-30 Concealment and Misdirection"
+    },
+    {
+      "control_id": "nist_800_53:sc-31-covert-channel-analysis",
+      "description": "SC-31 Covert Channel Analysis",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-31 Covert Channel Analysis"
+    },
+    {
+      "control_id": "nist_800_53:sc-32-system-partitioning",
+      "description": "SC-32 System Partitioning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-32 System Partitioning"
+    },
+    {
+      "control_id": "nist_800_53:sc-34-non-modifiable-executable-programs",
+      "description": "SC-34 Non-modifiable Executable Programs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-34 Non-modifiable Executable Programs"
+    },
+    {
+      "control_id": "nist_800_53:sc-35-external-malicious-code-identification",
+      "description": "SC-35 External Malicious Code Identification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-35 External Malicious Code Identification"
+    },
+    {
+      "control_id": "nist_800_53:sc-36-distributed-processing-and-storage",
+      "description": "SC-36 Distributed Processing and Storage",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-36 Distributed Processing and Storage"
+    },
+    {
+      "control_id": "nist_800_53:sc-37-out-of-band-channels",
+      "description": "SC-37 Out-of-band Channels",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-37 Out-of-band Channels"
+    },
+    {
+      "control_id": "nist_800_53:sc-38-operations-security",
+      "description": "SC-38 Operations Security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-38 Operations Security"
+    },
+    {
+      "control_id": "nist_800_53:sc-39-process-isolation",
+      "description": "SC-39 Process Isolation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-39 Process Isolation"
+    },
+    {
+      "control_id": "nist_800_53:sc-4-information-in-shared-system-resources",
+      "description": "SC-4 Information in Shared System Resources",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-4 Information in Shared System Resources"
+    },
+    {
+      "control_id": "nist_800_53:sc-40-wireless-link-protection",
+      "description": "SC-40 Wireless Link Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-40 Wireless Link Protection"
+    },
+    {
+      "control_id": "nist_800_53:sc-41-port-and-i-o-device-access",
+      "description": "SC-41 Port and I/O Device Access",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-41 Port and I/O Device Access"
+    },
+    {
+      "control_id": "nist_800_53:sc-42-sensor-capability-and-data",
+      "description": "SC-42 Sensor Capability and Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-42 Sensor Capability and Data"
+    },
+    {
+      "control_id": "nist_800_53:sc-43-usage-restrictions",
+      "description": "SC-43 Usage Restrictions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-43 Usage Restrictions"
+    },
+    {
+      "control_id": "nist_800_53:sc-44-detonation-chambers",
+      "description": "SC-44 Detonation Chambers",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-44 Detonation Chambers"
+    },
+    {
+      "control_id": "nist_800_53:sc-45-system-time-synchronization",
+      "description": "SC-45 System Time Synchronization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-45 System Time Synchronization"
+    },
+    {
+      "control_id": "nist_800_53:sc-46-cross-domain-policy-enforcement",
+      "description": "SC-46 Cross Domain Policy Enforcement",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-46 Cross Domain Policy Enforcement"
+    },
+    {
+      "control_id": "nist_800_53:sc-47-alternate-communications-paths",
+      "description": "SC-47 Alternate Communications Paths",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-47 Alternate Communications Paths"
+    },
+    {
+      "control_id": "nist_800_53:sc-48-sensor-relocation",
+      "description": "SC-48 Sensor Relocation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-48 Sensor Relocation"
+    },
+    {
+      "control_id": "nist_800_53:sc-49-hardware-enforced-separation-and-policy-enforcement",
+      "description": "SC-49 Hardware-enforced Separation and Policy Enforcement",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-49 Hardware-enforced Separation and Policy Enforcement"
+    },
+    {
+      "control_id": "nist_800_53:sc-5-denial-of-service-protection",
+      "description": "SC-5 DENIAL-OF-SERVICE PROTECTION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-5 DENIAL-OF-SERVICE PROTECTION"
+    },
+    {
+      "control_id": "nist_800_53:sc-50-software-enforced-separation-and-policy-enforcement",
+      "description": "SC-50 Software-enforced Separation and Policy Enforcement",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-50 Software-enforced Separation and Policy Enforcement"
+    },
+    {
+      "control_id": "nist_800_53:sc-51-hardware-based-protection",
+      "description": "SC-51 Hardware-based Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-51 Hardware-based Protection"
+    },
+    {
+      "control_id": "nist_800_53:sc-6-resource-availability",
+      "description": "SC-6 Resource Availability",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-6 Resource Availability"
+    },
+    {
+      "control_id": "nist_800_53:sc-7-boundary-protection",
+      "description": "SC-7 Boundary Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-7 Boundary Protection"
+    },
+    {
+      "control_id": "nist_800_53:sc-8-transmission-confidentiality-and-integrity",
+      "description": "SC-8 TRANSMISSION CONFIDENTIALITY AND INTEGRITY",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SC-8 TRANSMISSION CONFIDENTIALITY AND INTEGRITY"
+    },
+    {
+      "control_id": "nist_800_53:si-1-policy-and-procedures",
+      "description": "SI-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:si-10-information-input-validation",
+      "description": "SI-10 INFORMATION INPUT VALIDATION",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-10 INFORMATION INPUT VALIDATION"
+    },
+    {
+      "control_id": "nist_800_53:si-11-error-handling",
+      "description": "SI-11 Error Handling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-11 Error Handling"
+    },
+    {
+      "control_id": "nist_800_53:si-12-information-management-and-retention",
+      "description": "SI-12 Information Management and Retention",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-12 Information Management and Retention"
+    },
+    {
+      "control_id": "nist_800_53:si-13-predictable-failure-prevention",
+      "description": "SI-13 Predictable Failure Prevention",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-13 Predictable Failure Prevention"
+    },
+    {
+      "control_id": "nist_800_53:si-14-non-persistence",
+      "description": "SI-14 Non-persistence",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-14 Non-persistence"
+    },
+    {
+      "control_id": "nist_800_53:si-15-information-output-filtering",
+      "description": "SI-15 Information Output Filtering",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-15 Information Output Filtering"
+    },
+    {
+      "control_id": "nist_800_53:si-16-memory-protection",
+      "description": "SI-16 Memory Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-16 Memory Protection"
+    },
+    {
+      "control_id": "nist_800_53:si-17-fail-safe-procedures",
+      "description": "SI-17 Fail-safe Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-17 Fail-safe Procedures"
+    },
+    {
+      "control_id": "nist_800_53:si-18-personally-identifiable-information-quality-operations",
+      "description": "SI-18 Personally Identifiable Information Quality Operations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-18 Personally Identifiable Information Quality Operations"
+    },
+    {
+      "control_id": "nist_800_53:si-19-de-identification",
+      "description": "SI-19 De-identification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-19 De-identification"
+    },
+    {
+      "control_id": "nist_800_53:si-2-flaw-remediation",
+      "description": "SI-2 Flaw Remediation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-2 Flaw Remediation"
+    },
+    {
+      "control_id": "nist_800_53:si-20-tainting",
+      "description": "SI-20 Tainting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-20 Tainting"
+    },
+    {
+      "control_id": "nist_800_53:si-21-information-refresh",
+      "description": "SI-21 Information Refresh",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-21 Information Refresh"
+    },
+    {
+      "control_id": "nist_800_53:si-22-information-diversity",
+      "description": "SI-22 Information Diversity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-22 Information Diversity"
+    },
+    {
+      "control_id": "nist_800_53:si-23-information-fragmentation",
+      "description": "SI-23 Information Fragmentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-23 Information Fragmentation"
+    },
+    {
+      "control_id": "nist_800_53:si-3-malicious-code-protection",
+      "description": "SI-3 Malicious Code Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-3 Malicious Code Protection"
+    },
+    {
+      "control_id": "nist_800_53:si-4-system-monitoring",
+      "description": "SI-4 System Monitoring",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-4 System Monitoring"
+    },
+    {
+      "control_id": "nist_800_53:si-5-security-alerts-advisories-and-directives",
+      "description": "SI-5 Security Alerts, Advisories, and Directives",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-5 Security Alerts, Advisories, and Directives"
+    },
+    {
+      "control_id": "nist_800_53:si-6-security-and-privacy-function-verification",
+      "description": "SI-6 Security and Privacy Function Verification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-6 Security and Privacy Function Verification"
+    },
+    {
+      "control_id": "nist_800_53:si-7-software-firmware-and-information-integrity",
+      "description": "SI-7 Software, Firmware, and Information Integrity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-7 Software, Firmware, and Information Integrity"
+    },
+    {
+      "control_id": "nist_800_53:si-8-spam-protection",
+      "description": "SI-8 Spam Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SI-8 Spam Protection"
+    },
+    {
+      "control_id": "nist_800_53:sr-1-policy-and-procedures",
+      "description": "SR-1 Policy and Procedures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-1 Policy and Procedures"
+    },
+    {
+      "control_id": "nist_800_53:sr-10-inspection-of-systems-or-components",
+      "description": "SR-10 Inspection of Systems or Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-10 Inspection of Systems or Components"
+    },
+    {
+      "control_id": "nist_800_53:sr-11-component-authenticity",
+      "description": "SR-11 Component Authenticity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-11 Component Authenticity"
+    },
+    {
+      "control_id": "nist_800_53:sr-12-component-disposal",
+      "description": "SR-12 Component Disposal",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-12 Component Disposal"
+    },
+    {
+      "control_id": "nist_800_53:sr-2-supply-chain-risk-management-plan",
+      "description": "SR-2 Supply Chain Risk Management Plan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-2 Supply Chain Risk Management Plan"
+    },
+    {
+      "control_id": "nist_800_53:sr-3-supply-chain-controls-and-processes",
+      "description": "SR-3 Supply Chain Controls and Processes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-3 Supply Chain Controls and Processes"
+    },
+    {
+      "control_id": "nist_800_53:sr-4-provenance",
+      "description": "SR-4 Provenance",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-4 Provenance"
+    },
+    {
+      "control_id": "nist_800_53:sr-5-acquisition-strategies-tools-and-methods",
+      "description": "SR-5 Acquisition Strategies, Tools, and Methods",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-5 Acquisition Strategies, Tools, and Methods"
+    },
+    {
+      "control_id": "nist_800_53:sr-6-supplier-assessments-and-reviews",
+      "description": "SR-6 Supplier Assessments and Reviews",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-6 Supplier Assessments and Reviews"
+    },
+    {
+      "control_id": "nist_800_53:sr-7-supply-chain-operations-security",
+      "description": "SR-7 Supply Chain Operations Security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-7 Supply Chain Operations Security"
+    },
+    {
+      "control_id": "nist_800_53:sr-8-notification-agreements",
+      "description": "SR-8 Notification Agreements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-8 Notification Agreements"
+    },
+    {
+      "control_id": "nist_800_53:sr-9-tamper-resistance-and-detection",
+      "description": "SR-9 Tamper Resistance and Detection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "NIST 800-53 v5"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SR-9 Tamper Resistance and Detection"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "nist_800_53",
+  "framework_name": "NIST 800-53",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

@@ -1,0 +1,150 @@
+{
+  "controls": [
+    {
+      "control_id": "owasp_proactive_controls:c1",
+      "description": "C1",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C1"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c10",
+      "description": "C10",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c2",
+      "description": "C2",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C2"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c3",
+      "description": "C3",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C3"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c4",
+      "description": "C4",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c5",
+      "description": "C5",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c6",
+      "description": "C6",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c7",
+      "description": "C7",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C7"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c8",
+      "description": "C8",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:c9",
+      "description": "C9",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Proactive Controls"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "C9"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "owasp_proactive_controls",
+  "framework_name": "OWASP Proactive Controls",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

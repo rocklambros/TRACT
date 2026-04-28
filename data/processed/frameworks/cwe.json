@@ -1,0 +1,3454 @@
+{
+  "controls": [
+    {
+      "control_id": "cwe:1004",
+      "description": "Sensitive Cookie Without 'HttpOnly' Flag",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "1004",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sensitive Cookie Without 'HttpOnly' Flag"
+    },
+    {
+      "control_id": "cwe:1009",
+      "description": "CWE-1009",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "1009",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CWE-1009"
+    },
+    {
+      "control_id": "cwe:1021",
+      "description": "Improper Restriction of Rendered UI Layers or Frames",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "1021",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of Rendered UI Layers or Frames"
+    },
+    {
+      "control_id": "cwe:1053",
+      "description": "Missing Documentation for Design",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1053",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Documentation for Design"
+    },
+    {
+      "control_id": "cwe:1059",
+      "description": "Insufficient Technical Documentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "1059",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Technical Documentation"
+    },
+    {
+      "control_id": "cwe:1104",
+      "description": "Use of Unmaintained Third Party Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "1104",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Unmaintained Third Party Components"
+    },
+    {
+      "control_id": "cwe:1110",
+      "description": "Incomplete Design Documentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1110",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incomplete Design Documentation"
+    },
+    {
+      "control_id": "cwe:1111",
+      "description": "Incomplete I/O Documentation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1111",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incomplete I/O Documentation"
+    },
+    {
+      "control_id": "cwe:1112",
+      "description": "Incomplete Documentation of Program Execution",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1112",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incomplete Documentation of Program Execution"
+    },
+    {
+      "control_id": "cwe:1118",
+      "description": "Insufficient Documentation of Error Handling Techniques",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1118",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Documentation of Error Handling Techniques"
+    },
+    {
+      "control_id": "cwe:115",
+      "description": "Misinterpretation of Input",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "115",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Misinterpretation of Input"
+    },
+    {
+      "control_id": "cwe:116",
+      "description": "Improper Encoding or Escaping of Output",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "116",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Encoding or Escaping of Output"
+    },
+    {
+      "control_id": "cwe:117",
+      "description": "Improper Output Neutralization for Logs",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "117",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Output Neutralization for Logs"
+    },
+    {
+      "control_id": "cwe:1173",
+      "description": "Improper Use of Validation Framework",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1173",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Use of Validation Framework"
+    },
+    {
+      "control_id": "cwe:1191",
+      "description": "On-Chip Debug and Test Interface With Improper Access Control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1191",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "On-Chip Debug and Test Interface With Improper Access Control"
+    },
+    {
+      "control_id": "cwe:120",
+      "description": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "120",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')"
+    },
+    {
+      "control_id": "cwe:1204",
+      "description": "Generation of Weak Initialization Vector (IV)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1204",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Generation of Weak Initialization Vector (IV)"
+    },
+    {
+      "control_id": "cwe:1220",
+      "description": "Insufficient Granularity of Access Control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1220",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Granularity of Access Control"
+    },
+    {
+      "control_id": "cwe:1223",
+      "description": "Race Condition for Write-Once Attributes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1223",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Race Condition for Write-Once Attributes"
+    },
+    {
+      "control_id": "cwe:1224",
+      "description": "Improper Restriction of Write-Once Bit Fields",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1224",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of Write-Once Bit Fields"
+    },
+    {
+      "control_id": "cwe:1230",
+      "description": "Exposure of Sensitive Information Through Metadata",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1230",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Sensitive Information Through Metadata"
+    },
+    {
+      "control_id": "cwe:1231",
+      "description": "Improper Prevention of Lock Bit Modification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1231",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Prevention of Lock Bit Modification"
+    },
+    {
+      "control_id": "cwe:1235",
+      "description": "Incorrect Use of Autoboxing and Unboxing for Performance Critical Operations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1235",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incorrect Use of Autoboxing and Unboxing for Performance Critical Operations"
+    },
+    {
+      "control_id": "cwe:1240",
+      "description": "Use of a Cryptographic Primitive with a Risky Implementation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1240",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of a Cryptographic Primitive with a Risky Implementation"
+    },
+    {
+      "control_id": "cwe:1241",
+      "description": "Use of Predictable Algorithm in Random Number Generator",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1241",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Predictable Algorithm in Random Number Generator"
+    },
+    {
+      "control_id": "cwe:1246",
+      "description": "Improper Write Handling in Limited-write Non-Volatile Memories",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1246",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Write Handling in Limited-write Non-Volatile Memories"
+    },
+    {
+      "control_id": "cwe:1252",
+      "description": "CPU Hardware Not Configured to Support Exclusivity of Write and Execute Operations",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1252",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CPU Hardware Not Configured to Support Exclusivity of Write and Execute Operations"
+    },
+    {
+      "control_id": "cwe:1256",
+      "description": "Improper Restriction of Software Interfaces to Hardware Features",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1256",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of Software Interfaces to Hardware Features"
+    },
+    {
+      "control_id": "cwe:1258",
+      "description": "Exposure of Sensitive System Information Due to Uncleared Debug Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1258",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Sensitive System Information Due to Uncleared Debug Information"
+    },
+    {
+      "control_id": "cwe:1262",
+      "description": "Improper Access Control for Register Interface",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1262",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Access Control for Register Interface"
+    },
+    {
+      "control_id": "cwe:1267",
+      "description": "Policy Uses Obsolete Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1267",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Policy Uses Obsolete Encoding"
+    },
+    {
+      "control_id": "cwe:1273",
+      "description": "Device Unlock Credential Sharing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1273",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Device Unlock Credential Sharing"
+    },
+    {
+      "control_id": "cwe:1274",
+      "description": "Improper Access Control for Volatile Memory Containing Boot Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1274",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Access Control for Volatile Memory Containing Boot Code"
+    },
+    {
+      "control_id": "cwe:1275",
+      "description": "Sensitive Cookie with Improper SameSite Attribute",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "1275",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sensitive Cookie with Improper SameSite Attribute"
+    },
+    {
+      "control_id": "cwe:1276",
+      "description": "Hardware Child Block Incorrectly Connected to Parent System",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1276",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hardware Child Block Incorrectly Connected to Parent System"
+    },
+    {
+      "control_id": "cwe:1283",
+      "description": "Mutable Attestation or Measurement Reporting Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1283",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Mutable Attestation or Measurement Reporting Data"
+    },
+    {
+      "control_id": "cwe:1285",
+      "description": "Improper Validation of Specified Index, Position, or Offset in Input",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1285",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Validation of Specified Index, Position, or Offset in Input"
+    },
+    {
+      "control_id": "cwe:1286",
+      "description": "Improper Validation of Syntactic Correctness of Input",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1286",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Validation of Syntactic Correctness of Input"
+    },
+    {
+      "control_id": "cwe:1288",
+      "description": "Improper Validation of Consistency within Input",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1288",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Validation of Consistency within Input"
+    },
+    {
+      "control_id": "cwe:1294",
+      "description": "Insecure Security Identifier Mechanism",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1294",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insecure Security Identifier Mechanism"
+    },
+    {
+      "control_id": "cwe:1296",
+      "description": "Incorrect Chaining or Granularity of Debug Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1296",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incorrect Chaining or Granularity of Debug Components"
+    },
+    {
+      "control_id": "cwe:1297",
+      "description": "Unprotected Confidential Information on Device is Accessible by OSAT Vendors",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1297",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unprotected Confidential Information on Device is Accessible by OSAT Vendors"
+    },
+    {
+      "control_id": "cwe:1298",
+      "description": "Hardware Logic Contains Race Conditions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1298",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hardware Logic Contains Race Conditions"
+    },
+    {
+      "control_id": "cwe:1301",
+      "description": "Insufficient or Incomplete Data Removal within Hardware Component",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1301",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient or Incomplete Data Removal within Hardware Component"
+    },
+    {
+      "control_id": "cwe:1311",
+      "description": "Improper Translation of Security Attributes by Fabric Bridge",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1311",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Translation of Security Attributes by Fabric Bridge"
+    },
+    {
+      "control_id": "cwe:1313",
+      "description": "Hardware Allows Activation of Test or Debug Logic at Runtime",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1313",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hardware Allows Activation of Test or Debug Logic at Runtime"
+    },
+    {
+      "control_id": "cwe:1315",
+      "description": "Improper Setting of Bus Controlling Capability in Fabric End-point",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1315",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Setting of Bus Controlling Capability in Fabric End-point"
+    },
+    {
+      "control_id": "cwe:1316",
+      "description": "Fabric-Address Map Allows Programming of Unwarranted Overlaps of Protected and Unprotected Ranges",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1316",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Fabric-Address Map Allows Programming of Unwarranted Overlaps of Protected and Unprotected Ranges"
+    },
+    {
+      "control_id": "cwe:1317",
+      "description": "Improper Access Control in Fabric Bridge",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1317",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Access Control in Fabric Bridge"
+    },
+    {
+      "control_id": "cwe:1320",
+      "description": "Improper Protection for Outbound Error Messages and Alert Signals",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1320",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Protection for Outbound Error Messages and Alert Signals"
+    },
+    {
+      "control_id": "cwe:1323",
+      "description": "Improper Management of Sensitive Trace Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1323",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Management of Sensitive Trace Data"
+    },
+    {
+      "control_id": "cwe:1334",
+      "description": "Unauthorized Error Injection Can Degrade Hardware Redundancy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1334",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unauthorized Error Injection Can Degrade Hardware Redundancy"
+    },
+    {
+      "control_id": "cwe:1336",
+      "description": "Improper Neutralization of Special Elements Used in a Template Engine",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1336",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Special Elements Used in a Template Engine"
+    },
+    {
+      "control_id": "cwe:134",
+      "description": "Use of Externally-Controlled Format String",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "134",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Externally-Controlled Format String"
+    },
+    {
+      "control_id": "cwe:138",
+      "description": "Improper Neutralization of Special Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "138",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Special Elements"
+    },
+    {
+      "control_id": "cwe:1385",
+      "description": "Missing Origin Validation in WebSockets",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1385",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Origin Validation in WebSockets"
+    },
+    {
+      "control_id": "cwe:1390",
+      "description": "Weak Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1390",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Weak Authentication"
+    },
+    {
+      "control_id": "cwe:140",
+      "description": "Improper Neutralization of Delimiters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "140",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Delimiters"
+    },
+    {
+      "control_id": "cwe:1426",
+      "description": "Improper Validation of Generative AI Output",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1426",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Validation of Generative AI Output"
+    },
+    {
+      "control_id": "cwe:1428",
+      "description": "Reliance on HTTP instead of HTTPS",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "1428",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reliance on HTTP instead of HTTPS"
+    },
+    {
+      "control_id": "cwe:147",
+      "description": "Improper Neutralization of Input Terminators",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "147",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Input Terminators"
+    },
+    {
+      "control_id": "cwe:148",
+      "description": "Improper Neutralization of Input Leaders",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "148",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Input Leaders"
+    },
+    {
+      "control_id": "cwe:149",
+      "description": "Improper Neutralization of Quoting Syntax",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "149",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Quoting Syntax"
+    },
+    {
+      "control_id": "cwe:150",
+      "description": "Improper Neutralization of Escape, Meta, or Control Sequences",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "150",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Escape, Meta, or Control Sequences"
+    },
+    {
+      "control_id": "cwe:151",
+      "description": "Improper Neutralization of Comment Delimiters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "151",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Comment Delimiters"
+    },
+    {
+      "control_id": "cwe:152",
+      "description": "Improper Neutralization of Macro Symbols",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "152",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Macro Symbols"
+    },
+    {
+      "control_id": "cwe:153",
+      "description": "Improper Neutralization of Substitution Characters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "153",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Substitution Characters"
+    },
+    {
+      "control_id": "cwe:154",
+      "description": "Improper Neutralization of Variable Name Delimiters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "154",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Variable Name Delimiters"
+    },
+    {
+      "control_id": "cwe:155",
+      "description": "Improper Neutralization of Wildcards or Matching Symbols",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "155",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Wildcards or Matching Symbols"
+    },
+    {
+      "control_id": "cwe:156",
+      "description": "Improper Neutralization of Whitespace",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "156",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Whitespace"
+    },
+    {
+      "control_id": "cwe:157",
+      "description": "Failure to Sanitize Paired Delimiters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "157",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Failure to Sanitize Paired Delimiters"
+    },
+    {
+      "control_id": "cwe:158",
+      "description": "Improper Neutralization of Null Byte or NUL Character",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "158",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Null Byte or NUL Character"
+    },
+    {
+      "control_id": "cwe:159",
+      "description": "Improper Handling of Invalid Use of Special Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "159",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Invalid Use of Special Elements"
+    },
+    {
+      "control_id": "cwe:16",
+      "description": "CWE-16",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "16",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CWE-16"
+    },
+    {
+      "control_id": "cwe:160",
+      "description": "Improper Neutralization of Leading Special Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "160",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Leading Special Elements"
+    },
+    {
+      "control_id": "cwe:162",
+      "description": "Improper Neutralization of Trailing Special Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "162",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Trailing Special Elements"
+    },
+    {
+      "control_id": "cwe:164",
+      "description": "Improper Neutralization of Internal Special Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "164",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Internal Special Elements"
+    },
+    {
+      "control_id": "cwe:173",
+      "description": "Improper Handling of Alternate Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "173",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Alternate Encoding"
+    },
+    {
+      "control_id": "cwe:176",
+      "description": "Improper Handling of Unicode Encoding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "176",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Unicode Encoding"
+    },
+    {
+      "control_id": "cwe:190",
+      "description": "Integer Overflow or Wraparound",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "190",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Integer Overflow or Wraparound"
+    },
+    {
+      "control_id": "cwe:20",
+      "description": "Improper Input Validation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "20",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Input Validation"
+    },
+    {
+      "control_id": "cwe:200",
+      "description": "Exposure of Sensitive Information to an Unauthorized Actor",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "200",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Sensitive Information to an Unauthorized Actor"
+    },
+    {
+      "control_id": "cwe:210",
+      "description": "Self-generated Error Message Containing Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "210",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Self-generated Error Message Containing Sensitive Information"
+    },
+    {
+      "control_id": "cwe:212",
+      "description": "Improper Removal of Sensitive Information Before Storage or Transfer",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "212",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Removal of Sensitive Information Before Storage or Transfer"
+    },
+    {
+      "control_id": "cwe:213",
+      "description": "Exposure of Sensitive Information Due to Incompatible Policies",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "213",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Sensitive Information Due to Incompatible Policies"
+    },
+    {
+      "control_id": "cwe:214",
+      "description": "Invocation of Process Using Visible Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "214",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Invocation of Process Using Visible Sensitive Information"
+    },
+    {
+      "control_id": "cwe:215",
+      "description": "Insertion of Sensitive Information Into Debugging Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "215",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insertion of Sensitive Information Into Debugging Code"
+    },
+    {
+      "control_id": "cwe:219",
+      "description": "Storage of File with Sensitive Data Under Web Root",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "219",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Storage of File with Sensitive Data Under Web Root"
+    },
+    {
+      "control_id": "cwe:22",
+      "description": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "22",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+    },
+    {
+      "control_id": "cwe:220",
+      "description": "Storage of File With Sensitive Data Under FTP Root",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "220",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Storage of File With Sensitive Data Under FTP Root"
+    },
+    {
+      "control_id": "cwe:226",
+      "description": "Sensitive Information in Resource Not Removed Before Reuse",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "226",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sensitive Information in Resource Not Removed Before Reuse"
+    },
+    {
+      "control_id": "cwe:233",
+      "description": "Improper Handling of Parameters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "233",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Parameters"
+    },
+    {
+      "control_id": "cwe:234",
+      "description": "Failure to Handle Missing Parameter",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "234",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Failure to Handle Missing Parameter"
+    },
+    {
+      "control_id": "cwe:235",
+      "description": "Improper Handling of Extra Parameters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "235",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Extra Parameters"
+    },
+    {
+      "control_id": "cwe:236",
+      "description": "Improper Handling of Undefined Parameters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "236",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Undefined Parameters"
+    },
+    {
+      "control_id": "cwe:250",
+      "description": "Execution with Unnecessary Privileges",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "250",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Execution with Unnecessary Privileges"
+    },
+    {
+      "control_id": "cwe:255",
+      "description": "CWE-255",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "255",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CWE-255"
+    },
+    {
+      "control_id": "cwe:256",
+      "description": "Plaintext Storage of a Password",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "256",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Plaintext Storage of a Password"
+    },
+    {
+      "control_id": "cwe:260",
+      "description": "Password in Configuration File",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "260",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Password in Configuration File"
+    },
+    {
+      "control_id": "cwe:261",
+      "description": "Weak Encoding for Password",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "261",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Weak Encoding for Password"
+    },
+    {
+      "control_id": "cwe:263",
+      "description": "Password Aging with Long Expiration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "263",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Password Aging with Long Expiration"
+    },
+    {
+      "control_id": "cwe:269",
+      "description": "Improper Privilege Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "269",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Privilege Management"
+    },
+    {
+      "control_id": "cwe:272",
+      "description": "Least Privilege Violation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "272",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Least Privilege Violation"
+    },
+    {
+      "control_id": "cwe:276",
+      "description": "Incorrect Default Permissions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "276",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incorrect Default Permissions"
+    },
+    {
+      "control_id": "cwe:277",
+      "description": "Insecure Inherited Permissions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "277",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insecure Inherited Permissions"
+    },
+    {
+      "control_id": "cwe:278",
+      "description": "Insecure Preserved Inherited Permissions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "278",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insecure Preserved Inherited Permissions"
+    },
+    {
+      "control_id": "cwe:279",
+      "description": "Incorrect Execution-Assigned Permissions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "279",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incorrect Execution-Assigned Permissions"
+    },
+    {
+      "control_id": "cwe:282",
+      "description": "Improper Ownership Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "282",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Ownership Management"
+    },
+    {
+      "control_id": "cwe:284",
+      "description": "Improper Access Control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "284",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Access Control"
+    },
+    {
+      "control_id": "cwe:285",
+      "description": "Improper Authorization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "285",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Authorization"
+    },
+    {
+      "control_id": "cwe:286",
+      "description": "Incorrect User Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "286",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incorrect User Management"
+    },
+    {
+      "control_id": "cwe:287",
+      "description": "Improper Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "287",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Authentication"
+    },
+    {
+      "control_id": "cwe:290",
+      "description": "Authentication Bypass by Spoofing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "290",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authentication Bypass by Spoofing"
+    },
+    {
+      "control_id": "cwe:293",
+      "description": "Using Referer Field for Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "293",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Using Referer Field for Authentication"
+    },
+    {
+      "control_id": "cwe:295",
+      "description": "Improper Certificate Validation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "295",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Certificate Validation"
+    },
+    {
+      "control_id": "cwe:299",
+      "description": "Improper Check for Certificate Revocation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "299",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Check for Certificate Revocation"
+    },
+    {
+      "control_id": "cwe:300",
+      "description": "Channel Accessible by Non-Endpoint",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "300",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Channel Accessible by Non-Endpoint"
+    },
+    {
+      "control_id": "cwe:304",
+      "description": "Missing Critical Step in Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "304",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Critical Step in Authentication"
+    },
+    {
+      "control_id": "cwe:306",
+      "description": "Missing Authentication for Critical Function",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "306",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Authentication for Critical Function"
+    },
+    {
+      "control_id": "cwe:307",
+      "description": "Improper Restriction of Excessive Authentication Attempts",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "307",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of Excessive Authentication Attempts"
+    },
+    {
+      "control_id": "cwe:308",
+      "description": "Use of Single-factor Authentication",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "308",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Single-factor Authentication"
+    },
+    {
+      "control_id": "cwe:310",
+      "description": "CWE-310",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "310",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CWE-310"
+    },
+    {
+      "control_id": "cwe:311",
+      "description": "Missing Encryption of Sensitive Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "311",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Encryption of Sensitive Data"
+    },
+    {
+      "control_id": "cwe:319",
+      "description": "Cleartext Transmission of Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "319",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cleartext Transmission of Sensitive Information"
+    },
+    {
+      "control_id": "cwe:320",
+      "description": "CWE-320",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "320",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CWE-320"
+    },
+    {
+      "control_id": "cwe:326",
+      "description": "Inadequate Encryption Strength",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "326",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inadequate Encryption Strength"
+    },
+    {
+      "control_id": "cwe:327",
+      "description": "Use of a Broken or Risky Cryptographic Algorithm",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "327",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of a Broken or Risky Cryptographic Algorithm"
+    },
+    {
+      "control_id": "cwe:330",
+      "description": "Use of Insufficiently Random Values",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "330",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Insufficiently Random Values"
+    },
+    {
+      "control_id": "cwe:331",
+      "description": "Insufficient Entropy",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "331",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Entropy"
+    },
+    {
+      "control_id": "cwe:332",
+      "description": "Insufficient Entropy in PRNG",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "332",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Entropy in PRNG"
+    },
+    {
+      "control_id": "cwe:334",
+      "description": "Small Space of Random Values",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "334",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Small Space of Random Values"
+    },
+    {
+      "control_id": "cwe:338",
+      "description": "Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "338",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)"
+    },
+    {
+      "control_id": "cwe:344",
+      "description": "Use of Invariant Value in Dynamically Changing Context",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "344",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Invariant Value in Dynamically Changing Context"
+    },
+    {
+      "control_id": "cwe:345",
+      "description": "Insufficient Verification of Data Authenticity",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "345",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Verification of Data Authenticity"
+    },
+    {
+      "control_id": "cwe:346",
+      "description": "Origin Validation Error",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "346",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Origin Validation Error"
+    },
+    {
+      "control_id": "cwe:348",
+      "description": "Use of Less Trusted Source",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "348",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Less Trusted Source"
+    },
+    {
+      "control_id": "cwe:349",
+      "description": "Acceptance of Extraneous Untrusted Data With Trusted Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "349",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Acceptance of Extraneous Untrusted Data With Trusted Data"
+    },
+    {
+      "control_id": "cwe:350",
+      "description": "Reliance on Reverse DNS Resolution for a Security-Critical Action",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "350",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reliance on Reverse DNS Resolution for a Security-Critical Action"
+    },
+    {
+      "control_id": "cwe:352",
+      "description": "Cross-Site Request Forgery (CSRF)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "352",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross-Site Request Forgery (CSRF)"
+    },
+    {
+      "control_id": "cwe:353",
+      "description": "Missing Support for Integrity Check",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "353",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Support for Integrity Check"
+    },
+    {
+      "control_id": "cwe:359",
+      "description": "Exposure of Private Personal Information to an Unauthorized Actor",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "359",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Private Personal Information to an Unauthorized Actor"
+    },
+    {
+      "control_id": "cwe:360",
+      "description": "Trust of System Event Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "360",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Trust of System Event Data"
+    },
+    {
+      "control_id": "cwe:362",
+      "description": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "362",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+    },
+    {
+      "control_id": "cwe:367",
+      "description": "Time-of-check Time-of-use (TOCTOU) Race Condition",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "367",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Time-of-check Time-of-use (TOCTOU) Race Condition"
+    },
+    {
+      "control_id": "cwe:384",
+      "description": "Session Fixation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "384",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Fixation"
+    },
+    {
+      "control_id": "cwe:385",
+      "description": "Covert Timing Channel",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "385",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Covert Timing Channel"
+    },
+    {
+      "control_id": "cwe:390",
+      "description": "Detection of Error Condition Without Action",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "390",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Detection of Error Condition Without Action"
+    },
+    {
+      "control_id": "cwe:394",
+      "description": "Unexpected Status Code or Return Value",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "394",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unexpected Status Code or Return Value"
+    },
+    {
+      "control_id": "cwe:400",
+      "description": "Uncontrolled Resource Consumption",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "400",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Uncontrolled Resource Consumption"
+    },
+    {
+      "control_id": "cwe:405",
+      "description": "Asymmetric Resource Consumption (Amplification)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "405",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Asymmetric Resource Consumption (Amplification)"
+    },
+    {
+      "control_id": "cwe:409",
+      "description": "Improper Handling of Highly Compressed Data (Data Amplification)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "409",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Handling of Highly Compressed Data (Data Amplification)"
+    },
+    {
+      "control_id": "cwe:419",
+      "description": "Unprotected Primary Channel",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "419",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unprotected Primary Channel"
+    },
+    {
+      "control_id": "cwe:420",
+      "description": "Unprotected Alternate Channel",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "420",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unprotected Alternate Channel"
+    },
+    {
+      "control_id": "cwe:431",
+      "description": "Missing Handler",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "431",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Handler"
+    },
+    {
+      "control_id": "cwe:434",
+      "description": "Unrestricted Upload of File with Dangerous Type",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "434",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unrestricted Upload of File with Dangerous Type"
+    },
+    {
+      "control_id": "cwe:436",
+      "description": "Interpretation Conflict",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "436",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Interpretation Conflict"
+    },
+    {
+      "control_id": "cwe:437",
+      "description": "Incomplete Model of Endpoint Features",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "437",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incomplete Model of Endpoint Features"
+    },
+    {
+      "control_id": "cwe:464",
+      "description": "Addition of Data Structure Sentinel",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "464",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Addition of Data Structure Sentinel"
+    },
+    {
+      "control_id": "cwe:477",
+      "description": "Use of Obsolete Function",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "477",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Obsolete Function"
+    },
+    {
+      "control_id": "cwe:494",
+      "description": "Download of Code Without Integrity Check",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "494",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Download of Code Without Integrity Check"
+    },
+    {
+      "control_id": "cwe:497",
+      "description": "Exposure of Sensitive System Information to an Unauthorized Control Sphere",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "497",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Sensitive System Information to an Unauthorized Control Sphere"
+    },
+    {
+      "control_id": "cwe:5",
+      "description": "J2EE Misconfiguration: Data Transmission Without Encryption",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "5",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "J2EE Misconfiguration: Data Transmission Without Encryption"
+    },
+    {
+      "control_id": "cwe:502",
+      "description": "Deserialization of Untrusted Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "502",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Deserialization of Untrusted Data"
+    },
+    {
+      "control_id": "cwe:507",
+      "description": "Trojan Horse",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "507",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Trojan Horse"
+    },
+    {
+      "control_id": "cwe:508",
+      "description": "Non-Replicating Malicious Code",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "508",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Non-Replicating Malicious Code"
+    },
+    {
+      "control_id": "cwe:509",
+      "description": "Replicating Malicious Code (Virus or Worm)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "509",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Replicating Malicious Code (Virus or Worm)"
+    },
+    {
+      "control_id": "cwe:511",
+      "description": "Logic/Time Bomb",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "511",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Logic/Time Bomb"
+    },
+    {
+      "control_id": "cwe:521",
+      "description": "Weak Password Requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "521",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Weak Password Requirements"
+    },
+    {
+      "control_id": "cwe:522",
+      "description": "Insufficiently Protected Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "522",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficiently Protected Credentials"
+    },
+    {
+      "control_id": "cwe:523",
+      "description": "Unprotected Transport of Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "523",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unprotected Transport of Credentials"
+    },
+    {
+      "control_id": "cwe:524",
+      "description": "Use of Cache Containing Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "524",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Cache Containing Sensitive Information"
+    },
+    {
+      "control_id": "cwe:525",
+      "description": "Use of Web Browser Cache Containing Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "525",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Web Browser Cache Containing Sensitive Information"
+    },
+    {
+      "control_id": "cwe:527",
+      "description": "Exposure of Version-Control Repository to an Unauthorized Control Sphere",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "527",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Version-Control Repository to an Unauthorized Control Sphere"
+    },
+    {
+      "control_id": "cwe:528",
+      "description": "Exposure of Core Dump File to an Unauthorized Control Sphere",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "528",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Core Dump File to an Unauthorized Control Sphere"
+    },
+    {
+      "control_id": "cwe:529",
+      "description": "Exposure of Access Control List Files to an Unauthorized Control Sphere",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "529",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Access Control List Files to an Unauthorized Control Sphere"
+    },
+    {
+      "control_id": "cwe:530",
+      "description": "Exposure of Backup File to an Unauthorized Control Sphere",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "530",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Backup File to an Unauthorized Control Sphere"
+    },
+    {
+      "control_id": "cwe:532",
+      "description": "Insertion of Sensitive Information into Log File",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "532",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insertion of Sensitive Information into Log File"
+    },
+    {
+      "control_id": "cwe:538",
+      "description": "Insertion of Sensitive Information into Externally-Accessible File or Directory",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "538",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insertion of Sensitive Information into Externally-Accessible File or Directory"
+    },
+    {
+      "control_id": "cwe:539",
+      "description": "Use of Persistent Cookies Containing Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "539",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Persistent Cookies Containing Sensitive Information"
+    },
+    {
+      "control_id": "cwe:544",
+      "description": "Missing Standardized Error Handling Mechanism",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "544",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Standardized Error Handling Mechanism"
+    },
+    {
+      "control_id": "cwe:548",
+      "description": "Exposure of Information Through Directory Listing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "548",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposure of Information Through Directory Listing"
+    },
+    {
+      "control_id": "cwe:549",
+      "description": "Missing Password Field Masking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "549",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Password Field Masking"
+    },
+    {
+      "control_id": "cwe:552",
+      "description": "Files or Directories Accessible to External Parties",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "552",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Files or Directories Accessible to External Parties"
+    },
+    {
+      "control_id": "cwe:553",
+      "description": "Command Shell in Externally Accessible Directory",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "553",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Command Shell in Externally Accessible Directory"
+    },
+    {
+      "control_id": "cwe:566",
+      "description": "Authorization Bypass Through User-Controlled SQL Primary Key",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "566",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authorization Bypass Through User-Controlled SQL Primary Key"
+    },
+    {
+      "control_id": "cwe:598",
+      "description": "Use of GET Request Method With Sensitive Query Strings",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "598",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of GET Request Method With Sensitive Query Strings"
+    },
+    {
+      "control_id": "cwe:599",
+      "description": "Missing Validation of OpenSSL Certificate",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "599",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Validation of OpenSSL Certificate"
+    },
+    {
+      "control_id": "cwe:601",
+      "description": "URL Redirection to Untrusted Site ('Open Redirect')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "601",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "URL Redirection to Untrusted Site ('Open Redirect')"
+    },
+    {
+      "control_id": "cwe:602",
+      "description": "Client-Side Enforcement of Server-Side Security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "602",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Client-Side Enforcement of Server-Side Security"
+    },
+    {
+      "control_id": "cwe:611",
+      "description": "Improper Restriction of XML External Entity Reference",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "611",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of XML External Entity Reference"
+    },
+    {
+      "control_id": "cwe:613",
+      "description": "Insufficient Session Expiration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "613",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Session Expiration"
+    },
+    {
+      "control_id": "cwe:614",
+      "description": "Sensitive Cookie in HTTPS Session Without 'Secure' Attribute",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "614",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+    },
+    {
+      "control_id": "cwe:618",
+      "description": "Exposed Unsafe ActiveX Method",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "618",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposed Unsafe ActiveX Method"
+    },
+    {
+      "control_id": "cwe:620",
+      "description": "Unverified Password Change",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "620",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unverified Password Change"
+    },
+    {
+      "control_id": "cwe:622",
+      "description": "Improper Validation of Function Hook Arguments",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "622",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Validation of Function Hook Arguments"
+    },
+    {
+      "control_id": "cwe:637",
+      "description": "Unnecessary Complexity in Protection Mechanism (Not Using 'Economy of Mechanism')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "637",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unnecessary Complexity in Protection Mechanism (Not Using 'Economy of Mechanism')"
+    },
+    {
+      "control_id": "cwe:639",
+      "description": "Authorization Bypass Through User-Controlled Key",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "639",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authorization Bypass Through User-Controlled Key"
+    },
+    {
+      "control_id": "cwe:640",
+      "description": "Weak Password Recovery Mechanism for Forgotten Password",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "640",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Weak Password Recovery Mechanism for Forgotten Password"
+    },
+    {
+      "control_id": "cwe:641",
+      "description": "Improper Restriction of Names for Files and Other Resources",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "641",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of Names for Files and Other Resources"
+    },
+    {
+      "control_id": "cwe:643",
+      "description": "Improper Neutralization of Data within XPath Expressions ('XPath Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "643",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Data within XPath Expressions ('XPath Injection')"
+    },
+    {
+      "control_id": "cwe:644",
+      "description": "Improper Neutralization of HTTP Headers for Scripting Syntax",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "644",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of HTTP Headers for Scripting Syntax"
+    },
+    {
+      "control_id": "cwe:645",
+      "description": "Overly Restrictive Account Lockout Mechanism",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "645",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Overly Restrictive Account Lockout Mechanism"
+    },
+    {
+      "control_id": "cwe:646",
+      "description": "Reliance on File Name or Extension of Externally-Supplied File",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "646",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reliance on File Name or Extension of Externally-Supplied File"
+    },
+    {
+      "control_id": "cwe:649",
+      "description": "Reliance on Obfuscation or Encryption of Security-Relevant Inputs without Integrity Checking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "649",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Reliance on Obfuscation or Encryption of Security-Relevant Inputs without Integrity Checking"
+    },
+    {
+      "control_id": "cwe:650",
+      "description": "Trusting HTTP Permission Methods on the Server Side",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "650",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Trusting HTTP Permission Methods on the Server Side"
+    },
+    {
+      "control_id": "cwe:707",
+      "description": "Improper Neutralization",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "707",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization"
+    },
+    {
+      "control_id": "cwe:73",
+      "description": "External Control of File Name or Path",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "73",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "External Control of File Name or Path"
+    },
+    {
+      "control_id": "cwe:732",
+      "description": "Incorrect Permission Assignment for Critical Resource",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "732",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incorrect Permission Assignment for Critical Resource"
+    },
+    {
+      "control_id": "cwe:74",
+      "description": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "74",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+    },
+    {
+      "control_id": "cwe:749",
+      "description": "Exposed Dangerous Method or Function",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "749",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Exposed Dangerous Method or Function"
+    },
+    {
+      "control_id": "cwe:754",
+      "description": "Improper Check for Unusual or Exceptional Conditions",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "754",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Check for Unusual or Exceptional Conditions"
+    },
+    {
+      "control_id": "cwe:759",
+      "description": "Use of a One-Way Hash without a Salt",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "759",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of a One-Way Hash without a Salt"
+    },
+    {
+      "control_id": "cwe:760",
+      "description": "Use of a One-Way Hash with a Predictable Salt",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "760",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of a One-Way Hash with a Predictable Salt"
+    },
+    {
+      "control_id": "cwe:770",
+      "description": "Allocation of Resources Without Limits or Throttling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "770",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Allocation of Resources Without Limits or Throttling"
+    },
+    {
+      "control_id": "cwe:771",
+      "description": "Missing Reference to Active Allocated Resource",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "771",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Missing Reference to Active Allocated Resource"
+    },
+    {
+      "control_id": "cwe:774",
+      "description": "Allocation of File Descriptors or Handles Without Limits or Throttling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "774",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Allocation of File Descriptors or Handles Without Limits or Throttling"
+    },
+    {
+      "control_id": "cwe:778",
+      "description": "Insufficient Logging",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "778",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insufficient Logging"
+    },
+    {
+      "control_id": "cwe:779",
+      "description": "Logging of Excessive Data",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "779",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Logging of Excessive Data"
+    },
+    {
+      "control_id": "cwe:78",
+      "description": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "78",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+    },
+    {
+      "control_id": "cwe:780",
+      "description": "Use of RSA Algorithm without OAEP",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "780",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of RSA Algorithm without OAEP"
+    },
+    {
+      "control_id": "cwe:79",
+      "description": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "79",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+    },
+    {
+      "control_id": "cwe:790",
+      "description": "Improper Filtering of Special Elements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "790",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Filtering of Special Elements"
+    },
+    {
+      "control_id": "cwe:798",
+      "description": "Use of Hard-coded Credentials",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "798",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Hard-coded Credentials"
+    },
+    {
+      "control_id": "cwe:799",
+      "description": "Improper Control of Interaction Frequency",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "799",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Control of Interaction Frequency"
+    },
+    {
+      "control_id": "cwe:80",
+      "description": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "80",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
+    },
+    {
+      "control_id": "cwe:829",
+      "description": "Inclusion of Functionality from Untrusted Control Sphere",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "829",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inclusion of Functionality from Untrusted Control Sphere"
+    },
+    {
+      "control_id": "cwe:83",
+      "description": "Improper Neutralization of Script in Attributes in a Web Page",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "83",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Script in Attributes in a Web Page"
+    },
+    {
+      "control_id": "cwe:830",
+      "description": "Inclusion of Web Functionality from an Untrusted Source",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "830",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Inclusion of Web Functionality from an Untrusted Source"
+    },
+    {
+      "control_id": "cwe:837",
+      "description": "Improper Enforcement of a Single, Unique Action",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "837",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Enforcement of a Single, Unique Action"
+    },
+    {
+      "control_id": "cwe:84",
+      "description": "Improper Neutralization of Encoded URI Schemes in a Web Page",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "84",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Encoded URI Schemes in a Web Page"
+    },
+    {
+      "control_id": "cwe:841",
+      "description": "Improper Enforcement of Behavioral Workflow",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "841",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Enforcement of Behavioral Workflow"
+    },
+    {
+      "control_id": "cwe:87",
+      "description": "Improper Neutralization of Alternate XSS Syntax",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "87",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Alternate XSS Syntax"
+    },
+    {
+      "control_id": "cwe:89",
+      "description": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "89",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+    },
+    {
+      "control_id": "cwe:90",
+      "description": "Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "90",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')"
+    },
+    {
+      "control_id": "cwe:915",
+      "description": "Improperly Controlled Modification of Dynamically-Determined Object Attributes",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "915",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improperly Controlled Modification of Dynamically-Determined Object Attributes"
+    },
+    {
+      "control_id": "cwe:916",
+      "description": "Use of Password Hash With Insufficient Computational Effort",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "916",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Use of Password Hash With Insufficient Computational Effort"
+    },
+    {
+      "control_id": "cwe:918",
+      "description": "Server-Side Request Forgery (SSRF)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "918",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Server-Side Request Forgery (SSRF)"
+    },
+    {
+      "control_id": "cwe:921",
+      "description": "Storage of Sensitive Data in a Mechanism without Access Control",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "921",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Storage of Sensitive Data in a Mechanism without Access Control"
+    },
+    {
+      "control_id": "cwe:922",
+      "description": "Insecure Storage of Sensitive Information",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "922",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insecure Storage of Sensitive Information"
+    },
+    {
+      "control_id": "cwe:923",
+      "description": "Improper Restriction of Communication Channel to Intended Endpoints",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "923",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Restriction of Communication Channel to Intended Endpoints"
+    },
+    {
+      "control_id": "cwe:926",
+      "description": "Improper Export of Android Application Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "926",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Export of Android Application Components"
+    },
+    {
+      "control_id": "cwe:937",
+      "description": "CWE-937",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "937",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "CWE-937"
+    },
+    {
+      "control_id": "cwe:94",
+      "description": "Improper Control of Generation of Code ('Code Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "94",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Control of Generation of Code ('Code Injection')"
+    },
+    {
+      "control_id": "cwe:95",
+      "description": "Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "95",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+    },
+    {
+      "control_id": "cwe:96",
+      "description": "Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "96",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')"
+    },
+    {
+      "control_id": "cwe:98",
+      "description": "Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "98",
+        "opencre_standard_name": "CWE"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "cwe",
+  "framework_name": "CWE",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

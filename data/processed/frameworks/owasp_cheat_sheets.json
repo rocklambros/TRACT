@@ -1,0 +1,710 @@
+{
+  "controls": [
+    {
+      "control_id": "owasp_cheat_sheets:abuse-case-cheat-sheet",
+      "description": "Abuse Case Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Abuse Case Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:access-control-cheat-sheet",
+      "description": "Access Control Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Access Control Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:attack-surface-analysis-cheat-sheet",
+      "description": "Attack Surface Analysis Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Attack Surface Analysis Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:authentication-cheat-sheet",
+      "description": "Authentication Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authentication Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:authorization-testing-automation-cheat-sheet",
+      "description": "Authorization Testing Automation Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Authorization Testing Automation Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:bean-validation-cheat-sheet",
+      "description": "Bean Validation Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Bean Validation Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:choosing-and-using-security-questions-cheat-sheet",
+      "description": "Choosing and Using Security Questions Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Choosing and Using Security Questions Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:content-security-policy-cheat-sheet",
+      "description": "Content Security Policy Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Content Security Policy Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:credential-stuffing-prevention-cheat-sheet",
+      "description": "Credential Stuffing Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Credential Stuffing Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:cross-site-request-forgery-prevention-cheat-sheet",
+      "description": "Cross-Site Request Forgery Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross-Site Request Forgery Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:cross-site-scripting-prevention-cheat-sheet",
+      "description": "Cross Site Scripting Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cross Site Scripting Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:cryptographic-storage-cheat-sheet",
+      "description": "Cryptographic Storage Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cryptographic Storage Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:deserialization-cheat-sheet",
+      "description": "Deserialization Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Deserialization Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:docker-security-cheat-sheet",
+      "description": "Docker Security Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Docker Security Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:dom-based-xss-prevention-cheat-sheet",
+      "description": "DOM based XSS Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "DOM based XSS Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:error-handling-cheat-sheet",
+      "description": "Error Handling Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Error Handling Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:file-upload-cheat-sheet",
+      "description": "File Upload Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "File Upload Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:forgot-password-cheat-sheet",
+      "description": "Forgot Password Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Forgot Password Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:html5-security-cheat-sheet",
+      "description": "HTML5 Security Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTML5 Security Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:http-strict-transport-security-cheat-sheet",
+      "description": "HTTP Strict Transport Security Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "HTTP Strict Transport Security Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:injection-prevention-cheat-sheet",
+      "description": "Injection Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Injection Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:injection-prevention-in-java-cheat-sheet",
+      "description": "Injection Prevention in Java Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Injection Prevention in Java Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:input-validation-cheat-sheet",
+      "description": "Input Validation Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Input Validation Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:insecure-direct-object-reference-prevention-cheat-sheet",
+      "description": "Insecure Direct Object Reference Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insecure Direct Object Reference Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:json-web-token-for-java-cheat-sheet",
+      "description": "JSON Web Token for Java Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "JSON Web Token for Java Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:key-management-cheat-sheet",
+      "description": "Key Management Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Key Management Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:ldap-injection-prevention-cheat-sheet",
+      "description": "LDAP Injection Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "LDAP Injection Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:logging-cheat-sheet",
+      "description": "Logging Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Logging Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:mass-assignment-cheat-sheet",
+      "description": "Mass Assignment Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Mass Assignment Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:os-command-injection-defense-cheat-sheet",
+      "description": "OS Command Injection Defense Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "OS Command Injection Defense Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:password-storage-cheat-sheet",
+      "description": "Password Storage Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Password Storage Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:query-parameterization-cheat-sheet",
+      "description": "Query Parameterization Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Query Parameterization Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:rest-assessment-cheat-sheet",
+      "description": "REST Assessment Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "REST Assessment Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:rest-security-cheat-sheet",
+      "description": "REST Security Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "REST Security Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:secrets-management-cheat-sheet",
+      "description": "Secrets Management Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "AutomaticallyLinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secrets Management Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:server-side-request-forgery-prevention-cheat-sheet",
+      "description": "Server Side Request Forgery Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Server Side Request Forgery Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:session-management-cheat-sheet",
+      "description": "Session Management Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Session Management Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:sql-injection-prevention-cheat-sheet",
+      "description": "SQL Injection Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "SQL Injection Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:third-party-javascript-management-cheat-sheet",
+      "description": "Third Party Javascript Management Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Third Party Javascript Management Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:threat-modeling-cheat-sheet",
+      "description": "Threat Modeling Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Threat Modeling Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:tls-cipher-string-cheat-sheet",
+      "description": "TLS Cipher String Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "TLS Cipher String Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:transaction-authorization-cheat-sheet",
+      "description": "Transaction Authorization Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Transaction Authorization Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:transport-layer-protection-cheat-sheet",
+      "description": "Transport Layer Protection Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Transport Layer Protection Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:unvalidated-redirects-and-forwards-cheat-sheet",
+      "description": "Unvalidated Redirects and Forwards Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Unvalidated Redirects and Forwards Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:user-privacy-protection-cheat-sheet",
+      "description": "User Privacy Protection Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "User Privacy Protection Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:virtual-patching-cheat-sheet",
+      "description": "Virtual Patching Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Virtual Patching Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:vulnerable-dependency-management-cheat-sheet",
+      "description": "Vulnerable Dependency Management Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Vulnerable Dependency Management Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:web-service-security-cheat-sheet",
+      "description": "Web Service Security Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Web Service Security Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:xml-external-entity-prevention-cheat-sheet",
+      "description": "XML External Entity Prevention Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XML External Entity Prevention Cheat Sheet"
+    },
+    {
+      "control_id": "owasp_cheat_sheets:xml-security-cheat-sheet",
+      "description": "XML Security Cheat Sheet",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "",
+        "opencre_standard_name": "OWASP Cheat Sheets"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "XML Security Cheat Sheet"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "owasp_cheat_sheets",
+  "framework_name": "OWASP Cheat Sheets",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}
