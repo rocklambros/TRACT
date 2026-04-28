@@ -35,17 +35,17 @@ _LIGATURE_MAP: list[tuple[str, str]] = [
 _HYPHEN_BREAK_RE: re.Pattern[str] = re.compile(r"(\w)-\n(\w)")
 
 # Matches HTML/XML tags
-_HTML_TAG_RE: re.Pattern[str] = re.compile(r"<[^>]+>")
+_HTML_TAG_RE: re.Pattern[str] = re.compile(r"</?[a-zA-Z][^>]*>")
 
 # Matches runs of whitespace (spaces, tabs, newlines)
 _WHITESPACE_RE: re.Pattern[str] = re.compile(r"\s+")
 
 
 def strip_html(text: str) -> str:
-    """Remove HTML/XML tags, then unescape HTML entities.
+    """Unescape HTML entities, then remove HTML/XML tags.
 
-    Tags are stripped first so that escaped angle brackets (e.g., &lt;)
-    are not mistakenly consumed as tag delimiters after unescaping.
+    Unescape first so double-encoded tags (e.g., &lt;script&gt;) are
+    decoded and then stripped, preventing literal tags in output.
 
     Args:
         text: Raw text potentially containing HTML markup.
@@ -53,8 +53,8 @@ def strip_html(text: str) -> str:
     Returns:
         Plain text with all tags removed and entities decoded.
     """
-    stripped = _HTML_TAG_RE.sub("", text)
-    return html.unescape(stripped)
+    unescaped = html.unescape(text)
+    return _HTML_TAG_RE.sub("", unescaped)
 
 
 def _strip_null_bytes(text: str) -> str:
@@ -143,9 +143,14 @@ def sanitize_text(
     if return_full:
         if len(cleaned) > max_length:
             truncated = cleaned[:max_length].rsplit(" ", 1)[0]
+            if len(truncated) < max_length // 2:
+                truncated = cleaned[:max_length]
             return truncated, cleaned
         return cleaned, None
 
     if len(cleaned) > max_length:
-        return cleaned[:max_length].rsplit(" ", 1)[0]
+        truncated = cleaned[:max_length].rsplit(" ", 1)[0]
+        if len(truncated) < max_length // 2:
+            return cleaned[:max_length]
+        return truncated
     return cleaned
