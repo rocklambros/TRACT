@@ -21,7 +21,7 @@ class Control(BaseModel):
     hierarchy_level: str | None = None
     parent_id: str | None = None
     parent_name: str | None = None
-    metadata: dict[str, str] | None = None
+    metadata: dict[str, str | list[str]] | None = None
 
 
 class FrameworkOutput(BaseModel):

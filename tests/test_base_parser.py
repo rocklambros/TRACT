@@ -106,7 +106,7 @@ class TestBaseParserRun:
         result = parser.run()
         ctrl = result.controls[0]
         assert "\x00" not in ctrl.description
-        assert "nullbytes and spaces" == ctrl.description
+        assert "null bytes and spaces" == ctrl.description
         assert ctrl.title == "Bold Title"
 
     def test_preserves_full_text_on_truncation(self, tmp_path: Path) -> None:

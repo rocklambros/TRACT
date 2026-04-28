@@ -25,7 +25,7 @@ class TestSanitizeText:
 
     def test_strips_null_bytes(self) -> None:
         result = sanitize_text("hello\x00world")
-        assert result == "helloworld"
+        assert result == "hello world"
 
     def test_unicode_nfc_normalization(self) -> None:
         # e + combining acute accent -> single char e-acute
@@ -70,18 +70,19 @@ class TestSanitizeText:
         result = sanitize_text("  hello  ")
         assert result == "hello"
 
-    def test_truncation_at_max_length(self) -> None:
-        text = "a" * 3000
-        result = sanitize_text(text, max_length=100)
+    def test_truncation_at_word_boundary(self) -> None:
+        text = "word " * 600
+        result = sanitize_text(text.strip(), max_length=100)
         assert isinstance(result, str)
-        assert len(result) == 100
+        assert len(result) <= 100
+        assert not result.endswith(" ")
 
     def test_return_full_when_truncated(self) -> None:
-        text = "a" * 3000
-        short, full = sanitize_text(text, max_length=100, return_full=True)
-        assert len(short) == 100
+        text = "word " * 600
+        short, full = sanitize_text(text.strip(), max_length=100, return_full=True)
+        assert len(short) <= 100
         assert full is not None
-        assert len(full) == 3000
+        assert len(full) == len(text.strip())
 
     def test_return_full_when_not_truncated(self) -> None:
         text = "short text"

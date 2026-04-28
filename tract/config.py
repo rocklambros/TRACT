@@ -37,26 +37,27 @@ OPENCRE_PER_PAGE: Final[int] = 50
 OPENCRE_RETRY_MAX_ATTEMPTS: Final[int] = 5
 OPENCRE_RETRY_INITIAL_DELAY_S: Final[float] = 1.0
 OPENCRE_RETRY_BACKOFF_FACTOR: Final[float] = 2.0
-OPENCRE_RETRY_MAX_DELAY_S: Final[float] = 60.0
+OPENCRE_RETRY_MAX_DELAY_S: Final[float] = 30.0
 OPENCRE_REQUEST_TIMEOUT_S: Final[int] = 30
+OPENCRE_REQUEST_DELAY_S: Final[float] = 0.5
 
 # ── Expected Control Counts ───────────────────────────────────────────────
 # Source: PRD Section 4.2 — mapping-unit counts per framework.
 # Used by BaseParser._check_expected_count to warn on deviation.
 
-EXPECTED_COUNTS: Final[dict[str, int]] = {
-    "aiuc_1": 132,
+EXPECTED_COUNTS: Final[dict[str, int | None]] = {
     "csa_aicm": 243,
-    "mitre_atlas": 167,
+    "aiuc_1": 132,
+    "mitre_atlas": 202,
+    "cosai": 55,
     "nist_ai_rmf": 72,
-    "nist_ai_600_1": 0,        # TBD — count not yet specified in PRD
-    "owasp_ai_exchange": 54,
+    "nist_ai_600_1": 12,
+    "owasp_ai_exchange": 88,
     "owasp_llm_top10": 10,
     "owasp_agentic_top10": 10,
+    "eu_gpai_cop": 40,
     "owasp_dsgai": 21,
-    "cosai": 29,
-    "eu_gpai_cop": 32,
-    "eu_ai_act": 0,            # TBD — count not yet specified in PRD
+    "eu_ai_act": 100,
 }
 
 # ── OpenCRE Framework ID Map ─────────────────────────────────────────────
@@ -67,7 +68,7 @@ OPENCRE_FRAMEWORK_ID_MAP: Final[dict[str, str]] = {
     # AI frameworks
     "MITRE ATLAS": "mitre_atlas",
     "OWASP AI Exchange": "owasp_ai_exchange",
-    "NIST AI 100-2": "nist_ai_600_1",
+    "NIST AI 100-2": "nist_ai_100_2",
     "OWASP Top10 for LLM": "owasp_llm_top10",
     "OWASP Top10 for ML": "owasp_ml_top10",
     # Traditional frameworks (from OpenCRE)

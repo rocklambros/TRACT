@@ -59,7 +59,7 @@ def strip_html(text: str) -> str:
 
 def _strip_null_bytes(text: str) -> str:
     """Remove null bytes that can poison downstream processing."""
-    return text.replace("\x00", "")
+    return text.replace("\x00", " ")
 
 
 def _normalize_unicode(text: str) -> str:
@@ -142,7 +142,10 @@ def sanitize_text(
 
     if return_full:
         if len(cleaned) > max_length:
-            return cleaned[:max_length], cleaned
+            truncated = cleaned[:max_length].rsplit(" ", 1)[0]
+            return truncated, cleaned
         return cleaned, None
 
-    return cleaned[:max_length]
+    if len(cleaned) > max_length:
+        return cleaned[:max_length].rsplit(" ", 1)[0]
+    return cleaned
