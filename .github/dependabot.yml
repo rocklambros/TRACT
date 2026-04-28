@@ -1,0 +1,34 @@
+# Keep third-party GitHub Actions pinned to current SHAs.
+# Dependabot opens PRs that bump action SHAs AND update the
+# version comment, so we retain SHA-pinning without doing it manually.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Denver"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci(actions)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Denver"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps(pip)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
