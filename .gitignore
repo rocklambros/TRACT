@@ -1,5 +1,6 @@
 data/raw/
 models/
+results/
 *.db
 __pycache__/
 .env
@@ -10,3 +11,4 @@ build/
 .pytest_cache/
 *.pyc
 .ruff_cache/
+scripts/phase0/.pod_ids
