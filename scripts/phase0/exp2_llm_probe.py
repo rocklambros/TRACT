@@ -21,12 +21,9 @@ from typing import TYPE_CHECKING, Final
 if TYPE_CHECKING:
     import anthropic
 
-import numpy as np
-
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
     CREHierarchy,
-    EvalItem,
     LOFOFold,
     aggregate_lofo_metrics,
     build_evaluation_corpus,

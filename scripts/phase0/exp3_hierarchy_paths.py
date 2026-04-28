@@ -27,8 +27,8 @@ from scripts.phase0.common import (
     load_opencre_cres,
     load_parsed_controls,
     save_results,
-    _reciprocal_rank,
-    _ndcg_at_k,
+    reciprocal_rank,
+    ndcg_at_k,
 )
 from scripts.phase0.exp1_embedding_baseline import (
     BIENCODER_MODELS,
@@ -64,8 +64,8 @@ def compute_per_item_metrics(
             gt = item.ground_truth_hub_id
             hit1_list.append(1.0 if pred and pred[0] == gt else 0.0)
             hit5_list.append(1.0 if gt in pred[:5] else 0.0)
-            mrr_list.append(_reciprocal_rank(pred, gt))
-            ndcg_list.append(_ndcg_at_k(pred, gt))
+            mrr_list.append(reciprocal_rank(pred, gt))
+            ndcg_list.append(ndcg_at_k(pred, gt))
 
     return {
         "hit_at_1": np.array(hit1_list),
@@ -85,6 +85,11 @@ def main() -> None:
         "--device",
         default="cuda" if torch.cuda.is_available() else "cpu",
         help="Device for model inference",
+    )
+    parser.add_argument(
+        "--output-suffix",
+        default="",
+        help="Suffix for output filename (e.g. '_bge' -> exp3_hierarchy_paths_bge.json)",
     )
     args = parser.parse_args()
 
@@ -178,7 +183,8 @@ def main() -> None:
                 delta["ci_high"],
             )
 
-    save_results(results, "exp3_hierarchy_paths.json")
+    output_name = f"exp3_hierarchy_paths{args.output_suffix}.json"
+    save_results(results, output_name)
     logger.info("Experiment 3 complete.")
 
 

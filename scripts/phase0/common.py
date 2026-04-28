@@ -424,7 +424,7 @@ def build_hub_texts(
 # ── Scoring Metrics ─────────────────────────────────────────────────────────
 
 
-def _reciprocal_rank(predicted: list[str], truth: str) -> float:
+def reciprocal_rank(predicted: list[str], truth: str) -> float:
     """Reciprocal rank of truth in predicted list. 0 if not found."""
     for i, p in enumerate(predicted):
         if p == truth:
@@ -432,7 +432,7 @@ def _reciprocal_rank(predicted: list[str], truth: str) -> float:
     return 0.0
 
 
-def _ndcg_at_k(predicted: list[str], truth: str, k: int = 10) -> float:
+def ndcg_at_k(predicted: list[str], truth: str, k: int = 10) -> float:
     """NDCG@k for single-relevant-item retrieval."""
     dcg = 0.0
     for i, p in enumerate(predicted[:k]):
@@ -464,8 +464,8 @@ def score_predictions(
 
     hit1 = sum(1 for pred, gt in zip(predictions, ground_truth) if pred and pred[0] == gt) / n
     hit5 = sum(1 for pred, gt in zip(predictions, ground_truth) if gt in pred[:5]) / n
-    mrr = sum(_reciprocal_rank(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
-    ndcg = sum(_ndcg_at_k(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
+    mrr = sum(reciprocal_rank(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
+    ndcg = sum(ndcg_at_k(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
 
     return {
         "hit_at_1": hit1,
@@ -638,11 +638,11 @@ def aggregate_lofo_metrics(
         for pred, gt in zip(all_predictions, all_ground_truth)
     ])
     mrr_arr = np.array([
-        _reciprocal_rank(pred, gt)
+        reciprocal_rank(pred, gt)
         for pred, gt in zip(all_predictions, all_ground_truth)
     ])
     ndcg_arr = np.array([
-        _ndcg_at_k(pred, gt)
+        ndcg_at_k(pred, gt)
         for pred, gt in zip(all_predictions, all_ground_truth)
     ])
 

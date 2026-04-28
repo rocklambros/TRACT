@@ -194,6 +194,11 @@ def main() -> None:
         default="cuda" if torch.cuda.is_available() else "cpu",
         help="Device for model inference",
     )
+    parser.add_argument(
+        "--output-suffix",
+        default="",
+        help="Suffix for output filename (e.g. '_bge' -> exp1_embedding_baseline_bge.json)",
+    )
     args = parser.parse_args()
 
     logger.info("Loading data...")
@@ -267,7 +272,8 @@ def main() -> None:
             metrics_all198["hit_at_5"]["ci_high"],
         )
 
-    save_results(results, "exp1_embedding_baseline.json")
+    output_name = f"exp1_embedding_baseline{args.output_suffix}.json"
+    save_results(results, output_name)
     logger.info("Experiment 1 complete.")
 
 

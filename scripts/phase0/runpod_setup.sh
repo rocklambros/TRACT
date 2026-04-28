@@ -107,15 +107,15 @@ run_experiments() {
     wait
 
     log "Phase A: Running baseline experiments in parallel..."
-    runpodctl ssh --podId "$bge_id" "cd /workspace && python -m scripts.phase0.exp1_embedding_baseline --model bge" &
-    runpodctl ssh --podId "$gte_id" "cd /workspace && python -m scripts.phase0.exp1_embedding_baseline --model gte" &
-    runpodctl ssh --podId "$deberta_id" "cd /workspace && python -m scripts.phase0.exp1_embedding_baseline --model deberta" &
+    runpodctl ssh --podId "$bge_id" "cd /workspace && python -m scripts.phase0.exp1_embedding_baseline --model bge --output-suffix _bge" &
+    runpodctl ssh --podId "$gte_id" "cd /workspace && python -m scripts.phase0.exp1_embedding_baseline --model gte --output-suffix _gte" &
+    runpodctl ssh --podId "$deberta_id" "cd /workspace && python -m scripts.phase0.exp1_embedding_baseline --model deberta --output-suffix _deberta" &
     wait
     log "Phase A complete."
 
     log "Phase B: Running path-enriched experiments..."
-    runpodctl ssh --podId "$bge_id" "cd /workspace && python -m scripts.phase0.exp3_hierarchy_paths --model bge" &
-    runpodctl ssh --podId "$gte_id" "cd /workspace && python -m scripts.phase0.exp3_hierarchy_paths --model gte" &
+    runpodctl ssh --podId "$bge_id" "cd /workspace && python -m scripts.phase0.exp3_hierarchy_paths --model bge --output-suffix _bge" &
+    runpodctl ssh --podId "$gte_id" "cd /workspace && python -m scripts.phase0.exp3_hierarchy_paths --model gte --output-suffix _gte" &
     wait
     log "Phase B complete."
 
@@ -134,6 +134,30 @@ collect() {
     done < "$POD_IDS_FILE"
 
     log "Results collected to $RESULTS_DIR"
+
+    log "Merging per-model result files..."
+    python3 -c "
+import json, sys
+from pathlib import Path
+results_dir = Path('$RESULTS_DIR')
+
+for prefix in ['exp1_embedding_baseline', 'exp3_hierarchy_paths']:
+    merged = {'models': {}}
+    for part_file in sorted(results_dir.glob(f'{prefix}_*.json')):
+        with open(part_file) as f:
+            part = json.load(f)
+        for k, v in part.items():
+            if k == 'models':
+                merged['models'].update(v)
+            elif k not in merged:
+                merged[k] = v
+    if merged['models']:
+        out_path = results_dir / f'{prefix}.json'
+        with open(out_path, 'w') as f:
+            json.dump(merged, f, sort_keys=True, indent=2)
+        print(f'Merged {len(merged[\"models\"])} models into {out_path}')
+"
+    log "Merge complete."
     ls -la "$RESULTS_DIR"
 }
 

@@ -23,12 +23,9 @@ import torch
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
     CREHierarchy,
-    EvalItem,
     HubStandardLink,
     LOFOFold,
     RESULTS_DIR,
-    _ndcg_at_k,
-    _reciprocal_rank,
     _sanitize_text,
     aggregate_lofo_metrics,
     bootstrap_ci,
@@ -40,8 +37,9 @@ from scripts.phase0.common import (
     get_api_key,
     load_opencre_cres,
     load_parsed_controls,
+    ndcg_at_k,
+    reciprocal_rank,
     save_results,
-    score_predictions,
 )
 from scripts.phase0.exp1_embedding_baseline import (
     BIENCODER_MODELS,
@@ -186,8 +184,8 @@ def compute_subset_metrics(
             gt = item.ground_truth_hub_id
             hit1_list.append(1.0 if pred and pred[0] == gt else 0.0)
             hit5_list.append(1.0 if gt in pred[:5] else 0.0)
-            mrr_list.append(_reciprocal_rank(pred, gt))
-            ndcg_list.append(_ndcg_at_k(pred, gt))
+            mrr_list.append(reciprocal_rank(pred, gt))
+            ndcg_list.append(ndcg_at_k(pred, gt))
 
     return {
         "hit_at_1": np.array(hit1_list),
