@@ -23,6 +23,15 @@ dev = [
     "types-beautifulsoup4",
     "types-requests",
 ]
+phase0 = [
+    "torch>=2.2",
+    "transformers>=4.40",
+    "sentence-transformers>=3.0",
+    "anthropic>=0.25",
+    "numpy>=1.26",
+    "scipy>=1.12",
+    "scikit-learn>=1.4",
+]
 
 [tool.setuptools.packages.find]
 include = ["tract*"]
