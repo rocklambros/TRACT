@@ -98,3 +98,19 @@ OPENCRE_FRAMEWORK_ID_MAP: Final[dict[str, str]] = {
     "NIST 800-63": "nist_800_63",
     "NIST SSDF": "nist_ssdf",
 }
+
+# ── Phase 0: Zero-Shot Baseline Settings ─────────────────────────────────
+
+PHASE0_BOOTSTRAP_N_RESAMPLES: Final[int] = 10_000
+PHASE0_BOOTSTRAP_CI_LEVEL: Final[float] = 0.95
+PHASE0_BOOTSTRAP_SEED: Final[int] = 42
+
+PHASE0_GATE_A_OPUS_HIT5_THRESHOLD: Final[float] = 0.50
+PHASE0_GATE_B_HIT1_GAP_THRESHOLD: Final[float] = 0.10
+
+PHASE0_LLM_PROBE_MODEL: Final[str] = "claude-opus-4-20250514"
+PHASE0_LLM_PROBE_MAX_CONCURRENT: Final[int] = 5
+PHASE0_LLM_SHORTLIST_PER_BRANCH: Final[int] = 20
+PHASE0_LLM_FINAL_TOP_K: Final[int] = 10
+
+PHASE0_DESCRIPTION_PILOT_N_HUBS: Final[int] = 50
