@@ -133,7 +133,7 @@ class EvalItem:
 # ── Credential Retrieval ───────────────────────────────────────────────────
 
 
-def get_api_key(service: str = "anthropic/api_key") -> str:
+def get_api_key(service: str = "anthropic/api-key") -> str:
     """Retrieve API key from env var ANTHROPIC_API_KEY or pass manager."""
     key = os.environ.get("ANTHROPIC_API_KEY")
     if key:

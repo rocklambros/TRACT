@@ -12,3 +12,4 @@ build/
 *.pyc
 .ruff_cache/
 scripts/phase0/.pod_ids
+scripts/phase0/.pod_state.json

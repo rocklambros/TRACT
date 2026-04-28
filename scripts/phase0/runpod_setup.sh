@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 RESULTS_DIR="$PROJECT_ROOT/results/phase0"
 
-RUNPOD_API_KEY="$(pass runpod/api_key)" || { echo "ERROR: Failed to retrieve RunPod API key from pass" >&2; exit 1; }
+RUNPOD_API_KEY="$(pass runpod/api-key)" || { echo "ERROR: Failed to retrieve RunPod API key from pass" >&2; exit 1; }
 if [ -z "$RUNPOD_API_KEY" ]; then
     echo "ERROR: RunPod API key is empty" >&2; exit 1
 fi
