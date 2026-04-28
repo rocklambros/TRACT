@@ -72,6 +72,7 @@ def extract_framework_controls(
 ) -> list[Control]:
     """Extract unique controls for a framework from OpenCRE CRE records."""
     seen: set[tuple[str, str, str]] = set()
+    seen_control_ids: set[str] = set()
     controls: list[Control] = []
     bare_id_count = 0
 
@@ -107,6 +108,11 @@ def extract_framework_controls(
                 control_id_suffix = slugify(section_name)
 
             control_id = f"{framework_id}:{control_id_suffix}"
+
+            # Disambiguate when same section_id maps to different section_names
+            if control_id in seen_control_ids and section_name:
+                control_id = f"{framework_id}:{control_id_suffix}:{slugify(section_name)}"
+            seen_control_ids.add(control_id)
 
             # Build title
             if section_name:

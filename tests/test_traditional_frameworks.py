@@ -155,3 +155,65 @@ class TestBareIdHandling:
         controls = extract_framework_controls(cres, {"CAPEC"}, "capec")
         assert controls[0].metadata is not None
         assert controls[0].metadata["link_type"] == "AutomaticallyLinkedTo"
+
+
+class TestEndToEndExtraction:
+    """Integration tests against real OpenCRE data (skipped if not available)."""
+
+    @pytest.fixture
+    def real_cres(self) -> list[dict]:
+        path = Path("data/raw/opencre/opencre_all_cres.json")
+        if not path.exists():
+            pytest.skip("OpenCRE data not available")
+        import json
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return data["cres"]
+
+    def test_extracts_19_frameworks(self, real_cres: list[dict]) -> None:
+        from tract.config import OPENCRE_EXTRACT_FRAMEWORK_IDS, OPENCRE_FRAMEWORK_ID_MAP
+        from scripts.phase1a.extract_traditional_frameworks import extract_framework_controls
+        from collections import defaultdict
+
+        id_to_names: dict[str, set[str]] = defaultdict(set)
+        for name, fwid in OPENCRE_FRAMEWORK_ID_MAP.items():
+            id_to_names[fwid].add(name)
+
+        extracted_count = 0
+        for fw_id in sorted(OPENCRE_EXTRACT_FRAMEWORK_IDS):
+            names = id_to_names.get(fw_id)
+            if not names:
+                continue
+            controls = extract_framework_controls(real_cres, names, fw_id)
+            if controls:
+                extracted_count += 1
+                assert len(controls) > 0, f"{fw_id} has zero controls"
+                # Verify control_ids are unique
+                ids = [c.control_id for c in controls]
+                assert len(ids) == len(set(ids)), f"{fw_id} has duplicate control_ids"
+
+        assert extracted_count == 19
+
+    def test_capec_has_expected_controls(self, real_cres: list[dict]) -> None:
+        from scripts.phase1a.extract_traditional_frameworks import extract_framework_controls
+        controls = extract_framework_controls(real_cres, {"CAPEC"}, "capec")
+        # CAPEC has 1799 links but many point to same section
+        assert len(controls) > 100
+        assert all(c.control_id.startswith("capec:") for c in controls)
+
+    def test_all_controls_no_empty_descriptions(self, real_cres: list[dict]) -> None:
+        from tract.config import OPENCRE_EXTRACT_FRAMEWORK_IDS, OPENCRE_FRAMEWORK_ID_MAP
+        from scripts.phase1a.extract_traditional_frameworks import extract_framework_controls
+        from collections import defaultdict
+
+        id_to_names: dict[str, set[str]] = defaultdict(set)
+        for name, fwid in OPENCRE_FRAMEWORK_ID_MAP.items():
+            id_to_names[fwid].add(name)
+
+        for fw_id in sorted(OPENCRE_EXTRACT_FRAMEWORK_IDS):
+            names = id_to_names.get(fw_id)
+            if not names:
+                continue
+            controls = extract_framework_controls(real_cres, names, fw_id)
+            for c in controls:
+                assert c.description, f"{fw_id}:{c.control_id} has empty description"
