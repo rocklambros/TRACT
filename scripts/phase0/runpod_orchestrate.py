@@ -49,7 +49,7 @@ POD_CONFIGS: Final[list[dict[str, str]]] = [
     {"name": "tract-phase0-deberta", "role": "deberta"},
 ]
 
-DOCKER_IMAGE: Final[str] = "runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04"
+DOCKER_IMAGE: Final[str] = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
 
 
 # ── SSH / rsync helpers ────────────────────────────────────────────────────
@@ -79,8 +79,8 @@ def _ssh(ip: str, port: int, cmd: str, check: bool = True, env: dict[str, str] |
 
 def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
     cmd = (
-        f"rsync -avz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
-        f"--exclude='data/raw' --exclude='results' --exclude='.mypy_cache' "
+        f"rsync -rltz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
+        f"--exclude='results' --exclude='.mypy_cache' --exclude='models' "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     logger.info("[rsync] %s -> %s:%s", local_path, ip, remote_path)
@@ -88,7 +88,7 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
 
 
 def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
-    cmd = f"rsync -avz -e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
+    cmd = f"rsync -rltz -e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
     logger.info("[rsync] %s:%s -> %s", ip, remote_path, local_path)
     subprocess.run(cmd, shell=True, check=True, timeout=300)
 
@@ -117,7 +117,9 @@ def provision() -> list[dict]:
     logger.info("Selected GPU: %s", gpu_type)
 
     pods: list[dict] = []
-    for config in POD_CONFIGS:
+    for i, config in enumerate(POD_CONFIGS):
+        if i > 0:
+            time.sleep(3)
         logger.info("Creating pod: %s", config["name"])
         pod = create_pod(gpu_type, name=config["name"], image=DOCKER_IMAGE)
         pod["role"] = config["role"]

@@ -94,7 +94,7 @@ def run_biencoder(
     from sentence_transformers import SentenceTransformer
 
     logger.info("Loading bi-encoder: %s", model_config["hf_id"])
-    model = SentenceTransformer(model_config["hf_id"], device=device)
+    model = SentenceTransformer(model_config["hf_id"], device=device, trust_remote_code=True)
 
     fold_results: list[dict[int, list[str]]] = []
 

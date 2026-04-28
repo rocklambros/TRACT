@@ -96,36 +96,45 @@ def _validate_pod_id(pod_id: str) -> None:
 def create_pod(
     gpu_type_id: str,
     name: str,
-    image: str = "runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04",
+    image: str = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04",
     gpu_count: int = 1,
     volume_gb: int = 50,
     container_disk_gb: int = 20,
 ) -> dict:
-    """Create a RunPod pod. Returns {pod_id, ip, port, gpu_type, name}."""
-    for cloud_type in ["SECURE", "COMMUNITY"]:
-        payload = {
-            "name": name,
-            "imageName": image,
-            "gpuTypeIds": [gpu_type_id],
-            "gpuCount": gpu_count,
-            "cloudType": cloud_type,
-            "volumeInGb": volume_gb,
-            "containerDiskInGb": container_disk_gb,
-            "ports": ["22/tcp"],
-            "supportPublicIp": True,
-        }
-        resp = requests.post(
-            f"{REST_URL}/pods",
-            headers=_headers(), json=payload, timeout=30,
-        )
-        data = resp.json()
-        if isinstance(data, dict) and data.get("id"):
-            pod = data
+    """Create a RunPod pod with retry. Returns {pod_id, ip, port, gpu_type, name}."""
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        pod = None
+        for cloud_type in ["SECURE", "COMMUNITY"]:
+            payload = {
+                "name": name,
+                "imageName": image,
+                "gpuTypeIds": [gpu_type_id],
+                "gpuCount": gpu_count,
+                "cloudType": cloud_type,
+                "volumeInGb": volume_gb,
+                "containerDiskInGb": container_disk_gb,
+                "ports": ["22/tcp"],
+                "supportPublicIp": True,
+            }
+            resp = requests.post(
+                f"{REST_URL}/pods",
+                headers=_headers(), json=payload, timeout=30,
+            )
+            data = resp.json()
+            if isinstance(data, dict) and data.get("id"):
+                pod = data
+                break
+            err = data[0]["error"] if isinstance(data, list) else data.get("error", "")
+            logger.warning("%s cloud (attempt %d): %s", cloud_type, attempt, err)
+        if pod:
             break
-        err = data[0]["error"] if isinstance(data, list) else data.get("error", "")
-        logger.warning("%s cloud: %s", cloud_type, err)
+        if attempt < max_attempts:
+            wait = 5 * attempt
+            logger.info("Retrying pod creation in %ds...", wait)
+            time.sleep(wait)
     else:
-        raise RuntimeError(f"Failed to create pod on any cloud type: {data}")
+        raise RuntimeError(f"Failed to create pod after {max_attempts} attempts: {data}")
 
     pod_id = pod["id"]
     _validate_pod_id(pod_id)
