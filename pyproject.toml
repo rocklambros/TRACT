@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "tract"
@@ -23,6 +23,9 @@ dev = [
     "types-beautifulsoup4",
     "types-requests",
 ]
+
+[tool.setuptools.packages.find]
+include = ["tract*"]
 
 [tool.mypy]
 strict = true
