@@ -10,7 +10,7 @@ from tract.schema import Control
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-CONTROL_HEADER_RE = re.compile(r"^####\s+#(?P<id>[A-Z][A-Z0-9 ]+)\s*$", re.MULTILINE)
+CONTROL_HEADER_RE = re.compile(r"^####\s+#(?P<id>[A-Z][A-Z0-9 /]+)\s*$", re.MULTILINE)
 
 SOURCE_FILES_WITH_CONTROLS = [
     "src_1_general_controls.md",
