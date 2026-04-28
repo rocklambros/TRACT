@@ -106,6 +106,26 @@ class TestSanitizeText:
         with pytest.raises(ValueError, match="empty"):
             sanitize_text("<br/><hr/>")
 
+    def test_strips_zero_width_space(self) -> None:
+        result = sanitize_text("hello​world")
+        assert result == "helloworld"
+
+    def test_strips_zero_width_non_joiner(self) -> None:
+        result = sanitize_text("hello‌world")
+        assert result == "helloworld"
+
+    def test_strips_zero_width_joiner(self) -> None:
+        result = sanitize_text("hello‍world")
+        assert result == "helloworld"
+
+    def test_strips_bom(self) -> None:
+        result = sanitize_text("﻿hello world")
+        assert result == "hello world"
+
+    def test_strips_multiple_zero_width(self) -> None:
+        result = sanitize_text("a​‌‍﻿b")
+        assert result == "ab"
+
     def test_combined_pipeline(self) -> None:
         """Full pipeline: null bytes + HTML + ligatures + hyphenation + whitespace."""
         raw = "  <p>The eﬀective\x00 secu-\nrity   control.</p>  "

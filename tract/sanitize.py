@@ -3,11 +3,12 @@
 Every text field passes through this pipeline before storage:
 1. Strip null bytes
 2. Unicode NFC normalization
-3. HTML unescape + strip tags
-4. Fix common PDF ligatures
-5. Fix broken hyphenation from PDF line-wrapping
-6. Collapse whitespace
-7. Strip leading/trailing whitespace
+3. Strip zero-width characters
+4. HTML unescape + strip tags
+5. Fix common PDF ligatures
+6. Fix broken hyphenation from PDF line-wrapping
+7. Collapse whitespace
+8. Strip leading/trailing whitespace
 
 Public API:
     sanitize_text(text, *, max_length, return_full) -> str | tuple[str, str | None]
@@ -39,6 +40,15 @@ _HTML_TAG_RE: re.Pattern[str] = re.compile(r"</?[a-zA-Z][^>]*>")
 
 # Matches runs of whitespace (spaces, tabs, newlines)
 _WHITESPACE_RE: re.Pattern[str] = re.compile(r"\s+")
+
+_ZERO_WIDTH_RE: re.Pattern[str] = re.compile(
+    "[​‌‍﻿]"
+)
+
+
+def _strip_zero_width(text: str) -> str:
+    """Remove zero-width characters that can shift embedding spaces."""
+    return _ZERO_WIDTH_RE.sub("", text)
 
 
 def strip_html(text: str) -> str:
@@ -128,6 +138,7 @@ def sanitize_text(
     cleaned = text
     cleaned = _strip_null_bytes(cleaned)
     cleaned = _normalize_unicode(cleaned)
+    cleaned = _strip_zero_width(cleaned)
     cleaned = strip_html(cleaned)
     cleaned = _fix_ligatures(cleaned)
     cleaned = _fix_hyphenation(cleaned)
