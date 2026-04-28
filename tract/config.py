@@ -114,3 +114,25 @@ PHASE0_LLM_SHORTLIST_PER_BRANCH: Final[int] = 20
 PHASE0_LLM_FINAL_TOP_K: Final[int] = 10
 
 PHASE0_DESCRIPTION_PILOT_N_HUBS: Final[int] = 50
+
+# ── Phase 1A: Data Infrastructure ───────────────────────────────────────
+
+PHASE1A_DESCRIPTION_MODEL: Final[str] = "claude-opus-4-20250514"
+PHASE1A_DESCRIPTION_TEMPERATURE: Final[float] = 0.0
+PHASE1A_DESCRIPTION_MAX_TOKENS: Final[int] = 500
+PHASE1A_DESCRIPTION_MAX_CONCURRENT: Final[int] = 5
+PHASE1A_DESCRIPTION_SAVE_INTERVAL: Final[int] = 50
+PHASE1A_DESCRIPTION_TIMEOUT_S: Final[int] = 60
+PHASE1A_FRAMEWORK_SLUG_RE: Final[str] = r"^[a-z][a-z0-9_]{1,49}$"
+
+# Framework IDs that have primary-source parsers (take precedence over OpenCRE extraction)
+AI_PARSER_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "aiuc_1", "cosai", "csa_aicm", "eu_ai_act", "eu_gpai_cop",
+    "mitre_atlas", "nist_ai_600_1", "nist_ai_rmf",
+    "owasp_agentic_top10", "owasp_ai_exchange", "owasp_dsgai", "owasp_llm_top10",
+})
+
+# OpenCRE framework IDs to extract (those WITHOUT primary-source parsers)
+OPENCRE_EXTRACT_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset(
+    set(OPENCRE_FRAMEWORK_ID_MAP.values()) - AI_PARSER_FRAMEWORK_IDS
+)
