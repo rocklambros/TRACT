@@ -34,6 +34,11 @@ from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
 from tract.sanitize import sanitize_text
 
+try:
+    from anthropic.types import TextBlock
+except ImportError:  # pragma: no cover
+    TextBlock = None  # type: ignore[assignment,misc]
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
@@ -157,7 +162,12 @@ async def _generate_all(
                     ),
                     timeout=PHASE1A_DESCRIPTION_TIMEOUT_S,
                 )
-                raw_text = response.content[0].text.strip()
+                content_block = response.content[0]
+                if TextBlock is not None and not isinstance(content_block, TextBlock):
+                    raise TypeError(
+                        f"Expected TextBlock, got {type(content_block).__name__}"
+                    )
+                raw_text = content_block.text.strip()
                 clean_text = sanitize_text(raw_text)
 
                 desc = HubDescription(
