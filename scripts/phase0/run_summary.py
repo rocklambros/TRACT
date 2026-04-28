@@ -73,31 +73,33 @@ def main() -> None:
     header_line = "=" * (name_width + col_width * len(METRIC_HEADERS))
     sep_line = "-" * (name_width + col_width * len(METRIC_HEADERS))
 
-    print(f"\n{header_line}")
-    print("PHASE 0 SUMMARY — All-198 Track")
-    print(header_line)
-    print(
-        f"{'Method':<{name_width}}"
-        + "".join(f"{h:<{col_width}}" for h in METRIC_HEADERS)
+    logger.info("\n%s", header_line)
+    logger.info("PHASE 0 SUMMARY — All-198 Track")
+    logger.info(header_line)
+    logger.info(
+        "%s%s",
+        f"{'Method':<{name_width}}",
+        "".join(f"{h:<{col_width}}" for h in METRIC_HEADERS),
     )
-    print(sep_line)
+    logger.info(sep_line)
 
     for name, metrics in rows:
         if metrics is None:
             cells = "(missing)" + " " * (col_width - len("(missing)"))
-            print(f"{name:<{name_width}}" + cells * len(METRIC_NAMES))
+            logger.info("%s%s", f"{name:<{name_width}}", cells * len(METRIC_NAMES))
             continue
 
         formatted: list[str] = []
         for m_name in METRIC_NAMES:
             m = metrics.get(m_name)
             formatted.append(fmt_metric(m) if m else "(n/a)")
-        print(
-            f"{name:<{name_width}}"
-            + "".join(f"{cell:<{col_width}}" for cell in formatted)
+        logger.info(
+            "%s%s",
+            f"{name:<{name_width}}",
+            "".join(f"{cell:<{col_width}}" for cell in formatted),
         )
 
-    print(sep_line)
+    logger.info(sep_line)
 
     opus_hit5: float | None = None
     opus_hit1: float | None = None

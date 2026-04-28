@@ -13,8 +13,6 @@ import argparse
 import asyncio
 import json
 import logging
-import os
-import subprocess
 import time
 from collections import Counter
 from typing import Final
@@ -29,6 +27,9 @@ from scripts.phase0.common import (
     HubStandardLink,
     LOFOFold,
     RESULTS_DIR,
+    _ndcg_at_k,
+    _reciprocal_rank,
+    _sanitize_text,
     aggregate_lofo_metrics,
     bootstrap_ci,
     bootstrap_paired_delta,
@@ -36,12 +37,11 @@ from scripts.phase0.common import (
     build_hierarchy,
     build_lofo_folds,
     extract_hub_standard_links,
+    get_api_key,
     load_opencre_cres,
     load_parsed_controls,
     save_results,
     score_predictions,
-    _reciprocal_rank,
-    _ndcg_at_k,
 )
 from scripts.phase0.exp1_embedding_baseline import (
     BIENCODER_MODELS,
@@ -54,23 +54,7 @@ logger = logging.getLogger(__name__)
 MODEL: Final[str] = "claude-opus-4-20250514"
 TOP_N_HUBS: Final[int] = 50
 MAX_CONCURRENT_REQUESTS: Final[int] = 5
-
-
-# ── Credential Retrieval ────────────────────────────────────────────────────
-
-
-def get_api_key() -> str:
-    """Retrieve Anthropic API key from env var or pass password manager."""
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if key:
-        return key
-    result = subprocess.run(
-        ["pass", "anthropic/api_key"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return result.stdout.strip()
+API_TIMEOUT_S: Final[int] = 120
 
 
 # ── Hub Selection ───────────────────────────────────────────────────────────
@@ -142,7 +126,9 @@ async def generate_descriptions(
     import anthropic
 
     api_key = get_api_key()
-    client = anthropic.AsyncAnthropic(api_key=api_key)
+    client = anthropic.AsyncAnthropic(
+        api_key=api_key, max_retries=3, timeout=API_TIMEOUT_S,
+    )
     semaphore = asyncio.Semaphore(max_concurrent)
 
     descriptions: dict[str, str] = {}
@@ -150,22 +136,30 @@ async def generate_descriptions(
     async def generate_one(hub_id: str) -> tuple[str, str]:
         prompt = build_description_prompt(hub_id, tree, links)
         async with semaphore:
-            response = await client.messages.create(
-                model=MODEL,
-                max_tokens=512,
-                messages=[{"role": "user", "content": prompt}],
+            response = await asyncio.wait_for(
+                client.messages.create(
+                    model=MODEL,
+                    max_tokens=512,
+                    messages=[{"role": "user", "content": prompt}],
+                    timeout=API_TIMEOUT_S,
+                ),
+                timeout=API_TIMEOUT_S + 10,
             )
-            return hub_id, response.content[0].text.strip()
+            raw_text = response.content[0].text.strip()
+            return hub_id, _sanitize_text(raw_text, max_length=2000)
 
-    tasks = [generate_one(hid) for hid in hub_ids]
-    results = await asyncio.gather(*tasks)
+    try:
+        tasks = [generate_one(hid) for hid in hub_ids]
+        results = await asyncio.gather(*tasks)
 
-    for hub_id, description in results:
-        descriptions[hub_id] = description
-        logger.info(
-            "Generated description for %s (%s): %d chars",
-            hub_id, tree.hubs[hub_id], len(description),
-        )
+        for hub_id, description in results:
+            descriptions[hub_id] = description
+            logger.info(
+                "Generated description for %s (%s): %d chars",
+                hub_id, tree.hubs[hub_id], len(description),
+            )
+    finally:
+        await client.close()
 
     return descriptions
 

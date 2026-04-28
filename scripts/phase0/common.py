@@ -14,6 +14,7 @@ import json
 import logging
 import math
 import os
+import subprocess
 import tempfile
 import unicodedata
 from collections import defaultdict, deque
@@ -127,6 +128,27 @@ class EvalItem:
     framework_name: str
     section_id: str
     track: str  # "full-text" or "all"
+
+
+# ── Credential Retrieval ───────────────────────────────────────────────────
+
+
+def get_api_key(service: str = "anthropic/api_key") -> str:
+    """Retrieve API key from env var ANTHROPIC_API_KEY or pass manager."""
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if key:
+        return key
+    result = subprocess.run(
+        ["pass", service],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=True,
+    )
+    api_key = result.stdout.strip()
+    if not api_key:
+        raise RuntimeError(f"pass returned empty value for {service}")
+    return api_key
 
 
 # ── Input Validation ────────────────────────────────────────────────────────

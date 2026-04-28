@@ -14,11 +14,12 @@ import argparse
 import asyncio
 import json
 import logging
-import os
 import re
-import subprocess
 import time
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    import anthropic
 
 import numpy as np
 
@@ -32,6 +33,7 @@ from scripts.phase0.common import (
     build_hierarchy,
     build_lofo_folds,
     extract_hub_standard_links,
+    get_api_key,
     load_opencre_cres,
     load_parsed_controls,
     save_results,
@@ -47,18 +49,7 @@ SHORTLIST_PER_BRANCH: Final[int] = 20
 FINAL_TOP_K: Final[int] = 10
 
 
-def get_api_key() -> str:
-    """Retrieve Anthropic API key from environment or pass manager."""
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if key:
-        return key
-    result = subprocess.run(
-        ["pass", "anthropic/api_key"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return result.stdout.strip()
+API_TIMEOUT_S: Final[int] = 120
 
 
 def build_branch_prompt(
@@ -107,11 +98,22 @@ def build_final_prompt(
     )
 
 
+MAX_RESPONSE_LENGTH: Final[int] = 50_000
+
+
 def parse_hub_ids_from_response(text: str) -> list[str]:
     """Extract hub ID list from LLM response text.
 
-    Tries JSON array extraction first, falls back to regex for ID patterns.
+    Tries direct JSON parse, then regex extraction, with length guard.
     """
+    text = text[:MAX_RESPONSE_LENGTH]
+    stripped = text.strip()
+    if stripped.startswith("["):
+        try:
+            ids = json.loads(stripped)
+            return [str(i) for i in ids if isinstance(i, (str, int))]
+        except json.JSONDecodeError:
+            pass
     json_match = re.search(r"\[.*?\]", text, re.DOTALL)
     if json_match:
         try:
@@ -132,22 +134,26 @@ def _extract_linked_text(hub_text: str) -> str:
 
 
 async def call_opus(
-    client: object,
+    client: anthropic.AsyncAnthropic,
     prompt: str,
     semaphore: asyncio.Semaphore,
 ) -> str:
     """Make one Opus API call with rate limiting via semaphore."""
     async with semaphore:
-        response = await client.messages.create(  # type: ignore[union-attr]
-            model=MODEL,
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}],
+        response = await asyncio.wait_for(
+            client.messages.create(
+                model=MODEL,
+                max_tokens=1024,
+                messages=[{"role": "user", "content": prompt}],
+                timeout=API_TIMEOUT_S,
+            ),
+            timeout=API_TIMEOUT_S + 10,
         )
-        return response.content[0].text  # type: ignore[union-attr]
+        return response.content[0].text
 
 
 async def predict_single_control(
-    client: object,
+    client: anthropic.AsyncAnthropic,
     control_text: str,
     tree: CREHierarchy,
     fold: LOFOFold,
@@ -197,7 +203,7 @@ async def predict_single_control(
 
 
 async def run_fold_async(
-    client: object,
+    client: anthropic.AsyncAnthropic,
     fold: LOFOFold,
     tree: CREHierarchy,
     max_concurrent: int,
@@ -224,48 +230,53 @@ async def run_experiment(max_concurrent: int) -> dict:
     import anthropic
 
     api_key = get_api_key()
-    client = anthropic.AsyncAnthropic(api_key=api_key)
+    client = anthropic.AsyncAnthropic(
+        api_key=api_key, max_retries=3, timeout=API_TIMEOUT_S,
+    )
 
-    logger.info("Loading data...")
-    cres = load_opencre_cres()
-    tree = build_hierarchy(cres)
-    links = extract_hub_standard_links(cres)
-    parsed_controls = load_parsed_controls()
-    corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, parsed_controls)
+    try:
+        logger.info("Loading data...")
+        cres = load_opencre_cres()
+        tree = build_hierarchy(cres)
+        links = extract_hub_standard_links(cres)
+        parsed_controls = load_parsed_controls()
+        corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, parsed_controls)
 
-    logger.info("Building LOFO folds...")
-    folds = build_lofo_folds(tree, links, corpus, AI_FRAMEWORK_NAMES, template="default")
+        logger.info("Building LOFO folds...")
+        folds = build_lofo_folds(tree, links, corpus, AI_FRAMEWORK_NAMES, template="default")
 
-    fold_results: list[dict[int, list[str]]] = []
-    raw_predictions: list[dict] = []
-    start_time = time.time()
+        fold_results: list[dict[int, list[str]]] = []
+        raw_predictions: list[dict] = []
+        start_time = time.time()
 
-    for fold in folds:
-        logger.info("=" * 60)
-        logger.info(
-            "Fold: held out %s (%d items)",
-            fold.held_out_framework, len(fold.eval_items),
-        )
-        fold_start = time.time()
+        for fold in folds:
+            logger.info("=" * 60)
+            logger.info(
+                "Fold: held out %s (%d items)",
+                fold.held_out_framework, len(fold.eval_items),
+            )
+            fold_start = time.time()
 
-        preds = await run_fold_async(client, fold, tree, max_concurrent)
-        fold_results.append(preds)
+            preds = await run_fold_async(client, fold, tree, max_concurrent)
+            fold_results.append(preds)
 
-        for i, item in enumerate(fold.eval_items):
-            pred_list = preds.get(i, [])
-            raw_predictions.append({
-                "framework": fold.held_out_framework,
-                "section_id": item.section_id,
-                "ground_truth": item.ground_truth_hub_id,
-                "predicted": pred_list,
-                "hit_at_1": bool(pred_list and pred_list[0] == item.ground_truth_hub_id),
-            })
+            for i, item in enumerate(fold.eval_items):
+                pred_list = preds.get(i, [])
+                raw_predictions.append({
+                    "framework": fold.held_out_framework,
+                    "section_id": item.section_id,
+                    "ground_truth": item.ground_truth_hub_id,
+                    "predicted": pred_list,
+                    "hit_at_1": bool(pred_list and pred_list[0] == item.ground_truth_hub_id),
+                })
 
-        fold_elapsed = time.time() - fold_start
-        logger.info("Fold completed in %.1f seconds", fold_elapsed)
+            fold_elapsed = time.time() - fold_start
+            logger.info("Fold completed in %.1f seconds", fold_elapsed)
 
-    total_elapsed = time.time() - start_time
-    logger.info("Total elapsed: %.1f seconds", total_elapsed)
+        total_elapsed = time.time() - start_time
+        logger.info("Total elapsed: %.1f seconds", total_elapsed)
+    finally:
+        await client.close()
 
     metrics_all198 = aggregate_lofo_metrics(fold_results, folds, track_filter=None)
     metrics_fulltext = aggregate_lofo_metrics(
