@@ -116,38 +116,37 @@ def main() -> None:
                 best_emb_hit1 = h1
                 best_emb_name = model_name
 
-    print("\nGATE CRITERIA (all-198 track):")
+    logger.info("GATE CRITERIA (all-198 track):")
 
     if opus_hit5 is not None:
         gate_a_pass = opus_hit5 > GATE_A_THRESHOLD
-        print(
-            f"  (a) Opus hit@5 = {opus_hit5:.3f} > "
-            f"{GATE_A_THRESHOLD:.2f}? {'PASS' if gate_a_pass else 'FAIL'}"
+        logger.info(
+            "  (a) Opus hit@5 = %.3f > %.2f? %s",
+            opus_hit5, GATE_A_THRESHOLD, "PASS" if gate_a_pass else "FAIL",
         )
     else:
-        print("  (a) Opus hit@5: MISSING (experiment 2 not run)")
+        logger.info("  (a) Opus hit@5: MISSING (experiment 2 not run)")
         gate_a_pass = False
 
     if opus_hit1 is not None and best_emb_hit1 is not None:
         gap = opus_hit1 - best_emb_hit1
         gate_b_pass = gap > GATE_B_THRESHOLD
-        print(
-            f"  (b) Opus hit@1 ({opus_hit1:.3f}) - best embedding hit@1 "
-            f"({best_emb_hit1:.3f}, {best_emb_name}) = "
-            f"{gap:.3f} > {GATE_B_THRESHOLD:.2f}? "
-            f"{'PASS' if gate_b_pass else 'FAIL'}"
+        logger.info(
+            "  (b) Opus hit@1 (%.3f) - best embedding hit@1 (%.3f, %s) = "
+            "%.3f > %.2f? %s",
+            opus_hit1, best_emb_hit1, best_emb_name,
+            gap, GATE_B_THRESHOLD, "PASS" if gate_b_pass else "FAIL",
         )
     else:
-        print("  (b) hit@1 gap: MISSING (need both experiments 1 and 2)")
+        logger.info("  (b) hit@1 gap: MISSING (need both experiments 1 and 2)")
         gate_b_pass = False
 
-    print()
     if gate_a_pass and gate_b_pass:
-        print(">>> BOTH GATES PASS — proceed to Phase 1.")
+        logger.info(">>> BOTH GATES PASS — proceed to Phase 1.")
     elif not gate_a_pass and not gate_b_pass:
-        print(">>> BOTH GATES FAIL — reassess architecture.")
+        logger.info(">>> BOTH GATES FAIL — reassess architecture.")
     else:
-        print(">>> PARTIAL PASS — review results before proceeding.")
+        logger.info(">>> PARTIAL PASS — review results before proceeding.")
 
     summary: dict = {
         "gate_a": {
@@ -166,7 +165,7 @@ def main() -> None:
         "proceed_to_phase1": gate_a_pass and gate_b_pass,
     }
     save_results(summary, "summary.json")
-    print("\nSaved summary to results/phase0/summary.json")
+    logger.info("Saved summary to results/phase0/summary.json")
 
 
 if __name__ == "__main__":
