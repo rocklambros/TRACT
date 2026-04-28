@@ -1,0 +1,62 @@
+{
+  "cres": [
+    {
+      "doctype": "CRE",
+      "id": "ROOT-A",
+      "name": "Root A",
+      "tags": [],
+      "links": [
+        {"ltype": "Contains", "document": {"doctype": "CRE", "id": "HUB-A1", "name": "Hub A1", "tags": []}},
+        {"ltype": "Contains", "document": {"doctype": "CRE", "id": "HUB-A2", "name": "Hub A2", "tags": []}}
+      ]
+    },
+    {
+      "doctype": "CRE",
+      "id": "ROOT-B",
+      "name": "Root B",
+      "tags": [],
+      "links": [
+        {"ltype": "Contains", "document": {"doctype": "CRE", "id": "HUB-B1", "name": "Hub B1", "tags": []}},
+        {"ltype": "Contains", "document": {"doctype": "CRE", "id": "HUB-B2", "name": "Hub B2", "tags": []}}
+      ]
+    },
+    {
+      "doctype": "CRE",
+      "id": "ROOT-C",
+      "name": "Root C",
+      "tags": [],
+      "links": [
+        {"ltype": "Contains", "document": {"doctype": "CRE", "id": "HUB-C1", "name": "Hub C1", "tags": []}},
+        {"ltype": "Contains", "document": {"doctype": "CRE", "id": "HUB-C2", "name": "Hub C2", "tags": []}}
+      ]
+    },
+    {"doctype": "CRE", "id": "HUB-A1", "name": "Hub A1", "tags": [], "links": [
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Alpha", "sectionID": "ALPHA-1", "section": "Alpha Section 1"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Beta", "sectionID": "BETA-1", "section": "Beta Section 1"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Standard X", "sectionID": "X-1", "section": "X Section 1"}}
+    ]},
+    {"doctype": "CRE", "id": "HUB-A2", "name": "Hub A2", "tags": [], "links": [
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Alpha", "sectionID": "ALPHA-2", "section": "Alpha Section 2"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Standard Y", "sectionID": "Y-1", "section": "Y Section 1"}}
+    ]},
+    {"doctype": "CRE", "id": "HUB-B1", "name": "Hub B1", "tags": [], "links": [
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Beta", "sectionID": "BETA-2", "section": "Beta Section 2"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Standard X", "sectionID": "X-2", "section": "X Section 2"}}
+    ]},
+    {"doctype": "CRE", "id": "HUB-B2", "name": "Hub B2", "tags": [], "links": [
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Gamma", "sectionID": "GAMMA-1", "section": "Gamma Section 1"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Standard Z", "sectionID": "Z-1", "section": "Z Section 1"}}
+    ]},
+    {"doctype": "CRE", "id": "HUB-C1", "name": "Hub C1", "tags": [], "links": [
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Alpha", "sectionID": "ALPHA-3", "section": "Alpha Section 3"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Gamma", "sectionID": "GAMMA-2", "section": "Gamma Section 2"}}
+    ]},
+    {"doctype": "CRE", "id": "HUB-C2", "name": "Hub C2", "tags": [], "links": [
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Framework Beta", "sectionID": "BETA-3", "section": "Beta Section 3"}},
+      {"ltype": "Linked To", "document": {"doctype": "Standard", "name": "Standard W", "sectionID": "W-1", "section": "W Section 1"}}
+    ]}
+  ],
+  "fetch_timestamp": "2026-04-28T00:00:00Z",
+  "total_cres": 9,
+  "total_pages": 1
+}
