@@ -1,0 +1,42 @@
+{
+  "standard": "AIUC-1",
+  "version": "1.0",
+  "url": "https://www.aiuc-1.com",
+  "scraped_at": "2026-04-05",
+  "domains": [
+    {
+      "id": "A",
+      "name": "Data & Privacy",
+      "url": "https://www.aiuc-1.com/domains/a",
+      "description": "Data & Privacy domain",
+      "controls": [
+        {
+          "id": "A001",
+          "title": "Establish input data policy",
+          "url": "https://www.aiuc-1.com/controls/a001",
+          "classification": "critical",
+          "type": "Directive",
+          "frequency": "Annual",
+          "description": "Ensure policies for input data usage.",
+          "applicable_capabilities": ["NLP", "Vision"],
+          "activities": [
+            {
+              "id": "A001.1",
+              "description": "Define and communicate input data usage policies.",
+              "category": "Core",
+              "evidence_types": ["Terms of Service", "Privacy Policy"]
+            },
+            {
+              "id": "A001.2",
+              "description": "Implement technical controls to enforce data retention.",
+              "category": "Advanced",
+              "evidence_types": ["Automated deletion implementation"]
+            }
+          ],
+          "keywords": ["data", "privacy"],
+          "framework_references": []
+        }
+      ]
+    }
+  ]
+}

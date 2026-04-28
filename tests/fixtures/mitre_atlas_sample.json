@@ -1,0 +1,42 @@
+{
+  "id": "ATLAS",
+  "name": "ATLAS",
+  "version": "4.6.1",
+  "matrices": [
+    {
+      "id": "ATLAS",
+      "name": "ATLAS Matrix",
+      "tactics": [{"id": "AML.TA0000", "name": "Reconnaissance"}],
+      "techniques": [
+        {
+          "id": "AML.T0000",
+          "name": "Search Open Technical Databases",
+          "description": "Adversaries may search publicly available research.",
+          "tactics": ["AML.TA0000"],
+          "subtechniques": []
+        },
+        {
+          "id": "AML.T0001",
+          "name": "Acquire Infrastructure",
+          "description": "Adversaries may buy or compromise infrastructure.",
+          "tactics": ["AML.TA0000"],
+          "subtechniques": [
+            {
+              "id": "AML.T0001.001",
+              "name": "ML Development Workspaces",
+              "description": "Acquire access to ML development workspaces."
+            }
+          ]
+        }
+      ],
+      "mitigations": [
+        {
+          "id": "AML.M0000",
+          "name": "Limit Adversary Knowledge",
+          "description": "Limit public exposure of technical details."
+        }
+      ]
+    }
+  ],
+  "case-studies": []
+}

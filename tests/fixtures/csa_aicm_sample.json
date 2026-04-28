@@ -1,0 +1,38 @@
+{
+  "metadata": {"source": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"},
+  "domains": [{"id": "A&A", "name": "Audit & Assurance"}],
+  "controls": [
+    {
+      "id": "A&A-01",
+      "domain": "Audit & Assurance",
+      "domain_full": "Audit & Assurance - A&A",
+      "title": "Audit and Assurance Policy",
+      "specification": "Establish, document, approve, communicate, apply, evaluate and maintain audit and assurance policies.",
+      "control_type": "Cloud & AI Related",
+      "ownership": {"GenAI OPS/PI": "Shared"},
+      "architectural_relevance": ["Physical", "Network"],
+      "lifecycle_relevance": {"Preparation": "Data collection"},
+      "threat_categories": [],
+      "cross_references": [],
+      "implementation_guidelines": "Implement audit controls.",
+      "auditing_guidelines": "Review audit logs.",
+      "caiq_questions": ["Is there an audit policy?"]
+    },
+    {
+      "id": "A&A-02",
+      "domain": "Audit & Assurance",
+      "domain_full": "Audit & Assurance - A&A",
+      "title": "Independent Assessments",
+      "specification": "Conduct independent assessments at planned intervals.",
+      "control_type": "Cloud & AI Related",
+      "ownership": {},
+      "architectural_relevance": [],
+      "lifecycle_relevance": {},
+      "threat_categories": [],
+      "cross_references": [],
+      "implementation_guidelines": "Schedule assessments.",
+      "auditing_guidelines": "Verify assessment results.",
+      "caiq_questions": []
+    }
+  ]
+}
