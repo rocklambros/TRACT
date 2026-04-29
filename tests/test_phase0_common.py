@@ -61,6 +61,7 @@ def test_build_evaluation_corpus() -> None:
     assert len(corpus) == 3
     assert corpus[0].control_text == "Alpha Section 1"
     assert corpus[0].ground_truth_hub_id == "HUB-A1"
+    assert corpus[0].valid_hub_ids == frozenset({"HUB-A1"})
     assert corpus[0].framework_name == "Framework Alpha"
     assert corpus[0].track == "all"
 
@@ -237,3 +238,82 @@ def test_path_template(mini_cres: dict) -> None:
 
     assert "Root A > Hub A1" in texts["HUB-A1"]
     assert "|" in texts["HUB-A1"]
+
+
+class TestBuildEvaluationCorpusDedup:
+    """Test deduplicated evaluation corpus with multi-label ground truth."""
+
+    def test_deduplicates_identical_text_same_hub(self) -> None:
+        from scripts.phase0.common import build_evaluation_corpus, HubStandardLink
+
+        links = [
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="MITRE ATLAS", section_id="AML.M0008",
+                section_name="Validate AI Model",
+            ),
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="MITRE ATLAS", section_id="AML.M0008",
+                section_name="Validate AI Model",
+            ),
+        ]
+        corpus = build_evaluation_corpus(links, {"MITRE ATLAS"}, {})
+        assert len(corpus) == 1
+        assert corpus[0].valid_hub_ids == frozenset({"hub-1"})
+
+    def test_multi_label_collects_all_valid_hubs(self) -> None:
+        from scripts.phase0.common import build_evaluation_corpus, HubStandardLink
+
+        links = [
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="MITRE ATLAS", section_id="AML.M0008",
+                section_name="Validate AI Model",
+            ),
+            HubStandardLink(
+                cre_id="hub-2", cre_name="Hub 2",
+                standard_name="MITRE ATLAS", section_id="AML.M0008",
+                section_name="Validate AI Model",
+            ),
+        ]
+        corpus = build_evaluation_corpus(links, {"MITRE ATLAS"}, {})
+        assert len(corpus) == 1
+        assert corpus[0].valid_hub_ids == frozenset({"hub-1", "hub-2"})
+        assert corpus[0].ground_truth_hub_id in {"hub-1", "hub-2"}
+
+    def test_different_texts_not_deduplicated(self) -> None:
+        from scripts.phase0.common import build_evaluation_corpus, HubStandardLink
+
+        links = [
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="MITRE ATLAS", section_id="AML.M0008",
+                section_name="Validate AI Model",
+            ),
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="MITRE ATLAS", section_id="AML.M0009",
+                section_name="Different Control",
+            ),
+        ]
+        corpus = build_evaluation_corpus(links, {"MITRE ATLAS"}, {})
+        assert len(corpus) == 2
+
+    def test_cross_framework_not_deduplicated(self) -> None:
+        from scripts.phase0.common import build_evaluation_corpus, HubStandardLink
+
+        links = [
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="MITRE ATLAS", section_id="X",
+                section_name="Same Name",
+            ),
+            HubStandardLink(
+                cre_id="hub-1", cre_name="Hub 1",
+                standard_name="NIST AI 100-2", section_id="Y",
+                section_name="Same Name",
+            ),
+        ]
+        corpus = build_evaluation_corpus(links, {"MITRE ATLAS", "NIST AI 100-2"}, {})
+        assert len(corpus) == 2

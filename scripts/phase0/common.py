@@ -20,7 +20,7 @@ import unicodedata
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 import numpy as np
 
@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 OPENCRE_PATH: Final[Path] = PROJECT_ROOT / "data" / "raw" / "opencre" / "opencre_all_cres.json"
 HUB_LINKS_PATH: Final[Path] = PROJECT_ROOT / "data" / "training" / "hub_links.jsonl"
+CURATED_LINKS_PATH: Final[Path] = PROJECT_ROOT / "data" / "training" / "hub_links_curated.jsonl"
 PROCESSED_FRAMEWORKS_DIR: Final[Path] = PROJECT_ROOT / "data" / "processed" / "frameworks"
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase0"
 
@@ -124,6 +125,7 @@ class EvalItem:
 
     control_text: str
     ground_truth_hub_id: str
+    valid_hub_ids: frozenset[str]
     ground_truth_hub_name: str
     framework_name: str
     section_id: str
@@ -269,6 +271,37 @@ def extract_hub_standard_links(cres: list[dict]) -> list[HubStandardLink]:
     return links
 
 
+def load_curated_links(path: Path | None = None) -> list[HubStandardLink]:
+    """Load curated (audit-corrected) hub-standard links from JSONL.
+
+    Returns the same HubStandardLink objects as extract_hub_standard_links()
+    but with corrections from the expert audit applied (56 remapped, 1 excluded).
+    """
+    p = path or CURATED_LINKS_PATH
+    if not p.exists():
+        raise FileNotFoundError(
+            f"Curated links not found at {p} — run 'python -m scripts.phase0.curate_links' first"
+        )
+
+    links: list[HubStandardLink] = []
+    with open(p, encoding="utf-8") as f:
+        for line_num, line in enumerate(f, 1):
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            links.append(HubStandardLink(
+                cre_id=rec["cre_id"],
+                cre_name=rec.get("cre_name", ""),
+                standard_name=rec["standard_name"],
+                section_id=rec.get("section_id", ""),
+                section_name=rec.get("section_name", ""),
+            ))
+
+    logger.info("Loaded %d curated links from %s", len(links), p.name)
+    return links
+
+
 # ── Evaluation Corpus ───────────────────────────────────────────────────────
 
 
@@ -315,12 +348,13 @@ def build_evaluation_corpus(
     ai_framework_names: set[str] | frozenset[str],
     parsed_controls: dict[tuple[str, str], str],
 ) -> list[EvalItem]:
-    """Build evaluation corpus from AI framework hub links.
+    """Build deduplicated evaluation corpus from AI framework hub links.
 
-    For each AI framework link, uses parsed full-text description if available,
-    otherwise falls back to section_name (title-only).
+    For each unique (framework_name, control_text), creates one EvalItem with
+    all valid hub IDs collected into valid_hub_ids. This eliminates guaranteed
+    misses from multi-label items (same text mapping to multiple hubs).
     """
-    corpus: list[EvalItem] = []
+    raw_items: list[dict[str, str]] = []
 
     for link in links:
         if link.standard_name not in ai_framework_names:
@@ -345,18 +379,51 @@ def build_evaluation_corpus(
             control_text = link.section_name or link.section_id
             track = "all"
 
+        raw_items.append({
+            "control_text": _sanitize_text(control_text),
+            "hub_id": link.cre_id,
+            "hub_name": link.cre_name,
+            "framework": link.standard_name,
+            "section_id": link.section_id,
+            "track": track,
+        })
+
+    from collections import OrderedDict
+    seen: OrderedDict[tuple[str, str], dict[str, Any]] = OrderedDict()
+    for item in raw_items:
+        key = (item["framework"], item["control_text"])
+        if key not in seen:
+            seen[key] = {
+                "control_text": item["control_text"],
+                "ground_truth_hub_id": item["hub_id"],
+                "valid_hub_ids": {item["hub_id"]},
+                "ground_truth_hub_name": item["hub_name"],
+                "framework_name": item["framework"],
+                "section_id": item["section_id"],
+                "track": item["track"],
+            }
+        else:
+            seen[key]["valid_hub_ids"].add(item["hub_id"])
+
+    corpus: list[EvalItem] = []
+    for entry in seen.values():
         corpus.append(EvalItem(
-            control_text=_sanitize_text(control_text),
-            ground_truth_hub_id=link.cre_id,
-            ground_truth_hub_name=link.cre_name,
-            framework_name=link.standard_name,
-            section_id=link.section_id,
-            track=track,
+            control_text=entry["control_text"],
+            ground_truth_hub_id=entry["ground_truth_hub_id"],
+            valid_hub_ids=frozenset(entry["valid_hub_ids"]),
+            ground_truth_hub_name=entry["ground_truth_hub_name"],
+            framework_name=entry["framework_name"],
+            section_id=entry["section_id"],
+            track=entry["track"],
         ))
 
+    n_raw = len(raw_items)
+    n_dedup = len(corpus)
+    n_multilabel = sum(1 for e in corpus if len(e.valid_hub_ids) > 1)
     logger.info(
-        "Built evaluation corpus: %d items (%d full-text, %d title-only)",
-        len(corpus),
+        "Built evaluation corpus: %d items (deduplicated from %d raw, %d multi-label, "
+        "%d full-text, %d title-only)",
+        n_dedup, n_raw, n_multilabel,
         sum(1 for e in corpus if e.track == "full-text"),
         sum(1 for e in corpus if e.track == "all"),
     )
@@ -682,3 +749,148 @@ def save_results(results: dict, filename: str) -> Path:
 
     logger.info("Saved results to %s", path)
     return path
+
+
+# ── WandB Integration ──────────────────────────────────────────────────────
+
+WANDB_PROJECT: Final[str] = "tract-phase0r"
+WANDB_ENTITY: Final[str | None] = None
+
+
+def get_wandb_api_key() -> str:
+    """Retrieve WandB API key from env or pass manager."""
+    key = os.environ.get("WANDB_API_KEY")
+    if key:
+        return key
+    result = subprocess.run(
+        ["pass", "wandb/api-key"],
+        capture_output=True, text=True, timeout=10, check=True,
+    )
+    api_key = result.stdout.strip()
+    if not api_key:
+        raise RuntimeError("pass returned empty value for wandb/api-key")
+    return api_key
+
+
+def get_git_sha() -> str:
+    """Get current git SHA for experiment tracking."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=10,
+            cwd=str(PROJECT_ROOT),
+        )
+        return result.stdout.strip() if result.returncode == 0 else "unknown"
+    except Exception:
+        return "unknown"
+
+
+def init_wandb(
+    experiment_name: str,
+    config: dict | None = None,
+    tags: list[str] | None = None,
+    curated: bool = False,
+) -> object | None:
+    """Initialize a WandB run for experiment tracking.
+
+    Returns the wandb run object, or None if WandB is unavailable.
+    Sets WANDB_API_KEY in env if not already set.
+    """
+    try:
+        import wandb
+    except ImportError:
+        logger.warning("wandb not installed — skipping experiment tracking")
+        return None
+
+    try:
+        api_key = get_wandb_api_key()
+        os.environ["WANDB_API_KEY"] = api_key
+    except Exception as e:
+        logger.warning("Could not get WandB API key: %s — skipping tracking", e)
+        return None
+
+    run_config = {
+        "experiment": experiment_name,
+        "git_sha": get_git_sha(),
+        "curated_data": curated,
+        "bootstrap_n": BOOTSTRAP_N_RESAMPLES,
+        "bootstrap_seed": BOOTSTRAP_SEED,
+    }
+    if config:
+        run_config.update(config)
+
+    all_tags = ["phase0r" if curated else "phase0"]
+    if tags:
+        all_tags.extend(tags)
+
+    run = wandb.init(
+        project=WANDB_PROJECT,
+        entity=WANDB_ENTITY,
+        name=experiment_name,
+        config=run_config,
+        tags=all_tags,
+        reinit=True,
+    )
+    logger.info("WandB run initialized: %s", run.url if run else "None")
+    return run
+
+
+def log_fold_metrics(
+    run: object | None,
+    model_name: str,
+    fold_name: str,
+    metrics: dict[str, float],
+) -> None:
+    """Log per-fold metrics to WandB."""
+    if run is None:
+        return
+    import wandb
+    prefix = f"{model_name}/{fold_name}"
+    wandb.log({
+        f"{prefix}/hit_at_1": metrics["hit_at_1"],
+        f"{prefix}/hit_at_5": metrics["hit_at_5"],
+        f"{prefix}/mrr": metrics["mrr"],
+        f"{prefix}/ndcg_at_10": metrics["ndcg_at_10"],
+    })
+
+
+def log_aggregate_metrics(
+    run: object | None,
+    model_name: str,
+    metrics: dict[str, dict[str, float]],
+    prefix: str = "all",
+) -> None:
+    """Log aggregate metrics with CIs to WandB."""
+    if run is None:
+        return
+    import wandb
+    log_data: dict[str, float] = {}
+    for metric_name, vals in metrics.items():
+        log_data[f"{model_name}/{prefix}/{metric_name}"] = vals["mean"]
+        log_data[f"{model_name}/{prefix}/{metric_name}_ci_low"] = vals["ci_low"]
+        log_data[f"{model_name}/{prefix}/{metric_name}_ci_high"] = vals["ci_high"]
+    wandb.log(log_data)
+
+
+def log_wandb_summary_table(
+    run: object | None,
+    rows: list[dict],
+    table_name: str = "model_comparison",
+) -> None:
+    """Log a summary comparison table to WandB."""
+    if run is None or not rows:
+        return
+    import wandb
+    columns = list(rows[0].keys())
+    table = wandb.Table(columns=columns)
+    for row in rows:
+        table.add_data(*[row[c] for c in columns])
+    wandb.log({table_name: table})
+
+
+def finish_wandb(run: object | None) -> None:
+    """Finish a WandB run cleanly."""
+    if run is None:
+        return
+    import wandb
+    wandb.finish()
