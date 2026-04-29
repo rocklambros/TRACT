@@ -8,7 +8,7 @@
       "hub_id": "002-630",
       "hub_name": "Generate a new session token after authentication",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -20,7 +20,7 @@
       "hub_id": "002-801",
       "hub_name": "Use approved cryptographic algorithms for generation, seeding and verification",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -32,7 +32,7 @@
       "hub_id": "007-274",
       "hub_name": "Patching and updating system components",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -44,7 +44,7 @@
       "hub_id": "010-108",
       "hub_name": "Obscuring confidence in AI output",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -56,7 +56,7 @@
       "hub_id": "011-087",
       "hub_name": "Testing against membership inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -68,7 +68,7 @@
       "hub_id": "011-322",
       "hub_name": "Testing against evasion",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -80,7 +80,7 @@
       "hub_id": "012-625",
       "hub_name": "Indirect prompt injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -92,7 +92,7 @@
       "hub_id": "013-021",
       "hub_name": "Roles and responsibilities",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -104,7 +104,7 @@
       "hub_id": "015-063",
       "hub_name": "Log access to sensitive data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -116,7 +116,7 @@
       "hub_id": "020-540",
       "hub_name": "Direct runtime model poisoning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -128,7 +128,7 @@
       "hub_id": "026-280",
       "hub_name": "Securely transfer logs (remotely)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -140,7 +140,7 @@
       "hub_id": "027-210",
       "hub_name": "Create random GUIDs with cryptographically secure random number generators",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -152,7 +152,7 @@
       "hub_id": "027-555",
       "hub_name": "Enforce user passwords are of sufficient minimum length",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -164,7 +164,7 @@
       "hub_id": "028-254",
       "hub_name": "Secure auto-updates over full stack",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -176,7 +176,7 @@
       "hub_id": "028-727",
       "hub_name": "CSRF protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -188,7 +188,7 @@
       "hub_id": "028-728",
       "hub_name": "SSRF protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -200,7 +200,7 @@
       "hub_id": "031-447",
       "hub_name": "Whitelist all external (HTTP) input",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -212,7 +212,7 @@
       "hub_id": "032-213",
       "hub_name": "Use an isolated security module for cryptographic operations",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -224,7 +224,7 @@
       "hub_id": "034-540",
       "hub_name": "Model inversion / Membership inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -236,7 +236,7 @@
       "hub_id": "036-147",
       "hub_name": "Configure HSTS configuration properly",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -248,7 +248,7 @@
       "hub_id": "036-275",
       "hub_name": "Make (centrally) available secure coding resources for programmers",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -260,7 +260,7 @@
       "hub_id": "036-725",
       "hub_name": "Set content HTTP response type",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -272,7 +272,7 @@
       "hub_id": "036-810",
       "hub_name": "Let cryptographic modules fail securely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -284,7 +284,7 @@
       "hub_id": "041-188",
       "hub_name": "Data quality control",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -296,7 +296,7 @@
       "hub_id": "042-550",
       "hub_name": "Protect against mass parameter assignment attack",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -308,9 +308,9 @@
       "hub_id": "043-703",
       "hub_name": "Testing against sensitive data extraction by inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers tests that determine whether a deployed AI system can reveal sensitive attributes or confidential facts about training records through inference patterns in normal model outputs. It focuses on black box extraction of protected attributes, partial record characteristics, or confidential correlations that do not require proving that a specific record was in the training set. It does not cover membership inference, full training sample reconstruction through model inversion, direct memorized data disclosure in outputs, or privacy preserving training techniques themselves.",
+      "reviewer_notes": "Original overlapped with membership inference and model inversion testing; replacement narrows this hub to sensitive attribute or fact extraction by inference.",
       "temperature": 0.0
     },
     "044-202": {
@@ -320,7 +320,7 @@
       "hub_id": "044-202",
       "hub_name": "Data disclosure in model output",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -332,7 +332,7 @@
       "hub_id": "046-257",
       "hub_name": "Clear authentication data from client storage",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -344,7 +344,7 @@
       "hub_id": "048-612",
       "hub_name": "Encode user input before logging",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -356,7 +356,7 @@
       "hub_id": "052-821",
       "hub_name": "When using an authentication third party (CSP), relay last authentication event to other parties in the chain",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -368,7 +368,7 @@
       "hub_id": "053-751",
       "hub_name": "Force build pipeline to check outdated/insecure components",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -380,7 +380,7 @@
       "hub_id": "058-083",
       "hub_name": "Monitoring",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -392,9 +392,9 @@
       "hub_id": "058-443",
       "hub_name": "Data minimization",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers technical controls that reduce how much data an AI system collects, retains, or processes for training or inference, including feature reduction, sampling, aggregation, and collection limits that reduce individual data exposure before modeling. It focuses on reducing the data footprint itself, rather than transforming already collected data. It does not cover training data obfuscation, federated learning, retention schedules, model compression, or general governance policies that do not directly reduce data volume, granularity, or sensitivity.",
+      "reviewer_notes": "Original mixed data minimization with differential privacy and training data obfuscation; replacement sharpens the boundary around reducing data scope.",
       "temperature": 0.0
     },
     "058-527": {
@@ -404,7 +404,7 @@
       "hub_id": "058-527",
       "hub_name": "Secure name/address resolution service",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -416,7 +416,7 @@
       "hub_id": "060-472",
       "hub_name": "Use CSRF protection against authenticated functionality, add anti-automation controls for unauthenticated functionality",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -428,7 +428,7 @@
       "hub_id": "061-186",
       "hub_name": "Force uniform encoders and parsers throughout system",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -440,7 +440,7 @@
       "hub_id": "064-808",
       "hub_name": "Encode output context-specifically",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -452,7 +452,7 @@
       "hub_id": "065-183",
       "hub_name": "Disallow default credentials",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -464,7 +464,7 @@
       "hub_id": "065-388",
       "hub_name": "Configure X-Content-Type-Options properly",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -476,7 +476,7 @@
       "hub_id": "065-782",
       "hub_name": "Ensure session timeout (soft/hard)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -488,7 +488,7 @@
       "hub_id": "067-050",
       "hub_name": "Do not log credentials or payment details",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -500,7 +500,7 @@
       "hub_id": "068-102",
       "hub_name": "Describe high-level system architecture and perform threat modeling on it every critical change and regularly",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -512,7 +512,7 @@
       "hub_id": "072-713",
       "hub_name": "Manage standard technologies and frameworks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -524,7 +524,7 @@
       "hub_id": "076-470",
       "hub_name": "Biometric authenticators only as secondary factors",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -536,7 +536,7 @@
       "hub_id": "077-235",
       "hub_name": "Model input leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -548,7 +548,7 @@
       "hub_id": "077-772",
       "hub_name": "Direct training or test data leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -560,7 +560,7 @@
       "hub_id": "077-781",
       "hub_name": "Use separately stored secret salt (pepper)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -572,7 +572,7 @@
       "hub_id": "078-427",
       "hub_name": "Set the highest feasible work factor for bcrypt",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -584,7 +584,7 @@
       "hub_id": "082-327",
       "hub_name": "Inform users clearly about the collection and use of personal data,  and use it only after opt-in consent.",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -596,7 +596,7 @@
       "hub_id": "082-530",
       "hub_name": "Use unique random salt with sufficient entropy for each credential",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -608,9 +608,9 @@
       "hub_id": "088-316",
       "hub_name": "Augmentation data integrity controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers controls that preserve the integrity and trustworthiness of data used to augment AI systems, including synthetic data, transformed training examples, retrieval corpora, knowledge base entries, and other supplemental context sources. It includes validation of augmentation pipelines, provenance checks, anomaly detection, and removal of poisoned or manipulated augmentation records before they affect training or inference. It does not cover confidentiality of augmentation data, original training data collection controls, runtime model integrity, or post training model validation.",
+      "reviewer_notes": "Original focused too narrowly on training dataset augmentation and did not cover retrieval or context augmentation sources.",
       "temperature": 0.0
     },
     "088-377": {
@@ -620,7 +620,7 @@
       "hub_id": "088-377",
       "hub_name": "Automated dynamic security testing",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -632,7 +632,7 @@
       "hub_id": "101-217",
       "hub_name": "Use lookup secrets only once",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -644,7 +644,7 @@
       "hub_id": "102-811",
       "hub_name": "Communicate out of band multi factor authentication requests, codes or tokens independently and securely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -656,7 +656,7 @@
       "hub_id": "103-707",
       "hub_name": "Allow unicode in passwords",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -668,7 +668,7 @@
       "hub_id": "106-447",
       "hub_name": "Prompt input segregation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -680,7 +680,7 @@
       "hub_id": "108-316",
       "hub_name": "AI resource exhaustion input handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -692,7 +692,7 @@
       "hub_id": "112-273",
       "hub_name": "Scan untrusted files for malware",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -704,7 +704,7 @@
       "hub_id": "112-648",
       "hub_name": "Change management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -716,7 +716,7 @@
       "hub_id": "113-133",
       "hub_name": "Use centralized authentication mechanism",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -728,7 +728,7 @@
       "hub_id": "114-853",
       "hub_name": "Maintenance",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -740,7 +740,7 @@
       "hub_id": "117-371",
       "hub_name": "Use a centralized access control mechanism",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -752,7 +752,7 @@
       "hub_id": "118-602",
       "hub_name": "Use a standard last-resort error handler for unhandled errors",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -764,7 +764,7 @@
       "hub_id": "118-775",
       "hub_name": "Manage an internal secure software development community",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -776,7 +776,7 @@
       "hub_id": "122-287",
       "hub_name": "Ensure cryptographic elements can be upgraded or replaced",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -788,7 +788,7 @@
       "hub_id": "125-010",
       "hub_name": "Password management systems",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -800,7 +800,7 @@
       "hub_id": "130-171",
       "hub_name": "Runtime model io integrity controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -812,7 +812,7 @@
       "hub_id": "132-146",
       "hub_name": "Apply defense-in-depth techniques/processes for protection, detection, and timely response to network-based attacks.",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -824,9 +824,9 @@
       "hub_id": "134-207",
       "hub_name": "Protect against XML/XPath injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers controls that prevent XML and XPath injection by ensuring user controlled data cannot alter XML structures, XPath expressions, or XML query logic. It includes schema aware validation, escaping XML and XPath metacharacters, parameterized XPath construction where available, and restrictions on dangerous XPath functions. It does not cover XML External Entity parser hardening, general XML schema validation unrelated to injection, SQL injection, or non XML query languages.",
+      "reviewer_notes": "Original included XXE, which is covered by a separate XML parser restriction hub; replacement separates XML or XPath injection from XXE.",
       "temperature": 0.0
     },
     "134-412": {
@@ -836,7 +836,7 @@
       "hub_id": "134-412",
       "hub_name": "Protect sensitive functionalities against race conditions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -848,7 +848,7 @@
       "hub_id": "135-200",
       "hub_name": "Review of security policies",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -860,7 +860,7 @@
       "hub_id": "138-448",
       "hub_name": "Inform users for authentication renewal",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -872,9 +872,9 @@
       "hub_id": "141-385",
       "hub_name": "Model exfiltration",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers indirect extraction of proprietary AI model information through observation of model behavior, such as reconstructing model functionality, decision boundaries, parameters, architecture details, or hyperparameters from repeated queries and response analysis. It focuses on model confidentiality attacks that do not require direct access to model files, development environments, or runtime memory. It does not cover training data privacy attacks such as membership inference or model inversion except when they are incidental signals, nor direct model theft during development or runtime.",
+      "reviewer_notes": "Original incorrectly blended model confidentiality with training data confidentiality by naming membership inference and model inversion as core scope.",
       "temperature": 0.0
     },
     "141-555": {
@@ -884,7 +884,7 @@
       "hub_id": "141-555",
       "hub_name": "Fail securely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -896,7 +896,7 @@
       "hub_id": "145-310",
       "hub_name": "Sanitize, disable, or sandbox untrusted SVG scriptable content",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -908,9 +908,9 @@
       "hub_id": "146-706",
       "hub_name": "Enforce JSON schema before processing",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers enforcing JSON Schema or equivalent structural validation before JSON data is trusted by application logic or business processing. It includes validation of required fields, data types, nested structures, value ranges, additional property rules, and rejection of malformed or schema nonconforming payloads after safe parsing. It does not cover non JSON formats, business rules beyond schema conformance, post processing authorization, or general HTTP input allowlisting.",
+      "reviewer_notes": "Original said schema validation occurs before parsing, which is technically inaccurate; replacement clarifies safe parsing before schema validation and before business processing.",
       "temperature": 0.0
     },
     "146-871": {
@@ -920,7 +920,7 @@
       "hub_id": "146-871",
       "hub_name": "Ensemble AI models",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -932,7 +932,7 @@
       "hub_id": "148-853",
       "hub_name": "Setup and maintain a secure software development process",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -944,7 +944,7 @@
       "hub_id": "152-725",
       "hub_name": "Limit access to admin/management functionality",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -956,7 +956,7 @@
       "hub_id": "154-031",
       "hub_name": "Harden application by excluding unwanted functionality",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -968,7 +968,7 @@
       "hub_id": "155-155",
       "hub_name": "Architecture",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -980,7 +980,7 @@
       "hub_id": "157-430",
       "hub_name": "Protect and clear cached sensitive data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -992,7 +992,7 @@
       "hub_id": "158-874",
       "hub_name": "Allow long passwords",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1004,7 +1004,7 @@
       "hub_id": "162-655",
       "hub_name": "Documentation of all components' business or security function",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1016,7 +1016,7 @@
       "hub_id": "163-518",
       "hub_name": "Check uploaded archives for decompression attacks (eg zip bombs)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1028,7 +1028,7 @@
       "hub_id": "166-151",
       "hub_name": "Ensure that secure fail-safe is in place for access control",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1040,7 +1040,7 @@
       "hub_id": "168-186",
       "hub_name": "Use out of band authentication requests, codes or tokens only once",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1052,9 +1052,9 @@
       "hub_id": "170-772",
       "hub_name": "Cryptography",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "The Cryptography hub covers requirements for correct use of cryptographic controls across applications and systems, including encryption, hashing, digital signatures, certificate use, and secure generation, storage, rotation, and destruction of cryptographic material. It focuses on cryptographic mechanisms and key lifecycle concerns rather than the business purpose of the protected data. It does not cover TLS endpoint configuration, transport protocol hardening, injection protection, or privacy governance except where those topics specifically depend on cryptographic control selection or key handling.",
+      "reviewer_notes": "Original incorrectly stated that transport layer security configuration is covered under Architecture; replacement points that boundary to secure communication concerns.",
       "temperature": 0.0
     },
     "171-222": {
@@ -1064,7 +1064,7 @@
       "hub_id": "171-222",
       "hub_name": "Check binary integrity before deployment",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1076,7 +1076,7 @@
       "hub_id": "172-101",
       "hub_name": "Personnel security",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1088,7 +1088,7 @@
       "hub_id": "173-554",
       "hub_name": "Augmentation data leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1100,7 +1100,7 @@
       "hub_id": "175-235",
       "hub_name": "Validate file type of data from untrusted sources",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1112,7 +1112,7 @@
       "hub_id": "176-154",
       "hub_name": "Monitor expectation of usage intensity (e.g. number of requests)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1124,7 +1124,7 @@
       "hub_id": "180-488",
       "hub_name": "Proper Configuration for all applications and frameworks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1136,9 +1136,9 @@
       "hub_id": "182-732",
       "hub_name": "Direct runtime model leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "Direct runtime model leak covers threats where deployed model artifacts or internals are directly exposed during operation, such as unauthorized access to loaded weights, model files, runtime memory, containers, model serving logs, or inference infrastructure that stores proprietary model details. It focuses on post deployment leakage through runtime environments or operational access paths. It does not cover indirect model extraction through ordinary API queries, development time model leaks, supply chain compromise, or training data confidentiality attacks.",
+      "reviewer_notes": "Original described API based model extraction, which fits indirect exfiltration rather than a direct runtime leak.",
       "temperature": 0.0
     },
     "184-284": {
@@ -1148,7 +1148,7 @@
       "hub_id": "184-284",
       "hub_name": "Log all security relevant events",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1160,7 +1160,7 @@
       "hub_id": "186-540",
       "hub_name": "Do not expose data through HTTP verb",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1172,7 +1172,7 @@
       "hub_id": "187-083",
       "hub_name": "Rate limiting against AI input attacks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1184,7 +1184,7 @@
       "hub_id": "201-246",
       "hub_name": "Use multifactor authentication on administrative interfaces",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1196,7 +1196,7 @@
       "hub_id": "202-604",
       "hub_name": "Human AI oversight",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1208,7 +1208,7 @@
       "hub_id": "204-272",
       "hub_name": "Sensitive AI output handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1220,7 +1220,7 @@
       "hub_id": "205-522",
       "hub_name": "Automated AI oversight",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1232,7 +1232,7 @@
       "hub_id": "206-254",
       "hub_name": "Use secure random to generate initial authentication codes",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1244,7 +1244,7 @@
       "hub_id": "208-355",
       "hub_name": "Ensure repeatability of deployment",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1256,7 +1256,7 @@
       "hub_id": "208-805",
       "hub_name": "Disable debug mode in production",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1268,7 +1268,7 @@
       "hub_id": "217-112",
       "hub_name": "Minimize the number of parameters in a request",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1280,7 +1280,7 @@
       "hub_id": "217-163",
       "hub_name": "Augmentation data manipulation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1292,7 +1292,7 @@
       "hub_id": "220-442",
       "hub_name": "Model action privilege minimization",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1304,7 +1304,7 @@
       "hub_id": "224-321",
       "hub_name": "Encrypt health data at rest",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1316,7 +1316,7 @@
       "hub_id": "227-045",
       "hub_name": "Identify sensitive data and subject it to a policy",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1328,7 +1328,7 @@
       "hub_id": "230-318",
       "hub_name": "AI resource exhaustion attack",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1340,7 +1340,7 @@
       "hub_id": "232-034",
       "hub_name": "Set '_Host'  prefix for cookie-based session tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1352,7 +1352,7 @@
       "hub_id": "232-217",
       "hub_name": "Whitelist redirected/forwarded URLs",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1364,7 +1364,7 @@
       "hub_id": "232-325",
       "hub_name": "Treat client-secrets as insecure",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1376,7 +1376,7 @@
       "hub_id": "234-282",
       "hub_name": "Physical & environment protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1388,7 +1388,7 @@
       "hub_id": "235-658",
       "hub_name": "Notify user about credential change",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1400,7 +1400,7 @@
       "hub_id": "238-346",
       "hub_name": "Terminate all sessions when password is changed",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1412,7 +1412,7 @@
       "hub_id": "240-274",
       "hub_name": "Log only non-sensitive data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1424,7 +1424,7 @@
       "hub_id": "240-464",
       "hub_name": "Contingency planning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1436,7 +1436,7 @@
       "hub_id": "244-750",
       "hub_name": "Technical application security training",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1448,7 +1448,7 @@
       "hub_id": "248-646",
       "hub_name": "Disable insecure SSL/TLS versions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1460,7 +1460,7 @@
       "hub_id": "251-446",
       "hub_name": "Organize stakeholder commitment for secure software development",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1472,7 +1472,7 @@
       "hub_id": "253-452",
       "hub_name": "Securely automate build and deployment in pipeline",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1484,7 +1484,7 @@
       "hub_id": "257-117",
       "hub_name": "Perform regular backups of important data and test restoration",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1496,7 +1496,7 @@
       "hub_id": "257-668",
       "hub_name": "Configure CSP configuration properly",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1508,7 +1508,7 @@
       "hub_id": "260-200",
       "hub_name": "Log in consistent format across system",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1520,9 +1520,9 @@
       "hub_id": "263-184",
       "hub_name": "Automate secure build and deployment, especially with SDI",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers automating secure build and deployment controls in software defined infrastructure and infrastructure as code environments, including scripted provisioning, policy as code checks, secure template enforcement, and automated verification of deployment guardrails. It focuses on ensuring secure deployment controls are applied consistently through codified infrastructure automation. It does not cover securing the CI or CD pipeline platform itself, binary integrity checks, source trust validation, manual deployment processes, or runtime security monitoring after deployment.",
+      "reviewer_notes": "Original overlapped heavily with the sibling hub for securing automated build and deployment pipelines; replacement narrows this hub to SDI and IaC automation.",
       "temperature": 0.0
     },
     "265-800": {
@@ -1532,7 +1532,7 @@
       "hub_id": "265-800",
       "hub_name": "Check source code and third party libraries to not contain malicious code",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1544,7 +1544,7 @@
       "hub_id": "267-031",
       "hub_name": "Protect the availability of resources by providing more to higher-priority processes",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1556,7 +1556,7 @@
       "hub_id": "267-468",
       "hub_name": "Encrypt financial data at rest",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1568,7 +1568,7 @@
       "hub_id": "268-088",
       "hub_name": "Limit query impact GraphQL/data layer expression DoS",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1580,7 +1580,7 @@
       "hub_id": "268-100",
       "hub_name": "Configure Referrer-Policy properly",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1592,7 +1592,7 @@
       "hub_id": "268-272",
       "hub_name": "Classify personal data regarding retention so that old or outdated data is deleted",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1604,7 +1604,7 @@
       "hub_id": "270-634",
       "hub_name": "Send authentication secrets encrypted",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1616,7 +1616,7 @@
       "hub_id": "273-600",
       "hub_name": "Segregate components of differing trust levels",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1628,7 +1628,7 @@
       "hub_id": "276-748",
       "hub_name": "Runtime model integrity controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1640,7 +1640,7 @@
       "hub_id": "278-413",
       "hub_name": "Mutually authenticate application components. Minimize privileges",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1652,7 +1652,7 @@
       "hub_id": "284-521",
       "hub_name": "Enforce additional authorization and segregation of duties",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1664,7 +1664,7 @@
       "hub_id": "286-500",
       "hub_name": "OS security",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1676,7 +1676,7 @@
       "hub_id": "287-251",
       "hub_name": "Use a unique challenge nonce of sufficient size",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1688,7 +1688,7 @@
       "hub_id": "287-305",
       "hub_name": "Document explicit key/secret management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1700,7 +1700,7 @@
       "hub_id": "304-667",
       "hub_name": "Protect API against unauthorized access/modification (IDOR)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1712,7 +1712,7 @@
       "hub_id": "307-111",
       "hub_name": "Securely store files with untrusted origin",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1724,7 +1724,7 @@
       "hub_id": "307-507",
       "hub_name": "Allow only trusted sources both build time and runtime; therefore perform integrity checks on all resources and code",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1736,7 +1736,7 @@
       "hub_id": "314-131",
       "hub_name": "Use features in compile and build tools for executable security",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1748,7 +1748,7 @@
       "hub_id": "314-701",
       "hub_name": "Whitelist file extensions served by web tier",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1760,7 +1760,7 @@
       "hub_id": "316-272",
       "hub_name": "Whitelist CORS resources",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1772,7 +1772,7 @@
       "hub_id": "317-743",
       "hub_name": "Do not use eval or dynamic code execution functions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1784,7 +1784,7 @@
       "hub_id": "327-505",
       "hub_name": "Change password with presence of old and new password",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1796,7 +1796,7 @@
       "hub_id": "330-281",
       "hub_name": "Use least privilege OS accounts for system (components)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1808,7 +1808,7 @@
       "hub_id": "333-858",
       "hub_name": "Resist stolen credentials",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1820,7 +1820,7 @@
       "hub_id": "333-888",
       "hub_name": "Do not expose data through API URLs",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1832,7 +1832,7 @@
       "hub_id": "336-512",
       "hub_name": "Ensure integrity of DNS entries and domains",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1844,7 +1844,7 @@
       "hub_id": "338-370",
       "hub_name": "Do not enforce password rotation rules or history requirements",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1856,9 +1856,9 @@
       "hub_id": "340-375",
       "hub_name": "Use a dedicated secrets management solution",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers using a purpose built secrets management platform to store, retrieve, rotate, audit, and access control application secrets such as API keys, service credentials, database passwords, and certificates through secure runtime integrations. It focuses on adopting centralized secret management instead of embedding secrets in code, configuration files, or general purpose databases. It does not cover password hashing parameters, pepper or salt design, HSM based cryptographic operation isolation, or key vault requirements when cryptographic key custody is the primary control.",
+      "reviewer_notes": "Original examples and scope overlapped with the key vault sibling; replacement distinguishes general application secret management from key custody controls.",
       "temperature": 0.0
     },
     "342-055": {
@@ -1868,7 +1868,7 @@
       "hub_id": "342-055",
       "hub_name": "Set \"samesite\" attribute for cookie-based session tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1880,7 +1880,7 @@
       "hub_id": "342-641",
       "hub_name": "Anomalous AI input handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1892,7 +1892,7 @@
       "hub_id": "342-764",
       "hub_name": "Only store hashed authentication codes",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1904,9 +1904,9 @@
       "hub_id": "342-781",
       "hub_name": "Direct development-time model leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers direct leakage of proprietary AI model artifacts during development, including weights, architecture definitions, hyperparameters, training code, model checkpoints, and evaluation artifacts through compromised development environments, repositories, build systems, or insider access. It focuses on model confidentiality before deployment. It does not cover direct exposure of raw training or test datasets, runtime leakage of deployed models, or indirect model extraction through API queries.",
+      "reviewer_notes": "Original included datasets, which belongs to direct training or test data leak; replacement narrows the hub to model artifacts and development phase exposure.",
       "temperature": 0.0
     },
     "344-611": {
@@ -1916,7 +1916,7 @@
       "hub_id": "344-611",
       "hub_name": "Use centralized reusable security controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1928,7 +1928,7 @@
       "hub_id": "346-640",
       "hub_name": "Generate multi-factor lookup secrets with sufficient entropy",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1940,7 +1940,7 @@
       "hub_id": "347-352",
       "hub_name": "Set and confirm integrity of security deployment configuration",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1952,7 +1952,7 @@
       "hub_id": "354-752",
       "hub_name": "Prioritize strong multi-factor authenticators  (e.g. NOT SMS/mail) for critical access",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1964,7 +1964,7 @@
       "hub_id": "354-753",
       "hub_name": "Do not offer weak (clear text) multi-factor authenticators by default",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1976,7 +1976,7 @@
       "hub_id": "356-282",
       "hub_name": "Minimize sensitive data scattering and retention",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -1988,7 +1988,7 @@
       "hub_id": "358-860",
       "hub_name": "Require proof of identity of the same level as during enrollment when recovering OTP or MFA",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2000,7 +2000,7 @@
       "hub_id": "362-550",
       "hub_name": "Personal data handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2012,7 +2012,7 @@
       "hub_id": "366-835",
       "hub_name": "Escape output against XSS",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2024,7 +2024,7 @@
       "hub_id": "368-633",
       "hub_name": "Enforce least privilege",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2036,7 +2036,7 @@
       "hub_id": "370-877",
       "hub_name": "Evasion (e.g. adversarial examples)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2048,7 +2048,7 @@
       "hub_id": "377-680",
       "hub_name": "Reject non-whitelisted content types",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2060,7 +2060,7 @@
       "hub_id": "380-540",
       "hub_name": "Ensure business flows' thread safety/resistance to race conditions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2072,7 +2072,7 @@
       "hub_id": "384-344",
       "hub_name": "Store and serve user-uploaded files such that they cannot execute/damage server or client",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2084,7 +2084,7 @@
       "hub_id": "387-848",
       "hub_name": "Parse JSON safely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2096,7 +2096,7 @@
       "hub_id": "402-133",
       "hub_name": "Do not expose session token in URL",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2108,9 +2108,9 @@
       "hub_id": "404-126",
       "hub_name": "Use time-based OTP only once",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers enforcing the single use property of time based one time passwords during their validity window, including maintaining enough server side state to reject a TOTP value after it has already been accepted. It focuses on replay prevention for TOTP verification logic. It does not cover TOTP generation algorithms, validity period configuration, storage of OTP secrets, logging and notification of reuse attempts, or one time use rules for lookup secrets and out of band codes.",
+      "reviewer_notes": "Original overlapped with the sibling hub that logs, rejects, and notifies on TOTP reuse; replacement keeps this hub focused on the one time use rule.",
       "temperature": 0.0
     },
     "405-411": {
@@ -2120,9 +2120,9 @@
       "hub_id": "405-411",
       "hub_name": "Avoid using of Origin header for authentication of access control",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers preventing applications from using the HTTP Origin header as the sole basis for authentication or authorization decisions. It addresses cases where client supplied or intermediary supplied Origin values are trusted instead of server side sessions, bearer tokens, signatures, client certificates, or other verifiable credentials. It does not cover proper CORS allowlist configuration, supplemental CSRF origin checks, HTTP method allowlisting, or validation of headers inserted by trusted proxies or SSO devices.",
+      "reviewer_notes": "Original overstated spoofability and conflated Origin misuse with proper CORS or CSRF validation; replacement clarifies that Origin must not be the sole access control signal.",
       "temperature": 0.0
     },
     "408-838": {
@@ -2132,7 +2132,7 @@
       "hub_id": "408-838",
       "hub_name": "Adversarial training",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2144,7 +2144,7 @@
       "hub_id": "411-684",
       "hub_name": "Manual code review",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2156,7 +2156,7 @@
       "hub_id": "417-342",
       "hub_name": "Provide reusable application security controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2168,7 +2168,7 @@
       "hub_id": "418-525",
       "hub_name": "Check source code and third party libraries to not contain timebombs",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2180,7 +2180,7 @@
       "hub_id": "418-853",
       "hub_name": "Monitor unusual activities on system",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2192,7 +2192,7 @@
       "hub_id": "421-513",
       "hub_name": "Ignore/at least validate filenames from untrusted origin (against RFD)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2204,7 +2204,7 @@
       "hub_id": "422-005",
       "hub_name": "Sanitize/sandbox user input where template-injection is a threat",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2216,7 +2216,7 @@
       "hub_id": "423-055",
       "hub_name": "Data supply chain management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2228,7 +2228,7 @@
       "hub_id": "424-242",
       "hub_name": "Decommissioning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2240,7 +2240,7 @@
       "hub_id": "426-842",
       "hub_name": "Verify the authenticity of both headers and payload",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2252,7 +2252,7 @@
       "hub_id": "428-544",
       "hub_name": "Security awareness training",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2264,7 +2264,7 @@
       "hub_id": "430-636",
       "hub_name": "Verify TLS certificates and trust chain",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2276,7 +2276,7 @@
       "hub_id": "430-722",
       "hub_name": "Encode model output",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2288,7 +2288,7 @@
       "hub_id": "433-122",
       "hub_name": "Use nonces and initialization vectors only once",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2300,7 +2300,7 @@
       "hub_id": "440-361",
       "hub_name": "Ensure that physical single factor OTP generator can be revoked fully immediately when lost",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2312,9 +2312,9 @@
       "hub_id": "440-372",
       "hub_name": "Augmentation data confidentiality controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers confidentiality controls for augmentation data used by AI systems, including synthetic data, transformed samples, retrieval corpora, knowledge bases, embeddings, and supplemental context stores used during training or inference. It includes encryption, access controls, tenant separation, and privacy controls that prevent unauthorized disclosure of augmentation sources and derived records. It does not cover augmentation data integrity, original training data confidentiality, model parameter confidentiality, or runtime input and output confidentiality controls.",
+      "reviewer_notes": "Original limited augmentation data to training dataset augmentation; replacement includes inference and retrieval augmentation while preserving confidentiality scope.",
       "temperature": 0.0
     },
     "441-132": {
@@ -2324,7 +2324,7 @@
       "hub_id": "441-132",
       "hub_name": "Use weak crypto only for backwards compatibility",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2336,7 +2336,7 @@
       "hub_id": "443-447",
       "hub_name": "Log access control decisions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2348,7 +2348,7 @@
       "hub_id": "444-058",
       "hub_name": "Benign train data increase",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2360,9 +2360,9 @@
       "hub_id": "455-358",
       "hub_name": "When storing session tokens in browser, use secure methods only",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers secure browser storage choices for session tokens, especially use of cookies with HttpOnly, Secure, SameSite, and appropriate scope attributes when cookie based sessions are used. It focuses on preventing client side script access, unintended persistence, and exposure of session tokens in browser storage mechanisms. It does not cover server side session stores, session token generation entropy, session timeout, token transmission security, or general storage of non session sensitive data; localStorage and other script accessible persistent stores are out of scope as acceptable storage locations.",
+      "reviewer_notes": "Original treated sessionStorage as generally secure for session tokens; replacement avoids endorsing script accessible storage and sharpens browser session token storage boundaries.",
       "temperature": 0.0
     },
     "456-535": {
@@ -2372,7 +2372,7 @@
       "hub_id": "456-535",
       "hub_name": "Monitor for realistic \"human time\" business logic flows",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2384,7 +2384,7 @@
       "hub_id": "456-636",
       "hub_name": "Add integrity check to SOAP payload",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2396,7 +2396,7 @@
       "hub_id": "457-165",
       "hub_name": "Terminate session after logout",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2408,7 +2408,7 @@
       "hub_id": "461-680",
       "hub_name": "Securely archive builds and build information",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2420,7 +2420,7 @@
       "hub_id": "462-245",
       "hub_name": "Remove unnecessary elements from external components (e.g. features, documentation, configuration)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2432,7 +2432,7 @@
       "hub_id": "463-577",
       "hub_name": "Incident response",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2444,7 +2444,7 @@
       "hub_id": "463-820",
       "hub_name": "Limit size and number of uploaded files",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2456,7 +2456,7 @@
       "hub_id": "464-084",
       "hub_name": "Add CSRF protection for cookie based REST services",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2468,7 +2468,7 @@
       "hub_id": "467-215",
       "hub_name": "Adversarial robust distillation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2480,7 +2480,7 @@
       "hub_id": "473-758",
       "hub_name": "Set sufficient anti-caching headers",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2492,7 +2492,7 @@
       "hub_id": "474-203",
       "hub_name": "Model obfuscation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2504,9 +2504,9 @@
       "hub_id": "480-071",
       "hub_name": "Prevent Click jacking through X-Frame-Options or CSP",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers clickjacking prevention through frame embedding controls, primarily Content Security Policy frame ancestors and, where appropriate, X Frame Options values such as DENY or SAMEORIGIN. It focuses on preventing hostile sites from embedding application pages in frames or iframes to trick users into interacting with hidden UI elements. It does not cover non frame UI manipulation, JavaScript click event abuse, general CSP configuration unrelated to frame control, or other HTTP security headers such as HSTS or X Content Type Options.",
+      "reviewer_notes": "Original included legacy ALLOW FROM wording and mixed broader CSP concerns; replacement focuses on supported frame control mechanisms.",
       "temperature": 0.0
     },
     "482-771": {
@@ -2516,7 +2516,7 @@
       "hub_id": "482-771",
       "hub_name": "Check boundaries against integer overflow weaknesses",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2528,7 +2528,7 @@
       "hub_id": "482-866",
       "hub_name": "Encrypt personal data at rest",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2540,7 +2540,7 @@
       "hub_id": "483-253",
       "hub_name": "Testing against indirect prompt injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2552,7 +2552,7 @@
       "hub_id": "483-715",
       "hub_name": "White-list HTTP methods",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2564,7 +2564,7 @@
       "hub_id": "483-883",
       "hub_name": "When using stateless tokens, ensure cryptographically secure characteristics",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2576,7 +2576,7 @@
       "hub_id": "486-813",
       "hub_name": "Configuration",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2588,7 +2588,7 @@
       "hub_id": "487-305",
       "hub_name": "Provide options to view entire password or last typed character",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2600,7 +2600,7 @@
       "hub_id": "488-626",
       "hub_name": "Training data obfuscation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2612,7 +2612,7 @@
       "hub_id": "504-340",
       "hub_name": "Encrypt sensitive data with algorithms that provide both confidentiality and integrity",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2624,7 +2624,7 @@
       "hub_id": "508-702",
       "hub_name": "Use key vaults",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2636,7 +2636,7 @@
       "hub_id": "510-324",
       "hub_name": "Compliance",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2648,9 +2648,9 @@
       "hub_id": "513-845",
       "hub_name": "Use unpredictable multi-factor lookup secrets",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers ensuring MFA lookup secrets, such as backup codes or recovery codes, are unpredictable and not user chosen, sequential, patterned, derived from account data, or generated by weak deterministic processes. It focuses on the qualitative unpredictability requirement that makes each lookup secret resistant to guessing and prediction. It does not cover explicit entropy thresholds or generation formulas, single use invalidation, storage format, delivery to users, or revocation of lookup secrets.",
+      "reviewer_notes": "Original substantially duplicated the sibling hub on sufficient entropy for lookup secret generation; replacement distinguishes unpredictability from explicit entropy requirements.",
       "temperature": 0.0
     },
     "515-021": {
@@ -2660,7 +2660,7 @@
       "hub_id": "515-021",
       "hub_name": "Sandbox, containerize and/or isolate applications at the network level",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2672,7 +2672,7 @@
       "hub_id": "522-616",
       "hub_name": "Media protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2684,7 +2684,7 @@
       "hub_id": "524-446",
       "hub_name": "Mandate using multi factor authentication",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2696,7 +2696,7 @@
       "hub_id": "524-603",
       "hub_name": "Limit modification of access controls to specifically authorized actors/users",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2708,7 +2708,7 @@
       "hub_id": "525-361",
       "hub_name": "Authenticate by OTP token entry or user-initiated action on multi factor device",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2720,7 +2720,7 @@
       "hub_id": "527-034",
       "hub_name": "Protect communication between application components",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2732,7 +2732,7 @@
       "hub_id": "530-671",
       "hub_name": "Mutually authenticate application components",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2744,7 +2744,7 @@
       "hub_id": "531-558",
       "hub_name": "Protect against LDAP injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2756,7 +2756,7 @@
       "hub_id": "532-102",
       "hub_name": "Testing against model inversion",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2768,7 +2768,7 @@
       "hub_id": "532-878",
       "hub_name": "Limit REST HTTP methods",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2780,7 +2780,7 @@
       "hub_id": "533-516",
       "hub_name": "Encode output while preserving user input formatting",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2792,7 +2792,7 @@
       "hub_id": "533-635",
       "hub_name": "AI security Education",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2804,7 +2804,7 @@
       "hub_id": "534-605",
       "hub_name": "Enforce natural sequence of business flows to avoid abuse",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2816,7 +2816,7 @@
       "hub_id": "536-158",
       "hub_name": "Testing against direct prompt injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2828,7 +2828,7 @@
       "hub_id": "537-367",
       "hub_name": "Enable certification revocation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2840,7 +2840,7 @@
       "hub_id": "538-446",
       "hub_name": "Sanitize unstructured data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2852,7 +2852,7 @@
       "hub_id": "540-566",
       "hub_name": "Let application request minimal permissions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2864,7 +2864,7 @@
       "hub_id": "542-445",
       "hub_name": "Sanitize untrusted HTML input",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2876,7 +2876,7 @@
       "hub_id": "542-488",
       "hub_name": "Use cryptographically secure random number generators",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2888,7 +2888,7 @@
       "hub_id": "543-428",
       "hub_name": "Use security module to store one-time password verification keys",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2900,7 +2900,7 @@
       "hub_id": "543-512",
       "hub_name": "Verify content-type for REST services",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2912,7 +2912,7 @@
       "hub_id": "543-621",
       "hub_name": "Do not reveal the current password during password recovery",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2924,7 +2924,7 @@
       "hub_id": "545-243",
       "hub_name": "Block execution/output of uploaded files",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2936,7 +2936,7 @@
       "hub_id": "547-283",
       "hub_name": "Protect against LFI / RFI",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2948,7 +2948,7 @@
       "hub_id": "547-824",
       "hub_name": "AI model performance validation",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2960,7 +2960,7 @@
       "hub_id": "551-054",
       "hub_name": "Use ephemeral secrets rather than static secrets",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2972,7 +2972,7 @@
       "hub_id": "551-400",
       "hub_name": "Allow user revocation of Oauth tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2984,7 +2984,7 @@
       "hub_id": "553-413",
       "hub_name": "Support subscriber-provided authentication devices",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -2996,7 +2996,7 @@
       "hub_id": "555-048",
       "hub_name": "Log events sufficiently to recreate their order",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3008,7 +3008,7 @@
       "hub_id": "555-083",
       "hub_name": "Testing against backdoor poisoning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3020,7 +3020,7 @@
       "hub_id": "558-807",
       "hub_name": "Mutually authenticate application and credential service provider",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3032,7 +3032,7 @@
       "hub_id": "560-224",
       "hub_name": "Planning and resource management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3044,7 +3044,7 @@
       "hub_id": "567-025",
       "hub_name": "Train data distortion",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3056,7 +3056,7 @@
       "hub_id": "570-487",
       "hub_name": "Manual penetration testing",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3068,7 +3068,7 @@
       "hub_id": "571-640",
       "hub_name": "Personal data handling management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3080,7 +3080,7 @@
       "hub_id": "576-042",
       "hub_name": "Consistently apply authentication strength",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3092,7 +3092,7 @@
       "hub_id": "576-262",
       "hub_name": "Unwanted AI input series handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3104,7 +3104,7 @@
       "hub_id": "576-651",
       "hub_name": "Validate new passwords are not in commonly breached passwords list",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3116,7 +3116,7 @@
       "hub_id": "577-260",
       "hub_name": "Enforce integrity check for externally hosted assets (eg SRI)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3128,7 +3128,7 @@
       "hub_id": "581-525",
       "hub_name": "Use secure recovery mechanisms for forgotten passwords",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3140,7 +3140,7 @@
       "hub_id": "582-541",
       "hub_name": "Re-authenticate before sensitive transactions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3152,7 +3152,7 @@
       "hub_id": "604-025",
       "hub_name": "Provide a password strength meter",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3164,7 +3164,7 @@
       "hub_id": "605-735",
       "hub_name": "Authenticate all external connections",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3176,7 +3176,7 @@
       "hub_id": "607-671",
       "hub_name": "Protect against JS or JSON injection attacks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3188,7 +3188,7 @@
       "hub_id": "611-051",
       "hub_name": "Enforce schema on XML structure/field",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3200,9 +3200,9 @@
       "hub_id": "611-158",
       "hub_name": "Use static analysis tooling to detect potentially malicious actions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers automated static analysis configured to detect code constructs that suggest intentionally malicious behavior, such as hidden remote access paths, credential theft, unauthorized outbound communication, destructive file operations, time triggered logic, obfuscation, or covert data exfiltration. It focuses on malicious intent indicators in source code and configuration, not ordinary vulnerability discovery. It does not cover general code quality, performance issues, unintentional coding weaknesses, or routine SAST rules for common bugs unless they are evidence of deliberate malicious functionality.",
+      "reviewer_notes": "Original mixed malicious behavior detection with ordinary vulnerability examples; replacement separates malicious intent analysis from general SAST.",
       "temperature": 0.0
     },
     "612-252": {
@@ -3212,7 +3212,7 @@
       "hub_id": "612-252",
       "hub_name": "Separate GraphQL (or similar) authorization logic from data layer",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3224,7 +3224,7 @@
       "hub_id": "612-435",
       "hub_name": "Show generic message for security exceptions or unanticipated exceptions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3236,7 +3236,7 @@
       "hub_id": "614-353",
       "hub_name": "Store backups securely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3248,7 +3248,7 @@
       "hub_id": "615-663",
       "hub_name": "Data poisoning of train/finetune/augmentation data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3260,7 +3260,7 @@
       "hub_id": "615-744",
       "hub_name": "Protect against directory browsing/discovery attacks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3272,7 +3272,7 @@
       "hub_id": "617-524",
       "hub_name": "Do not store sensitive data on client (browser) storage",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3284,7 +3284,7 @@
       "hub_id": "618-403",
       "hub_name": "Enforce authentication timeout when dealing with an authentication third party (CSP)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3296,7 +3296,7 @@
       "hub_id": "620-101",
       "hub_name": "Force output encoding for specific interpreter's context",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3308,7 +3308,7 @@
       "hub_id": "622-203",
       "hub_name": "Store passwords salted and hashed",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3320,7 +3320,7 @@
       "hub_id": "622-835",
       "hub_name": "Generate initial passwords with sufficient secure random, short expiration time and do not allow to reuse the initial password.",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3332,7 +3332,7 @@
       "hub_id": "623-347",
       "hub_name": "Disallow shared high privileged accounts",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3344,7 +3344,7 @@
       "hub_id": "623-550",
       "hub_name": "Denial Of Service protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3356,7 +3356,7 @@
       "hub_id": "626-250",
       "hub_name": "Design review",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3368,7 +3368,7 @@
       "hub_id": "630-573",
       "hub_name": "Detect and protect against automation abuse",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3380,7 +3380,7 @@
       "hub_id": "630-577",
       "hub_name": "Allow password helpers, including paste functionality",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3392,7 +3392,7 @@
       "hub_id": "635-851",
       "hub_name": "Steer the secure software development program",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3404,7 +3404,7 @@
       "hub_id": "636-854",
       "hub_name": "Encrypt all communications",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3416,7 +3416,7 @@
       "hub_id": "637-021",
       "hub_name": "Watermarking AI models",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3428,7 +3428,7 @@
       "hub_id": "640-364",
       "hub_name": "Enforce access control on trusted parts/serverside",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3440,7 +3440,7 @@
       "hub_id": "641-760",
       "hub_name": "AI Input distortion",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3452,7 +3452,7 @@
       "hub_id": "646-227",
       "hub_name": "Log and reject re-use of valid time-based OTP tokens and notify device holder.",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3464,7 +3464,7 @@
       "hub_id": "646-285",
       "hub_name": "AI compliance management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3476,9 +3476,9 @@
       "hub_id": "646-462",
       "hub_name": "Sanitize, disable, or sandbox untrusted scriptable or template language content",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers neutralizing untrusted content written in scriptable, active, or expression capable formats, including Markdown configurations that allow embedded HTML or scripts, CSS or XSL constructs, BBCode variants, and other template like content that can trigger execution or unsafe rendering. It includes sanitization, disabling active features, or sandboxing before the content is interpreted. It does not cover server side template injection into engines such as Jinja2 or Twig, direct eval style code execution, plain HTML sanitization, SVG specific controls, or SSRF prevention.",
+      "reviewer_notes": "Original overstated that formats such as Markdown are inherently executable and overlapped with server side template injection; replacement clarifies active content variants and boundaries.",
       "temperature": 0.0
     },
     "650-560": {
@@ -3488,7 +3488,7 @@
       "hub_id": "650-560",
       "hub_name": "Enforce access control on trusted service layer",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3500,7 +3500,7 @@
       "hub_id": "653-242",
       "hub_name": "Enforce schema on type/contents of structured data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3512,7 +3512,7 @@
       "hub_id": "657-084",
       "hub_name": "(SSRF) When depending on internal server input, use validation sanitization and whitelisting",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3524,7 +3524,7 @@
       "hub_id": "660-052",
       "hub_name": "Validate max input/file sizes",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3536,7 +3536,7 @@
       "hub_id": "660-867",
       "hub_name": "Implement business logic limits against identified business risks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3548,7 +3548,7 @@
       "hub_id": "661-440",
       "hub_name": "Federated learning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3560,7 +3560,7 @@
       "hub_id": "663-550",
       "hub_name": "Testing against model theft by inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3572,7 +3572,7 @@
       "hub_id": "664-080",
       "hub_name": "Enforce model-based authorization both at URI and final resource",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3584,7 +3584,7 @@
       "hub_id": "664-571",
       "hub_name": "Ensure proper generation of secure random",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3596,7 +3596,7 @@
       "hub_id": "668-364",
       "hub_name": "Log TLS connection failures",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3608,7 +3608,7 @@
       "hub_id": "670-660",
       "hub_name": "Do not share unsynchronized state on high-value logic flows",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3620,7 +3620,7 @@
       "hub_id": "673-475",
       "hub_name": "Disallow unsupported/deprecated client-side technologies",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3632,7 +3632,7 @@
       "hub_id": "673-736",
       "hub_name": "Enable option to log out from all active session",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3644,9 +3644,9 @@
       "hub_id": "674-425",
       "hub_name": "Use state of the art cryptographic configuration",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers configuring cryptographic implementations with current security parameters, such as sufficient key lengths, approved cipher modes, safe padding schemes, secure hash options, and deprecated parameter removal. It focuses on parameter and mode choices inside cryptographic mechanisms after an approved algorithm family has been selected. It does not cover algorithm approval decisions, TLS protocol configuration, nonce and IV uniqueness, key management lifecycle, constant time implementation, secure failure behavior, or weak cryptography exceptions for legacy interoperability.",
+      "reviewer_notes": "Original used TLS protocol versions as examples even though the hub is for encryption algorithm configuration; replacement removes transport protocol scope.",
       "temperature": 0.0
     },
     "675-168": {
@@ -3656,7 +3656,7 @@
       "hub_id": "675-168",
       "hub_name": "Sanitize filename metadata from untrusted origin if processing is required",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3668,7 +3668,7 @@
       "hub_id": "681-823",
       "hub_name": "Defined lifetime of time-based one-time password",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3680,7 +3680,7 @@
       "hub_id": "683-036",
       "hub_name": "Wireless link protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3692,7 +3692,7 @@
       "hub_id": "683-722",
       "hub_name": "Block direct execution of file metadata from untrusted origin",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3704,7 +3704,7 @@
       "hub_id": "686-110",
       "hub_name": "Direct prompt injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3716,7 +3716,7 @@
       "hub_id": "688-081",
       "hub_name": "Set \"secure\" attribute for cookie-based session tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3728,7 +3728,7 @@
       "hub_id": "701-654",
       "hub_name": "Supply-chain model poisoning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3740,7 +3740,7 @@
       "hub_id": "703-813",
       "hub_name": "Monitor inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3752,7 +3752,7 @@
       "hub_id": "704-530",
       "hub_name": "Enforce high entropy session tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3764,7 +3764,7 @@
       "hub_id": "705-182",
       "hub_name": "Set path attribute in cookie-based session tokens as precise as possible",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3776,7 +3776,7 @@
       "hub_id": "713-683",
       "hub_name": "Protect logs against unauthorized access",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3788,7 +3788,7 @@
       "hub_id": "715-223",
       "hub_name": "Ensure trusted origin of third party resources",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3800,7 +3800,7 @@
       "hub_id": "715-304",
       "hub_name": "Zeroize sensitive information in memory after use",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3812,7 +3812,7 @@
       "hub_id": "715-334",
       "hub_name": "Update third party components build- or compile time",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3824,7 +3824,7 @@
       "hub_id": "715-644",
       "hub_name": "Access control to AI inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3836,7 +3836,7 @@
       "hub_id": "715-681",
       "hub_name": "Avoid password truncation, with exception of consecutive spaces",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3848,7 +3848,7 @@
       "hub_id": "725-682",
       "hub_name": "Enable configurable alert against usage anomalies",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3860,7 +3860,7 @@
       "hub_id": "727-043",
       "hub_name": "Ensure secure algorithms for generating session tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3872,7 +3872,7 @@
       "hub_id": "731-120",
       "hub_name": "Document requirements for (data) protection levels",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3884,7 +3884,7 @@
       "hub_id": "732-148",
       "hub_name": "Vulnerability management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3896,7 +3896,7 @@
       "hub_id": "732-873",
       "hub_name": "Lock/precompile queries (parameterization) to avoid injection attacks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3908,7 +3908,7 @@
       "hub_id": "736-237",
       "hub_name": "Set metadata/content-Disposition for API responses",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3920,7 +3920,7 @@
       "hub_id": "736-554",
       "hub_name": "Block serialization of content from untrusted clients",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3932,7 +3932,7 @@
       "hub_id": "737-086",
       "hub_name": "Ignore/at least validate  filename metadata from untrusted origin (local file context, eg LFI)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3944,7 +3944,7 @@
       "hub_id": "742-056",
       "hub_name": "Ignore/at least validate  filename metadata from untrusted origin (remote file context, eg RFI)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3956,7 +3956,7 @@
       "hub_id": "742-431",
       "hub_name": "Use approved cryptographic algorithms",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3968,7 +3968,7 @@
       "hub_id": "743-110",
       "hub_name": "Do not disclose technical information in HTTP header or response",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3980,7 +3980,7 @@
       "hub_id": "743-237",
       "hub_name": "Validatie/enforce HTTP inputs (against HTTP parameter pollution attacks)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -3992,7 +3992,7 @@
       "hub_id": "745-045",
       "hub_name": "Do not fall back to insecure protocols in TCP",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4004,7 +4004,7 @@
       "hub_id": "745-356",
       "hub_name": "Development process audit trail",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4016,7 +4016,7 @@
       "hub_id": "746-705",
       "hub_name": "Limit/authorize user's access to functionality",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4028,7 +4028,7 @@
       "hub_id": "751-176",
       "hub_name": "Offer password changing functionality",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4040,7 +4040,7 @@
       "hub_id": "757-271",
       "hub_name": "Use source code control system with change traceability and access control",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4052,7 +4052,7 @@
       "hub_id": "760-764",
       "hub_name": "Injection protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4064,7 +4064,7 @@
       "hub_id": "760-765",
       "hub_name": "XSS protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4076,7 +4076,7 @@
       "hub_id": "761-417",
       "hub_name": "Evasion attack input handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4088,7 +4088,7 @@
       "hub_id": "762-451",
       "hub_name": "Ensure users can remove or export their data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4100,7 +4100,7 @@
       "hub_id": "762-616",
       "hub_name": "Secure serialized objects (e.g. integrity checks)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4112,7 +4112,7 @@
       "hub_id": "764-507",
       "hub_name": "Restrict XML parsing (against XXE)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4124,7 +4124,7 @@
       "hub_id": "765-788",
       "hub_name": "Classify sensitive data in protection levels",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4136,9 +4136,9 @@
       "hub_id": "767-435",
       "hub_name": "Set the highest feasible iteration count for PBKDF2",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers setting PBKDF2 iteration counts to the highest feasible value that meets operational performance requirements for password verification and key derivation. It focuses only on PBKDF2 cost tuning, including periodic reassessment as hardware and guidance change. It does not cover bcrypt work factors, Argon2 or scrypt parameters, salt entropy, pepper use, password storage architecture, or selection of the key derivation function itself.",
+      "reviewer_notes": "Original cited a fixed minimum iteration count that may become stale and distracts from the hub's highest feasible PBKDF2 tuning scope.",
       "temperature": 0.0
     },
     "767-701": {
@@ -4148,7 +4148,7 @@
       "hub_id": "767-701",
       "hub_name": "Verify strong TLS algorithms by testing",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4160,7 +4160,7 @@
       "hub_id": "768-532",
       "hub_name": "Model input confidentiality controls",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4172,7 +4172,7 @@
       "hub_id": "770-361",
       "hub_name": "Synchronize time zones for logs",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4184,7 +4184,7 @@
       "hub_id": "772-358",
       "hub_name": "Do not use password hints or secret questions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4196,7 +4196,7 @@
       "hub_id": "774-888",
       "hub_name": "Do not store secrets in the code",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4208,7 +4208,7 @@
       "hub_id": "777-470",
       "hub_name": "Ignore/block execution logic from untrusted sources",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4220,7 +4220,7 @@
       "hub_id": "780-757",
       "hub_name": "Model output contains conventional injection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4232,7 +4232,7 @@
       "hub_id": "782-234",
       "hub_name": "Clear policy compliant I/O requirements",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4244,7 +4244,7 @@
       "hub_id": "783-255",
       "hub_name": "Store cryptographic keys securely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4256,7 +4256,7 @@
       "hub_id": "786-224",
       "hub_name": "Authenticate encrypted data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4268,7 +4268,7 @@
       "hub_id": "788-323",
       "hub_name": "Model size reduction",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4280,7 +4280,7 @@
       "hub_id": "801-310",
       "hub_name": "Use ABAC/FBAC on data/feature level, even when using RBAC for permissions",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4292,7 +4292,7 @@
       "hub_id": "802-056",
       "hub_name": "Restrict excessive authentication",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4304,7 +4304,7 @@
       "hub_id": "804-220",
       "hub_name": "Set httponly attribute for cookie-based session tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4316,7 +4316,7 @@
       "hub_id": "806-367",
       "hub_name": "Encode output near the consuming interpreter",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4328,7 +4328,7 @@
       "hub_id": "807-565",
       "hub_name": "Do not limit character types for password composition",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4340,7 +4340,7 @@
       "hub_id": "808-425",
       "hub_name": "Notify users about anomalies in their usage patterns",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4352,7 +4352,7 @@
       "hub_id": "810-884",
       "hub_name": "AI user transparency",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4364,7 +4364,7 @@
       "hub_id": "813-610",
       "hub_name": "Do not use static secrets",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4376,7 +4376,7 @@
       "hub_id": "814-322",
       "hub_name": "Whitelist data sources and sinks",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4388,7 +4388,7 @@
       "hub_id": "816-631",
       "hub_name": "Ensure timely expiration of out of band authentication request, code, or tokens",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4400,7 +4400,7 @@
       "hub_id": "817-808",
       "hub_name": "Deny new users by default",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4412,7 +4412,7 @@
       "hub_id": "818-434",
       "hub_name": "Protection of technical AI information",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4424,7 +4424,7 @@
       "hub_id": "820-421",
       "hub_name": "Authenticate HTTP headers added by a trusted proxy or SSO device",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4436,7 +4436,7 @@
       "hub_id": "820-878",
       "hub_name": "Document all trust boundaries and significant data flows",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4448,7 +4448,7 @@
       "hub_id": "821-832",
       "hub_name": "Ensure keys and passwords are replaceable",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4460,7 +4460,7 @@
       "hub_id": "822-100",
       "hub_name": "Constrain functional features based on user stories",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4472,7 +4472,7 @@
       "hub_id": "824-732",
       "hub_name": "Force format strings as constants",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4484,7 +4484,7 @@
       "hub_id": "831-563",
       "hub_name": "Avoid deserialization logic",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4496,7 +4496,7 @@
       "hub_id": "831-570",
       "hub_name": "Use memory-safe functions exclusively",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4508,7 +4508,7 @@
       "hub_id": "833-030",
       "hub_name": "Connect with the community",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4520,7 +4520,7 @@
       "hub_id": "834-645",
       "hub_name": "Avoid unauthorized client data collection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4532,7 +4532,7 @@
       "hub_id": "838-636",
       "hub_name": "Check source code and third party libraries to not contain backdoors",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4544,7 +4544,7 @@
       "hub_id": "841-710",
       "hub_name": "Log authentication decisions without exposing sensitive data",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4556,7 +4556,7 @@
       "hub_id": "841-757",
       "hub_name": "Use approved cryptographic algorithms in generation, seeding and verification of OTPs",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4568,7 +4568,7 @@
       "hub_id": "843-475",
       "hub_name": "Prompt injection I/O handling",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4580,7 +4580,7 @@
       "hub_id": "846-302",
       "hub_name": "Prevent caching of sensitive data in server components",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4592,7 +4592,7 @@
       "hub_id": "847-247",
       "hub_name": "Interoperability and portability policy and procedures",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4604,7 +4604,7 @@
       "hub_id": "848-711",
       "hub_name": "Enforce input validation on a trusted service layer",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4616,7 +4616,7 @@
       "hub_id": "852-770",
       "hub_name": "AI model supply chain management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4628,7 +4628,7 @@
       "hub_id": "854-183",
       "hub_name": "Benign fine-tuning and pruning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4640,7 +4640,7 @@
       "hub_id": "857-718",
       "hub_name": "Protect against OS command injection attack",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4652,7 +4652,7 @@
       "hub_id": "858-745",
       "hub_name": "Training data retention management",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4664,7 +4664,7 @@
       "hub_id": "860-084",
       "hub_name": "Sandbox third party libraries",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4676,7 +4676,7 @@
       "hub_id": "860-723",
       "hub_name": "GenAI model alignment",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4688,7 +4688,7 @@
       "hub_id": "863-521",
       "hub_name": "Maintain/manage inventory of third party components",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4700,7 +4700,7 @@
       "hub_id": "863-636",
       "hub_name": "Use exception handling uniformly",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4712,7 +4712,7 @@
       "hub_id": "867-642",
       "hub_name": "Direct development-time model poisoning",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4724,7 +4724,7 @@
       "hub_id": "872-574",
       "hub_name": "Virus/malware protection",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4736,7 +4736,7 @@
       "hub_id": "878-880",
       "hub_name": "Perform cryptographic operations in constant time",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4748,9 +4748,9 @@
       "hub_id": "881-321",
       "hub_name": "Store credentials securely",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
-      "reviewed_description": null,
-      "reviewer_notes": null,
+      "review_status": "edited",
+      "reviewed_description": "This hub covers secure storage practices for authentication credentials broadly, including protecting passwords, API keys, service account credentials, and tokens with storage controls appropriate to each credential type. It includes limiting access to credential stores, preventing exposure in code or configuration, using encryption or hashing where appropriate, and reducing offline recovery risk. It does not cover password specific salt, pepper, work factor, or PBKDF2 tuning requirements, dedicated key vault adoption, isolated cryptographic modules, credential transmission, or credential lifecycle actions such as rotation and revocation.",
+      "reviewer_notes": "Original duplicated several sibling hubs by covering salts, work factors, and storage mechanisms in detail; replacement makes this a general credential storage boundary.",
       "temperature": 0.0
     },
     "881-434": {
@@ -4760,7 +4760,7 @@
       "hub_id": "881-434",
       "hub_name": "Sanitize user input before passing content to mail systems (SMTP/IMAP injection)",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4772,7 +4772,7 @@
       "hub_id": "883-173",
       "hub_name": "Model hosting supply chain mannagement",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4784,7 +4784,7 @@
       "hub_id": "886-662",
       "hub_name": "Limit inference resources",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4796,7 +4796,7 @@
       "hub_id": "888-770",
       "hub_name": "Threat intelligence - stay up to date with new threats and consider them",
       "model": "claude-opus-4-20250514",
-      "review_status": "pending",
+      "review_status": "accepted",
       "reviewed_description": null,
       "reviewer_notes": null,
       "temperature": 0.0
@@ -4805,5 +4805,5 @@
   "generation_model": "claude-opus-4-20250514",
   "generation_timestamp": "2026-04-28T23:29:05.097981+00:00",
   "total_generated": 400,
-  "total_pending_review": 400
+  "total_pending_review": 0
 }
