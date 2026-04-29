@@ -58,7 +58,7 @@ Assignment paradigm only: `g(control_text) -> CRE_position`. NEVER pairwise `f(A
 ## Operational
 
 - **Old project:** `/home/rock/github_projects/ai-security-framework-crosswalk/` — data source only, no runtime dependencies
-- **Credentials:** `pass` password manager (not .env). `pass huggingface`, `pass runpod/api_key`, `pass wandb/api_key`
+- **Credentials:** `pass` password manager (not .env). `pass huggingface/token`, `pass runpod/api-key`, `pass wandb/api-key`
 - **OpenCRE API:** Paginated JSON. Retry with exponential backoff. Endpoint changed from /rest/v1/all to /rest/v1/all_cres (the old one returns HTML now).
 
 ## Cross-Session Memory (claude-mem)

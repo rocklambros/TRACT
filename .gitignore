@@ -14,3 +14,4 @@ build/
 scripts/phase0/.pod_ids
 scripts/phase0/.pod_state.json
 .claude/
+wandb/
