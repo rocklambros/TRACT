@@ -554,6 +554,51 @@ tract-crosswalk-dataset/
 
 ---
 
+## 8B. Phase 3B: Experimental Narrative Notebook
+
+**Deliverable:** A publication-quality Jupyter notebook (`notebooks/tract_experimental_narrative.ipynb`) that tells the complete story of TRACT's model development — from zero-shot baselines through base model selection, contrastive fine-tuning, ablation analysis, and final evaluation. This is not a code dump; it is a narrative document that a reader with no prior context can follow from start to finish.
+
+**Style reference:** `ai-security-framework-crosswalk/project1/COMP_4433_RockLambros_project1_crosswalk_eda.ipynb` (128 cells, 82 markdown / 46 code, 24 figures). Match or exceed that notebook's standards:
+
+- **Narrative-first structure.** More markdown than code (≥1.5:1 ratio). Every code cell has dense inline comments explaining what AND why. Every figure has a paragraph of interpretation before it (what to look for) and after it (what it shows).
+- **"Plain English" callouts.** After every technical section, a `> **Plain English:**` blockquote explains what just happened in language accessible to a security professional who doesn't know ML.
+- **Numbered figures with titles.** Every visualization is named (e.g., "Figure 4.2: Per-Framework hit@1 Across Base Models"). Figures are referenced by number in the narrative text.
+- **Story arc.** The notebook follows a problem → exploration → failure → insight → solution arc. Each section builds on the previous. Dead ends and failures are documented honestly — they teach readers (and future contributors) what doesn't work and why.
+
+**Narrative structure (tentative — adapts to actual results):**
+
+| Section | Content | Key Figures |
+|---------|---------|-------------|
+| 1. Introduction & Motivation | The crosswalk problem, CRE as coordinate system, assignment paradigm | CRE hierarchy tree visualization, framework coverage heatmap |
+| 2. Data Landscape | 4,406 training links, 31 frameworks, 2,802 controls, hub distribution | Link distribution by hub (long tail), multi-label frequency, framework size comparison |
+| 3. Phase 0 Baselines | Zero-shot embedding + Opus results, what worked and what failed | Radar chart of per-fold metrics, BGE vs GTE vs DeBERTa comparison, hierarchy path impact |
+| 4. Base Model Selection | 6 embedding models compared, per-fold complementarity analysis | Model comparison heatmap, per-framework performance matrix, embedding space UMAP projections |
+| 5. Contrastive Fine-Tuning | Training approach, loss curves, hard negative strategy | Training loss curves, learning rate schedules, negative sampling analysis |
+| 6. Ablation Analysis | Data scope, hub representation, hard negatives — what mattered | Ablation matrix heatmap, paired delta forest plots with CIs, interaction effects |
+| 7. The Hub Firewall | How LOFO evaluation works, what happens without it (information leakage demo) | With-firewall vs without-firewall comparison, per-hub leakage magnitude |
+| 8. Final Results | Best model vs all baselines vs Opus, per-framework deep dive | Bootstrap CI comparison chart, confusion analysis (which hubs are hardest), per-framework waterfall |
+| 9. Error Analysis | Where the model fails and why, framework difficulty analysis | t-SNE/UMAP of misclassified controls, similarity distribution of errors vs correct predictions |
+| 10. Calibration | Temperature scaling, reliability diagrams, ECE | Reliability diagram (before/after calibration), confidence histogram |
+| 11. Conclusion & Next Steps | Summary, limitations, what Phase 1C needs | Summary metrics table, roadmap visualization |
+| Appendix A | Experiment log — every run with hyperparameters and metrics | Full results table linked to WandB |
+| Appendix B | Visual style guide — palette definitions, design principles with citations | Palette swatches, accessibility notes |
+
+**Visualization standards:**
+
+- **Innovative approaches where they earn their complexity.** 3D renderings of embedding spaces (Plotly 3D scatter with framework-colored points). Animated training progression (epoch-by-epoch embedding space evolution as HTML widget). Interactive UMAP projections where hovering reveals control text and predicted hub. Sankey diagrams showing the flow from frameworks → hubs.
+- **Static fallbacks for every interactive element.** The notebook must render meaningfully as a static PDF/HTML export. Interactive widgets degrade to static snapshots.
+- **Colorblind-accessible palettes.** Okabe-Ito for categorical data, single-hue sequential ramps for counts, diverging palettes centered at meaningful zero points. No rainbow or jet colormaps.
+- **Publication-quality typography.** Consistent font sizes, axis labels on every plot, no default matplotlib titles. LaTeX-rendered equations where formulas appear.
+- **Dark/light theme compatibility.** Use Plotly themes that work on both light and dark backgrounds.
+
+**Technical requirements:**
+- All data loaded from TRACT's canonical paths (`data/processed/`, `data/training/`, WandB API)
+- Reproducible: running all cells from top to bottom produces identical output (seeded randomness, sorted keys)
+- Dependencies: plotly, matplotlib, seaborn, umap-learn, scikit-learn (for t-SNE/UMAP), ipywidgets (for animations)
+- Cell execution time: full notebook runs in < 10 minutes (pre-computed embeddings loaded, not re-computed)
+
+---
+
 ## 9. Phase 4: Secure API with Full Documentation
 
 **Deliverable:** Deployed API server + OpenAPI spec + Python SDK + Docker image.
@@ -621,6 +666,9 @@ tract-crosswalk-dataset/
 | Phase 2 | AI/Traditional bridge hubs identified | At least 10 validated bridges |
 | Phase 3 | Human review coverage | 100% of predicted assignments reviewed |
 | Phase 3 | Published dataset | Available on HuggingFace or Zenodo |
+| Phase 3B | Experimental narrative notebook | ≥128 cells, ≥24 figures, full story arc from baselines to final model |
+| Phase 3B | Notebook reproducibility | All cells run top-to-bottom with identical output |
+| Phase 3B | Visualization quality | Interactive 3D/animated figures with static fallbacks, colorblind-accessible palettes |
 | Phase 4 | API latency | < 500ms per single control assignment |
 | Phase 4 | API documentation | Complete OpenAPI spec |
 
@@ -661,7 +709,7 @@ tract-crosswalk-dataset/
 | 9 AI framework source files | Primary source data for mapping units | Phase 1 |
 | 13 traditional framework data (from OpenCRE) | Additional training data + traditional security coverage | Phase 1 |
 | ai-security-framework-crosswalk repo | Reference only: expert_train.jsonl (5,920 pairs), nodes.json (983 nodes), framework source files | Phase 0+ |
-| GPU compute | Contrastive fine-tuning of BGE-large-v1.5 (single A100/H100 sufficient for 335M param model with 4,406 training examples) | Phase 1 |
+| GPU compute | Contrastive fine-tuning of best base model (single A100/H100 per run; multiple pods for parallel ablations) | Phase 1 |
 | LLM API access (Claude or GPT-4) | Hub description generation, Phase 0 LLM probe | Phase 0-1 |
 | transformers, sentence-transformers | Encoder fine-tuning and embedding | Phase 1+ |
 | hdbscan | Guardrailed hub proposal clustering | Phase 1+ |
