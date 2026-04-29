@@ -218,7 +218,7 @@ Before designing the model, extract these answers from previous results:
 - Hub representation: hub name + hierarchy path, encoded as target embeddings. Descriptions as ablation experiment (Phase 0 showed they hurt zero-shot).
 - Training data: 4,406 standard-to-hub links from OpenCRE (2,047 human + 2,359 expert-transitive)
 - Training strategy: contrastive learning with hard negatives (sibling hubs). Transfer learning (all 4,406 vs AI-only 198 vs two-stage) is an ablation, not prescribed.
-- Multi-label: median 1 hub/section but max 24. Per-hub similarity threshold tuning.
+- Multi-label: median 1 hub/section but max 38. Per-hub similarity threshold tuning.
 - Output: cosine similarity scores over 400 leaf hubs, calibrated to probabilities via temperature/Platt scaling.
 - Phase 0 disproved: DeBERTa-v3-NLI (hit@1=0.000), classification heads, RoBERTa-large (old project only).
 

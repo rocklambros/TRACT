@@ -373,7 +373,7 @@ Every framework re-ingested from its official source. NOT from the old project's
 - **Training data:** 4,406 standard-to-hub links (2,047 human + 2,359 expert-transitive), extracted fresh from OpenCRE API data
 - **Training strategy:** Contrastive learning with hard negatives (sibling hubs in the CRE tree are natural hard negatives). Whether to train on all 4,406 links vs. AI-specific 198 links vs. a two-stage transfer approach is an ablation experiment, not a prescribed architecture.
 - **Output:** Cosine similarity scores over 400 leaf hubs, calibrated to probabilities via temperature/Platt scaling
-- **Multi-label handling:** Median 1 hub/section but max 24; model returns ranked hub list with calibrated similarity scores. Per-hub similarity thresholds tuned on validation set.
+- **Multi-label handling:** Median 1 hub/section but max 38; model returns ranked hub list with calibrated similarity scores. Per-hub similarity thresholds tuned on validation set.
 
 ### 6.5 Hub Representation Firewall
 When evaluating hub assignment for framework X, rebuild hub representations WITHOUT contributions from X's own linked sections. This means:
