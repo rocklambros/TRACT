@@ -107,7 +107,7 @@ Each framework has a distinct internal hierarchy. The "mapping unit" is the leve
 | Gap | Impact | Mitigation |
 |-----|--------|------------|
 | Zero hub descriptions | Model lacks target label semantics | LLM-generate + expert validate (Phase 1 Task 1) |
-| 198 AI-specific links (~2.4/hub) | Thin training for AI hub assignment | Transfer learning from 4,208 traditional links + few-shot techniques |
+| 198 AI-specific links (~2.4/hub) | Thin training for AI hub assignment | Transfer learning from 4,208 traditional links via contrastive fine-tuning + active learning loop |
 | 5 of 9 AI frameworks have zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWASP Agentic) | Cannot train directly on these | Model-predicted + expert-reviewed hub assignments via active learning loop |
 | AI and traditional CRE hubs are disconnected | No cross-domain bridges | Phase 2: bridge identification using ENISA/ETSI/BIML as seeds |
 | Hub granularity varies | "Data poisoning" = 1 hub but 5 standards describe different aspects | CRE hierarchy paths as features; hub proposal system for fine-grained concepts |
@@ -343,7 +343,7 @@ The CRE hubs have names but zero descriptions. We fix that here.
 - **Expert validation workflow:** Rock reviews each description. Accept / edit / reject. Edited descriptions are the gold standard.
 - **Estimated effort:** ~33 hours for 400 hubs (~5 min each). Can be batched in sessions of 50.
 - **Deliverable:** `hub_descriptions.json` — every leaf hub with a validated semantic description
-- This is NOT optional — the model uses these descriptions as part of its hub representation
+- **Phase 0 finding:** LLM-generated descriptions hurt zero-shot embedding performance (BGE -0.019, GTE -0.147). However, descriptions may help a trained model that learns to use them — this is an experiment in Phase 1B. Descriptions are also valuable for CLI/web display and expert review regardless of model impact.
 
 ### 6.3 Framework Ingestion (All 22 — From Primary Sources)
 Every framework re-ingested from its official source. NOT from the old project's nodes.json.
@@ -368,12 +368,12 @@ Every framework re-ingested from its official source. NOT from the old project's
 | OWASP Agentic Top 10 | OWASP official 2026 PDF/markdown |
 
 ### 6.4 CRE Hub Assignment Model
-- **Architecture:** Fine-tuned encoder (DeBERTa-v3-base or RoBERTa-large) with multi-label classification head over 400 leaf hubs
-- **Hub representation:** Hub name + LLM-generated description (from 6.2) + hierarchy path (from 6.1), encoded as target embeddings
+- **Architecture:** Contrastive fine-tuning of BGE-large-v1.5 (335M params) — the best-performing zero-shot embedding model from Phase 0 (hit@1=0.348 baseline, 0.424 with hierarchy paths). Produces a bi-encoder that maps control text and hub representations into a shared embedding space. *(Phase 0 showed DeBERTa-v3-NLI completely fails for this task — hit@1=0.000 — confirming semantic similarity, not entailment, is the right approach.)*
+- **Hub representation:** Hub name + hierarchy path (from 6.1), encoded as target embeddings. *(Phase 0 proved hierarchy paths help: +7.6% hit@1 for BGE, significant.)* Whether to include expert-reviewed descriptions (from 6.2) is an ablation experiment — Phase 0 showed descriptions hurt zero-shot embeddings, but a trained model may learn to use them.
 - **Training data:** 4,406 standard-to-hub links (2,047 human + 2,359 expert-transitive), extracted fresh from OpenCRE API data
-- **Transfer learning strategy:** Pre-train on all 4,406 links, then fine-tune on 198 AI-specific links
-- **Output:** Probability distribution over 400 leaf hubs, with calibrated confidence scores
-- **Multi-label handling:** Median 1 hub/section but max 24; model handles multi-label assignment with per-hub threshold tuning
+- **Training strategy:** Contrastive learning with hard negatives (sibling hubs in the CRE tree are natural hard negatives). Whether to train on all 4,406 links vs. AI-specific 198 links vs. a two-stage transfer approach is an ablation experiment, not a prescribed architecture.
+- **Output:** Cosine similarity scores over 400 leaf hubs, calibrated to probabilities via temperature/Platt scaling
+- **Multi-label handling:** Median 1 hub/section but max 24; model returns ranked hub list with calibrated similarity scores. Per-hub similarity thresholds tuned on validation set.
 
 ### 6.5 Hub Representation Firewall
 When evaluating hub assignment for framework X, rebuild hub representations WITHOUT contributions from X's own linked sections. This means:
@@ -394,7 +394,7 @@ Build all 5 guardrail categories as concrete, testable components:
 **Model Integrity guardrails (built with the model):**
 - Hub representation firewall (6.5 above)
 - Confidence calibration module (temperature/Platt scaling on validation set)
-- Per-hub threshold tuner (optimize on validation set, freeze before test evaluation)
+- Per-hub similarity threshold tuner (optimize on validation set, freeze before test evaluation)
 - Transfer learning A/B test (compare model with vs. without traditional pre-training)
 
 **Output Integrity guardrails (built with the inference pipeline):**
@@ -468,7 +468,7 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 ### 6.11 Evaluation Strategy
 **Leave-one-framework-out cross-validation (LOFO):**
 - For each of the 5 CRE-mapped AI frameworks: hold out entirely, train on remaining 4, predict hub assignments for held-out framework
-- **Primary metrics (hub assignment quality):** hit@1, hit@5, MRR, precision@K, NDCG
+- **Primary metrics (hub assignment quality):** hit@1, hit@5, MRR, NDCG@10 — matching Phase 0 metrics for direct comparison. Bootstrap CIs (10,000 resamples) and paired deltas for all model comparisons.
 - Compare against all Phase 0 baselines — trained model MUST exceed them
 - No pairwise metrics as success criteria. The assignment paradigm is evaluated on assignment quality, period.
 
@@ -503,7 +503,7 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 
 ### 7.3 HuggingFace Model Publication
 **Deliverable:** Published model repo at huggingface.co/rockCO78/tract-cre-assignment with:
-- Model weights (encoder + classification head)
+- Model weights (fine-tuned bi-encoder)
 - `hub_descriptions.json` and `cre_hierarchy.json` bundled with model
 - Model card (AIBOM-compliant, targeting 100/100): model description, intended use, architecture, training details, evaluation results, limitations, ethical considerations, environmental impact, usage code snippet, citation
 - `predict.py`: standalone inference script — takes control text, returns hub assignments
@@ -643,12 +643,12 @@ tract-crosswalk-dataset/
 | # | Question/Risk | Impact | Resolution Path |
 |---|--------------|--------|-----------------|
 | 1 | Is 198 AI-specific links enough for hub assignment? | May need more AI training data | Phase 0 gate + active learning loop adds data iteratively |
-| 2 | Do traditional security links transfer to AI domain? | Transfer learning may not help if domains are too distinct | Phase 0 experiment: compare with/without traditional pre-training |
+| 2 | Do traditional security links transfer to AI domain? | Transfer learning may not help if domains are too distinct | Phase 1B ablation: compare training on all 4,406 links vs. AI-only 198 links vs. two-stage transfer |
 | 3 | Can 400 leaf hubs distinguish fine-grained relationships? | Granularity may be too coarse | Hub proposal system as escape valve; hierarchy paths add precision |
 | 4 | How much expert review time is actually needed? | 33 hrs for descriptions + active learning review | Pilot with 50 hubs in Phase 0 to calibrate |
 | 5 | AIUC-1 data shows 132 activities but user reports ~187 | May be missing data in graph | Verify against official AIUC-1 standard during Phase 1 ingestion |
 | 6 | CRE ontology may evolve (hubs added/removed by OpenCRE maintainers) | Model needs to handle ontology changes | Version pin CRE data; rebuild on new releases |
-| 7 | Multi-label classification with extreme label imbalance | Some hubs have 100+ examples, others have 1-2 | Class-weighted loss, focal loss, or few-shot learning techniques |
+| 7 | Hub link distribution is highly skewed | Some hubs have 100+ examples, others have 1-2 | Contrastive learning with hard negative mining (sibling hubs); hub-frequency-weighted sampling during training |
 | 8 | Community adoption / "build it and they will come" risk | No users means no value | Phase 2 framework submission template lowers barrier; target specific user community (OWASP, MITRE) |
 
 ---
@@ -661,7 +661,7 @@ tract-crosswalk-dataset/
 | 9 AI framework source files | Primary source data for mapping units | Phase 1 |
 | 13 traditional framework data (from OpenCRE) | Additional training data + traditional security coverage | Phase 1 |
 | ai-security-framework-crosswalk repo | Reference only: expert_train.jsonl (5,920 pairs), nodes.json (983 nodes), framework source files | Phase 0+ |
-| GPU compute | Fine-tuning encoder (single A100/H100 sufficient; much smaller than v_final 3-model ensemble) | Phase 1 |
+| GPU compute | Contrastive fine-tuning of BGE-large-v1.5 (single A100/H100 sufficient for 335M param model with 4,406 training examples) | Phase 1 |
 | LLM API access (Claude or GPT-4) | Hub description generation, Phase 0 LLM probe | Phase 0-1 |
 | transformers, sentence-transformers | Encoder fine-tuning and embedding | Phase 1+ |
 | hdbscan | Guardrailed hub proposal clustering | Phase 1+ |

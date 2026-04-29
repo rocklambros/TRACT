@@ -62,7 +62,7 @@ Document the analysis either way.
 ## Prompt 2: Phase 1A — CRE Hierarchy, Hub Descriptions & Traditional Frameworks
 
 ```
-TRACT Phase 1A: Build the production CRE hierarchy, generate all 400 hub descriptions, and ingest 13 traditional frameworks from OpenCRE. PRD Sections 6.1, 6.2, 6.3.
+/using-superpowers TRACT Phase 1A: Build the production CRE hierarchy, generate all 400 hub descriptions, and ingest 13 traditional frameworks from OpenCRE. PRD Sections 6.1, 6.2, 6.3.
 
 Read PRD.md Sections 6.1-6.3 for full requirements. Read CLAUDE.md for code standards.
 
@@ -118,21 +118,69 @@ These frameworks' control texts come from OpenCRE link metadata (section names, 
 - CSA Cloud Controls Matrix (CCM, 29 CRE links) is a DIFFERENT framework from CSA AI Controls Matrix (AICM, 243 controls). Never conflate them.
 
 ## Approach
-Use the brainstorming → spec → plan → subagent-driven-development pipeline. Run a security review agent after implementation. Parallelize independent tasks. Target: comprehensive tests for every module.
+Use the brainstorming → spec → plan → subagent-driven-development pipeline. Run a security review agent after implementation. Parallelize independent tasks. Target: comprehensive tests for every module. Before presenting the spec, run 5 competing agents with different competing personas to analyze and debate the spec and then a 6th judge to build concensus. They must debate with each other until the judge can decide. Then, a 7th agent acts as the brutal evaluator of the methodologies used in troubleshooting and diagnosing this fix and new approach. Challenge my assumptions and choices, expose blind spots, and name opportunity costs. If my reasoning is weak, dissect it and show why. Skip validation, flattery, and softening. Show reasoning before conclusions, then give a precise, prioritized plan for what to change. We need an optimal outcome once and for all. 
 
 ## Success criteria (PRD Section 11)
 - CRE hierarchy built and validated: all 522 hubs, no cycles, all leaves reachable
 - 400 hub descriptions generated (expert review is ongoing — start the process)
 - 22 frameworks fully ingested with correct mapping units
 - All tests passing, code typed and validated
+
+Think deeply using the seqauential-thinking MCP server and save memories accordingly. --ultrathink
 ```
+'''
+Human review of data/processed/hub_descriptions.json
+
+Review guide saved to docs/hub-description-review-guide.md. It covers:
+
+  - What they're reviewing and why it matters
+  - Three quality criteria to check per description (concrete definition, sibling distinction, scope boundary)
+  - How to mark reviews — accept/edit/reject with exact JSON field instructions
+  - Common problems to watch for (parent/child confusion, vague boundaries, factual errors)
+  - Workflow tips — batch in sessions of 50, work by hierarchy path, save frequently
+  - Concrete examples of accept, edit, and reject reviews using real descriptions from the file
+  - How to check progress via validate_descriptions
+  - How to look up linked standards in hub_links.jsonl when unsure
+
+
 
 ---
 
 ## Prompt 3: Phase 1B — CRE Hub Assignment Model
 
 ```
-TRACT Phase 1B: Train the CRE hub assignment model. PRD Sections 6.4, 6.5, 6.11.
+/using-superpowers TRACT Phase 1B: Combine what you said abouve about:
+
+Phase 1B — What's Next                                                                                                                  
+                                                                  
+  The remaining Phase 1 sections (6.4–6.11) form the ML training pipeline, evaluation, and CLI. They naturally group into three waves:    
+                                                                  
+  Wave 1 — Model Training Core (6.4, 6.5, 6.11)                                                                                           
+  - 6.4 Hub Assignment Model — Contrastive fine-tuning of BGE-large-v1.5 bi-encoder (Phase 0 best baseline). Training
+  data: 4,406 standard-to-hub links. Hub representation = name + hierarchy path (descriptions as ablation experiment).                                   
+  - 6.5 Hub Representation Firewall — When evaluating framework X, rebuild hub representations without X's linked sections. Hard
+  requirement for honest LOFO eval.                                                                                                       
+  - 6.11 Evaluation — Leave-one-framework-out cross-validation. hit@1, hit@5, MRR. Must beat Phase 0 baselines (Opus hit@1=0.465, BGE     
+  hit@1=0.348).                                                                                                                      
+                                                                                                                                          
+  Wave 2 — Guardrails & Active Learning (6.6, 6.7)                
+  - 6.6 Guardrails — Five categories: data integrity, model integrity, output integrity (conformal prediction, confidence thresholds),    
+  adversarial robustness (paraphrase probes, OOD detection), provenance tracking.                                                         
+  - 6.7 Active Learning Loop — Model predicts hubs for zero-coverage frameworks (AIUC-1, CSA AICM, CoSAI, etc.), expert reviews, retrain. 
+  Target >80% acceptance rate.                                                                                                            
+                                                                                                                                          
+  Wave 3 — Product Layer (6.8, 6.9, 6.10)
+  - 6.8 Crosswalk Database — SQLite with confidence scores, provenance, cross-framework relationship matrix.                              
+  - 6.9 CLI Tool — tract assign, tract compare, tract ingest, tract export.                                                               
+  - 6.10 Hub Proposal System — HDBSCAN clustering of OOD controls, 6-guardrail filter, review interface.                                  
+                                                                                                                                          
+  The big decision is whether to tackle this as one combined design or break it into sub-projects. Given the scope, I'd recommend two     
+  specs: one for the training pipeline (6.4+6.5+6.11) and one for everything else (6.6–6.10). The model needs to exist before guardrails  
+  and active learning make sense. 
+
+  With the following prompt from session-prompts.md in this project:
+
+Train the CRE hub assignment model. PRD Sections 6.4, 6.5, 6.11.
 
 Read PRD.md Sections 6.4, 6.5, 6.11 for full requirements. Read CLAUDE.md for code standards (especially ML Engineering section).
 
@@ -166,13 +214,13 @@ Before designing the model, extract these answers from previous results:
 ## Scope
 
 ### 6.4 Hub Assignment Model
-- Architecture: fine-tuned encoder (DeBERTa-v3-base or RoBERTa-large) with classification head over 400 leaf hubs
-- Hub representation: hub name + description (from 6.2) + hierarchy path (from 6.1), encoded as target embeddings
+- Architecture: contrastive fine-tuning of BGE-large-v1.5 bi-encoder (Phase 0 best baseline, hit@1=0.348, 0.424 with paths)
+- Hub representation: hub name + hierarchy path, encoded as target embeddings. Descriptions as ablation experiment (Phase 0 showed they hurt zero-shot).
 - Training data: 4,406 standard-to-hub links from OpenCRE (2,047 human + 2,359 expert-transitive)
-- Transfer learning: pre-train on ALL 4,406 links, then fine-tune on 198 AI-specific links
-- Multi-label: median 1 hub/section but max 24. Per-hub threshold tuning.
-- Output: calibrated probability distribution over 400 leaf hubs
-- Calibration: temperature/Platt scaling on validation set. Raw logits are NOT probabilities.
+- Training strategy: contrastive learning with hard negatives (sibling hubs). Transfer learning (all 4,406 vs AI-only 198 vs two-stage) is an ablation, not prescribed.
+- Multi-label: median 1 hub/section but max 24. Per-hub similarity threshold tuning.
+- Output: cosine similarity scores over 400 leaf hubs, calibrated to probabilities via temperature/Platt scaling.
+- Phase 0 disproved: DeBERTa-v3-NLI (hit@1=0.000), classification heads, RoBERTa-large (old project only).
 
 ### 6.5 Hub Representation Firewall
 Already implemented in scripts/phase0/common.py build_hub_texts(). Promote to tract/ module.
@@ -188,7 +236,7 @@ This is a build step, not a runtime hack — hub embeddings are pre-computed per
 - Full-text vs all-198 track analysis
 
 ## Approach
-Use brainstorming → spec → plan → subagent-driven-development. This is the most complex ML engineering phase — break into smaller tasks: data pipeline, model architecture, training loop, evaluation harness, experiment runner. WandB integration from the start. Security review for credential handling and model serialization.
+Use brainstorming → spec → plan → subagent-driven-development. This is the most complex ML engineering phase — break into smaller tasks: data pipeline, model architecture, training loop, evaluation harness, experiment runner. WandB integration from the start. Security review for credential handling and model serialization. Run a security review agent after implementation. Parallelize independent tasks. Target: comprehensive tests for every module. Before presenting the spec, run 5 competing agents with different competing personas to analyze and debate the spec and then a 6th judge to build concensus. They must debate with each other until the judge can decide. Then, a 7th agent acts as the brutal evaluator of the methodologies used in troubleshooting and diagnosing this fix and new approach. Challenge my assumptions and choices, expose blind spots, and name opportunity costs. If my reasoning is weak, dissect it and show why. Skip validation, flattery, and softening. Show reasoning before conclusions, then give a precise, prioritized plan for what to change. We need an optimal outcome once and for all. 
 
 ## Success criteria (PRD Section 11)
 - Trained model hit@1 > Phase 0 embedding baseline by 0.10+
@@ -196,7 +244,14 @@ Use brainstorming → spec → plan → subagent-driven-development. This is the
 - All Phase 0 baselines exceeded with statistically significant margins
 - Full experiment logs with data hash, hyperparams, git SHA
 - Model checkpoint with optimizer + scheduler + metrics
+
+Think deeply for this challenge using the sequential-thinking MCP
+
+--ultrathink
+
 ```
+
+
 
 ---
 

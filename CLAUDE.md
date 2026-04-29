@@ -38,7 +38,8 @@ You are a senior data scientist and ML engineer building production-grade resear
 - **Data versioning.** Hash raw data at fetch time. Store hash in processed output metadata. If hash changes, force re-processing.
 - **Checkpoint discipline.** Save model + optimizer + scheduler + epoch + metrics. Never save just weights.
 - **Evaluation honesty.** Hub firewall is non-negotiable — no information leakage from held-out framework into hub representations. Assert this programmatically.
-- **Calibration.** Raw model outputs are logits, not probabilities. Always calibrate before reporting confidence scores.
+- **Calibration.** Raw model outputs are cosine similarities, not probabilities. Always calibrate (temperature/Platt scaling) before reporting confidence scores.
+- **Model architecture.** BGE-large-v1.5 bi-encoder with contrastive fine-tuning. Phase 0 proved: DeBERTa-v3-NLI fails completely (hit@1=0.000); hierarchy paths help (+7.6%); descriptions hurt zero-shot. Do not use classification heads, NLI models, or RoBERTa — these are old-project patterns.
 
 ## Core Constraint
 
@@ -49,7 +50,7 @@ Assignment paradigm only: `g(control_text) -> CRE_position`. NEVER pairwise `f(A
 - **CSA CCM ≠ CSA AICM.** Cloud Controls Matrix (traditional cloud, 29 CRE links) is a completely different framework from AI Controls Matrix (AI security, 243 controls, zero CRE links). Never conflate them.
 - **Hub firewall.** When evaluating framework X, rebuild hub representations WITHOUT X's linked sections. No exceptions — this is what makes LOFO honest.
 - **LOFO only.** Leave-one-framework-out cross-validation. Never hold out random controls. Never use a frozen test set.
-- **No pairwise metrics.** hit@1, hit@5, MRR, precision@K, NDCG on hub assignment. No F1 on pairwise tiers.
+- **No pairwise metrics.** hit@1, hit@5, MRR, NDCG@10 on hub assignment. Bootstrap CIs (10,000 resamples) for all comparisons. No F1 on pairwise tiers.
 - **Auto-links are expert-quality.** AutomaticallyLinkedTo in OpenCRE = deterministic CAPEC→CWE→CRE transitive chain, NOT ML output. Treat as equivalent to human LinkedTo (penalty=0).
 - **data/raw/ is immutable.** Never modify files after initial fetch. Parsers read raw/, write processed/.
 - **Fresh OpenCRE fetch.** Always from `opencre.org/rest/v1/all_cres` (1-indexed, per_page=50, ~261 pages). Never copy from old project.
