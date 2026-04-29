@@ -317,3 +317,62 @@ class TestBuildEvaluationCorpusDedup:
         ]
         corpus = build_evaluation_corpus(links, {"MITRE ATLAS", "NIST AI 100-2"}, {})
         assert len(corpus) == 2
+
+
+class TestMultiLabelScoring:
+    """Test multi-label-aware scoring functions."""
+
+    def test_hit1_accepts_any_valid_hub(self) -> None:
+        from scripts.phase0.common import score_predictions
+
+        predictions = [["hub-2", "hub-1", "hub-3"]]
+        ground_truth = ["hub-1"]
+        valid_hub_sets = [frozenset({"hub-1", "hub-2"})]
+        result = score_predictions(predictions, ground_truth, valid_hub_sets)
+        assert result["hit_at_1"] == 1.0
+
+    def test_hit1_fails_when_no_valid_hub_at_top(self) -> None:
+        from scripts.phase0.common import score_predictions
+
+        predictions = [["hub-3", "hub-1"]]
+        ground_truth = ["hub-1"]
+        valid_hub_sets = [frozenset({"hub-1", "hub-2"})]
+        result = score_predictions(predictions, ground_truth, valid_hub_sets)
+        assert result["hit_at_1"] == 0.0
+
+    def test_mrr_uses_first_valid_hub(self) -> None:
+        from scripts.phase0.common import score_predictions
+
+        predictions = [["hub-3", "hub-2", "hub-1"]]
+        ground_truth = ["hub-1"]
+        valid_hub_sets = [frozenset({"hub-1", "hub-2"})]
+        result = score_predictions(predictions, ground_truth, valid_hub_sets)
+        assert result["mrr"] == 0.5  # hub-2 at position 2
+
+    def test_backward_compat_without_valid_sets(self) -> None:
+        from scripts.phase0.common import score_predictions
+
+        predictions = [["hub-1", "hub-2"]]
+        ground_truth = ["hub-1"]
+        result = score_predictions(predictions, ground_truth)
+        assert result["hit_at_1"] == 1.0
+
+    def test_ndcg_multi_label(self) -> None:
+        from scripts.phase0.common import score_predictions
+
+        predictions = [["hub-3", "hub-2", "hub-1"]]
+        ground_truth = ["hub-1"]
+        valid_hub_sets = [frozenset({"hub-1", "hub-2"})]
+        result = score_predictions(predictions, ground_truth, valid_hub_sets)
+        import math
+        expected_ndcg = (1.0 / math.log2(3)) / (1.0 / math.log2(2))
+        assert result["ndcg_at_10"] == pytest.approx(expected_ndcg)
+
+    def test_hit5_multi_label(self) -> None:
+        from scripts.phase0.common import score_predictions
+
+        predictions = [["a", "b", "c", "hub-2", "e"]]
+        ground_truth = ["hub-1"]
+        valid_hub_sets = [frozenset({"hub-1", "hub-2"})]
+        result = score_predictions(predictions, ground_truth, valid_hub_sets)
+        assert result["hit_at_5"] == 1.0

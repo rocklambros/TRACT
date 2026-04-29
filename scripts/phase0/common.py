@@ -491,19 +491,30 @@ def build_hub_texts(
 # ── Scoring Metrics ─────────────────────────────────────────────────────────
 
 
-def reciprocal_rank(predicted: list[str], truth: str) -> float:
-    """Reciprocal rank of truth in predicted list. 0 if not found."""
+def reciprocal_rank(
+    predicted: list[str],
+    truth: str,
+    valid_set: frozenset[str] | None = None,
+) -> float:
+    """Reciprocal rank of first valid hub in predicted list."""
+    targets = valid_set if valid_set else frozenset({truth})
     for i, p in enumerate(predicted):
-        if p == truth:
+        if p in targets:
             return 1.0 / (i + 1)
     return 0.0
 
 
-def ndcg_at_k(predicted: list[str], truth: str, k: int = 10) -> float:
-    """NDCG@k for single-relevant-item retrieval."""
+def ndcg_at_k(
+    predicted: list[str],
+    truth: str,
+    k: int = 10,
+    valid_set: frozenset[str] | None = None,
+) -> float:
+    """NDCG@k for single-relevant-item retrieval (multi-label aware)."""
+    targets = valid_set if valid_set else frozenset({truth})
     dcg = 0.0
     for i, p in enumerate(predicted[:k]):
-        if p == truth:
+        if p in targets:
             dcg = 1.0 / math.log2(i + 2)
             break
     idcg = 1.0 / math.log2(2)
@@ -513,15 +524,12 @@ def ndcg_at_k(predicted: list[str], truth: str, k: int = 10) -> float:
 def score_predictions(
     predictions: list[list[str]],
     ground_truth: list[str],
+    valid_hub_sets: list[frozenset[str]] | None = None,
 ) -> dict[str, float]:
     """Score ranked predictions against ground truth hub IDs.
 
-    Args:
-        predictions: List of ranked hub ID lists (one per eval item).
-        ground_truth: List of correct hub IDs (one per eval item).
-
-    Returns:
-        Dict with hit_at_1, hit_at_5, mrr, ndcg_at_10.
+    If valid_hub_sets is provided, any hub in the valid set counts as a hit
+    (multi-label-aware scoring). Otherwise falls back to single-label.
     """
     n = len(predictions)
     if n == 0:
@@ -529,10 +537,25 @@ def score_predictions(
     if n != len(ground_truth):
         raise ValueError(f"Prediction count {n} != ground truth count {len(ground_truth)}")
 
-    hit1 = sum(1 for pred, gt in zip(predictions, ground_truth) if pred and pred[0] == gt) / n
-    hit5 = sum(1 for pred, gt in zip(predictions, ground_truth) if gt in pred[:5]) / n
-    mrr = sum(reciprocal_rank(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
-    ndcg = sum(ndcg_at_k(pred, gt) for pred, gt in zip(predictions, ground_truth)) / n
+    if valid_hub_sets is None:
+        valid_hub_sets = [frozenset({gt}) for gt in ground_truth]
+
+    hit1 = sum(
+        1 for pred, vs in zip(predictions, valid_hub_sets)
+        if pred and pred[0] in vs
+    ) / n
+    hit5 = sum(
+        1 for pred, vs in zip(predictions, valid_hub_sets)
+        if any(p in vs for p in pred[:5])
+    ) / n
+    mrr = sum(
+        reciprocal_rank(pred, gt, vs)
+        for pred, gt, vs in zip(predictions, ground_truth, valid_hub_sets)
+    ) / n
+    ndcg = sum(
+        ndcg_at_k(pred, gt, valid_set=vs)
+        for pred, gt, vs in zip(predictions, ground_truth, valid_hub_sets)
+    ) / n
 
     return {
         "hit_at_1": hit1,
@@ -678,6 +701,7 @@ def aggregate_lofo_metrics(
     """
     all_predictions: list[list[str]] = []
     all_ground_truth: list[str] = []
+    all_valid_sets: list[frozenset[str]] = []
 
     for fold, results in zip(folds, fold_results):
         for i, item in enumerate(fold.eval_items):
@@ -689,6 +713,8 @@ def aggregate_lofo_metrics(
                 preds = []
             all_predictions.append(preds)
             all_ground_truth.append(item.ground_truth_hub_id)
+            vs = item.valid_hub_ids if hasattr(item, "valid_hub_ids") else frozenset({item.ground_truth_hub_id})
+            all_valid_sets.append(vs)
 
     if not all_predictions:
         return {
@@ -697,20 +723,20 @@ def aggregate_lofo_metrics(
         }
 
     hit1_arr = np.array([
-        1.0 if pred and pred[0] == gt else 0.0
-        for pred, gt in zip(all_predictions, all_ground_truth)
+        1.0 if pred and pred[0] in vs else 0.0
+        for pred, vs in zip(all_predictions, all_valid_sets)
     ])
     hit5_arr = np.array([
-        1.0 if gt in pred[:5] else 0.0
-        for pred, gt in zip(all_predictions, all_ground_truth)
+        1.0 if any(p in vs for p in pred[:5]) else 0.0
+        for pred, vs in zip(all_predictions, all_valid_sets)
     ])
     mrr_arr = np.array([
-        reciprocal_rank(pred, gt)
-        for pred, gt in zip(all_predictions, all_ground_truth)
+        reciprocal_rank(pred, gt, vs)
+        for pred, gt, vs in zip(all_predictions, all_ground_truth, all_valid_sets)
     ])
     ndcg_arr = np.array([
-        ndcg_at_k(pred, gt)
-        for pred, gt in zip(all_predictions, all_ground_truth)
+        ndcg_at_k(pred, gt, valid_set=vs)
+        for pred, gt, vs in zip(all_predictions, all_ground_truth, all_valid_sets)
     ])
 
     return {
