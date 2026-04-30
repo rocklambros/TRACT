@@ -142,3 +142,50 @@ def fit_t_lofo(
     logger.info("T_lofo=%.4f, per-fold NLL: %s", result["temperature"],
                 {k: f"{v:.4f}" for k, v in per_fold_nll.items()})
     return result
+
+
+def find_global_threshold(
+    similarities: NDArray[np.floating],
+    valid_hub_indices: list[list[int]],
+    temperature: float,
+    n_thresholds: int = 200,
+) -> dict:
+    """Find global probability threshold at max-F1 for multi-label assignment.
+
+    TP: predicted hub in valid_hubs
+    FP: predicted hub not in valid_hubs
+    FN: no predicted hub in valid_hubs
+    """
+    probs = calibrate_similarities(similarities, temperature)
+    thresholds = np.linspace(0.001, 0.999, n_thresholds)
+    best_f1 = 0.0
+    best_threshold = 0.5
+
+    for t in thresholds:
+        tp = 0
+        fp = 0
+        fn = 0
+        for i, valid_indices in enumerate(valid_hub_indices):
+            valid_set = set(valid_indices)
+            any_hit = False
+            for j in range(probs.shape[1]):
+                predicted = probs[i, j] >= t
+                is_valid = j in valid_set
+                if predicted and is_valid:
+                    tp += 1
+                    any_hit = True
+                elif predicted and not is_valid:
+                    fp += 1
+            if not any_hit:
+                fn += 1
+
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
+        if f1 > best_f1:
+            best_f1 = f1
+            best_threshold = float(t)
+
+    logger.info("Global threshold: %.4f (F1=%.4f)", best_threshold, best_f1)
+    return {"threshold": best_threshold, "f1": best_f1}

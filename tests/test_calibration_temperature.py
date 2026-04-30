@@ -92,3 +92,29 @@ class TestFitTLofo:
         assert 0.01 <= result["temperature"] <= 5.0
         assert "per_fold_nll" in result
         assert len(result["per_fold_nll"]) == 3
+
+
+class TestGlobalThreshold:
+    def test_threshold_in_valid_range(self) -> None:
+        from tract.calibration.temperature import find_global_threshold
+
+        rng = np.random.default_rng(42)
+        n, n_hubs = 30, 10
+        sims = rng.uniform(0, 1, size=(n, n_hubs))
+        gt_indices = rng.integers(0, n_hubs, size=n).tolist()
+        for i in range(n):
+            sims[i, gt_indices[i]] += 0.3
+        valid = [[idx] for idx in gt_indices]
+
+        result = find_global_threshold(sims, valid, temperature=1.0)
+        assert 0.0 < result["threshold"] < 1.0
+        assert result["f1"] >= 0.0
+
+    def test_multi_label_tp_if_any_valid(self) -> None:
+        from tract.calibration.temperature import find_global_threshold
+
+        sims = np.array([[0.9, 0.8, 0.1], [0.1, 0.1, 0.9]])
+        valid = [[0, 1], [2]]
+
+        result = find_global_threshold(sims, valid, temperature=1.0)
+        assert result["f1"] > 0.0
