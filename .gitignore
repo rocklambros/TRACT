@@ -16,3 +16,4 @@ scripts/phase0/.pod_state.json
 scripts/phase0/.pod_state_0r.json
 .claude/
 wandb/
+docs/session-prompts.md
