@@ -60,6 +60,50 @@ def rank_hubs_by_similarity(
     return [hub_ids[i] for i in ranked_indices]
 
 
+def extract_similarity_matrix(
+    model: Any,
+    eval_items: list[Any],
+    hub_ids: list[str],
+    hub_embs: NDArray[np.floating[Any]],
+) -> dict[str, Any]:
+    """Extract full similarity matrix for calibration.
+
+    Args:
+        model: SentenceTransformer (or anything with .encode()).
+        eval_items: Items with .control_text, .valid_hub_ids, .framework_name.
+        hub_ids: Canonical sorted hub IDs matching hub_embs rows.
+        hub_embs: Pre-computed hub embeddings, shape (n_hubs, dim), L2-normalized.
+
+    Returns:
+        Dict with keys: sims (n_eval, n_hubs), hub_ids, gt_json, frameworks.
+    """
+    import json
+
+    control_texts = [item.control_text for item in eval_items]
+    query_embs = model.encode(
+        control_texts,
+        normalize_embeddings=True,
+        convert_to_numpy=True,
+        show_progress_bar=False,
+        batch_size=128,
+    )
+
+    sims = query_embs @ hub_embs.T
+
+    gt_json = [
+        json.dumps(sorted(item.valid_hub_ids))
+        for item in eval_items
+    ]
+    frameworks = [item.framework_name for item in eval_items]
+
+    return {
+        "sims": sims.astype(np.float32),
+        "hub_ids": hub_ids,
+        "gt_json": gt_json,
+        "frameworks": frameworks,
+    }
+
+
 def _build_fold_index_matrix(
     fold_sizes: list[int],
     n_resamples: int,

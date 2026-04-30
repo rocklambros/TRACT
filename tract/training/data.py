@@ -75,6 +75,7 @@ TIER_PRIORITY: dict[str, int] = {
     "T1": 0,
     "T1-AI": 1,
     "T3": 2,
+    "AL": 3,
 }
 
 

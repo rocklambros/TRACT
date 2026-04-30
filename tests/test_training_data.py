@@ -378,3 +378,9 @@ class TestPairsToDataset:
         assert "is_ai" in ds.column_names
         assert "anchor_key" in ds.column_names
         assert len(ds) == 4
+
+
+def test_tier_priority_includes_al() -> None:
+    from tract.training.data import TIER_PRIORITY
+    assert "AL" in TIER_PRIORITY
+    assert TIER_PRIORITY["AL"] == 3

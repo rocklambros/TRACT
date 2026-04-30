@@ -1,0 +1,238 @@
+{
+  "description": "Phase 1C canary items. Independently assign CRE hub(s) to each item BEFORE seeing model predictions. Fill in expert_hub_ids with CRE hub IDs (e.g., '155-600'). Use data/processed/cre_hierarchy.json for the full hub list.",
+  "selection_seed": 42,
+  "pool_size": 557,
+  "instructions": "For each canary, read the full_text (or description if full_text is empty). Assign the most relevant CRE hub(s). Multiple hubs are allowed. Use CRE IDs from data/processed/cre_hierarchy.json.",
+  "canaries": [
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "CEK-06",
+      "title": "Encryption Change Cost Benefit Analysis",
+      "description": "Manage and adopt changes to cryptography-, encryption-, and key management-related systems (including policies and procedures) that fully account for downstream effects of proposed changes, including residual risk, cost, and benefits analysis.",
+      "full_text": "Manage and adopt changes to cryptography-, encryption-, and key management-related systems (including policies and procedures) that fully account for downstream effects of proposed changes, including residual risk, cost, and benefits analysis. shared: [All Actors] Applies to all Roles (Baseline) before application of role context. 1. Establish and document policies and procedures for Cryptography, Encryption, and Key Management. 2. Approve the policies and procedures through formal governance processes (e.g., security committee, CISO). 3. Communicate the policies and procedures to all relevant stakeholders. 4. Apply the approved policies and procedures to all systems, services, and processes under the role’s control. 5. Evaluate the effectiveness of policy and procedure implementation using internal audits, technical reviews, and encryption control validations. 6. Review and update the policies and procedures at least annually, or when significant system, model, or regulatory changes occur. model_provider: Role Specific 1. Develop a structured evaluation matrix to assess the trade-offs between cryptographic strength and model performance during proposed encryption changes. 2. Involve data privacy, security, and research teams in pre-implementation reviews to ensure that proposed cryptographic updates align with risk tolerance and technical feasibility. 3. Track encryption-related incidents or performance regressions post-change to validate whether cost-benefit forecasts held true and inform future policy adjustments. [All Actors] Applies to all Roles (Baseline) before application of role context. 1. Establish and document policies and procedures for Cryptography, Encryption, and Key Management. 2. Approve the policies and procedures through formal governance processes (e.g., security committee, CISO). 3. Communicate the policies and procedures to all relevant stakeholders. 4. Apply the approved policies and procedures to all systems, services, and processes under th",
+      "expert_hub_ids": [
+        "122-287",
+        "112-648"
+      ]
+    },
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "CEK-08",
+      "title": "Customer Key Management Capability",
+      "description": "Providers must provide the capability for customers to manage their own data encryption keys.",
+      "full_text": "Providers must provide the capability for customers to manage their own data encryption keys. shared: [All Actors] Applies to all Roles (Baseline) before application of role context. 1. Establish and document policies and procedures for Cryptography, Encryption, and Key Management. 2. Approve the policies and procedures through formal governance processes (e.g., security committee, CISO). 3. Communicate the policies and procedures to all relevant stakeholders. 4. Apply the approved policies and procedures to all systems, services, and processes under the role’s control. 5. Evaluate the effectiveness of policy and procedure implementation using internal audits, technical reviews, and encryption control validations. 6. Review and update the policies and procedures at least annually, or when significant system, model, or regulatory changes occur. model_provider: Role Specific 1. Configure model-serving platforms to support AIC-managed encryption keys through CSP-integrated mechanisms such as envelope encryption or key alias resolution for inference data. 2. Implement safeguards in model output pipelines to ensure telemetry, logs, and predictions are encrypted using AIC-held keys where applicable, especially in multi-tenant model serving environments. 3. Conduct platform validation exercises to confirm key usage attribution and that cryptographic boundaries align with customer-managed key expectations defined by CSP controls. [All Actors] Applies to all Roles (Baseline) before application of role context. 1. Establish and document policies and procedures for Cryptography, Encryption, and Key Management. 2. Approve the policies and procedures through formal governance processes (e.g., security committee, CISO). 3. Communicate the policies and procedures to all relevant stakeholders. 4. Apply the approved policies and procedures to all systems, services, and processes under the role’s control. 5. Evaluate the effectiveness of policy and procedure implementation using inte",
+      "expert_hub_ids": [
+        "508-702"
+      ]
+    },
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "CEK-11",
+      "title": "Key Purpose",
+      "description": "Manage cryptographic secret and private keys that are provisioned for a unique purpose.",
+      "full_text": "Manage cryptographic secret and private keys that are provisioned for a unique purpose. shared: [All Actors] Applies to all Roles (Baseline) before application of role context. 1. Establish and document policies and procedures for Cryptography, Encryption, and Key Management. 2. Approve the policies and procedures through formal governance processes (e.g., security committee, CISO). 3. Communicate the policies and procedures to all relevant stakeholders. 4. Apply the approved policies and procedures to all systems, services, and processes under the role’s control. 5. Evaluate the effectiveness of policy and procedure implementation using internal audits, technical reviews, and encryption control validations. 6. Review and update the policies and procedures at least annually, or when significant system, model, or regulatory changes occur. model_provider: Role Specific 1. Configure model-serving and training environments to generate and assign unique keys for distinct tasks such as encrypting training datasets, securing inference responses, and isolating model artifacts. 2. Tag each cryptographic key with a defined usage scope and enforce key separation through access policies embedded in ML pipeline orchestration and deployment scripts. 3. Review telemetry and audit logs regularly to detect cross-purpose key usage and initiate remediation procedures when key assignments violate defined purpose boundaries. [All Actors] Applies to all Roles (Baseline) before application of role context. 1. Establish and document policies and procedures for Cryptography, Encryption, and Key Management. 2. Approve the policies and procedures through formal governance processes (e.g., security committee, CISO). 3. Communicate the policies and procedures to all relevant stakeholders. 4. Apply the approved policies and procedures to all systems, services, and processes under the role’s control. 5. Evaluate the effectiveness of policy and procedure implementation using internal audits, techn",
+      "expert_hub_ids": [
+        "287-305",
+        "783-255"
+      ]
+    },
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "DCS-10",
+      "title": "Surveillance System",
+      "description": "Implement, maintain, and operate datacenter surveillance systems at the external perimeter and at all the ingress and egress points to detect unauthorized ingress and egress attempts.",
+      "full_text": "Implement, maintain, and operate datacenter surveillance systems at the external perimeter and at all the ingress and egress points to detect unauthorized ingress and egress attempts. shared: [All Actors except AIC,AP,OSP] 1. Providers should implement and maintain surveillance around data centres that perform tasks related to data processing, inference, etc. 2. Full coverage of DC with no blind spots. Establish formal chain of custody procedures for access recordings. 3. Maintain comprehensive access logs for all entry and exit events including maintenance activities performed on surveillance systems for regulatory compliance reviews. model_provider: Role Specific Providers should implement and maintain surveillance around model related tasks and their hosting in data centres that perform tasks related to data processing, inference etc . [All Actors except AIC,AP,OSP] 1. Providers should implement and maintain surveillance around data centres that perform tasks related to data processing, inference, etc. 2. Full coverage of DC with no blind spots. Establish formal chain of custody procedures for access recordings. 3. Maintain comprehensive access logs for all entry and exit events including maintenance activities performed on surveillance systems for regulatory compliance reviews. orchestrated_service_provider: Role Specific and Shared 1. Providers should implement and maintain surveillance around data centres that perform tasks related to data processing, inference etc . application_provider: Role Specific and Shared 1. Providers should implement and maintain surveillance around data centres that perform tasks related to data processing, inference etc . ai_customer: Not Applicable cloud_service_provider: Role Specific For the CSPs to effectively implement, maintain, and operate datacenter surveillance systems for unauthorized ingress and egress detection, implementation best practices should include (but not limited to): a. Physical Access Control Systems (PACS): ",
+      "expert_hub_ids": [
+        "234-282"
+      ]
+    },
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "GRC-10",
+      "title": "AI Impact Assessment",
+      "description": "Establish, document, and communicate to all relevant stakeholders an AI Impact Assessment process and its criteria to regularly evaluate the ethical, societal, operational, legal, and security impacts of the AI system throughout its lifecycle.",
+      "full_text": "Establish, document, and communicate to all relevant stakeholders an AI Impact Assessment process and its criteria to regularly evaluate the ethical, societal, operational, legal, and security impacts of the AI system throughout its lifecycle. shared: [All Actors] 1. Conduct a comprehensive impact assessment, for example using the guidance provided in ISO/IEC 42005:2025 on how to conduct AI Impact Assessments before deploying AI systems that process sensitive data, affect individuals, or are used in high-risk contexts. 2. Define the scope of the assessment to include intended use, affected users or communities, risk scenarios, and mitigations. 3. Document potential harms, legal/regulatory implications, fairness concerns, and system limitations. 4. Establish a review and sign-off process involving legal, compliance, risk, and technical stakeholders. 5. Update assessments periodically or when the system’s purpose, data sources, or deployment context changes. model_provider: 1. Perform AI impact assessments as part of model development lifecycle, including fairness, robustness, and explainability risks. 2. Document potential downstream misuse and include mitigations in model cards or technical documentation. 3. Evaluate dataset bias and assess impact on demographic groups. 4. Collaborate with legal and risk teams to assess implications of model deployment. 5. Maintain versioned impact assessments tied to model versions. [All Actors] 1. Conduct a comprehensive impact assessment, for example using the guidance provided in ISO/IEC 42005:2025 on how to conduct AI Impact Assessments before deploying AI systems that process sensitive data, affect individuals, or are used in high-risk contexts. 2. Define the scope of the assessment to include intended use, affected users or communities, risk scenarios, and mitigations. 3. Document potential harms, legal/regulatory implications, fairness concerns, and system limitations. 4. Establish a review and sign-off process involving leg",
+      "expert_hub_ids": [
+        "307-242",
+        "646-285"
+      ]
+    },
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "UEM-06",
+      "title": "Automatic Lock Screen",
+      "description": "Configure all relevant interactive-use endpoints to require an automatic lock screen.",
+      "full_text": "Configure all relevant interactive-use endpoints to require an automatic lock screen. shared: [Applicable to all actors except CSP] 1. Enforce a common idle timeout (e.g., 15 minutes or less) on all user endpoints across MP, OSP, AP, and AIC via UEM policies to automatically lock devices after inactivity. 2. Configure the UEM platform to apply this lock screen policy uniformly and prevent end-user modifications, with any non-compliant endpoints flagged to all stakeholders’ security teams for prompt action. 3. Include automatic lock screen checks in joint security audits, verifying every participant’s devices lock properly and require re-authentication (password or biometric) after the idle period. 4. Establish a shared standard for lock screen settings (such as requiring MFA or strong passwords upon unlock) so that all organizations maintain a consistent baseline for endpoint access security. 5. Encourage the use of passkeys (FIDO2/WebAuthn) as the primary unlock mechanism on managed endpoints, leveraging device biometrics or PIN and to replace or supplement passwords and traditional MFA. model_provider: 1. Configure all model development and training endpoints (developer laptops, lab workstations, etc.) to automatically lock the screen after a brief idle interval and require secure re-authentication (password/biometric) to regain access. 2. Use group policies or device management tools to set a firm inactivity timeout (such as 5 minutes) on model provider devices and restrict users from changing or disabling this setting. 3. Include server or cloud-based development environments in the policy: ensure that if model engineers use cloud VMs or remote desktops for development, those sessions also auto-lock or log out when idle to protect sensitive data and code. 4. Perform routine checks (via UEM compliance reports or login audits) to verify all MP team devices adhere to the auto-lock policy and address any cases of non-compliance with immediate configuration updates o",
+      "expert_hub_ids": [
+        "286-500",
+        "065-782"
+      ]
+    },
+    {
+      "framework": "csa_aicm",
+      "framework_name": "CSA AI Controls Matrix",
+      "control_id": "UEM-09",
+      "title": "Anti-Malware Detection and Prevention",
+      "description": "Configure managed endpoints with anti-malware detection and prevention technology and services.",
+      "full_text": "Configure managed endpoints with anti-malware detection and prevention technology and services. shared: [Applicable to all actors except CSP] 1. Deploy and maintain anti-malware or EDR on all endpoints (laptops, mobiles, virtual machines, virtual desktops, jump hosts, etc.), with real-time protection and behavior or ML-based detection, and keep engines and signatures current. 2. Continuously monitor agent health in UEM (installed, running, current, scans performed) and enforce access restrictions for non-compliant devices using Conditional Access or NAC, including auto-quarantine until remediated. 3. Standardize protection settings and scanning policy across parties: require on-access scanning and periodic scans on a risk-based cadence; use vendor guidance for full scans and run them when catch-up or incident conditions warrant. 4. Share threat intelligence and coordinate response across stakeholders so that new IoCs and detections propagate quickly and comparable protective actions are triggered everywhere. 5. Maintain malware response playbooks that define containment, isolation, eradication, and recovery steps, with roles and escalation, and test them periodically. model_provider: 1. Deploy anti-malware software on all model provider endpoints and ensure it is active at all times. Each model developer’s computer, any servers hosting training data, and even test machines used for model tuning should have an anti-malware agent that provides real-time protection and regular system scanning. 2. Set anti-malware policies specifically tailored to the development environment: for example, allow the agent to scan code repositories, data sets, and model files for known malicious content (ensuring that nothing like a poisoned data file or malicious script is introduced). At the same time, whitelist known safe development tools to avoid unnecessary performance overhead, balancing security with productivity. 3. Keep the anti-malware agents updated and monitor their status vi",
+      "expert_hub_ids": [
+        "872-574"
+      ]
+    },
+    {
+      "framework": "eu_ai_act",
+      "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
+      "control_id": "AIA-Art8",
+      "title": "Compliance with the requirements",
+      "description": "1. High-risk AI systems shall comply with the requirements laid down in this Section, taking into account their intended purpose as well as the generally acknowledged state of the art on AI and AI-related technologies. The risk management system referred to in Article 9 shall be taken into account when ensuring compliance with those requirements. 2. Where a product contains an AI system, to which the requirements of this Regulation as well as requirements of the Union harmonisation legislation listed in Section A of Annex I apply, providers shall be responsible for ensuring that their product is fully compliant with all applicable requirements under applicable Union harmonisation legislation. In ensuring the compliance of high-risk AI systems referred to in paragraph 1 with the requirements set out in this Section, and in order to ensure consistency, avoid duplication and minimise additional burdens, providers shall have a choice of integrating, as appropriate, the necessary testing and reporting processes, information and documentation they provide with regard to their product into documentation and procedures that already exist and are required under the Union harmonisation legislation listed in Section A of Annex I.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "646-285"
+      ]
+    },
+    {
+      "framework": "eu_ai_act",
+      "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
+      "control_id": "AIA-Art42",
+      "title": "Presumption of conformity with certain requirements",
+      "description": "1. High-risk AI systems that have been trained and tested on data reflecting the specific geographical, behavioural, contextual or functional setting within which they are intended to be used shall be presumed to comply with the relevant requirements laid down in Article 10(4). 2. High-risk AI systems that have been certified or for which a statement of conformity has been issued under a cybersecurity scheme pursuant to Regulation (EU) 2019/881 and the references of which have been published in the Official Journal of the European Union shall be presumed to comply with the cybersecurity requirements set out in Article 15 of this Regulation in so far as the cybersecurity certificate or statement of conformity or parts thereof cover those requirements.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "041-188",
+        "646-285"
+      ]
+    },
+    {
+      "framework": "eu_ai_act",
+      "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
+      "control_id": "AIA-Art46",
+      "title": "Derogation from conformity assessment procedure",
+      "description": "1. By way of derogation from Article 43 and upon a duly justified request, any market surveillance authority may authorise the placing on the market or the putting into service of specific high-risk AI systems within the territory of the Member State concerned, for exceptional reasons of public security or the protection of life and health of persons, environmental protection or the protection of key industrial and infrastructural assets. That authorisation shall be for a limited period while the necessary conformity assessment procedures are being carried out, taking into account the exceptional reasons justifying the derogation. The completion of those procedures shall be undertaken without undue delay. 2. In a duly justified situation of urgency for exceptional reasons of public security or in the case of specific, substantial and imminent threat to the life or physical safety of natural persons, law-enforcement authorities or civil protection authorities may put a specific high-risk AI system into service without the authorisation referred to in paragraph 1, provided that such authorisation is requested during or after the use without undue delay. If the authorisation referred to in paragraph 1 is refused, the use of the high-risk AI system shall be stopped with immediate effect and all the results and outputs of such use shall be immediately discarded. 3. The authorisation referred to in paragraph 1 shall be issued only if the market surveillance authority concludes that the high-risk AI system complies with the requirements of Section 2. The market surveillance authority shall inform the Commission and the other Member States of any authorisation issued pursuant to paragraphs 1 and 2. This obligation shall not cover sensitive operational data in relation to the activities of law-enforcement authorities. 4. Where, within 15 calendar days of receipt of the information referred to in paragraph 3, no objection has been raised by either a Member State or the Commis",
+      "full_text": "1. By way of derogation from Article 43 and upon a duly justified request, any market surveillance authority may authorise the placing on the market or the putting into service of specific high-risk AI systems within the territory of the Member State concerned, for exceptional reasons of public security or the protection of life and health of persons, environmental protection or the protection of key industrial and infrastructural assets. That authorisation shall be for a limited period while the necessary conformity assessment procedures are being carried out, taking into account the exceptional reasons justifying the derogation. The completion of those procedures shall be undertaken without undue delay. 2. In a duly justified situation of urgency for exceptional reasons of public security or in the case of specific, substantial and imminent threat to the life or physical safety of natural persons, law-enforcement authorities or civil protection authorities may put a specific high-risk AI system into service without the authorisation referred to in paragraph 1, provided that such authorisation is requested during or after the use without undue delay. If the authorisation referred to in paragraph 1 is refused, the use of the high-risk AI system shall be stopped with immediate effect and all the results and outputs of such use shall be immediately discarded. 3. The authorisation referred to in paragraph 1 shall be issued only if the market surveillance authority concludes that the high-risk AI system complies with the requirements of Section 2. The market surveillance authority shall inform the Commission and the other Member States of any authorisation issued pursuant to paragraphs 1 and 2. This obligation shall not cover sensitive operational data in relation to the activities of law-enforcement authorities. 4. Where, within 15 calendar days of receipt of the information referred to in paragraph 3, no objection has been raised by either a Member State or the Commis",
+      "expert_hub_ids": [
+        "646-285"
+      ]
+    },
+    {
+      "framework": "eu_ai_act",
+      "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
+      "control_id": "AIA-Art111",
+      "title": "AI systems already placed on the market or put into service and general-purpose AI models already placed on the marked",
+      "description": "1. Without prejudice to the application of Article 5 as referred to in Article 113(3), point (a), AI systems which are components of the large-scale IT systems established by the legal acts listed in Annex X that have been placed on the market or put into service before 2 August 2027 shall be brought into compliance with this Regulation by 31 December 2030. The requirements laid down in this Regulation shall be taken into account in the evaluation of each large-scale IT system established by the legal acts listed in Annex X to be undertaken as provided for in those legal acts and where those legal acts are replaced or amended. 2. Without prejudice to the application of Article 5 as referred to in Article 113(3), point (a), this Regulation shall apply to operators of high-risk AI systems, other than the systems referred to in paragraph 1 of this Article, that have been placed on the market or put into service before 2 August 2026, only if, as from that date, those systems are subject to significant changes in their designs. In any case, the providers and deployers of high-risk AI systems intended to be used by public authorities shall take the necessary steps to comply with the requirements and obligations of this Regulation by 2 August 2030. 3. Providers of general-purpose AI models that have been placed on the market before 2 August 2025 shall take the necessary steps in order to comply with the obligations laid down in this Regulation by 2 August 2027.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "646-285",
+        "112-648"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0016",
+      "title": "Obtain Capabilities",
+      "description": "Adversaries may search for and obtain software capabilities for use in their operations. Capabilities may be specific to AI-based attacks [Adversarial AI Attack Implementations](/techniques/AML.T0016.000) or generic software tools repurposed for malicious intent ([Software Tools](/techniques/AML.T0016.001)). In both instances, an adversary may modify or customize the capability to aid in targeting a particular AI-enabled system.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "888-770"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0041",
+      "title": "Physical Environment Access",
+      "description": "In addition to the attacks that take place purely in the digital domain, adversaries may also exploit the physical environment for their attacks. If the model is interacting with data collected from the real world in some way, the adversary can influence the model through access to wherever the data is being collected. By modifying the data in the collection process, the adversary can perform modified versions of attacks designed for digital access.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "234-282",
+        "641-760"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0005.002",
+      "title": "Use Pre-Trained Model",
+      "description": "Adversaries may use an off-the-shelf pre-trained model as a proxy for the victim model to aid in staging the attack.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "370-877"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0031",
+      "title": "Erode AI Model Integrity",
+      "description": "Adversaries may degrade the target model's performance with adversarial data inputs to erode confidence in the system over time. This can lead to the victim organization wasting time and money both attempting to fix the system and performing the tasks it was meant to automate by hand.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "370-877"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0042",
+      "title": "Verify Attack",
+      "description": "Adversaries can verify the efficacy of their attack via an inference API or access to an offline copy of the target model. This gives the adversary confidence that their approach works and allows them to carry out the attack at a later time of their choosing. The adversary may verify the attack once but use it against many edge devices running copies of the target model. The adversary may verify their attack digitally, then deploy it in the [Physical Environment Access](/techniques/AML.T0041) at a later time. Verifying the attack may be hard to detect since the adversary can use a minimal number of queries or an offline copy of the model.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "703-813",
+        "715-644"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0051.000",
+      "title": "Direct",
+      "description": "An adversary may inject prompts directly as a user of the LLM. This type of injection may be used by the adversary to gain a foothold in the system or to misuse the LLM itself, as for example to generate harmful content.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "686-110"
+      ]
+    },
+    {
+      "framework": "mitre_atlas",
+      "framework_name": "MITRE ATLAS",
+      "control_id": "AML.T0073",
+      "title": "Impersonation",
+      "description": "Adversaries may impersonate a trusted person or organization in order to persuade and trick a target into performing some action on their behalf. For example, adversaries may communicate with victims (via [Phishing](/techniques/AML.T0052), or [Spearphishing via Social Engineering LLM](/techniques/AML.T0052.000)) while impersonating a known sender such as an executive, colleague, or third-party vendor. Established trust can then be leveraged to accomplish an adversary's ultimate goals, possibly against multiple victims. Adversaries may target resources that are part of the AI DevOps lifecycle, such as model repositories, container registries, and software registries.",
+      "full_text": "",
+      "expert_hub_ids": [
+        "428-544"
+      ]
+    },
+    {
+      "framework": "nist_ai_600_1",
+      "framework_name": "NIST AI 600-1 Generative AI Profile",
+      "control_id": "GAI-CBRN",
+      "title": "CBRN Information or Capabilities",
+      "description": "In the future, GAI may enable malicious actors to more easily access CBRN weapons and/or relevant knowledge, information, materials, tools, or technologies that could be misused to assist in the design, development, production, or use of CBRN weapons or other dangerous materials or agents. While relevant biological and chemical threat knowledge and information is often publicly accessible, LLMs could facilitate its [analysis or synthesis, particularly by individuals without formal scientific training or](https://arxiv.org/abs/2306.03809) expertise. Recent research on this topic found that LLM outputs regarding [biological threat creaton and](https://openai.com/index/building-an-early-warning-system-for-llm-aided-biological-threat-creation/) [atack](https://www.rand.org/pubs/research_reports/RRA2977-2.html) [planning](https://www.rand.org/pubs/research_reports/RRA2977-2.html) provided minimal assistance beyond traditional search engine queries, suggesting that state-ofthe-art LLMs at the time these studies were conducted do not substantially increase the operational likelihood of such an attack. The physical synthesis development, production, and use of chemical or biological agents will continue to require both applicable expertise and supporting materials and infrastructure. The impact of GAI on chemical or biological agent misuse will depend on what the key barriers for malicious actors are (e.g., whether information access is one such barrier), and how well GAI can help actors address those barriers. Furthermore, chemical and biological design tools (BDTs) – highly [specialized AI systems](https://arxiv.org/pdf/2306.13952) trained on scientific data that aid in chemical and biological design – may augment design capabilities in chemistry and biology beyond what text-based LLMs are able to provide. As these models become more efficacious, including for beneficial uses, it will be important to assess their potential to be used for harm, such as the ideation and d",
+      "full_text": "In the future, GAI may enable malicious actors to more easily access CBRN weapons and/or relevant knowledge, information, materials, tools, or technologies that could be misused to assist in the design, development, production, or use of CBRN weapons or other dangerous materials or agents. While relevant biological and chemical threat knowledge and information is often publicly accessible, LLMs could facilitate its [analysis or synthesis, particularly by individuals without formal scientific training or](https://arxiv.org/abs/2306.03809) expertise. Recent research on this topic found that LLM outputs regarding [biological threat creaton and](https://openai.com/index/building-an-early-warning-system-for-llm-aided-biological-threat-creation/) [atack](https://www.rand.org/pubs/research_reports/RRA2977-2.html) [planning](https://www.rand.org/pubs/research_reports/RRA2977-2.html) provided minimal assistance beyond traditional search engine queries, suggesting that state-ofthe-art LLMs at the time these studies were conducted do not substantially increase the operational likelihood of such an attack. The physical synthesis development, production, and use of chemical or biological agents will continue to require both applicable expertise and supporting materials and infrastructure. The impact of GAI on chemical or biological agent misuse will depend on what the key barriers for malicious actors are (e.g., whether information access is one such barrier), and how well GAI can help actors address those barriers. Furthermore, chemical and biological design tools (BDTs) – highly [specialized AI systems](https://arxiv.org/pdf/2306.13952) trained on scientific data that aid in chemical and biological design – may augment design capabilities in chemistry and biology beyond what text-based LLMs are able to provide. As these models become more efficacious, including for beneficial uses, it will be important to assess their potential to be used for harm, such as the ideation and des",
+      "expert_hub_ids": [
+        "204-272",
+        "860-723"
+      ]
+    },
+    {
+      "framework": "owasp_agentic_top10",
+      "framework_name": "OWASP Top 10 for Agentic Applications 2026",
+      "control_id": "ASI09",
+      "title": "Human-Agent Trust Exploitation",
+      "description": "Intelligent agents can establish strong trust with human users through their natural language fluency, emotional intelligence, and perceived expertise, known as _anthropomorphism_ . Adversaries or misaligned designs may exploit this trust to influence user decisions, extract sensitive information, or steer outcomes for malicious purposes. In agentic systems, this risk is amplified when humans over-rely on autonomous recommendations or unverifiable rationales, approving actions without independent validation. By leveraging authority bias and persuasive explainability, attackers can bypass oversight, leading to data breaches, financial losses, downstream and reputational harms. The agent acts as an untraceable \"bad influence,\" manipulating the human into performing the final, audited action, making the agent's role in the compromise invisible to forensics. Automation bias, perceived authority, and anthropomorphic cues make abuse look legitimate and hard to spot. Over-reliance on agent recommendations, especially when they appear confident or authoritative, increases the chance of harmful decision-making. This entry is about human misperception or over-reliance whereas **ASI10** is agent intent deviation. The entry builds on **LLM06:2025 Excessive Agency**, and can be caused by **LLM01:2025 Prompt Injection**, **LLM05:2025** **Improper Output Handling**, or results in **LLM09:2025 Misinformation** . Aligns with Agentic AI Threats and Mitigations Guide **(T7) Misaligned & Deceptive**, **(T8) Repudiation & Untraceability**, **(T10) Overwhelming the** **Human in the Loop** . ###### **Common Examples of the Vulnerability** 1. Insufficient Explainability: Opaque reasoning forces users to trust outputs they cannot question, allowing attackers to exploit the agent's perceived authority to execute harmful actions, such as deploying malicious code, approving false instructions, or altering system states without scrutiny. 2. Missing Confirmation for Sensitive Actions: Lac",
+      "full_text": "Intelligent agents can establish strong trust with human users through their natural language fluency, emotional intelligence, and perceived expertise, known as _anthropomorphism_ . Adversaries or misaligned designs may exploit this trust to influence user decisions, extract sensitive information, or steer outcomes for malicious purposes. In agentic systems, this risk is amplified when humans over-rely on autonomous recommendations or unverifiable rationales, approving actions without independent validation. By leveraging authority bias and persuasive explainability, attackers can bypass oversight, leading to data breaches, financial losses, downstream and reputational harms. The agent acts as an untraceable \"bad influence,\" manipulating the human into performing the final, audited action, making the agent's role in the compromise invisible to forensics. Automation bias, perceived authority, and anthropomorphic cues make abuse look legitimate and hard to spot. Over-reliance on agent recommendations, especially when they appear confident or authoritative, increases the chance of harmful decision-making. This entry is about human misperception or over-reliance whereas **ASI10** is agent intent deviation. The entry builds on **LLM06:2025 Excessive Agency**, and can be caused by **LLM01:2025 Prompt Injection**, **LLM05:2025** **Improper Output Handling**, or results in **LLM09:2025 Misinformation** . Aligns with Agentic AI Threats and Mitigations Guide **(T7) Misaligned & Deceptive**, **(T8) Repudiation & Untraceability**, **(T10) Overwhelming the** **Human in the Loop** . ###### **Common Examples of the Vulnerability** 1. Insufficient Explainability: Opaque reasoning forces users to trust outputs they cannot question, allowing attackers to exploit the agent's perceived authority to execute harmful actions, such as deploying malicious code, approving false instructions, or altering system states without scrutiny. 2. Missing Confirmation for Sensitive Actions: Lack of a ",
+      "expert_hub_ids": [
+        "202-604",
+        "810-884"
+      ]
+    }
+  ]
+}

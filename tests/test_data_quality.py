@@ -207,3 +207,8 @@ class TestDataHash:
         h1 = compute_data_hash([{"a": 1, "b": 2}])
         h2 = compute_data_hash([{"b": 2, "a": 1}])
         assert h1 == h2  # sort_keys=True makes this deterministic
+
+
+def test_quality_tier_al_exists() -> None:
+    from tract.training.data_quality import QualityTier
+    assert QualityTier.AL.value == "AL"
