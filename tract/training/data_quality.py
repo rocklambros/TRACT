@@ -45,6 +45,7 @@ class QualityTier(enum.Enum):
     T1 = "T1"
     T1_AI = "T1-AI"
     T3 = "T3"
+    AL = "AL"
     DROPPED = "DROPPED"
 
 
