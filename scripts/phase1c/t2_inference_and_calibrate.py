@@ -224,7 +224,7 @@ def main() -> None:
     max_sims_unmapped = np.array([float(sims_unmapped[i].max()) for i in range(len(sims_unmapped))])
     ks_result = ks_test_similarity_distributions(max_sims_cal, max_sims_unmapped)
     atomic_write_json(ks_result, cal_dir / "ks_test.json")
-    logger.info("KS-test: statistic=%.4f, p=%.6f", ks_result["statistic"], ks_result["p_value"])
+    logger.info("KS-test: statistic=%.4f, p=%.6f", ks_result["ks_statistic"], ks_result["p_value"])
 
     # === 9. Generate review.json ===
     probs_unmapped = calibrate_similarities(sims_unmapped, t_deploy)
