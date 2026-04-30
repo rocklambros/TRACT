@@ -216,3 +216,11 @@ PHASE1C_AL_HUB_DIVERSITY_GATE: Final[int] = 50
 PHASE1C_AL_MAX_ROUNDS: Final[int] = 3
 
 PHASE1C_T_GAP_WARNING: Final[float] = 0.5
+
+PHASE1C_UNMAPPED_FRAMEWORKS: Final[dict[str, str]] = {
+    "csa_aicm": "CSA AI Controls Matrix",
+    "eu_ai_act": "EU AI Act — Regulation (EU) 2024/1689",
+    "mitre_atlas": "MITRE ATLAS",
+    "nist_ai_600_1": "NIST AI 600-1 Generative AI Profile",
+    "owasp_agentic_top10": "OWASP Top 10 for Agentic Applications 2026",
+}
