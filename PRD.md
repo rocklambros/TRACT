@@ -442,7 +442,7 @@ For frameworks with zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWA
 - Every assignment traced to: model version, training data version, expert review status
 - **Deliverable:** `crosswalk.db` + export scripts
 
-### 6.9 CLI Tool
+### 6.9 CLI Tool ✅ COMPLETE
 ```
 tract assign "Implement rate limiting for API endpoints"
   -> CRE-236 (API security, 0.89), CRE-441 (Rate limiting, 0.72)
@@ -461,7 +461,7 @@ tract hierarchy --hub CRE-236
   -> linked controls from 5 frameworks
 ```
 
-### 6.10 Guardrailed Hub Proposal System
+### 6.10 Guardrailed Hub Proposal System ✅ COMPLETE
 When the OOD detector (from 6.6 adversarial guardrails) flags controls that don't map to any existing hub, they feed into this system.
 
 **Built as a Phase 1 CLI command:** `tract propose-hubs --min-controls 3 --min-frameworks 2`
