@@ -4,6 +4,7 @@ Reads:
   - results/phase1c/similarities/fold_*.npz (from T0)
   - data/training/hub_links_curated.jsonl (training links)
   - data/processed/cre_hierarchy.json
+  - results/phase1c/round_*/review.json (if --round > 1, previous AL links)
 
 Writes:
   - results/phase1c/calibration/t_lofo_result.json
@@ -13,10 +14,11 @@ Writes:
   - results/phase1c/deployment_model/ (trained model + metadata)
 
 Usage:
-  python -m scripts.phase1c.t1_calibrate_and_train
+  python -m scripts.phase1c.t1_calibrate_and_train [--round N]
 """
 from __future__ import annotations
 
+import argparse
 import gc
 import json
 import logging
@@ -39,6 +41,7 @@ from tract.config import (
     PHASE1C_SIMILARITIES_DIR,
     PROCESSED_DIR,
 )
+from tract.active_learning.review import ingest_reviews
 from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
 from tract.training.config import TrainingConfig
@@ -180,8 +183,29 @@ def _train_deployment_model(
     logger.info("Deployment model saved to %s", PHASE1C_DEPLOYMENT_MODEL_DIR)
 
 
+def _load_al_links(up_to_round: int) -> list:
+    """Load accepted/corrected links from all previous AL rounds."""
+    from tract.training.data_quality import TieredLink
+    al_links: list[TieredLink] = []
+    for r in range(1, up_to_round):
+        review_path = PHASE1C_RESULTS_DIR / f"round_{r}" / "review.json"
+        if not review_path.exists():
+            logger.warning("Round %d review.json not found at %s, skipping", r, review_path)
+            continue
+        review_data = load_json(review_path)
+        round_links = ingest_reviews(review_data)
+        al_links.extend(round_links)
+        logger.info("Loaded %d AL links from round %d", len(round_links), r)
+    return al_links
+
+
 def main() -> None:
-    logger.info("=== T1: Calibrate T_lofo + Train Deployment Model ===")
+    parser = argparse.ArgumentParser(description="T1: Calibrate T_lofo + Train Deployment Model")
+    parser.add_argument("--round", type=int, default=1, help="Current round (>1 incorporates previous AL links)")
+    args = parser.parse_args()
+    round_num = args.round
+
+    logger.info("=== T1: Calibrate T_lofo + Train Deployment Model (round %d) ===", round_num)
     t0 = time.time()
 
     hierarchy = CREHierarchy.model_validate(load_json(PROCESSED_DIR / "cre_hierarchy.json"))
@@ -190,6 +214,11 @@ def main() -> None:
     logger.info("T_lofo = %.4f", t_lofo_result["temperature"])
 
     cal_links, canary_links, remaining = _select_and_save_holdout()
+
+    if round_num > 1:
+        al_links = _load_al_links(round_num)
+        logger.info("Adding %d AL links to %d training links", len(al_links), len(remaining))
+        remaining = list(remaining) + al_links
 
     _train_deployment_model(remaining, hierarchy)
 

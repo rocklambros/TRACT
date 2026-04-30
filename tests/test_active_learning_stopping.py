@@ -32,7 +32,7 @@ class TestEvaluateStopping:
 
         result = evaluate_stopping_criteria(
             acceptance_rate=0.85,
-            canary_accuracy=0.80,
+            canary_accuracy=0.40,
             unique_hubs_accepted=60,
         )
         assert result["should_stop"] is False
