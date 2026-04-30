@@ -183,3 +183,36 @@ PHASE1B_DROPPED_FRAMEWORKS: Final[frozenset[str]] = frozenset({
     "owasp_proactive_controls",
 })
 PHASE1B_MIN_SECTION_TEXT_LENGTH: Final[int] = 10
+
+# ── Phase 1C: Guardrails, Active Learning & Crosswalk DB ─────────────
+
+PHASE1C_RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase1c"
+PHASE1C_SIMILARITIES_DIR: Final[Path] = PHASE1C_RESULTS_DIR / "similarities"
+PHASE1C_DEPLOYMENT_MODEL_DIR: Final[Path] = PHASE1C_RESULTS_DIR / "deployment_model"
+PHASE1C_CROSSWALK_DB_PATH: Final[Path] = PHASE1C_RESULTS_DIR / "crosswalk.db"
+
+PHASE1C_HOLDOUT_TOTAL: Final[int] = 440
+PHASE1C_HOLDOUT_CALIBRATION: Final[int] = 420
+PHASE1C_HOLDOUT_CANARY: Final[int] = 20
+PHASE1C_N_AI_CANARIES: Final[int] = 20
+
+PHASE1C_T_GRID_N: Final[int] = 200
+PHASE1C_T_GRID_MIN: Final[float] = 0.01
+PHASE1C_T_GRID_MAX: Final[float] = 5.0
+
+PHASE1C_ECE_N_BINS: Final[int] = 5
+PHASE1C_ECE_THRESHOLD: Final[float] = 0.10
+PHASE1C_ECE_BOOTSTRAP_N: Final[int] = 1000
+
+PHASE1C_CONFORMAL_ALPHA: Final[float] = 0.10
+PHASE1C_CONFORMAL_COVERAGE_GATE: Final[float] = 0.90
+
+PHASE1C_OOD_PERCENTILE: Final[int] = 5
+PHASE1C_OOD_SEPARATION_GATE: Final[float] = 0.90
+
+PHASE1C_AL_ACCEPTANCE_GATE: Final[float] = 0.80
+PHASE1C_AL_CANARY_ACCURACY_GATE: Final[float] = 0.85
+PHASE1C_AL_HUB_DIVERSITY_GATE: Final[int] = 50
+PHASE1C_AL_MAX_ROUNDS: Final[int] = 3
+
+PHASE1C_T_GAP_WARNING: Final[float] = 0.5
