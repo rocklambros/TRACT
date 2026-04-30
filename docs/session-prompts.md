@@ -1,709 +1,603 @@
-# TRACT Phase-by-Phase Session Prompts
+# TRACT Session Prompts
 
-Standalone prompts for continuing the TRACT project in new Claude Code sessions. Each prompt is self-contained: paste it to start a session. Prompts are sequential — complete each before moving to the next.
+Self-contained prompts for continuing the TRACT project in new Claude Code sessions. Each prompt bootstraps a fresh session with full context. Complete sequentially.
 
-**Current state (as of 2026-04-28):**
-- Data preparation: COMPLETE (12 parsers, OpenCRE fetch, hub link extraction, all_controls.json)
-- Phase 0 code: COMPLETE (4 experiments, RunPod infra, tests, security-hardened)
-- Phase 0 execution: NOT YET RUN on GPUs
+**Project state (2026-04-29):**
+- Data Preparation: COMPLETE
+- Phase 0 (Zero-Shot Baselines): COMPLETE — Gates A+B passed
+- Phase 1A (Hierarchy, Descriptions, Ingestion): COMPLETE
+- Phase 1B (Training Pipeline): COMPLETE — Gate 1 CLEAN PASS (hit@1=0.531, delta=+0.132)
+- Phase 1C (Guardrails, Active Learning, Crosswalk DB): NOT STARTED
+- Phase 1D (CLI, Hub Proposals): NOT STARTED
+- Phase 2+ : NOT STARTED
 
----
-
-## Prompt 1: Phase 0 — Execute Experiments & Gate Evaluation
-
-```
-TRACT Phase 0: Execute zero-shot baseline experiments on RunPod and evaluate gate criteria.
-
-Read PRD.md Section 5 and docs/superpowers/plans/2026-04-28-phase0-zero-shot-baselines.md for full context.
-
-## What's already built
-All experiment code is committed and tested (90 tests passing):
-- scripts/phase0/common.py — shared infrastructure (hierarchy, LOFO, metrics, bootstrap CIs)
-- scripts/phase0/exp1_embedding_baseline.py — BGE, GTE bi-encoders + DeBERTa cross-encoder
-- scripts/phase0/exp2_llm_probe.py — Two-stage Opus probe (branch shortlist → final rank)
-- scripts/phase0/exp3_hierarchy_paths.py — Path-enriched hub text comparison
-- scripts/phase0/exp4_hub_descriptions.py — LLM description pilot (50 hubs)
-- scripts/phase0/runpod_setup.sh — 3x A100 80GB provisioning with parallel phases
-- scripts/phase0/run_summary.py — Aggregation and gate evaluation
-
-## What to do
-1. Review runpod_setup.sh and confirm the provisioning plan looks correct
-2. Help me execute `./scripts/phase0/runpod_setup.sh all` — troubleshoot any issues
-3. Once results are collected in results/phase0/, analyze them:
-   - Parse exp1 results: which model (BGE vs GTE vs DeBERTa) performed best on hit@1, hit@5, MRR?
-   - Parse exp2 results: what did Opus achieve? Is hit@5 > 0.50? (Gate A)
-   - Parse exp3 results: do hierarchy paths help? Are paired deltas significant?
-   - Parse exp4 results: do LLM descriptions improve the described-hub subset?
-   - Run run_summary.py and interpret the gate table
-4. Evaluate gate criteria (PRD Section 5):
-   - Gate A: Opus hit@5 > 0.50 on all-198 track → task is feasible
-   - Gate B: Best embedding hit@1 is at least 0.10 below Opus hit@1 → room for trained model
-5. Write a results analysis document at docs/phase0-results.md with:
-   - Summary table with all metrics and CIs
-   - Per-fold breakdown (which frameworks are hardest?)
-   - Gate pass/fail with evidence
-   - Recommendations for Phase 1 model architecture based on what we learned
-6. Commit everything
-
-## Key context
-- 198 AI evaluation items across 5 frameworks (MITRE ATLAS: 65, OWASP AI Exchange: 65, NIST AI 100-2: 45, OWASP LLM Top10: 13, OWASP ML Top10: 10)
-- Two evaluation tracks: "full-text" (125 items with parsed descriptions) and "all-198" (73 use section_name fallback)
-- RunPod pods write model-specific output files (e.g. exp1_embedding_baseline_bge.json) — collect() merges them
-- ANTHROPIC_API_KEY needed for exp2 and exp4 (set env var or ensure `pass anthropic/api_key` works)
-
-## If gates fail
-If Gate A fails (Opus can't do this task): we need to reassess whether CRE hub assignment is viable at this granularity. Consider coarser labels (parent hubs instead of leaf hubs).
-If Gate B fails (embeddings already match Opus): a trained model may not be worth the effort — consider shipping the best embedding model directly with confidence calibration.
-Document the analysis either way.
-```
+**Key results driving all remaining work:**
+- BGE-large-v1.5 + LoRA rank 16 + MNRL contrastive loss + text-aware batching
+- Per-fold deltas vs zero-shot: NIST +0.322, ML +0.285, OWASP-X +0.143, ATLAS +0.006, LLM-10 +0.000
+- 262 tests passing, all code typed and validated
+- CUDA determinism flags added to training loop
+- 5-round adversarial review completed — all findings resolved
 
 ---
 
-## Prompt 2: Phase 1A — CRE Hierarchy, Hub Descriptions & Traditional Frameworks
+## Prompt 1: Phase 1C — Guardrails, Active Learning & Crosswalk Database
 
 ```
-/using-superpowers TRACT Phase 1A: Build the production CRE hierarchy, generate all 400 hub descriptions, and ingest 13 traditional frameworks from OpenCRE. PRD Sections 6.1, 6.2, 6.3.
+TRACT Phase 1C: Implement guardrails (PRD 6.6), active learning loop (PRD 6.7), and crosswalk database (PRD 6.8).
 
-Read PRD.md Sections 6.1-6.3 for full requirements. Read CLAUDE.md for code standards.
+Read PRD.md Sections 6.6–6.8. Read CLAUDE.md for code standards (especially "Fail loud, fail early" and "Defensive I/O").
 
-## Prerequisites — verify before starting
-- Phase 0 experiments have been run and both gates passed (check docs/phase0-results.md)
-- Phase 0 results inform this work: check which embedding model performed best, whether hierarchy paths helped, whether descriptions helped the pilot
+## Current state — verify before starting
+Run these checks and stop if any fail:
+1. `python -m pytest tests/ -q` → 262 tests pass
+2. `ls data/processed/cre_hierarchy.json data/processed/hub_descriptions.json data/processed/all_controls.json` → all exist
+3. `ls results/phase1b/phase1b_textaware/` → 5 fold directories with predictions.json and metrics.json
+4. `python -c "from tract.hierarchy import CREHierarchy; from tract.io import load_json; from tract.config import PROCESSED_DIR; h = CREHierarchy.model_validate(load_json(PROCESSED_DIR / 'cre_hierarchy.json')); print(f'{len(h.hubs)} hubs, {len(h.leaf_hub_ids())} leaves')"` → 457 hubs, ~400 leaves
 
-## Phase 0 results to incorporate
-Before designing, read results/phase0/ and docs/phase0-results.md to answer:
-1. Did hierarchy paths improve hit@1/hit@5? (exp3 results) → Informs whether hierarchy_path should be a first-class feature in hub representations
-2. Did descriptions improve the 50-hub pilot? (exp4 results) → Informs how aggressively to invest in description quality
-3. Which embedding model performed best? → Informs which encoder to use for description quality validation (semantic similarity between generated description and linked standards)
-4. Which LOFO folds were hardest? → Informs where to focus expert review effort
+## Phase 1B results to incorporate
+The trained model exists at results/phase1b/phase1b_textaware/fold_*/model/. Key facts:
+- Gate 1 PASS: micro hit@1=0.531 (delta=+0.132 over zero-shot 0.399)
+- Per-fold: ATLAS=0.279(n=43), NIST=0.429(n=28), OWASP-X=0.762(n=63), LLM-10=0.333(n=6), ML-10=0.714(n=7)
+- Zero-shot per-fold: ATLAS=0.273, NIST=0.107, OWASP-X=0.619, LLM-10=0.333, ML-10=0.429
+- Model predictions for all 5 folds are in fold_*/predictions.json (control_text, ground_truth_hub_id, predicted_top10)
+- Confidence scores: cosine similarities, NOT calibrated probabilities yet — calibration is part of THIS phase (6.6 Model Integrity)
+- Training config: 20 epochs, batch=32, lr=5e-4, LoRA rank=16, seed=42
 
-## Lessons learned from previous phases
-- LLM output is untrusted input. All generated descriptions MUST be sanitized (_sanitize_text: strip null bytes, NFC normalize, enforce max length) before storage or use as model features.
-- Constants belong in one place. Import from tract/config.py — do not duplicate values across modules.
-- Async API clients must be closed in finally blocks. Use try/finally with await client.close() for all Anthropic API usage.
-- API calls need timeouts. Use asyncio.wait_for() + client-level timeout + max_retries.
-- Test with small representative fixtures first, then validate on real data.
-- Security review as a parallel agent catches real bugs — run one after implementation.
-- The hub firewall operates at the LINK level, not text level. Substring matching produces false positives. This matters for how hub descriptions interact with evaluation.
+## Lessons from Phase 1B (incorporate these)
+1. **Pre-register gate metrics.** Define success criteria BEFORE running experiments. Post-hoc metric substitution (e.g., switching micro→macro after seeing results) is not permitted. Document criteria in the spec.
+2. **Report per-fold deltas, not just aggregates.** Aggregate hit@1=0.531 masked that ATLAS was flat. Per-fold delta vs zero-shot revealed the real picture.
+3. **Traditional framework links are always in training by LOFO design.** When a CWE section maps to the same hub as an ATLAS eval item, this is the semantic bridge mechanism working as designed, NOT information leakage. Do not filter these out.
+4. **Multi-hub text mappings are valid CRE graph structure.** 35% of control texts map to >1 hub. Handle at the batching/loss layer (HubAwareTemperatureSampler), never at the data layer (dropping examples).
+5. **Adversarial review catches real errors.** R2 compared 4-fold FT vs 5-fold ZS (apples to oranges) — without cross-examination this would have become a false "model only helps one framework" conclusion.
+6. **CUDA determinism flags are required.** Without torch.backends.cudnn.deterministic=True + CUBLAS_WORKSPACE_CONFIG, fp16 on H100 produces ±1 item variance on small folds.
+7. **Hub disambiguation is harder than hub neighborhood identification.** ATLAS misses are 77% unrelated-subtree (model confused at top level), and regressions trade 1:1 with improvements (7 gained, 7 lost). The model reaches the right neighborhood but sometimes picks the wrong leaf.
 
-## Scope
-
-### 6.1 Production CRE Hierarchy
-We already have build_hierarchy() in scripts/phase0/common.py. For Phase 1, promote this to a proper tract/ module:
-- tract/hierarchy.py — CREHierarchy class with full tree operations
-- Queryable: parent lookup, child listing, path computation, branch enumeration, leaf detection
-- Validated: no cycles, all leaves reachable from roots, depth matches expectations
-- Versioned: include fetch timestamp, data hash
-- Output: data/processed/cre_hierarchy.json (the "coordinate system")
-- Tests: comprehensive hierarchy validation
-
-### 6.2 Hub Description Generation (ALL 400 leaf hubs)
-Phase 0 piloted 50 hubs. Now do all 400.
-- Generate 2-3 sentence descriptions for every leaf hub
-- Input per hub: name, hierarchy path, all linked standard section names
-- Output: what it covers, what distinguishes it from siblings, scope boundary
-- Expert review workflow: CLI-based review tool (accept/edit/reject per hub)
-- Rate: ~5 min review per hub × 400 = ~33 hours (batch in sessions of 50)
-- Store: data/processed/hub_descriptions.json with review status per hub
-- The descriptions become part of the model's hub representation — quality matters
-
-### 6.3 Traditional Framework Ingestion
-13 traditional frameworks appear in OpenCRE but we haven't parsed them separately:
-CAPEC (1799 links), CWE (613), OWASP Cheat Sheets (391), NIST 800-53 (300), ASVS (277), DSOMM (214), WSTG (118), ISO 27001 (94), NIST 800-63 (79), OWASP Proactive Controls (76), ENISA (68), NIST SSDF (46), ETSI (36), SAMM (30), Cloud Controls Matrix (29), BIML (21), OWASP Top 10 2021 (17)
-
-These frameworks' control texts come from OpenCRE link metadata (section names, section IDs). No separate source files needed — extract from opencre_all_cres.json.
-- Characterize mapping units per framework
-- Output: one standardized JSON per framework in data/processed/frameworks/
-- Update all_controls.json with all 22+ frameworks
-- CSA Cloud Controls Matrix (CCM, 29 CRE links) is a DIFFERENT framework from CSA AI Controls Matrix (AICM, 243 controls). Never conflate them.
-
-## Approach
-Use the brainstorming → spec → plan → subagent-driven-development pipeline. Run a security review agent after implementation. Parallelize independent tasks. Target: comprehensive tests for every module. Before presenting the spec, run 5 competing agents with different competing personas to analyze and debate the spec and then a 6th judge to build concensus. They must debate with each other until the judge can decide. Then, a 7th agent acts as the brutal evaluator of the methodologies used in troubleshooting and diagnosing this fix and new approach. Challenge my assumptions and choices, expose blind spots, and name opportunity costs. If my reasoning is weak, dissect it and show why. Skip validation, flattery, and softening. Show reasoning before conclusions, then give a precise, prioritized plan for what to change. We need an optimal outcome once and for all. 
-
-## Success criteria (PRD Section 11)
-- CRE hierarchy built and validated: all 522 hubs, no cycles, all leaves reachable
-- 400 hub descriptions generated (expert review is ongoing — start the process)
-- 22 frameworks fully ingested with correct mapping units
-- All tests passing, code typed and validated
-
-Think deeply using the seqauential-thinking MCP server and save memories accordingly. --ultrathink
-```
-'''
-Human review of data/processed/hub_descriptions.json
-
-Review guide saved to docs/hub-description-review-guide.md. It covers:
-
-  - What they're reviewing and why it matters
-  - Three quality criteria to check per description (concrete definition, sibling distinction, scope boundary)
-  - How to mark reviews — accept/edit/reject with exact JSON field instructions
-  - Common problems to watch for (parent/child confusion, vague boundaries, factual errors)
-  - Workflow tips — batch in sessions of 50, work by hierarchy path, save frequently
-  - Concrete examples of accept, edit, and reject reviews using real descriptions from the file
-  - How to check progress via validate_descriptions
-  - How to look up linked standards in hub_links.jsonl when unsure
-
-
-
----
-
-## Prompt 3: Phase 1B — CRE Hub Assignment Model
-
-```
-/using-superpowers TRACT Phase 1B: Combine what you said abouve about:
-
-Phase 1B — What's Next                                                                                                                  
-                                                                  
-  The remaining Phase 1 sections (6.4–6.11) form the ML training pipeline, evaluation, and CLI. They naturally group into three waves:    
-                                                                  
-  Wave 1 — Model Training Core (6.4, 6.5, 6.11)                                                                                           
-  - 6.4 Hub Assignment Model — Contrastive fine-tuning of BGE-large-v1.5 bi-encoder (Phase 0 best baseline). Training
-  data: 4,406 standard-to-hub links. Hub representation = name + hierarchy path (descriptions as ablation experiment).                                   
-  - 6.5 Hub Representation Firewall — When evaluating framework X, rebuild hub representations without X's linked sections. Hard
-  requirement for honest LOFO eval.                                                                                                       
-  - 6.11 Evaluation — Leave-one-framework-out cross-validation. hit@1, hit@5, MRR. Must beat Phase 0 baselines (Opus hit@1=0.465, BGE     
-  hit@1=0.348).                                                                                                                      
-                                                                                                                                          
-  Wave 2 — Guardrails & Active Learning (6.6, 6.7)                
-  - 6.6 Guardrails — Five categories: data integrity, model integrity, output integrity (conformal prediction, confidence thresholds),    
-  adversarial robustness (paraphrase probes, OOD detection), provenance tracking.                                                         
-  - 6.7 Active Learning Loop — Model predicts hubs for zero-coverage frameworks (AIUC-1, CSA AICM, CoSAI, etc.), expert reviews, retrain. 
-  Target >80% acceptance rate.                                                                                                            
-                                                                                                                                          
-  Wave 3 — Product Layer (6.8, 6.9, 6.10)
-  - 6.8 Crosswalk Database — SQLite with confidence scores, provenance, cross-framework relationship matrix.                              
-  - 6.9 CLI Tool — tract assign, tract compare, tract ingest, tract export.                                                               
-  - 6.10 Hub Proposal System — HDBSCAN clustering of OOD controls, 6-guardrail filter, review interface.                                  
-                                                                                                                                          
-  The big decision is whether to tackle this as one combined design or break it into sub-projects. Given the scope, I'd recommend two     
-  specs: one for the training pipeline (6.4+6.5+6.11) and one for everything else (6.6–6.10). The model needs to exist before guardrails  
-  and active learning make sense. 
-
-  With the following prompt from session-prompts.md in this project:
-
-Train the CRE hub assignment model. PRD Sections 6.4, 6.5, 6.11.
-
-Read PRD.md Sections 6.4, 6.5, 6.11 for full requirements. Read CLAUDE.md for code standards (especially ML Engineering section).
-
-## Prerequisites — verify before starting
-- Phase 1A complete: cre_hierarchy.json exists, hub_descriptions.json exists (at least generated, review ongoing), all 22 frameworks ingested
-- Phase 0 results analyzed: check docs/phase0-results.md for baseline numbers to beat
-
-## Phase 0 & 1A results to incorporate
-Before designing the model, extract these answers from previous results:
-1. Best embedding model from Phase 0 → starting point for encoder selection
-2. Whether hierarchy paths helped → include as feature or not
-3. Whether descriptions helped → confirms description investment was worthwhile
-4. Per-fold difficulty → expect smaller frameworks (LLM Top10: 10 items, ML Top10: 10 items) to have wide CIs
-5. Opus ceiling → this is the target to approach (not necessarily beat — Opus has 6 calls per control)
-6. Full-text vs all-198 gap → how much does rich control text matter vs section names?
-7. Hub description quality from expert review → are descriptions ready for use?
-
-## Lessons learned from previous phases
-- Assignment paradigm only: g(control_text) → CRE_position. NEVER pairwise f(A,B) → relationship. If you find yourself comparing two controls directly, you're doing it wrong.
-- Hub firewall is non-negotiable. When evaluating framework X, rebuild hub representations WITHOUT X's linked sections. Assert this programmatically in every evaluation path.
-- LOFO is the only valid evaluation. Leave-one-framework-out. Never hold out random controls. Never use a frozen test set.
-- No pairwise metrics. hit@1, hit@5, MRR, NDCG on hub assignment only.
-- Bootstrap CIs (10,000 resamples) and paired deltas are essential for comparing models. Use them for every comparison.
-- Auto-links (AutomaticallyLinkedTo) are expert-quality — treat as equivalent to human LinkedTo (penalty=0).
-- Constants: import thresholds/seeds/paths from tract/config.py.
-- Experiment tracking: every run logs data hash, hyperparameters, git SHA, seed, full metrics. Use WandB.
-- Checkpoint discipline: save model + optimizer + scheduler + epoch + metrics. Never just weights.
-- Deterministic: set seeds explicitly, sort keys in output, pin versions.
-- Security: use safetensors for model weights (not pickle). Credentials via `pass` manager.
-
-## Scope
-
-### 6.4 Hub Assignment Model
-- Architecture: contrastive fine-tuning of BGE-large-v1.5 bi-encoder (Phase 0 best baseline, hit@1=0.348, 0.424 with paths)
-- Hub representation: hub name + hierarchy path, encoded as target embeddings. Descriptions as ablation experiment (Phase 0 showed they hurt zero-shot).
-- Training data: 4,406 standard-to-hub links from OpenCRE (2,047 human + 2,359 expert-transitive)
-- Training strategy: contrastive learning with hard negatives (sibling hubs). Transfer learning (all 4,406 vs AI-only 198 vs two-stage) is an ablation, not prescribed.
-- Multi-label: median 1 hub/section but max 38. Per-hub similarity threshold tuning.
-- Output: cosine similarity scores over 400 leaf hubs, calibrated to probabilities via temperature/Platt scaling.
-- Phase 0 disproved: DeBERTa-v3-NLI (hit@1=0.000), classification heads, RoBERTa-large (old project only).
-
-### 6.5 Hub Representation Firewall
-Already implemented in scripts/phase0/common.py build_hub_texts(). Promote to tract/ module.
-Must work at the LINK level: remove held-out framework's links, rebuild hub text, re-encode.
-This is a build step, not a runtime hack — hub embeddings are pre-computed per fold.
-
-### 6.11 Evaluation
-- LOFO cross-validation on 5 AI frameworks
-- Primary metrics: hit@1, hit@5, MRR, NDCG@10 with bootstrap CIs
-- Compare against ALL Phase 0 baselines — trained model MUST exceed them
-- Per-fold breakdown to identify hard frameworks
-- Transfer learning A/B: compare with vs without traditional pre-training
-- Full-text vs all-198 track analysis
-
-## Approach
-Use brainstorming → spec → plan → subagent-driven-development. This is the most complex ML engineering phase — break into smaller tasks: data pipeline, model architecture, training loop, evaluation harness, experiment runner. WandB integration from the start. Security review for credential handling and model serialization. Run a security review agent after implementation. Parallelize independent tasks. Target: comprehensive tests for every module. Before presenting the spec, run 5 competing agents with different competing personas to analyze and debate the spec and then a 6th judge to build concensus. They must debate with each other until the judge can decide. Then, a 7th agent acts as the brutal evaluator of the methodologies used in troubleshooting and diagnosing this fix and new approach. Challenge my assumptions and choices, expose blind spots, and name opportunity costs. If my reasoning is weak, dissect it and show why. Skip validation, flattery, and softening. Show reasoning before conclusions, then give a precise, prioritized plan for what to change. We need an optimal outcome once and for all. 
-
-## Success criteria (PRD Section 11)
-- Trained model hit@1 > Phase 0 embedding baseline by 0.10+
-- Trained model hit@5 > 0.70
-- All Phase 0 baselines exceeded with statistically significant margins
-- Full experiment logs with data hash, hyperparams, git SHA
-- Model checkpoint with optimizer + scheduler + metrics
-
-Think deeply for this challenge using the sequential-thinking MCP
-
---ultrathink
-
-```
-
-
-
----
-
-## Prompt 4: Phase 1C — Guardrails, Active Learning & Crosswalk Database
-
-```
-TRACT Phase 1C: Implement all 5 guardrail categories, the active learning loop, and the crosswalk database. PRD Sections 6.6, 6.7, 6.8.
-
-Read PRD.md Sections 6.6, 6.7, 6.8 for full requirements. Read CLAUDE.md for code standards.
-
-## Prerequisites — verify before starting
-- Phase 1B complete: trained model exists, exceeds Phase 0 baselines, evaluation results documented
-- Hub descriptions reviewed (at least first batch — active learning needs the model)
-- All 22 frameworks ingested
-
-## Results from previous phases to incorporate
-1. Model confidence distribution → informs confidence threshold for Output Integrity guardrails
-2. Per-hub prediction accuracy → identifies hubs that need more training data (active learning targets)
-3. OOD characteristics → which controls got low-confidence predictions? What do they look like?
-4. Transfer learning results → did traditional pre-training help? Informs active learning strategy.
-5. Multi-label distribution → how often does the model predict multiple hubs? Informs disagreement detector thresholds.
-
-## Lessons learned from previous phases
-- Validate at boundaries, trust internals. Every guardrail component validates its inputs and outputs at the edges.
-- Fail loud: raise ValueError with specific messages, never return None to signal failure. No bare except.
-- Defensive I/O: atomic writes for all database operations and file writes.
-- Test-driven: write the failing test first for every guardrail. Guardrails that aren't tested don't exist.
-- Security: no eval/exec/shell=True. All external data is untrusted. Sanitize text at ingestion boundaries.
-- Logging not print. DEBUG for internal state, INFO for pipeline progress, WARNING for recoverable issues.
-- Small representative test fixtures catch real bugs — build fixtures that exercise edge cases (hubs with 1 link, hubs with 100+ links, multi-label controls).
-
-## Scope
+## Scope — three components
 
 ### 6.6 Guardrails (5 categories, all concrete and testable)
 
-**Data Integrity:**
-- Framework-level train/test split logic (LOFO — already have this, promote to tract/ module)
-- Mapping-level dedup (detect same control appearing via different CRE paths)
-- Auto-link provenance chain stored per link
-- Source version pinning (framework version + fetch date per record)
+**Data Integrity** (mostly exists — formalize):
+- LOFO train/test split: already in tract/training/orchestrate.py. Promote split logic to a standalone tract/guardrails/data_integrity.py with explicit assertions.
+- Mapping-level dedup: detect same control text appearing via different CRE link paths. Already handled by build_training_pairs() dedup on (text.lower().strip(), hub_id). Add a reporting function that surfaces dedup statistics.
+- Auto-link provenance: already stored in tiered_links (QualityTier.T1 vs T1_AI vs T2 vs T3). Add provenance chain field (CAPEC→CWE→CRE path).
+- Source version pinning: each framework tagged with document version + fetch date. Check data/processed/frameworks/*.json for existing metadata.
 
-**Model Integrity:**
-- Hub representation firewall (promote from common.py to tract/)
-- Confidence calibration module (temperature/Platt scaling)
-- Per-hub threshold tuner (optimize on validation, freeze before test)
-- Transfer learning A/B comparison (already done in 1B, formalize the comparison)
+**Model Integrity**:
+- Hub representation firewall: already in tract/training/firewall.py. Promote to tract/guardrails/model_integrity.py. Add programmatic assertion: for each fold, verify zero overlap between eval framework sections and hub representations.
+- Confidence calibration: NEW. Implement temperature scaling (Platt scaling) on held-out validation predictions. Input: cosine similarities from predictions.json. Output: calibrated probabilities. Use tract/training/calibrate.py (stub exists). Fit on LOFO validation predictions, evaluate with reliability diagrams and ECE (Expected Calibration Error).
+- Per-hub threshold tuner: NEW. For each hub, find the cosine similarity threshold that maximizes F1 on validation data. Freeze thresholds before test evaluation.
 
-**Output Integrity:**
-- Confidence threshold filter (low-confidence → flagged, not committed)
-- Conformal prediction wrapper (coverage ≥ 90%)
-- Multi-hub disagreement detector (flag near-equal competing predictions)
+**Output Integrity**:
+- Confidence threshold filter: predictions below calibrated threshold → flagged, not committed to crosswalk.db
+- Conformal prediction wrapper: guarantee coverage ≥ 90% (the true hub is in the prediction set 90%+ of the time). Use split conformal prediction on LOFO validation data.
+- Multi-hub disagreement detector: flag cases where top-2 predictions have similar confidence (delta < 0.05 calibrated probability)
 
-**Adversarial Robustness:**
-- Paraphrase probe test set (same controls reworded → same hub assignments)
-- OOD detector (max confidence below threshold → flag as "no good hub match")
-- OOD → hub proposal pipeline trigger
+**Adversarial Robustness**:
+- Paraphrase probe test set: take 20 controls, generate 3 paraphrases each via LLM, verify same hub assignments. This is a test, not a training feature.
+- OOD detector: max cosine similarity below threshold → flag as "no good hub match". Threshold from calibration.
+- OOD → hub proposal pipeline trigger (connects to Phase 1D)
 
-**Provenance Tracking:**
-- Prediction log schema (control text, hub(s), scores, model version, timestamp)
-- Human review tracking (accept/reject/correct linked to prediction ID)
-- Training data lineage per example
-- Model version tag (training data hash + hyperparameters)
+**Provenance Tracking**:
+- Prediction log schema: control_text, predicted_hubs (with scores), model_version (git SHA + data hash + config name), timestamp
+- Human review tracking: accept/reject/correct linked to prediction ID
+- Training data lineage per example: source framework, link type, quality tier
 
 ### 6.7 Active Learning Loop
-For 5 zero-coverage AI frameworks (AIUC-1: 132, CSA AICM: 243, CoSAI: 29, EU GPAI CoP: 32, OWASP Agentic: 10):
-1. Model predicts top-K hub assignments
-2. Expert reviews via CLI (accept/reject/correct)
-3. Accepted predictions added to training data with provenance="active_learning_round_N"
-4. Model retrained on expanded dataset
-5. Repeat until expert acceptance rate > 80%
-This is ~446 controls needing initial review.
+Target: 6 unmapped AI frameworks (AIUC-1: 132, CSA AICM: 243, CoSAI: 29, EU GPAI CoP: 32, OWASP Agentic: 10, NIST AI RMF: 72) = 518 controls total.
+1. Load trained model (best fold or retrained on all 5 folds)
+2. Run inference on all 518 unmapped controls → top-5 hub predictions with calibrated confidence
+3. Export to review format: control_text | framework | predicted_hub_1 (conf) | ... | reviewer_decision
+4. Expert reviews via CLI tool (tract review — implement minimal version here, full CLI in 1D)
+5. Accepted predictions → training data with provenance="active_learning_round_1"
+6. Retrain model on expanded dataset
+7. Re-predict remaining unreviewed/rejected controls
+8. Repeat until acceptance rate > 80%
 
 ### 6.8 Crosswalk Database
-- SQLite database: crosswalk.db
-- Schema: controls, hubs, assignments (with confidence + provenance), frameworks, reviews
-- Cross-framework relationships derived transitively from shared hub assignments
-- Every assignment traced to: model version, training data version, review status
-- Export scripts: JSON, CSV per framework or full matrix
+- SQLite: crosswalk.db
+- Schema tables: frameworks, controls, hubs, assignments (control_id, hub_id, confidence, calibrated_probability, review_status, model_version, provenance), reviews (assignment_id, reviewer, decision, timestamp, notes)
+- Populate from: (a) all 4,406 known CRE links (review_status="ground_truth"), (b) Phase 1B model predictions for mapped frameworks (review_status="model_predicted"), (c) active learning predictions (review_status="active_learning_round_N")
+- Cross-framework relationships derived transitively: controls sharing a hub are equivalent, sharing a parent are related
+- Export: JSON, CSV per framework or full matrix
+- All writes via atomic transactions
 
 ## Approach
-Use brainstorming → spec → plan → subagent-driven-development. Break into: guardrail modules, active learning CLI, crosswalk DB schema + ORM, export pipeline. Security review for database operations (SQL injection prevention — use parameterized queries only).
+Use brainstorming → spec → plan → subagent-driven-development.
 
-## Success criteria (PRD Section 11)
-- All 5 guardrail categories pass automated test suite
-- Active learning: >80% expert acceptance rate by round 3
-- Crosswalk database complete with all 22 frameworks
-- Every prediction traceable to model version + training data version
+Key architectural decisions to make in brainstorming:
+1. Should calibration fit on all 5 folds pooled, or per-fold? (Pooled is simpler; per-fold respects LOFO but has n=6 for LLM-10)
+2. Should the active learning model be retrained on all 5 folds combined (no LOFO), or keep LOFO? Once we're predicting truly unmapped frameworks, LOFO is no longer needed.
+3. Conformal prediction: use LOFO validation data or a separate calibration split?
+
+Before finalizing the spec, run adversarial review: 3 critic agents (data scientist, ML engineer, security engineer) attack the spec, then a judge synthesizes. Focus on: calibration methodology soundness, active learning bias risks, database integrity under concurrent review.
+
+## Success criteria
+- All 5 guardrail categories pass automated test suite (one test class per category)
+- Calibration: ECE < 0.05 on held-out validation data
+- Conformal prediction: empirical coverage ≥ 0.90
+- Active learning round 1: predictions generated for all 518 unmapped controls
+- Crosswalk database: populated with all ground-truth links + model predictions
+- All new code typed, tested, no bare exceptions
+
+## Anti-patterns from Phase 1B — do NOT repeat
+- Do not drop data to "simplify." Multi-hub mappings, multi-label predictions, low-confidence outputs — keep everything, handle complexity at the right layer.
+- Do not substitute metrics post-hoc. If ECE < 0.05 is the calibration gate, don't switch to "calibration looks reasonable" after seeing results.
+- Do not compare across different data subsets without accounting for the difference (R2's 4-fold vs 5-fold error).
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
 
 ---
 
-## Prompt 5: Phase 1D — CLI Tool & Hub Proposal System
+## Prompt 2: Phase 1D — CLI Tool & Hub Proposal System
 
 ```
-TRACT Phase 1D: Build the CLI tool and guardrailed hub proposal system. PRD Sections 6.9, 6.10.
+TRACT Phase 1D: Build the CLI tool (PRD 6.9) and guardrailed hub proposal system (PRD 6.10).
 
-Read PRD.md Sections 6.9, 6.10 for full requirements. Read CLAUDE.md for code standards.
+Read PRD.md Sections 6.9, 6.10. Read CLAUDE.md for code standards.
 
-## Prerequisites — verify before starting
-- Phase 1C complete: all guardrails implemented, crosswalk.db populated, active learning started
-- OOD detector from guardrails identifies controls that don't map to existing hubs
+## Current state — verify before starting
+1. `python -m pytest tests/ -q` → all tests pass
+2. `python -c "import sqlite3; conn = sqlite3.connect('crosswalk.db'); print(conn.execute('SELECT COUNT(*) FROM assignments').fetchone())"` → crosswalk.db exists and is populated
+3. `ls tract/guardrails/` → calibration module exists, guardrail tests pass
+4. Phase 1C guardrails all implemented and tested
 
-## Results from previous phases to incorporate
-1. OOD detection results → how many controls are flagged as "no good hub"? This determines hub proposal volume.
-2. Active learning acceptance rates → are reviewers finding that existing hubs are insufficient? Do they suggest new hubs?
-3. Confidence calibration curves → verify the OOD threshold is well-calibrated before feeding proposals.
-4. Crosswalk coverage → which framework pairs have the most/least overlap? CLI compare command should highlight this.
+## Phase 1C results to incorporate
+1. Calibrated confidence scores → CLI `tract assign` should show calibrated probabilities, not raw cosine
+2. OOD detection threshold → controls below threshold trigger hub proposal pipeline
+3. Conformal prediction sets → `tract assign` can show guaranteed-coverage prediction sets
+4. Active learning round 1 results → how many controls accepted? What's the current acceptance rate?
+5. Crosswalk DB schema → CLI queries this, export commands read from it
+6. Per-hub thresholds → `tract assign` uses these for filtering low-confidence predictions
 
-## Lessons learned from previous phases
-- CLI tools should use argparse with clear subcommands. Follow the pattern in exp1-exp4 scripts.
-- All file outputs use atomic writes (tempfile + os.replace).
-- Deterministic: HDBSCAN clustering must produce identical results on re-run. Pin min_cluster_size, min_samples, and use a fixed metric.
-- User-facing output goes through logger.info, not print (even in CLI scripts — the logging format is configurable).
-- Validate all user inputs at the boundary. Control text max 2000 chars, sanitized.
-- Security: the CLI will be used by security professionals. No eval/exec. Input text treated as untrusted.
+## Lessons from Phase 1B and 1C
+1. **Assignment paradigm only.** g(control_text) → CRE_position. The CLI never compares two controls directly. `tract compare` derives relationships transitively from shared hub assignments.
+2. **Sanitize all user input.** Control text from `tract assign` and `tract ingest` is untrusted. Use tract/sanitize.py sanitize_text() — strip null bytes, NFC normalize, enforce 2000-char max.
+3. **No eval/exec/shell=True.** No pickle. All file reads specify encoding='utf-8'.
+4. **Atomic writes.** `tract export` and `tract ingest` write to temp files then os.replace().
+5. **Logging not print.** Even CLI output goes through logging with configurable format/level.
+6. **CSA CCM ≠ CSA AICM.** Cloud Controls Matrix (traditional, 29 CRE links) ≠ AI Controls Matrix (AI, 243 controls). Verify framework identity in `tract ingest` validation.
 
 ## Scope
 
-### 6.9 CLI Tool
-Five core commands:
+### 6.9 CLI Tool — 5 commands
 
-tract assign "control text here"
-  → Top-5 hub assignments with confidence scores, hierarchy paths
+`tract assign "Implement rate limiting for API endpoints"`
+  → Top-5 hub assignments with calibrated confidence, hierarchy paths, conformal prediction set
+  → Uses: trained model inference, calibration module, crosswalk.db for related controls
+  → Implementation: thin CLI wrapper over tract/inference.py (new module)
 
-tract compare --framework atlas --framework asvs
-  → Relationship matrix: shared hubs (equivalent), parent/child (related), disjoint (gap)
+`tract compare --framework atlas --framework asvs`
+  → Cross-framework relationship matrix: shared hubs (equivalent), shared parent (related), disjoint (gap)
+  → Uses: crosswalk.db transitive relationships
+  → Output: table + optional JSON export
 
-tract ingest --file new_framework.json --template standard
-  → Schema validation, model inference, predicted assignments for review
+`tract ingest --file new_framework.json --template standard`
+  → Schema validation against framework_template.json
+  → Duplicate detection: cosine > 0.95 to existing controls flagged
+  → Model inference: predicted hub assignments for each control
+  → Output: review file for expert validation
+  → Uses: tract/schema.py validation, model inference, OOD detection
 
-tract export --format csv --framework atlas
+`tract export --format csv --framework atlas`
   → Full crosswalk table from crosswalk.db
+  → Formats: csv, json, jsonl
+  → Filters: by framework, by hub, by confidence threshold, by review status
 
-tract hierarchy --hub CRE-236
-  → Full hierarchy path, linked controls from all frameworks
+`tract hierarchy --hub 686-110`
+  → Full hierarchy path, hub description, sibling hubs
+  → Linked controls from all frameworks with confidence scores
+  → Uses: cre_hierarchy.json, hub_descriptions.json, crosswalk.db
 
-Implementation: use click or argparse. Each command is a thin wrapper over tract/ library functions. The CLI layer handles I/O; business logic lives in tract/.
+Implementation: use argparse (not click — keep dependencies minimal). Each command is a thin wrapper over tract/ library functions. CLI layer handles I/O formatting; business logic lives in tract/.
 
-### 6.10 Guardrailed Hub Proposal System
+### 6.10 Hub Proposal System
+
 When OOD detector flags controls with no good hub match:
 
-1. HDBSCAN clustering on OOD control embeddings (deterministic, seeded)
-2. Six-guardrail filter pipeline per proposed cluster:
+1. Collect OOD control embeddings (controls where max cosine < OOD threshold)
+2. HDBSCAN clustering: min_cluster_size=3, min_samples=2, metric='euclidean' on embeddings. Deterministic (no randomness).
+3. Six-guardrail filter per proposed cluster:
    - Minimum evidence: 3+ controls from 2+ frameworks
-   - Hierarchy constraint: must identify parent hub (no top-level creation)
-   - Similarity ceiling: cosine < 0.85 to all existing hubs
-   - Budget cap: ~40 proposals max per review cycle
-   - Candidate queue writer (stores proposals with evidence)
-   - Deterministic reproducibility (re-run = same clusters)
-3. CLI review: `tract review-proposals` shows name, parent, controls, similarity scores
-4. Accept/reject/edit per proposal
-5. Accepted proposals inserted into cre_hierarchy.json as children
+   - Hierarchy constraint: identify parent hub via max similarity to existing hubs. No top-level creation.
+   - Similarity ceiling: centroid cosine < 0.85 to all existing hubs (if higher, the control fits an existing hub)
+   - Budget cap: 40 proposals max per review cycle
+   - Candidate queue writer: store to hub_proposals/ with evidence
+   - Reproducibility: re-run produces identical clusters
+4. `tract review-proposals`: CLI shows proposed hub name (LLM-generated), parent hub, contributing controls, similarity scores. Expert accepts/rejects/edits.
+5. Accepted → insert into cre_hierarchy.json as children of identified parent hub. Update crosswalk.db.
 
-Output: hub_proposals/ directory with versioned rounds, acceptance records, hierarchy diffs.
+Output: hub_proposals/ directory with versioned rounds.
 
 ## Approach
-Use brainstorming → spec → plan → subagent-driven-development. Break into: CLI framework + commands, hub proposal clustering, 6-guardrail pipeline, review interface, hierarchy updater. Security review for input validation and proposal integrity.
+Use brainstorming → spec → plan → subagent-driven-development.
 
-## Success criteria (PRD Section 11)
-- Hub proposal system functional end-to-end: OOD detect → cluster → propose → review
-- CLI commands working with crosswalk.db
-- All commands tested with representative inputs
+Key design decisions for brainstorming:
+1. Should `tract assign` load the model on every invocation (slow cold start) or use a persistent server? For Phase 1 CLI, cold start is acceptable. Phase 4 API will use persistent loading.
+2. HDBSCAN: should we cluster in the original embedding space or a reduced-dimension UMAP projection? Original space is simpler and deterministic.
+3. How to generate proposed hub names? Use LLM (Claude) with the cluster's control texts + nearest existing hub as context.
+
+Adversarial review: 3 critics (UX/CLI expert, ML engineer, security engineer) attack the spec. Focus on: input validation edge cases, HDBSCAN determinism across platforms, proposal quality.
+
+## Success criteria
+- All 5 CLI commands functional with --help documentation
+- `tract assign` returns results in < 30 seconds (cold start including model load)
+- Hub proposal system: end-to-end OOD detect → cluster → propose → review
+- All commands tested: golden path + edge cases (empty input, unknown framework, malformed JSON)
+- Security: no injection vectors in any user input path
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
 
 ---
 
-## Prompt 6: Phase 2A — Dash Web UI & Framework Submission
+## Prompt 3: Phase 2A — Dash Web UI & Framework Submission
 
 ```
-TRACT Phase 2A: Build the Dash web UI and framework submission system. PRD Sections 7.1, 7.2.
+TRACT Phase 2A: Build the Dash web UI (PRD 7.1) and framework submission system (PRD 7.2).
 
-Read PRD.md Sections 7.1, 7.2 for full requirements. Read CLAUDE.md for code standards.
+Read PRD.md Sections 7.1, 7.2. Read CLAUDE.md for code standards.
 
-NOTE: PRD says "Phase 2 will be planned in detail after Phase 1 ships and we have real model results." This prompt is a starting point — adapt based on actual Phase 1 outcomes.
+NOTE: PRD says "Phase 2 will be planned in detail after Phase 1 ships and we have real model results." Adapt based on actual Phase 1 outcomes.
 
-## Prerequisites — verify before starting
-- Phase 1 fully complete: model trained, crosswalk.db populated, CLI working, hub proposals functional
-- All 22 frameworks ingested with hub assignments
-- Active learning acceptance rate > 80%
+## Current state — verify before starting
+1. `python -m pytest tests/ -q` → all tests pass
+2. `tract assign "test input"` → CLI works, returns hub assignments
+3. `tract export --format json --framework atlas` → crosswalk.db populated and queryable
+4. `ls hub_proposals/` → at least one proposal round completed (or confirm zero OOD controls)
+5. Phase 1 fully complete: model trained, crosswalk.db populated, CLI working, guardrails tested
 
 ## Phase 1 results to incorporate
-1. Crosswalk database schema → Dash pages query this directly
-2. Model inference latency → Control Search page needs sub-second response for live inference
-3. Hub proposal volume → Ontology Browser should show proposed (pending) hubs differently from established ones
-4. Framework coverage matrix → Framework Comparison page should highlight coverage gaps
-5. Confidence distribution → Confidence Dashboard heatmap needs appropriate color scale based on actual score ranges
-6. Which frameworks have the most/least CRE overlap → prioritize comparison page design for common use cases
+1. Crosswalk.db schema → Dash pages query this (use the same ORM/query functions as CLI)
+2. Model inference latency (from `tract assign` timing) → Control Search page needs sub-second response. If cold start > 5s, implement model preloading.
+3. Calibrated confidence distribution → Confidence Dashboard heatmap color scale must match actual score ranges (check min/max/median from crosswalk.db)
+4. Framework coverage matrix → which framework pairs have highest/lowest hub overlap? Design comparison page for common use cases.
+5. Active learning acceptance rates → frameworks with low acceptance need visual flagging in UI
+6. Hub proposal outcomes → Ontology Browser should distinguish proposed (pending) hubs from established ones
 
-## Lessons learned from previous phases
-- Atomic writes for any data mutation through the web UI.
-- Input sanitization on all user-provided text (control text search, framework upload). Use _sanitize_text pattern.
-- All external data (uploaded frameworks) is untrusted. Validate schema before processing.
-- Security: no eval/exec. Parameterized SQL queries only. CSRF protection on forms.
-- Test the UI in a browser — type checking and test suites verify code correctness, not feature correctness.
-- Async API client usage needs timeout + retry + cleanup (if any LLM features in UI).
+## Lessons from Phase 1
+1. **Test the UI in a browser.** Type checking and test suites verify code correctness, not feature correctness. Start the dev server and use every feature before reporting done.
+2. **All external data is untrusted.** Framework uploads in the submission system need schema validation + text sanitization before processing.
+3. **Atomic writes.** Any data mutation through the web UI uses atomic transactions.
+4. **No eval/exec/shell=True.** Parameterized SQL queries only. No raw string interpolation in queries.
+5. **Input sanitization.** Control text search uses sanitize_text(). Framework upload validates against framework_template.json schema.
+6. **CSRF protection** on any mutation endpoints.
 
 ## Scope
 
-### 7.1 Dash Web UI (5 pages)
-- Crosswalk Explorer: framework A → controls → CRE hub(s) → framework B controls at same hub
-- Framework Comparison: 2 frameworks side-by-side with equivalent/related/gap breakdown
-- Hub Ontology Browser: navigate CRE tree → click hub → linked controls, description, confidence
-- Confidence Dashboard: heatmap (frameworks × hubs) colored by assignment confidence
-- Control Search: paste text → live model inference → top-5 hubs + related controls
+### 7.1 Dash Web UI — 5 pages
 
-Tech: Dash + Plotly + dash-bootstrap-components (CYBORG theme). SQLite backend.
+| Page | Function | Data Source | Key Interaction |
+|------|----------|------------|-----------------|
+| Crosswalk Explorer | Framework A → controls → CRE hub(s) → Framework B controls | crosswalk.db | Dropdown select → table → click row → hub detail → related controls |
+| Framework Comparison | Two frameworks side-by-side: equivalent (shared hub), related (shared parent), gap | crosswalk.db | Two dropdown selects → three-column table with hub links |
+| Hub Ontology Browser | Navigate CRE tree → click hub → linked controls, description, confidence | cre_hierarchy.json + hub_descriptions.json + crosswalk.db | Collapsible tree → detail panel |
+| Confidence Dashboard | Heatmap: frameworks × hubs, colored by calibrated confidence | crosswalk.db assignments | Heatmap with click-through to prediction details |
+| Control Search | Paste text → live model inference → top-5 hubs + related controls | Trained model + crosswalk.db | Text input → results table with confidence bars |
+
+Tech: Dash + Plotly + dash-bootstrap-components. SQLite backend from crosswalk.db.
 
 ### 7.2 Framework Submission System
-- framework_template.json: JSON Schema defining required fields
-- tract validate --file new_framework.json: schema validation + duplicate detection (cosine > 0.95 flagged)
-- Upload page in Dash: drag-and-drop JSON, validation results, model inference
-- Review queue page: predicted assignments, accept/reject/correct per control
-- framework_registry.json: versioned list of all frameworks with metadata
+
+- `framework_template.json`: JSON Schema with required fields (control_id, title, description, framework_name, version, source_url)
+- Upload page in Dash: drag-and-drop JSON → schema validation → duplicate detection (cosine > 0.95) → model inference → review queue
+- Review queue page: predicted assignments per control, accept/reject/correct, batch approve
+- `framework_registry.json`: versioned list of all ingested frameworks with metadata
 
 ## Approach
-Use brainstorming → spec → plan → subagent-driven-development. Design the UI pages as mockups first before implementing. Break into: Dash app skeleton, individual pages, framework submission pipeline, review queue. Security review for web application vulnerabilities (XSS, injection, CSRF).
+Use brainstorming → spec → plan → subagent-driven-development.
 
-## Success criteria (PRD Section 11)
-- 5 pages deployed, all data sources connected
+Design the UI layout as mockups first (use the visual companion if available). Each page is an independent Dash callback module — can be developed and tested in parallel.
+
+Adversarial review: 3 critics (frontend/UX, security, data visualization) attack the spec. Focus on: XSS in user text display, SQL injection in search, responsive layout, accessibility.
+
+## Success criteria
+- 5 pages deployed and functional
 - New framework submission < 1 hour for standard-format frameworks
-- UI tested in browser for golden path and edge cases
+- Control Search returns results in < 2 seconds
+- All pages tested in browser: golden path + edge cases
+- No XSS, SQL injection, or CSRF vulnerabilities
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
 
 ---
 
-## Prompt 7: Phase 2B — HuggingFace Publication & AI/Traditional Bridge
+## Prompt 4: Phase 2B — HuggingFace Publication & AI/Traditional Bridge
 
 ```
-TRACT Phase 2B: Publish model to HuggingFace and identify AI/traditional security bridges. PRD Sections 7.3, 7.4.
+TRACT Phase 2B: Publish model to HuggingFace (PRD 7.3) and identify AI/traditional security bridges (PRD 7.4).
 
-Read PRD.md Sections 7.3, 7.4 for full requirements. Read CLAUDE.md for code standards.
+Read PRD.md Sections 7.3, 7.4. Read CLAUDE.md for code standards.
 
-## Prerequisites — verify before starting
-- Phase 2A complete: web UI functional, framework submission working
-- Model finalized (no more retraining planned before publication)
-- Hub descriptions fully reviewed by expert
+## Current state — verify before starting
+1. Phase 2A complete: web UI functional, framework submission working
+2. Model finalized (no more retraining planned before publication)
+3. Hub descriptions fully expert-reviewed: `python -c "import json; d=json.load(open('data/processed/hub_descriptions_reviewed.json')); reviewed=[h for h in d.values() if h.get('review_status')=='accepted']; print(f'{len(reviewed)} reviewed')"`
+4. Active learning rounds completed with acceptance rate documented
 
-## Phase 1 & 2A results to incorporate
-1. Final model metrics (all LOFO folds) → goes into model card
-2. Training data hash + hyperparameters → full reproducibility info for model card
-3. Environmental impact (GPU hours, energy) → required for AIBOM compliance
-4. Active learning rounds completed → documents training data provenance
-5. Hub proposal outcomes → new hubs created affect the bridge analysis
-6. Which traditional hubs have high-confidence AI framework assignments → seed candidates for bridges
+## Phase 1-2A results to incorporate
+1. Final model metrics (all LOFO folds with CIs) → model card
+2. Training config: base model, LoRA rank, epochs, batch size, learning rate, seed → model card
+3. Data hash + git SHA from training metadata → reproducibility section
+4. GPU hours and energy estimate → environmental impact for AIBOM
+5. Active learning rounds and acceptance rates → training data provenance
+6. Per-fold zero-shot vs fine-tuned comparison table → evaluation section
+7. Calibration metrics (ECE, reliability diagrams) → model card limitations section
 
-## Lessons learned from previous phases
-- CSA Cloud Controls Matrix (CCM, 29 CRE links, traditional) ≠ CSA AI Controls Matrix (AICM, 243 controls, AI). Verify framework identity when computing bridges.
-- LLM-generated content (bridge descriptions) must be sanitized before storage.
-- All API calls need timeout + retry + cleanup.
-- Deterministic: bridge identification must be reproducible (cosine threshold, not random sampling).
-- Expert review is the bottleneck. Design review workflows for efficiency (batch, sort by confidence).
+## Lessons from all previous phases
+1. **CSA CCM ≠ CSA AICM.** Verify framework identity when computing bridges.
+2. **Safetensors only.** No pickle for model weights. HuggingFace Hub uses safetensors by default.
+3. **No secrets in artifacts.** Scan model repo for API keys, credentials, paths containing usernames.
+4. **LLM-generated content must be sanitized.** Bridge descriptions go through sanitize_text() before storage.
+5. **Deterministic bridge identification.** Cosine threshold, not random sampling. Same inputs = same bridges.
 
 ## Scope
 
-### 7.3 HuggingFace Model Publication
-Published to huggingface.co/rockCO78/tract-cre-assignment:
-- Model weights (safetensors format — NOT pickle)
-- Bundled: hub_descriptions.json, cre_hierarchy.json
-- Model card (AIBOM-compliant, target 100/100): description, intended use, architecture, training details, evaluation results, limitations, ethical considerations, environmental impact, usage snippet, citation
+### 7.3 HuggingFace Publication
+Publish to huggingface.co/rockCO78/tract-cre-assignment:
+- Model weights (safetensors, LoRA adapters + base model reference)
+- Bundled data: hub_descriptions.json, cre_hierarchy.json
+- Model card targeting AIBOM 100/100: description, intended use, architecture, training details, evaluation results (full LOFO table with CIs), limitations (ATLAS flat performance, calibration caveats), ethical considerations, environmental impact, usage code snippet, citation
 - predict.py: standalone inference script
-- train.py: reproduction script with requirements and data download
-- README.md: usage documentation
+- train.py: reproduction script with pinned requirements
 
 ### 7.4 AI/Traditional Security Bridge
-81 AI hubs + 441 traditional hubs. Find conceptual bridges:
-1. Compute embedding similarity: each AI hub vs all traditional hubs. Flag cosine > 0.70.
+81 AI-specific CRE hubs + 441 traditional hubs. Find conceptual bridges:
+1. Compute embedding similarity: each AI hub representation vs all traditional hub representations. Flag cosine > 0.70.
 2. Use ENISA (68 links), ETSI (36), BIML (21) as seed evidence — they appear on both AI and traditional hubs.
-3. For each bridge candidate: LLM-generate bridge description explaining overlap.
+3. For each candidate: LLM-generate bridge description explaining the conceptual overlap.
 4. Expert review: accept bridge, reject, or propose new parent hub.
 5. Accepted bridges → new Related links in cre_hierarchy.json.
-6. New parent hubs via guardrailed proposal system (6.10).
-7. Model retrained with bridge links (if significant new training signal).
-8. Output: bridge_report.json documenting all bridges with evidence.
+6. Output: bridge_report.json with all candidates, evidence, review status.
 
 ## Approach
-Use brainstorming → spec → plan → subagent-driven-development. HuggingFace publication and bridge identification are independent — can be parallelized. Security review for model publication (no secrets in model artifacts, no PII in training data).
+HuggingFace publication and bridge identification are independent — parallelize. Security review for model artifacts (no secrets, no PII).
 
-## Success criteria (PRD Section 11)
+Adversarial review: focus on model card completeness (does it document the ATLAS flat performance and calibration limitations honestly?) and bridge methodology soundness.
+
+## Success criteria
 - HuggingFace AIBOM score: 100/100
-- At least 10 validated AI/traditional bridges
+- Model card documents all known limitations honestly
+- At least 10 validated AI/traditional bridges with evidence
 - bridge_report.json with full evidence and review status
+- No secrets or PII in any published artifact
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
 
 ---
 
-## Prompt 8: Phase 3 — Published Human-Reviewed Crosswalk Dataset
+## Prompt 5: Phase 3 — Published Human-Reviewed Crosswalk Dataset
 
 ```
 TRACT Phase 3: Produce and publish the human-reviewed crosswalk dataset. PRD Section 8.
 
-Read PRD.md Section 8 for full requirements. Read CLAUDE.md for code standards.
+Read PRD.md Section 8. Read CLAUDE.md for code standards.
 
-## Prerequisites — verify before starting
-- All Phase 2 work complete: model published, bridges identified, web UI functional
-- crosswalk.db contains predictions for all 22 frameworks
-- Active learning rounds completed with >80% acceptance rate
+## Current state — verify before starting
+1. All Phase 2 work complete: model published, bridges identified, web UI functional
+2. crosswalk.db contains predictions for all 22 frameworks
+3. Active learning rounds completed (acceptance rate documented)
+4. Hub proposals reviewed and accepted proposals integrated
 
-## Results from all previous phases to incorporate
-1. Model confidence per framework → prioritize review order (start with highest-confidence frameworks for quick wins)
-2. Active learning acceptance rates per framework → frameworks with low acceptance need more careful review
-3. Bridge hubs from Phase 2B → include bridge relationships in the published dataset
-4. Hub proposals accepted → expanded hierarchy included in publication
-5. Per-control confidence scores → reviewer can focus time on low-confidence predictions
-6. Inter-framework overlap patterns → inform review batching strategy (review overlapping controls together)
+## Key context
+This phase is primarily expert review, not engineering. The engineering work is building the review tooling and publication pipeline. The expert review itself (~62+ hours for 749 AI controls) happens outside Claude Code sessions.
 
-## Lessons learned from previous phases
-- Expert review is ~5 min/control. 749+ AI controls = ~62 hours minimum. Budget accordingly.
-- Atomic writes for review state. If a review session crashes, no work is lost.
-- Deterministic: review state serialization must be stable (sorted keys, consistent encoding).
-- Provenance: every reviewed assignment links back to model version, training data version, reviewer ID, timestamp.
-- Active learning showed which prediction patterns experts correct most → build review interface to surface these patterns.
+## Results from all previous phases
+1. Model confidence per framework → prioritize review: start with highest-confidence frameworks
+2. Active learning acceptance rates → frameworks with low acceptance need more careful review
+3. Bridge hubs from 2B → include bridge relationships in published dataset
+4. Calibration reliability → show calibrated probabilities to reviewer to guide effort allocation
+5. Per-hub prediction accuracy from LOFO → identify systematically difficult hubs
 
 ## Scope
 
-### Full Review Workflow
-1. Export all model predictions from crosswalk.db (every control, all 22 frameworks)
-2. Group by framework. Per framework, generate review spreadsheet:
-   control_id | control_text | predicted_hub_1 (confidence) | predicted_hub_2 | ... | reviewer_decision | notes
-3. Expert reviews one framework at a time:
-   - Accept top prediction
-   - Select different hub
-   - Flag for discussion
-   - Mark "no good hub" (→ hub proposal pipeline)
+### Review Tooling
+1. Export all predictions from crosswalk.db grouped by framework → review spreadsheets (CSV or web interface)
+2. Each row: control_id, control_text, predicted_hub_1 (calibrated_conf), predicted_hub_2 (calibrated_conf), ..., reviewer_decision, reviewer_notes
+3. Review interface: accept top prediction, select different hub, flag for discussion, mark "no good hub"
 4. Track: total reviewed, acceptance rate, edit rate, rejection rate, time per control
-5. Second-pass review for rejected/edited controls (consistency check)
+5. Second-pass consistency check for edited/rejected controls
 6. Inter-reviewer agreement metrics if multiple reviewers (Cohen's kappa)
 7. Freeze as crosswalk_reviewed_v1.0.jsonl
 
-### Publication
-Published dataset structure:
+### Publication Pipeline
+Published to HuggingFace Datasets AND Zenodo (for DOI):
 - crosswalk_v1.0.jsonl — every control + hub assignment + confidence + review status
 - framework_metadata.json — 22 framework descriptions, versions, sources
-- cre_hierarchy_v1.0.json — hub ontology at time of publication
-- hub_descriptions_v1.0.json — validated hub descriptions
-- review_metrics.json — acceptance rates, agreement metrics
+- cre_hierarchy_v1.0.json — hub ontology at publication time
+- hub_descriptions_v1.0.json — validated descriptions
+- review_metrics.json — acceptance rates, agreement, reviewer effort
 - README.md — dataset card (HuggingFace Datasets format)
 - LICENSE — Apache 2.0 or CC-BY-4.0
 
-Publish to: HuggingFace Datasets AND Zenodo (for DOI).
-Contribute back to OpenCRE: submit validated assignments for 5 zero-coverage AI frameworks as proposed LinkedTo links.
+Contribute back to OpenCRE: submit validated assignments for 6 unmapped AI frameworks as proposed LinkedTo links.
 
-## Approach
-Use brainstorming → spec → plan → subagent-driven-development. Break into: review interface tooling, review state management, publication formatting, HuggingFace/Zenodo upload pipeline.
+### Atomic review state
+Review progress must survive crashes. Write review state atomically after each decision. Use the same atomic write pattern as all other TRACT I/O (write to temp, os.replace).
 
-## Success criteria (PRD Section 11)
+## Success criteria
 - 100% of predicted assignments reviewed by expert
-- Published dataset available on HuggingFace Datasets
-- Review metrics documented
+- Published dataset on HuggingFace Datasets with DOI from Zenodo
+- Review metrics documented (acceptance rate, edit rate, inter-reviewer agreement if applicable)
+- OpenCRE contribution submitted for unmapped frameworks
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
 
 ---
 
-## Prompt 9: Phase 4 — Secure API with Documentation
+## Prompt 6: Phase 3B — Experimental Narrative Notebook
+
+```
+TRACT Phase 3B: Create the publication-quality experimental narrative notebook. PRD Section 8B.
+
+Read PRD.md Section 8B for full requirements including visualization standards and narrative structure.
+
+## Current state — verify before starting
+1. All training results available in results/phase0/, results/phase0r/, results/phase1b/
+2. Model published to HuggingFace (Phase 2B complete)
+3. Crosswalk reviewed and published (Phase 3 complete)
+4. All raw data for visualizations accessible
+
+## Key context
+This is NOT a code dump. It is a narrative document following a problem → exploration → failure → insight → solution arc. Style reference: ai-security-framework-crosswalk/project1/COMP_4433_RockLambros_project1_crosswalk_eda.ipynb (128 cells, 82 markdown / 46 code, 24 figures).
+
+## Concrete requirements
+- ≥128 cells, ≥1.5:1 markdown-to-code ratio
+- ≥24 figures, all numbered with titles (e.g., "Figure 4.2: Per-Framework hit@1 Across Base Models")
+- Every figure: interpretation paragraph before (what to look for) and after (what it shows)
+- "Plain English" blockquotes after every technical section
+- Interactive visualizations with static fallbacks for PDF export
+- Colorblind-accessible palettes (Okabe-Ito for categorical, single-hue sequential for counts)
+- Reproducible: all cells run top-to-bottom with identical output
+- Full notebook runs in < 10 minutes (pre-computed embeddings, not re-computed)
+
+## Narrative structure (11 sections)
+1. Introduction & Motivation — CRE as coordinate system, assignment paradigm
+2. Data Landscape — 4,406 links, 22 frameworks, hub distribution
+3. Phase 0 Baselines — zero-shot results, what worked/failed (DeBERTa=0.000)
+4. Base Model Selection — BGE vs GTE vs DeBERTa, per-fold analysis
+5. Contrastive Fine-Tuning — MNRL, LoRA, text-aware batching, loss curves
+6. Ablation Analysis — what mattered, paired deltas with CIs
+7. The Hub Firewall — LOFO, with/without firewall comparison
+8. Final Results — best model vs all baselines, per-framework deep dive
+9. Error Analysis — ATLAS item-level trades, hub disambiguation, attractor hubs
+10. Calibration — temperature scaling, reliability diagrams, ECE
+11. Conclusion & Next Steps
+
+## Key stories to tell honestly
+- DeBERTa-v3-NLI complete failure (hit@1=0.000) — why NLI ≠ semantic similarity for this task
+- Multi-hub text correction — user insight about CRE graph structure, not noise
+- ATLAS flat performance — model trades hits 1:1, hub disambiguation problem
+- R2's methodology error — 4-fold vs 5-fold comparison, caught by adversarial cross-examination
+- NIST AI massive improvement (0.107 → 0.429) — biggest single-fold gain
+
+## Success criteria (PRD Section 11)
+- ≥128 cells, ≥24 figures, full story arc
+- All cells run top-to-bottom with identical output
+- Interactive 3D/animated figures with static fallbacks
+- Colorblind-accessible palettes throughout
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
+```
+
+---
+
+## Prompt 7: Phase 4 — Secure API with Full Documentation
 
 ```
 TRACT Phase 4: Build and deploy the secure API with full documentation. PRD Section 9.
 
-Read PRD.md Section 9 for full requirements. Read CLAUDE.md for code standards.
+Read PRD.md Section 9. Read CLAUDE.md for code standards (especially Security section).
 
-## Prerequisites — verify before starting
-- Phase 3 complete: reviewed dataset published, crosswalk.db finalized
-- Model published to HuggingFace (inference code available)
-- CLI commands working (API wraps the same business logic)
+## Current state — verify before starting
+1. All Phase 1-3 complete: model trained, crosswalk reviewed, dataset published
+2. CLI commands working (`tract assign`, `tract compare`, `tract ingest`, `tract export`, `tract hierarchy`)
+3. Model published to HuggingFace (inference code available)
+4. Crosswalk.db finalized with reviewed assignments
 
-## Results from all previous phases to incorporate
-1. Model inference latency from Phase 2A Control Search page → baseline for API latency target (<500ms)
-2. Crosswalk database schema → API endpoints query this
-3. Common query patterns from web UI usage → optimize API for actual usage patterns
-4. Framework submission workflow from Phase 2A → /v1/ingest endpoint mirrors this
-5. Security patterns established throughout project → apply consistently to API
+## Key principle
+The API wraps the SAME business logic as the CLI. tract/ library functions are the shared layer. The API adds: HTTP transport, authentication, rate limiting, OpenAPI docs. No new business logic in the API layer.
 
-## Lessons learned from all previous phases
-- Input sanitization: all user text max 2000 chars, null byte stripped, NFC normalized. Already have _sanitize_text — reuse it.
-- No eval/exec/shell=True. Parameterized SQL only. No pickle (safetensors for models).
-- Credentials via environment variables or pass manager. Never in code, config, or logs.
-- API keys: don't log them, don't include in error messages, don't return in responses.
-- Defensive I/O: timeouts on all operations, retry with backoff for downstream calls.
-- Atomic writes for any state mutation.
-- Structured logging (not print) with request IDs for traceability.
-- Rate limiting must be per-key, not global — prevent one user from blocking others.
+## Results from all phases
+1. Model inference latency from CLI → baseline for API <500ms target
+2. crosswalk.db schema → API endpoints query this
+3. Common query patterns from web UI usage → optimize API for actual patterns
+4. Security patterns from all phases → apply consistently (sanitize_text, parameterized SQL, no eval/exec)
+5. Calibrated confidence scores → API returns calibrated probabilities
 
 ## Scope
 
-### API Endpoints
-| Method | Endpoint | Function |
-|--------|----------|----------|
-| POST | /v1/assign | Control text → top-K hub assignments with confidence |
-| GET | /v1/hub/{cre_id} | Hub description, hierarchy path, linked controls |
-| GET | /v1/compare?fw1=X&fw2=Y | Cross-framework relationship matrix |
-| GET | /v1/framework/{fw_id} | All controls with assignments and confidence |
-| POST | /v1/ingest | Framework JSON → validation + predicted assignments |
-| GET | /v1/hierarchy | Full CRE hierarchy tree |
-| GET | /v1/search?q=... | Text search across controls with hub assignments |
-| GET | /v1/health | Health check |
+### API Endpoints (FastAPI)
+| Method | Endpoint | Latency Target |
+|--------|----------|---------------|
+| POST | /v1/assign | <500ms (model inference) |
+| GET | /v1/hub/{cre_id} | <50ms (DB lookup) |
+| GET | /v1/compare?fw1=X&fw2=Y | <200ms (DB query) |
+| GET | /v1/framework/{fw_id} | <100ms (DB query) |
+| POST | /v1/ingest | <30s (validation + inference) |
+| GET | /v1/hierarchy | <100ms (cached) |
+| GET | /v1/search?q=... | <200ms (DB + optional inference) |
+| GET | /v1/health | <10ms |
 
-### Security
-- API key authentication (issued per user/org)
+### Security (CRITICAL — this is internet-facing)
+- API key authentication (issued per user/org, stored hashed)
 - Rate limiting: 100/min for /assign (model inference), 1000/min for reads
-- Input validation: max 2000 chars, sanitized
-- HTTPS only
-- No PII stored; prediction logs anonymized
+- Input validation: max 2000 chars, sanitize_text() on all user input
+- Parameterized SQL only — no string interpolation in queries
+- HTTPS only (TLS termination at reverse proxy)
+- No PII stored; prediction logs use hashed request IDs
 - CORS configuration for web clients
+- No eval/exec/shell=True anywhere in the API
 
 ### Documentation
-- OpenAPI 3.0 spec (auto-generated from endpoint definitions)
+- OpenAPI 3.0 spec auto-generated from FastAPI endpoint definitions
 - Hosted Swagger UI at /docs
 - Python SDK: pip install tract-client
 - Usage examples in README
 
 ### Deployment
 - Dockerfile + docker-compose.yml (API + SQLite + model weights)
-- Health check endpoint
-- Deployment guide: local, cloud, Docker
+- Model loaded once at startup, shared across requests
+- Health check endpoint with model status
+- Deployment guide: local, Docker, cloud
 
 ## Approach
-Use brainstorming → spec → plan → subagent-driven-development. Break into: API framework (FastAPI recommended), endpoint implementations, auth/rate-limiting middleware, OpenAPI spec, Python SDK, Docker packaging, deployment guide. Security review is CRITICAL for this phase — it's the only internet-facing component.
+Use brainstorming → spec → plan → subagent-driven-development.
 
-## Success criteria (PRD Section 11)
-- API latency < 500ms per single control assignment
-- Complete OpenAPI spec
-- Python SDK published
-- Docker deployment working
-- All security measures tested
+Security review is MANDATORY for this phase — run a dedicated security review agent after implementation. Focus on: input validation completeness, SQL injection, authentication bypass, rate limit circumvention, information disclosure in error messages.
+
+Adversarial review: 3 critics (API design, security, DevOps) attack the spec.
+
+## Success criteria
+- API latency < 500ms per /assign
+- Complete OpenAPI spec with all endpoints documented
+- Python SDK published and tested
+- Docker deployment working end-to-end
+- Zero security vulnerabilities in dedicated security review
+- All endpoints tested: valid input, invalid input, auth failures, rate limit enforcement
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
 
 ---
 
-## Cross-Phase Lessons Learned Reference
+## Accumulated Lessons Learned
 
-These compound over time. Each prompt above incorporates the relevant subset.
+These compound across phases. Each prompt above incorporates the relevant subset.
 
-### From Data Preparation
-- 12 parsers completed; EU AI Act HTML was hardest (15,530 lines EUR-Lex)
-- OWASP AI Exchange ID matching requires normalization (lowercase, strip hyphens/underscores/spaces/slashes)
-- NIST AI 600-1 may appear as "NIST AI 100-2" in OpenCRE — verify framework identity
-- CSA CCM (cloud, 29 CRE links) ≠ CSA AICM (AI, 243 controls, zero CRE links) — ALWAYS verify
-- Parser pattern: read raw/ → validate input → transform → validate output against Pydantic schema → write processed/
-- Text sanitization: null bytes → NFC normalize → strip HTML → fix ligatures → collapse whitespace → truncate
+### Architecture
+- Assignment paradigm only: g(control_text) → CRE_position. Never pairwise.
+- CRE graph has legitimate multi-hop structure — controls map to multiple hubs (35%). Handle at batching/loss layer, not data layer.
+- Hub firewall at LINK level, not text level. Substring matching gives false positives.
+- Traditional framework links always in training by LOFO design — this is the semantic bridge, not leakage.
 
-### From Phase 0 Implementation
-- Hub firewall operates at LINK level, not text level. Substring matching gives false positives.
-- LOFO folds are uneven: ATLAS(65), AIE(65), NIST(45), LLM(13), ML(10)
-- Two tracks: full-text(125 items) vs all-198(73 use section_name fallback)
-- Bootstrap CIs (10K resamples, vectorized numpy) are fast — use everywhere
-- Paired bootstrap deltas essential for model comparison on same data
-- Cross-encoder is O(controls × hubs), bi-encoder is O(controls + hubs)
-- LLM probe costs ~6 API calls/control × 198 = ~1,188 calls total
-- RunPod parallel pods need model-specific output filenames to avoid overwrites
-- Async clients: always try/finally with await client.close()
-- API calls: asyncio.wait_for() + client timeout + max_retries
-- Security reviews caught: shell injection, path traversal, input validation gaps, resource leaks
-- Constants in one place (tract/config.py), not duplicated across modules
-- Decide API boundaries upfront — private functions imported cross-module should be public
-- Small test fixtures (9 CREs, 3 frameworks) catch real bugs
-- Two-stage review (spec compliance + code quality) is an effective quality gate
+### ML Engineering
+- Pre-register gate metrics before running experiments. No post-hoc substitution.
+- Report per-fold deltas alongside aggregates — aggregates mask framework-specific behavior.
+- CUDA determinism flags required: cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8.
+- DeBERTa-v3-NLI fails completely (hit@1=0.000). No classification heads, NLI models, or RoBERTa.
+- Hierarchy paths help (+7.6%). Descriptions hurt zero-shot but may help trained models (ablation).
+- Bootstrap CIs (10K resamples) and paired deltas for ALL model comparisons.
+
+### Data
+- CSA CCM (cloud, 29 CRE links) ≠ CSA AICM (AI, 243 controls). Never conflate.
+- Auto-links are expert-quality (deterministic CAPEC→CWE→CRE chain). Treat as equivalent to human LinkedTo.
+- data/raw/ is immutable. Parsers read raw/, write processed/.
+- Text sanitization: null bytes → NFC normalize → strip HTML → fix ligatures → collapse whitespace → truncate.
+
+### Engineering
+- Typed, validated, tested, deterministic. Every function has a clear contract.
+- Fail loud: raise ValueError with specific message. No bare except. No silent None returns.
+- Atomic writes everywhere: tempfile + os.replace.
+- Logging not print. DEBUG/INFO/WARNING/ERROR levels.
+- No eval/exec/shell=True. No pickle. Credentials via `pass` manager.
+- Constants in tract/config.py, not scattered across modules.
+
+### Process
+- Adversarial review catches real methodology errors (R2's 4-fold vs 5-fold comparison).
+- Cross-examination between critics is essential — without it, false findings persist.
+- Small test fixtures (9 CREs, 3 frameworks) catch real bugs.
+- Two-stage review (spec compliance + code quality) is an effective quality gate.

@@ -74,6 +74,9 @@ def train_model(
     """
     torch.manual_seed(config.seed)
     np.random.seed(config.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
     model = load_model_with_lora(config)
     loss = MultipleNegativesRankingLoss(model)
