@@ -21,15 +21,18 @@ class TestBuildHubRecords:
         from tract.crosswalk.populate import build_hub_records
 
         hierarchy = _make_hierarchy({
+            "root1": HubNode(hub_id="root1", name="Root", parent_id=None, depth=0, branch_root_id="root1", hierarchy_path="/Root", is_leaf=False),
             "h1": HubNode(hub_id="h1", name="Hub One", parent_id="root1", depth=1, branch_root_id="root1", hierarchy_path="/Root/Hub One", is_leaf=True),
             "h2": HubNode(hub_id="h2", name="Hub Two", parent_id="root1", depth=1, branch_root_id="root1", hierarchy_path="/Root/Hub Two", is_leaf=True),
         })
         records = build_hub_records(hierarchy)
-        assert len(records) == 2
-        assert records[0]["id"] == "h1"
-        assert records[0]["name"] == "Hub One"
-        assert records[0]["path"] == "/Root/Hub One"
-        assert records[0]["parent_id"] == "root1"
+        assert len(records) == 3
+        assert records[0]["id"] == "root1"
+        assert records[0]["parent_id"] is None
+        assert records[1]["id"] == "h1"
+        assert records[1]["name"] == "Hub One"
+        assert records[1]["path"] == "/Root/Hub One"
+        assert records[1]["parent_id"] == "root1"
 
 
 class TestBuildFrameworkRecords:

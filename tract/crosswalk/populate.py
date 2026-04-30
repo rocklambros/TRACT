@@ -10,15 +10,34 @@ logger = logging.getLogger(__name__)
 
 
 def build_hub_records(hierarchy: CREHierarchy) -> list[dict]:
-    """Convert CREHierarchy hubs to insert_hubs() format."""
+    """Convert CREHierarchy hubs to insert_hubs() format.
+
+    Topologically sorted: parents before children (required by FK constraint).
+    """
+    from collections import deque
+
+    all_ids = set(hierarchy.hubs.keys())
+    children_map: dict[str | None, list[str]] = {}
+    for hub_id, hub in hierarchy.hubs.items():
+        parent = hub.parent_id if hub.parent_id in all_ids else None
+        children_map.setdefault(parent, []).append(hub_id)
+
+    ordered: list[str] = []
+    queue: deque[str | None] = deque([None])
+    while queue:
+        parent = queue.popleft()
+        for child_id in sorted(children_map.get(parent, [])):
+            ordered.append(child_id)
+            queue.append(child_id)
+
     records = []
-    for hub_id in sorted(hierarchy.hubs.keys()):
+    for hub_id in ordered:
         hub = hierarchy.hubs[hub_id]
         records.append({
             "id": hub.hub_id,
             "name": hub.name,
             "path": hub.hierarchy_path,
-            "parent_id": hub.parent_id,
+            "parent_id": hub.parent_id if hub.parent_id in all_ids else None,
         })
     return records
 
@@ -41,14 +60,20 @@ def build_control_records(frameworks_data: list[dict]) -> list[dict]:
     """Convert parsed framework controls to insert_controls() format.
 
     Each control gets a composite ID: framework_id:control_id.
+    Deduplicates by composite ID (keeps first occurrence).
     """
+    seen: set[str] = set()
     records = []
     for fw in frameworks_data:
         fid = fw["framework_id"]
         for ctrl in fw.get("controls", []):
             cid = ctrl.get("control_id", "")
+            composite = f"{fid}:{cid}"
+            if composite in seen:
+                continue
+            seen.add(composite)
             records.append({
-                "id": f"{fid}:{cid}",
+                "id": composite,
                 "framework_id": fid,
                 "section_id": cid,
                 "title": ctrl.get("title", ""),
