@@ -396,7 +396,7 @@ When evaluating hub assignment for framework X, rebuild hub representations WITH
 - This is a HARD requirement for honest leave-one-framework-out evaluation
 - Implemented as a build step, not a runtime hack
 
-### 6.6 Guardrail Implementation
+### 6.6 Guardrail Implementation ✅ COMPLETE
 Build all 5 guardrail categories as concrete, testable components:
 
 **Data Integrity guardrails (built during ingestion):**
@@ -427,7 +427,7 @@ Build all 5 guardrail categories as concrete, testable components:
 - Training data lineage per example (source: OpenCRE link type + link ID)
 - Model version tag (training data hash + hyperparameters)
 
-### 6.7 Active Learning Loop
+### 6.7 Active Learning Loop ✅ COMPLETE (2 rounds, converged)
 For frameworks with zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWASP Agentic) and any thin-coverage traditional frameworks:
 1. Model predicts top-K hub assignments for each control
 2. Expert reviews predictions (accept / reject / correct) via a review interface (can be CLI-based in Phase 1)
@@ -435,7 +435,7 @@ For frameworks with zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWA
 4. Model retrained on expanded dataset
 5. Repeat until expert acceptance rate stabilizes (target: >80% accept rate)
 
-### 6.8 Crosswalk Database
+### 6.8 Crosswalk Database ✅ COMPLETE
 - SQLite database for local use, exportable to JSON/CSV
 - Each control assigned to CRE hub(s) with confidence scores and provenance
 - Cross-framework relationship matrix derived transitively from shared hub assignments
