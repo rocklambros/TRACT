@@ -110,7 +110,15 @@ class TRACTPredictor:
             hierarchy_path = PROCESSED_DIR / "cre_hierarchy.json"
         self._hierarchy = CREHierarchy.load(hierarchy_path)
 
-        adapter_path = model_dir / "model" / "adapter_model.safetensors"
+        st_model_dir = model_dir / "model"
+        if (st_model_dir / "model").exists():
+            st_model_dir = st_model_dir / "model"
+
+        adapter_path = st_model_dir / "adapter_model.safetensors"
+        if not adapter_path.exists():
+            for p in st_model_dir.rglob("adapter_model.safetensors"):
+                adapter_path = p
+                break
         if adapter_path.exists():
             current_hash = hashlib.sha256(adapter_path.read_bytes()).hexdigest()
             if current_hash != self._artifacts.model_adapter_hash:
@@ -119,7 +127,7 @@ class TRACTPredictor:
                     f"vs current={current_hash[:12]}…"
                 )
 
-        self._model = load_deployment_model(model_dir / "model")
+        self._model = load_deployment_model(st_model_dir)
 
         health_emb = self._model.encode(
             ["access control security authentication"],

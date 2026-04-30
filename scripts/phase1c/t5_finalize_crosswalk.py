@@ -452,6 +452,8 @@ def main() -> None:
     from tract.config import PHASE1D_ARTIFACTS_PATH, PHASE1D_CALIBRATION_PATH
 
     deploy_model_dir = PHASE1C_RESULTS_DIR / "deployment_model" / "model"
+    if (deploy_model_dir / "model").exists():
+        deploy_model_dir = deploy_model_dir / "model"
     if deploy_model_dir.exists():
         deploy_model = load_deployment_model(deploy_model_dir)
 
