@@ -30,9 +30,14 @@ from scripts.phase0.common import (
     build_hierarchy,
     build_lofo_folds,
     extract_hub_standard_links,
+    finish_wandb,
     get_api_key,
+    init_wandb,
+    load_curated_links,
     load_opencre_cres,
     load_parsed_controls,
+    log_aggregate_metrics,
+    log_fold_metrics,
     save_results,
     score_predictions,
 )
@@ -222,7 +227,7 @@ async def run_fold_async(
     return predictions
 
 
-async def run_experiment(max_concurrent: int) -> dict:
+async def run_experiment(max_concurrent: int, curated: bool = False) -> dict:
     """Run the full LLM probe experiment across all LOFO folds."""
     import anthropic
 
@@ -231,11 +236,21 @@ async def run_experiment(max_concurrent: int) -> dict:
         api_key=api_key, max_retries=3, timeout=API_TIMEOUT_S,
     )
 
+    run = init_wandb(
+        experiment_name=f"exp2_llm_probe{'_curated' if curated else ''}",
+        config={"model": MODEL, "max_concurrent": max_concurrent},
+        tags=["exp2", "llm-probe"],
+        curated=curated,
+    )
+
     try:
         logger.info("Loading data...")
         cres = load_opencre_cres()
         tree = build_hierarchy(cres)
-        links = extract_hub_standard_links(cres)
+        if curated:
+            links = load_curated_links()
+        else:
+            links = extract_hub_standard_links(cres)
         parsed_controls = load_parsed_controls()
         corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, parsed_controls)
 
@@ -291,8 +306,15 @@ async def run_experiment(max_concurrent: int) -> dict:
             "metrics": fold_metrics,
         })
 
+    log_aggregate_metrics(run, "opus", metrics_all198, prefix="all")
+    log_aggregate_metrics(run, "opus", metrics_fulltext, prefix="fulltext")
+    for fold_result in per_fold:
+        log_fold_metrics(run, "opus", fold_result["framework"], fold_result["metrics"])
+    finish_wandb(run)
+
     return {
         "experiment": "exp2_llm_probe",
+        "curated": curated,
         "model": MODEL,
         "elapsed_seconds": round(total_elapsed, 1),
         "all_198": metrics_all198,
@@ -312,10 +334,16 @@ def main() -> None:
         default=MAX_CONCURRENT_REQUESTS,
         help="Max concurrent API requests",
     )
+    parser.add_argument(
+        "--curated",
+        action="store_true",
+        help="Use audit-curated links (Phase 0R) instead of raw OpenCRE links",
+    )
+    parser.add_argument("--output-suffix", default="")
     args = parser.parse_args()
 
-    results = asyncio.run(run_experiment(args.max_concurrent))
-    save_results(results, "exp2_llm_probe.json")
+    results = asyncio.run(run_experiment(args.max_concurrent, curated=args.curated))
+    save_results(results, f"exp2_llm_probe{args.output_suffix}.json")
 
     logger.info(
         "Opus all-198: hit@1=%.3f [%.3f, %.3f], hit@5=%.3f [%.3f, %.3f]",

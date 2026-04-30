@@ -156,7 +156,8 @@ If you're unsure whether a description is correct, check what standards are link
 
 You can look up linked sections in:
 ```
-data/training/hub_links.jsonl
+~/github_projects/TRACT/data/training/hub_links.jsonl
 ```
 
 Search for the hub's `cre_id` to see which framework sections are mapped to it.
+

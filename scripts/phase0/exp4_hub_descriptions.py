@@ -34,9 +34,13 @@ from scripts.phase0.common import (
     build_hierarchy,
     build_lofo_folds,
     extract_hub_standard_links,
+    finish_wandb,
     get_api_key,
+    init_wandb,
+    load_curated_links,
     load_opencre_cres,
     load_parsed_controls,
+    log_aggregate_metrics,
     ndcg_at_k,
     reciprocal_rank,
     save_results,
@@ -213,12 +217,20 @@ def main() -> None:
         "--skip-generation", action="store_true",
         help="Skip description generation, load from existing file",
     )
+    parser.add_argument(
+        "--curated",
+        action="store_true",
+        help="Use audit-curated links (Phase 0R) instead of raw OpenCRE links",
+    )
     args = parser.parse_args()
 
     logger.info("Loading data...")
     cres = load_opencre_cres()
     tree = build_hierarchy(cres)
-    links = extract_hub_standard_links(cres)
+    if args.curated:
+        links = load_curated_links()
+    else:
+        links = extract_hub_standard_links(cres)
     parsed_controls = load_parsed_controls()
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, parsed_controls)
 
@@ -273,8 +285,16 @@ def main() -> None:
         template="description", descriptions=descriptions,
     )
 
+    run = init_wandb(
+        experiment_name=f"exp4_hub_descriptions{'_curated' if args.curated else ''}",
+        config={"device": args.device, "n_described_hubs": len(described_hub_ids)},
+        tags=["exp4", "hub-descriptions"],
+        curated=args.curated,
+    )
+
     results: dict = {
         "experiment": "exp4_hub_descriptions",
+        "curated": args.curated,
         "n_described_hubs": len(described_hub_ids),
         "n_eval_subset": eval_subset_count,
         "models": {},
@@ -342,6 +362,8 @@ def main() -> None:
             desc_metrics_subset["hit_at_1"]["mean"],
             deltas["hit_at_1"]["delta_mean"],
         )
+
+    finish_wandb(run)
 
     save_results(results, "exp4_hub_descriptions.json")
     logger.info("Experiment 4 complete.")

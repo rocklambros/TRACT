@@ -80,6 +80,21 @@ def train_model(
 
     use_custom_sampler = "hub_id" in train_dataset.column_names
 
+    if use_custom_sampler:
+        anchor_keys = (
+            list(train_dataset["anchor_key"])
+            if "anchor_key" in train_dataset.column_names
+            else None
+        )
+        HubAwareTemperatureSampler.set_metadata(
+            hub_ids=list(train_dataset["hub_id"]),
+            is_ai=list(train_dataset["is_ai"]),
+            anchor_keys=anchor_keys,
+        )
+        meta_cols = [c for c in ["hub_id", "is_ai", "anchor_key"]
+                     if c in train_dataset.column_names]
+        train_dataset = train_dataset.remove_columns(meta_cols)
+
     training_args = SentenceTransformerTrainingArguments(
         output_dir=str(output_dir),
         num_train_epochs=config.max_epochs,
@@ -101,18 +116,22 @@ def train_model(
         batch_sampler=HubAwareTemperatureSampler if use_custom_sampler else BatchSamplers.BATCH_SAMPLER,
     )
 
-    trainer = SentenceTransformerTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        loss=loss,
-    )
+    try:
+        trainer = SentenceTransformerTrainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            loss=loss,
+        )
 
-    logger.info("Starting training: %d examples, %d epochs, batch=%d, lr=%s",
-                len(train_dataset), config.max_epochs, config.batch_size, config.learning_rate)
-    trainer.train()
-    logger.info("Training complete")
+        logger.info("Starting training: %d examples, %d epochs, batch=%d, lr=%s",
+                    len(train_dataset), config.max_epochs, config.batch_size, config.learning_rate)
+        trainer.train()
+        logger.info("Training complete")
+    finally:
+        if use_custom_sampler:
+            HubAwareTemperatureSampler.clear_metadata()
 
     return model
 

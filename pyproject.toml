@@ -31,6 +31,8 @@ phase0 = [
     "numpy>=1.26,<3",
     "scipy>=1.12,<2",
     "scikit-learn>=1.4,<2",
+    "datasets>=2.18,<4",
+    "einops>=0.7,<1",
 ]
 
 [tool.setuptools.packages.find]
@@ -42,3 +44,4 @@ python_version = "3.11"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["slow: marks tests as slow (deselect with '-k not slow')"]

@@ -136,3 +136,50 @@ AI_PARSER_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
 OPENCRE_EXTRACT_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset(
     set(OPENCRE_FRAMEWORK_ID_MAP.values()) - AI_PARSER_FRAMEWORK_IDS
 )
+
+# ── Phase 1B: Model Training ──────────────────────────────────────────
+
+PHASE1B_BASE_MODEL: Final[str] = "BAAI/bge-large-en-v1.5"
+PHASE1B_EMBEDDING_DIM: Final[int] = 1024
+
+PHASE1B_LORA_RANK: Final[int] = 16
+PHASE1B_LORA_ALPHA: Final[int] = 32
+PHASE1B_LORA_DROPOUT: Final[float] = 0.1
+PHASE1B_LORA_TARGET_MODULES: Final[list[str]] = ["query", "key", "value"]
+
+PHASE1B_BATCH_SIZE: Final[int] = 32
+PHASE1B_LEARNING_RATE: Final[float] = 5e-4
+PHASE1B_WARMUP_RATIO: Final[float] = 0.1
+PHASE1B_WEIGHT_DECAY: Final[float] = 0.01
+PHASE1B_MAX_GRAD_NORM: Final[float] = 1.0
+PHASE1B_MAX_EPOCHS: Final[int] = 20
+PHASE1B_MAX_SEQ_LENGTH: Final[int] = 512
+PHASE1B_SEED: Final[int] = 42
+
+PHASE1B_HARD_NEGATIVES: Final[int] = 3
+PHASE1B_SAMPLING_TEMPERATURE: Final[float] = 2.0
+PHASE1B_MIN_CONTROL_TEXT_LENGTH: Final[int] = 10
+
+PHASE1B_BOOTSTRAP_N_RESAMPLES: Final[int] = 10_000
+PHASE1B_BOOTSTRAP_SEED: Final[int] = 42
+PHASE1B_BOOTSTRAP_CI_LEVEL: Final[float] = 0.95
+
+PHASE1B_BH_FDR_Q: Final[float] = 0.10
+
+PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
+PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
+PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70
+
+PHASE1B_SOFT_FLOOR_LARGE: Final[float] = -0.05
+PHASE1B_SOFT_FLOOR_NIST: Final[float] = -0.10
+
+PHASE1B_RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase1b"
+PHASE1B_MODELS_DIR: Final[Path] = MODELS_DIR / "phase1b"
+
+PHASE1B_WANDB_PROJECT: Final[str] = "tract-phase1b"
+
+PHASE1B_DROPPED_FRAMEWORKS: Final[frozenset[str]] = frozenset({
+    "nist_800_63",
+    "owasp_proactive_controls",
+})
+PHASE1B_MIN_SECTION_TEXT_LENGTH: Final[int] = 10

@@ -28,8 +28,14 @@ from scripts.phase0.common import (
     build_hierarchy,
     build_lofo_folds,
     extract_hub_standard_links,
+    finish_wandb,
+    init_wandb,
+    load_curated_links,
     load_opencre_cres,
     load_parsed_controls,
+    log_aggregate_metrics,
+    log_fold_metrics,
+    log_wandb_summary_table,
     save_results,
     score_predictions,
 )
@@ -199,20 +205,36 @@ def main() -> None:
         default="",
         help="Suffix for output filename (e.g. '_bge' -> exp1_embedding_baseline_bge.json)",
     )
+    parser.add_argument(
+        "--curated",
+        action="store_true",
+        help="Use audit-curated links (Phase 0R) instead of raw OpenCRE links",
+    )
     args = parser.parse_args()
 
     logger.info("Loading data...")
     cres = load_opencre_cres()
     tree = build_hierarchy(cres)
-    links = extract_hub_standard_links(cres)
+    if args.curated:
+        links = load_curated_links()
+    else:
+        links = extract_hub_standard_links(cres)
     parsed_controls = load_parsed_controls()
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, parsed_controls)
 
     logger.info("Building LOFO folds (default template)...")
     folds = build_lofo_folds(tree, links, corpus, AI_FRAMEWORK_NAMES, template="default")
 
+    run = init_wandb(
+        experiment_name=f"exp1_embedding{'_curated' if args.curated else ''}",
+        config={"device": args.device, "batch_size": BATCH_SIZE},
+        tags=["exp1", "embedding-baseline"],
+        curated=args.curated,
+    )
+
     results: dict = {
         "experiment": "exp1_embedding_baseline",
+        "curated": args.curated,
         "models": {},
         "device": args.device,
     }
@@ -252,6 +274,12 @@ def main() -> None:
                 "metrics": fold_metrics,
             })
 
+        for fold_result in per_fold:
+            log_fold_metrics(run, model_name, fold_result["framework"], fold_result["metrics"])
+
+        log_aggregate_metrics(run, model_name, metrics_all198, prefix="all")
+        log_aggregate_metrics(run, model_name, metrics_fulltext, prefix="fulltext")
+
         results["models"][model_name] = {
             "hf_id": model_config["hf_id"],
             "model_type": model_type,
@@ -271,6 +299,19 @@ def main() -> None:
             metrics_all198["hit_at_5"]["ci_low"],
             metrics_all198["hit_at_5"]["ci_high"],
         )
+
+    summary_rows = [
+        {
+            "model": mname,
+            "hit_at_1": mdata["all_198"]["hit_at_1"]["mean"],
+            "hit_at_5": mdata["all_198"]["hit_at_5"]["mean"],
+            "mrr": mdata["all_198"]["mrr"]["mean"],
+            "elapsed_s": mdata["elapsed_seconds"],
+        }
+        for mname, mdata in results["models"].items()
+    ]
+    log_wandb_summary_table(run, summary_rows, "exp1_model_comparison")
+    finish_wandb(run)
 
     output_name = f"exp1_embedding_baseline{args.output_suffix}.json"
     save_results(results, output_name)

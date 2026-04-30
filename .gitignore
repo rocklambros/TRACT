@@ -13,5 +13,6 @@ build/
 .ruff_cache/
 scripts/phase0/.pod_ids
 scripts/phase0/.pod_state.json
+scripts/phase0/.pod_state_0r.json
 .claude/
 wandb/

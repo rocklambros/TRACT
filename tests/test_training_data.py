@@ -131,6 +131,78 @@ class TestBuildTrainingPairs:
         pairs = build_training_pairs(links, hub_texts)
         assert len(pairs) == 0
 
+    def test_keeps_same_text_multiple_hubs(self, hierarchy) -> None:
+        """Multi-hub mappings are valid CRE graph structure, not noise."""
+        hub_ids = list(hierarchy.hubs.keys())[:5]
+        hub_texts = {hid: f"path | {node.name}" for hid, node in hierarchy.hubs.items()}
+        links = [
+            TieredLink(
+                link={"cre_id": hub_ids[i], "standard_name": "CAPEC",
+                      "section_name": "Brute Force", "link_type": "LinkedTo"},
+                tier=QualityTier.T1,
+            )
+            for i in range(5)
+        ]
+        pairs = build_training_pairs(links, hub_texts)
+        assert len(pairs) == 5, "All 5 text→hub pairs should be kept"
+        assert len({p.hub_id for p in pairs}) == 5
+
+    def test_dedup_same_text_same_hub_keeps_best_tier(self, hierarchy) -> None:
+        hub_ids = list(hierarchy.hubs.keys())[:1]
+        hub_texts = {hid: f"path | {node.name}" for hid, node in hierarchy.hubs.items()}
+        links = [
+            TieredLink(
+                link={"cre_id": hub_ids[0], "standard_name": "CWE",
+                      "section_name": "SQL Injection", "link_type": "LinkedTo"},
+                tier=QualityTier.T3,
+            ),
+            TieredLink(
+                link={"cre_id": hub_ids[0], "standard_name": "CAPEC",
+                      "section_name": "SQL Injection", "link_type": "LinkedTo"},
+                tier=QualityTier.T1,
+            ),
+        ]
+        pairs = build_training_pairs(links, hub_texts)
+        assert len(pairs) == 1, "Same text + same hub = deduplicated"
+        assert pairs[0].quality_tier == "T1"
+
+    def test_dedup_case_insensitive_same_hub(self, hierarchy) -> None:
+        hub_ids = list(hierarchy.hubs.keys())[:1]
+        hub_texts = {hid: f"path | {node.name}" for hid, node in hierarchy.hubs.items()}
+        links = [
+            TieredLink(
+                link={"cre_id": hub_ids[0], "standard_name": "ATLAS",
+                      "section_name": "Validate AI Model", "link_type": "LinkedTo"},
+                tier=QualityTier.T1_AI,
+            ),
+            TieredLink(
+                link={"cre_id": hub_ids[0], "standard_name": "ATLAS",
+                      "section_name": "Validate AI model", "link_type": "LinkedTo"},
+                tier=QualityTier.T1_AI,
+            ),
+        ]
+        pairs = build_training_pairs(links, hub_texts)
+        assert len(pairs) == 1, "Case-insensitive dedup on same hub"
+
+    def test_keeps_same_text_different_hubs_case_insensitive(self, hierarchy) -> None:
+        """Same text, different hubs = different CRE neighborhoods, keep both."""
+        hub_ids = list(hierarchy.hubs.keys())[:2]
+        hub_texts = {hid: f"path | {node.name}" for hid, node in hierarchy.hubs.items()}
+        links = [
+            TieredLink(
+                link={"cre_id": hub_ids[0], "standard_name": "ATLAS",
+                      "section_name": "Validate AI Model", "link_type": "LinkedTo"},
+                tier=QualityTier.T1_AI,
+            ),
+            TieredLink(
+                link={"cre_id": hub_ids[1], "standard_name": "ATLAS",
+                      "section_name": "Validate AI model", "link_type": "LinkedTo"},
+                tier=QualityTier.T1_AI,
+            ),
+        ]
+        pairs = build_training_pairs(links, hub_texts)
+        assert len(pairs) == 2, "Same text, different hubs = keep both"
+
 
 def _make_sampler_dataset(
     n: int,
@@ -223,6 +295,61 @@ class TestHubAwareTemperatureSampler:
         batches_e1 = list(sampler)
         assert batches_e0 != batches_e1
 
+    def test_set_metadata_works_without_hub_id_column(self) -> None:
+        """Simulates trainer path: metadata set via class method, dataset has no hub_id."""
+        hub_ids = [f"h{i}" for i in range(10)]
+        is_ai = [i < 3 for i in range(10)]
+        ds_stripped = Dataset.from_dict({
+            "anchor": [f"text_{i}" for i in range(10)],
+            "positive": [f"pos_{i}" for i in range(10)],
+        })
+        try:
+            HubAwareTemperatureSampler.set_metadata(hub_ids=hub_ids, is_ai=is_ai)
+            sampler = HubAwareTemperatureSampler(dataset=ds_stripped, batch_size=4)
+            all_indices: list[int] = []
+            for batch in sampler:
+                all_indices.extend(batch)
+            assert sorted(all_indices) == list(range(10))
+        finally:
+            HubAwareTemperatureSampler.clear_metadata()
+
+    def test_no_anchor_text_collisions_in_full_batches(self) -> None:
+        """Same anchor text mapped to different hubs must not share a batch."""
+        n = 30
+        hub_ids = [f"h{i}" for i in range(n)]
+        anchor_keys = [f"text_{i}" for i in range(n)]
+        anchor_keys[10] = anchor_keys[0]
+        anchor_keys[20] = anchor_keys[0]
+        ds = Dataset.from_dict({
+            "anchor": [f"anchor_{i}" for i in range(n)],
+            "positive": [f"pos_{i}" for i in range(n)],
+            "hub_id": hub_ids,
+            "anchor_key": anchor_keys,
+        })
+        sampler = HubAwareTemperatureSampler(dataset=ds, batch_size=8, drop_last=False)
+        for batch_indices in sampler:
+            if len(batch_indices) == 8:
+                batch_keys = [anchor_keys[i] for i in batch_indices]
+                assert len(batch_keys) == len(set(batch_keys)), \
+                    f"Anchor text collision in batch: {batch_keys}"
+
+    def test_anchor_text_all_indices_still_appear(self) -> None:
+        """Text collision avoidance must not lose any examples."""
+        n = 20
+        hub_ids = [f"h{i}" for i in range(n)]
+        anchor_keys = [f"text_{i % 5}" for i in range(n)]
+        ds = Dataset.from_dict({
+            "anchor": [f"anchor_{i}" for i in range(n)],
+            "positive": [f"pos_{i}" for i in range(n)],
+            "hub_id": hub_ids,
+            "anchor_key": anchor_keys,
+        })
+        sampler = HubAwareTemperatureSampler(dataset=ds, batch_size=4, drop_last=False)
+        all_indices: list[int] = []
+        for batch in sampler:
+            all_indices.extend(batch)
+        assert sorted(all_indices) == list(range(n))
+
 
 class TestPairsToDataset:
 
@@ -249,4 +376,5 @@ class TestPairsToDataset:
         assert "negative_3" in ds.column_names
         assert "hub_id" in ds.column_names
         assert "is_ai" in ds.column_names
+        assert "anchor_key" in ds.column_names
         assert len(ds) == 4

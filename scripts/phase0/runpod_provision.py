@@ -192,6 +192,49 @@ def get_running_pods() -> list[dict]:
     return [p for p in myself.get("pods", []) if p.get("desiredStatus") == "RUNNING"]
 
 
+def create_pods_parallel(
+    configs: list[dict[str, str]],
+    gpu_type_id: str,
+    image: str = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04",
+    gpu_count: int = 1,
+    volume_gb: int = 50,
+    container_disk_gb: int = 20,
+    max_workers: int = 8,
+) -> list[dict]:
+    """Create multiple RunPod pods concurrently.
+
+    Each config dict must have 'name' and 'role' keys.
+    Returns list of pod info dicts in same order as configs.
+    """
+    import concurrent.futures
+
+    def _create_one(cfg: dict[str, str]) -> dict:
+        pod = create_pod(
+            gpu_type_id, name=cfg["name"], image=image,
+            gpu_count=gpu_count, volume_gb=volume_gb,
+            container_disk_gb=container_disk_gb,
+        )
+        pod["role"] = cfg["role"]
+        logger.info("Ready: %s @ %s:%d", cfg["name"], pod["ip"], pod["port"])
+        return pod
+
+    workers = min(max_workers, len(configs))
+    logger.info("Creating %d pods in parallel (workers=%d)...", len(configs), workers)
+    pods: list[dict] = [{}] * len(configs)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+        future_to_idx = {
+            ex.submit(_create_one, cfg): i
+            for i, cfg in enumerate(configs)
+        }
+        for future in concurrent.futures.as_completed(future_to_idx):
+            idx = future_to_idx[future]
+            pods[idx] = future.result()
+
+    logger.info("All %d pods created and SSH-ready.", len(pods))
+    return pods
+
+
 def terminate_pod(pod_id: str) -> None:
     _validate_pod_id(pod_id)
     _gql(

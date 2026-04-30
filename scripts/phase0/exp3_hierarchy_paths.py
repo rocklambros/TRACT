@@ -24,11 +24,16 @@ from scripts.phase0.common import (
     build_hierarchy,
     build_lofo_folds,
     extract_hub_standard_links,
+    finish_wandb,
+    init_wandb,
+    load_curated_links,
     load_opencre_cres,
     load_parsed_controls,
-    save_results,
-    reciprocal_rank,
+    log_aggregate_metrics,
+    log_fold_metrics,
     ndcg_at_k,
+    reciprocal_rank,
+    save_results,
 )
 from scripts.phase0.exp1_embedding_baseline import (
     BIENCODER_MODELS,
@@ -91,12 +96,20 @@ def main() -> None:
         default="",
         help="Suffix for output filename (e.g. '_bge' -> exp3_hierarchy_paths_bge.json)",
     )
+    parser.add_argument(
+        "--curated",
+        action="store_true",
+        help="Use audit-curated links (Phase 0R) instead of raw OpenCRE links",
+    )
     args = parser.parse_args()
 
     logger.info("Loading data...")
     cres = load_opencre_cres()
     tree = build_hierarchy(cres)
-    links = extract_hub_standard_links(cres)
+    if args.curated:
+        links = load_curated_links()
+    else:
+        links = extract_hub_standard_links(cres)
     parsed_controls = load_parsed_controls()
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, parsed_controls)
 
@@ -104,8 +117,16 @@ def main() -> None:
     folds_baseline = build_lofo_folds(tree, links, corpus, AI_FRAMEWORK_NAMES, template="default")
     folds_path = build_lofo_folds(tree, links, corpus, AI_FRAMEWORK_NAMES, template="path")
 
+    run = init_wandb(
+        experiment_name=f"exp3_hierarchy_paths{'_curated' if args.curated else ''}",
+        config={"device": args.device},
+        tags=["exp3", "hierarchy-paths"],
+        curated=args.curated,
+    )
+
     results: dict = {
         "experiment": "exp3_hierarchy_paths",
+        "curated": args.curated,
         "models": {},
         "device": args.device,
     }
@@ -182,6 +203,8 @@ def main() -> None:
                 delta["ci_low"],
                 delta["ci_high"],
             )
+
+    finish_wandb(run)
 
     output_name = f"exp3_hierarchy_paths{args.output_suffix}.json"
     save_results(results, output_name)

@@ -391,7 +391,7 @@ def build_evaluation_corpus(
     from collections import OrderedDict
     seen: OrderedDict[tuple[str, str], dict[str, Any]] = OrderedDict()
     for item in raw_items:
-        key = (item["framework"], item["control_text"])
+        key = (item["framework"], item["control_text"].lower().strip())
         if key not in seen:
             seen[key] = {
                 "control_text": item["control_text"],

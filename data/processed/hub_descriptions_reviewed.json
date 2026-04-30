@@ -62,8 +62,8 @@
       "temperature": 0.0
     },
     "011-322": {
-      "description": "This hub covers testing AI systems to detect and prevent adversarial evasion attacks where inputs are deliberately crafted to cause misclassification or incorrect outputs while appearing legitimate to human observers. It encompasses gradient-based attacks (FGSM, PGD), optimization-based attacks (C&W), and black-box evasion techniques that manipulate model decisions through minimal input perturbations. Unlike sibling hubs that focus on data extraction (membership inference, model inversion), unauthorized control (prompt injection), or model corruption (backdoor poisoning), this hub specifically addresses attacks that exploit decision boundaries without attempting to extract information or alter model behavior. It excludes testing for robustness against natural distribution shifts, benign out-of-distribution inputs, or non-adversarial performance degradation.",
-      "generated_at": "2026-04-28T23:19:09.814729+00:00",
+      "description": "Testing against evasion covers verification methods to detect and prevent adversarial inputs that cause AI models to produce incorrect outputs while appearing legitimate to human observers, including techniques like gradient-based perturbations, patch attacks, and semantic manipulations. This hub focuses specifically on attacks that alter model predictions through crafted inputs during inference time, distinguishing it from training-time attacks (backdoor poisoning), privacy attacks (membership inference, model inversion), prompt manipulation attacks (direct/indirect injection), or intellectual property theft (model theft by inference). The scope excludes general robustness testing, benign distribution shifts, and attacks that aim to extract information rather than cause misclassification.",
+      "generated_at": "2026-04-29T15:53:50.179231+00:00",
       "hierarchy_path": "Development processes for security > Verification > AI security assurance & validation > Testing against evasion",
       "hub_id": "011-322",
       "hub_name": "Testing against evasion",
@@ -110,8 +110,8 @@
       "temperature": 0.0
     },
     "020-540": {
-      "description": "Direct runtime model poisoning encompasses attacks that modify AI model parameters, weights, or behavior during active deployment through direct manipulation of the model's runtime environment, memory, or inference pipeline. This hub covers techniques such as adversarial weight perturbation, runtime parameter injection, and dynamic model modification that occur after deployment without retraining, distinguishing it from data poisoning (which corrupts training inputs), supply-chain poisoning (which compromises pre-deployment distribution), and development-time poisoning (which occurs during initial model creation). The scope excludes indirect manipulation through adversarial inputs, prompt injection, or any attacks that require retraining or redeployment of the model.",
-      "generated_at": "2026-04-28T23:19:11.111223+00:00",
+      "description": "Direct runtime model poisoning encompasses attacks that modify AI model parameters, weights, or behavior during active deployment through direct manipulation of the model's runtime environment, memory, or inference pipeline. This hub covers threats where attackers exploit runtime access vectors such as API vulnerabilities, memory corruption, or privileged system access to alter model behavior without retraining or modifying training data. Unlike data poisoning (which corrupts training inputs), supply-chain poisoning (which compromises pre-deployment artifacts), or development-time poisoning (which targets the model during creation), this hub specifically addresses post-deployment model corruption and excludes attacks on training infrastructure or data pipelines.",
+      "generated_at": "2026-04-29T15:53:50.238710+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning > Direct runtime model poisoning",
       "hub_id": "020-540",
       "hub_name": "Direct runtime model poisoning",
@@ -218,8 +218,8 @@
       "temperature": 0.0
     },
     "034-540": {
-      "description": "This hub covers attacks that extract information about training data through model queries, including membership inference attacks that determine if specific data was used in training and model inversion attacks that reconstruct training samples or their attributes from model outputs. It encompasses techniques that exploit model behavior patterns, confidence scores, and output distributions to reveal private training data characteristics without directly accessing the training dataset. This hub specifically addresses inference-based extraction methods and excludes direct data leakage through model outputs (covered by \"Data disclosure in model output\"), attacks on training infrastructure, or privacy violations that don't involve querying the trained model.",
-      "generated_at": "2026-04-28T23:19:24.362356+00:00",
+      "description": "This hub covers attacks that exploit trained AI models to extract information about their training data, including model inversion attacks that reconstruct training samples from model parameters or outputs, and membership inference attacks that determine whether specific data points were part of the training set. It encompasses techniques that leverage model APIs, gradients, confidence scores, or other model behaviors to compromise the confidentiality of training data through statistical or optimization-based inference methods. This hub excludes direct data leakage through model outputs during normal operation (covered by \"Data disclosure in model output\") and focuses specifically on adversarial techniques that reverse-engineer or probe models to reveal training data characteristics.",
+      "generated_at": "2026-04-29T15:54:29.953197+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats > Training data confidentiality threats through inference > Model inversion / Membership inference",
       "hub_id": "034-540",
       "hub_name": "Model inversion / Membership inference",
@@ -302,15 +302,15 @@
       "temperature": 0.0
     },
     "043-703": {
-      "description": "This hub covers testing methodologies to detect and prevent AI models from revealing sensitive training data through legitimate queries, including attribute inference attacks where protected characteristics are deduced from model outputs and reconstruction attacks where training examples are partially recovered through repeated querying. It focuses specifically on extraction through inference patterns during normal model operation, distinguishing it from membership inference (determining if specific data was in training), model inversion (reconstructing full training inputs), and direct attacks like prompt injection or model theft. The scope excludes privacy-preserving training techniques themselves and attacks that require model architecture knowledge or gradient access, covering only black-box inference-based extraction methods.",
-      "generated_at": "2026-04-28T23:19:37.722973+00:00",
+      "description": "This hub covers testing methodologies to verify that AI models cannot reveal sensitive training data through statistical analysis of model outputs, confidence scores, or prediction patterns across multiple queries. It focuses on inference attacks where adversaries extract private information about individuals or datasets by analyzing model behavior, distinct from membership inference (determining if specific data was in training), model inversion (reconstructing training inputs), or direct data extraction through prompts. The scope excludes testing for model architecture theft, adversarial input manipulation, or privacy violations through explicit memorization rather than statistical inference.",
+      "generated_at": "2026-04-29T15:54:31.571889+00:00",
       "hierarchy_path": "Development processes for security > Verification > AI security assurance & validation > Testing against sensitive data extraction by inference",
       "hub_id": "043-703",
       "hub_name": "Testing against sensitive data extraction by inference",
       "model": "claude-opus-4-20250514",
-      "review_status": "edited",
-      "reviewed_description": "This hub covers tests that determine whether a deployed AI system can reveal sensitive attributes or confidential facts about training records through inference patterns in normal model outputs. It focuses on black box extraction of protected attributes, partial record characteristics, or confidential correlations that do not require proving that a specific record was in the training set. It does not cover membership inference, full training sample reconstruction through model inversion, direct memorized data disclosure in outputs, or privacy preserving training techniques themselves.",
-      "reviewer_notes": "Original overlapped with membership inference and model inversion testing; replacement narrows this hub to sensitive attribute or fact extraction by inference.",
+      "review_status": "accepted",
+      "reviewed_description": null,
+      "reviewer_notes": null,
       "temperature": 0.0
     },
     "044-202": {
@@ -386,15 +386,15 @@
       "temperature": 0.0
     },
     "058-443": {
-      "description": "Data minimization for AI systems encompasses techniques and controls that reduce the volume, granularity, and sensitivity of data collected and processed during model training and inference, including implementing differential privacy mechanisms to limit individual data point influence on model outputs. Unlike training data obfuscation which transforms existing data, federated learning which distributes computation, or retention management which controls data lifecycle, this hub specifically addresses reducing data collection scope and applying mathematical privacy guarantees during model development. This hub excludes post-training model compression techniques, inference-time privacy controls, and organizational data governance policies that don't directly impact the technical implementation of data reduction in AI systems.",
-      "generated_at": "2026-04-28T23:19:46.669423+00:00",
+      "description": "Data minimization for AI systems encompasses techniques and controls that reduce the volume, granularity, and sensitivity of data collected and processed during model training and inference, including implementing differential privacy mechanisms, aggregating data points, and removing unnecessary features or attributes. Unlike training data obfuscation which transforms existing data, federated learning which distributes computation, or retention management which controls data lifecycle, this hub specifically addresses reducing data collection and processing scope at the source. This hub excludes post-collection data handling practices, distributed learning architectures, and temporal data management policies, focusing solely on minimizing the initial data footprint and granularity requirements for AI systems.",
+      "generated_at": "2026-04-29T15:53:50.338637+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > AI data reduction > Data minimization",
       "hub_id": "058-443",
       "hub_name": "Data minimization",
       "model": "claude-opus-4-20250514",
-      "review_status": "edited",
-      "reviewed_description": "This hub covers technical controls that reduce how much data an AI system collects, retains, or processes for training or inference, including feature reduction, sampling, aggregation, and collection limits that reduce individual data exposure before modeling. It focuses on reducing the data footprint itself, rather than transforming already collected data. It does not cover training data obfuscation, federated learning, retention schedules, model compression, or general governance policies that do not directly reduce data volume, granularity, or sensitivity.",
-      "reviewer_notes": "Original mixed data minimization with differential privacy and training data obfuscation; replacement sharpens the boundary around reducing data scope.",
+      "review_status": "accepted",
+      "reviewed_description": null,
+      "reviewer_notes": null,
       "temperature": 0.0
     },
     "058-527": {
@@ -530,8 +530,8 @@
       "temperature": 0.0
     },
     "077-235": {
-      "description": "Model input leak covers threats where adversaries gain unauthorized access to data being fed into AI models during inference or training, including prompts, queries, uploaded files, or streaming inputs. Unlike augmentation data leaks which target supplementary knowledge bases or retrieval systems, this hub specifically addresses the exposure of direct model inputs through methods like prompt extraction, input reconstruction from model behavior, or interception of API calls. This hub excludes output-based attacks, data poisoning during training, or manipulation of the input data itself - focusing solely on the unauthorized disclosure of legitimate input data.",
-      "generated_at": "2026-04-28T23:20:09.640023+00:00",
+      "description": "Model input leak covers threats where adversaries gain unauthorized access to data being fed into AI models during inference or training, including prompts, queries, uploaded files, or streaming inputs. Unlike augmentation data threats which target supplementary knowledge bases or retrieval systems, this hub specifically addresses the exposure of direct model inputs through channels like API logs, memory dumps, or network interception. This hub excludes output-based leaks, data manipulation attacks, and threats to stored training datasets or model parameters themselves.",
+      "generated_at": "2026-04-29T15:53:55.886977+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Model input leak",
       "hub_id": "077-235",
       "hub_name": "Model input leak",
@@ -542,8 +542,8 @@
       "temperature": 0.0
     },
     "077-772": {
-      "description": "This hub covers threats where training or test data is directly exposed through unauthorized access to data storage, development environments, or model artifacts, including scenarios where raw datasets, model checkpoints, or debugging outputs containing actual training examples are leaked through insecure storage, logging, or development practices. It focuses on breaches that reveal the original data in its unprocessed form through direct access mechanisms rather than through model behavior analysis. This hub excludes indirect data exposure through model inference attacks, membership inference, or model inversion techniques where training data characteristics are reconstructed by querying the deployed model - these threats are covered by the \"Training data confidentiality threats through inference\" sibling hub.",
-      "generated_at": "2026-04-28T23:20:14.775822+00:00",
+      "description": "This hub covers threats where training or test data is directly exposed through unauthorized access to storage systems, development environments, or model artifacts, resulting in immediate disclosure of the raw datasets without requiring inference or reconstruction techniques. It encompasses scenarios such as exposed data repositories, insecure model checkpoints containing embedded training data, leaked datasets during transfer or processing, and unauthorized access to development systems containing training corpora. This hub excludes indirect data exposure through model inference attacks (covered by its sibling hub), privacy attacks that reconstruct training data from model outputs, and general data breaches unrelated to AI training pipelines.",
+      "generated_at": "2026-04-29T15:53:59.168104+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats > Direct training or test data leak",
       "hub_id": "077-772",
       "hub_name": "Direct training or test data leak",
@@ -662,8 +662,8 @@
       "temperature": 0.0
     },
     "106-447": {
-      "description": "Prompt input segregation encompasses controls that isolate and separate different components of AI model inputs during inference, including user prompts, system instructions, retrieved context, and injected parameters, to prevent cross-contamination and prompt injection attacks. This hub specifically addresses architectural patterns and technical mechanisms for maintaining boundaries between trusted system prompts and untrusted user inputs, distinct from input filtering (covered by generic/specific input attack controls) or output manipulation (covered by obscuring confidence). The scope excludes pre-processing transformations like distortion or sanitization, focusing solely on structural separation and isolation techniques that preserve the integrity of each input component's intended role.",
-      "generated_at": "2026-04-28T23:20:30.280242+00:00",
+      "description": "Prompt input segregation encompasses techniques for separating and isolating different components of AI model inputs, including distinguishing system prompts from user inputs, implementing structured prompt templates, and enforcing boundaries between instruction and data segments to prevent prompt injection attacks. Unlike its siblings that focus on output manipulation (Obscuring confidence), model architecture (Ensemble AI models), or general input validation (Generic/Specific input attack controls), this hub specifically addresses the architectural separation and formatting of prompt components during inference. This hub excludes input sanitization techniques, rate limiting mechanisms, and model-level defenses, focusing solely on the structural segregation and formatting of prompts before they reach the AI model.",
+      "generated_at": "2026-04-29T15:53:56.958313+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Secure AI inference > Prompt input segregation",
       "hub_id": "106-447",
       "hub_name": "Prompt input segregation",
@@ -674,8 +674,8 @@
       "temperature": 0.0
     },
     "108-316": {
-      "description": "This hub covers controls for detecting and mitigating inputs designed to exhaust computational resources during AI model inference, including adversarial inputs that trigger excessive processing loops, memory allocation, or GPU/CPU utilization through techniques like algorithmic complexity attacks or malformed data structures. It focuses specifically on resource-based denial of service attacks targeting the inference pipeline, distinct from evasion attacks that aim to manipulate model outputs or prompt injections that seek unauthorized functionality. The scope excludes training-time resource attacks, general system-level DoS protections, and attacks targeting model accuracy or confidentiality rather than availability.",
-      "generated_at": "2026-04-28T23:20:33.876964+00:00",
+      "description": "This hub covers controls for detecting and mitigating inputs designed to exhaust computational resources during AI model inference, including adversarial inputs that trigger excessive processing loops, memory allocation, or GPU/CPU utilization through techniques like recursive prompt expansion or computationally expensive token sequences. It focuses specifically on resource-based denial of service attacks at the inference stage, distinct from evasion attacks that aim to manipulate model outputs or prompt injections that seek unauthorized functionality. The scope excludes training-time resource attacks, general system-level DoS protections, and output filtering mechanisms that prevent sensitive information disclosure.",
+      "generated_at": "2026-04-29T15:54:02.546469+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > AI resource exhaustion input handling",
       "hub_id": "108-316",
       "hub_name": "AI resource exhaustion input handling",
@@ -794,8 +794,8 @@
       "temperature": 0.0
     },
     "130-171": {
-      "description": "This hub covers security controls that ensure the integrity of data flowing into and out of AI models during runtime execution, including input validation, output verification, and protection against adversarial inputs or manipulated outputs. It focuses specifically on the data interface layer between the model and external systems, distinct from runtime model integrity controls (which protect the model itself) and augmentation data integrity controls (which protect training/fine-tuning data). This hub excludes confidentiality aspects of model I/O, static model verification, and integrity controls for the model's internal parameters or architecture.",
-      "generated_at": "2026-04-28T23:20:46.882062+00:00",
+      "description": "This hub covers security controls that ensure the integrity of data flowing into and out of AI models during runtime execution, including input validation, output verification, and protection against data poisoning or manipulation attacks at inference time. It focuses specifically on the data streams and interfaces between the model and external systems, distinct from runtime model integrity controls (which protect the model itself) and augmentation data integrity controls (which protect supplementary datasets used alongside the model). This hub excludes controls for protecting the confidentiality of inputs/outputs (covered by sibling confidentiality hubs), model training data integrity, and integrity protections for the model's internal parameters or architecture during execution.",
+      "generated_at": "2026-04-29T15:54:03.546122+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Runtime model io integrity controls",
       "hub_id": "130-171",
       "hub_name": "Runtime model io integrity controls",
@@ -1082,8 +1082,8 @@
       "temperature": 0.0
     },
     "173-554": {
-      "description": "This hub covers threats where auxiliary data used to enhance AI model inputs (such as retrieved documents, knowledge bases, or context databases) is exposed through unauthorized access or inference attacks, potentially revealing sensitive information about the augmentation sources or retrieval mechanisms. It specifically addresses leakage of the supplementary data itself, not the model's primary inputs or outputs, distinguishing it from model input/output leaks and focusing on confidentiality rather than integrity attacks like augmentation data manipulation. The scope excludes direct model parameter extraction, training data leakage, and cases where augmentation data is intentionally corrupted rather than exposed.",
-      "generated_at": "2026-04-28T23:21:17.567076+00:00",
+      "description": "This hub covers threats where auxiliary data used to enhance AI model inputs (such as retrieved documents, knowledge bases, or context databases) is exposed through unauthorized access or exfiltration. It specifically addresses leakage of augmentation data repositories and retrieval mechanisms, distinguishing it from direct model input/output leaks or manipulation of the augmentation data itself. The scope excludes threats to the primary model inputs, model outputs, or scenarios where augmentation data is tampered with rather than leaked.",
+      "generated_at": "2026-04-29T15:54:04.432592+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Augmentation data leak",
       "hub_id": "173-554",
       "hub_name": "Augmentation data leak",
@@ -1130,15 +1130,15 @@
       "temperature": 0.0
     },
     "182-732": {
-      "description": "Direct runtime model leak encompasses threats where an attacker extracts proprietary model information (weights, architecture, hyperparameters) through legitimate API interactions during model inference, including techniques like model extraction attacks, gradient estimation, and decision boundary probing. Unlike model exfiltration which involves unauthorized copying of model files, or development-time leaks which occur during training/deployment phases, this hub specifically addresses information leakage through the model's intended runtime interface via crafted queries and response analysis. This scope excludes physical theft, supply chain compromises, or attacks that require privileged access beyond standard API usage.",
-      "generated_at": "2026-04-28T23:21:23.450517+00:00",
+      "description": "Direct runtime model leak encompasses threats where an attacker extracts model parameters, architecture details, or training data through legitimate API interactions during model inference, including techniques like model inversion, membership inference, and gradient-based extraction attacks. Unlike model exfiltration which involves unauthorized copying of entire model files, and development-time leaks which occur during training or deployment phases, this hub specifically addresses information leakage through the model's intended query-response interface. This scope excludes side-channel attacks, physical access exploits, and vulnerabilities in the underlying infrastructure or hosting environment.",
+      "generated_at": "2026-04-29T15:54:11.544471+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Model confidentiality threats > Direct runtime model leak",
       "hub_id": "182-732",
       "hub_name": "Direct runtime model leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "edited",
-      "reviewed_description": "Direct runtime model leak covers threats where deployed model artifacts or internals are directly exposed during operation, such as unauthorized access to loaded weights, model files, runtime memory, containers, model serving logs, or inference infrastructure that stores proprietary model details. It focuses on post deployment leakage through runtime environments or operational access paths. It does not cover indirect model extraction through ordinary API queries, development time model leaks, supply chain compromise, or training data confidentiality attacks.",
-      "reviewer_notes": "Original described API based model extraction, which fits indirect exfiltration rather than a direct runtime leak.",
+      "review_status": "accepted",
+      "reviewed_description": null,
+      "reviewer_notes": null,
       "temperature": 0.0
     },
     "184-284": {
@@ -1190,8 +1190,8 @@
       "temperature": 0.0
     },
     "202-604": {
-      "description": "Human AI oversight encompasses controls where human operators directly monitor, review, and intervene in AI system decisions and outputs, including human-in-the-loop mechanisms, manual review processes, and human feedback integration for model behavior correction. This hub focuses on active human participation in AI operations, distinguishing it from automated AI oversight (which uses technical monitoring without human intervention), model action privilege minimization (which restricts AI capabilities regardless of oversight), and AI user transparency (which informs users but doesn't require human control). The scope is limited to direct human supervision and intervention mechanisms, excluding fully automated monitoring systems, technical access controls, or passive transparency measures that don't involve human decision-making in the AI workflow.",
-      "generated_at": "2026-04-28T23:21:30.111179+00:00",
+      "description": "Human AI oversight encompasses controls that require human review, approval, or intervention in AI system decisions and actions, including manual review checkpoints, human-in-the-loop decision gates, and override mechanisms for critical operations. Unlike automated AI oversight which relies on technical monitoring and algorithmic safeguards, this hub focuses on direct human judgment and control, while differing from AI user transparency by emphasizing active human intervention rather than passive information disclosure. This hub excludes fully automated monitoring systems, technical access controls covered under model action privilege minimization, and user-facing transparency features that don't involve human decision-making authority.",
+      "generated_at": "2026-04-29T15:54:10.200634+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour > Human AI oversight",
       "hub_id": "202-604",
       "hub_name": "Human AI oversight",
@@ -1202,8 +1202,8 @@
       "temperature": 0.0
     },
     "204-272": {
-      "description": "Sensitive AI output handling encompasses controls for detecting, filtering, and redacting confidential information (PII, proprietary data, security credentials) from AI model responses before they reach users, including output validation rules and content classification mechanisms. Unlike its sibling hubs that focus on malicious inputs (prompt injection, evasion attacks) or resource abuse, this hub specifically addresses preventing unintended disclosure of sensitive data through model outputs during normal operation. This scope excludes input sanitization, model training data protection, and attacks targeting model behavior - it strictly covers post-inference output processing and filtering controls.",
-      "generated_at": "2026-04-28T23:21:30.319339+00:00",
+      "description": "Sensitive AI output handling encompasses controls for preventing AI models from exposing confidential data, personally identifiable information, or proprietary knowledge through their generated responses, including techniques like output filtering, differential privacy, and response sanitization. Unlike its siblings that focus on malicious inputs (prompt injection, evasion attacks) or resource abuse, this hub specifically addresses the risk of legitimate queries inadvertently extracting sensitive information from the model's training data or internal representations. This scope excludes input validation controls and model architecture defenses, focusing solely on post-generation output inspection and modification mechanisms.",
+      "generated_at": "2026-04-29T15:54:10.152595+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > Sensitive AI output handling",
       "hub_id": "204-272",
       "hub_name": "Sensitive AI output handling",
@@ -1274,8 +1274,8 @@
       "temperature": 0.0
     },
     "217-163": {
-      "description": "This hub covers threats where attackers manipulate auxiliary data sources that AI systems use to enhance their outputs, including retrieval-augmented generation (RAG) databases, knowledge bases, and external context stores that supplement model inference. It focuses on integrity attacks against these augmentation sources—such as poisoning vector databases, corrupting retrieved documents, or injecting malicious content into knowledge graphs—which cause AI systems to produce incorrect or malicious outputs despite having uncorrupted models and inputs. This hub excludes direct manipulation of training data or model parameters (covered under model security), leakage of augmentation data (covered by Augmentation data leak), and attacks on the primary model inputs themselves (covered under input manipulation).",
-      "generated_at": "2026-04-28T23:21:40.346732+00:00",
+      "description": "This hub covers threats where attackers manipulate auxiliary data sources that AI systems use to enhance their responses, including retrieval-augmented generation (RAG) databases, knowledge bases, and external context stores that supplement model training data. It focuses on poisoning attacks against these augmentation sources and integrity violations of the retrieval pipeline, distinct from direct model input attacks or data exfiltration scenarios. The scope excludes manipulation of core training datasets, prompt injection attacks, and scenarios where augmentation data is leaked rather than corrupted.",
+      "generated_at": "2026-04-29T15:54:16.168486+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Augmentation data manipulation",
       "hub_id": "217-163",
       "hub_name": "Augmentation data manipulation",
@@ -1286,8 +1286,8 @@
       "temperature": 0.0
     },
     "220-442": {
-      "description": "Model action privilege minimization encompasses controls that restrict AI models' permissions to execute actions, access resources, or invoke tools based on the principle of least privilege. This hub covers technical implementations of role-based access control (RBAC) for AI agents, permission configuration frameworks that limit model capabilities to minimum necessary functions, and isolation mechanisms that prevent models from exceeding their authorized scope of operations. Unlike its siblings which focus on monitoring (Human/Automated AI oversight) or disclosure (AI user transparency), this hub specifically addresses preventive access controls that constrain what actions models can perform rather than detecting or reporting their behavior. It excludes runtime behavioral monitoring, user notification mechanisms, and post-execution audit controls, focusing solely on pre-execution permission boundaries and capability restrictions.",
-      "generated_at": "2026-04-28T23:21:40.584848+00:00",
+      "description": "Model action privilege minimization encompasses controls that restrict AI models' permissions to execute actions, access resources, or invoke tools based on the principle of least privilege. This hub covers technical implementations of role-based access control (RBAC) for AI agents, configuration of tool permissions, and restrictions on model capabilities when processing untrusted data. Unlike its siblings which focus on monitoring (Human/Automated AI oversight) or disclosure (AI user transparency), this hub specifically addresses preventive access controls that limit what actions an AI model can perform. It excludes detection mechanisms, audit logging, or user notification requirements, focusing solely on permission boundaries and capability restrictions enforced at the model execution layer.",
+      "generated_at": "2026-04-29T15:54:16.630686+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour > Model action privilege minimization",
       "hub_id": "220-442",
       "hub_name": "Model action privilege minimization",
@@ -1874,8 +1874,8 @@
       "temperature": 0.0
     },
     "342-641": {
-      "description": "Anomalous AI input handling covers the detection and mitigation of individual adversarial or out-of-distribution inputs during AI model inference, including techniques like adversarial example detection algorithms and randomized smoothing defenses. This hub focuses on identifying and responding to single anomalous data points that deviate from expected input distributions or exhibit adversarial characteristics, distinguishing it from rate limiting (volume-based controls), unwanted input series (temporal pattern controls), monitoring (observability), and access control (authentication/authorization). The scope excludes training-time defenses, model architecture hardening, and controls for handling legitimate but edge-case inputs that fall within normal operational parameters.",
-      "generated_at": "2026-04-28T23:22:54.354941+00:00",
+      "description": "This hub covers technical controls for detecting and handling individual anomalous or adversarial inputs during AI model inference, including statistical outlier detection, adversarial example identification algorithms, and response mechanisms when suspicious inputs are identified. It focuses specifically on point-in-time analysis of single inputs for anomalies, distinguishing it from \"Unwanted AI input series handling\" which addresses patterns across multiple inputs, and from \"Rate limiting\" which controls input volume rather than content. This hub excludes training-time adversarial defenses, general input validation that isn't AI-specific, and monitoring of model outputs or system behavior - these belong to model hardening, general input validation, and \"Monitor inference\" hubs respectively.",
+      "generated_at": "2026-04-29T15:54:23.442298+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference > Anomalous AI input handling",
       "hub_id": "342-641",
       "hub_name": "Anomalous AI input handling",
@@ -1898,15 +1898,15 @@
       "temperature": 0.0
     },
     "342-781": {
-      "description": "This hub covers threats where AI model artifacts (weights, architectures, training code, datasets) are directly accessed and stolen during the development phase through compromised development environments, insider threats, or inadequate access controls on training infrastructure. It specifically addresses leaks that occur before model deployment, distinguishing it from runtime model leaks (post-deployment theft) and model exfiltration (indirect reconstruction through queries or side channels). This hub excludes model extraction attacks that infer model behavior through API interactions and does not cover accidental model exposure through misconfigured production systems.",
-      "generated_at": "2026-04-28T23:22:57.468041+00:00",
+      "description": "This hub covers threats where AI model artifacts (weights, architectures, training data, or intermediate checkpoints) are exposed through insecure development environments, version control systems, or collaboration tools before deployment. It addresses leaks via compromised developer workstations, misconfigured repositories, insecure model registries, and unauthorized access to training infrastructure, distinguishing it from runtime leaks (which occur during inference) and exfiltration (which involves active theft rather than passive exposure). This hub excludes post-deployment model extraction through API queries, side-channel attacks during inference, or deliberate insider threats that involve active data theft mechanisms.",
+      "generated_at": "2026-04-29T15:54:23.517051+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Model confidentiality threats > Direct development-time model leak",
       "hub_id": "342-781",
       "hub_name": "Direct development-time model leak",
       "model": "claude-opus-4-20250514",
-      "review_status": "edited",
-      "reviewed_description": "This hub covers direct leakage of proprietary AI model artifacts during development, including weights, architecture definitions, hyperparameters, training code, model checkpoints, and evaluation artifacts through compromised development environments, repositories, build systems, or insider access. It focuses on model confidentiality before deployment. It does not cover direct exposure of raw training or test datasets, runtime leakage of deployed models, or indirect model extraction through API queries.",
-      "reviewer_notes": "Original included datasets, which belongs to direct training or test data leak; replacement narrows the hub to model artifacts and development phase exposure.",
+      "review_status": "accepted",
+      "reviewed_description": null,
+      "reviewer_notes": null,
       "temperature": 0.0
     },
     "344-611": {
@@ -2270,8 +2270,8 @@
       "temperature": 0.0
     },
     "430-722": {
-      "description": "This hub covers technical controls that transform or encode AI model outputs before they reach end users or downstream systems, including differential privacy mechanisms, output obfuscation techniques, and information reduction methods that limit the granularity or specificity of model responses. It focuses specifically on post-processing transformations applied to model outputs to prevent information leakage, protect training data privacy, or reduce attack surface, distinguishing it from runtime integrity controls that verify output correctness or input confidentiality controls that protect data before model processing. This hub excludes controls for model architecture modifications, training-time privacy techniques, or access control mechanisms that restrict who can receive outputs rather than modifying the outputs themselves.",
-      "generated_at": "2026-04-28T23:23:39.381034+00:00",
+      "description": "This hub covers technical controls for encoding and transforming AI model outputs to prevent information leakage, including differential privacy mechanisms, output perturbation techniques, and response sanitization methods that reduce the extractable information from model predictions. It focuses specifically on post-processing transformations applied to model outputs before they reach end users, distinguishing it from runtime integrity controls that protect the model execution environment and confidentiality controls that secure data in transit or at rest. This hub excludes input encoding mechanisms, model architecture modifications for privacy preservation, and access control policies for output distribution.",
+      "generated_at": "2026-04-29T15:54:23.276542+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Encode model output",
       "hub_id": "430-722",
       "hub_name": "Encode model output",
@@ -2342,8 +2342,8 @@
       "temperature": 0.0
     },
     "444-058": {
-      "description": "This hub covers techniques that mitigate training set backdoors by diluting malicious samples through the addition of clean, correctly-labeled data to the training dataset, reducing the relative influence of poisoned examples during model training. Unlike its siblings that modify existing data (train data distortion), alter model architecture (model size reduction), or apply post-training interventions (benign fine-tuning and pruning), this approach maintains the original training process while counteracting backdoors through dataset expansion with verified benign samples. The scope excludes data augmentation techniques that transform existing samples and methods that remove or modify potentially poisoned data rather than adding new clean instances.",
-      "generated_at": "2026-04-28T23:23:45.950465+00:00",
+      "description": "This hub covers techniques that mitigate training set backdoors by diluting malicious samples through the addition of clean, correctly-labeled data to the training dataset, reducing the relative influence of poisoned examples during model training. Unlike its siblings that modify existing data (train data distortion), alter model architecture (model size reduction), or apply post-training interventions (benign fine-tuning and pruning), this approach maintains the original training process while counteracting backdoors through increased volume of benign samples. The scope excludes data augmentation techniques that transform existing samples and methods that actively identify or remove poisoned data rather than diluting their effect.",
+      "generated_at": "2026-04-29T15:54:29.668224+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors > Benign train data increase",
       "hub_id": "444-058",
       "hub_name": "Benign train data increase",
@@ -2534,8 +2534,8 @@
       "temperature": 0.0
     },
     "483-253": {
-      "description": "This hub covers testing methodologies to detect and prevent indirect prompt injection attacks, where malicious instructions are embedded in external data sources (documents, emails, web pages) that AI systems process, causing the model to execute unintended commands when processing seemingly benign user requests. It focuses on validation techniques for multi-step attack chains where the payload enters through data ingestion rather than direct user input, including testing retrieval-augmented generation (RAG) systems, document processors, and AI agents that interact with external content. This hub excludes direct prompt injection (where users directly input malicious prompts), other inference-based attacks like membership inference or model inversion, and general adversarial robustness testing that doesn't involve instruction injection through indirect channels.",
-      "generated_at": "2026-04-28T23:24:07.377594+00:00",
+      "description": "This hub covers testing methodologies to detect and prevent indirect prompt injection attacks, where malicious instructions are embedded in external data sources (documents, emails, web pages) that AI systems process, causing them to execute unintended commands when users interact with that content. It focuses on validation techniques for scenarios where attackers compromise AI behavior through poisoned context rather than direct user input, including testing retrieval-augmented generation systems, document processors, and multi-modal AI applications that consume external content. This hub excludes direct prompt injection (where users directly input malicious prompts), other adversarial attacks like evasion or model extraction, and general AI performance validation unrelated to security vulnerabilities.",
+      "generated_at": "2026-04-29T15:54:30.849435+00:00",
       "hierarchy_path": "Development processes for security > Verification > AI security assurance & validation > Testing against indirect prompt injection",
       "hub_id": "483-253",
       "hub_name": "Testing against indirect prompt injection",
@@ -2810,8 +2810,8 @@
       "temperature": 0.0
     },
     "536-158": {
-      "description": "This hub covers testing methodologies to detect and prevent direct prompt injection attacks where malicious users craft input prompts to manipulate AI model behavior, bypass safety controls, or execute unintended operations through the primary user interface. It encompasses validation of input sanitization, prompt filtering mechanisms, and model response boundaries when exposed to adversarial prompts containing jailbreaking attempts, role-playing instructions, or encoded commands. This hub excludes indirect prompt injection through external data sources, attacks targeting model architecture or training data (backdoor poisoning, model theft), and privacy-focused attacks (membership inference, model inversion, sensitive data extraction).",
-      "generated_at": "2026-04-28T23:24:37.940386+00:00",
+      "description": "This hub covers testing methodologies to detect and prevent direct prompt injection attacks where malicious users craft input prompts to manipulate AI model behavior, bypass safety controls, or execute unintended actions through the primary user interface. It encompasses validation of input sanitization, prompt filtering mechanisms, and model response boundaries when processing user-supplied prompts in conversational AI, code generation, and instruction-following systems. This hub excludes indirect prompt injection through external data sources, attacks targeting model architecture or training data (backdoor poisoning, model theft), privacy-focused attacks (membership inference, model inversion), and general model performance or robustness testing unrelated to prompt manipulation.",
+      "generated_at": "2026-04-29T15:54:35.539032+00:00",
       "hierarchy_path": "Development processes for security > Verification > AI security assurance & validation > Testing against direct prompt injection",
       "hub_id": "536-158",
       "hub_name": "Testing against direct prompt injection",
@@ -3002,8 +3002,8 @@
       "temperature": 0.0
     },
     "555-083": {
-      "description": "This hub covers testing methodologies to detect and prevent backdoor attacks where malicious triggers are embedded during AI model training to cause misclassification or unintended behavior when specific inputs are presented. It encompasses validation techniques such as trigger reverse-engineering, activation pattern analysis, and poisoned sample detection across training datasets and model architectures. This hub specifically addresses training-time attacks and does not cover runtime adversarial manipulations (handled by evasion testing), prompt-based attacks (covered by prompt injection testing), or privacy attacks that extract information about training data (addressed by membership inference and model inversion testing).",
-      "generated_at": "2026-04-28T23:25:03.287677+00:00",
+      "description": "This hub covers testing methodologies to detect and validate against backdoor attacks where malicious triggers are embedded during AI model training to cause misclassification or unintended behavior when specific inputs are presented. It encompasses techniques for identifying poisoned training data, detecting hidden model behaviors activated by backdoor triggers, and validating model integrity against trojan patterns inserted through compromised datasets or training pipelines. This hub specifically addresses pre-deployment contamination of AI models through training manipulation, distinguishing it from runtime attacks (evasion, prompt injection) or post-deployment extraction attacks (model theft, inversion, membership inference). It excludes testing for naturally occurring biases, performance degradation from benign data drift, or attacks that don't involve deliberate training-time model corruption.",
+      "generated_at": "2026-04-29T15:54:37.538923+00:00",
       "hierarchy_path": "Development processes for security > Verification > AI security assurance & validation > Testing against backdoor poisoning",
       "hub_id": "555-083",
       "hub_name": "Testing against backdoor poisoning",
@@ -3554,8 +3554,8 @@
       "temperature": 0.0
     },
     "663-550": {
-      "description": "This hub covers testing methodologies to detect and prevent unauthorized extraction of AI model parameters, architectures, or decision boundaries through repeated queries and analysis of model outputs. It encompasses techniques for identifying model extraction attacks, hyperparameter stealing, and functional approximation attempts where adversaries reconstruct proprietary models by observing input-output relationships. This hub excludes membership inference attacks (determining if specific data was in training sets), data extraction attacks (recovering training data content), and prompt-based attacks (manipulating model behavior through inputs).",
-      "generated_at": "2026-04-28T23:26:22.547531+00:00",
+      "description": "This hub covers testing methodologies to detect and prevent unauthorized extraction of AI model parameters, architectures, or decision boundaries through repeated queries and analysis of model outputs. It encompasses techniques for identifying model extraction attacks, hyperparameter stealing, and functional approximation attempts where adversaries reconstruct proprietary models by observing input-output relationships. This hub excludes membership inference attacks (determining if specific data was in training sets), data extraction attacks (recovering training data content), and prompt-based attacks (manipulating model behavior through inputs), focusing solely on threats that aim to replicate the model itself rather than extract information about its training data or manipulate its outputs.",
+      "generated_at": "2026-04-29T15:54:37.023686+00:00",
       "hierarchy_path": "Development processes for security > Verification > AI security assurance & validation > Testing against model theft by inference",
       "hub_id": "663-550",
       "hub_name": "Testing against model theft by inference",
@@ -3698,8 +3698,8 @@
       "temperature": 0.0
     },
     "686-110": {
-      "description": "Direct prompt injection covers attacks where malicious instructions are embedded directly into user-provided prompts to manipulate AI model outputs, causing the model to ignore its original instructions, leak sensitive data, or perform unintended actions. This hub addresses threats from explicit user inputs that attempt to override system prompts or safety guardrails through techniques like role-playing, instruction repetition, or encoding schemes. It excludes indirect injection attacks that arrive through external data sources or documents, and does not cover adversarial examples that manipulate model behavior through imperceptible input perturbations rather than explicit instructions.",
-      "generated_at": "2026-04-28T23:26:46.725283+00:00",
+      "description": "Direct prompt injection covers attacks where malicious instructions are embedded directly into user-provided prompts to manipulate AI model outputs, causing the model to ignore its original instructions, leak sensitive data, or perform unintended actions. This hub focuses on threats where the attacker has direct control over the input prompt sent to the model, distinguishing it from indirect prompt injection where malicious content is retrieved from external sources, and from evasion attacks that use adversarial perturbations to bypass model detection capabilities. The scope excludes attacks that rely on intermediary data sources, model poisoning during training, or attacks that manipulate the model's perception through imperceptible input modifications rather than explicit instruction manipulation.",
+      "generated_at": "2026-04-29T15:54:37.521030+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model behaviour integrity threats through inference > Direct prompt injection",
       "hub_id": "686-110",
       "hub_name": "Direct prompt injection",
@@ -3722,8 +3722,8 @@
       "temperature": 0.0
     },
     "701-654": {
-      "description": "Supply-chain model poisoning encompasses attacks where adversaries compromise AI models through third-party sources, including poisoned pre-trained models, malicious model weights distributed through model hubs, or backdoored models embedded in software dependencies. This hub covers threats introduced before the model reaches the end user's environment, distinguishing it from direct runtime poisoning (attacks during model execution), data poisoning (compromising training datasets), and direct development-time poisoning (attacks on the model during the user's own development process). The scope excludes attacks on non-model supply chain components such as libraries, frameworks, or hardware, focusing specifically on the integrity of model artifacts distributed through external channels.",
-      "generated_at": "2026-04-28T23:26:51.799892+00:00",
+      "description": "Supply-chain model poisoning encompasses attacks where adversaries compromise AI models through third-party sources, including poisoned pre-trained models, malicious model weights distributed through model hubs, and backdoored models embedded in software dependencies or frameworks. This hub specifically addresses threats introduced before the model reaches the end user's environment, distinguishing it from direct runtime poisoning (attacks during model execution), data poisoning (contaminating training datasets), and direct development-time poisoning (compromising the model during the user's own development process). The scope excludes attacks on the model after deployment in the user's infrastructure and poisoning that occurs through the user's own data collection or model training activities.",
+      "generated_at": "2026-04-29T15:54:38.877717+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning > Supply-chain model poisoning",
       "hub_id": "701-654",
       "hub_name": "Supply-chain model poisoning",
@@ -4214,8 +4214,8 @@
       "temperature": 0.0
     },
     "780-757": {
-      "description": "This hub covers vulnerabilities where AI model outputs contain malicious payloads designed to exploit conventional injection flaws (SQL, command, script injection) in downstream systems that process or display the model's responses. It specifically addresses scenarios where the AI model generates syntactically valid but malicious code or commands that execute when the output is consumed by vulnerable applications, databases, or interfaces. This hub excludes prompt injection attacks targeting the AI model itself (covered under LLM Prompt Injection), data exfiltration through model outputs (covered by sibling leak hubs), and manipulation of training or augmentation data (covered by Augmentation data manipulation).",
-      "generated_at": "2026-04-28T23:28:29.491002+00:00",
+      "description": "This hub covers vulnerabilities where AI model outputs contain traditional injection payloads (SQL, command, script, or other code injections) that can compromise downstream systems consuming the model's responses. It focuses specifically on cases where the AI system generates or passes through malicious code in its output that exploits conventional injection vulnerabilities in connected applications, distinguishing it from siblings that address data leakage or augmentation data tampering. The scope excludes prompt injection attacks targeting the AI model itself and is limited to scenarios where the model's output serves as an attack vector for traditional injection exploits in non-AI components.",
+      "generated_at": "2026-04-29T15:54:42.695558+00:00",
       "hierarchy_path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Model output contains conventional injection",
       "hub_id": "780-757",
       "hub_name": "Model output contains conventional injection",
@@ -4262,8 +4262,8 @@
       "temperature": 0.0
     },
     "788-323": {
-      "description": "Model size reduction encompasses techniques that compress AI models through quantization, knowledge distillation, or architectural optimization to eliminate backdoor triggers embedded during training. Unlike benign fine-tuning which retrains parameters or train data distortion which corrupts poisoned samples, this hub specifically addresses how reducing model capacity and complexity can break the learned associations between backdoor triggers and malicious outputs. This hub excludes runtime defenses, detection mechanisms, or modifications to the training process itself - focusing solely on post-training compression methods that degrade backdoor functionality.",
-      "generated_at": "2026-04-28T23:28:00.227526+00:00",
+      "description": "Model size reduction mitigates training set backdoors by compressing neural networks through techniques like quantization, knowledge distillation, and structured pruning, which disrupts the precise weight patterns that backdoor triggers rely on to activate malicious behaviors. Unlike its siblings that manipulate training data (benign data increase, data distortion) or modify model parameters post-training (fine-tuning/pruning), this approach specifically targets architectural compression during or after training to eliminate backdoor pathways. This hub excludes unstructured pruning methods that don't reduce overall model size, data-centric defenses, and detection-only techniques that identify but don't remove backdoors.",
+      "generated_at": "2026-04-29T15:54:44.057645+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors > Model size reduction",
       "hub_id": "788-323",
       "hub_name": "Model size reduction",
@@ -4562,8 +4562,8 @@
       "temperature": 0.0
     },
     "843-475": {
-      "description": "This hub covers security controls for detecting, preventing, and mitigating prompt injection attacks during AI model inference, including input validation, prompt sanitization, and output filtering mechanisms that prevent malicious instructions from being executed through user-supplied prompts. It encompasses techniques for identifying injection patterns, implementing input/output guardrails, and restoring legitimate prompts after detecting manipulation attempts. This hub specifically addresses prompt-based attacks and does not cover resource-based attacks (handled by AI resource exhaustion), privacy-related output controls (handled by Sensitive AI output), or adversarial examples designed to evade model detection (handled by Evasion attack input).",
-      "generated_at": "2026-04-28T23:28:42.016876+00:00",
+      "description": "This hub covers security controls for detecting, filtering, and mitigating prompt injection attacks during AI model inference, including techniques for identifying malicious prompt patterns, sanitizing user inputs, and restoring compromised prompts to safe states. It focuses specifically on the input/output pipeline defenses against prompt manipulation attempts that seek to override model instructions or extract unauthorized information, distinguishing it from resource exhaustion controls (which address computational abuse), sensitive output handling (which manages information disclosure), and evasion attacks (which target model decision boundaries). The scope excludes training-time defenses, model architecture hardening, and attacks that don't involve direct prompt manipulation such as data poisoning or model extraction.",
+      "generated_at": "2026-04-29T15:54:44.539819+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > Prompt injection I/O handling",
       "hub_id": "843-475",
       "hub_name": "Prompt injection I/O handling",
@@ -4670,8 +4670,8 @@
       "temperature": 0.0
     },
     "860-723": {
-      "description": "GenAI model alignment encompasses techniques and controls for ensuring generative AI models produce outputs that conform to intended behaviors, values, and safety constraints through methods like reinforcement learning from human feedback (RLHF), constitutional AI, and preference optimization. This hub focuses specifically on the training methodologies and evaluation frameworks that shape model behavior during and after training, distinguishing it from data quality controls (which address input data integrity) and evasion-preventing training (which targets adversarial robustness). The scope excludes runtime inference controls, prompt engineering safeguards, and output filtering mechanisms, which fall under operational AI security rather than model engineering.",
-      "generated_at": "2026-04-28T23:28:52.698456+00:00",
+      "description": "GenAI model alignment encompasses techniques and controls for ensuring generative AI models produce outputs that conform to intended behaviors, values, and safety constraints through methods like RLHF, constitutional AI, and preference learning. This hub specifically addresses the alignment problem in generative models - making them helpful, harmless, and honest - distinguishing it from siblings that focus on data integrity (Data quality control), adversarial robustness (Weakening training set backdoors, Evasion-preventing training), or operational security (Protection of technical AI information, AI supply chain management). The scope excludes non-generative AI alignment, deployment-time safety measures, and general model performance optimization that doesn't relate to value alignment or behavioral safety.",
+      "generated_at": "2026-04-29T15:54:45.210594+00:00",
       "hierarchy_path": "Technical application security controls > Technical AI security controls > AI engineering controls > GenAI model alignment",
       "hub_id": "860-723",
       "hub_name": "GenAI model alignment",
@@ -4803,7 +4803,7 @@
     }
   },
   "generation_model": "claude-opus-4-20250514",
-  "generation_timestamp": "2026-04-28T23:29:05.097981+00:00",
+  "generation_timestamp": "2026-04-29T15:54:47.289568+00:00",
   "total_generated": 400,
   "total_pending_review": 0
 }

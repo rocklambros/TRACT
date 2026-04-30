@@ -24,7 +24,7 @@ def main() -> None:
     parser.add_argument("--training-data", type=str, default="joint-tempscaled",
                         choices=["joint-tempscaled", "ai-only", "joint-flat", "two-stage-transfer"])
     parser.add_argument("--lora-rank", type=int, default=16)
-    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--epochs", type=int, default=20)
     parser.add_argument("--hard-negatives", type=int, default=3)
