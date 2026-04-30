@@ -226,3 +226,24 @@ PHASE1C_UNMAPPED_FRAMEWORKS: Final[dict[str, str]] = {
     "nist_ai_600_1": "NIST AI 600-1 Generative AI Profile",
     "owasp_agentic_top10": "OWASP Top 10 for Agentic Applications 2026",
 }
+
+# ── Phase 1D: CLI & Hub Proposals ─────────────────────────────────────
+
+PHASE1D_DEPLOYMENT_MODEL_DIR: Final[Path] = PHASE1C_RESULTS_DIR / "deployment_model"
+PHASE1D_ARTIFACTS_PATH: Final[Path] = PHASE1D_DEPLOYMENT_MODEL_DIR / "deployment_artifacts.npz"
+PHASE1D_CALIBRATION_PATH: Final[Path] = PHASE1D_DEPLOYMENT_MODEL_DIR / "calibration.json"
+
+PHASE1D_DEFAULT_TOP_K: Final[int] = 5
+PHASE1D_DUPLICATE_THRESHOLD: Final[float] = 0.95
+PHASE1D_SIMILAR_THRESHOLD: Final[float] = 0.85
+PHASE1D_HEALTH_CHECK_FLOOR: Final[float] = 0.3
+PHASE1D_INGEST_MAX_FILE_SIZE: Final[int] = 50 * 1024 * 1024  # 50MB
+
+# Hub Proposal System
+PHASE1D_HDBSCAN_MIN_CLUSTER_SIZE: Final[int] = 3
+PHASE1D_HDBSCAN_MIN_SAMPLES: Final[int] = 2
+PHASE1D_PROPOSAL_INTER_CLUSTER_MAX_COSINE: Final[float] = 0.70
+PHASE1D_PROPOSAL_MIN_FRAMEWORKS: Final[int] = 2
+PHASE1D_PROPOSAL_BUDGET_CAP: Final[int] = 40
+PHASE1D_PROPOSAL_NAMING_MODEL: Final[str] = "claude-sonnet-4-20250514"
+PHASE1D_PROPOSAL_UNCERTAIN_PLACEMENT_FLOOR: Final[float] = 0.20

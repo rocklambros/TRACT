@@ -23,11 +23,16 @@ Usage:
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import time
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 from tract.config import (
     OPENCRE_FRAMEWORK_ID_MAP,
@@ -275,6 +280,88 @@ def _export_per_framework(db_path: Path, output_dir: Path) -> None:
     logger.info("Exported %d per-framework files to %s", len(by_framework), output_dir)
 
 
+def _generate_deployment_artifacts(
+    model: Any,
+    hub_ids: list[str],
+    hub_texts: dict[str, str],
+    control_ids: list[str],
+    control_texts: dict[str, str],
+    adapter_path: Path,
+    output_path: Path,
+) -> None:
+    """Generate consolidated deployment NPZ with all cached embeddings.
+
+    Hub IDs are stored in canonical sorted order. Embedding rows match
+    the hub_ids/control_ids arrays for index consistency.
+    """
+    sorted_hub_ids = sorted(hub_ids)
+    sorted_hub_texts = [hub_texts[hid] for hid in sorted_hub_ids]
+
+    hub_embs = model.encode(
+        sorted_hub_texts,
+        normalize_embeddings=True,
+        convert_to_numpy=True,
+        show_progress_bar=True,
+        batch_size=128,
+    )
+
+    sorted_control_ids = sorted(control_ids)
+    sorted_control_texts = [control_texts[cid] for cid in sorted_control_ids]
+
+    ctrl_embs = model.encode(
+        sorted_control_texts,
+        normalize_embeddings=True,
+        convert_to_numpy=True,
+        show_progress_bar=True,
+        batch_size=128,
+    )
+
+    adapter_hash = hashlib.sha256(adapter_path.read_bytes()).hexdigest()
+    timestamp = datetime.now(timezone.utc).isoformat()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(
+        str(output_path),
+        hub_embeddings=hub_embs.astype(np.float32),
+        control_embeddings=ctrl_embs.astype(np.float32),
+        hub_ids=np.array(sorted_hub_ids),
+        control_ids=np.array(sorted_control_ids),
+        model_adapter_hash=np.array(adapter_hash),
+        generation_timestamp=np.array(timestamp),
+    )
+    logger.info(
+        "Saved deployment artifacts: %d hubs, %d controls, adapter_hash=%s…",
+        len(sorted_hub_ids), len(sorted_control_ids), adapter_hash[:12],
+    )
+
+
+def _generate_calibration_bundle(
+    t_deploy: float,
+    ood_threshold: float,
+    conformal_quantile: float,
+    global_threshold: float,
+    hierarchy_path: Path,
+    output_path: Path,
+) -> None:
+    """Bundle all calibration parameters into a single JSON file."""
+    hierarchy_hash = hashlib.sha256(hierarchy_path.read_bytes()).hexdigest()
+
+    bundle = {
+        "t_deploy": t_deploy,
+        "ood_threshold": ood_threshold,
+        "conformal_quantile": conformal_quantile,
+        "global_threshold": global_threshold,
+        "hierarchy_hash": hierarchy_hash,
+        "calibration_note": (
+            "Calibrated on 420 traditional framework holdout items. "
+            "Accuracy on AI framework text may differ."
+        ),
+    }
+
+    atomic_write_json(bundle, output_path)
+    logger.info("Saved calibration bundle to %s", output_path)
+
+
 def main() -> None:
     logger.info("=== T5: Finalize Crosswalk Database ===")
     t_start = time.time()
@@ -359,6 +446,66 @@ def main() -> None:
     export_crosswalk(db_path, export_dir / "crosswalk_full.csv", fmt="csv")
     _export_cross_framework_matrix(db_path, export_dir / "cross_framework_matrix.json")
     _export_per_framework(db_path, export_dir / "per_framework")
+
+    # === 7. Generate deployment artifacts ===
+    from tract.active_learning.model_io import load_deployment_model
+    from tract.config import PHASE1D_ARTIFACTS_PATH, PHASE1D_CALIBRATION_PATH
+
+    deploy_model_dir = PHASE1C_RESULTS_DIR / "deployment_model" / "model"
+    if (deploy_model_dir / "model").exists():
+        deploy_model_dir = deploy_model_dir / "model"
+    if deploy_model_dir.exists():
+        deploy_model = load_deployment_model(deploy_model_dir)
+
+        hub_texts: dict[str, str] = {
+            node.hub_id: f"{node.hierarchy_path}\n{node.name}"
+            for node in hierarchy.hubs.values()
+        }
+        all_hub_ids = sorted(hierarchy.hubs.keys())
+
+        ctrl_texts: dict[str, str] = {}
+        ctrl_ids: list[str] = []
+        for fw_data in all_fw_data:
+            for ctrl in fw_data.get("controls", []):
+                cid = f"{fw_data['framework_id']}::{ctrl['control_id']}"
+                text_parts = [ctrl.get("title", ""), ctrl.get("description", "")]
+                if ctrl.get("full_text"):
+                    text_parts.append(ctrl["full_text"])
+                ctrl_texts[cid] = " ".join(p for p in text_parts if p)
+                ctrl_ids.append(cid)
+
+        adapter_path = deploy_model_dir / "adapter_model.safetensors"
+        if not adapter_path.exists():
+            for p in deploy_model_dir.rglob("adapter_model.safetensors"):
+                adapter_path = p
+                break
+
+        _generate_deployment_artifacts(
+            model=deploy_model,
+            hub_ids=all_hub_ids,
+            hub_texts=hub_texts,
+            control_ids=ctrl_ids,
+            control_texts=ctrl_texts,
+            adapter_path=adapter_path,
+            output_path=PHASE1D_ARTIFACTS_PATH,
+        )
+
+        cal_results_dir = PHASE1C_RESULTS_DIR / "calibration"
+        t_deploy = load_json(cal_results_dir / "t_deploy_result.json")["temperature"]
+        ood_data = load_json(cal_results_dir / "ood.json")["threshold"]
+        conformal_data = load_json(cal_results_dir / "conformal.json")["quantile"]
+        global_data = load_json(cal_results_dir / "global_threshold.json")["threshold"]
+
+        _generate_calibration_bundle(
+            t_deploy=t_deploy,
+            ood_threshold=ood_data,
+            conformal_quantile=conformal_data,
+            global_threshold=global_data,
+            hierarchy_path=PROCESSED_DIR / "cre_hierarchy.json",
+            output_path=PHASE1D_CALIBRATION_PATH,
+        )
+    else:
+        logger.warning("Deployment model not found at %s — skipping artifact generation", deploy_model_dir)
 
     db_hash = compute_db_hash(db_path)
     logger.info("DB hash: %s", db_hash)
