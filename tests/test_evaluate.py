@@ -383,3 +383,67 @@ class TestCoveredUncoveredSplit:
         result = compute_covered_uncovered_split(items, predictions, {"h1"})
         assert "covered" in result
         assert "uncovered" not in result
+
+
+class TestExtractSimilarityMatrix:
+    def test_returns_correct_shape(self) -> None:
+        from unittest.mock import MagicMock
+        from tract.training.evaluate import extract_similarity_matrix
+
+        n_items, n_hubs, dim = 5, 10, 64
+        mock_model = MagicMock()
+        rng = np.random.default_rng(42)
+        query_embs = rng.standard_normal((n_items, dim)).astype(np.float32)
+        query_embs /= np.linalg.norm(query_embs, axis=1, keepdims=True)
+        mock_model.encode.return_value = query_embs
+
+        hub_ids = [f"hub_{i}" for i in range(n_hubs)]
+        hub_embs = rng.standard_normal((n_hubs, dim)).astype(np.float32)
+        hub_embs /= np.linalg.norm(hub_embs, axis=1, keepdims=True)
+
+        EvalItem = type("EvalItem", (), {})
+        items = []
+        for i in range(n_items):
+            item = EvalItem()
+            item.control_text = f"text_{i}"
+            item.valid_hub_ids = frozenset({hub_ids[i % n_hubs]})
+            item.framework_name = "test_fw"
+            items.append(item)
+
+        result = extract_similarity_matrix(mock_model, items, hub_ids, hub_embs)
+        assert result["sims"].shape == (n_items, n_hubs)
+        assert len(result["hub_ids"]) == n_hubs
+        assert len(result["gt_json"]) == n_items
+        assert len(result["frameworks"]) == n_items
+
+    def test_gt_json_is_valid_json(self) -> None:
+        import json
+        from unittest.mock import MagicMock
+        from tract.training.evaluate import extract_similarity_matrix
+
+        mock_model = MagicMock()
+        rng = np.random.default_rng(42)
+        embs = rng.standard_normal((2, 32)).astype(np.float32)
+        embs /= np.linalg.norm(embs, axis=1, keepdims=True)
+        mock_model.encode.return_value = embs
+
+        hub_ids = ["h1", "h2", "h3"]
+        hub_embs = rng.standard_normal((3, 32)).astype(np.float32)
+        hub_embs /= np.linalg.norm(hub_embs, axis=1, keepdims=True)
+
+        EvalItem = type("EvalItem", (), {})
+        item1 = EvalItem()
+        item1.control_text = "ctrl1"
+        item1.valid_hub_ids = frozenset({"h1", "h2"})
+        item1.framework_name = "fw1"
+        item2 = EvalItem()
+        item2.control_text = "ctrl2"
+        item2.valid_hub_ids = frozenset({"h3"})
+        item2.framework_name = "fw1"
+
+        result = extract_similarity_matrix(mock_model, [item1, item2], hub_ids, hub_embs)
+
+        for gt_str in result["gt_json"]:
+            parsed = json.loads(gt_str)
+            assert isinstance(parsed, list)
+            assert all(isinstance(h, str) for h in parsed)
