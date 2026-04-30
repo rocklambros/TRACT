@@ -44,4 +44,7 @@ python_version = "3.11"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["slow: marks tests as slow (deselect with '-k not slow')"]
+markers = [
+    "slow: marks tests as slow (deselect with '-k not slow')",
+    "integration: marks tests requiring real deployment model and artifacts (deselect with '-m not integration')",
+]
