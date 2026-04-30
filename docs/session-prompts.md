@@ -147,164 +147,72 @@ Think deeply using the sequential-thinking MCP server. --ultrathink
 
 ---
 
-## Prompt 3: Phase 2A — Next.js Web UI & Framework Submission (Vercel)
+## Prompt 3: Phase 2A — Dash Web UI & Framework Submission
 
 ```
-TRACT Phase 2A: Build the public web UI (PRD 7.1) and framework submission system (PRD 7.2).
+TRACT Phase 2A: Build the Dash web UI (PRD 7.1) and framework submission system (PRD 7.2).
 
 Read PRD.md Sections 7.1, 7.2. Read CLAUDE.md for code standards.
 
-NOTE: PRD specifies Dash but we are hosting publicly on Vercel, which requires Next.js.
-Dash (Python/Flask) cannot run on Vercel's serverless platform — no persistent process,
-no WebSockets, no local SQLite. The 5 pages and their functionality are unchanged;
-only the tech stack changes.
-
-## Architecture pivot: Dash → Next.js on Vercel
-
-| PRD Spec (Dash)                  | Vercel Implementation              |
-|----------------------------------|------------------------------------|
-| Dash + Flask                     | Next.js 15 App Router              |
-| Plotly (server-side callbacks)   | Plotly.js or Recharts (client-side) |
-| dash-bootstrap-components        | Tailwind CSS + shadcn/ui           |
-| SQLite crosswalk.db (local)      | Pre-exported static JSON (SSG)     |
-| Live model inference in process  | External inference API (FastAPI)   |
-| Docker deployment                | Vercel Git Integration (auto-deploy) |
-
-**Why static-first:** Crosswalk data only changes after active learning rounds (weeks/months).
-4 of 5 pages are pure data display. Only Control Search needs a live API call.
-
-**Model inference:** BGE-large-v1.5 + LoRA (~1.3GB) cannot load in a Vercel function (10s timeout,
-250MB limit). Run a FastAPI inference server externally (Jetson via Cloudflare Tunnel, or
-Modal/RunPod serverless GPU). Next.js API route proxies to it.
-
-## Monorepo structure
-
-```
-TRACT/
-├── tract/                    # Python ML library (existing, unchanged)
-├── scripts/
-│   └── export_for_web.py     # NEW: crosswalk.db → JSON for Next.js
-├── web/                      # NEW: Next.js app (Vercel root directory)
-│   ├── package.json
-│   ├── next.config.ts
-│   ├── tailwind.config.ts
-│   ├── app/                  # App Router pages
-│   │   ├── layout.tsx
-│   │   ├── page.tsx          # Landing / Crosswalk Explorer
-│   │   ├── compare/page.tsx
-│   │   ├── hierarchy/page.tsx
-│   │   ├── dashboard/page.tsx
-│   │   ├── search/page.tsx   # Control Search (calls inference API)
-│   │   ├── submit/page.tsx   # Framework submission
-│   │   └── api/
-│   │       ├── search/route.ts    # Proxy to inference API
-│   │       └── submit/route.ts    # Framework upload handler
-│   ├── components/           # React components
-│   ├── lib/                  # Data loading, types
-│   └── public/data/          # Pre-exported JSON from crosswalk.db
-└── vercel.json               # Points root to web/
-```
-
-## Vercel deployment setup
-
-**Vercel GitHub app is already installed.** Deployment is automatic:
-- Push to `main` → **production** deployment
-- Push to PR branch → **preview** deployment (acts as dev/staging)
-
-**Environments (dev + prod):**
-- Production: `main` branch → custom domain (e.g., tract.rockcyber.com)
-- Preview: PR branches → auto-generated *.vercel.app URLs (use for dev/staging)
-- Environment variables scoped per environment in Vercel dashboard:
-  - `NEXT_PUBLIC_INFERENCE_API_URL` (different per env)
-  - `INFERENCE_API_KEY` (server-side only, for proxy route)
-
-**No GitHub Actions needed for deployment** — Vercel handles it via Git integration.
-Use GitHub Actions only for CI (pytest, lint, type-check on PRs).
-
-**To create the Vercel project:**
-1. Create `web/` with Next.js app
-2. Push to GitHub
-3. Import repo in Vercel dashboard → set root directory to `web/`
-4. Set environment variables per environment
-5. Add custom domain in Vercel dashboard
+NOTE: PRD says "Phase 2 will be planned in detail after Phase 1 ships and we have real model results." Adapt based on actual Phase 1 outcomes.
 
 ## Current state — verify before starting
-1. `python -m pytest tests/ -q` → 394+ tests pass
-2. `tract assign "test input"` → CLI works, returns hub assignments with calibrated confidence
-3. `tract export --format json` → crosswalk.db populated and queryable (2,802 controls, 522 hubs)
-4. `ls results/phase1c/deployment_model/deployment_artifacts.npz` → deployment artifacts exist
+1. `python -m pytest tests/ -q` → all tests pass
+2. `tract assign "test input"` → CLI works, returns hub assignments
+3. `tract export --format json --framework atlas` → crosswalk.db populated and queryable
+4. `ls hub_proposals/` → at least one proposal round completed (or confirm zero OOD controls)
 5. Phase 1 fully complete: model trained, crosswalk.db populated, CLI working, guardrails tested
 
 ## Phase 1 results to incorporate
-1. Crosswalk.db → export to static JSON via `scripts/export_for_web.py` (frameworks, controls, assignments, hubs)
-2. Model inference latency: cold start ~8s on Jetson Orin AGX → Control Search needs a pre-warmed inference endpoint
-3. Calibrated confidence range: T_deploy=0.074, scores typically 0.05–0.85 → design heatmap scale accordingly
-4. 95 OOD controls found, 5 hub proposals generated → Ontology Browser should show proposed (pending) hubs
-5. 636 assignments across 22 frameworks → design Crosswalk Explorer for this scale
-6. Duplicate detection thresholds: 0.95 (duplicate), 0.85 (similar) → Framework Submission uses these
+1. Crosswalk.db schema → Dash pages query this (use the same ORM/query functions as CLI)
+2. Model inference latency (from `tract assign` timing) → Control Search page needs sub-second response. If cold start > 5s, implement model preloading.
+3. Calibrated confidence distribution → Confidence Dashboard heatmap color scale must match actual score ranges (check min/max/median from crosswalk.db)
+4. Framework coverage matrix → which framework pairs have highest/lowest hub overlap? Design comparison page for common use cases.
+5. Active learning acceptance rates → frameworks with low acceptance need visual flagging in UI
+6. Hub proposal outcomes → Ontology Browser should distinguish proposed (pending) hubs from established ones
 
 ## Lessons from Phase 1
-1. **Test the UI in a browser.** Type checking verifies code, not features. Run `next dev` and use every page.
-2. **All external data is untrusted.** Framework uploads need schema validation + sanitize_text() before processing.
-3. **No eval/exec.** Parameterized queries only. Next.js API routes use typed inputs.
-4. **Input sanitization.** Control text search uses the same sanitize_text() logic (port to TypeScript or call Python API).
-5. **CSA CCM ≠ CSA AICM.** Verify framework identity in submission validation.
+1. **Test the UI in a browser.** Type checking and test suites verify code correctness, not feature correctness. Start the dev server and use every feature before reporting done.
+2. **All external data is untrusted.** Framework uploads in the submission system need schema validation + text sanitization before processing.
+3. **Atomic writes.** Any data mutation through the web UI uses atomic transactions.
+4. **No eval/exec/shell=True.** Parameterized SQL queries only. No raw string interpolation in queries.
+5. **Input sanitization.** Control text search uses sanitize_text(). Framework upload validates against framework_template.json schema.
+6. **CSRF protection** on any mutation endpoints.
 
 ## Scope
 
-### 7.1 Next.js Web UI — 5 pages + submission
+### 7.1 Dash Web UI — 5 pages
 
-| Page | Route | Data Source | Key Interaction |
-|------|-------|------------|-----------------|
-| Crosswalk Explorer | `/` | Static JSON | Framework dropdown → controls table → click → hub detail → related controls |
-| Framework Comparison | `/compare` | Static JSON | Two dropdowns → equivalences/related/gaps table |
-| Hub Ontology Browser | `/hierarchy` | Static JSON | Collapsible tree → click hub → detail panel with controls |
-| Confidence Dashboard | `/dashboard` | Static JSON | Heatmap (frameworks × hubs) → click cell → prediction detail |
-| Control Search | `/search` | Inference API | Text input → POST to /api/search → results with confidence bars |
-| Framework Submission | `/submit` | Inference API | Upload JSON → validate → inference → review queue |
+| Page | Function | Data Source | Key Interaction |
+|------|----------|------------|-----------------|
+| Crosswalk Explorer | Framework A → controls → CRE hub(s) → Framework B controls | crosswalk.db | Dropdown select → table → click row → hub detail → related controls |
+| Framework Comparison | Two frameworks side-by-side: equivalent (shared hub), related (shared parent), gap | crosswalk.db | Two dropdown selects → three-column table with hub links |
+| Hub Ontology Browser | Navigate CRE tree → click hub → linked controls, description, confidence | cre_hierarchy.json + hub_descriptions.json + crosswalk.db | Collapsible tree → detail panel |
+| Confidence Dashboard | Heatmap: frameworks × hubs, colored by calibrated confidence | crosswalk.db assignments | Heatmap with click-through to prediction details |
+| Control Search | Paste text → live model inference → top-5 hubs + related controls | Trained model + crosswalk.db | Text input → results table with confidence bars |
 
-Tech: Next.js 15, React 19, Tailwind CSS, shadcn/ui, Plotly.js (heatmap), react-arborist (tree).
+Tech: Dash + Plotly + dash-bootstrap-components. SQLite backend from crosswalk.db.
 
-### Data export pipeline
+### 7.2 Framework Submission System
 
-`scripts/export_for_web.py` reads crosswalk.db and outputs:
-- `web/public/data/frameworks.json` — framework metadata
-- `web/public/data/assignments.json` — all accepted assignments with confidence
-- `web/public/data/hierarchy.json` — CRE hub tree with descriptions
-- `web/public/data/comparison_matrix.json` — pre-computed framework pair overlaps
-
-Run locally after any data change, commit the JSON files, push → Vercel rebuilds.
-
-### Inference API (separate from Vercel)
-
-FastAPI endpoint on Jetson Orin AGX (or Modal/RunPod):
-- `POST /predict` — text → top-K hub assignments with calibrated confidence
-- `POST /find-duplicates` — text → duplicate/similar matches
-- `POST /ingest` — framework JSON → batch predictions + duplicate detection
-- Authentication: API key in header
-- Exposed via Cloudflare Tunnel (free) for stable public URL
-
-Next.js API route `/api/search` proxies to this, keeping the inference URL server-side.
+- `framework_template.json`: JSON Schema with required fields (control_id, title, description, framework_name, version, source_url)
+- Upload page in Dash: drag-and-drop JSON → schema validation → duplicate detection (cosine > 0.95) → model inference → review queue
+- Review queue page: predicted assignments per control, accept/reject/correct, batch approve
+- `framework_registry.json`: versioned list of all ingested frameworks with metadata
 
 ## Approach
 Use brainstorming → spec → plan → subagent-driven-development.
 
-Design the UI layout as mockups first (use the visual companion). Each page is an independent
-React component — can be developed and tested in parallel. Start with data export + static pages,
-add inference API integration last.
+Design the UI layout as mockups first (use the visual companion if available). Each page is an independent Dash callback module — can be developed and tested in parallel.
 
-Adversarial review: 3 critics (frontend/UX, security, data visualization) attack the spec.
-Focus on: XSS in user text display, API route input validation, responsive layout, accessibility.
+Adversarial review: 3 critics (frontend/UX, security, data visualization) attack the spec. Focus on: XSS in user text display, SQL injection in search, responsive layout, accessibility.
 
 ## Success criteria
-- 5 pages + submission deployed on Vercel and publicly accessible
-- Production and preview environments working
-- Crosswalk Explorer loads in < 2 seconds (static data)
-- Control Search returns results in < 5 seconds (including inference API call)
-- Framework submission validates, runs inference, shows review UI
+- 5 pages deployed and functional
+- New framework submission < 1 hour for standard-format frameworks
+- Control Search returns results in < 2 seconds
 - All pages tested in browser: golden path + edge cases
-- No XSS or injection vulnerabilities in any user input path
-- Lighthouse performance score > 90 for static pages
+- No XSS, SQL injection, or CSRF vulnerabilities
 
 Think deeply using the sequential-thinking MCP server. --ultrathink
 ```
