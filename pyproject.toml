@@ -35,6 +35,9 @@ phase0 = [
     "einops>=0.7,<1",
 ]
 
+[project.scripts]
+tract = "tract.cli:main"
+
 [tool.setuptools.packages.find]
 include = ["tract*"]
 
