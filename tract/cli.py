@@ -163,6 +163,40 @@ def build_parser() -> argparse.ArgumentParser:
     p_validate.add_argument("--file", required=True, help="Framework JSON file to validate")
     p_validate.add_argument("--json", action="store_true", help="Machine-readable JSON output")
 
+    # ── prepare ──────────────────────────────────────────────────────
+    p_prepare = subparsers.add_parser(
+        "prepare",
+        help="Prepare a raw framework document for ingestion",
+        epilog=(
+            "Examples:\n"
+            "  tract prepare --file controls.csv --framework-id new_fw \\\n"
+            "    --name 'New Framework' --version '1.0' \\\n"
+            "    --source-url 'https://example.com' --mapping-unit control\n"
+            "\n"
+            "  tract prepare --file doc.pdf --llm --framework-id new_fw \\\n"
+            "    --name 'New Framework' --version '1.0' \\\n"
+            "    --source-url 'https://example.com' --mapping-unit control\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_prepare.add_argument("--file", required=True, help="Input file path (CSV, markdown, JSON, or unstructured)")
+    p_prepare.add_argument("--framework-id", required=True, help="Framework ID slug (lowercase, underscores)")
+    p_prepare.add_argument("--name", required=True, help="Human-readable framework name")
+    p_prepare.add_argument("--version", default="1.0", help="Framework version string (default: 1.0)")
+    p_prepare.add_argument("--source-url", default="", help="Official framework URL (default: empty)")
+    p_prepare.add_argument("--mapping-unit", default="control", help="What each control represents (default: control)")
+    p_prepare.add_argument("--fetched-date", default=None, help="Fetch date in YYYY-MM-DD format (default: today)")
+    p_prepare.add_argument("--expected-count", type=int, default=None, help="Expected number of controls (warns on mismatch)")
+    p_prepare.add_argument("--id-column", default=None, help="CSV column name for control_id (overrides auto-detect)")
+    p_prepare.add_argument("--title-column", default=None, help="CSV column name for title (overrides auto-detect)")
+    p_prepare.add_argument("--description-column", default=None, help="CSV column name for description (overrides auto-detect)")
+    p_prepare.add_argument("--fulltext-column", default=None, help="CSV column name for full_text (overrides auto-detect)")
+    p_prepare.add_argument("--llm", action="store_true", help="Use Claude API for LLM-assisted extraction")
+    p_prepare.add_argument("--format", choices=["csv", "markdown", "json", "unstructured"], help="Override auto-detected format")
+    p_prepare.add_argument("--output", help="Output file path (default: <input_stem>_prepared.json)")
+    p_prepare.add_argument("--heading-level", type=int, help="Markdown heading depth to split on (default: auto-detect)")
+    p_prepare.add_argument("--json", action="store_true", help="Output summary as JSON")
+
     return parser
 
 
@@ -524,6 +558,70 @@ def _cmd_validate(args: argparse.Namespace) -> None:
 
     if errors:
         sys.exit(1)
+
+
+def _cmd_prepare(args: argparse.Namespace) -> None:
+    from datetime import date
+
+    from tract.prepare import prepare_framework
+
+    file_path = Path(args.file)
+    if not file_path.exists():
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    output_path = Path(args.output) if args.output else None
+    fetched_date = args.fetched_date if args.fetched_date else date.today().isoformat()
+
+    column_overrides: dict[str, str] | None = None
+    override_keys = {
+        "id_column": "control_id",
+        "title_column": "title",
+        "description_column": "description",
+        "fulltext_column": "full_text",
+    }
+    for attr, canonical in override_keys.items():
+        val = getattr(args, attr, None)
+        if val is not None:
+            if column_overrides is None:
+                column_overrides = {}
+            column_overrides[canonical] = val
+
+    try:
+        result_path = prepare_framework(
+            file_path=file_path,
+            framework_id=args.framework_id,
+            name=args.name,
+            version=args.version,
+            source_url=args.source_url,
+            mapping_unit=args.mapping_unit,
+            fetched_date=fetched_date,
+            output_path=output_path,
+            format_override=args.format,
+            use_llm=args.llm,
+            heading_level=args.heading_level,
+            expected_count=args.expected_count,
+            column_overrides=column_overrides,
+        )
+    except (ValueError, FileNotFoundError) as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.json:
+        from tract.io import load_json
+        data = load_json(result_path)
+        summary = {
+            "output_path": str(result_path),
+            "framework_id": data["framework_id"],
+            "controls": len(data["controls"]),
+        }
+        print(json.dumps(summary, indent=2))
+    else:
+        from tract.io import load_json
+        data = load_json(result_path)
+        print(f"Prepared: {data['framework_name']} ({data['framework_id']})")
+        print(f"  Controls: {len(data['controls'])}")
+        print(f"  Output: {result_path}")
 
 
 def _cmd_export(args: argparse.Namespace) -> None:
@@ -938,6 +1036,7 @@ def main() -> None:
         "review-proposals": _cmd_review_proposals,
         "tutorial": _cmd_tutorial,
         "validate": _cmd_validate,
+        "prepare": _cmd_prepare,
     }
 
     handler = handlers.get(args.command)

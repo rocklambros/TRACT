@@ -80,6 +80,9 @@ def prepare_framework(
     format_override: str | None = None,
     use_llm: bool = False,
     heading_level: int | None = None,
+    fetched_date: str | None = None,
+    expected_count: int | None = None,
+    column_overrides: dict[str, str] | None = None,
 ) -> Path:
     """Prepare a raw framework document into a validated FrameworkOutput JSON.
 
@@ -98,6 +101,11 @@ def prepare_framework(
         format_override: Override auto-detected format.
         use_llm: Use Claude API for LLM-assisted extraction.
         heading_level: Override heading level for markdown extraction.
+        fetched_date: Override auto-generated fetch date (YYYY-MM-DD).
+        expected_count: Expected number of controls; warns on mismatch.
+        column_overrides: CSV column name overrides mapping canonical
+            names (control_id, title, description, full_text) to actual
+            column names in the file.
 
     Returns:
         Path to the written output JSON file.
@@ -138,14 +146,24 @@ def prepare_framework(
             f"Extraction produced zero controls from {file_path.name}."
         )
 
+    if expected_count is not None and len(raw_controls) != expected_count:
+        logger.warning(
+            "Expected %d controls but extracted %d from %s",
+            expected_count,
+            len(raw_controls),
+            file_path.name,
+        )
+
     sanitized_controls = [_sanitize_control(c) for c in raw_controls]
+
+    resolved_date = fetched_date or datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
 
     fw = FrameworkOutput(
         framework_id=framework_id,
         framework_name=name,
         version=version,
         source_url=source_url,
-        fetched_date=datetime.now(tz=timezone.utc).strftime("%Y-%m-%d"),
+        fetched_date=resolved_date,
         mapping_unit_level=mapping_unit,
         controls=sanitized_controls,
     )
