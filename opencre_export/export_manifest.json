@@ -1,0 +1,66 @@
+{
+  "confidence_floor": 0.3,
+  "confidence_overrides": {
+    "mitre_atlas": 0.35
+  },
+  "export_date": "2026-05-01T17:12:11.310352+00:00",
+  "model_adapter_hash": "7e8b8f834db5",
+  "per_framework": {
+    "csa_aicm": {
+      "excluded_confidence": 55,
+      "excluded_ground_truth": 0,
+      "excluded_not_accepted": 0,
+      "excluded_null_confidence": 4,
+      "excluded_ood": 0,
+      "exported": 184
+    },
+    "eu_ai_act": {
+      "excluded_confidence": 16,
+      "excluded_ground_truth": 0,
+      "excluded_not_accepted": 0,
+      "excluded_null_confidence": 0,
+      "excluded_ood": 0,
+      "exported": 84
+    },
+    "mitre_atlas": {
+      "excluded_confidence": 64,
+      "excluded_ground_truth": 65,
+      "excluded_not_accepted": 0,
+      "excluded_null_confidence": 3,
+      "excluded_ood": 0,
+      "exported": 128
+    },
+    "nist_ai_600_1": {
+      "excluded_confidence": 3,
+      "excluded_ground_truth": 0,
+      "excluded_not_accepted": 0,
+      "excluded_null_confidence": 0,
+      "excluded_ood": 0,
+      "exported": 7
+    },
+    "owasp_agentic_top10": {
+      "excluded_confidence": 2,
+      "excluded_ground_truth": 0,
+      "excluded_not_accepted": 0,
+      "excluded_null_confidence": 0,
+      "excluded_ood": 0,
+      "exported": 8
+    },
+    "owasp_llm_top10": {
+      "excluded_confidence": 0,
+      "excluded_ground_truth": 13,
+      "excluded_not_accepted": 0,
+      "excluded_null_confidence": 0,
+      "excluded_ood": 0,
+      "exported": 0
+    }
+  },
+  "staleness_check": {
+    "status": "skipped",
+    "upstream_hub_count": 0
+  },
+  "total_excluded": 225,
+  "total_exported": 411,
+  "tract_git_sha": "a12efc66a706ba6b2e92a3213d9e4d58feeef3f9",
+  "tract_version": "0.1.0"
+}

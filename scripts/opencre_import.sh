@@ -11,6 +11,7 @@ set -euo pipefail
 
 CSV_FILE="${1:?Usage: $0 <csv_file>}"
 OPENCRE_DIR="${HOME}/github_projects/OpenCRE"
+OPENCRE_DB="${OPENCRE_DIR}/cre.db"
 PORT=5001
 PID_FILE="/tmp/opencre_import_flask.pid"
 
@@ -24,6 +25,12 @@ if [ ! -d "$OPENCRE_DIR" ]; then
     exit 1
 fi
 
+if [ ! -f "$OPENCRE_DB" ]; then
+    echo "Error: OpenCRE database not found at $OPENCRE_DB"
+    echo "Run: cd $OPENCRE_DIR && CRE_ALLOW_IMPORT=1 .venv/bin/python cre.py --upstream_sync --cache_file cre.db"
+    exit 1
+fi
+
 cleanup() {
     if [ -f "$PID_FILE" ]; then
         kill "$(cat "$PID_FILE")" 2>/dev/null || true
@@ -34,7 +41,13 @@ trap cleanup EXIT
 
 echo "Starting OpenCRE Flask app on port $PORT..."
 cd "$OPENCRE_DIR"
-CRE_ALLOW_IMPORT=1 FLASK_APP=cre.py flask run --port "$PORT" &
+CRE_ALLOW_IMPORT=1 \
+  SQLALCHEMY_DATABASE_URI="sqlite:///${OPENCRE_DB}" \
+  CRE_CACHE_FILE="sqlite:///${OPENCRE_DB}" \
+  NO_LOGIN=1 \
+  INSECURE_REQUESTS=1 \
+  FLASK_APP=cre.py \
+  .venv/bin/flask run --port "$PORT" &
 echo $! > "$PID_FILE"
 
 echo "Waiting for app to be ready..."
