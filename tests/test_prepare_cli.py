@@ -329,3 +329,19 @@ class TestIngestValidationGate:
         issues = validate_framework(fw_data)
         errors = [i for i in issues if i.severity == "error"]
         assert len(errors) == 0
+
+
+class TestIngestSanitization:
+    def test_sanitize_control_removes_null_bytes(self) -> None:
+        """sanitize_control() should clean text fields for ingest."""
+        from tract.sanitize import sanitize_control
+
+        ctrl = {
+            "control_id": "TC-01",
+            "title": "Null\x00Title",
+            "description": "A description\x00 with null bytes to sanitize properly",
+        }
+        result = sanitize_control(ctrl)
+        assert "\x00" not in result["title"]
+        assert "\x00" not in result["description"]
+        assert result["control_id"] == "TC-01"

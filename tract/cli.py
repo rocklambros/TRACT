@@ -376,6 +376,11 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
             print(f"{prefix}{issue.message}", file=sys.stderr)
         print("", file=sys.stderr)
 
+    from tract.sanitize import sanitize_control
+
+    for i, ctrl in enumerate(raw_data["controls"]):
+        raw_data["controls"][i] = sanitize_control(ctrl)
+
     try:
         fw = FrameworkOutput.model_validate(raw_data)
     except Exception as e:
@@ -463,6 +468,27 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         "controls": controls_output,
     }
 
+    if raw_data.get("metadata", {}).get("source") == "tract_prepare":
+        review_data["calibration_note"] = (
+            "Confidence scores were calibrated on parser-extracted text. "
+            "This file was prepared via tract prepare, which may produce "
+            "different text surface forms. Treat confidence scores as "
+            "approximate rankings, not calibrated probabilities."
+        )
+
+    max_sims = [
+        ctrl["predictions"][0]["confidence"]
+        for ctrl in controls_output
+        if ctrl.get("predictions")
+    ]
+    n = len(controls_output)
+    review_data["quality_summary"] = {
+        "mean_max_cosine_sim": round(sum(max_sims) / len(max_sims), 3) if max_sims else 0.0,
+        "ood_fraction": round(ood_count / n, 3) if n else 0.0,
+        "below_confidence_floor_count": low_conf,
+        "below_confidence_floor_fraction": round(low_conf / n, 3) if n else 0.0,
+    }
+
     output_path = file_path.with_stem(file_path.stem + "_review").with_suffix(".json")
     atomic_write_json(review_data, output_path)
 
@@ -475,6 +501,10 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         print(f"  Duplicates: {dup_count}, Similar: {sim_count}")
         print(f"  High confidence: {high_conf}, Low confidence: {low_conf}")
         print(f"  Review file: {output_path}")
+        qs = review_data["quality_summary"]
+        print(f"  Average match quality: {qs['mean_max_cosine_sim']:.3f}", file=sys.stderr)
+        print(f"  Unusual controls (out-of-distribution): {qs['ood_fraction']:.0%}", file=sys.stderr)
+        print(f"  Below confidence floor: {qs['below_confidence_floor_count']} controls ({qs['below_confidence_floor_fraction']:.0%})", file=sys.stderr)
 
 
 def _cmd_accept(args: argparse.Namespace) -> None:

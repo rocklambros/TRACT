@@ -12,6 +12,7 @@ Every text field passes through this pipeline before storage:
 
 Public API:
     sanitize_text(text, *, max_length, return_full) -> str | tuple[str, str | None]
+    sanitize_control(control: dict) -> dict
     strip_html(text) -> str
 """
 
@@ -165,3 +166,22 @@ def sanitize_text(
             return cleaned[:max_length]
         return truncated
     return cleaned
+
+
+def sanitize_control(control: dict) -> dict:
+    """Sanitize all text fields in a control dict, preserving non-text fields.
+
+    Applies sanitize_text() to title, description, and full_text.
+    Preserves hierarchy_level, parent_id, parent_name, metadata unchanged.
+    """
+    result = dict(control)
+    if "description" in result and result["description"]:
+        desc, full = sanitize_text(result["description"], return_full=True)
+        result["description"] = desc
+        if full and not result.get("full_text"):
+            result["full_text"] = full
+    if "full_text" in result and result["full_text"]:
+        result["full_text"] = sanitize_text(result["full_text"], max_length=50_000)
+    if "title" in result and result["title"]:
+        result["title"] = sanitize_text(result["title"], max_length=500)
+    return result
