@@ -1,0 +1,1196 @@
+{
+  "csa_aicm": {
+    "coverage_pct": 75.7,
+    "exported_controls": 184,
+    "missing_controls": [
+      {
+        "detail": "Best confidence 0.254 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIS-01",
+        "title": "Application and Interface Security Policy and Procedures"
+      },
+      {
+        "detail": "Best confidence 0.232 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIS-04",
+        "title": "Secure Application Development Lifecycle"
+      },
+      {
+        "detail": "Best confidence 0.082 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIS-12",
+        "title": "Source Code Managemement"
+      },
+      {
+        "detail": "Best confidence 0.211 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIS-13",
+        "title": "AI Sandboxing"
+      },
+      {
+        "detail": "Best confidence 0.268 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "BCR-10",
+        "title": "Response Plan Exercise"
+      },
+      {
+        "detail": "Best confidence 0.245 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CCC-02",
+        "title": "Quality Testing"
+      },
+      {
+        "detail": "Best confidence 0.217 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CCC-09",
+        "title": "Change Restoration"
+      },
+      {
+        "detail": "Best confidence 0.206 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-04",
+        "title": "Encryption Algorithm"
+      },
+      {
+        "detail": "Best confidence 0.209 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-10",
+        "title": "Key Generation"
+      },
+      {
+        "detail": "Best confidence 0.292 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-11",
+        "title": "Key Purpose"
+      },
+      {
+        "detail": "Best confidence 0.225 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-15",
+        "title": "Key Activation"
+      },
+      {
+        "detail": "Best confidence 0.287 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-16",
+        "title": "Key Suspension"
+      },
+      {
+        "detail": "Best confidence 0.195 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-19",
+        "title": "Key Compromise"
+      },
+      {
+        "detail": "Best confidence 0.168 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "CEK-20",
+        "title": "Key Recovery"
+      },
+      {
+        "detail": "Best confidence 0.270 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "DCS-12",
+        "title": "Cabling Security"
+      },
+      {
+        "detail": "Best confidence 0.284 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "DCS-13",
+        "title": "Environmental Systems"
+      },
+      {
+        "detail": "Best confidence 0.290 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "DSP-11",
+        "title": "Personal Data Access, Reversal, Rectification and Deletion"
+      },
+      {
+        "detail": "Best confidence 0.238 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "DSP-12",
+        "title": "Limitation of Purpose in Personal Data Processing"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "DSP-15",
+        "title": "Limitation of Production Data Use"
+      },
+      {
+        "detail": "Best confidence 0.241 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "DSP-16",
+        "title": "Data Retention and Deletion"
+      },
+      {
+        "detail": "Best confidence 0.224 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "DSP-19",
+        "title": "Data Location"
+      },
+      {
+        "detail": "Best confidence 0.205 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-04",
+        "title": "Policy Exception Process"
+      },
+      {
+        "detail": "Best confidence 0.184 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-05",
+        "title": "Information Security Program"
+      },
+      {
+        "detail": "Best confidence 0.280 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-09",
+        "title": "Acceptable Use of the AI Service"
+      },
+      {
+        "detail": "Best confidence 0.278 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-10",
+        "title": "AI Impact Assessment"
+      },
+      {
+        "detail": "Best confidence 0.177 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-11",
+        "title": "Bias and Fairness Assessment"
+      },
+      {
+        "detail": "Best confidence 0.255 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-12",
+        "title": "Ethics Committee"
+      },
+      {
+        "detail": "Best confidence 0.246 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GRC-13",
+        "title": "Explainability Requirement"
+      },
+      {
+        "detail": "Best confidence 0.296 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "HRS-02",
+        "title": "Acceptable Use of Technology Policy and Procedures"
+      },
+      {
+        "detail": "Best confidence 0.273 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "HRS-04",
+        "title": "Remote and Home Working Policy and Procedures"
+      },
+      {
+        "detail": "Best confidence 0.233 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "HRS-06",
+        "title": "Employment Termination"
+      },
+      {
+        "detail": "Best confidence 0.168 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "HRS-08",
+        "title": "Employment Agreement Content"
+      },
+      {
+        "detail": "Best confidence 0.211 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "HRS-15",
+        "title": "AI Acceptable Use"
+      },
+      {
+        "detail": "Best confidence 0.271 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-03",
+        "title": "Identity Inventory"
+      },
+      {
+        "detail": "Best confidence 0.249 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-06",
+        "title": "User Access Provisioning"
+      },
+      {
+        "detail": "Best confidence 0.296 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-07",
+        "title": "User Access Changes and Revocation"
+      },
+      {
+        "detail": "Best confidence 0.146 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-12",
+        "title": "Safeguard Logs Integrity"
+      },
+      {
+        "detail": "Best confidence 0.203 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-13",
+        "title": "Uniquely Identifiable Users"
+      },
+      {
+        "detail": "Best confidence 0.147 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-14",
+        "title": "Strong Authentication"
+      },
+      {
+        "detail": "Best confidence 0.200 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-15",
+        "title": "Passwords and Secrets Management"
+      },
+      {
+        "detail": "Best confidence 0.247 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-17",
+        "title": "Knowledge Access Control - Need to Know"
+      },
+      {
+        "detail": "Best confidence 0.195 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IAM-19",
+        "title": "Agent Access Restriction"
+      },
+      {
+        "detail": "Best confidence 0.210 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IPY-03",
+        "title": "Secure Interoperability and Portability Management"
+      },
+      {
+        "detail": "Best confidence 0.273 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "IPY-04",
+        "title": "Data Portability Contractual Obligations"
+      },
+      {
+        "detail": "Best confidence 0.154 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "LOG-01",
+        "title": "Logging and Monitoring Policy and Procedures"
+      },
+      {
+        "detail": "Best confidence 0.300 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "LOG-05",
+        "title": "Audit Logs Monitoring and Response"
+      },
+      {
+        "detail": "Best confidence 0.267 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "LOG-07",
+        "title": "Logging Scope"
+      },
+      {
+        "detail": "Best confidence 0.191 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "LOG-09",
+        "title": "Log Protection"
+      },
+      {
+        "detail": "Best confidence 0.228 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "LOG-12",
+        "title": "Access Control Logs"
+      },
+      {
+        "detail": "Best confidence 0.175 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "MDS-01",
+        "title": "Training Pipeline Security"
+      },
+      {
+        "detail": "Best confidence 0.184 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "MDS-02",
+        "title": "Model Artifact Scanning"
+      },
+      {
+        "detail": "Best confidence 0.193 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "MDS-06",
+        "title": "Adversarial Attack Analysis"
+      },
+      {
+        "detail": "Best confidence 0.258 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "MDS-11",
+        "title": "Model Failure"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "SEF-02",
+        "title": "Service Management Policy and Procedures"
+      },
+      {
+        "detail": "Best confidence 0.228 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "STA-12",
+        "title": "Supply Chain Compliance Assessment"
+      },
+      {
+        "detail": "Best confidence 0.236 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "STA-16",
+        "title": "Service Bill of Material (BOM)"
+      },
+      {
+        "detail": "Best confidence 0.279 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "UEM-10",
+        "title": "Software Firewall"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "UEM-12",
+        "title": "Remote Locate"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "UEM-13",
+        "title": "Remote Wipe"
+      }
+    ],
+    "total_controls": 243
+  },
+  "eu_ai_act": {
+    "coverage_pct": 66.7,
+    "exported_controls": 84,
+    "missing_controls": [
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-AnnexI",
+        "title": "List of Union harmonisation legislation"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-AnnexII",
+        "title": "List of criminal offences referred to in Article 5(1), first subparagraph, point (h)(iii)"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-AnnexX",
+        "title": "Union legislative acts on large-scale IT systems in the area of Freedom, Security and Justice"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art1",
+        "title": "Subject matter"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art100",
+        "title": "Administrative fines on Union institutions, bodies, offices and agencies"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art101",
+        "title": "Fines for providers of general-purpose AI models"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art102",
+        "title": "Amendment to Regulation (EC) No 300/2008"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art103",
+        "title": "Amendment to Regulation (EU) No 167/2013"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art104",
+        "title": "Amendment to Regulation (EU) No 168/2013"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art105",
+        "title": "Amendment to Directive 2014/90/EU"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art106",
+        "title": "Amendment to Directive (EU) 2016/797"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art107",
+        "title": "Amendment to Regulation (EU) 2018/858"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art108",
+        "title": "Amendments to Regulation (EU) 2018/1139"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art109",
+        "title": "Amendment to Regulation (EU) 2019/2144"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art110",
+        "title": "Amendment to Directive (EU) 2020/1828"
+      },
+      {
+        "detail": "Best confidence 0.285 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art111",
+        "title": "AI systems already placed on the market or put into service and general-purpose AI models already placed on the marked"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art113",
+        "title": "Entry into force and application"
+      },
+      {
+        "detail": "Best confidence 0.254 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art17",
+        "title": "Quality management system"
+      },
+      {
+        "detail": "Best confidence 0.280 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art19",
+        "title": "Automatically generated logs"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art2",
+        "title": "Scope"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art3",
+        "title": "Definitions"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art35",
+        "title": "Identification numbers and lists of notified bodies"
+      },
+      {
+        "detail": "Best confidence 0.265 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art38",
+        "title": "Coordination of notified bodies"
+      },
+      {
+        "detail": "Best confidence 0.287 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art52",
+        "title": "Procedure"
+      },
+      {
+        "detail": "Best confidence 0.206 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art54",
+        "title": "Authorised representatives of providers of general-purpose AI models"
+      },
+      {
+        "detail": "Best confidence 0.133 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art57",
+        "title": "AI regulatory sandboxes"
+      },
+      {
+        "detail": "Best confidence 0.059 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art58",
+        "title": "Detailed arrangements for, and functioning of, AI regulatory sandboxes"
+      },
+      {
+        "detail": "Best confidence 0.240 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art61",
+        "title": "Informed consent to participate in testing in real world conditions outside AI regulatory sandboxes"
+      },
+      {
+        "detail": "Best confidence 0.183 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art62",
+        "title": "Measures for providers and deployers, in particular SMEs, including start-ups"
+      },
+      {
+        "detail": "Best confidence 0.214 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art65",
+        "title": "Establishment and structure of the European Artificial Intelligence Board"
+      },
+      {
+        "detail": "Best confidence 0.148 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art66",
+        "title": "Tasks of the Board"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art68",
+        "title": "Scientific panel of independent experts"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art69",
+        "title": "Access to the pool of experts by the Member States"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art7",
+        "title": "Amendments to Annex III"
+      },
+      {
+        "detail": "Best confidence 0.224 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art78",
+        "title": "Confidentiality"
+      },
+      {
+        "detail": "Best confidence 0.200 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art84",
+        "title": "Union AI testing support structures"
+      },
+      {
+        "detail": "Best confidence 0.209 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art85",
+        "title": "Right to lodge a complaint with a market surveillance authority"
+      },
+      {
+        "detail": "Best confidence 0.244 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "AIA-Art90",
+        "title": "Alerts of systemic risks by the scientific panel"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art94",
+        "title": "Procedural rights of economic operators of the general-purpose AI model"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art97",
+        "title": "Exercise of the delegation"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art98",
+        "title": "Committee procedure"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AIA-Art99",
+        "title": "Penalties"
+      }
+    ],
+    "total_controls": 126
+  },
+  "mitre_atlas": {
+    "coverage_pct": 63.4,
+    "exported_controls": 128,
+    "missing_controls": [
+      {
+        "detail": "Best confidence 0.250 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.M0003",
+        "title": "Model Hardening"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "AML.M0009",
+        "title": "Use Multi-Modal Sensors"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "AML.M0011",
+        "title": "Restrict Library Loading"
+      },
+      {
+        "detail": "Best confidence 0.294 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.M0012",
+        "title": "Encrypt Sensitive Information"
+      },
+      {
+        "detail": "Best confidence 0.307 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.M0014",
+        "title": "Verify AI Artifacts"
+      },
+      {
+        "detail": "Best confidence 0.252 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.M0024",
+        "title": "AI Telemetry Logging"
+      },
+      {
+        "detail": "Best confidence 0.276 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.M0034",
+        "title": "Deepfake Detection"
+      },
+      {
+        "detail": "Best confidence 0.233 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0002.000",
+        "title": "Datasets"
+      },
+      {
+        "detail": "Best confidence 0.181 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0005",
+        "title": "Create Proxy AI Model"
+      },
+      {
+        "detail": "Best confidence 0.305 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0005.000",
+        "title": "Train Proxy via Gathered AI Artifacts"
+      },
+      {
+        "detail": "Best confidence 0.334 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0005.001",
+        "title": "Train Proxy via Replication"
+      },
+      {
+        "detail": "Best confidence 0.327 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0006",
+        "title": "Active Scanning"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0008",
+        "title": "Acquire Infrastructure"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0008.001",
+        "title": "Consumer Hardware"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0008.004",
+        "title": "Serverless"
+      },
+      {
+        "detail": "Best confidence 0.208 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0010.001",
+        "title": "AI Software"
+      },
+      {
+        "detail": "Best confidence 0.292 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0010.004",
+        "title": "Container Registry"
+      },
+      {
+        "detail": "Best confidence 0.192 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0011",
+        "title": "User Execution"
+      },
+      {
+        "detail": "Best confidence 0.071 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0011.000",
+        "title": "Unsafe AI Artifacts"
+      },
+      {
+        "detail": "Best confidence 0.341 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0011.001",
+        "title": "Malicious Package"
+      },
+      {
+        "detail": "Best confidence 0.278 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0011.003",
+        "title": "Malicious Link"
+      },
+      {
+        "detail": "Best confidence 0.318 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0013",
+        "title": "Discover AI Model Ontology"
+      },
+      {
+        "detail": "Best confidence 0.327 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0014",
+        "title": "Discover AI Model Family"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0016",
+        "title": "Obtain Capabilities"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0016.001",
+        "title": "Software Tools"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0016.002",
+        "title": "Generative AI"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "AML.T0017",
+        "title": "Develop Capabilities"
+      },
+      {
+        "detail": "Best confidence 0.305 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0017.000",
+        "title": "Adversarial AI Attacks"
+      },
+      {
+        "detail": "Best confidence 0.293 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0018.002",
+        "title": "Embed Malware"
+      },
+      {
+        "detail": "Best confidence 0.169 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0021",
+        "title": "Establish Accounts"
+      },
+      {
+        "detail": "Best confidence 0.294 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0024",
+        "title": "Exfiltration via AI Inference API"
+      },
+      {
+        "detail": "Best confidence 0.243 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0031",
+        "title": "Erode AI Model Integrity"
+      },
+      {
+        "detail": "Best confidence 0.289 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0034.000",
+        "title": "Excessive Queries"
+      },
+      {
+        "detail": "Best confidence 0.230 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0036",
+        "title": "Data from Information Repositories"
+      },
+      {
+        "detail": "Assignment exists but confidence score is NULL",
+        "reason": "null_confidence",
+        "section_id": "AML.T0037",
+        "title": "Data from Local System"
+      },
+      {
+        "detail": "Best confidence 0.309 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0042",
+        "title": "Verify Attack"
+      },
+      {
+        "detail": "Best confidence 0.261 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0043.000",
+        "title": "White-Box Optimization"
+      },
+      {
+        "detail": "Best confidence 0.163 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0043.001",
+        "title": "Black-Box Optimization"
+      },
+      {
+        "detail": "Best confidence 0.232 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0043.002",
+        "title": "Black-Box Transfer"
+      },
+      {
+        "detail": "Best confidence 0.299 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0044",
+        "title": "Full AI Model Access"
+      },
+      {
+        "detail": "Best confidence 0.313 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0046",
+        "title": "Spamming AI System with Chaff Data"
+      },
+      {
+        "detail": "Best confidence 0.303 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0048.000",
+        "title": "Financial Harm"
+      },
+      {
+        "detail": "Best confidence 0.326 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0051.002",
+        "title": "Triggered"
+      },
+      {
+        "detail": "Best confidence 0.231 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0052",
+        "title": "Phishing"
+      },
+      {
+        "detail": "Best confidence 0.277 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0052.000",
+        "title": "Spearphishing via Social Engineering LLM"
+      },
+      {
+        "detail": "Best confidence 0.035 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0060",
+        "title": "Publish Hallucinated Entities"
+      },
+      {
+        "detail": "Best confidence 0.255 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0061",
+        "title": "LLM Prompt Self-Replication"
+      },
+      {
+        "detail": "Best confidence 0.333 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0063",
+        "title": "Discover AI Model Outputs"
+      },
+      {
+        "detail": "Best confidence 0.166 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0067.000",
+        "title": "Citations"
+      },
+      {
+        "detail": "Best confidence 0.317 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0068",
+        "title": "LLM Prompt Obfuscation"
+      },
+      {
+        "detail": "Best confidence 0.324 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0069.001",
+        "title": "System Instruction Keywords"
+      },
+      {
+        "detail": "Best confidence 0.347 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0069.002",
+        "title": "System Prompt"
+      },
+      {
+        "detail": "Best confidence 0.344 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0072",
+        "title": "Reverse Shell"
+      },
+      {
+        "detail": "Best confidence 0.326 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0073",
+        "title": "Impersonation"
+      },
+      {
+        "detail": "Best confidence 0.248 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0074",
+        "title": "Masquerading"
+      },
+      {
+        "detail": "Best confidence 0.314 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0077",
+        "title": "LLM Response Rendering"
+      },
+      {
+        "detail": "Best confidence 0.270 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0079",
+        "title": "Stage Capabilities"
+      },
+      {
+        "detail": "Best confidence 0.236 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0080.000",
+        "title": "Memory"
+      },
+      {
+        "detail": "Best confidence 0.276 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0084.000",
+        "title": "Embedded Knowledge"
+      },
+      {
+        "detail": "Best confidence 0.278 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0084.003",
+        "title": "Call Chains"
+      },
+      {
+        "detail": "Best confidence 0.206 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0085",
+        "title": "Data from AI Services"
+      },
+      {
+        "detail": "Best confidence 0.280 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0091",
+        "title": "Use Alternate Authentication Material"
+      },
+      {
+        "detail": "Best confidence 0.301 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0091.000",
+        "title": "Application Access Token"
+      },
+      {
+        "detail": "Best confidence 0.297 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0094",
+        "title": "Delay Execution of LLM Instructions"
+      },
+      {
+        "detail": "Best confidence 0.195 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0096",
+        "title": "AI Service API"
+      },
+      {
+        "detail": "Best confidence 0.260 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0097",
+        "title": "Virtualization/Sandbox Evasion"
+      },
+      {
+        "detail": "Best confidence 0.305 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0098",
+        "title": "AI Agent Tool Credential Harvesting"
+      },
+      {
+        "detail": "Best confidence 0.315 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0099",
+        "title": "AI Agent Tool Data Poisoning"
+      },
+      {
+        "detail": "Best confidence 0.332 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0102",
+        "title": "Generate Malicious Commands"
+      },
+      {
+        "detail": "Best confidence 0.238 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0104",
+        "title": "Publish Poisoned AI Agent Tool"
+      },
+      {
+        "detail": "Best confidence 0.342 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0106",
+        "title": "Exploitation for Credential Access"
+      },
+      {
+        "detail": "Best confidence 0.284 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0110",
+        "title": "AI Agent Tool Poisoning"
+      },
+      {
+        "detail": "Best confidence 0.275 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0112",
+        "title": "Machine Compromise"
+      },
+      {
+        "detail": "Best confidence 0.329 < floor 0.35",
+        "reason": "below_confidence_floor",
+        "section_id": "AML.T0112.001",
+        "title": "AI Artifacts"
+      }
+    ],
+    "total_controls": 202
+  },
+  "nist_ai_600_1": {
+    "coverage_pct": 58.3,
+    "exported_controls": 7,
+    "missing_controls": [
+      {
+        "detail": "Best confidence 0.199 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GAI-BIAS",
+        "title": "Harmful Bias and Homogenization"
+      },
+      {
+        "detail": "Best confidence 0.198 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GAI-CBRN",
+        "title": "CBRN Information or Capabilities"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "GAI-ENVIRON",
+        "title": "Environmental Impacts"
+      },
+      {
+        "detail": "Best confidence 0.283 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "GAI-INFOSEC",
+        "title": "Information Security"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "GAI-IP",
+        "title": "Intellectual Property"
+      }
+    ],
+    "total_controls": 12
+  },
+  "owasp_agentic_top10": {
+    "coverage_pct": 80.0,
+    "exported_controls": 8,
+    "missing_controls": [
+      {
+        "detail": "Best confidence 0.115 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "ASI05",
+        "title": "Unexpected Code Execution (RCE)"
+      },
+      {
+        "detail": "Best confidence 0.267 < floor 0.30",
+        "reason": "below_confidence_floor",
+        "section_id": "ASI07",
+        "title": "Insecure Inter-Agent Communication"
+      }
+    ],
+    "total_controls": 10
+  },
+  "owasp_llm_top10": {
+    "coverage_pct": 0.0,
+    "exported_controls": 0,
+    "missing_controls": [
+      {
+        "detail": "Reserved as ground truth training data",
+        "reason": "ground_truth",
+        "section_id": "LLM01:2025",
+        "title": "Prompt Injection"
+      },
+      {
+        "detail": "Reserved as ground truth training data",
+        "reason": "ground_truth",
+        "section_id": "LLM02:2025",
+        "title": "Sensitive Information Disclosure"
+      },
+      {
+        "detail": "Reserved as ground truth training data",
+        "reason": "ground_truth",
+        "section_id": "LLM03:2025",
+        "title": "Supply Chain Vulnerabilities"
+      },
+      {
+        "detail": "Reserved as ground truth training data",
+        "reason": "ground_truth",
+        "section_id": "LLM04:2025",
+        "title": "Data and Model Poisoning"
+      },
+      {
+        "detail": "Reserved as ground truth training data",
+        "reason": "ground_truth",
+        "section_id": "LLM05:2025",
+        "title": "Improper Output Handling"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "LLM06:2025",
+        "title": "Excessive Agency"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "LLM07:2025",
+        "title": "System Prompt Leakage"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "LLM08:2025",
+        "title": "Vector and Embedding Weaknesses"
+      },
+      {
+        "detail": "No hub assignment exists for this control",
+        "reason": "no_assignment",
+        "section_id": "LLM09:2025",
+        "title": "Misinformation"
+      },
+      {
+        "detail": "Reserved as ground truth training data",
+        "reason": "ground_truth",
+        "section_id": "LLM10:2025",
+        "title": "Unbounded Consumption"
+      }
+    ],
+    "total_controls": 10
+  }
+}

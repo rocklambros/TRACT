@@ -3,7 +3,7 @@
   "confidence_overrides": {
     "mitre_atlas": 0.35
   },
-  "export_date": "2026-05-01T17:12:11.310352+00:00",
+  "export_date": "2026-05-01T18:39:26.595008+00:00",
   "model_adapter_hash": "7e8b8f834db5",
   "per_framework": {
     "csa_aicm": {
@@ -61,6 +61,6 @@
   },
   "total_excluded": 225,
   "total_exported": 411,
-  "tract_git_sha": "a12efc66a706ba6b2e92a3213d9e4d58feeef3f9",
+  "tract_git_sha": "9c82094d4a3a086f08e2617e4733cf4a43455535",
   "tract_version": "0.1.0"
 }

@@ -410,6 +410,7 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
         PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES,
     )
     from tract.export.filters import compute_filter_stats, query_exportable_assignments
+    from tract.export.gaps import query_coverage_gaps
     from tract.export.manifest import build_manifest
     from tract.export.opencre_csv import write_opencre_csv
     from tract.export.opencre_names import TRACT_TO_OPENCRE_NAME
@@ -503,7 +504,30 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
     manifest_path = output_dir / "export_manifest.json"
     atomic_write_json(manifest, manifest_path)
     print(f"\n  Manifest: {manifest_path}")
-    print(f"  Total exported: {total_exported} assignments across {len(written_files)} frameworks")
+
+    exported_keys = {(r["control_id"], r["hub_id"]) for r in all_exported}
+    gaps = query_coverage_gaps(
+        PHASE1C_CROSSWALK_DB_PATH,
+        exported_keys=exported_keys,
+        confidence_floor=confidence_floor,
+        confidence_overrides=confidence_overrides,
+        framework_ids=frameworks,
+    )
+    gaps_path = output_dir / "coverage_gaps.json"
+    atomic_write_json(gaps, gaps_path)
+    print(f"  Coverage gaps: {gaps_path}")
+
+    total_missing = sum(len(g["missing_controls"]) for g in gaps.values())
+    if total_missing:
+        print(f"\n  Coverage gaps ({total_missing} controls not exported):")
+        for fw_id in sorted(gaps.keys()):
+            g = gaps[fw_id]
+            missing = g["missing_controls"]
+            if missing:
+                print(f"    {fw_id}: {g['exported_controls']}/{g['total_controls']} "
+                      f"({g['coverage_pct']}%) — {len(missing)} missing")
+
+    print(f"\n  Total exported: {total_exported} assignments across {len(written_files)} frameworks")
 
 
 def _cmd_export_opencre_proposals(args: argparse.Namespace) -> None:
