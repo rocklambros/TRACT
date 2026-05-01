@@ -114,10 +114,23 @@ class TestArgParsing:
         args = parser.parse_args(["tutorial"])
         assert args.command == "tutorial"
 
+    def test_accept_review(self) -> None:
+        from tract.cli import build_parser
+        parser = build_parser()
+        args = parser.parse_args(["accept", "--review", "review.json"])
+        assert args.command == "accept"
+        assert args.review == "review.json"
+
+    def test_accept_force(self) -> None:
+        from tract.cli import build_parser
+        parser = build_parser()
+        args = parser.parse_args(["accept", "--review", "r.json", "--force"])
+        assert args.force is True
+
     def test_all_commands_have_help(self) -> None:
         from tract.cli import build_parser
         parser = build_parser()
-        for cmd in ["assign", "compare", "ingest", "export", "hierarchy",
+        for cmd in ["assign", "compare", "ingest", "accept", "export", "hierarchy",
                      "propose-hubs", "review-proposals", "tutorial"]:
             with pytest.raises(SystemExit) as exc_info:
                 parser.parse_args([cmd, "--help"])

@@ -72,6 +72,21 @@ def build_parser() -> argparse.ArgumentParser:
     p_ingest.add_argument("--force", action="store_true", help="Overwrite if framework ID already exists")
     p_ingest.add_argument("--json", action="store_true", help="Output as JSON")
 
+    # ── accept ───────────────────────────────────────────────────
+    p_accept = subparsers.add_parser(
+        "accept",
+        help="Commit reviewed ingest predictions to crosswalk DB",
+        epilog=(
+            "Examples:\n"
+            "  tract accept --review new_framework_review.json\n"
+            "  tract accept --review new_framework_review.json --force\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_accept.add_argument("--review", required=True, help="Reviewed JSON file from 'tract ingest'")
+    p_accept.add_argument("--force", action="store_true", help="Replace if framework already exists in DB")
+    p_accept.add_argument("--json", action="store_true", help="Output summary as JSON")
+
     # ── export ───────────────────────────────────────────────────
     p_export = subparsers.add_parser(
         "export",
@@ -348,15 +363,21 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         controls_output.append({
             "control_id": ctrl.control_id,
             "title": ctrl.title,
+            "description": ctrl.description,
+            "full_text": ctrl.full_text,
             "predictions": [p.to_dict() for p in preds],
             "is_ood": is_ood,
             "duplicates": [d.to_dict() for d in duplicates],
             "similar": [s.to_dict() for s in similar],
+            "review": {"status": "pending"},
         })
 
     review_data = {
         "framework_id": fw.framework_id,
         "framework_name": fw.framework_name,
+        "version": fw.version,
+        "fetched_date": fw.fetched_date,
+        "source_url": fw.source_url,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "model_version": "deployment_round2",
         "context": "ingestion",
@@ -383,6 +404,58 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         print(f"  Duplicates: {dup_count}, Similar: {sim_count}")
         print(f"  High confidence: {high_conf}, Low confidence: {low_conf}")
         print(f"  Review file: {output_path}")
+
+
+def _cmd_accept(args: argparse.Namespace) -> None:
+    from tract.accept import accept_review
+    from tract.io import load_json
+
+    review_path = Path(args.review)
+    if not review_path.exists():
+        print(f"Error: File not found: {review_path}", file=sys.stderr)
+        sys.exit(1)
+
+    review_data = load_json(review_path)
+
+    required_fields = ["framework_id", "framework_name", "controls"]
+    for field in required_fields:
+        if field not in review_data:
+            print(f"Error: Review file missing required field '{field}'", file=sys.stderr)
+            sys.exit(1)
+
+    pending = [c for c in review_data["controls"]
+               if c.get("review", {}).get("status") == "pending"]
+    if pending and not args.force:
+        print(f"Warning: {len(pending)} controls still pending review:")
+        for p in pending[:5]:
+            print(f"  {p['control_id']}: {p.get('title', 'untitled')}")
+        if len(pending) > 5:
+            print(f"  ... and {len(pending) - 5} more")
+        print("These will be skipped (no assignment created).")
+
+    try:
+        result = accept_review(
+            PHASE1C_CROSSWALK_DB_PATH,
+            review_data,
+            force=args.force,
+        )
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"Accepted: {review_data['framework_name']} ({result['framework_id']})")
+        print(f"  Controls inserted: {result['controls_inserted']}")
+        print(f"  Assignments created: {result['assignments_created']}")
+        print(f"    Accepted: {result['accepted']}")
+        if result['corrected']:
+            print(f"    Corrected: {result['corrected']}")
+        if result['rejected']:
+            print(f"    Rejected: {result['rejected']}")
+        if result['pending']:
+            print(f"    Pending (skipped): {result['pending']}")
 
 
 def _cmd_export(args: argparse.Namespace) -> None:
@@ -755,13 +828,18 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
 
     print("Step 4: Ingest a new framework")
     print("  Prepare a JSON file matching the FrameworkOutput schema (see tract/schema.py)")
-    print("  Try: tract ingest --file new_framework.json\n")
+    print("  Try: tract ingest --file new_framework.json")
+    print("  This generates a _review.json with model predictions for human review.\n")
 
-    print("Step 5: Export the crosswalk")
+    print("Step 5: Accept reviewed predictions into the crosswalk DB")
+    print("  Edit the _review.json to set review status (accepted/rejected/corrected)")
+    print("  Try: tract accept --review new_framework_review.json\n")
+
+    print("Step 6: Export the crosswalk")
     print("  Try: tract export --format csv")
     print("  Exports all accepted assignments as CSV or JSON.\n")
 
-    print("Step 6: Propose new hubs (advanced)")
+    print("Step 7: Propose new hubs (advanced)")
     print("  Try: tract propose-hubs")
     print("  Clusters OOD controls to suggest new taxonomy extensions.\n")
 
@@ -785,6 +863,7 @@ def main() -> None:
         "assign": _cmd_assign,
         "compare": _cmd_compare,
         "ingest": _cmd_ingest,
+        "accept": _cmd_accept,
         "export": _cmd_export,
         "hierarchy": _cmd_hierarchy,
         "propose-hubs": _cmd_propose_hubs,
