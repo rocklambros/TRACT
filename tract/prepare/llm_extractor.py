@@ -72,8 +72,8 @@ def _get_anthropic_client() -> Any:
         import anthropic
     except ImportError:
         raise RuntimeError(
-            "The 'anthropic' package is required for LLM extraction. "
-            "Install it with: pip install anthropic"
+            "LLM extraction requires additional dependencies. "
+            "Install with: pip install tract[llm]"
         )
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
