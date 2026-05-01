@@ -149,6 +149,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="Guided walkthrough of TRACT capabilities",
     )
 
+    # ── validate ─────────────────────────────────────────────────────
+    p_validate = subparsers.add_parser(
+        "validate",
+        help="Validate a prepared framework JSON file",
+        epilog=(
+            "Examples:\n"
+            "  tract validate --file prepared.json\n"
+            "  tract validate --file prepared.json --json\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_validate.add_argument("--file", required=True, help="Framework JSON file to validate")
+    p_validate.add_argument("--json", action="store_true", help="Machine-readable JSON output")
+
     return parser
 
 
@@ -456,6 +470,60 @@ def _cmd_accept(args: argparse.Namespace) -> None:
             print(f"    Rejected: {result['rejected']}")
         if result['pending']:
             print(f"    Pending (skipped): {result['pending']}")
+
+
+def _cmd_validate(args: argparse.Namespace) -> None:
+    from tract.io import load_json
+    from tract.validate import validate_framework
+
+    file_path = Path(args.file)
+    if not file_path.exists():
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        data = load_json(file_path)
+    except Exception as e:
+        print(f"Error: Failed to load JSON: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    issues = validate_framework(data)
+    errors = [i for i in issues if i.severity == "error"]
+    warnings = [i for i in issues if i.severity == "warning"]
+
+    if args.json:
+        output = {
+            "file": str(file_path),
+            "errors": [
+                {"control_id": i.control_id, "rule": i.rule, "message": i.message}
+                for i in errors
+            ],
+            "warnings": [
+                {"control_id": i.control_id, "rule": i.rule, "message": i.message}
+                for i in warnings
+            ],
+        }
+        print(json.dumps(output, indent=2))
+    else:
+        if errors:
+            print(f"ERRORS ({len(errors)}):", file=sys.stderr)
+            for i in errors:
+                prefix = f"  [{i.control_id}] " if i.control_id else "  "
+                print(f"{prefix}{i.message}", file=sys.stderr)
+
+        if warnings:
+            print(f"\nWARNINGS ({len(warnings)}):", file=sys.stderr)
+            for i in warnings:
+                prefix = f"  [{i.control_id}] " if i.control_id else "  "
+                print(f"{prefix}{i.message}", file=sys.stderr)
+
+        if not errors and not warnings:
+            print("Validation passed: no errors, no warnings.")
+        elif not errors:
+            print(f"\nValidation passed with {len(warnings)} warning(s).")
+
+    if errors:
+        sys.exit(1)
 
 
 def _cmd_export(args: argparse.Namespace) -> None:
@@ -869,6 +937,7 @@ def main() -> None:
         "propose-hubs": _cmd_propose_hubs,
         "review-proposals": _cmd_review_proposals,
         "tutorial": _cmd_tutorial,
+        "validate": _cmd_validate,
     }
 
     handler = handlers.get(args.command)
