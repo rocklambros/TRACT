@@ -1,0 +1,6 @@
+control_id,title,description
+EXAMPLE-01,"Access Control","Organizations must implement role-based access controls to restrict system access to authorized users based on the principle of least privilege."
+EXAMPLE-02,"Data Encryption","Sensitive data must be encrypted at rest using AES-256 or equivalent, and in transit using TLS 1.2 or higher."
+EXAMPLE-03,"Incident Response","Organizations must maintain and test an incident response plan that covers detection, containment, eradication, and recovery procedures."
+EXAMPLE-04,"Audit Logging","All security-relevant events must be logged with sufficient detail for forensic analysis, including timestamps, user identifiers, and action descriptions."
+EXAMPLE-05,"Vulnerability Management","Organizations must scan for vulnerabilities at least monthly and remediate critical vulnerabilities within 30 days of discovery."
