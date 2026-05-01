@@ -1,0 +1,4 @@
+control_id,title,description
+TC-01,Access Control,"Enforce access control policies for all system components and users to prevent unauthorized access"
+TC-02,Data Encryption,"Encrypt sensitive data at rest and in transit using industry-standard cryptographic algorithms"
+TC-03,Audit Logging,"Maintain comprehensive audit logs of security-relevant events for forensic analysis and compliance"
