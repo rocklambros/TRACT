@@ -107,9 +107,10 @@ class MarkdownExtractor:
 
         if not sections:
             raise ValueError(
-                f"No headings found at level {level} in {path.name}. "
-                "Try using --heading-level to specify a different level, "
-                "or use --llm for unstructured extraction."
+                f"No extractable headings found at level {level} in {path.name}. Options:\n"
+                "  (1) Restructure with ## headings per control\n"
+                "  (2) Convert to CSV with id/title/description columns\n"
+                "  (3) Use --llm with ANTHROPIC_API_KEY env var for LLM extraction"
             )
 
         controls: list[Control] = []

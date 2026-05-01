@@ -113,10 +113,10 @@ class JsonExtractor:
                     return self._extract_from_array(data[real_key])
 
         raise ValueError(
-            f"No recognizable control structure found in {path.name}. "
-            f"Expected: FrameworkOutput JSON, an array of objects, or an object "
-            f"with a 'controls'/'items'/'data' array key. "
-            f"Try --llm for complex nested formats."
+            f"Could not find a recognizable control structure in {path.name}. "
+            f"Expected: FrameworkOutput schema, an array of objects with id/title/description, "
+            f"or an object with a 'controls'/'items'/'data' array.\n"
+            f"Options: (1) restructure to match expected format, (2) use --llm for complex nested JSON"
         )
 
     def _extract_from_array(self, items: list[Any]) -> list[Control]:

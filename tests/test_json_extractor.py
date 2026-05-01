@@ -122,7 +122,7 @@ class TestJsonExtractor:
 
     def test_unrecognizable_raises(self, unrecognizable_json: Path) -> None:
         extractor = JsonExtractor()
-        with pytest.raises(ValueError, match="(?i)no recognizable"):
+        with pytest.raises(ValueError, match="(?i)recognizable control structure"):
             extractor.extract(unrecognizable_json)
 
     def test_returns_control_objects(self, array_json: Path) -> None:

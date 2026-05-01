@@ -59,7 +59,8 @@ def _resolve_columns(header: list[str]) -> dict[str, str]:
     if missing:
         raise ValueError(
             f"CSV missing required column(s): {', '.join(missing)}. "
-            f"Found columns: {header}"
+            f"Found columns: {header}. "
+            f"Use --id-column / --description-column to specify explicitly."
         )
     return resolved
 
