@@ -247,3 +247,13 @@ PHASE1D_PROPOSAL_MIN_FRAMEWORKS: Final[int] = 2
 PHASE1D_PROPOSAL_BUDGET_CAP: Final[int] = 40
 PHASE1D_PROPOSAL_NAMING_MODEL: Final[str] = "claude-sonnet-4-20250514"
 PHASE1D_PROPOSAL_UNCERTAIN_PLACEMENT_FLOOR: Final[float] = 0.20
+
+# ── Phase 5: OpenCRE Export Pipeline ─────────────────────────────────
+
+PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR: Final[float] = 0.30
+PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES: Final[dict[str, float]] = {
+    "mitre_atlas": 0.35,
+}
+PHASE5_OPENCRE_STALENESS_URL: Final[str] = "https://opencre.org/rest/v1/root_cres"
+PHASE5_OPENCRE_STALENESS_TIMEOUT_S: Final[int] = 30
+PHASE5_GROUND_TRUTH_PROVENANCE: Final[str] = "ground_truth_T1-AI"
