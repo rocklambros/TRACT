@@ -9,7 +9,11 @@ Self-contained prompts for continuing the TRACT project in new Claude Code sessi
 - Phase 1B (Training Pipeline): COMPLETE — Gate 1 CLEAN PASS (hit@1=0.531, delta=+0.132)
 - Phase 1C (Guardrails, Active Learning, Crosswalk DB): COMPLETE — 2 AL rounds converged, 636 assignments, 339 tests
 - Phase 1D (CLI, Hub Proposals): COMPLETE — 8 CLI commands, hub proposal pipeline, 394 tests
-- Phase 2+ : NOT STARTED
+- Phase 2 (Web Platform + HuggingFace): NOT STARTED
+- Phase 3 (Published Crosswalk Dataset): NOT STARTED
+- Phase 3B (Experimental Narrative Notebook): NOT STARTED
+- Phase 4 (Secure API): NOT STARTED
+- Phase 5 (OpenCRE Upstream Contribution): NOT STARTED
 
 **Key results driving all remaining work:**
 - BGE-large-v1.5 + LoRA rank 16 + MNRL contrastive loss + text-aware batching

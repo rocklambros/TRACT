@@ -655,13 +655,51 @@ tract-crosswalk-dataset/
 
 ---
 
-## 10. Guardrails and Safety
+## 10. Phase 5: OpenCRE Upstream Contribution
+
+**Deliverable:** Validated TRACT outputs packaged and submitted as contributions to the OpenCRE project.
+
+TRACT consumes the OpenCRE ontology as its coordinate system. Phase 5 closes the loop by contributing back: human-reviewed crosswalk assignments, validated hub proposals, and AI/traditional bridge mappings. This is the "gives back to OpenCRE" promise from Section 1.
+
+**Contribution scope:**
+
+| Contribution | Source | Format |
+|-------------|--------|--------|
+| New framework→hub assignments | Phase 3 human-reviewed crosswalk dataset | OpenCRE link format (standard_section → CRE hub) |
+| Hub proposals | Phase 1D HDBSCAN clustering of OOD controls | Proposed new CRE hubs with member controls and suggested hierarchy positions |
+| AI/traditional bridge mappings | Phase 2 bridge analysis | Cross-domain links showing where AI and traditional security hubs overlap |
+| Confidence metadata | Phase 1C calibration | Calibrated confidence scores and conformal prediction coverage for each assignment |
+
+**Workflow:**
+
+1. **Export:** Generate OpenCRE-compatible contribution files from crosswalk.db and hub_proposals/
+2. **Validate:** Run integrity checks — no duplicate links, all referenced CRE IDs exist in current ontology, confidence above contribution threshold
+3. **Package:** Bundle contributions with provenance metadata (TRACT version, model hash, review status, reviewer identity)
+4. **Submit:** Open PRs or issues against the OpenCRE GitHub repository with structured contribution data
+5. **Track:** Record which contributions are accepted, rejected, or modified by OpenCRE maintainers
+
+**Contribution criteria (only submit high-quality data):**
+
+- Assignments must be human-reviewed (Phase 3 complete)
+- Hub proposals must pass the guardrailed review process (Phase 1D)
+- Calibrated confidence ≥ contribution threshold (tuned during Phase 3 review)
+- No assignments from frameworks already fully linked in OpenCRE (avoid contradicting existing expert curation)
+
+**Open questions for Phase 5:**
+
+- OpenCRE contribution format — coordinate with OpenCRE maintainers on preferred submission format
+- Contribution cadence — one-time bulk submission vs. incremental as new frameworks are ingested
+- Attribution — how to credit TRACT's ML-assisted curation in OpenCRE's provenance tracking
+
+---
+
+## 11. Guardrails and Safety
 
 **All guardrails are implemented as concrete Phase 1 deliverables in Section 6.6.** The five categories (Data Integrity, Model Integrity, Output Integrity, Adversarial Robustness, Provenance Tracking) are built into the components that need them — ingestion pipeline, model training, inference pipeline, test suite, and logging — not bolted on after the fact. See Section 6.6 for the complete implementation plan.
 
 ---
 
-## 11. Success Criteria
+## 12. Success Criteria
 
 | Phase | Metric | Target |
 |-------|--------|--------|
@@ -689,10 +727,13 @@ tract-crosswalk-dataset/
 | Phase 3B | Visualization quality | Interactive 3D/animated figures with static fallbacks, colorblind-accessible palettes |
 | Phase 4 | API latency | < 500ms per single control assignment |
 | Phase 4 | API documentation | Complete OpenAPI spec |
+| Phase 5 | Contribution package generated | All human-reviewed assignments exported in OpenCRE format |
+| Phase 5 | Hub proposals submitted | Validated proposals submitted to OpenCRE project |
+| Phase 5 | Contribution acceptance rate | Track acceptance/rejection by OpenCRE maintainers |
 
 ---
 
-## 12. Non-Goals and Scope Boundaries
+## 13. Non-Goals and Scope Boundaries
 
 - **NOT rebuilding OpenCRE.** We extend it, contribute to it, build on top of it. The CRE ontology is maintained by the OpenCRE project; we consume and enrich it.
 - **NOT a general NLI or semantic similarity system.** Narrowly scoped to security framework crosswalking via CRE hub assignment.
@@ -704,7 +745,7 @@ tract-crosswalk-dataset/
 
 ---
 
-## 13. Open Questions and Risks
+## 14. Open Questions and Risks
 
 | # | Question/Risk | Impact | Resolution Path |
 |---|--------------|--------|-----------------|
@@ -721,7 +762,7 @@ tract-crosswalk-dataset/
 
 ---
 
-## 14. Technical Dependencies
+## 15. Technical Dependencies
 
 | Dependency | Purpose | Phase |
 |------------|---------|-------|
