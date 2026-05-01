@@ -2,18 +2,19 @@
 
 Self-contained prompts for continuing the TRACT project in new Claude Code sessions. Each prompt bootstraps a fresh session with full context. Complete sequentially.
 
-**Project state (2026-04-30):**
+**Project state (2026-05-01):**
 - Data Preparation: COMPLETE
 - Phase 0 (Zero-Shot Baselines): COMPLETE — Gates A+B passed
 - Phase 1A (Hierarchy, Descriptions, Ingestion): COMPLETE
 - Phase 1B (Training Pipeline): COMPLETE — Gate 1 CLEAN PASS (hit@1=0.531, delta=+0.132)
 - Phase 1C (Guardrails, Active Learning, Crosswalk DB): COMPLETE — 2 AL rounds converged, 636 assignments, 339 tests
 - Phase 1D (CLI, Hub Proposals): COMPLETE — 8 CLI commands, hub proposal pipeline, 394 tests
+- Phase 5A (Export Pipeline + Fork Import): COMPLETE — 411 assignments across 5 frameworks, coverage gaps report
 - Phase 2 (Web Platform + HuggingFace): NOT STARTED
 - Phase 3 (Published Crosswalk Dataset): NOT STARTED
 - Phase 3B (Experimental Narrative Notebook): NOT STARTED
 - Phase 4 (Secure API): NOT STARTED
-- Phase 5 (OpenCRE Upstream Contribution): NOT STARTED
+- Phase 5B (OpenCRE Upstream Contribution): BLOCKED on Phase 3
 
 **Key results driving all remaining work:**
 - BGE-large-v1.5 + LoRA rank 16 + MNRL contrastive loss + text-aware batching
@@ -21,6 +22,7 @@ Self-contained prompts for continuing the TRACT project in new Claude Code sessi
 - 262 tests passing, all code typed and validated
 - CUDA determinism flags added to training loop
 - 5-round adversarial review completed — all findings resolved
+- Phase 5A: 411 assignments exported (conf ≥ 0.30, ATLAS ≥ 0.35), 192 controls excluded with reasons, all imported into local OpenCRE fork
 
 ---
 
@@ -484,6 +486,76 @@ Think deeply using the sequential-thinking MCP server. --ultrathink
 
 ---
 
+## Prompt 8: Phase 5B — OpenCRE Upstream Contribution
+
+```
+TRACT Phase 5B: Submit validated TRACT outputs as contributions to the OpenCRE project. PRD Section 10.
+
+Read PRD.md Section 10 (especially Phase 5B subsection). Read CLAUDE.md for code standards.
+
+## Current state — verify before starting
+1. Phase 3 complete: all assignments human-reviewed and published
+2. Phase 5A infrastructure exists: `tract export --opencre` generates CSVs, coverage_gaps.json, export_manifest.json
+3. Local OpenCRE fork at ~/github_projects/OpenCRE with pilot import (411 assignments from 2026-05-01)
+4. `scripts/direct_opencre_import.py` working for fork validation
+5. Hub proposals from Phase 1D available in hub_proposals/
+6. Bridge mappings from Phase 2B available (if Phase 2B is complete)
+
+## Phase 5A results to incorporate
+1. Export pipeline tested: 411 assignments across 5 frameworks at conf ≥ 0.30 (ATLAS ≥ 0.35)
+2. Coverage gaps: 192 controls not exported — 140 below confidence floor, 39 no assignment, 6 ground truth, 3 null confidence, 4 other
+3. OWASP LLM Top 10 correctly excluded (ground truth training data)
+4. MITRE ATLAS deduplication works: 28 pre-existing nodes matched, 100 new nodes created, zero duplicates
+5. Import path: direct SQLAlchemy script (~3s) preferred over REST API (requires Redis/graph loading)
+
+## Phase 3 review results to incorporate
+1. Which assignments changed during human review? Regenerate CSVs with reviewed data.
+2. Review acceptance rate per framework → confidence in contribution quality
+3. Any new hub proposals accepted → include in contribution
+4. Did human review reveal systematic model errors? Document in contribution notes.
+
+## Scope
+
+### Re-export with reviewed data
+1. Re-run `tract export --opencre` after Phase 3 review is complete — CSVs now reflect human-reviewed assignments
+2. Re-import into local fork to validate the reviewed data
+3. Compare pilot (411 assignments) vs reviewed export — document what changed
+
+### Upstream contribution preparation
+1. Fork the official OpenCRE repo (or verify existing fork is up-to-date with upstream)
+2. Create a feature branch per framework (e.g., `tract/add-csa-aicm`, `tract/add-eu-ai-act`)
+3. Import each framework's CSV into the fork branch
+4. Verify import via OpenCRE's own validation (run tests, check DB integrity)
+5. Write PR descriptions with: framework name, control count, coverage stats, confidence distribution, link to TRACT project
+
+### PR strategy
+- One PR per framework (not one monolithic PR) — easier to review and merge independently
+- Order: smallest first for easy review wins (NIST AI 600-1 → OWASP Agentic → EU AI Act → CSA AICM → MITRE ATLAS)
+- MITRE ATLAS last because it modifies existing data (pre-existing upstream links)
+- Include coverage_gaps.json as supplementary information for OpenCRE maintainers
+
+### Hub proposals (if accepted in Phase 1D review)
+- Format hub proposals in whatever format OpenCRE maintainers prefer (coordinate with them)
+- Submit as separate PRs from framework assignments
+- Include evidence: member controls, similarity scores, parent hub justification
+
+## Open questions to resolve
+1. Attribution format — discuss with OpenCRE maintainers before first PR
+2. Does OpenCRE want the CSVs committed to their repo, or just the DB changes?
+3. Should TRACT confidence scores be included as metadata in the OpenCRE link entries?
+
+## Success criteria
+- All human-reviewed assignments submitted as PRs to OpenCRE GitHub
+- One PR per framework, each with clear description and stats
+- Hub proposals submitted (if any accepted)
+- Contribution tracking: record acceptance/rejection/modification per PR
+- No data quality regressions (fork passes OpenCRE's own test suite)
+
+Think deeply using the sequential-thinking MCP server. --ultrathink
+```
+
+---
+
 ## Accumulated Lessons Learned
 
 These compound across phases. Each prompt above incorporates the relevant subset.
@@ -515,6 +587,14 @@ These compound across phases. Each prompt above incorporates the relevant subset
 - Logging not print. DEBUG/INFO/WARNING/ERROR levels.
 - No eval/exec/shell=True. No pickle. Credentials via `pass` manager.
 - Constants in tract/config.py, not scattered across modules.
+
+### OpenCRE Integration
+- OpenCRE's REST API import path requires Flask + Redis + full graph loading — too heavyweight for local SQLite. Bypass with direct SQLAlchemy import.
+- `dbNodeFromNode()` creates ORM objects WITHOUT the database primary key → `add_link()` crashes on `object_select()`. Query the ORM `Node` table directly to get objects with `id` set.
+- MITRE ATLAS has pre-existing upstream data (44 nodes/links). Import must match existing nodes by name/section/section_id, not create duplicates.
+- OpenCRE's `export_format_parser.parse_export_format()` is the canonical CSV parser. Target its format: `CRE 0` = `"hub_id|hub_name"` (pipe-delimited).
+- Coverage gaps report is essential for "Top N" frameworks where users expect complete coverage. Always generate alongside CSVs.
+- `INSECURE_REQUESTS=1` and `NO_LOGIN=1` env vars required for local OpenCRE Flask app.
 
 ### Process
 - Adversarial review catches real methodology errors (R2's 4-fold vs 5-fold comparison).

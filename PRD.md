@@ -456,6 +456,9 @@ tract ingest --file new_framework.json --template standard
 tract export --format csv --framework atlas
   -> full crosswalk table
 
+tract export --opencre [--framework FW] [--skip-staleness] [--dry-run]
+  -> per-framework OpenCRE-compatible CSVs + export_manifest.json + coverage_gaps.json
+
 tract hierarchy --hub CRE-236
   -> full path: Root > Network Security > API Security > CRE-236
   -> linked controls from 5 frameworks
@@ -661,35 +664,74 @@ tract-crosswalk-dataset/
 
 TRACT consumes the OpenCRE ontology as its coordinate system. Phase 5 closes the loop by contributing back: human-reviewed crosswalk assignments, validated hub proposals, and AI/traditional bridge mappings. This is the "gives back to OpenCRE" promise from Section 1.
 
+### Phase 5A: Export Pipeline & Fork Validation ✅ COMPLETE
+
+Built the full export-to-import pipeline and validated it against a local OpenCRE fork (~/github_projects/OpenCRE).
+
+**Infrastructure built (PRs #17, #18, #19):**
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| Export filter pipeline | `tract/export/filters.py` | SQL+Python filters: ground truth exclusion, confidence floor, OOD, null confidence, review status |
+| OpenCRE CSV generator | `tract/export/opencre_csv.py` | Per-framework CSVs targeting OpenCRE's `export_format_parser` |
+| Coverage gaps report | `tract/export/gaps.py` | Per-control exclusion reasons for every unexported control |
+| Export manifest | `tract/export/manifest.py` | Provenance: git SHA, model hash, filter stats, staleness check |
+| Staleness check | `tract/export/staleness.py` | Pre-export verification against upstream OpenCRE API |
+| CLI command | `tract export --opencre` | Full pipeline: filter → CSV → manifest → gaps report |
+| Direct import script | `scripts/direct_opencre_import.py` | SQLAlchemy import bypassing Flask/Redis/graph loading (~3s) |
+| REST API import script | `scripts/opencre_import.sh` | Flask-based import path (backup, slower) |
+
+**Pilot results (2026-05-01):**
+
+| Framework | Exported | Total | Coverage | Gaps |
+|-----------|----------|-------|----------|------|
+| CSA AI Controls Matrix | 184 | 243 | 75.7% | 59 below floor |
+| MITRE ATLAS | 128 | 202 | 63.4% | 74 (64 below floor, 3 null, 7 no assignment) |
+| EU AI Act | 84 | 126 | 66.7% | 42 (16 below floor, 26 no assignment) |
+| OWASP Agentic AI Top 10 | 8 | 10 | 80.0% | 2 below floor (ASI05=0.115, ASI07=0.267) |
+| NIST AI 600-1 | 7 | 12 | 58.3% | 5 (3 below floor, 2 no assignment) |
+| OWASP LLM Top 10 | 0 | 10 | 0.0% | 10 (6 ground truth, 4 no assignment) — correct exclusion |
+| **Total** | **411** | **603** | **68.2%** | **192 missing** |
+
+All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 100 new nodes created, 28 pre-existing upstream nodes matched without duplication (44 pre-existing links preserved).
+
+**Confidence thresholds:** 0.30 global floor (temperature-scaled cosine similarity, T=0.074), 0.35 override for MITRE ATLAS. These are ~2.5× the F1-optimal threshold (0.121), reflecting a conservative policy for upstream contribution quality.
+
+**Export format (resolved):** OpenCRE CSV with `CRE 0` column = `"hub_id|hub_name"` (pipe-delimited), standard columns = `StandardName|name`, `StandardName|id`, `StandardName|description`, `StandardName|hyperlink`. Consumed by OpenCRE's `export_format_parser.parse_export_format()`.
+
+### Phase 5B: Upstream Contribution (blocked on Phase 3 human review)
+
 **Contribution scope:**
 
-| Contribution | Source | Format |
-|-------------|--------|--------|
-| New framework→hub assignments | Phase 3 human-reviewed crosswalk dataset | OpenCRE link format (standard_section → CRE hub) |
-| Hub proposals | Phase 1D HDBSCAN clustering of OOD controls | Proposed new CRE hubs with member controls and suggested hierarchy positions |
-| AI/traditional bridge mappings | Phase 2 bridge analysis | Cross-domain links showing where AI and traditional security hubs overlap |
-| Confidence metadata | Phase 1C calibration | Calibrated confidence scores and conformal prediction coverage for each assignment |
+| Contribution | Source | Format | Status |
+|-------------|--------|--------|--------|
+| New framework→hub assignments | Phase 3 human-reviewed crosswalk | OpenCRE CSV (per framework) | Blocked on Phase 3 |
+| Hub proposals | Phase 1D HDBSCAN clustering of OOD controls | Proposed new CRE hubs with evidence | Proposals generated, needs upstream format |
+| AI/traditional bridge mappings | Phase 2B bridge analysis | Cross-domain Related links | Not started |
+| Confidence metadata | Phase 1C calibration | Per-assignment calibrated scores | Available now |
 
 **Workflow:**
 
-1. **Export:** Generate OpenCRE-compatible contribution files from crosswalk.db and hub_proposals/
-2. **Validate:** Run integrity checks — no duplicate links, all referenced CRE IDs exist in current ontology, confidence above contribution threshold
-3. **Package:** Bundle contributions with provenance metadata (TRACT version, model hash, review status, reviewer identity)
-4. **Submit:** Open PRs or issues against the OpenCRE GitHub repository with structured contribution data
-5. **Track:** Record which contributions are accepted, rejected, or modified by OpenCRE maintainers
+1. **Export:** ✅ `tract export --opencre` generates per-framework CSVs + manifest + coverage gaps
+2. **Validate:** ✅ Confidence floor filters, ground truth exclusion, staleness check, coverage gaps report
+3. **Package:** ✅ CSVs + `export_manifest.json` + `coverage_gaps.json` in `opencre_export/`
+4. **Import to fork:** ✅ `scripts/direct_opencre_import.py` loads into local fork for validation
+5. **Submit upstream:** PENDING — open PRs against OpenCRE GitHub after Phase 3 human review
+6. **Track:** NOT YET — record acceptance/rejection by OpenCRE maintainers
 
 **Contribution criteria (only submit high-quality data):**
 
-- Assignments must be human-reviewed (Phase 3 complete)
+- Assignments must be human-reviewed (Phase 3 complete) — fork import is a validation step, not an upstream submission
 - Hub proposals must pass the guardrailed review process (Phase 1D)
-- Calibrated confidence ≥ contribution threshold (tuned during Phase 3 review)
+- Calibrated confidence ≥ 0.30 (ATLAS ≥ 0.35) — tuned during Phase 5A pilot
+- Ground truth frameworks excluded (OWASP LLM Top 10 — already in OpenCRE as training data)
 - No assignments from frameworks already fully linked in OpenCRE (avoid contradicting existing expert curation)
 
-**Open questions for Phase 5:**
+**Open questions (remaining):**
 
-- OpenCRE contribution format — coordinate with OpenCRE maintainers on preferred submission format
-- Contribution cadence — one-time bulk submission vs. incremental as new frameworks are ingested
 - Attribution — how to credit TRACT's ML-assisted curation in OpenCRE's provenance tracking
+- Contribution cadence — one-time bulk submission vs. incremental as new frameworks are ingested (initial plan: one-time per framework)
+- Hub proposal format — OpenCRE's preferred format for proposing new hubs (not just linking to existing ones)
 
 ---
 
@@ -727,9 +769,12 @@ TRACT consumes the OpenCRE ontology as its coordinate system. Phase 5 closes the
 | Phase 3B | Visualization quality | Interactive 3D/animated figures with static fallbacks, colorblind-accessible palettes |
 | Phase 4 | API latency | < 500ms per single control assignment |
 | Phase 4 | API documentation | Complete OpenAPI spec |
-| Phase 5 | Contribution package generated | All human-reviewed assignments exported in OpenCRE format |
-| Phase 5 | Hub proposals submitted | Validated proposals submitted to OpenCRE project |
-| Phase 5 | Contribution acceptance rate | Track acceptance/rejection by OpenCRE maintainers |
+| Phase 5A | Export pipeline functional | ✅ `tract export --opencre` generates CSVs + manifest + coverage gaps |
+| Phase 5A | Fork import validated | ✅ 411 assignments across 5 frameworks imported into local OpenCRE fork |
+| Phase 5A | Coverage gaps report | ✅ Per-control exclusion reasons for all 192 unexported controls |
+| Phase 5B | Upstream PRs submitted | Human-reviewed assignments submitted to OpenCRE GitHub (after Phase 3) |
+| Phase 5B | Hub proposals submitted | Validated proposals submitted to OpenCRE project |
+| Phase 5B | Contribution acceptance rate | Track acceptance/rejection by OpenCRE maintainers |
 
 ---
 
