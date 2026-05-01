@@ -276,3 +276,56 @@ class TestPrepareCommand:
         with pytest.raises(SystemExit) as exc_info:
             _cmd_prepare(args)
         assert exc_info.value.code == 1
+
+
+class TestIngestValidationGate:
+    def test_ingest_rejects_invalid_framework(self, tmp_path: Path) -> None:
+        """Ingest should exit 1 if validation finds errors."""
+        from tract.cli import _cmd_ingest
+
+        fw_data = {
+            "framework_id": "BAD ID",
+            "framework_name": "Test",
+            "version": "1.0",
+            "source_url": "https://example.com",
+            "fetched_date": "2026-05-01",
+            "mapping_unit_level": "control",
+            "controls": [
+                {
+                    "control_id": "TC-01",
+                    "title": "Test",
+                    "description": "A valid description for the control test case",
+                },
+            ],
+        }
+        file_path = tmp_path / "bad_fw.json"
+        file_path.write_text(json.dumps(fw_data), encoding="utf-8")
+
+        import argparse
+        args = argparse.Namespace(file=str(file_path), force=False, json=False)
+        with pytest.raises(SystemExit) as exc_info:
+            _cmd_ingest(args)
+        assert exc_info.value.code == 1
+
+    def test_ingest_allows_warnings_only(self, tmp_path: Path) -> None:
+        """Ingest should proceed (not exit 1 from validation) if only warnings."""
+        from tract.validate import validate_framework
+
+        fw_data = {
+            "framework_id": "test_fw",
+            "framework_name": "Test Framework",
+            "version": "",
+            "source_url": "https://example.com",
+            "fetched_date": "2026-05-01",
+            "mapping_unit_level": "control",
+            "controls": [
+                {
+                    "control_id": "TC-01",
+                    "title": "Test",
+                    "description": "Short desc but still valid",
+                },
+            ],
+        }
+        issues = validate_framework(fw_data)
+        errors = [i for i in issues if i.severity == "error"]
+        assert len(errors) == 0

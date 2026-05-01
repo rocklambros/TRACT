@@ -353,6 +353,29 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     raw_data = load_json(file_path)
+
+    from tract.validate import validate_framework
+
+    validation_issues = validate_framework(raw_data)
+    val_errors = [i for i in validation_issues if i.severity == "error"]
+    val_warnings = [i for i in validation_issues if i.severity == "warning"]
+
+    if val_errors:
+        print(f"Validation failed ({len(val_errors)} error(s)):", file=sys.stderr)
+        for issue in val_errors:
+            prefix = f"  [{issue.control_id}] " if issue.control_id else "  "
+            print(f"{prefix}{issue.message}", file=sys.stderr)
+        if val_warnings:
+            print(f"\n  ({len(val_warnings)} warning(s) also found)", file=sys.stderr)
+        sys.exit(1)
+
+    if val_warnings:
+        print(f"Validation warnings ({len(val_warnings)}):", file=sys.stderr)
+        for issue in val_warnings:
+            prefix = f"  [{issue.control_id}] " if issue.control_id else "  "
+            print(f"{prefix}{issue.message}", file=sys.stderr)
+        print("", file=sys.stderr)
+
     try:
         fw = FrameworkOutput.model_validate(raw_data)
     except Exception as e:
