@@ -109,9 +109,7 @@ def compute_filter_stats(
         s = stats[fw_id]
         key = (row["control_id"], row["hub_id"])
 
-        if key in exported_keys:
-            s["exported"] += 1
-        elif row["provenance"] == PHASE5_GROUND_TRUTH_PROVENANCE:
+        if row["provenance"] == PHASE5_GROUND_TRUTH_PROVENANCE:
             s["excluded_ground_truth"] += 1
         elif row["review_status"] != "accepted":
             s["excluded_not_accepted"] += 1
@@ -119,6 +117,8 @@ def compute_filter_stats(
             s["excluded_null_confidence"] += 1
         elif row["is_ood"] == 1:
             s["excluded_ood"] += 1
+        elif key in exported_keys:
+            s["exported"] += 1
         else:
             floor = confidence_overrides.get(fw_id, confidence_floor)
             if row["confidence"] < floor:
