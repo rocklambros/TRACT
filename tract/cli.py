@@ -85,6 +85,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_export.add_argument("--min-confidence", type=float, help="Minimum confidence threshold")
     p_export.add_argument("--status", default="accepted", help="Filter by review status")
     p_export.add_argument("--output", help="Output file path")
+    p_export.add_argument("--opencre", action="store_true",
+                          help="Export in OpenCRE CSV format (one CSV per framework)")
+    p_export.add_argument("--opencre-proposals", action="store_true",
+                          help="Export hub proposals document for OpenCRE")
+    p_export.add_argument("--output-dir",
+                          help="Output directory for OpenCRE export (default: ./opencre_export/)")
+    p_export.add_argument("--dry-run", action="store_true",
+                          help="Show what would be exported without writing files")
+    p_export.add_argument("--skip-staleness", action="store_true",
+                          help="Skip pre-export staleness check (offline mode)")
 
     # ── hierarchy ────────────────────────────────────────────────
     p_hierarchy = subparsers.add_parser(
@@ -376,6 +386,13 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
 
 
 def _cmd_export(args: argparse.Namespace) -> None:
+    if getattr(args, "opencre", False):
+        _cmd_export_opencre(args)
+        return
+    if getattr(args, "opencre_proposals", False):
+        _cmd_export_opencre_proposals(args)
+        return
+
     from tract.crosswalk.export import export_crosswalk
 
     fmt = args.format
@@ -385,6 +402,144 @@ def _cmd_export(args: argparse.Namespace) -> None:
     output_path = Path(args.output) if args.output else Path(f"crosswalk_export.{args.format}")
     export_crosswalk(PHASE1C_CROSSWALK_DB_PATH, output_path, fmt=fmt)
     print(f"Exported to {output_path}")
+
+
+def _cmd_export_opencre(args: argparse.Namespace) -> None:
+    from tract.config import (
+        PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR,
+        PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES,
+    )
+    from tract.export.filters import compute_filter_stats, query_exportable_assignments
+    from tract.export.manifest import build_manifest
+    from tract.export.opencre_csv import write_opencre_csv
+    from tract.export.opencre_names import TRACT_TO_OPENCRE_NAME
+    from tract.io import atomic_write_json
+
+    output_dir = Path(args.output_dir) if args.output_dir else Path("./opencre_export")
+
+    confidence_floor = PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR
+    confidence_overrides = dict(PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES)
+
+    staleness_result = {"status": "skipped", "upstream_hub_count": 0, "message": "skipped"}
+    if not args.skip_staleness and not args.dry_run:
+        from tract.export.staleness import check_staleness
+
+        print("Running pre-export staleness check...")
+        staleness_result = check_staleness(PHASE1C_CROSSWALK_DB_PATH)
+        if staleness_result["status"] == "warn":
+            print(f"WARNING: {staleness_result['message']}")
+            print(f"  Stale IDs: {staleness_result['stale_ids']}")
+        elif staleness_result["status"] == "error":
+            print(f"ERROR: Staleness check failed: {staleness_result['message']}")
+            print("  Use --skip-staleness to bypass (offline mode)")
+            sys.exit(1)
+        else:
+            print(f"Staleness check passed ({staleness_result['upstream_hub_count']} upstream hubs)")
+
+    if args.framework:
+        if args.framework not in TRACT_TO_OPENCRE_NAME:
+            print(f"Error: Framework '{args.framework}' has no OpenCRE name mapping", file=sys.stderr)
+            print(f"  Available: {', '.join(sorted(TRACT_TO_OPENCRE_NAME.keys()))}", file=sys.stderr)
+            sys.exit(1)
+        frameworks = [args.framework]
+    else:
+        frameworks = sorted(TRACT_TO_OPENCRE_NAME.keys())
+
+    all_rows: dict[str, list[dict]] = {}
+    for fw_id in frameworks:
+        rows = query_exportable_assignments(
+            PHASE1C_CROSSWALK_DB_PATH,
+            confidence_floor=confidence_floor,
+            confidence_overrides=confidence_overrides,
+            framework_filter=fw_id,
+        )
+        if rows:
+            all_rows[fw_id] = rows
+
+    if not all_rows:
+        print("No assignments survived filters. Nothing to export.")
+        return
+
+    if args.dry_run:
+        print("\nDry run — would export:\n")
+        total = 0
+        for fw_id, rows in sorted(all_rows.items()):
+            print(f"  {fw_id}: {len(rows)} assignments")
+            total += len(rows)
+        print(f"\n  Total: {total} assignments")
+        return
+
+    written_files: list[Path] = []
+    total_exported = 0
+    for fw_id, rows in sorted(all_rows.items()):
+        csv_path = write_opencre_csv(rows, fw_id, output_dir)
+        written_files.append(csv_path)
+        total_exported += len(rows)
+        print(f"  {fw_id}: {len(rows)} assignments → {csv_path}")
+
+    all_exported = []
+    for rows in all_rows.values():
+        all_exported.extend(rows)
+
+    stats = compute_filter_stats(
+        PHASE1C_CROSSWALK_DB_PATH, all_exported,
+        confidence_floor, confidence_overrides,
+    )
+
+    model_hash = "unknown"
+    from tract.config import PHASE1D_ARTIFACTS_PATH
+    if PHASE1D_ARTIFACTS_PATH.exists():
+        import hashlib
+        model_hash = hashlib.sha256(PHASE1D_ARTIFACTS_PATH.read_bytes()).hexdigest()[:12]
+
+    manifest = build_manifest(
+        per_framework_stats=stats,
+        confidence_floor=confidence_floor,
+        confidence_overrides=confidence_overrides,
+        staleness_result=staleness_result,
+        model_adapter_hash=model_hash,
+    )
+
+    manifest_path = output_dir / "export_manifest.json"
+    atomic_write_json(manifest, manifest_path)
+    print(f"\n  Manifest: {manifest_path}")
+    print(f"  Total exported: {total_exported} assignments across {len(written_files)} frameworks")
+
+
+def _cmd_export_opencre_proposals(args: argparse.Namespace) -> None:
+    output_dir = Path(args.output_dir) if args.output_dir else Path("./opencre_export")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    from tract.io import load_json
+
+    proposals_dir = HUB_PROPOSALS_DIR
+    if not proposals_dir.exists():
+        print("No hub proposals found. Run 'tract propose-hubs' first.")
+        return
+
+    rounds = sorted(proposals_dir.glob("round_*"))
+    if not rounds:
+        print("No proposal rounds found.")
+        return
+
+    latest_round = rounds[-1]
+    summary_path = latest_round / "summary.json"
+    if not summary_path.exists():
+        print(f"No summary.json in {latest_round}")
+        return
+
+    summary = load_json(summary_path)
+    proposals_output = {
+        "source": "TRACT hub proposal pipeline",
+        "round": latest_round.name,
+        "proposals": summary.get("proposals", []),
+    }
+
+    from tract.io import atomic_write_json
+
+    out_path = output_dir / "hub_proposals_for_opencre.json"
+    atomic_write_json(proposals_output, out_path)
+    print(f"Hub proposals written to {out_path}")
 
 
 def _cmd_hierarchy(args: argparse.Namespace) -> None:

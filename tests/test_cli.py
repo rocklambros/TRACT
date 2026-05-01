@@ -160,3 +160,35 @@ class TestOutputFormatting:
         parsed = json.loads(output)
         assert isinstance(parsed, list)
         assert parsed[0]["hub_id"] == "646-285"
+
+
+class TestExportOpenCRECLI:
+    def test_opencre_flag_recognized(self) -> None:
+        from tract.cli import build_parser
+
+        parser = build_parser()
+        args = parser.parse_args(["export", "--opencre", "--dry-run"])
+        assert args.opencre is True
+        assert args.dry_run is True
+
+    def test_opencre_with_framework_filter(self) -> None:
+        from tract.cli import build_parser
+
+        parser = build_parser()
+        args = parser.parse_args(["export", "--opencre", "--framework", "nist_ai_600_1"])
+        assert args.opencre is True
+        assert args.framework == "nist_ai_600_1"
+
+    def test_opencre_with_output_dir(self) -> None:
+        from tract.cli import build_parser
+
+        parser = build_parser()
+        args = parser.parse_args(["export", "--opencre", "--output-dir", "/tmp/test"])
+        assert args.output_dir == "/tmp/test"
+
+    def test_opencre_proposals_flag_recognized(self) -> None:
+        from tract.cli import build_parser
+
+        parser = build_parser()
+        args = parser.parse_args(["export", "--opencre-proposals", "--output-dir", "/tmp/test"])
+        assert args.opencre_proposals is True
