@@ -231,3 +231,57 @@ class TestValidateFrameworkWarnings:
         issues = validate_framework(_make_framework(controls=controls))
         warnings = [i for i in issues if i.severity == "warning"]
         assert not any(i.rule == "non_nfc_unicode" for i in warnings)
+
+
+class TestAdversarialValidationRules:
+    def test_expected_count_mismatch_warns(self) -> None:
+        issues = validate_framework(_make_framework(), expected_count=10)
+        rules = [i.rule for i in issues if i.severity == "warning"]
+        assert "expected_count_mismatch" in rules
+
+    def test_expected_count_match_no_warning(self) -> None:
+        issues = validate_framework(_make_framework(), expected_count=1)
+        rules = [i.rule for i in issues if i.rule == "expected_count_mismatch"]
+        assert len(rules) == 0
+
+    def test_expected_count_none_no_warning(self) -> None:
+        issues = validate_framework(_make_framework())
+        rules = [i.rule for i in issues if i.rule == "expected_count_mismatch"]
+        assert len(rules) == 0
+
+    def test_reference_only_description_warns(self) -> None:
+        controls = [
+            {"control_id": "TC-01", "title": "Test", "description": "See appendix B for details"},
+        ]
+        issues = validate_framework(_make_framework(controls=controls))
+        rules = [i.rule for i in issues if i.severity == "warning"]
+        assert "reference_only_description" in rules
+
+    def test_reference_only_long_description_no_warning(self) -> None:
+        controls = [
+            {"control_id": "TC-01", "title": "Test", "description": "See the detailed specification in the appendix for complete requirements including access control, encryption standards, and audit logging procedures that must be followed"},
+        ]
+        issues = validate_framework(_make_framework(controls=controls))
+        rules = [i.rule for i in issues if i.rule == "reference_only_description"]
+        assert len(rules) == 0
+
+    def test_title_description_redundancy_warns(self) -> None:
+        controls = [
+            {"control_id": "TC-01", "title": "Access Control", "description": "Access Control"},
+        ]
+        issues = validate_framework(_make_framework(controls=controls))
+        rules = [i.rule for i in issues if i.severity == "warning"]
+        assert "title_description_redundancy" in rules
+
+    def test_non_english_text_warns(self) -> None:
+        controls = [
+            {"control_id": "TC-01", "title": "Test", "description": "アクセス制御ポリシーを実施して、システムコンポーネントおよびユーザーの不正アクセスを防止します"},
+        ]
+        issues = validate_framework(_make_framework(controls=controls))
+        rules = [i.rule for i in issues if i.severity == "warning"]
+        assert "non_english_text" in rules
+
+    def test_non_english_text_ok_for_english(self) -> None:
+        issues = validate_framework(_make_framework())
+        rules = [i.rule for i in issues if i.rule == "non_english_text"]
+        assert len(rules) == 0

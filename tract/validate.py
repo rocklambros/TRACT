@@ -29,6 +29,9 @@ from tract.schema import FrameworkOutput
 logger = logging.getLogger(__name__)
 
 _FRAMEWORK_ID_PATTERN: re.Pattern[str] = re.compile(VALIDATE_FRAMEWORK_ID_RE)
+_REFERENCE_RE: re.Pattern[str] = re.compile(
+    r"^(see|refer to|as defined in|per)\b", re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,7 +52,7 @@ class ValidationIssue:
     message: str
 
 
-def validate_framework(data: dict[str, Any]) -> list[ValidationIssue]:
+def validate_framework(data: dict[str, Any], *, expected_count: int | None = None) -> list[ValidationIssue]:
     """Validate a FrameworkOutput dict against all error and warning rules.
 
     Args:
@@ -202,6 +205,41 @@ def validate_framework(data: dict[str, Any]) -> list[ValidationIssue]:
                 ))
                 break  # One warning per control is enough
 
+        if _REFERENCE_RE.match(desc_stripped) and len(desc_stripped) < 100:
+            issues.append(ValidationIssue(
+                severity="warning",
+                control_id=cid,
+                rule="reference_only_description",
+                message=(
+                    f"Control {cid}: description appears to be a reference, "
+                    "not substantive text — will produce weak embeddings"
+                ),
+            ))
+
+        if ctrl.title.strip().lower() == desc_stripped.lower():
+            issues.append(ValidationIssue(
+                severity="warning",
+                control_id=cid,
+                rule="title_description_redundancy",
+                message=(
+                    f"Control {cid}: description duplicates title — "
+                    "add substantive text for better embeddings"
+                ),
+            ))
+
+        ascii_letters = sum(1 for c in desc_stripped if c.isascii() and c.isalpha())
+        total_letters = sum(1 for c in desc_stripped if c.isalpha())
+        if total_letters > 10 and ascii_letters / total_letters < 0.7:
+            issues.append(ValidationIssue(
+                severity="warning",
+                control_id=cid,
+                rule="non_english_text",
+                message=(
+                    f"Control {cid}: description may not be English — "
+                    "model was trained on English text"
+                ),
+            ))
+
     # ── Framework-level warnings ─────────────────────────────────────
     n_controls = len(fw.controls)
     if n_controls < VALIDATE_LOW_CONTROL_COUNT:
@@ -218,6 +256,19 @@ def validate_framework(data: dict[str, Any]) -> list[ValidationIssue]:
             rule="high_control_count",
             message=f"{n_controls} controls — unusually high, verify extraction",
         ))
+
+    if expected_count is not None and n_controls > 0:
+        deviation = abs(n_controls - expected_count) / expected_count
+        if deviation > 0.5:
+            issues.append(ValidationIssue(
+                severity="warning",
+                control_id=None,
+                rule="expected_count_mismatch",
+                message=(
+                    f"Expected ~{expected_count} controls, got {n_controls} "
+                    "— verify extraction captured everything"
+                ),
+            ))
 
     if not fw.version:
         issues.append(ValidationIssue(
