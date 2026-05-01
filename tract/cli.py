@@ -1015,20 +1015,28 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
     print("  Try: tract hierarchy --hub 646-285")
     print("  See the full path, parent, children, and assigned controls for any hub.\n")
 
-    print("Step 4: Ingest a new framework")
-    print("  Prepare a JSON file matching the FrameworkOutput schema (see tract/schema.py)")
-    print("  Try: tract ingest --file new_framework.json")
-    print("  This generates a _review.json with model predictions for human review.\n")
+    print("Step 4: Prepare a new framework for ingestion")
+    print("  Convert a CSV, Markdown, or JSON document into FrameworkOutput JSON:")
+    print("  Try: tract prepare --file controls.csv --framework-id new_fw --name 'New Framework'")
+    print("  Supports --llm for unstructured documents (PDF, plain text).\n")
 
-    print("Step 5: Accept reviewed predictions into the crosswalk DB")
+    print("Step 5: Validate the prepared output")
+    print("  Try: tract validate --file new_fw_prepared.json")
+    print("  Checks for errors (block ingest) and warnings (informational).\n")
+
+    print("Step 6: Ingest the framework")
+    print("  Try: tract ingest --file new_fw_prepared.json")
+    print("  Runs model inference and generates a _review.json for human review.\n")
+
+    print("Step 7: Accept reviewed predictions into the crosswalk DB")
     print("  Edit the _review.json to set review status (accepted/rejected/corrected)")
-    print("  Try: tract accept --review new_framework_review.json\n")
+    print("  Try: tract accept --review new_fw_prepared_review.json\n")
 
-    print("Step 6: Export the crosswalk")
+    print("Step 8: Export the crosswalk")
     print("  Try: tract export --format csv")
     print("  Exports all accepted assignments as CSV or JSON.\n")
 
-    print("Step 7: Propose new hubs (advanced)")
+    print("Step 9: Propose new hubs (advanced)")
     print("  Try: tract propose-hubs")
     print("  Clusters OOD controls to suggest new taxonomy extensions.\n")
 
