@@ -29,9 +29,9 @@ def build_manifest(
     per_framework_stats: dict[str, dict[str, int]],
     confidence_floor: float,
     confidence_overrides: dict[str, float],
-    staleness_result: dict,
+    staleness_result: dict[str, object],
     model_adapter_hash: str,
-) -> dict:
+) -> dict[str, object]:
     total_exported = sum(
         s.get("exported", 0) for s in per_framework_stats.values()
     )

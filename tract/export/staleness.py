@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 import requests
 
@@ -41,7 +42,7 @@ def _fetch_upstream_cre_ids() -> set[str]:
     return ids
 
 
-def _collect_ids(node: dict | list, ids: set[str]) -> None:
+def _collect_ids(node: dict[str, Any] | list[Any], ids: set[str]) -> None:
     if isinstance(node, list):
         for item in node:
             _collect_ids(item, ids)
@@ -57,7 +58,7 @@ def _collect_ids(node: dict | list, ids: set[str]) -> None:
                         _collect_ids(child, ids)
 
 
-def check_staleness(db_path: Path) -> dict:
+def check_staleness(db_path: Path) -> dict[str, Any]:
     tract_ids = _get_tract_hub_ids(db_path)
 
     try:

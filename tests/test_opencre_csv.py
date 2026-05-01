@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import csv
-import tempfile
 from io import StringIO
 from pathlib import Path
 

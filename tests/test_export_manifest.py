@@ -3,8 +3,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 
 class TestExportManifest:
     def test_manifest_has_required_fields(self) -> None:

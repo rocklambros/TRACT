@@ -23,7 +23,7 @@ def query_exportable_assignments(
     confidence_floor: float,
     confidence_overrides: dict[str, float],
     framework_filter: str | None = None,
-) -> list[dict]:
+) -> list[dict[str, object]]:
     """Query assignments passing all export filters.
 
     Returns list of dicts with keys: control_id, hub_id, hub_name,
@@ -44,7 +44,7 @@ def query_exportable_assignments(
             "AND a.confidence IS NOT NULL "
             "AND a.is_ood != 1 "
         )
-        params: list = [PHASE5_GROUND_TRUTH_PROVENANCE]
+        params: list[str] = [PHASE5_GROUND_TRUTH_PROVENANCE]
 
         if framework_filter:
             query += "AND c.framework_id = ? "
@@ -76,7 +76,7 @@ def query_exportable_assignments(
 
 def compute_filter_stats(
     db_path: Path,
-    exported_rows: list[dict],
+    exported_rows: list[dict[str, object]],
     confidence_floor: float,
     confidence_overrides: dict[str, float],
 ) -> dict[str, dict[str, int]]:
