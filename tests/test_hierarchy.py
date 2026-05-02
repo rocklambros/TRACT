@@ -236,3 +236,99 @@ class TestPhase0Parity:
         phase1a_tree = CREHierarchy.from_opencre(cres, ts, data_hash)
 
         assert phase1a_tree.label_space == phase0_leaves
+
+
+class TestRelatedHubIds:
+
+    def test_related_hub_ids_defaults_empty(self, hierarchy) -> None:
+        for node in hierarchy.hubs.values():
+            assert node.related_hub_ids == []
+
+    def test_related_hub_ids_backward_compat(self) -> None:
+        """Old JSON without related_hub_ids loads correctly."""
+        from tract.hierarchy import HubNode
+        raw = {
+            "hub_id": "TEST-1",
+            "name": "Test Hub",
+            "parent_id": None,
+            "children_ids": [],
+            "depth": 0,
+            "branch_root_id": "TEST-1",
+            "hierarchy_path": "Test Hub",
+            "is_leaf": True,
+            "sibling_hub_ids": [],
+        }
+        node = HubNode.model_validate(raw)
+        assert node.related_hub_ids == []
+
+    def test_related_hub_ids_loads_when_present(self) -> None:
+        from tract.hierarchy import HubNode
+        raw = {
+            "hub_id": "TEST-1",
+            "name": "Test Hub",
+            "parent_id": None,
+            "children_ids": [],
+            "depth": 0,
+            "branch_root_id": "TEST-1",
+            "hierarchy_path": "Test Hub",
+            "is_leaf": True,
+            "sibling_hub_ids": [],
+            "related_hub_ids": ["TEST-2"],
+        }
+        node = HubNode.model_validate(raw)
+        assert node.related_hub_ids == ["TEST-2"]
+
+    def test_validate_integrity_rejects_dangling_related(self) -> None:
+        from tract.hierarchy import CREHierarchy, HubNode
+        hubs = {
+            "A": HubNode(
+                hub_id="A", name="Hub A", depth=0, branch_root_id="A",
+                hierarchy_path="Hub A", is_leaf=True, related_hub_ids=["NONEXISTENT"],
+            ),
+        }
+        hier = CREHierarchy(
+            hubs=hubs, roots=["A"], label_space=["A"],
+            fetch_timestamp="2026-01-01T00:00:00", data_hash="test",
+            version="1.1",
+        )
+        with pytest.raises(ValueError, match="dangling related_hub_id"):
+            hier.validate_integrity()
+
+    def test_validate_integrity_rejects_asymmetric_related(self) -> None:
+        from tract.hierarchy import CREHierarchy, HubNode
+        hubs = {
+            "A": HubNode(
+                hub_id="A", name="Hub A", depth=0, branch_root_id="A",
+                hierarchy_path="Hub A", is_leaf=True, related_hub_ids=["B"],
+            ),
+            "B": HubNode(
+                hub_id="B", name="Hub B", depth=0, branch_root_id="B",
+                hierarchy_path="Hub B", is_leaf=True, related_hub_ids=[],
+            ),
+        }
+        hier = CREHierarchy(
+            hubs=hubs, roots=["A", "B"], label_space=["A", "B"],
+            fetch_timestamp="2026-01-01T00:00:00", data_hash="test",
+            version="1.1",
+        )
+        with pytest.raises(ValueError, match="does not list"):
+            hier.validate_integrity()
+
+    def test_validate_integrity_accepts_symmetric_related(self) -> None:
+        from tract.hierarchy import CREHierarchy, HubNode
+        hubs = {
+            "A": HubNode(
+                hub_id="A", name="Hub A", depth=0, branch_root_id="A",
+                hierarchy_path="Hub A", is_leaf=True, related_hub_ids=["B"],
+            ),
+            "B": HubNode(
+                hub_id="B", name="Hub B", depth=0, branch_root_id="B",
+                hierarchy_path="Hub B", is_leaf=True, related_hub_ids=["A"],
+            ),
+        }
+        hier = CREHierarchy(
+            hubs=hubs, roots=["A", "B"], label_space=["A", "B"],
+            fetch_timestamp="2026-01-01T00:00:00", data_hash="test",
+            version="1.1",
+        )
+        hier.validate_integrity()
