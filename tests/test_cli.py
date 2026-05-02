@@ -131,7 +131,7 @@ class TestArgParsing:
         from tract.cli import build_parser
         parser = build_parser()
         for cmd in ["assign", "compare", "ingest", "accept", "export", "hierarchy",
-                     "propose-hubs", "review-proposals", "tutorial"]:
+                     "propose-hubs", "review-proposals", "tutorial", "validate", "prepare"]:
             with pytest.raises(SystemExit) as exc_info:
                 parser.parse_args([cmd, "--help"])
             assert exc_info.value.code == 0

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from tract.sanitize import sanitize_text, strip_html
+from tract.sanitize import sanitize_control, sanitize_text, strip_html
 
 
 class TestStripHtml:
@@ -131,3 +131,60 @@ class TestSanitizeText:
         raw = "  <p>The eﬀective\x00 secu-\nrity   control.</p>  "
         result = sanitize_text(raw)
         assert result == "The effective security control."
+
+
+class TestSanitizeControl:
+    def test_sanitizes_description(self) -> None:
+        ctrl = {
+            "control_id": "TC-01",
+            "title": "Test",
+            "description": "A\x00 description with null bytes",
+        }
+        result = sanitize_control(ctrl)
+        assert "\x00" not in result["description"]
+        assert "description" in result["description"]
+
+    def test_sanitizes_title(self) -> None:
+        ctrl = {
+            "control_id": "TC-01",
+            "title": "Title\x00with null",
+            "description": "Valid description for the control test case",
+        }
+        result = sanitize_control(ctrl)
+        assert "\x00" not in result["title"]
+
+    def test_sanitizes_full_text(self) -> None:
+        ctrl = {
+            "control_id": "TC-01",
+            "title": "Test",
+            "description": "Valid description for the control test case",
+            "full_text": "Full\x00text content here for detailed analysis",
+        }
+        result = sanitize_control(ctrl)
+        assert "\x00" not in result["full_text"]
+
+    def test_preserves_non_text_fields(self) -> None:
+        ctrl = {
+            "control_id": "TC-01",
+            "title": "Test",
+            "description": "Valid description for the control test case",
+            "hierarchy_level": 2,
+            "parent_id": "PARENT-01",
+            "metadata": {"source": "test"},
+        }
+        result = sanitize_control(ctrl)
+        assert result["hierarchy_level"] == 2
+        assert result["parent_id"] == "PARENT-01"
+        assert result["metadata"] == {"source": "test"}
+
+    def test_long_description_splits_to_full_text(self) -> None:
+        long_desc = "A " * 1500
+        ctrl = {
+            "control_id": "TC-01",
+            "title": "Test",
+            "description": long_desc,
+        }
+        result = sanitize_control(ctrl)
+        assert len(result["description"]) <= 2000
+        assert result["full_text"] is not None
+        assert len(result["full_text"]) > len(result["description"])

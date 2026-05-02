@@ -125,6 +125,23 @@ PHASE1A_DESCRIPTION_SAVE_INTERVAL: Final[int] = 50
 PHASE1A_DESCRIPTION_TIMEOUT_S: Final[int] = 60
 PHASE1A_FRAMEWORK_SLUG_RE: Final[str] = r"^[a-z][a-z0-9_]{1,49}$"
 
+# ── Validation Constants ─────────────────────────────────────────────────
+
+VALIDATE_FRAMEWORK_ID_RE: Final[str] = r"^[a-z][a-z0-9_]{1,49}$"
+VALIDATE_MIN_DESCRIPTION_LENGTH: Final[int] = 10
+VALIDATE_SHORT_DESCRIPTION_LENGTH: Final[int] = 50
+VALIDATE_LONG_DESCRIPTION_LENGTH: Final[int] = 2000
+VALIDATE_LOW_CONTROL_COUNT: Final[int] = 10
+VALIDATE_HIGH_CONTROL_COUNT: Final[int] = 2000
+
+# LLM extractor settings
+PREPARE_LLM_MODEL: Final[str] = "claude-sonnet-4-20250514"
+PREPARE_LLM_TEMPERATURE: Final[float] = 0.0
+PREPARE_LLM_MAX_RETRIES: Final[int] = 3
+PREPARE_LLM_RETRY_INITIAL_DELAY_S: Final[float] = 1.0
+PREPARE_LLM_RETRY_BACKOFF_FACTOR: Final[float] = 2.0
+PREPARE_LLM_CHUNK_TOKEN_LIMIT: Final[int] = 100_000
+
 # Framework IDs that have primary-source parsers (take precedence over OpenCRE extraction)
 AI_PARSER_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
     "aiuc_1", "cosai", "csa_aicm", "eu_ai_act", "eu_gpai_cop",

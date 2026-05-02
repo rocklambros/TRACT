@@ -1,0 +1,5 @@
+[
+  {"id": "TC-01", "name": "Access Control", "description": "Enforce access control policies for system components and users to prevent unauthorized access"},
+  {"id": "TC-02", "name": "Encryption", "description": "Encrypt sensitive data at rest and in transit using standard cryptographic algorithms"},
+  {"id": "TC-03", "name": "Logging", "description": "Maintain comprehensive audit logs of security events for forensic analysis and compliance"}
+]

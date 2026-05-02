@@ -149,6 +149,54 @@ def build_parser() -> argparse.ArgumentParser:
         help="Guided walkthrough of TRACT capabilities",
     )
 
+    # ── validate ─────────────────────────────────────────────────────
+    p_validate = subparsers.add_parser(
+        "validate",
+        help="Validate a prepared framework JSON file",
+        epilog=(
+            "Examples:\n"
+            "  tract validate --file prepared.json\n"
+            "  tract validate --file prepared.json --json\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_validate.add_argument("--file", required=True, help="Framework JSON file to validate")
+    p_validate.add_argument("--json", action="store_true", help="Machine-readable JSON output")
+
+    # ── prepare ──────────────────────────────────────────────────────
+    p_prepare = subparsers.add_parser(
+        "prepare",
+        help="Prepare a raw framework document for ingestion",
+        epilog=(
+            "Examples:\n"
+            "  tract prepare --file controls.csv --framework-id new_fw \\\n"
+            "    --name 'New Framework' --version '1.0' \\\n"
+            "    --source-url 'https://example.com' --mapping-unit control\n"
+            "\n"
+            "  tract prepare --file doc.pdf --llm --framework-id new_fw \\\n"
+            "    --name 'New Framework' --version '1.0' \\\n"
+            "    --source-url 'https://example.com' --mapping-unit control\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_prepare.add_argument("--file", required=True, help="Input file path (CSV, markdown, JSON, or unstructured)")
+    p_prepare.add_argument("--framework-id", required=True, help="Framework ID slug (lowercase, underscores)")
+    p_prepare.add_argument("--name", required=True, help="Human-readable framework name")
+    p_prepare.add_argument("--version", default="1.0", help="Framework version string (default: 1.0)")
+    p_prepare.add_argument("--source-url", default="", help="Official framework URL (default: empty)")
+    p_prepare.add_argument("--mapping-unit", default="control", help="What each control represents (default: control)")
+    p_prepare.add_argument("--fetched-date", default=None, help="Fetch date in YYYY-MM-DD format (default: today)")
+    p_prepare.add_argument("--expected-count", type=int, default=None, help="Expected number of controls (warns on mismatch)")
+    p_prepare.add_argument("--id-column", default=None, help="CSV column name for control_id (overrides auto-detect)")
+    p_prepare.add_argument("--title-column", default=None, help="CSV column name for title (overrides auto-detect)")
+    p_prepare.add_argument("--description-column", default=None, help="CSV column name for description (overrides auto-detect)")
+    p_prepare.add_argument("--fulltext-column", default=None, help="CSV column name for full_text (overrides auto-detect)")
+    p_prepare.add_argument("--llm", action="store_true", help="Use Claude API for LLM-assisted extraction")
+    p_prepare.add_argument("--format", choices=["csv", "markdown", "json", "unstructured"], help="Override auto-detected format")
+    p_prepare.add_argument("--output", help="Output file path (default: <input_stem>_prepared.json)")
+    p_prepare.add_argument("--heading-level", type=int, help="Markdown heading depth to split on (default: auto-detect)")
+    p_prepare.add_argument("--json", action="store_true", help="Output summary as JSON")
+
     return parser
 
 
@@ -305,6 +353,34 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     raw_data = load_json(file_path)
+
+    from tract.validate import validate_framework
+
+    validation_issues = validate_framework(raw_data)
+    val_errors = [i for i in validation_issues if i.severity == "error"]
+    val_warnings = [i for i in validation_issues if i.severity == "warning"]
+
+    if val_errors:
+        print(f"Validation failed ({len(val_errors)} error(s)):", file=sys.stderr)
+        for issue in val_errors:
+            prefix = f"  [{issue.control_id}] " if issue.control_id else "  "
+            print(f"{prefix}{issue.message}", file=sys.stderr)
+        if val_warnings:
+            print(f"\n  ({len(val_warnings)} warning(s) also found)", file=sys.stderr)
+        sys.exit(1)
+
+    if val_warnings:
+        print(f"Validation warnings ({len(val_warnings)}):", file=sys.stderr)
+        for issue in val_warnings:
+            prefix = f"  [{issue.control_id}] " if issue.control_id else "  "
+            print(f"{prefix}{issue.message}", file=sys.stderr)
+        print("", file=sys.stderr)
+
+    from tract.sanitize import sanitize_control
+
+    for i, ctrl in enumerate(raw_data["controls"]):
+        raw_data["controls"][i] = sanitize_control(ctrl)
+
     try:
         fw = FrameworkOutput.model_validate(raw_data)
     except Exception as e:
@@ -392,6 +468,27 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         "controls": controls_output,
     }
 
+    if raw_data.get("metadata", {}).get("source") == "tract_prepare":
+        review_data["calibration_note"] = (
+            "Confidence scores were calibrated on parser-extracted text. "
+            "This file was prepared via tract prepare, which may produce "
+            "different text surface forms. Treat confidence scores as "
+            "approximate rankings, not calibrated probabilities."
+        )
+
+    max_sims = [
+        ctrl["predictions"][0]["confidence"]
+        for ctrl in controls_output
+        if ctrl.get("predictions")
+    ]
+    n = len(controls_output)
+    review_data["quality_summary"] = {
+        "mean_max_cosine_sim": round(sum(max_sims) / len(max_sims), 3) if max_sims else 0.0,
+        "ood_fraction": round(ood_count / n, 3) if n else 0.0,
+        "below_confidence_floor_count": low_conf,
+        "below_confidence_floor_fraction": round(low_conf / n, 3) if n else 0.0,
+    }
+
     output_path = file_path.with_stem(file_path.stem + "_review").with_suffix(".json")
     atomic_write_json(review_data, output_path)
 
@@ -404,6 +501,10 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         print(f"  Duplicates: {dup_count}, Similar: {sim_count}")
         print(f"  High confidence: {high_conf}, Low confidence: {low_conf}")
         print(f"  Review file: {output_path}")
+        qs = review_data["quality_summary"]
+        print(f"  Average match quality: {qs['mean_max_cosine_sim']:.3f}", file=sys.stderr)
+        print(f"  Unusual controls (out-of-distribution): {qs['ood_fraction']:.0%}", file=sys.stderr)
+        print(f"  Below confidence floor: {qs['below_confidence_floor_count']} controls ({qs['below_confidence_floor_fraction']:.0%})", file=sys.stderr)
 
 
 def _cmd_accept(args: argparse.Namespace) -> None:
@@ -456,6 +557,124 @@ def _cmd_accept(args: argparse.Namespace) -> None:
             print(f"    Rejected: {result['rejected']}")
         if result['pending']:
             print(f"    Pending (skipped): {result['pending']}")
+
+
+def _cmd_validate(args: argparse.Namespace) -> None:
+    from tract.io import load_json
+    from tract.validate import validate_framework
+
+    file_path = Path(args.file)
+    if not file_path.exists():
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        data = load_json(file_path)
+    except Exception as e:
+        print(f"Error: Failed to load JSON: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    issues = validate_framework(data)
+    errors = [i for i in issues if i.severity == "error"]
+    warnings = [i for i in issues if i.severity == "warning"]
+
+    if args.json:
+        output = {
+            "file": str(file_path),
+            "errors": [
+                {"control_id": i.control_id, "rule": i.rule, "message": i.message}
+                for i in errors
+            ],
+            "warnings": [
+                {"control_id": i.control_id, "rule": i.rule, "message": i.message}
+                for i in warnings
+            ],
+        }
+        print(json.dumps(output, indent=2))
+    else:
+        if errors:
+            print(f"ERRORS ({len(errors)}):", file=sys.stderr)
+            for i in errors:
+                prefix = f"  [{i.control_id}] " if i.control_id else "  "
+                print(f"{prefix}{i.message}", file=sys.stderr)
+
+        if warnings:
+            print(f"\nWARNINGS ({len(warnings)}):", file=sys.stderr)
+            for i in warnings:
+                prefix = f"  [{i.control_id}] " if i.control_id else "  "
+                print(f"{prefix}{i.message}", file=sys.stderr)
+
+        if not errors and not warnings:
+            print("Validation passed: no errors, no warnings.")
+        elif not errors:
+            print(f"\nValidation passed with {len(warnings)} warning(s).")
+
+    if errors:
+        sys.exit(1)
+
+
+def _cmd_prepare(args: argparse.Namespace) -> None:
+    from datetime import date
+
+    from tract.prepare import prepare_framework
+
+    file_path = Path(args.file)
+    if not file_path.exists():
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
+        sys.exit(1)
+
+    output_path = Path(args.output) if args.output else None
+    fetched_date = args.fetched_date if args.fetched_date else date.today().isoformat()
+
+    column_overrides: dict[str, str] | None = None
+    override_keys = {
+        "id_column": "control_id",
+        "title_column": "title",
+        "description_column": "description",
+        "fulltext_column": "full_text",
+    }
+    for attr, canonical in override_keys.items():
+        val = getattr(args, attr, None)
+        if val is not None:
+            if column_overrides is None:
+                column_overrides = {}
+            column_overrides[canonical] = val
+
+    try:
+        result_path = prepare_framework(
+            file_path=file_path,
+            framework_id=args.framework_id,
+            name=args.name,
+            version=args.version,
+            source_url=args.source_url,
+            mapping_unit=args.mapping_unit,
+            fetched_date=fetched_date,
+            output_path=output_path,
+            format_override=args.format,
+            use_llm=args.llm,
+            heading_level=args.heading_level,
+            expected_count=args.expected_count,
+            column_overrides=column_overrides,
+        )
+    except (ValueError, FileNotFoundError) as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.json:
+        from tract.io import load_json
+        data = load_json(result_path)
+        summary = {
+            "output_path": str(result_path),
+            "framework_id": data["framework_id"],
+            "controls": len(data["controls"]),
+        }
+        print(json.dumps(summary, indent=2))
+    else:
+        from tract.io import load_json
+        data = load_json(result_path)
+        print(f"Prepared: {data['framework_name']} ({data['framework_id']})")
+        print(f"  Controls: {len(data['controls'])}")
+        print(f"  Output: {result_path}")
 
 
 def _cmd_export(args: argparse.Namespace) -> None:
@@ -826,20 +1045,28 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
     print("  Try: tract hierarchy --hub 646-285")
     print("  See the full path, parent, children, and assigned controls for any hub.\n")
 
-    print("Step 4: Ingest a new framework")
-    print("  Prepare a JSON file matching the FrameworkOutput schema (see tract/schema.py)")
-    print("  Try: tract ingest --file new_framework.json")
-    print("  This generates a _review.json with model predictions for human review.\n")
+    print("Step 4: Prepare a new framework for ingestion")
+    print("  Convert a CSV, Markdown, or JSON document into FrameworkOutput JSON:")
+    print("  Try: tract prepare --file controls.csv --framework-id new_fw --name 'New Framework'")
+    print("  Supports --llm for unstructured documents (PDF, plain text).\n")
 
-    print("Step 5: Accept reviewed predictions into the crosswalk DB")
+    print("Step 5: Validate the prepared output")
+    print("  Try: tract validate --file new_fw_prepared.json")
+    print("  Checks for errors (block ingest) and warnings (informational).\n")
+
+    print("Step 6: Ingest the framework")
+    print("  Try: tract ingest --file new_fw_prepared.json")
+    print("  Runs model inference and generates a _review.json for human review.\n")
+
+    print("Step 7: Accept reviewed predictions into the crosswalk DB")
     print("  Edit the _review.json to set review status (accepted/rejected/corrected)")
-    print("  Try: tract accept --review new_framework_review.json\n")
+    print("  Try: tract accept --review new_fw_prepared_review.json\n")
 
-    print("Step 6: Export the crosswalk")
+    print("Step 8: Export the crosswalk")
     print("  Try: tract export --format csv")
     print("  Exports all accepted assignments as CSV or JSON.\n")
 
-    print("Step 7: Propose new hubs (advanced)")
+    print("Step 9: Propose new hubs (advanced)")
     print("  Try: tract propose-hubs")
     print("  Clusters OOD controls to suggest new taxonomy extensions.\n")
 
@@ -869,6 +1096,8 @@ def main() -> None:
         "propose-hubs": _cmd_propose_hubs,
         "review-proposals": _cmd_review_proposals,
         "tutorial": _cmd_tutorial,
+        "validate": _cmd_validate,
+        "prepare": _cmd_prepare,
     }
 
     handler = handlers.get(args.command)
