@@ -6,7 +6,7 @@
 
 **PRD Sections:** 7.3 (HuggingFace Publication), 7.4 (AI/Traditional Security Bridge)
 
-**Dependencies:** Phase 1C (deployment model, calibration, crosswalk DB), Phase 1D (hub proposals, OOD analysis)
+**Dependencies:** Phase 1C (deployment model, calibration, crosswalk DB)
 
 **Hard dependency chain:** Bridge Analysis → HuggingFace Publication (publication gate checks for completed bridge_report.json)
 
@@ -18,7 +18,7 @@
 
 The CRE ontology has 81 AI-specific hubs (linked from MITRE ATLAS, OWASP AI Exchange, NIST AI 100-2, OWASP LLM Top 10, OWASP ML Top 10) and 442 traditional hubs (linked from CAPEC, CWE, NIST 800-53, ASVS, etc.). 60 hubs are already linked from both domains — natural bridges. 21 hubs are AI-only. 382 are traditional-only.
 
-Bridge analysis identifies conceptual overlaps between AI and traditional security hubs that aren't captured by existing framework links, then adds them as `Related` links in the CRE hierarchy.
+Bridge analysis identifies conceptual overlaps between AI and traditional security hubs that aren't captured by existing framework links, then records them as `related_hub_ids` in the CRE hierarchy (bidirectional).
 
 ### 1.2 Hub Classification
 
@@ -28,95 +28,118 @@ Hubs are classified by which frameworks link to them in `data/training/hub_links
 |---|---|---|
 | AI-linked | 81 | Linked from at least one AI framework |
 | Traditional-linked | 442 | Linked from at least one traditional framework |
-| Both (known bridges) | 60 | Linked from both AI and traditional frameworks |
+| Both (naturally bridged) | 60 | Linked from both AI and traditional frameworks |
 | AI-only | 21 | Linked from AI frameworks only, no traditional links |
 | Traditional-only | 382 | Linked from traditional frameworks only, no AI links |
+| Unlinked | 59 | Have embeddings in deployment_artifacts.npz but no framework links (55 non-leaf internal nodes, 4 leaves). Excluded from bridge analysis — logged in bridge_report.json as "unclassified" for transparency. |
 
 AI framework IDs: `mitre_atlas`, `owasp_ai_exchange`, `nist_ai_100_2`, `owasp_llm_top10`, `owasp_ml_top10`.
 
-### 1.3 Threshold Calibration from Known Bridges
+Note: 522 hubs have embeddings total. 463 appear in hub_links_by_framework.json. The 59 unlinked hubs are mostly organizational grouping nodes without direct framework connections.
 
-The 60 known bridge hubs serve as ground truth for calibrating the discovery threshold. Each hub has a single embedding in `deployment_artifacts.npz`. The calibration approach:
+### 1.3 Similarity Computation (No Threshold)
 
-1. For each of the 60 known bridge hubs, find its nearest neighbor among the 382 traditional-only hubs (by cosine similarity of hub embeddings). This measures "how close do known bridge hubs get to the purely-traditional part of the embedding space?"
-2. Compute the distribution of these 60 nearest-neighbor distances.
-3. Set the discovery threshold at `mean - 1σ` of this distribution, floored at `BRIDGE_MIN_SIMILARITY` (0.50).
-4. Document the empirical distribution (mean, std, min, max, quartiles) in bridge_report.json.
+Hub embeddings in `deployment_artifacts.npz` are 1024-dim unit vectors (all norms = 1.0), so cosine similarity = dot product. The bridge pipeline computes the full 21×382 cosine matrix and extracts the **top-K traditional matches per AI-only hub** (default K=3, configurable via `--top-k`).
 
-This gives a principled threshold grounded in how close known bridges get to traditional hubs, rather than an arbitrary cutoff.
+No automated threshold is applied. Empirical analysis showed:
+- Mann-Whitney U test (p=0.374): AI-only and naturally-bridged hub similarity distributions to traditional hubs are statistically indistinguishable. No threshold can separate "real bridges" from "non-bridges" using embedding similarity alone.
+- Known bridges like "Data poisoning" → "Weakening training set backdoors" sit at cosine 0.51 — below any reasonable threshold.
+- At threshold 0.55, only 10/21 AI-only hubs would get any match, missing obvious bridges like "Testing against direct prompt injection" → "Manual penetration testing" (0.54).
+
+With K=3, the pipeline produces 63 candidates — reviewable by an expert in ~30 minutes. The similarity score is a **ranking signal for the expert**, not a classifier. The expert accepts or rejects each candidate based on domain knowledge.
 
 ### 1.4 Bridge Discovery Pipeline
 
 ```
-deployment_artifacts.npz (522 hub embeddings, 1024-dim)
+deployment_artifacts.npz (522 hub embeddings, 1024-dim, unit-normalized)
   + hub_links_by_framework.json (framework→hub mappings)
   + cre_hierarchy.json (hub structure)
   ↓
-classify_hubs() → {ai_only: 21, trad_only: 382, known_bridges: 60}
+classify_hubs() → {ai_only: 21, trad_only: 382, naturally_bridged: 60, unlinked: 59}
   ↓
-calibrate_threshold() → empirical threshold from 60 known bridges
+compute_bridge_similarities() → 21×382 cosine matrix (= dot product, unit vectors)
   ↓
-compute_bridge_similarities() → 21×382 cosine matrix
+extract_top_k() → top-3 traditional matches per AI hub (63 candidates)
   ↓
-filter_candidates() → ranked pairs above threshold
+generate_descriptions() → LLM bridge descriptions for candidates (Claude API, sanitize_text)
+  + generate_negative_descriptions() → blinded negatives (bottom-1 per hub, 21 items)
   ↓
-generate_descriptions() → LLM bridge descriptions (Claude API, sanitize_text applied)
+  (If LLM API fails: write candidates with empty descriptions. Re-run without --skip-descriptions to fill gaps.)
   ↓
 bridge_candidates.json → expert review (accept/reject in JSON file)
   ↓
 commit_bridges() → updated cre_hierarchy.json + bridge_report.json
 ```
 
+Bridge analysis is hub-level ontology enrichment — not control→hub assignment. The core constraint (`g(control_text) → CRE_position`, no pairwise `f(A,B) → relationship`) applies to the assignment model, not to taxonomy curation.
+
 ### 1.5 Bridge Candidate JSON Format
 
 ```json
 {
   "generated_at": "2026-05-02T...",
-  "threshold": 0.682,
-  "threshold_method": "known_bridge_nearest_neighbor_mean_minus_1std",
-  "known_bridge_stats": {
-    "count": 60,
-    "mean_nearest_trad_similarity": 0.743,
-    "std": 0.061,
-    "min": 0.612,
-    "max": 0.891
+  "method": "top_k_per_ai_hub",
+  "top_k": 3,
+  "similarity_stats": {
+    "matrix_shape": [21, 382],
+    "mean": 0.162,
+    "std": 0.106,
+    "min": -0.149,
+    "max": 0.774,
+    "percentiles": {"25": 0.083, "50": 0.155, "75": 0.234, "90": 0.310, "95": 0.370, "99": 0.530}
   },
   "candidates": [
     {
-      "ai_hub_id": "062-850",
-      "ai_hub_name": "Data poisoning of train/finetune/augmentation data",
-      "trad_hub_id": "457-210",
-      "trad_hub_name": "Input validation",
-      "cosine_similarity": 0.734,
+      "ai_hub_id": "202-604",
+      "ai_hub_name": "Human AI oversight",
+      "trad_hub_id": "427-113",
+      "trad_hub_name": "Security governance regarding people",
+      "cosine_similarity": 0.774,
+      "rank_for_ai_hub": 1,
       "seed_evidence": {
-        "shared_frameworks": [],
         "ai_controls_linked": 5,
-        "trad_controls_linked": 12,
-        "note": "shared_frameworks lists ENISA/ETSI/BIML if they link to both hubs; empty for most AI-only candidates since they lack traditional links by definition"
+        "trad_controls_linked": 12
       },
-      "description": "Both hubs address the integrity of data entering a system...",
+      "description": "Both hubs address human governance and oversight of systems...",
       "status": "pending",
       "reviewer_notes": ""
     }
-  ]
+  ],
+  "negative_controls": [
+    {
+      "ai_hub_id": "202-604",
+      "ai_hub_name": "Human AI oversight",
+      "trad_hub_id": "xxx-yyy",
+      "trad_hub_name": "...",
+      "cosine_similarity": 0.012,
+      "description": "...",
+      "is_negative": true
+    }
+  ],
+  "unclassified_leaf_hubs": ["hub-1", "hub-2", "hub-3", "hub-4"]
 }
 ```
 
-Review workflow: user edits `status` to `"accepted"` or `"rejected"`, optionally adds `reviewer_notes`. Then runs `tract bridge --commit`.
+**Negative controls:** For each AI hub, the pipeline also generates a description for the **worst match** (bottom-1 of 382 traditional hubs). These 21 negative descriptions are presented alongside the 63 real candidates. If the expert can't distinguish negative descriptions from real candidates, the LLM descriptions add no filtering value.
+
+**Review workflow:** User edits `status` to `"accepted"` or `"rejected"`, optionally adds `reviewer_notes`. Then runs `tract bridge --commit`. `commit_bridges()` validates: JSON parseable, all required keys present, `status ∈ {"accepted", "rejected"}`, all hub IDs exist in hierarchy. Rejects malformed input with specific error messages.
 
 ### 1.6 Hierarchy Update
 
-Accepted bridges are added to `cre_hierarchy.json` as `Related` links between the two hubs (bidirectional). This does NOT change:
+Accepted bridges are stored in `cre_hierarchy.json` by adding `related_hub_ids` to each hub in the bridge pair (bidirectional). This requires a schema extension to `HubNode` in `tract/hierarchy.py`:
+
+- Add field: `related_hub_ids: list[str] = Field(default_factory=list)`
+- `HubNode` is `frozen=True` (Pydantic v2) — adding a new field with a default works; existing hierarchy files load without error because Pydantic v2 ignores unknown fields by default (no `extra="forbid"` set)
+- Bump hierarchy version from `"1.0"` to `"1.1"`
+- Update `validate_integrity()` to check that all `related_hub_ids` reference existing hubs
+
+This does NOT change:
 - Model weights (trained on control→hub assignments, not hub→hub)
-- Hub embeddings (encoded from name + hierarchy path; Related links are lateral, not hierarchical)
+- Hub embeddings (encoded from name + hierarchy path; related links are lateral, not hierarchical)
 - Calibration (T, thresholds fitted on model output distribution)
 - deployment_artifacts.npz (pre-computed from the above)
 
-The updated hierarchy is bundled with the HuggingFace publication, giving downstream users a richer ontology.
-
-### 1.7 OOD Cross-Reference
-
-Phase 1D identified 95 OOD controls (3.4%) that didn't map well to any existing hub. 5 hub proposals passed guardrails. Cross-reference OOD controls against bridge candidates: if OOD controls cluster near a bridge pair, this is supporting evidence that the bridge captures a real concept. Logged in bridge_report.json but does not affect accept/reject decisions (that's expert judgment).
+The updated hierarchy is bundled with the HuggingFace publication, giving downstream users a richer ontology. Bridge provenance (similarity scores, evidence, review decisions) lives in `bridge_report.json`, not the hierarchy — the hierarchy stores topology, not provenance.
 
 ---
 
@@ -127,18 +150,35 @@ Phase 1D identified 95 OOD controls (3.4%) that didn't map well to any existing 
 `publish_to_huggingface()` checks before proceeding:
 1. `bridge_report.json` exists
 2. All candidates in bridge_report.json have status `accepted` or `rejected` (no `pending`)
-3. `cre_hierarchy.json` has been updated with accepted bridges
+3. `cre_hierarchy.json` has been updated with accepted bridges (or no accepted bridges — zero accepted is valid)
 
-If any check fails, raise `ValueError` with specific message.
+If any check fails, raise `ValueError` with specific message. Zero accepted bridges is explicitly valid — the publication proceeds with bridge_report.json documenting the null result.
 
 ### 2.2 Model Merge
 
-Merge LoRA adapters into base model to produce a standalone ~1.3GB model:
+Merge LoRA adapters into base model to produce a standalone ~1.3GB model. The saved model is a **SentenceTransformer with a PEFT adapter overlay**, not a raw transformers model — the merge path must respect this.
 
-- **Input:** `results/phase1c/deployment_model/model/model/` (adapter_config.json + adapter_model.safetensors) + `BAAI/bge-large-en-v1.5` (downloaded from HuggingFace)
-- **Process:** Load base model, load PEFT adapters, merge with `model.merge_and_unload()`, save as safetensors
-- **Output:** Complete model directory with model.safetensors, config.json, tokenizer files, sentence_bert_config.json, modules.json, 1_Pooling/config.json
-- **Verification:** No adapter_config.json in output (fully merged). Model produces near-identical embeddings to LoRA-loaded model (cosine similarity > 0.9999 for test inputs; minor float divergence from merge rounding is expected).
+- **Input:** `results/phase1c/deployment_model/model/model/` (SentenceTransformer directory with adapter_config.json + adapter_model.safetensors overlaying BAAI/bge-large-en-v1.5)
+- **Process:**
+  1. Load via `SentenceTransformer(model_dir)` — this auto-detects the PEFT adapter
+  2. Access the inner PeftModel: `model[0].auto_model` (the `Transformer` module's `.auto_model` attribute)
+  3. Merge: `model[0].auto_model = model[0].auto_model.merge_and_unload()`
+  4. Save: `model.save(output_dir)` — preserves the full SentenceTransformer directory structure
+- **Output directory structure** (differs from the flat adapter input layout):
+  ```
+  output_dir/
+    0_Transformer/
+      model.safetensors  (~1.3GB, fully merged weights)
+      config.json
+      tokenizer.json, tokenizer_config.json, vocab.txt, special_tokens_map.json
+    1_Pooling/
+      config.json
+    2_Normalize/
+    modules.json
+    sentence_bert_config.json
+    config_sentence_transformers.json
+  ```
+- **Verification:** No adapter_config.json in output (fully merged). Model produces near-identical embeddings to LoRA-loaded model (cosine similarity > 0.9999 for test inputs; minor float divergence from merge rounding is expected). Output loads correctly via `SentenceTransformer(output_dir)`.
 
 ### 2.3 Inference Data Bundle
 
@@ -202,10 +242,12 @@ Bootstrap CIs included from fold summary files.
 - Active learning rounds used expert-reviewed predictions, not autonomous deployment
 
 **Environmental Impact:**
-- Training: H100 GPU via RunPod. Source actual hours from RunPod billing dashboard or WandB run metadata (total training time across LOFO folds + deployment model). Estimate CO2 using ML CO2 Impact calculator with US-West grid factor.
+- Training: H100 GPU via RunPod. `generate_model_card()` accepts `gpu_hours: float` parameter — hardcode actual hours from RunPod billing dashboard or WandB run metadata. Estimate CO2 using ML CO2 Impact calculator with US-West grid factor.
 - Deployment: runs on Jetson Orin AGX (edge device, ~30W TDP)
 
-**Usage snippet, citation (BibTeX), license (CC0 1.0)**
+**Evaluation addition — hit@any:** Because 35% of controls map to multiple hubs, hit@1 alone understates performance. Include a hit@any column in the LOFO table (whether the prediction matches ANY ground-truth hub for that control).
+
+**Usage snippet, citation (BibTeX), license (MIT for model weights and code, with NOTICE attributing BAAI/bge-large-en-v1.5 base model; bundled data files are CC0 1.0)**
 
 **Bridge Analysis Summary:** Included as a section — number of bridges found, methodology, link to bridge_report.json.
 
@@ -216,28 +258,46 @@ Bootstrap CIs included from fold summary files.
 - Takes control text as input, returns top-K hub predictions with calibrated confidence
 - Dependencies: `sentence-transformers`, `torch`, `numpy` (no TRACT package required)
 - Handles: single text and batch mode
+- Inlines the following from TRACT's inference pipeline:
+  - Simplified `sanitize_text()`: NFC normalization + whitespace stripping
+  - Temperature scaling: `softmax(similarities / T)` (one line, T from calibration.json)
+  - OOD flagging: `max_sim < ood_threshold` (threshold from calibration.json)
+  - Does NOT include conformal prediction — reference TRACT repo for full pipeline
 
 **train.py:**
 - Documents full reproduction pipeline
-- Points to TRACT GitHub repo for training code
+- Acknowledges reproduction requires cloning the full TRACT repository (custom training procedures: text-aware batch sampling, joint temperature-scaled loss, active learning)
 - Lists pinned requirements
 - Includes data download instructions (OpenCRE API fetch)
 - Includes exact training command with all hyperparameters
+- References specific modules: `tract/training/`, active learning scripts, batch sampler
 
 ### 2.6 Security Scan
 
-Automated scan before upload — regex patterns for:
-- API keys: `sk-`, `hf_`, `key-`, `token-` followed by alphanumeric strings
-- File paths containing usernames: `/home/rock`, `/Users/`
-- Email addresses
-- `pass ` commands (credential manager invocations)
-- Environment variable references to secrets
+Automated scan before upload. Context-aware: scans Python scripts, model card (README.md), config files, and `reviewer_notes` fields in bridge_report.json. Does NOT scan JSON data files (hierarchy paths contain words like "home" that false-positive on path patterns).
 
-Scan runs against ALL files in the staging directory. Any match = hard failure with file path and line number. No manual override — fix the source and re-run.
+**Patterns for scanned files:**
+- API keys: `sk-[a-zA-Z0-9]{20,}`, `hf_[a-zA-Z0-9]{20,}`, `wandb_[a-zA-Z0-9]{10,}`
+- Specific paths: `/home/rock`, `/Users/rock` (not broad `/home/\w+` which false-positives)
+- Email addresses: standard email regex
+- Credential manager: `^pass\s+\w+/\w+` (anchored to line start, avoids matching prose "pass through/to")
+- AWS keys: `AKIA[0-9A-Z]{16}`
+- Environment variable assignments: `(HF_TOKEN|WANDB_API_KEY|ANTHROPIC_API_KEY)\s*=`
 
-### 2.7 AIBOM Validation
+**Structural checks:**
+- No `.git/` directory in staging area
+- No `adapter_config.json` in output (confirms merge completed)
+- `reviewer_notes` fields in bridge_report.json scanned for PII (names, emails)
 
-Final step before upload:
+Any match = hard failure with file path and line number. No manual override — fix the source and re-run.
+
+### 2.7 Upload
+
+Use `huggingface_hub.HfApi.upload_folder()` to push the staging directory to the HuggingFace repo. This handles Git LFS automatically for files over 10MB (the ~1.3GB model.safetensors). HuggingFace token retrieved via `pass huggingface/token` and set as `HF_TOKEN` environment variable.
+
+### 2.8 AIBOM Validation
+
+Final step after upload (or during `--dry-run`):
 1. Clone `GenAI-Security-Project/aibom-generator` to a temp directory
 2. Run against the generated README.md
 3. Report score and any missing fields
@@ -252,13 +312,13 @@ If the tool is unavailable or broken, log a warning and proceed (the model card 
 ### 3.1 `tract bridge`
 
 ```
-tract bridge [--output-dir DIR] [--threshold FLOAT] [--skip-descriptions]
+tract bridge [--output-dir DIR] [--top-k INT] [--skip-descriptions]
 ```
 
 - `--output-dir`: output directory for bridge_candidates.json and bridge_report.json (default: `results/bridge/`)
-- `--threshold`: override auto-calibrated threshold (optional)
-- `--skip-descriptions`: skip LLM description generation (for testing/dry runs)
-- Prints: threshold used, number of candidates found, path to bridge_candidates.json
+- `--top-k`: number of traditional matches per AI hub (default: 3)
+- `--skip-descriptions`: skip LLM description generation (for testing/dry runs). If skipped and re-run without this flag, fills in missing descriptions without regenerating existing ones.
+- Prints: number of AI-only hubs, number of candidates generated, path to bridge_candidates.json
 - Does NOT auto-commit bridges — requires explicit `--commit`
 
 ```
@@ -266,8 +326,8 @@ tract bridge --commit --candidates results/bridge/bridge_candidates.json
 ```
 
 - Reads reviewed candidates file
-- Validates all entries have non-pending status
-- Accepted bridges → Related links in cre_hierarchy.json (atomic write)
+- Validates: JSON parseable, all required keys present, `status ∈ {"accepted", "rejected"}`, all hub IDs exist in hierarchy
+- Accepted bridges → `related_hub_ids` in cre_hierarchy.json (bidirectional, atomic write)
 - Writes bridge_report.json with full statistics
 - Prints: N accepted, N rejected, hierarchy updated
 
@@ -292,17 +352,17 @@ tract publish-hf --repo-id rockCO78/tract-cre-assignment [--staging-dir DIR] [--
 tract/
   bridge/
     __init__.py          # run_bridge_analysis() orchestrator
-    classify.py          # classify_hubs() — AI/trad/both split
-    similarity.py        # compute_bridge_similarities(), calibrate_threshold()
-    describe.py          # generate_bridge_descriptions() — LLM + sanitize_text
-    review.py            # load_candidates(), commit_bridges() — JSON I/O, hierarchy update
+    classify.py          # classify_hubs() — AI/trad/both/unlinked split
+    similarity.py        # compute_bridge_similarities(), extract_top_k()
+    describe.py          # generate_bridge_descriptions(), generate_negative_descriptions() — LLM + sanitize_text
+    review.py            # load_candidates(), validate_candidates(), commit_bridges() — JSON I/O, hierarchy update
   publish/
     __init__.py          # publish_to_huggingface() orchestrator, bridge gate
-    merge.py             # merge_lora_adapters() — PEFT merge + safetensors export
+    merge.py             # merge_lora_adapters() — SentenceTransformer-aware PEFT merge
     bundle.py            # bundle_inference_data() — copy/validate data files
-    model_card.py        # generate_model_card() — templated README.md
+    model_card.py        # generate_model_card(gpu_hours: float) — templated README.md
     scripts.py           # write_predict_script(), write_train_script()
-    security.py          # scan_for_secrets() — regex scan
+    security.py          # scan_for_secrets() — context-aware regex scan
 ```
 
 ---
@@ -317,8 +377,7 @@ BRIDGE_AI_FRAMEWORK_IDS: frozenset[str] = frozenset({
     "mitre_atlas", "owasp_ai_exchange", "nist_ai_100_2",
     "owasp_llm_top10", "owasp_ml_top10",
 })
-BRIDGE_THRESHOLD_SIGMA: float = 1.0  # mean - N*std for threshold
-BRIDGE_MIN_SIMILARITY: float = 0.50  # absolute floor regardless of calibration
+BRIDGE_TOP_K: int = 3  # top-K traditional matches per AI hub
 BRIDGE_LLM_MODEL: str = "claude-sonnet-4-20250514"
 BRIDGE_LLM_TEMPERATURE: float = 0.0
 BRIDGE_OUTPUT_DIR: Path = Path("results/bridge")
@@ -327,14 +386,20 @@ BRIDGE_OUTPUT_DIR: Path = Path("results/bridge")
 HF_DEFAULT_REPO_ID: str = "rockCO78/tract-cre-assignment"
 HF_STAGING_DIR: Path = Path("build/hf_repo")
 HF_BASE_MODEL: str = "BAAI/bge-large-en-v1.5"
-HF_SECRET_PATTERNS: list[str] = [
-    r"sk-[a-zA-Z0-9]{20,}",
-    r"hf_[a-zA-Z0-9]{20,}",
-    r"/home/\w+",
-    r"/Users/\w+",
-    r"pass\s+\w+/\w+",
-    r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",
+HF_SECRET_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(r"sk-[a-zA-Z0-9]{20,}"),
+    re.compile(r"hf_[a-zA-Z0-9]{20,}"),
+    re.compile(r"wandb_[a-zA-Z0-9]{10,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"/home/rock"),
+    re.compile(r"/Users/rock"),
+    re.compile(r"^pass\s+\w+/\w+", re.MULTILINE),
+    re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"),
+    re.compile(r"(HF_TOKEN|WANDB_API_KEY|ANTHROPIC_API_KEY)\s*="),
 ]
+# Security scan targets: .py, .md, .json (config only), .txt, .yaml
+# Excludes: JSON data files (hierarchy, descriptions) to avoid false positives
+HF_SCAN_EXTENSIONS: frozenset[str] = frozenset({".py", ".md", ".txt", ".yaml", ".yml"})
 ```
 
 ---
@@ -345,25 +410,25 @@ HF_SECRET_PATTERNS: list[str] = [
 
 | Test file | Scope |
 |---|---|
-| `test_classify.py` | Hub classification counts. Edge cases: hub with zero links, hub in neither set. |
-| `test_similarity.py` | Cosine matrix shape (21×382). Threshold calibration produces value in (0,1). Candidates sorted descending. Deterministic output. |
-| `test_describe.py` | sanitize_text applied to descriptions. Non-empty output. API failure retry. |
-| `test_review.py` | JSON round-trip. Commit rejects pending entries. Accepted → Related links. Rejected excluded. Atomic writes. |
-| `test_bridge_integration.py` | End-to-end with synthetic fixture: 3 AI hubs, 5 trad hubs, 1 known bridge → candidates → commit → hierarchy updated. |
+| `test_classify.py` | Hub classification counts (ai_only, trad_only, naturally_bridged, unlinked). Edge cases: hub with zero links, hub in neither set, leaf vs non-leaf unlinked. |
+| `test_similarity.py` | Cosine matrix shape (21×382). Top-K extraction returns K items per hub sorted descending. Deterministic output. Unit-vector dot product equals cosine. |
+| `test_describe.py` | sanitize_text applied to descriptions. Non-empty output. API failure → empty description (not crash). Negative control descriptions generated for bottom-1 per hub. |
+| `test_review.py` | JSON round-trip. Validation rejects: pending entries, unknown status values, non-existent hub IDs, malformed JSON. Accepted → `related_hub_ids` bidirectional. Rejected excluded. Atomic writes. Zero accepted = valid. |
+| `test_bridge_integration.py` | End-to-end with synthetic fixture: 3 AI hubs, 5 trad hubs, 1 naturally bridged → top-3 candidates → commit → hierarchy updated with `related_hub_ids`. |
 
 ### Publish Tests (`tests/test_publish/`)
 
 | Test file | Scope |
 |---|---|
-| `test_merge.py` | Merged model has model.safetensors, no adapter_config.json. |
-| `test_bundle.py` | All required files copied. Missing file → ValueError. Hierarchy includes bridges. |
-| `test_model_card.py` | All AIBOM sections present. Metrics match source. Limitations honest. No secrets. |
-| `test_security.py` | Planted secrets detected. Clean dir passes. |
-| `test_publish_integration.py` | End-to-end --dry-run passes. Bridge gate blocks without bridge_report.json. |
+| `test_merge.py` | Merged model directory has `0_Transformer/model.safetensors`, `modules.json`, `1_Pooling/`, `2_Normalize/`. No adapter_config.json. Loads via `SentenceTransformer()`. |
+| `test_bundle.py` | All required files copied. Missing file → ValueError. Hierarchy includes `related_hub_ids`. hub_ids.json ordering matches embeddings (`len(hub_ids) == hub_embeddings.shape[0]`). |
+| `test_model_card.py` | All AIBOM sections present. Metrics match source. hit@any included. Limitations honest. No secrets. MIT license with NOTICE. |
+| `test_security.py` | Planted secrets detected in .py/.md files. Clean dir passes. JSON data files with `/home` in hierarchy paths do NOT trigger. `reviewer_notes` with PII detected. |
+| `test_publish_integration.py` | End-to-end --dry-run passes. Bridge gate blocks without bridge_report.json. Zero-bridge gate passes. |
 
 ### Fixtures
 
-- Synthetic hierarchy: ~10 hubs with fake 1024-dim embeddings, known bridge relationship
+- Synthetic hierarchy: ~10 hubs with fake 1024-dim unit-normalized embeddings, known bridge relationship
 - All tests run without GPU, real model, or network access (mocked where needed)
 
 ---
