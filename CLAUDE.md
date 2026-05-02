@@ -109,6 +109,16 @@ claude-mem records observations as you work. These are valuable for continuity:
 - Git history — use `git log` / `git blame`
 - Things already documented in this file or PRD.md
 
+## Project Status
+
+- **Data Preparation:** COMPLETE
+- **Phase 0 (Zero-Shot Baselines):** COMPLETE — Gates A+B passed
+- **Phase 1A–1D:** COMPLETE — model trained (hit@1=0.531), 11 CLI subcommands, hub proposals, 553 tests
+- **Phase 2B (Bridge + HF Publication):** CODE COMPLETE — pipeline built and tested (640 tests, PR #22), execution pending
+- **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
+- **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
+- **No web UI.** TRACT is CLI + API only. No Dash dashboard.
+
 ## Commands
 
 ```bash
@@ -123,4 +133,12 @@ python -m pytest tests/ -q
 
 # Type check
 mypy parsers/ scripts/ --strict
+
+# Bridge analysis (Phase 2B)
+tract bridge --top-k 3                           # Generate bridge candidates
+tract bridge --commit --candidates <path>         # Commit reviewed bridges to hierarchy
+
+# HuggingFace publication (Phase 2B)
+tract publish-hf --repo-id <repo> --dry-run       # Build staging dir without upload
+tract publish-hf --repo-id <repo> --gpu-hours N   # Full publish
 ```

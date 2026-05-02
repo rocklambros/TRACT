@@ -2,7 +2,7 @@
 
 Self-contained prompts for continuing the TRACT project in new Claude Code sessions. Each prompt bootstraps a fresh session with full context. Complete sequentially.
 
-**Project state (2026-05-01):**
+**Project state (2026-05-02):**
 - Data Preparation: COMPLETE
 - Phase 0 (Zero-Shot Baselines): COMPLETE — Gates A+B passed
 - Phase 1A (Hierarchy, Descriptions, Ingestion): COMPLETE
@@ -10,7 +10,9 @@ Self-contained prompts for continuing the TRACT project in new Claude Code sessi
 - Phase 1C (Guardrails, Active Learning, Crosswalk DB): COMPLETE — 2 AL rounds converged, 636 assignments, 339 tests
 - Phase 1D (CLI, Hub Proposals): COMPLETE — 8 CLI commands, hub proposal pipeline, 394 tests
 - Phase 5A (Export Pipeline + Fork Import): COMPLETE — 411 assignments across 5 frameworks, coverage gaps report
-- Phase 2 (Web Platform + HuggingFace): NOT STARTED
+- Framework Preparation Pipeline (PR #21): COMPLETE — `tract prepare` + `tract validate` + ingest integration, 553 tests total
+- Phase 2B (Bridge + HF Publication): CODE COMPLETE — pipeline built and tested (640 tests, PR #22 merged). Execution pending.
+- ~~Phase 2A (Web UI):~~ CANCELLED — no web dashboard, CLI + API only
 - Phase 3 (Published Crosswalk Dataset): NOT STARTED
 - Phase 3B (Experimental Narrative Notebook): NOT STARTED
 - Phase 4 (Secure API): NOT STARTED
@@ -19,10 +21,12 @@ Self-contained prompts for continuing the TRACT project in new Claude Code sessi
 **Key results driving all remaining work:**
 - BGE-large-v1.5 + LoRA rank 16 + MNRL contrastive loss + text-aware batching
 - Per-fold deltas vs zero-shot: NIST +0.322, ML +0.285, OWASP-X +0.143, ATLAS +0.006, LLM-10 +0.000
-- 262 tests passing, all code typed and validated
+- 640 tests passing, 13 CLI subcommands, all code typed and validated
 - CUDA determinism flags added to training loop
 - 5-round adversarial review completed — all findings resolved
 - Phase 5A: 411 assignments exported (conf ≥ 0.30, ATLAS ≥ 0.35), 192 controls excluded with reasons, all imported into local OpenCRE fork
+- Framework Preparation Pipeline: CSV/Markdown/JSON/LLM extractors, 17-rule validation engine, ingest integration with calibration disclaimer + quality summary
+- Phase 2B: bridge analysis (classify → cosine similarity → top-3 → LLM describe → review → commit) + HF publish (LoRA merge → bundle → model card → scripts → security scan → upload). 18 commits, 3,332 lines, 640 tests. 3-round adversarial review + 3 implementation reviews all passed.
 
 ---
 
@@ -153,140 +157,53 @@ Think deeply using the sequential-thinking MCP server. --ultrathink
 
 ---
 
-## Prompt 3: Phase 2A — Dash Web UI & Framework Submission
+## ~~Prompt 2.5: Framework Preparation Pipeline~~ ✅ COMPLETE
 
-```
-TRACT Phase 2A: Build the Dash web UI (PRD 7.1) and framework submission system (PRD 7.2).
+**Completed 2026-05-01.** PR #21 merged. 18 commits, 553 tests total (159 new).
 
-Read PRD.md Sections 7.1, 7.2. Read CLAUDE.md for code standards.
+**What was built:**
+- `tract/prepare/` — ExtractorRegistry with Protocol-based extractors: CSV (BOM, TSV, flexible aliases), Markdown (4 ID patterns, heading-level auto-detect), JSON (passthrough/array/nested), LLM (Claude tool_use, optional dep)
+- `tract/validate.py` — ValidationIssue frozen dataclass, 6 error + 11 warning rules
+- `tract/cli.py` — now 11 subcommands (+prepare, +validate, +accept from PR #20)
+- Ingest integration: validation gate, calibration disclaimer for prepare-sourced data, quality summary (mean_max_cosine_sim, ood_fraction, below_confidence_floor)
+- `tract/sanitize.py` — added sanitize_control() for dict-based ingest pipeline
+- `examples/` — sample_framework.csv, sample_framework.md, README.md
 
-NOTE: PRD says "Phase 2 will be planned in detail after Phase 1 ships and we have real model results." Adapt based on actual Phase 1 outcomes.
-
-## Current state — verify before starting
-1. `python -m pytest tests/ -q` → all tests pass
-2. `tract assign "test input"` → CLI works, returns hub assignments
-3. `tract export --format json --framework atlas` → crosswalk.db populated and queryable
-4. `ls hub_proposals/` → at least one proposal round completed (or confirm zero OOD controls)
-5. Phase 1 fully complete: model trained, crosswalk.db populated, CLI working, guardrails tested
-
-## Phase 1 results to incorporate
-1. Crosswalk.db schema → Dash pages query this (use the same ORM/query functions as CLI)
-2. Model inference latency (from `tract assign` timing) → Control Search page needs sub-second response. If cold start > 5s, implement model preloading.
-3. Calibrated confidence distribution → Confidence Dashboard heatmap color scale must match actual score ranges (check min/max/median from crosswalk.db)
-4. Framework coverage matrix → which framework pairs have highest/lowest hub overlap? Design comparison page for common use cases.
-5. Active learning acceptance rates → frameworks with low acceptance need visual flagging in UI
-6. Hub proposal outcomes → Ontology Browser should distinguish proposed (pending) hubs from established ones
-
-## Lessons from Phase 1
-1. **Test the UI in a browser.** Type checking and test suites verify code correctness, not feature correctness. Start the dev server and use every feature before reporting done.
-2. **All external data is untrusted.** Framework uploads in the submission system need schema validation + text sanitization before processing.
-3. **Atomic writes.** Any data mutation through the web UI uses atomic transactions.
-4. **No eval/exec/shell=True.** Parameterized SQL queries only. No raw string interpolation in queries.
-5. **Input sanitization.** Control text search uses sanitize_text(). Framework upload validates against framework_template.json schema.
-6. **CSRF protection** on any mutation endpoints.
-
-## Scope
-
-### 7.1 Dash Web UI — 5 pages
-
-| Page | Function | Data Source | Key Interaction |
-|------|----------|------------|-----------------|
-| Crosswalk Explorer | Framework A → controls → CRE hub(s) → Framework B controls | crosswalk.db | Dropdown select → table → click row → hub detail → related controls |
-| Framework Comparison | Two frameworks side-by-side: equivalent (shared hub), related (shared parent), gap | crosswalk.db | Two dropdown selects → three-column table with hub links |
-| Hub Ontology Browser | Navigate CRE tree → click hub → linked controls, description, confidence | cre_hierarchy.json + hub_descriptions.json + crosswalk.db | Collapsible tree → detail panel |
-| Confidence Dashboard | Heatmap: frameworks × hubs, colored by calibrated confidence | crosswalk.db assignments | Heatmap with click-through to prediction details |
-| Control Search | Paste text → live model inference → top-5 hubs + related controls | Trained model + crosswalk.db | Text input → results table with confidence bars |
-
-Tech: Dash + Plotly + dash-bootstrap-components. SQLite backend from crosswalk.db.
-
-### 7.2 Framework Submission System
-
-- `framework_template.json`: JSON Schema with required fields (control_id, title, description, framework_name, version, source_url)
-- Upload page in Dash: drag-and-drop JSON → schema validation → duplicate detection (cosine > 0.95) → model inference → review queue
-- Review queue page: predicted assignments per control, accept/reject/correct, batch approve
-- `framework_registry.json`: versioned list of all ingested frameworks with metadata
-
-## Approach
-Use brainstorming → spec → plan → subagent-driven-development.
-
-Design the UI layout as mockups first (use the visual companion if available). Each page is an independent Dash callback module — can be developed and tested in parallel.
-
-Adversarial review: 3 critics (frontend/UX, security, data visualization) attack the spec. Focus on: XSS in user text display, SQL injection in search, responsive layout, accessibility.
-
-## Success criteria
-- 5 pages deployed and functional
-- New framework submission < 1 hour for standard-format frameworks
-- Control Search returns results in < 2 seconds
-- All pages tested in browser: golden path + edge cases
-- No XSS, SQL injection, or CSRF vulnerabilities
-
-Think deeply using the sequential-thinking MCP server. --ultrathink
-```
+**Key results:**
+- Full onboarding pipeline: `tract prepare` → `tract validate` → `tract ingest` → `tract accept`
+- 17 validation rules catch data quality issues before expensive model inference
+- Optional LLM dependencies via `pip install tract[llm]` with guarded imports
 
 ---
 
-## Prompt 4: Phase 2B — HuggingFace Publication & AI/Traditional Bridge
+## ~~Prompt 3: Phase 2A — Dash Web UI~~ ❌ CANCELLED
 
-```
-TRACT Phase 2B: Publish model to HuggingFace (PRD 7.3) and identify AI/traditional security bridges (PRD 7.4).
+**Decision (2026-05-02):** No web UI. TRACT is CLI + API only. All web UI references removed from PRD.
 
-Read PRD.md Sections 7.3, 7.4. Read CLAUDE.md for code standards.
+---
 
-## Current state — verify before starting
-1. Phase 2A complete: web UI functional, framework submission working
-2. Model finalized (no more retraining planned before publication)
-3. Hub descriptions fully expert-reviewed: `python -c "import json; d=json.load(open('data/processed/hub_descriptions_reviewed.json')); reviewed=[h for h in d.values() if h.get('review_status')=='accepted']; print(f'{len(reviewed)} reviewed')"`
-4. Active learning rounds completed with acceptance rate documented
+## ~~Prompt 4: Phase 2B — HuggingFace Publication & AI/Traditional Bridge~~ ✅ CODE COMPLETE
 
-## Phase 1-2A results to incorporate
-1. Final model metrics (all LOFO folds with CIs) → model card
-2. Training config: base model, LoRA rank, epochs, batch size, learning rate, seed → model card
-3. Data hash + git SHA from training metadata → reproducibility section
-4. GPU hours and energy estimate → environmental impact for AIBOM
-5. Active learning rounds and acceptance rates → training data provenance
-6. Per-fold zero-shot vs fine-tuned comparison table → evaluation section
-7. Calibration metrics (ECE, reliability diagrams) → model card limitations section
+**Completed 2026-05-02.** PR #22 merged. 18 commits, 3,332 lines, 640 tests (134 new).
 
-## Lessons from all previous phases
-1. **CSA CCM ≠ CSA AICM.** Verify framework identity when computing bridges.
-2. **Safetensors only.** No pickle for model weights. HuggingFace Hub uses safetensors by default.
-3. **No secrets in artifacts.** Scan model repo for API keys, credentials, paths containing usernames.
-4. **LLM-generated content must be sanitized.** Bridge descriptions go through sanitize_text() before storage.
-5. **Deterministic bridge identification.** Cosine threshold, not random sampling. Same inputs = same bridges.
+**What was built:**
+- `tract/bridge/` — 6 modules: types.py (TypedDicts), classify.py, similarity.py, describe.py, review.py, orchestrator
+- `tract/publish/` — 6 modules: merge.py (LoRA merge + cosine verification), bundle.py, model_card.py, scripts.py, security.py, orchestrator
+- `tract/cli.py` — 13 subcommands (+bridge, +publish-hf)
+- `tract/hierarchy.py` — added `related_hub_ids` with bidirectional integrity validation
+- `tract/config.py` — BRIDGE_*/HF_*/HIERARCHY_BRIDGE_VERSION constants
+- `tract/bridge/types.py` — TypedDict structures: RawCandidate, BridgeCandidate, RawNegative, NegativeControl, SimilarityStats
 
-## Scope
+**Key implementation details:**
+- Bridge: cosine = dot product (all embeddings unit-normalized), top-3 per AI hub (63 candidates), no threshold
+- Merge: pre/post embedding cosine > 0.9999 verification, module-level SentenceTransformer import for testability
+- Publication gate: bridge report exists + no pending candidates + hierarchy version="1.1" + related_hub_ids populated
+- Security: 9 secret patterns, allow_pickle=False, HfApi(token=token) + del token in finally, 8-step sanitize in predict.py
+- Eval counts from len(predictions.json), NOT n_pairs. Corrected metrics from phase1b_textaware, NOT phase1b_primary.
 
-### 7.3 HuggingFace Publication
-Publish to huggingface.co/rockCO78/tract-cre-assignment:
-- Model weights (safetensors, LoRA adapters + base model reference)
-- Bundled data: hub_descriptions.json, cre_hierarchy.json
-- Model card targeting AIBOM 100/100: description, intended use, architecture, training details, evaluation results (full LOFO table with CIs), limitations (ATLAS flat performance, calibration caveats), ethical considerations, environmental impact, usage code snippet, citation
-- predict.py: standalone inference script
-- train.py: reproduction script with pinned requirements
+**Reviews passed:** 3-round adversarial review (7 critical/high/medium fixes), spec compliance, code quality, final holistic. All approved.
 
-### 7.4 AI/Traditional Security Bridge
-81 AI-specific CRE hubs + 441 traditional hubs. Find conceptual bridges:
-1. Compute embedding similarity: each AI hub representation vs all traditional hub representations. Flag cosine > 0.70.
-2. Use ENISA (68 links), ETSI (36), BIML (21) as seed evidence — they appear on both AI and traditional hubs.
-3. For each candidate: LLM-generate bridge description explaining the conceptual overlap.
-4. Expert review: accept bridge, reject, or propose new parent hub.
-5. Accepted bridges → new Related links in cre_hierarchy.json.
-6. Output: bridge_report.json with all candidates, evidence, review status.
-
-## Approach
-HuggingFace publication and bridge identification are independent — parallelize. Security review for model artifacts (no secrets, no PII).
-
-Adversarial review: focus on model card completeness (does it document the ATLAS flat performance and calibration limitations honestly?) and bridge methodology soundness.
-
-## Success criteria
-- HuggingFace AIBOM score: 100/100
-- Model card documents all known limitations honestly
-- At least 10 validated AI/traditional bridges with evidence
-- bridge_report.json with full evidence and review status
-- No secrets or PII in any published artifact
-
-Think deeply using the sequential-thinking MCP server. --ultrathink
-```
+**Execution pending:** Run `tract bridge` → expert review → `tract bridge --commit` → `tract publish-hf`
 
 ---
 
@@ -298,7 +215,7 @@ TRACT Phase 3: Produce and publish the human-reviewed crosswalk dataset. PRD Sec
 Read PRD.md Section 8. Read CLAUDE.md for code standards.
 
 ## Current state — verify before starting
-1. All Phase 2 work complete: model published, bridges identified, web UI functional
+1. Phase 2B complete: bridge analysis run, model published (or dry-run validated)
 2. crosswalk.db contains predictions for all 22 frameworks
 3. Active learning rounds completed (acceptance rate documented)
 4. Hub proposals reviewed and accepted proposals integrated
@@ -426,7 +343,7 @@ The API wraps the SAME business logic as the CLI. tract/ library functions are t
 ## Results from all phases
 1. Model inference latency from CLI → baseline for API <500ms target
 2. crosswalk.db schema → API endpoints query this
-3. Common query patterns from web UI usage → optimize API for actual patterns
+3. Common query patterns from CLI usage → optimize API for actual patterns
 4. Security patterns from all phases → apply consistently (sanitize_text, parameterized SQL, no eval/exec)
 5. Calibrated confidence scores → API returns calibrated probabilities
 
@@ -596,8 +513,27 @@ These compound across phases. Each prompt above incorporates the relevant subset
 - Coverage gaps report is essential for "Top N" frameworks where users expect complete coverage. Always generate alongside CSVs.
 - `INSECURE_REQUESTS=1` and `NO_LOGIN=1` env vars required for local OpenCRE Flask app.
 
+### Framework Onboarding
+- Front-load validation before expensive model inference. `tract validate` catches data quality issues in seconds; `tract ingest` takes minutes.
+- Confidence scores from `tract prepare` are ordinal cosine similarities (T=0.074), not calibrated probabilities. Always include calibration disclaimer for prepare-sourced data.
+- CSV extractor must handle BOM (utf-8-sig) — Excel exports include BOM by default. Use `encoding='utf-8-sig'` which handles both BOM and plain UTF-8.
+- Flexible column aliases prevent user frustration: accept control_id/id/section_id, title/name, description/desc/text/body, etc.
+- Protocol-based ExtractorRegistry pattern makes adding new extractors trivial — implement `.extract(path) -> list[Control]`.
+
+### Publication & Bridge Analysis
+- Cosine similarity = dot product when embeddings are unit-normalized. Verify with `all norms = 1.0000`.
+- n_pairs in fold summaries is training pair count (~3891-3931), NOT eval item count. Use len(predictions.json) for eval counts.
+- corrected_metrics.json must come from the TEXTAWARE run (deployment model), not PRIMARY (different model). Cross-model contamination silently produces wrong model card numbers.
+- LoRA merge: verify cosine > 0.9999 between pre/post-merge embeddings. Merge can corrupt weights silently.
+- Publication gate BEFORE upload: bridge report exists, no pending candidates, hierarchy version updated, accepted bridges in related_hub_ids. Prevents publishing incomplete work.
+- TypedDict for domain objects shared across 5+ modules (BridgeCandidate has 8 fields). Field name typos become type errors instead of silent KeyErrors.
+- allow_pickle=False on all np.load calls. hub_ids dtype is `<U7` (fixed unicode), pickle never needed.
+- Token handling: `pass` → `HfApi(token=token)` → `del token` in finally. No os.environ leak.
+
 ### Process
-- Adversarial review catches real methodology errors (R2's 4-fold vs 5-fold comparison).
+- Adversarial review catches real methodology errors (R2's 4-fold vs 5-fold comparison, n_pairs vs eval count).
 - Cross-examination between critics is essential — without it, false findings persist.
 - Small test fixtures (9 CREs, 3 frameworks) catch real bugs.
 - Two-stage review (spec compliance + code quality) is an effective quality gate.
+- Marathon subagent runs (one subagent completing 10+ tasks) work when the plan is well-specified. The key enabler: complete code in every plan step, no placeholders.
+- Three-round adversarial review convergence: findings shift from "will produce wrong results" to "will confuse the implementer" → safe to stop.

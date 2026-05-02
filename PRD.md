@@ -2,9 +2,9 @@
 
 ## Product Requirements Document
 
-**Date:** 2026-04-27
+**Date:** 2026-05-02 (last updated)
 **Author:** Rock Lambros
-**Status:** Draft — pending approval
+**Status:** Active — Phases 0–1D + 2B + 5A complete, Phase 3+ in queue
 
 ---
 
@@ -442,7 +442,7 @@ For frameworks with zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWA
 - Every assignment traced to: model version, training data version, expert review status
 - **Deliverable:** `crosswalk.db` + export scripts
 
-### 6.9 CLI Tool ✅ COMPLETE
+### 6.9 CLI Tool ✅ COMPLETE (11 subcommands, 553 tests)
 ```
 tract assign "Implement rate limiting for API endpoints"
   -> CRE-236 (API security, 0.89), CRE-441 (Rate limiting, 0.72)
@@ -450,8 +450,20 @@ tract assign "Implement rate limiting for API endpoints"
 tract compare --framework atlas --framework asvs
   -> relationship matrix with confidence scores
 
+tract prepare --file framework.csv --framework-id my_fw --name "My Framework"
+  -> extracts controls from CSV/Markdown/JSON/unstructured → standardized FrameworkOutput JSON
+  -> flexible column mapping, heading-level auto-detection, LLM fallback (--use-llm)
+
+tract validate --file prepared_framework.json [--json]
+  -> checks FrameworkOutput against 6 error rules + 11 warning rules
+  -> schema conformance, duplicate IDs, short descriptions, non-NFC unicode, etc.
+
 tract ingest --file new_framework.json --template standard
-  -> predicted hub assignments for review
+  -> runs validation gate, then predicted hub assignments for review
+  -> appends calibration disclaimer + quality summary (mean_max_cosine_sim, ood_fraction)
+
+tract accept --review-file review.json [--force]
+  -> commits reviewed predictions to crosswalk.db
 
 tract export --format csv --framework atlas
   -> full crosswalk table
@@ -462,7 +474,28 @@ tract export --opencre [--framework FW] [--skip-staleness] [--dry-run]
 tract hierarchy --hub CRE-236
   -> full path: Root > Network Security > API Security > CRE-236
   -> linked controls from 5 frameworks
+
+tract propose-hubs --min-controls 3 --min-frameworks 2
+  -> HDBSCAN clustering of OOD controls → guardrailed hub proposals
+
+tract review-proposals --round 1
+  -> interactive CLI review of proposed hubs
+
+tract tutorial
+  -> guided walkthrough of TRACT features
 ```
+
+#### Framework Preparation Pipeline (PR #21)
+The `prepare` → `validate` → `ingest` pipeline enables onboarding new frameworks from arbitrary file formats:
+
+| Extractor | Input | Key Features |
+|-----------|-------|-------------|
+| CSV | `.csv`, `.tsv` | Flexible column aliases (control_id/id/section_id, etc.), BOM handling (utf-8-sig) |
+| Markdown | `.md` | 4 ID patterns, heading-level auto-detection, positional fallback IDs |
+| JSON | `.json` | FrameworkOutput passthrough, top-level arrays, nested controls/items/data keys |
+| LLM | any | Claude API tool_use extraction via `--use-llm` (requires `pip install tract[llm]`) |
+
+Validation rules (6 errors + 11 warnings): schema_conformance, empty_description, duplicate_control_id, invalid_framework_id, null_bytes, zero_controls, short_description, long_description_no_full_text, problematic_control_id_chars, low_control_count, high_control_count, missing_optional_field, non_nfc_unicode, reference_only_description, title_description_redundancy, non_english_text.
 
 ### 6.10 Guardrailed Hub Proposal System ✅ COMPLETE
 When the OOD detector (from 6.6 adversarial guardrails) flags controls that don't map to any existing hub, they feed into this system.
@@ -494,34 +527,18 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 
 ---
 
-## 7. Phase 2: Web Platform + HuggingFace + AI/Traditional Bridge
+## 7. Phase 2: HuggingFace Publication + AI/Traditional Bridge
 
-**Note:** Phase 2 will be planned in detail after Phase 1 ships and we have real model results. The deliverables below define WHAT gets built; the implementation plan will be written when Phase 2 starts. Phases 2-4 are intentionally less granular than Phase 1 because their scope depends on Phase 1 outcomes.
+### 7.1 Framework Submission System ✅ COMPLETE (CLI pipeline)
+**Deliverable:** CLI-based framework onboarding pipeline.
 
-### 7.1 Dash Web UI
-**Deliverable:** Running Dash app with 5 pages, deployable locally or via Docker.
+**Built (Phase 1):** `tract prepare` (multi-format extraction → FrameworkOutput JSON), `tract validate` (6 error + 11 warning rules), `tract ingest` (validation gate + model inference + calibration disclaimer), `tract accept` (commit reviewed predictions to DB). The full CLI pipeline for framework onboarding is operational.
 
-| Page | What It Does | Data Source |
-|------|-------------|-------------|
-| Crosswalk Explorer | Select framework A -> see all controls -> click control -> see CRE hub(s) -> see controls from framework B at the same hub | crosswalk.db (Phase 1) |
-| Framework Comparison | Select 2 frameworks -> side-by-side table showing which controls share hubs (equivalent), which share parent hubs (related), which don't overlap (gap) | crosswalk.db derived relationships |
-| Hub Ontology Browser | Navigate CRE hierarchy tree -> click hub -> see all linked controls from all 22 frameworks, confidence scores, description | cre_hierarchy.json + hub_descriptions.json + crosswalk.db |
-| Confidence Dashboard | Heatmap: frameworks x hubs, colored by assignment confidence. Click a cell -> see the control text and model prediction details | crosswalk.db prediction logs |
-| Control Search | Paste any control text -> live model inference -> show top-5 hub assignments with confidence + related controls from other frameworks | Trained model (Phase 1) + crosswalk.db |
-
-**Tech stack:** Dash + Plotly + dash-bootstrap-components (CYBORG theme, matching Project 2). SQLite backend from Phase 1.
-
-### 7.2 Framework Submission System
-**Deliverable:** JSON schema template + upload CLI + web upload page + review queue.
-
-**Concrete components:**
-- `framework_template.json`: JSON Schema defining required fields (control_id, title, description, hierarchy_level, framework_name, version, source_url)
-- `tract validate --file new_framework.json`: Schema validation + duplicate detection (cosine similarity > 0.95 to existing controls flagged)
-- Upload page in Dash UI: drag-and-drop JSON, shows validation results, submits to model for hub assignment
-- Review queue page: expert sees predicted assignments, accepts/rejects/corrects per control, batch approve
+**Future enhancements (not planned):**
+- Duplicate detection: cosine similarity > 0.95 to existing controls flagged during validation (requires model embeddings)
 - `framework_registry.json`: versioned list of all ingested frameworks with metadata, changelog, ingestion date
 
-### 7.3 HuggingFace Model Publication
+### 7.2 HuggingFace Model Publication ✅ CODE COMPLETE (PR #22)
 **Deliverable:** Published model repo at huggingface.co/rockCO78/tract-cre-assignment with:
 - Model weights (fine-tuned bi-encoder)
 - `hub_descriptions.json` and `cre_hierarchy.json` bundled with model
@@ -529,19 +546,20 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 - `predict.py`: standalone inference script — takes control text, returns hub assignments
 - `train.py`: reproduction script with requirements.txt and data download instructions
 
-### 7.4 AI/Traditional Security Bridge
+### 7.3 AI/Traditional Security Bridge ✅ CODE COMPLETE (PR #22)
 **Deliverable:** Extended `cre_hierarchy.json` with bridge hubs + bridge validation report.
 
-**Concrete process:**
-1. Take the 81 AI hubs and 441 traditional hubs
-2. For each AI hub, compute embedding similarity to all traditional hubs. Flag pairs with cosine > 0.70 as bridge candidates
-3. Use ENISA (68 links), ETSI (36 links), BIML (21 links) as seed evidence — these frameworks appear on both AI and traditional hubs
-4. For each bridge candidate pair: LLM-generate a bridge description explaining the conceptual overlap
-5. Expert review: accept bridge, reject bridge, or propose a new parent hub that contains both
-6. Accepted bridges become new Related links in `cre_hierarchy.json`
-7. New parent hubs (if any) created via the guardrailed hub proposal system (6.10)
-8. Model retrained with bridge links as additional training signal
-9. **Deliverable:** `bridge_report.json` documenting all AI/traditional bridges with evidence and expert review status
+**Implementation (PR #22, 640 tests):**
+1. Classify 522 CRE hubs by framework type → AI-only, traditional-only, both, unlinked
+2. Compute full cosine similarity matrix between AI-only and traditional-only hub embeddings (dot product — all embeddings unit-normalized)
+3. Extract top-3 traditional matches per AI hub (63 candidates total). No threshold — rank-based selection
+4. LLM-generate bridge descriptions explaining the conceptual overlap (Claude, T=0.0). Also generate negative control descriptions (bottom-1 per AI hub)
+5. Expert review: accept/reject each candidate via `tract bridge --commit --candidates <path>`
+6. Accepted bridges become bidirectional `related_hub_ids` in `cre_hierarchy.json` (version bumped to "1.1")
+7. Publication gate enforces bridge completion before HuggingFace upload (no pending candidates, hierarchy updated)
+8. **Deliverables:** `bridge_candidates.json` (analysis output), `bridge_report.json` (after review), updated `cre_hierarchy.json`
+
+**Execution status:** Pipeline code complete and tested. Actual bridge analysis run, expert review, and hierarchy commit are pending.
 
 ---
 
@@ -758,8 +776,6 @@ All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 
 | Phase 1 | Guardrails implemented (5 categories) | All pass automated test suite |
 | Phase 1 | Hub proposal system functional | End-to-end: OOD detect -> cluster -> propose -> review |
 | Phase 1 | Crosswalk database complete | All 22 frameworks with hub assignments |
-| Phase 2 | Web UI functional | 5 pages deployed, all data sources connected |
-| Phase 2 | New framework submission < 1 hour | For standard-format frameworks using template |
 | Phase 2 | HuggingFace AIBOM score | 100/100 |
 | Phase 2 | AI/Traditional bridge hubs identified | At least 10 validated bridges |
 | Phase 3 | Human review coverage | 100% of predicted assignments reviewed |
@@ -786,7 +802,7 @@ All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 
 - **NOT competing with the existing v_final pairwise classifier.** TRACT is a fundamentally different architecture (assignment vs. pairwise). The old project is a COMP 4433 academic deliverable; TRACT is a production community tool.
 - **NOT a public hosted service** (like opencre.org). This is a tool for security professionals to run locally or self-host. Phase 4 API is for programmatic access, not SaaS.
 - **Phase 1 does NOT include AI/traditional security bridging.** That's explicitly Phase 2.
-- **Phase 1 does NOT require the web UI.** CLI-first; web comes in Phase 2.
+- **No web UI.** TRACT is CLI-first. The API (Phase 4) provides programmatic access; there is no planned Dash/web dashboard.
 
 ---
 
@@ -819,7 +835,6 @@ All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 
 | LLM API access (Claude or GPT-4) | Hub description generation, Phase 0 LLM probe | Phase 0-1 |
 | transformers, sentence-transformers | Encoder fine-tuning and embedding | Phase 1+ |
 | hdbscan | Guardrailed hub proposal clustering | Phase 1+ |
-| dash, plotly | Web UI | Phase 2 |
 | huggingface_hub | Model and dataset publication | Phase 2-3 |
 
 ---
