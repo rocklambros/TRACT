@@ -12,6 +12,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from tract.config import HIERARCHY_BRIDGE_VERSION
 from tract.io import atomic_write_json, load_json
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ class HubNode(BaseModel):
     hierarchy_path: str = Field(..., min_length=1)
     is_leaf: bool
     sibling_hub_ids: list[str] = Field(default_factory=list)
+    related_hub_ids: list[str] = Field(default_factory=list)
 
 
 class CREHierarchy(BaseModel):
@@ -43,7 +45,7 @@ class CREHierarchy(BaseModel):
     label_space: list[str]
     fetch_timestamp: str = Field(..., min_length=1)
     data_hash: str = Field(..., min_length=1)
-    version: str = "1.0"
+    version: str = HIERARCHY_BRIDGE_VERSION
 
     @classmethod
     def from_opencre(
@@ -223,7 +225,20 @@ class CREHierarchy(BaseModel):
         if self.label_space != sorted(self.label_space):
             raise ValueError("label_space is not sorted")
 
-        # 5. Expected counts (warnings only)
+        # 5. Related hub IDs: exist and are bidirectional
+        for hub_id, node in self.hubs.items():
+            for related_id in node.related_hub_ids:
+                if related_id not in self.hubs:
+                    raise ValueError(
+                        f"Hub {hub_id} has dangling related_hub_id: {related_id}"
+                    )
+                if hub_id not in self.hubs[related_id].related_hub_ids:
+                    raise ValueError(
+                        f"Hub {hub_id} has related_hub_id {related_id} but "
+                        f"{related_id} does not list {hub_id}"
+                    )
+
+        # 6. Expected counts (warnings only)
         if len(self.hubs) != 522:
             logger.warning(
                 "Expected 522 hubs, got %d", len(self.hubs)

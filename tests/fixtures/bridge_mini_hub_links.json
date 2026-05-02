@@ -1,0 +1,21 @@
+{
+  "mitre_atlas": [
+    {"cre_id": "AI-1", "cre_name": "AI Hub 1", "framework_id": "mitre_atlas", "link_type": "LinkedTo", "section_id": "T0001", "section_name": "Adversarial Example", "standard_name": "MITRE ATLAS"},
+    {"cre_id": "AI-2", "cre_name": "AI Hub 2", "framework_id": "mitre_atlas", "link_type": "LinkedTo", "section_id": "T0002", "section_name": "Data Poisoning", "standard_name": "MITRE ATLAS"},
+    {"cre_id": "BOTH-1", "cre_name": "Both Hub 1", "framework_id": "mitre_atlas", "link_type": "LinkedTo", "section_id": "T0003", "section_name": "Model Access", "standard_name": "MITRE ATLAS"}
+  ],
+  "owasp_ai_exchange": [
+    {"cre_id": "AI-3", "cre_name": "AI Hub 3", "framework_id": "owasp_ai_exchange", "link_type": "LinkedTo", "section_id": "AIX-01", "section_name": "AI Exchange Control", "standard_name": "OWASP AI Exchange"}
+  ],
+  "asvs": [
+    {"cre_id": "TRAD-1", "cre_name": "Trad Hub 1", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.1", "section_name": "Secure SDLC", "standard_name": "ASVS"},
+    {"cre_id": "TRAD-2", "cre_name": "Trad Hub 2", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.2", "section_name": "Authentication", "standard_name": "ASVS"},
+    {"cre_id": "TRAD-3", "cre_name": "Trad Hub 3", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.3", "section_name": "Session Mgmt", "standard_name": "ASVS"},
+    {"cre_id": "TRAD-4", "cre_name": "Trad Hub 4", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.4", "section_name": "Access Control", "standard_name": "ASVS"},
+    {"cre_id": "TRAD-5", "cre_name": "Trad Hub 5", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.5", "section_name": "Input Validation", "standard_name": "ASVS"},
+    {"cre_id": "BOTH-1", "cre_name": "Both Hub 1", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V2.1", "section_name": "Model Access Ctrl", "standard_name": "ASVS"}
+  ],
+  "cwe": [
+    {"cre_id": "TRAD-1", "cre_name": "Trad Hub 1", "framework_id": "cwe", "link_type": "LinkedTo", "section_id": "CWE-89", "section_name": "SQL Injection", "standard_name": "CWE"}
+  ]
+}

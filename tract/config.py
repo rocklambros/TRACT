@@ -4,6 +4,7 @@ All magic numbers, paths, and external API settings live here.
 Import from this module; never hardcode values in library code.
 """
 
+import re
 from pathlib import Path
 from typing import Final
 
@@ -274,3 +275,45 @@ PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES: Final[dict[str, float]] = {
 PHASE5_OPENCRE_STALENESS_URL: Final[str] = "https://opencre.org/rest/v1/root_cres"
 PHASE5_OPENCRE_STALENESS_TIMEOUT_S: Final[int] = 30
 PHASE5_GROUND_TRUTH_PROVENANCE: Final[str] = "ground_truth_T1-AI"
+
+# ── Phase 2B: Bridge Analysis ─────────────────────────────────────────
+
+BRIDGE_AI_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "mitre_atlas", "owasp_ai_exchange", "nist_ai_100_2",
+    "owasp_llm_top10", "owasp_ml_top10",
+})
+BRIDGE_TOP_K: Final[int] = 3
+BRIDGE_LLM_MODEL: Final[str] = "claude-sonnet-4-20250514"
+BRIDGE_LLM_TEMPERATURE: Final[float] = 0.0
+BRIDGE_OUTPUT_DIR: Final[Path] = PROJECT_ROOT / "results" / "bridge"
+HIERARCHY_BRIDGE_VERSION: Final[str] = "1.1"
+
+# ── Phase 2B: HuggingFace Publication ─────────────────────────────────
+
+HF_DEFAULT_REPO_ID: Final[str] = "rockCO78/tract-cre-assignment"
+HF_STAGING_DIR: Final[Path] = PROJECT_ROOT / "build" / "hf_repo"
+HF_BASE_MODEL: Final[str] = "BAAI/bge-large-en-v1.5"
+HF_SCAN_EXTENSIONS: Final[frozenset[str]] = frozenset({
+    ".py", ".md", ".txt", ".yaml", ".yml", ".json",
+})
+HF_SECRET_PATTERNS: Final[list[re.Pattern[str]]] = [
+    re.compile(r"sk-[a-zA-Z0-9]{20,}"),
+    re.compile(r"hf_[a-zA-Z0-9]{20,}"),
+    re.compile(r"wandb_[a-zA-Z0-9]{10,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"/home/rock"),
+    re.compile(r"/Users/rock"),
+    re.compile(r"^pass\s+\w+/\w+", re.MULTILINE),
+    re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"),
+    re.compile(r"(HF_TOKEN|WANDB_API_KEY|ANTHROPIC_API_KEY)\s*="),
+]
+
+PHASE1B_TEXTAWARE_RESULTS_DIR: Final[Path] = (
+    PROJECT_ROOT / "results" / "phase1b" / "phase1b_textaware"
+)
+PHASE1B_CORRECTED_METRICS_PATH: Final[Path] = (
+    PROJECT_ROOT / "results" / "phase1b" / "phase1b_textaware" / "corrected_metrics.json"
+)
+PHASE1C_ECE_GATE_PATH: Final[Path] = (
+    PHASE1C_RESULTS_DIR / "calibration" / "ece_gate.json"
+)

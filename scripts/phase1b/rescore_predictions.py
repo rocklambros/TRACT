@@ -90,7 +90,7 @@ def rescore_experiment(experiment_dir: Path) -> None:
 
 
 def main() -> None:
-    for experiment in ["phase1b_primary", "ablation_a6_descriptions"]:
+    for experiment in ["phase1b_primary", "phase1b_textaware", "ablation_a6_descriptions"]:
         exp_dir = PHASE1B_RESULTS_DIR / experiment
         if exp_dir.exists():
             rescore_experiment(exp_dir)
@@ -99,7 +99,7 @@ def main() -> None:
 
     print("\n" + "=" * 60)
     print("RE-SCORING COMPLETE")
-    for experiment in ["phase1b_primary", "ablation_a6_descriptions"]:
+    for experiment in ["phase1b_primary", "phase1b_textaware", "ablation_a6_descriptions"]:
         corrected_path = PHASE1B_RESULTS_DIR / experiment / "corrected_metrics.json"
         if corrected_path.exists():
             data = load_json(corrected_path)
