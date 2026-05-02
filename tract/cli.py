@@ -15,6 +15,8 @@ from pathlib import Path
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
     BRIDGE_TOP_K,
+    HF_DEFAULT_REPO_ID,
+    HF_STAGING_DIR,
     HUB_PROPOSALS_DIR,
     PHASE1C_CROSSWALK_DB_PATH,
     PHASE1D_DEFAULT_TOP_K,
@@ -216,6 +218,23 @@ def build_parser() -> argparse.ArgumentParser:
     p_bridge.add_argument("--skip-descriptions", action="store_true", help="Skip LLM descriptions")
     p_bridge.add_argument("--commit", action="store_true", help="Commit reviewed candidates")
     p_bridge.add_argument("--candidates", help="Path to reviewed bridge_candidates.json (for --commit)")
+
+    # ── publish-hf ──────────────────────────────────────────────
+    p_publish = subparsers.add_parser(
+        "publish-hf",
+        help="Publish model to HuggingFace Hub",
+        epilog=(
+            "Examples:\n"
+            "  tract publish-hf --repo-id rockCO78/tract-cre-assignment --dry-run\n"
+            "  tract publish-hf --repo-id rockCO78/tract-cre-assignment\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_publish.add_argument("--repo-id", required=True, help="HuggingFace repo ID")
+    p_publish.add_argument("--staging-dir", default=str(HF_STAGING_DIR), help="Local build dir")
+    p_publish.add_argument("--dry-run", action="store_true", help="Build + scan, no upload")
+    p_publish.add_argument("--skip-upload", action="store_true", help="Build + scan only")
+    p_publish.add_argument("--gpu-hours", type=float, default=0.0, help="GPU training hours for model card")
 
     return parser
 
@@ -1093,6 +1112,119 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
     print("For more: https://github.com/rockcyber/TRACT")
 
 
+def _cmd_publish_hf(args: argparse.Namespace) -> None:
+    from tract.config import (
+        PHASE1B_CORRECTED_METRICS_PATH,
+        PHASE1B_TEXTAWARE_RESULTS_DIR,
+        PHASE1C_ECE_GATE_PATH,
+        PHASE1D_ARTIFACTS_PATH,
+        PHASE1D_CALIBRATION_PATH,
+    )
+    from tract.publish import publish_to_huggingface
+
+    model_dir = PHASE1D_DEPLOYMENT_MODEL_DIR / "model" / "model"
+    bridge_report = BRIDGE_OUTPUT_DIR / "bridge_report.json"
+
+    fold_results = _load_fold_results(
+        PHASE1B_TEXTAWARE_RESULTS_DIR, PHASE1B_CORRECTED_METRICS_PATH,
+    )
+
+    publish_to_huggingface(
+        repo_id=args.repo_id,
+        staging_dir=Path(args.staging_dir),
+        model_dir=model_dir,
+        artifacts_path=PHASE1D_ARTIFACTS_PATH,
+        hierarchy_path=PROCESSED_DIR / "cre_hierarchy.json",
+        hub_descriptions_path=PROCESSED_DIR / "hub_descriptions_reviewed.json",
+        calibration_path=PHASE1D_CALIBRATION_PATH,
+        ece_gate_path=PHASE1C_ECE_GATE_PATH,
+        bridge_report_path=bridge_report,
+        fold_results=fold_results,
+        gpu_hours=args.gpu_hours,
+        dry_run=args.dry_run,
+        skip_upload=args.skip_upload,
+    )
+
+
+def _load_fold_results(
+    textaware_dir: Path,
+    corrected_path: Path,
+    zero_shot_path: Path | None = None,
+) -> list[dict]:
+    """Load LOFO fold results from Phase 1B artifacts.
+
+    eval count comes from len(predictions.json), NOT n_pairs.
+    corrected_metrics must come from the TEXTAWARE experiment.
+    """
+    from tract.io import load_json
+
+    if zero_shot_path and zero_shot_path.exists():
+        zs_data = load_json(zero_shot_path)
+        zs_baselines = {
+            fw: m.get("hit_at_1", 0)
+            for fw, m in zs_data.get("per_framework", {}).items()
+        }
+    else:
+        zs_baselines = {
+            "MITRE ATLAS": 0.273,
+            "NIST AI 100-2": 0.107,
+            "OWASP AI Exchange": 0.619,
+            "OWASP Top10 for LLM": 0.333,
+            "OWASP Top10 for ML": 0.429,
+        }
+        logger.warning("Zero-shot baselines loaded from hardcoded fallback")
+
+    fold_names = {
+        "MITRE_ATLAS": "MITRE ATLAS",
+        "NIST_AI_100-2": "NIST AI 100-2",
+        "OWASP_AI_Exchange": "OWASP AI Exchange",
+        "OWASP_Top10_for_LLM": "OWASP Top10 for LLM",
+        "OWASP_Top10_for_ML": "OWASP Top10 for ML",
+    }
+
+    if not corrected_path.exists():
+        raise FileNotFoundError(
+            f"Corrected metrics not found: {corrected_path}. "
+            "Run 'python scripts/phase1b/rescore_predictions.py' first."
+        )
+    corrected = load_json(corrected_path)
+    corrected_folds = corrected.get("per_fold", {})
+
+    results = []
+    for file_key, display_name in fold_names.items():
+        fold_dir = textaware_dir / f"fold_{file_key}"
+        predictions_path = fold_dir / "predictions.json"
+        summary_path = textaware_dir / f"fold_{file_key}_summary.json"
+
+        if not predictions_path.exists():
+            logger.warning("Predictions not found: %s", predictions_path)
+            continue
+
+        predictions = load_json(predictions_path)
+        n_eval = len(predictions)
+
+        summary = load_json(summary_path) if summary_path.exists() else {}
+        metrics = summary.get("metrics", {})
+
+        corrected_fold = corrected_folds.get(display_name, {})
+        if not corrected_fold:
+            raise ValueError(
+                f"No corrected metrics for fold '{display_name}'. "
+                f"Available keys: {list(corrected_folds.keys())}"
+            )
+        hit_any = corrected_fold.get("hit_at_1", metrics.get("hit_at_1", 0))
+
+        results.append({
+            "fold": display_name,
+            "hit1": metrics.get("hit_at_1", 0),
+            "zs_hit1": zs_baselines.get(display_name, 0),
+            "n": n_eval,
+            "hit_any": hit_any,
+        })
+
+    return results
+
+
 def _cmd_bridge(args: argparse.Namespace) -> None:
     if args.commit:
         if not args.candidates:
@@ -1147,6 +1279,7 @@ def main() -> None:
         "export": _cmd_export,
         "hierarchy": _cmd_hierarchy,
         "propose-hubs": _cmd_propose_hubs,
+        "publish-hf": _cmd_publish_hf,
         "review-proposals": _cmd_review_proposals,
         "tutorial": _cmd_tutorial,
         "validate": _cmd_validate,
