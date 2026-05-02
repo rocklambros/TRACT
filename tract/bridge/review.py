@@ -5,6 +5,7 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tract.config import HIERARCHY_BRIDGE_VERSION
 from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
 
@@ -98,7 +99,7 @@ def commit_bridges(
                 trad_related.append(ai_id)
             hier_data["hubs"][trad_id]["related_hub_ids"] = sorted(trad_related)
 
-        hier_data["version"] = "1.1"
+        hier_data["version"] = HIERARCHY_BRIDGE_VERSION
 
         updated = CREHierarchy.model_validate(hier_data)
         updated.validate_integrity()

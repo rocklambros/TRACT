@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+from tract.config import HIERARCHY_BRIDGE_VERSION
 from tract.io import load_json
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ def check_publication_gate(
     Raises ValueError if:
     - bridge_report.json does not exist
     - Any candidate has status 'pending'
-    - Accepted bridges exist but hierarchy not updated (version != "1.1")
+    - Accepted bridges exist but hierarchy not updated
     """
     if not bridge_report_path.exists():
         raise ValueError(
@@ -43,10 +44,11 @@ def check_publication_gate(
     ]
     if accepted and hierarchy_path:
         hier = load_json(hierarchy_path)
-        if hier.get("version") != "1.1":
+        if hier.get("version") != HIERARCHY_BRIDGE_VERSION:
             raise ValueError(
                 f"Bridge report has {len(accepted)} accepted bridges but "
-                f"hierarchy version is '{hier.get('version')}', not '1.1'. "
+                f"hierarchy version is '{hier.get('version')}', not "
+                f"'{HIERARCHY_BRIDGE_VERSION}'. "
                 "Run 'tract bridge --commit' to update the hierarchy."
             )
         for bridge in accepted:
@@ -188,9 +190,8 @@ def _validate_aibom(staging_dir: Path) -> None:
             logger.info("AIBOM output:\n%s", result.stdout)
             if result.returncode != 0:
                 logger.warning("AIBOM validation returned non-zero: %s", result.stderr)
-    except Exception as e:
+    except (subprocess.SubprocessError, FileNotFoundError, OSError) as e:
         logger.warning("AIBOM validation skipped — tool unavailable: %s", e)
-        logger.info("AIBOM validation skipped (tool unavailable: %s)", e)
 
 
 def _upload_to_hub(repo_id: str, staging_dir: Path) -> None:

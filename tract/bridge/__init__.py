@@ -76,12 +76,6 @@ def run_bridge_analysis(
     negatives_raw = extract_negatives(
         sim_matrix, classification.ai_only, classification.trad_only,
     )
-    for neg in negatives_raw:
-        ai_id = neg["ai_hub_id"]
-        trad_id = neg["trad_hub_id"]
-        neg["ai_hub_name"] = hierarchy.hubs[ai_id].name
-        neg["trad_hub_name"] = hierarchy.hubs[trad_id].name
-
     if not skip_descriptions:
         from tract.bridge.describe import (
             generate_bridge_descriptions,

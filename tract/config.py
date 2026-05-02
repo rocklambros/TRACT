@@ -286,6 +286,7 @@ BRIDGE_TOP_K: Final[int] = 3
 BRIDGE_LLM_MODEL: Final[str] = "claude-sonnet-4-20250514"
 BRIDGE_LLM_TEMPERATURE: Final[float] = 0.0
 BRIDGE_OUTPUT_DIR: Final[Path] = PROJECT_ROOT / "results" / "bridge"
+HIERARCHY_BRIDGE_VERSION: Final[str] = "1.1"
 
 # ── Phase 2B: HuggingFace Publication ─────────────────────────────────
 

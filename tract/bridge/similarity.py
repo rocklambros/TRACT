@@ -6,6 +6,8 @@ import logging
 import numpy as np
 from numpy.typing import NDArray
 
+from tract.bridge.types import RawCandidate, RawNegative, SimilarityStats
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,8 +24,9 @@ def compute_bridge_similarities(
     Returns:
         (n_ai, n_trad) float matrix of cosine similarities.
     """
-    ai_indices = [hub_ids.index(h) for h in ai_only_ids]
-    trad_indices = [hub_ids.index(h) for h in trad_only_ids]
+    id_to_idx = {h: i for i, h in enumerate(hub_ids)}
+    ai_indices = [id_to_idx[h] for h in ai_only_ids]
+    trad_indices = [id_to_idx[h] for h in trad_only_ids]
 
     ai_emb = hub_embeddings[ai_indices]
     trad_emb = hub_embeddings[trad_indices]
@@ -36,13 +39,13 @@ def extract_top_k(
     ai_hub_ids: list[str],
     trad_hub_ids: list[str],
     k: int = 3,
-) -> list[dict]:
+) -> list[RawCandidate]:
     """Extract top-K traditional matches per AI-only hub.
 
     Returns:
         List of candidate dicts sorted by (ai_hub_id, rank).
     """
-    candidates: list[dict] = []
+    candidates: list[RawCandidate] = []
     for i, ai_id in enumerate(ai_hub_ids):
         row = similarity_matrix[i]
         top_k_indices = np.argsort(row)[-k:][::-1]
@@ -60,13 +63,13 @@ def extract_negatives(
     similarity_matrix: NDArray[np.floating],
     ai_hub_ids: list[str],
     trad_hub_ids: list[str],
-) -> list[dict]:
+) -> list[RawNegative]:
     """Extract bottom-1 traditional match per AI-only hub (negative controls).
 
     Returns:
         List of negative candidate dicts (one per AI hub).
     """
-    negatives: list[dict] = []
+    negatives: list[RawNegative] = []
     for i, ai_id in enumerate(ai_hub_ids):
         row = similarity_matrix[i]
         worst_idx = int(np.argmin(row))
@@ -81,7 +84,7 @@ def extract_negatives(
 
 def compute_similarity_stats(
     similarity_matrix: NDArray[np.floating],
-) -> dict:
+) -> SimilarityStats:
     """Compute summary statistics for the similarity matrix."""
     return {
         "matrix_shape": list(similarity_matrix.shape),

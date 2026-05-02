@@ -12,6 +12,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from tract.config import HIERARCHY_BRIDGE_VERSION
 from tract.io import atomic_write_json, load_json
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class CREHierarchy(BaseModel):
     label_space: list[str]
     fetch_timestamp: str = Field(..., min_length=1)
     data_hash: str = Field(..., min_length=1)
-    version: str = "1.1"
+    version: str = HIERARCHY_BRIDGE_VERSION
 
     @classmethod
     def from_opencre(

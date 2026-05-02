@@ -72,7 +72,8 @@ class TestGenerateBridgeDescriptions:
     def test_api_failure_sets_empty(self, mini_hierarchy, hub_links) -> None:
         from tract.bridge.describe import generate_bridge_descriptions
         mock_client = MagicMock()
-        mock_client.messages.create.side_effect = Exception("API error")
+        import anthropic
+        mock_client.messages.create.side_effect = anthropic.APIConnectionError(request=MagicMock())
 
         with patch("tract.bridge.describe.anthropic.Anthropic", return_value=mock_client):
             candidates = [
