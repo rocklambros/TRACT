@@ -69,7 +69,61 @@ results/phase1c/deployment_model/calibration.json          — t_deploy, ood_thr
 results/phase1c/deployment_model/model/model/              — SentenceTransformer + PEFT adapter
 results/phase1c/calibration/ece_gate.json                  — ECE + bootstrap CI
 results/phase1b/phase1b_textaware/fold_*_summary.json      — Per-fold LOFO metrics
-results/phase1b/phase1b_primary/corrected_metrics.json     — Multi-label-aware corrected metrics
+results/phase1b/phase1b_textaware/corrected_metrics.json   — Multi-label-aware corrected metrics (generated in Task 0)
+```
+
+---
+
+### Task 0: Generate Corrected Metrics for TEXTAWARE Experiment (Pre-requisite)
+
+**Files:**
+- Modify: `scripts/phase1b/rescore_predictions.py:92-98`
+- Output: `results/phase1b/phase1b_textaware/corrected_metrics.json`
+
+> **Why:** The existing `corrected_metrics.json` was generated for the PRIMARY experiment (n=197, different model). The deployment model comes from the TEXTAWARE experiment (n=147). Mixing metrics from different models in the model card is methodologically invalid. This task generates corrected metrics for the actual deployment model.
+
+- [ ] **Step 1: Update rescore_predictions.py to include textaware**
+
+In `scripts/phase1b/rescore_predictions.py`, update the `main()` function:
+
+```python
+def main() -> None:
+    for experiment in ["phase1b_primary", "phase1b_textaware", "ablation_a6_descriptions"]:
+        exp_dir = PHASE1B_RESULTS_DIR / experiment
+        if exp_dir.exists():
+            rescore_experiment(exp_dir)
+        else:
+            logger.warning("Experiment dir not found: %s", exp_dir)
+
+    print("\n" + "=" * 60)
+    print("RE-SCORING COMPLETE")
+    for experiment in ["phase1b_primary", "phase1b_textaware", "ablation_a6_descriptions"]:
+        corrected_path = PHASE1B_RESULTS_DIR / experiment / "corrected_metrics.json"
+        if corrected_path.exists():
+            data = load_json(corrected_path)
+            agg = data["aggregate_hit1"]
+            print(f"\n  {experiment}:")
+            print(f"    Corrected hit@1: {agg['mean']:.3f} [{agg['ci_low']:.3f}, {agg['ci_high']:.3f}]")
+            for fw, m in sorted(data["per_fold"].items()):
+                print(f"    {fw}: hit@1={m['hit_at_1']:.3f} hit@5={m['hit_at_5']:.3f} MRR={m['mrr']:.3f}")
+    print("=" * 60)
+```
+
+- [ ] **Step 2: Run rescore_predictions.py**
+
+Run: `python scripts/phase1b/rescore_predictions.py`
+Expected: Generates `results/phase1b/phase1b_textaware/corrected_metrics.json` with per_fold keys: `"MITRE ATLAS"`, `"NIST AI 100-2"`, `"OWASP AI Exchange"`, `"OWASP Top10 for LLM"`, `"OWASP Top10 for ML"`.
+
+- [ ] **Step 3: Verify the output**
+
+Run: `python3 -c "from tract.io import load_json; d = load_json('results/phase1b/phase1b_textaware/corrected_metrics.json'); print('Keys:', list(d['per_fold'].keys())); print('Aggregate:', d['aggregate_hit1'])"`
+Expected: Keys match fold directory names. Aggregate should be close to 0.531 (the textaware micro-average).
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add scripts/phase1b/rescore_predictions.py results/phase1b/phase1b_textaware/corrected_metrics.json
+git commit -m "data: generate multi-label corrected metrics for textaware experiment"
 ```
 
 ---
@@ -102,7 +156,7 @@ HF_DEFAULT_REPO_ID: Final[str] = "rockCO78/tract-cre-assignment"
 HF_STAGING_DIR: Final[Path] = PROJECT_ROOT / "build" / "hf_repo"
 HF_BASE_MODEL: Final[str] = "BAAI/bge-large-en-v1.5"
 HF_SCAN_EXTENSIONS: Final[frozenset[str]] = frozenset({
-    ".py", ".md", ".txt", ".yaml", ".yml",
+    ".py", ".md", ".txt", ".yaml", ".yml", ".json",
 })
 HF_SECRET_PATTERNS: Final[list[re.Pattern[str]]] = [
     re.compile(r"sk-[a-zA-Z0-9]{20,}"),
@@ -120,7 +174,7 @@ PHASE1B_TEXTAWARE_RESULTS_DIR: Final[Path] = (
     PROJECT_ROOT / "results" / "phase1b" / "phase1b_textaware"
 )
 PHASE1B_CORRECTED_METRICS_PATH: Final[Path] = (
-    PROJECT_ROOT / "results" / "phase1b" / "phase1b_primary" / "corrected_metrics.json"
+    PROJECT_ROOT / "results" / "phase1b" / "phase1b_textaware" / "corrected_metrics.json"
 )
 PHASE1C_ECE_GATE_PATH: Final[Path] = (
     PHASE1C_RESULTS_DIR / "calibration" / "ece_gate.json"
@@ -1363,8 +1417,6 @@ def commit_bridges(
 
         updated = CREHierarchy.model_validate(hier_data)
         updated.validate_integrity()
-        updated.save(hierarchy_path)
-        logger.info("Updated hierarchy with %d bridges", len(accepted))
 
     report = {
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -1389,8 +1441,15 @@ def commit_bridges(
         "similarity_stats": candidates_data.get("similarity_stats", {}),
     }
 
+    # Write report BEFORE hierarchy — a crash between leaves report
+    # as ground truth; hierarchy can be re-derived from report.
     atomic_write_json(report, report_path)
     logger.info("Wrote bridge report to %s", report_path)
+
+    if accepted:
+        updated.save(hierarchy_path)
+        logger.info("Updated hierarchy with %d bridges", len(accepted))
+
     return report
 ```
 
@@ -1618,7 +1677,7 @@ def run_bridge_analysis(
     from tract.hierarchy import CREHierarchy
     from tract.io import load_json
 
-    data = np.load(str(artifacts_path), allow_pickle=True)
+    data = np.load(str(artifacts_path), allow_pickle=False)
     hub_embeddings = data["hub_embeddings"]
     hub_ids = list(data["hub_ids"])
 
@@ -1949,6 +2008,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
+import numpy as np
 import pytest
 
 
@@ -1963,6 +2023,29 @@ def _create_merged_output(output_dir: Path) -> None:
     (output_dir / "modules.json").write_text("[]")
     (output_dir / "sentence_bert_config.json").write_text("{}")
     (output_dir / "config_sentence_transformers.json").write_text("{}")
+
+
+def _make_mock_model(fake_save_dir: Path | None = None) -> MagicMock:
+    """Create a mock SentenceTransformer with encode() returning unit vectors."""
+    mock_peft_model = MagicMock()
+    mock_peft_model.merge_and_unload.return_value = mock_peft_model
+
+    mock_transformer_module = MagicMock()
+    mock_transformer_module.auto_model = mock_peft_model
+
+    mock_model = MagicMock()
+    mock_model.__getitem__ = MagicMock(return_value=mock_transformer_module)
+
+    fake_emb = np.ones((3, 1024), dtype=np.float32)
+    fake_emb /= np.linalg.norm(fake_emb, axis=1, keepdims=True)
+    mock_model.encode.return_value = fake_emb
+
+    if fake_save_dir is not None:
+        def fake_save(path: str) -> None:
+            _create_merged_output(Path(path))
+        mock_model.save = fake_save
+
+    return mock_model
 
 
 class TestValidateMergedOutput:
@@ -2000,24 +2083,13 @@ class TestMergeLoraAdapters:
         model_dir.mkdir()
         output_dir = tmp_path / "output"
 
-        mock_peft_model = MagicMock()
-        mock_peft_model.merge_and_unload.return_value = mock_peft_model
-
-        mock_transformer_module = MagicMock()
-        mock_transformer_module.auto_model = mock_peft_model
-
-        mock_model = MagicMock()
-        mock_model.__getitem__ = MagicMock(return_value=mock_transformer_module)
-
-        def fake_save(path: str) -> None:
-            _create_merged_output(Path(path))
-
-        mock_model.save = fake_save
+        mock_model = _make_mock_model(fake_save_dir=output_dir)
         mocker.patch("tract.publish.merge.SentenceTransformer", return_value=mock_model)
 
         merge_lora_adapters(model_dir, output_dir)
 
-        mock_peft_model.merge_and_unload.assert_called_once()
+        mock_model[0].auto_model.merge_and_unload.assert_called_once()
+        assert mock_model.encode.call_count == 2  # pre-merge + post-merge
 
     def test_output_directory_created(self, tmp_path, mocker) -> None:
         from tract.publish.merge import merge_lora_adapters
@@ -2026,22 +2098,30 @@ class TestMergeLoraAdapters:
         model_dir.mkdir()
         output_dir = tmp_path / "output"
 
-        mock_peft_model = MagicMock()
-        mock_peft_model.merge_and_unload.return_value = mock_peft_model
-        mock_transformer_module = MagicMock()
-        mock_transformer_module.auto_model = mock_peft_model
-        mock_model = MagicMock()
-        mock_model.__getitem__ = MagicMock(return_value=mock_transformer_module)
-
-        def fake_save(path: str) -> None:
-            _create_merged_output(Path(path))
-
-        mock_model.save = fake_save
+        mock_model = _make_mock_model(fake_save_dir=output_dir)
         mocker.patch("tract.publish.merge.SentenceTransformer", return_value=mock_model)
 
         result = merge_lora_adapters(model_dir, output_dir)
         assert result == output_dir
         assert (output_dir / "0_Transformer" / "model.safetensors").exists()
+
+    def test_fails_on_cosine_mismatch(self, tmp_path, mocker) -> None:
+        from tract.publish.merge import merge_lora_adapters
+
+        model_dir = tmp_path / "input"
+        model_dir.mkdir()
+        output_dir = tmp_path / "output"
+
+        mock_model = _make_mock_model(fake_save_dir=output_dir)
+        pre_emb = np.ones((3, 1024), dtype=np.float32)
+        pre_emb /= np.linalg.norm(pre_emb, axis=1, keepdims=True)
+        post_emb = np.random.default_rng(42).standard_normal((3, 1024)).astype(np.float32)
+        post_emb /= np.linalg.norm(post_emb, axis=1, keepdims=True)
+        mock_model.encode.side_effect = [pre_emb, post_emb]
+        mocker.patch("tract.publish.merge.SentenceTransformer", return_value=mock_model)
+
+        with pytest.raises(RuntimeError, match="Merge verification failed"):
+            merge_lora_adapters(model_dir, output_dir)
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -2066,7 +2146,17 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
 logger = logging.getLogger(__name__)
+
+MERGE_VERIFICATION_TEXTS = [
+    "Implement access controls for AI model training pipelines",
+    "Data encryption at rest using AES-256",
+    "Regularly audit AI system outputs for bias and fairness",
+]
+MERGE_COSINE_THRESHOLD = 0.9999
 
 
 def validate_merged_output(output_dir: Path) -> None:
@@ -2096,8 +2186,10 @@ def merge_lora_adapters(
     """Merge LoRA adapters into base model weights.
 
     Loads via SentenceTransformer (which auto-detects PEFT),
-    merges the adapter into the base weights, and saves the
-    full SentenceTransformer directory structure.
+    captures pre-merge embeddings for verification,
+    merges the adapter into the base weights, verifies
+    cosine similarity > 0.9999, and saves the full
+    SentenceTransformer directory structure.
 
     Args:
         model_dir: Path to SentenceTransformer directory with PEFT adapter overlay.
@@ -2105,20 +2197,45 @@ def merge_lora_adapters(
 
     Returns:
         output_dir path.
-    """
-    from sentence_transformers import SentenceTransformer
 
+    Raises:
+        RuntimeError: If merge verification fails (cosine < threshold).
+    """
     logger.info("Loading model from %s", model_dir)
     model = SentenceTransformer(str(model_dir))
 
+    logger.info("Computing pre-merge reference embeddings")
+    pre_merge_emb = model.encode(
+        MERGE_VERIFICATION_TEXTS,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    )
+
     logger.info("Merging LoRA adapters into base weights")
     model[0].auto_model = model[0].auto_model.merge_and_unload()
+
+    logger.info("Computing post-merge embeddings for verification")
+    post_merge_emb = model.encode(
+        MERGE_VERIFICATION_TEXTS,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    )
+
+    cosines = np.sum(pre_merge_emb * post_merge_emb, axis=1)
+    min_cosine = float(np.min(cosines))
+    logger.info("Merge verification: min cosine = %.6f (threshold: %.4f)", min_cosine, MERGE_COSINE_THRESHOLD)
+
+    if min_cosine < MERGE_COSINE_THRESHOLD:
+        raise RuntimeError(
+            f"Merge verification failed: min cosine {min_cosine:.6f} < {MERGE_COSINE_THRESHOLD}. "
+            f"Per-text cosines: {cosines.tolist()}"
+        )
 
     logger.info("Saving merged model to %s", output_dir)
     model.save(str(output_dir))
 
     validate_merged_output(output_dir)
-    logger.info("Merge complete — verified no adapter artifacts remain")
+    logger.info("Merge complete — verified: no adapter artifacts, embeddings match")
 
     return output_dir
 ```
@@ -2310,7 +2427,7 @@ def bundle_inference_data(
     if not artifacts.exists():
         raise FileNotFoundError(f"Artifacts not found: {artifacts}")
 
-    data = np.load(str(artifacts), allow_pickle=True)
+    data = np.load(str(artifacts), allow_pickle=False)
     hub_ids = list(data["hub_ids"])
     hub_embeddings = data["hub_embeddings"]
 
@@ -2364,8 +2481,8 @@ SAMPLE_FOLD_RESULTS = [
     {"fold": "MITRE ATLAS", "hit1": 0.279, "zs_hit1": 0.273, "n": 43, "hit_any": 0.35},
     {"fold": "NIST AI 100-2", "hit1": 0.429, "zs_hit1": 0.107, "n": 28, "hit_any": 0.50},
     {"fold": "OWASP AI Exchange", "hit1": 0.762, "zs_hit1": 0.619, "n": 63, "hit_any": 0.82},
-    {"fold": "OWASP LLM Top 10", "hit1": 0.333, "zs_hit1": 0.333, "n": 6, "hit_any": 0.50},
-    {"fold": "OWASP ML Top 10", "hit1": 0.714, "zs_hit1": 0.429, "n": 7, "hit_any": 0.86},
+    {"fold": "OWASP Top10 for LLM", "hit1": 0.333, "zs_hit1": 0.333, "n": 6, "hit_any": 0.50},
+    {"fold": "OWASP Top10 for ML", "hit1": 0.714, "zs_hit1": 0.429, "n": 7, "hit_any": 0.86},
 ]
 
 SAMPLE_CALIBRATION = {
@@ -2523,9 +2640,15 @@ def generate_model_card(
     micro_hit1 = sum(f["hit1"] * f["n"] for f in fold_results) / total_n
     micro_zs = sum(f["zs_hit1"] * f["n"] for f in fold_results) / total_n
     micro_delta = micro_hit1 - micro_zs
+    hit_any_folds = [f for f in fold_results if isinstance(f.get("hit_any"), (int, float))]
+    if hit_any_folds:
+        micro_hit_any = sum(f["hit_any"] * f["n"] for f in hit_any_folds) / sum(f["n"] for f in hit_any_folds)
+        hit_any_str = f"**{micro_hit_any:.3f}**"
+    else:
+        hit_any_str = "—"
     lofo_rows += (
         f"| **Micro average** | **{micro_hit1:.3f}** | **{micro_zs:.3f}** "
-        f"| **{micro_delta:+.3f}** | — | **{total_n}** |\n"
+        f"| **{micro_delta:+.3f}** | {hit_any_str} | **{total_n}** |\n"
     )
 
     t_val = calibration.get("t_deploy", 0.074)
@@ -2712,7 +2835,8 @@ class TestWritePredictScript:
         from tract.publish.scripts import write_predict_script
         write_predict_script(tmp_path)
         content = (tmp_path / "predict.py").read_text()
-        assert "sanitize_text" in content or "NFC" in content
+        assert "sanitize_text" in content
+        assert "html.unescape" in content  # full pipeline, not simplified 2-step
 
     def test_contains_temperature_scaling(self, tmp_path) -> None:
         from tract.publish.scripts import write_predict_script
@@ -2801,9 +2925,24 @@ from sentence_transformers import SentenceTransformer
 
 
 def sanitize_text(text: str) -> str:
-    """Simplified sanitize: NFC normalization + whitespace collapse + strip."""
+    """Full sanitization pipeline matching training-time preprocessing.
+
+    Steps: null bytes → NFC → zero-width chars → HTML unescape+strip →
+    PDF ligatures → broken hyphenation → whitespace collapse → strip.
+    Must match tract/sanitize.py exactly to avoid train/inference skew.
+    """
+    import html
+    import re
+
+    text = text.replace("\\x00", " ")
     text = unicodedata.normalize("NFC", text)
-    return " ".join(text.split()).strip()
+    text = re.sub("[\\u200b\\u200c\\u200d\\ufeff]", "", text)
+    text = re.sub(r"</?[a-zA-Z][^>]*>", "", html.unescape(text))
+    for lig, repl in [("\\ufb04", "ffl"), ("\\ufb03", "ffi"), ("\\ufb00", "ff"), ("\\ufb01", "fi"), ("\\ufb02", "fl")]:
+        text = text.replace(lig, repl)
+    text = re.sub(r"(\\w)-\\n(\\w)", r"\\1\\2", text)
+    text = re.sub(r"\\s+", " ", text)
+    return text.strip()
 
 
 def softmax(x):
@@ -3272,15 +3411,45 @@ class TestPublishGate:
         report_path.write_text(json.dumps(report))
         check_publication_gate(report_path)
 
-    def test_accepts_all_reviewed(self, tmp_path) -> None:
+    def test_accepts_all_reviewed_with_hierarchy(self, tmp_path) -> None:
         from tract.publish import check_publication_gate
         report = {
             "counts": {"total": 2, "accepted": 1, "rejected": 1},
-            "candidates": [{"status": "accepted"}, {"status": "rejected"}],
+            "candidates": [
+                {"status": "accepted", "ai_hub_id": "AI-1", "trad_hub_id": "T-1"},
+                {"status": "rejected", "ai_hub_id": "AI-2", "trad_hub_id": "T-2"},
+            ],
         }
         report_path = tmp_path / "bridge_report.json"
         report_path.write_text(json.dumps(report))
-        check_publication_gate(report_path)
+
+        hier = {
+            "version": "1.1",
+            "hubs": {
+                "AI-1": {"related_hub_ids": ["T-1"]},
+                "T-1": {"related_hub_ids": ["AI-1"]},
+            },
+        }
+        hier_path = tmp_path / "cre_hierarchy.json"
+        hier_path.write_text(json.dumps(hier))
+        check_publication_gate(report_path, hierarchy_path=hier_path)
+
+    def test_rejects_accepted_bridges_without_hierarchy_update(self, tmp_path) -> None:
+        from tract.publish import check_publication_gate
+        report = {
+            "counts": {"total": 1, "accepted": 1, "rejected": 0},
+            "candidates": [
+                {"status": "accepted", "ai_hub_id": "AI-1", "trad_hub_id": "T-1"},
+            ],
+        }
+        report_path = tmp_path / "bridge_report.json"
+        report_path.write_text(json.dumps(report))
+
+        hier = {"version": "1.0", "hubs": {"AI-1": {"related_hub_ids": []}}}
+        hier_path = tmp_path / "cre_hierarchy.json"
+        hier_path.write_text(json.dumps(hier))
+        with pytest.raises(ValueError, match="version"):
+            check_publication_gate(report_path, hierarchy_path=hier_path)
 
 
 class TestPublishHFCLIParsing:
@@ -3332,12 +3501,16 @@ from tract.io import load_json
 logger = logging.getLogger(__name__)
 
 
-def check_publication_gate(bridge_report_path: Path) -> None:
+def check_publication_gate(
+    bridge_report_path: Path,
+    hierarchy_path: Path | None = None,
+) -> None:
     """Verify bridge analysis is complete before publication.
 
     Raises ValueError if:
     - bridge_report.json does not exist
     - Any candidate has status 'pending'
+    - Accepted bridges exist but hierarchy not updated (version != "1.1")
     """
     if not bridge_report_path.exists():
         raise ValueError(
@@ -3355,6 +3528,28 @@ def check_publication_gate(bridge_report_path: Path) -> None:
             f"{len(pending)} candidates still have 'pending' status in "
             f"{bridge_report_path}. Review all candidates before publishing."
         )
+
+    accepted = [
+        c for c in report.get("candidates", [])
+        if c.get("status") == "accepted"
+    ]
+    if accepted and hierarchy_path:
+        hier = load_json(hierarchy_path)
+        if hier.get("version") != "1.1":
+            raise ValueError(
+                f"Bridge report has {len(accepted)} accepted bridges but "
+                f"hierarchy version is '{hier.get('version')}', not '1.1'. "
+                "Run 'tract bridge --commit' to update the hierarchy."
+            )
+        for bridge in accepted:
+            ai_id = bridge["ai_hub_id"]
+            trad_id = bridge["trad_hub_id"]
+            ai_related = hier.get("hubs", {}).get(ai_id, {}).get("related_hub_ids", [])
+            if trad_id not in ai_related:
+                raise ValueError(
+                    f"Accepted bridge {ai_id}↔{trad_id} not found in "
+                    f"hierarchy related_hub_ids. Run 'tract bridge --commit'."
+                )
 
 
 def publish_to_huggingface(
@@ -3385,7 +3580,7 @@ def publish_to_huggingface(
     from tract.publish.scripts import write_predict_script, write_train_script
     from tract.publish.security import scan_for_secrets
 
-    check_publication_gate(bridge_report_path)
+    check_publication_gate(bridge_report_path, hierarchy_path=hierarchy_path)
     logger.info("Publication gate passed")
 
     if staging_dir.exists():
@@ -3423,7 +3618,10 @@ def publish_to_huggingface(
     write_predict_script(staging_dir)
     write_train_script(staging_dir)
 
-    print("Step 5/7: Running security scan...")
+    print("Step 5/7: AIBOM validation...")
+    _validate_aibom(staging_dir)
+
+    print("Step 6/7: Running security scan...")
     findings = scan_for_secrets(staging_dir)
     if findings:
         for f in findings:
@@ -3432,9 +3630,6 @@ def publish_to_huggingface(
             f"Security scan found {len(findings)} issues. Fix and re-run."
         )
     print("  Security scan passed")
-
-    print("Step 6/7: AIBOM validation...")
-    _validate_aibom(staging_dir)
 
     if dry_run:
         print(f"\nDry run complete. Staging directory: {staging_dir}")
@@ -3451,12 +3646,18 @@ def publish_to_huggingface(
     print(f"\nPublished to https://huggingface.co/{repo_id}")
 
 
+AIBOM_REPO = "https://github.com/GenAI-Security-Project/aibom-generator.git"
+AIBOM_COMMIT_SHA = "main"  # TODO: Pin to specific SHA after verifying a known-good commit
+
+
 def _validate_aibom(staging_dir: Path) -> None:
     """Run AIBOM validator against the generated model card.
 
-    Clones aibom-generator to a temp dir, runs it, and reports the score.
+    Clones aibom-generator at a pinned commit to a temp dir, runs it on a
+    COPY of README.md (not the staging dir), and reports the score.
     Non-blocking: logs a warning if the tool is unavailable or broken.
     """
+    import shutil
     import subprocess
     import tempfile
 
@@ -3468,13 +3669,14 @@ def _validate_aibom(staging_dir: Path) -> None:
     try:
         with tempfile.TemporaryDirectory() as tmp:
             subprocess.run(
-                ["git", "clone", "--depth=1",
-                 "https://github.com/GenAI-Security-Project/aibom-generator.git",
-                 tmp],
+                ["git", "clone", "--depth=1", "--branch", AIBOM_COMMIT_SHA,
+                 AIBOM_REPO, tmp],
                 check=True, capture_output=True, timeout=60,
             )
+            readme_copy = Path(tmp) / "README_to_validate.md"
+            shutil.copy2(readme, readme_copy)
             result = subprocess.run(
-                ["python", "-m", "aibom_generator", str(readme)],
+                ["python", "-m", "aibom_generator", str(readme_copy)],
                 capture_output=True, text=True, timeout=120, cwd=tmp,
             )
             print(f"  AIBOM output:\n{result.stdout}")
@@ -3487,23 +3689,24 @@ def _validate_aibom(staging_dir: Path) -> None:
 
 def _upload_to_hub(repo_id: str, staging_dir: Path) -> None:
     """Upload staging directory to HuggingFace Hub."""
-    import os
     import subprocess
+
+    from huggingface_hub import HfApi
 
     token = subprocess.check_output(
         ["pass", "huggingface/token"], text=True
     ).strip()
-    os.environ["HF_TOKEN"] = token
 
-    from huggingface_hub import HfApi
-
-    api = HfApi()
-    api.upload_folder(
-        folder_path=str(staging_dir),
-        repo_id=repo_id,
-        repo_type="model",
-    )
-    logger.info("Uploaded to %s", repo_id)
+    try:
+        api = HfApi(token=token)
+        api.upload_folder(
+            folder_path=str(staging_dir),
+            repo_id=repo_id,
+            repo_type="model",
+        )
+        logger.info("Uploaded to %s", repo_id)
+    finally:
+        del token
 ```
 
 - [ ] **Step 4: Add publish-hf subcommand to CLI**
@@ -3551,7 +3754,6 @@ def _cmd_publish_hf(args: argparse.Namespace) -> None:
         PHASE1C_ECE_GATE_PATH,
         PHASE1D_ARTIFACTS_PATH,
         PHASE1D_CALIBRATION_PATH,
-        TRAINING_DIR,
     )
     from tract.publish import publish_to_huggingface
     from tract.io import load_json
@@ -3583,47 +3785,78 @@ def _cmd_publish_hf(args: argparse.Namespace) -> None:
 def _load_fold_results(
     textaware_dir: Path,
     corrected_path: Path,
+    zero_shot_path: Path | None = None,
 ) -> list[dict]:
-    """Load LOFO fold results from Phase 1B artifacts."""
+    """Load LOFO fold results from Phase 1B artifacts.
+
+    IMPORTANT: eval count comes from len(predictions.json), NOT n_pairs
+    (n_pairs is the training pair count ~3900, not eval items 43-63).
+    corrected_metrics must come from the TEXTAWARE experiment (same model),
+    not from phase1b_primary (different model, different corpus).
+    """
     from tract.io import load_json
 
-    _ZERO_SHOT_BASELINES = {
-        "MITRE ATLAS": 0.273,
-        "NIST AI 100-2": 0.107,
-        "OWASP AI Exchange": 0.619,
-        "OWASP LLM Top 10": 0.333,
-        "OWASP ML Top 10": 0.429,
-    }
+    if zero_shot_path and zero_shot_path.exists():
+        zs_data = load_json(zero_shot_path)
+        zs_baselines = {
+            fw: m.get("hit_at_1", 0)
+            for fw, m in zs_data.get("per_framework", {}).items()
+        }
+    else:
+        zs_baselines = {
+            "MITRE ATLAS": 0.273,
+            "NIST AI 100-2": 0.107,
+            "OWASP AI Exchange": 0.619,
+            "OWASP Top10 for LLM": 0.333,
+            "OWASP Top10 for ML": 0.429,
+        }
+        logger.warning("Zero-shot baselines loaded from hardcoded fallback")
 
     fold_names = {
         "MITRE_ATLAS": "MITRE ATLAS",
         "NIST_AI_100-2": "NIST AI 100-2",
         "OWASP_AI_Exchange": "OWASP AI Exchange",
-        "OWASP_Top10_for_LLM": "OWASP LLM Top 10",
-        "OWASP_Top10_for_ML": "OWASP ML Top 10",
+        "OWASP_Top10_for_LLM": "OWASP Top10 for LLM",
+        "OWASP_Top10_for_ML": "OWASP Top10 for ML",
     }
 
-    corrected = load_json(corrected_path) if corrected_path.exists() else {}
+    if not corrected_path.exists():
+        raise FileNotFoundError(
+            f"Corrected metrics not found: {corrected_path}. "
+            "Run 'python scripts/phase1b/rescore_predictions.py' first."
+        )
+    corrected = load_json(corrected_path)
     corrected_folds = corrected.get("per_fold", {})
 
     results = []
     for file_key, display_name in fold_names.items():
+        fold_dir = textaware_dir / f"fold_{file_key}"
+        predictions_path = fold_dir / "predictions.json"
         summary_path = textaware_dir / f"fold_{file_key}_summary.json"
-        if not summary_path.exists():
-            logger.warning("Fold summary not found: %s", summary_path)
+
+        if not predictions_path.exists():
+            logger.warning("Predictions not found: %s", predictions_path)
             continue
 
-        summary = load_json(summary_path)
+        predictions = load_json(predictions_path)
+        n_eval = len(predictions)
+
+        summary = load_json(summary_path) if summary_path.exists() else {}
         metrics = summary.get("metrics", {})
 
         corrected_fold = corrected_folds.get(display_name, {})
+        if not corrected_fold:
+            raise ValueError(
+                f"No corrected metrics for fold '{display_name}'. "
+                f"Available keys: {list(corrected_folds.keys())}"
+            )
         hit_any = corrected_fold.get("hit_at_1", metrics.get("hit_at_1", 0))
 
         results.append({
             "fold": display_name,
             "hit1": metrics.get("hit_at_1", 0),
-            "zs_hit1": _ZERO_SHOT_BASELINES.get(display_name, 0),
-            "n": summary.get("n_pairs", 0),
+            "zs_hit1": zs_baselines.get(display_name, 0),
+            "n": n_eval,
             "hit_any": hit_any,
         })
 
