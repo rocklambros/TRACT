@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 
 from tract.config import (
+    BRIDGE_OUTPUT_DIR,
+    BRIDGE_TOP_K,
     HUB_PROPOSALS_DIR,
     PHASE1C_CROSSWALK_DB_PATH,
     PHASE1D_DEFAULT_TOP_K,
@@ -196,6 +198,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_prepare.add_argument("--output", help="Output file path (default: <input_stem>_prepared.json)")
     p_prepare.add_argument("--heading-level", type=int, help="Markdown heading depth to split on (default: auto-detect)")
     p_prepare.add_argument("--json", action="store_true", help="Output summary as JSON")
+
+    # ── bridge ──────────────────────────────────────────────────
+    p_bridge = subparsers.add_parser(
+        "bridge",
+        help="Discover AI/traditional CRE hub bridges",
+        epilog=(
+            "Examples:\n"
+            "  tract bridge --skip-descriptions\n"
+            "  tract bridge --top-k 5\n"
+            "  tract bridge --commit --candidates results/bridge/bridge_candidates.json\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_bridge.add_argument("--output-dir", default=str(BRIDGE_OUTPUT_DIR), help="Output directory")
+    p_bridge.add_argument("--top-k", type=int, default=BRIDGE_TOP_K, help="Top-K matches per AI hub")
+    p_bridge.add_argument("--skip-descriptions", action="store_true", help="Skip LLM descriptions")
+    p_bridge.add_argument("--commit", action="store_true", help="Commit reviewed candidates")
+    p_bridge.add_argument("--candidates", help="Path to reviewed bridge_candidates.json (for --commit)")
 
     return parser
 
@@ -1073,6 +1093,38 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
     print("For more: https://github.com/rockcyber/TRACT")
 
 
+def _cmd_bridge(args: argparse.Namespace) -> None:
+    if args.commit:
+        if not args.candidates:
+            print("Error: --commit requires --candidates <path>", file=sys.stderr)
+            sys.exit(1)
+        from tract.bridge.review import commit_bridges
+        from tract.io import load_json
+
+        candidates_path = Path(args.candidates)
+        candidates_data = load_json(candidates_path)
+        hierarchy_path = PROCESSED_DIR / "cre_hierarchy.json"
+        report_path = Path(args.output_dir) / "bridge_report.json"
+
+        report = commit_bridges(candidates_data, hierarchy_path, report_path)
+        print(f"Accepted: {report['counts']['accepted']}")
+        print(f"Rejected: {report['counts']['rejected']}")
+        print(f"Hierarchy updated: {hierarchy_path}")
+        print(f"Report: {report_path}")
+    else:
+        from tract.bridge import run_bridge_analysis
+        from tract.config import PHASE1D_ARTIFACTS_PATH, TRAINING_DIR
+
+        run_bridge_analysis(
+            artifacts_path=PHASE1D_ARTIFACTS_PATH,
+            hub_links_path=TRAINING_DIR / "hub_links_by_framework.json",
+            hierarchy_path=PROCESSED_DIR / "cre_hierarchy.json",
+            output_dir=Path(args.output_dir),
+            top_k=args.top_k,
+            skip_descriptions=args.skip_descriptions,
+        )
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
@@ -1088,6 +1140,7 @@ def main() -> None:
 
     handlers = {
         "assign": _cmd_assign,
+        "bridge": _cmd_bridge,
         "compare": _cmd_compare,
         "ingest": _cmd_ingest,
         "accept": _cmd_accept,
