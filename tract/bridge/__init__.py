@@ -115,8 +115,8 @@ def run_bridge_analysis(
     atomic_write_json(output, candidates_path)
     logger.info("Wrote %d candidates to %s", len(candidates), candidates_path)
 
-    print(f"AI-only hubs: {len(classification.ai_only)}")
-    print(f"Candidates generated: {len(candidates)}")
-    print(f"Output: {candidates_path}")
+    logger.info("AI-only hubs: %d", len(classification.ai_only))
+    logger.info("Candidates generated: %d", len(candidates))
+    logger.info("Output: %s", candidates_path)
 
     return candidates_path

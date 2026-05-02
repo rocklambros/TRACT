@@ -95,10 +95,10 @@ def publish_to_huggingface(
         shutil.rmtree(staging_dir)
     staging_dir.mkdir(parents=True)
 
-    print("Step 1/7: Merging LoRA adapters...")
+    logger.info("Step 1/7: Merging LoRA adapters...")
     merge_lora_adapters(model_dir, staging_dir)
 
-    print("Step 2/7: Bundling inference data...")
+    logger.info("Step 2/7: Bundling inference data...")
     calibration = load_json(calibration_path)
     ece_data = load_json(ece_gate_path)
     bridge_summary = load_json(bridge_report_path)
@@ -112,7 +112,7 @@ def publish_to_huggingface(
         bridge_report=bridge_report_path,
     )
 
-    print("Step 3/7: Generating model card...")
+    logger.info("Step 3/7: Generating model card...")
     generate_model_card(
         staging_dir,
         fold_results=fold_results,
@@ -122,36 +122,36 @@ def publish_to_huggingface(
         gpu_hours=gpu_hours,
     )
 
-    print("Step 4/7: Writing standalone scripts...")
+    logger.info("Step 4/7: Writing standalone scripts...")
     write_predict_script(staging_dir)
     write_train_script(staging_dir)
 
-    print("Step 5/7: AIBOM validation...")
+    logger.info("Step 5/7: AIBOM validation...")
     _validate_aibom(staging_dir)
 
-    print("Step 6/7: Running security scan...")
+    logger.info("Step 6/7: Running security scan...")
     findings = scan_for_secrets(staging_dir)
     if findings:
         for f in findings:
-            print(f"  ALERT: {f.file_path}:{f.line_number} — {f.pattern_name}")
+            logger.warning("ALERT: %s:%d — %s", f.file_path, f.line_number, f.pattern_name)
         raise ValueError(
             f"Security scan found {len(findings)} issues. Fix and re-run."
         )
-    print("  Security scan passed")
+    logger.info("Security scan passed")
 
     if dry_run:
-        print(f"\nDry run complete. Staging directory: {staging_dir}")
-        print("Run without --dry-run to upload.")
+        logger.info("Dry run complete. Staging directory: %s", staging_dir)
+        logger.info("Run without --dry-run to upload.")
         return
 
     if skip_upload:
-        print(f"\nBuild complete. Staging directory: {staging_dir}")
-        print("Run without --skip-upload to upload.")
+        logger.info("Build complete. Staging directory: %s", staging_dir)
+        logger.info("Run without --skip-upload to upload.")
         return
 
-    print("Step 7/7: Uploading to HuggingFace...")
+    logger.info("Step 7/7: Uploading to HuggingFace...")
     _upload_to_hub(repo_id, staging_dir)
-    print(f"\nPublished to https://huggingface.co/{repo_id}")
+    logger.info("Published to https://huggingface.co/%s", repo_id)
 
 
 AIBOM_REPO = "https://github.com/GenAI-Security-Project/aibom-generator.git"
@@ -185,12 +185,12 @@ def _validate_aibom(staging_dir: Path) -> None:
                 ["python", "-m", "aibom_generator", str(readme_copy)],
                 capture_output=True, text=True, timeout=120, cwd=tmp,
             )
-            print(f"  AIBOM output:\n{result.stdout}")
+            logger.info("AIBOM output:\n%s", result.stdout)
             if result.returncode != 0:
                 logger.warning("AIBOM validation returned non-zero: %s", result.stderr)
     except Exception as e:
         logger.warning("AIBOM validation skipped — tool unavailable: %s", e)
-        print(f"  AIBOM validation skipped (tool unavailable: {e})")
+        logger.info("AIBOM validation skipped (tool unavailable: %s)", e)
 
 
 def _upload_to_hub(repo_id: str, staging_dir: Path) -> None:
