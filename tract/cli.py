@@ -19,10 +19,15 @@ from tract.config import (
     HF_STAGING_DIR,
     HUB_PROPOSALS_DIR,
     PHASE1C_CROSSWALK_DB_PATH,
+    PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
     PHASE1D_DEPLOYMENT_MODEL_DIR,
     PHASE1D_PROPOSAL_BUDGET_CAP,
+    PHASE3_DATASET_REPO_ID,
+    PHASE3_DATASET_STAGING_DIR,
+    PHASE3_REVIEW_OUTPUT_DIR,
     PROCESSED_DIR,
+    TRAINING_DIR,
 )
 
 logger = logging.getLogger(__name__)
@@ -235,6 +240,97 @@ def build_parser() -> argparse.ArgumentParser:
     p_publish.add_argument("--dry-run", action="store_true", help="Build + scan, no upload")
     p_publish.add_argument("--skip-upload", action="store_true", help="Build + scan only")
     p_publish.add_argument("--gpu-hours", type=float, default=0.0, help="GPU training hours for model card")
+
+    # ── import-ground-truth ─────────────────────────────────────────
+    p_import_gt = subparsers.add_parser(
+        "import-ground-truth",
+        help="Import OpenCRE ground truth links and run inference on uncovered frameworks",
+        epilog=(
+            "Examples:\n"
+            "  tract import-ground-truth\n"
+            "  tract import-ground-truth --dry-run\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_import_gt.add_argument(
+        "--dry-run", action="store_true", help="Report counts without modifying DB",
+    )
+
+    # ── review-export ──────────────────────────────────────────────
+    p_review_export = subparsers.add_parser(
+        "review-export",
+        help="Generate review JSON for expert review",
+        epilog=(
+            "Examples:\n"
+            "  tract review-export\n"
+            "  tract review-export --output results/review\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_review_export.add_argument(
+        "--output", default=str(PHASE3_REVIEW_OUTPUT_DIR),
+        help="Output directory for review files",
+    )
+    p_review_export.add_argument(
+        "--model-dir", default=str(PHASE1D_DEPLOYMENT_MODEL_DIR),
+        help="Path to deployment model directory",
+    )
+
+    # ── review-validate ─────────────────────────────────────────────
+    p_review_validate = subparsers.add_parser(
+        "review-validate",
+        help="Validate a reviewed predictions JSON file",
+        epilog=(
+            "Examples:\n"
+            "  tract review-validate --input results/review/review_export.json\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_review_validate.add_argument(
+        "--input", required=True, help="Path to reviewed JSON file",
+    )
+
+    # ── review-import ──────────────────────────────────────────────
+    p_review_import = subparsers.add_parser(
+        "review-import",
+        help="Import expert review decisions into crosswalk.db",
+        epilog=(
+            "Examples:\n"
+            "  tract review-import --input review.json --reviewer expert_1\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_review_import.add_argument(
+        "--input", required=True, help="Path to reviewed JSON file",
+    )
+    p_review_import.add_argument(
+        "--reviewer", required=True, help="Reviewer name/identifier",
+    )
+
+    # ── publish-dataset ──────────────────────────────────────────────
+    p_pub_dataset = subparsers.add_parser(
+        "publish-dataset",
+        help="Publish crosswalk dataset to HuggingFace Datasets",
+        epilog=(
+            "Examples:\n"
+            "  tract publish-dataset --dry-run\n"
+            "  tract publish-dataset\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_pub_dataset.add_argument(
+        "--repo-id", default=PHASE3_DATASET_REPO_ID, help="HuggingFace repo ID",
+    )
+    p_pub_dataset.add_argument(
+        "--staging-dir", default=str(PHASE3_DATASET_STAGING_DIR),
+        help="Local build dir",
+    )
+    p_pub_dataset.add_argument(
+        "--dry-run", action="store_true", help="Build without upload",
+    )
+    p_pub_dataset.add_argument(
+        "--skip-upload", action="store_true", help="Build only, no upload",
+    )
 
     return parser
 
@@ -1257,6 +1353,140 @@ def _cmd_bridge(args: argparse.Namespace) -> None:
         )
 
 
+def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
+    from tract.crosswalk.ground_truth import import_ground_truth, run_uncovered_inference
+
+    summary = import_ground_truth(
+        PHASE1C_CROSSWALK_DB_PATH,
+        TRAINING_DIR / "hub_links_by_framework.json",
+        dry_run=args.dry_run,
+    )
+    logger.info("Ground truth import: %s", summary)
+    print(
+        f"Ground truth import: imported={summary['imported']}, "
+        f"skipped_duplicate={summary['skipped_duplicate']}, "
+        f"unresolved={summary['unresolved']}"
+    )
+
+    if not args.dry_run:
+        inf_summary = run_uncovered_inference(
+            PHASE1C_CROSSWALK_DB_PATH,
+            PHASE1D_DEPLOYMENT_MODEL_DIR,
+            dry_run=args.dry_run,
+        )
+        logger.info("Uncovered inference: %s", inf_summary)
+        print(
+            f"Uncovered inference: inserted={inf_summary['total_inserted']}, "
+            f"skipped={inf_summary['skipped_duplicate']}"
+        )
+
+
+def _cmd_review_export(args: argparse.Namespace) -> None:
+    from tract.review.export import generate_review_export
+    from tract.review.guide import generate_hub_reference, generate_reviewer_guide
+
+    output_dir = Path(args.output)
+    model_dir = Path(args.model_dir)
+
+    metadata = generate_review_export(
+        PHASE1C_CROSSWALK_DB_PATH,
+        model_dir,
+        output_dir,
+        PHASE1D_CALIBRATION_PATH,
+    )
+    generate_reviewer_guide(output_dir, metadata)
+    generate_hub_reference(PHASE1C_CROSSWALK_DB_PATH, output_dir)
+
+    print(
+        f"Review export: {metadata['total_predictions']} predictions "
+        f"({metadata['calibration_items']} calibration items)"
+    )
+    print(f"Priority breakdown: {metadata['priority_breakdown']}")
+    print(f"Files written to {output_dir}")
+
+
+def _cmd_review_validate(args: argparse.Namespace) -> None:
+    from tract.review.validate import validate_review_json
+
+    result = validate_review_json(Path(args.input), PHASE1C_CROSSWALK_DB_PATH)
+
+    if result.errors:
+        print(f"VALIDATION FAILED — {len(result.errors)} error(s):")
+        for e in result.errors:
+            print(f"  ERROR: {e}")
+    if result.warnings:
+        for w in result.warnings:
+            print(f"  WARNING: {w}")
+    if result.valid:
+        msg = "Validation PASSED"
+        if result.warnings:
+            msg += f" ({len(result.warnings)} warning(s))"
+        print(msg)
+    sys.exit(0 if result.valid else 1)
+
+
+def _cmd_review_import(args: argparse.Namespace) -> None:
+    from tract.review.import_review import apply_review_decisions
+    from tract.review.metrics import compute_review_metrics
+
+    summary = apply_review_decisions(
+        PHASE1C_CROSSWALK_DB_PATH,
+        Path(args.input),
+        args.reviewer,
+    )
+    print(
+        f"Review import: accepted={summary['accepted']}, "
+        f"rejected={summary['rejected']}, reassigned={summary['reassigned']}, "
+        f"skipped_pending={summary['skipped_pending']}, "
+        f"skipped_calibration={summary['skipped_calibration']}"
+    )
+
+    review_data = json.loads(Path(args.input).read_text(encoding="utf-8"))
+    metrics = compute_review_metrics(
+        PHASE1C_CROSSWALK_DB_PATH,
+        review_data,
+        PHASE3_REVIEW_OUTPUT_DIR / "review_metrics.json",
+    )
+    print(
+        f"Metrics: completion={metrics['coverage']['completion_pct']:.1f}%, "
+        f"quality_score={metrics.get('calibration', {}).get('quality_score', 'N/A')}"
+    )
+
+
+def _cmd_publish_dataset(args: argparse.Namespace) -> None:
+    from tract.dataset.bundle import bundle_dataset
+    from tract.dataset.card import generate_dataset_card
+    from tract.dataset.publish import publish_dataset
+
+    staging_dir = Path(args.staging_dir)
+
+    stats = bundle_dataset(
+        PHASE1C_CROSSWALK_DB_PATH,
+        staging_dir,
+        hierarchy_path=TRAINING_DIR / "cre_hierarchy.json",
+        hub_descriptions_path=TRAINING_DIR / "hub_descriptions.json",
+        bridge_report_path=PHASE3_REVIEW_OUTPUT_DIR / "bridge_report.json",
+        review_metrics_path=PHASE3_REVIEW_OUTPUT_DIR / "review_metrics.json",
+    )
+    print(f"Dataset bundled: {stats['total_rows']} rows, {stats['frameworks']} frameworks")
+
+    fm_path = staging_dir / "framework_metadata.json"
+    rm_path = staging_dir / "review_metrics.json"
+    framework_metadata = json.loads(fm_path.read_text(encoding="utf-8")) if fm_path.exists() else []
+    review_metrics = json.loads(rm_path.read_text(encoding="utf-8")) if rm_path.exists() else {}
+
+    generate_dataset_card(staging_dir, framework_metadata, review_metrics, stats)
+    print(f"Dataset card generated at {staging_dir / 'README.md'}")
+
+    publish_dataset(args.repo_id, staging_dir, dry_run=args.dry_run, skip_upload=args.skip_upload)
+    if args.dry_run:
+        print("Dry run complete — no upload")
+    elif args.skip_upload:
+        print(f"Staging dir ready at {staging_dir}")
+    else:
+        print(f"Published to {args.repo_id}")
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
@@ -1278,9 +1508,14 @@ def main() -> None:
         "accept": _cmd_accept,
         "export": _cmd_export,
         "hierarchy": _cmd_hierarchy,
+        "import-ground-truth": _cmd_import_ground_truth,
         "propose-hubs": _cmd_propose_hubs,
+        "publish-dataset": _cmd_publish_dataset,
         "publish-hf": _cmd_publish_hf,
+        "review-export": _cmd_review_export,
+        "review-import": _cmd_review_import,
         "review-proposals": _cmd_review_proposals,
+        "review-validate": _cmd_review_validate,
         "tutorial": _cmd_tutorial,
         "validate": _cmd_validate,
         "prepare": _cmd_prepare,
