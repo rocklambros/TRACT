@@ -1,0 +1,146 @@
+{
+  "confidence_analysis": {
+    "high_confidence": {
+      "acceptance_rate": 98.2,
+      "accepted": 161,
+      "total": 164
+    },
+    "low_confidence": {
+      "acceptance_rate": 72.7,
+      "accepted": 519,
+      "total": 714
+    },
+    "ood_items": {
+      "acceptance_rate": 7.7,
+      "accepted": 2,
+      "total": 26
+    }
+  },
+  "coverage": {
+    "completion_pct": 100.0,
+    "pending": 0,
+    "reviewed": 878,
+    "total_predictions": 878
+  },
+  "import_round": 1,
+  "overall": {
+    "accepted": 680,
+    "accepted_rate": 77.4,
+    "reassigned": 196,
+    "reassigned_rate": 22.3,
+    "rejected": 2,
+    "rejected_rate": 0.2
+  },
+  "per_framework": {
+    "aiuc_1": {
+      "accepted": 38,
+      "framework_name": "AIUC-1 Standard",
+      "reassigned": 92,
+      "rejected": 2
+    },
+    "cosai": {
+      "accepted": 25,
+      "framework_name": "CoSAI Landscape of AI Security Risk Map",
+      "reassigned": 30,
+      "rejected": 0
+    },
+    "csa_aicm": {
+      "accepted": 240,
+      "framework_name": "CSA AI Controls Matrix",
+      "reassigned": 3,
+      "rejected": 0
+    },
+    "eu_ai_act": {
+      "accepted": 100,
+      "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
+      "reassigned": 0,
+      "rejected": 0
+    },
+    "eu_gpai_cop": {
+      "accepted": 28,
+      "framework_name": "EU GPAI Code of Practice",
+      "reassigned": 12,
+      "rejected": 0
+    },
+    "mitre_atlas": {
+      "accepted": 177,
+      "framework_name": "MITRE ATLAS",
+      "reassigned": 18,
+      "rejected": 0
+    },
+    "nist_ai_600_1": {
+      "accepted": 10,
+      "framework_name": "NIST AI 600-1 Generative AI Profile",
+      "reassigned": 0,
+      "rejected": 0
+    },
+    "nist_ai_rmf": {
+      "accepted": 42,
+      "framework_name": "NIST AI Risk Management Framework",
+      "reassigned": 30,
+      "rejected": 0
+    },
+    "owasp_agentic_top10": {
+      "accepted": 10,
+      "framework_name": "OWASP Top 10 for Agentic Applications 2026",
+      "reassigned": 0,
+      "rejected": 0
+    },
+    "owasp_dsgai": {
+      "accepted": 10,
+      "framework_name": "OWASP GenAI Data Security Risks and Mitigations",
+      "reassigned": 11,
+      "rejected": 0
+    }
+  },
+  "reviewer_quality": {
+    "agreed": 13,
+    "disagreements": [
+      {
+        "assigned_hub_id": "768-532",
+        "id": -8,
+        "reviewer_hub_id": "504-340",
+        "status": "reassigned"
+      },
+      {
+        "assigned_hub_id": "364-516",
+        "id": -12,
+        "reviewer_hub_id": "547-824",
+        "status": "reassigned"
+      },
+      {
+        "assigned_hub_id": "205-522",
+        "id": -15,
+        "reviewer_hub_id": "333-480",
+        "status": "reassigned"
+      },
+      {
+        "assigned_hub_id": "780-757",
+        "id": -16,
+        "reviewer_hub_id": "430-722",
+        "status": "reassigned"
+      },
+      {
+        "assigned_hub_id": "843-475",
+        "id": -17,
+        "reviewer_hub_id": "342-641",
+        "status": "reassigned"
+      },
+      {
+        "assigned_hub_id": "843-475",
+        "id": -18,
+        "reviewer_hub_id": "342-641",
+        "status": "reassigned"
+      },
+      {
+        "assigned_hub_id": "077-772",
+        "id": -20,
+        "reviewer_hub_id": "044-202",
+        "status": "reassigned"
+      }
+    ],
+    "quality_score": 0.65,
+    "reviewed": 20,
+    "total_calibration": 20
+  }
+}
