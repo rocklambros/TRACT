@@ -159,7 +159,7 @@ class FigureCounter:
 
 ### Section 3: Phase 0 — Can a Pre-Trained Model Do This? (14 cells, 3 figures)
 
-**The question:** "Before training anything, can an off-the-shelf embedding model solve this? We tested multiple models straight out of the box — BGE-large, GTE-large, DeBERTa-v3-NLI, E5-Mistral-7B, SFR-Embedding-2, plus a kNN baseline and few-shot Claude Sonnet."
+**The question:** "Before training anything, can an off-the-shelf embedding model solve this? We tested multiple models straight out of the box — BGE-large, GTE-large, DeBERTa-v3-NLI, E5-Mistral-7B, SFR-Embedding-2, plus a kNN baseline and few-shot Claude Sonnet 4 (`claude-sonnet-4-20250514`)."
 
 **The DeBERTa disaster:** Hit@1 = 0.000. Zero. "DeBERTa-v3 is designed for natural language inference — 'does sentence A entail sentence B?' That's a different question from 'do these two texts describe the same security concept?' NLI models classify logical relationships; we need semantic similarity. Wrong tool for the job."
 
@@ -167,7 +167,7 @@ class FigureCounter:
 
 **Hierarchy paths help:** +7.6% when you prepend the hub's position in the CRE tree to its description. "Telling the model that 'Multi-factor Authentication' lives under 'Authentication > Verification methods' gives it structural context that pure text similarity misses."
 
-**The Opus ceiling:** Claude Opus as a zero-shot classifier. Hit@1 = 0.553 (unfirewalled, n=197; summary.json reports 0.465 from partial eval of 99 controls). "An LLM with security knowledge does better, but at $0.60 per control it's not scalable."
+**The Opus ceiling:** Claude Opus 4 (`claude-opus-4-20250514`) as a zero-shot classifier. Hit@1 = 0.553 (unfirewalled, n=197; summary.json reports 0.465 from partial eval of 99 controls). "An LLM with security knowledge does better, but at $0.60 per control it's not scalable."
 
 **Figures:**
 - Figure 3.1: Model comparison bar chart — hit@1 for all 6 models + Opus (matplotlib)

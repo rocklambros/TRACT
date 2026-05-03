@@ -1175,9 +1175,9 @@ Append to existing notebook via nbformat:
        "kNN (k=5)": knn["k_values"]["k5"]["all"]["hit_at_1"]["mean"],
        "GTE-large": gte["models"]["gte-large-v1.5"]["all_198"]["hit_at_1"]["mean"],
        "BGE-large-v1.5": bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]["mean"],
-       "Few-shot Sonnet (desc)": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"],
-       "Few-shot Sonnet (no desc)": fewshot["variants"]["sonnet-nodesc"]["all"]["hit_at_1"]["mean"],
-       "Claude Opus": opus["all_198"]["hit_at_1"]["mean"],
+       "Few-shot Sonnet 4 (desc)": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"],
+       "Few-shot Sonnet 4 (no desc)": fewshot["variants"]["sonnet-nodesc"]["all"]["hit_at_1"]["mean"],
+       "Claude Opus 4": opus["all_198"]["hit_at_1"]["mean"],
    }
    ```
 3. **Code** — Figure 3.1: Model comparison bar chart (sorted by performance)
@@ -1189,7 +1189,7 @@ Append to existing notebook via nbformat:
    bge_folds = bge["models"]["bge-large-v1.5"]["per_fold"]
    # ... build radar chart for multiple models × frameworks
    ```
-7. **Markdown** — The Opus ceiling (hit@1=0.553 unfirewalled at $0.60/control; summary.json reports 0.465 from partial evaluation of 99/197 controls)
+7. **Markdown** — The Opus ceiling: Claude Opus 4 (`claude-opus-4-20250514`) as zero-shot classifier. hit@1=0.553 unfirewalled at $0.60/control; summary.json reports 0.465 from partial evaluation of 99/197 controls
 8. **Code** — Load hierarchy path ablation data
    ```python
    paths_bge = load_phase0_experiment("exp3_hierarchy_paths_bge")
@@ -1759,9 +1759,9 @@ Note: Commands that modify state (`bridge --commit`, `publish-hf`, `publish-data
        {"approach": "kNN (k=5)", "hit1": knn["k_values"]["k5"]["all"]["hit_at_1"]["mean"], "lesson": "Neighborhood helps but insufficient"},
        {"approach": "GTE-large", "hit1": gte["models"]["gte-large-v1.5"]["all_198"]["hit_at_1"]["mean"], "lesson": "Decent but inconsistent across folds"},
        {"approach": "BGE-large-v1.5 (zero-shot)", "hit1": bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]["mean"], "lesson": "Best off-the-shelf embedding model"},
-       {"approach": "Few-shot Sonnet (desc)", "hit1": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"], "lesson": "In-context learning works but expensive"},
+       {"approach": "Few-shot Sonnet 4 (desc)", "hit1": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"], "lesson": "In-context learning works but expensive"},
        {"approach": "BGE firewalled baseline", "hit1": firewalled["aggregate_hit1"]["mean"], "lesson": "Firewall actually HELPS aggregate"},
-       {"approach": "Claude Opus (zero-shot)", "hit1": opus["all_198"]["hit_at_1"]["mean"], "lesson": "LLM ceiling — $0.60/control"},
+       {"approach": "Claude Opus 4 (zero-shot)", "hit1": opus["all_198"]["hit_at_1"]["mean"], "lesson": "LLM ceiling — $0.60/control"},
        {"approach": "BGE fine-tuned (TRACT)", "hit1": _load_json(PHASE1B_DIR / "phase1b_textaware" / "corrected_metrics.json")["aggregate_hit1"]["mean"], "lesson": "Contrastive training + LOFO = honest gains"},
    ]
    ```
@@ -1835,13 +1835,13 @@ Note: Commands that modify state (`bridge --commit`, `publish-hf`, `publish-data
        {"run": "exp1_deberta", "model": "DeBERTa-v3-NLI",
         "hit1": deberta["models"]["deberta-v3-nli"]["all_198"]["hit_at_1"]["mean"],
         "params": "304M", "notes": "NLI — total failure"},
-       {"run": "exp2_opus", "model": "Claude Opus",
+       {"run": "exp2_opus", "model": "Claude Opus 4",
         "hit1": opus["all_198"]["hit_at_1"]["mean"],
         "params": "N/A", "notes": "Zero-shot (unfirewalled)"},
        {"run": "exp5_knn", "model": "kNN (k=5)",
         "hit1": knn["k_values"]["k5"]["all"]["hit_at_1"]["mean"],
         "params": "N/A", "notes": "Zero-shot"},
-       {"run": "exp6_sonnet_desc", "model": "Few-shot Sonnet (desc)",
+       {"run": "exp6_sonnet_desc", "model": "Few-shot Sonnet 4 (desc)",
         "hit1": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"],
         "params": "N/A", "notes": "3-shot with descriptions"},
        # ... Phase 1B
@@ -1972,7 +1972,8 @@ Frequently-accessed data structures (verified empirically during adversarial rev
 
 - **exp1 per_fold**: `list[{framework: str, metrics: {hit_at_1: float, ...}, n_items: int}]`
 - **exp1 model keys**: `"bge-large-v1.5"`, `"gte-large-v1.5"`, `"deberta-v3-nli"` (NOT `"deberta-v3-large-nli"` or `"gte-large"`)
-- **exp2 (Opus)**: `all_198.hit_at_1 = {ci_high, ci_low, mean}` where mean=0.553 (unfirewalled, n=197). NOTE: summary.json reports 0.465 from partial evaluation (99/197 controls)
+- **exp2 (Opus)**: model=`claude-opus-4-20250514`. `all_198.hit_at_1 = {ci_high, ci_low, mean}` where mean=0.553 (unfirewalled, n=197). NOTE: summary.json reports 0.465 from partial evaluation (99/197 controls)
+- **exp6 (Sonnet)**: model=`claude-sonnet-4-20250514`. Variant keys: `"sonnet-desc"`, `"sonnet-nodesc"`
 - **exp3 ablation**: `models["bge-large-v1.5"]["deltas_all_198"]["hit_at_1"]` = `{ci_high, ci_low, delta_mean}` — note `delta_mean` NOT `mean`
 - **exp4 descriptions**: `models["bge-large-v1.5"]["deltas_subset"]["hit_at_1"]` = `{ci_high, ci_low, delta_mean}` (delta_mean = -0.048)
 - **exp6 few-shot**: variant keys are `"sonnet-desc"` and `"sonnet-nodesc"` (NOT `"3shot_with_descriptions"`)
