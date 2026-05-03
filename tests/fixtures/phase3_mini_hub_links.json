@@ -1,0 +1,17 @@
+{
+  "mitre_atlas": [
+    {"cre_id": "364-516", "cre_name": "Adversarial machine learning", "framework_id": "mitre_atlas", "link_type": "LinkedTo", "section_id": "AML.M0008", "section_name": "AML.M0008", "standard_name": "MITRE ATLAS"}
+  ],
+  "asvs": [
+    {"cre_id": "170-772", "cre_name": "Session management", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.1.1", "section_name": "V1.1.1", "standard_name": "ASVS"}
+  ],
+  "nist_800_53": [
+    {"cre_id": "555-001", "cre_name": "Config management", "framework_id": "nist_800_53", "link_type": "AutomaticallyLinkedTo", "section_id": "CM-2 BASELINE CONFIGURATION", "section_name": "CM-2 BASELINE CONFIGURATION", "standard_name": "NIST 800-53"}
+  ],
+  "nist_800_63": [
+    {"cre_id": "666-001", "cre_name": "Authentication", "framework_id": "nist_800_63", "link_type": "LinkedTo", "section_id": "5.1.1.2", "section_name": "5.1.1.2", "standard_name": "NIST 800-63"}
+  ],
+  "owasp_ai_exchange": [
+    {"cre_id": "777-001", "cre_name": "AI security", "framework_id": "owasp_ai_exchange", "link_type": "LinkedTo", "section_id": "aiprogram", "section_name": "AI Program", "standard_name": "OWASP AI Exchange"}
+  ]
+}
