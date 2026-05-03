@@ -274,7 +274,7 @@ This is NOT a code dump. It is a narrative document following a problem → expl
 - Reproducible: all cells run top-to-bottom with identical output
 - Full notebook runs in < 10 minutes (pre-computed embeddings, not re-computed)
 
-## Narrative structure (11 sections)
+## Narrative structure (13 sections + appendices)
 1. Introduction & Motivation — CRE as coordinate system, assignment paradigm
 2. Data Landscape — 4,406 links, 22 frameworks, hub distribution
 3. Phase 0 Baselines — zero-shot results, what worked/failed (DeBERTa=0.000)
@@ -285,7 +285,43 @@ This is NOT a code dump. It is a narrative document following a problem → expl
 8. Final Results — best model vs all baselines, per-framework deep dive
 9. Error Analysis — ATLAS item-level trades, hub disambiguation, attractor hubs
 10. Calibration — temperature scaling, reliability diagrams, ECE
-11. Conclusion & Next Steps
+11. Human Review & Dataset Publication — Phase 3 results, acceptance rates, calibration quality
+12. Using TRACT (CLI Tutorial) — hands-on walkthrough of all 18 CLI commands (see below)
+13. Conclusion & Next Steps
+
+## Section 12: CLI Tutorial requirements
+This section transitions the notebook from "how it works" to "how to use it." After 11 sections of ML methodology, the reader should be able to actually run TRACT. Use `!tract ...` shell cells with real output.
+
+**Three workflow walkthroughs (each self-contained):**
+
+### Workflow A: "I have a control, what hub does it map to?"
+- `!tract assign "Implement multi-factor authentication for all privileged accounts"` — show top-5 predictions with confidence scores, OOD flag, conformal set
+- `!tract assign --format json "Implement multi-factor authentication..."` — show JSON output for programmatic use
+- `!tract hierarchy --hub 615-663` — look up a hub from the results, show its children and parent
+- `!tract compare --fw1 nist_800_53 --fw2 iso_27001` — find cross-framework equivalences through shared hubs
+
+### Workflow B: "I have a new framework to onboard"
+- `!tract prepare --format csv --input examples/sample_framework.csv --output /tmp/demo_prepared.json` — parse a framework file
+- `!tract validate /tmp/demo_prepared.json` — show validation output (warnings/errors)
+- `!tract ingest /tmp/demo_prepared.json --dry-run` — show what inference would produce (without writing to DB)
+- Explain: `tract accept` finalizes the ingest
+
+### Workflow C: "I want to explore the published crosswalk"
+- `!tract export --format jsonl --framework mitre_atlas` — export ATLAS assignments
+- `!tract export --opencre --dry-run` — show what the OpenCRE CSV export would look like
+- Show loading the HuggingFace dataset: `from datasets import load_dataset; ds = load_dataset("rockCO78/tract-crosswalk-dataset")`
+
+**For each command:**
+- Markdown cell BEFORE: what this command does and when you'd use it
+- Shell cell: the actual command with real output
+- Markdown cell AFTER: interpret the output, point out key fields
+- "Plain English" blockquote summarizing the workflow
+
+**Commands to document but NOT run** (would modify state):
+- `tract bridge --commit`, `tract publish-hf`, `tract publish-dataset`, `tract import-ground-truth`, `tract review-import` — show example output or use `--dry-run`
+
+**Commands to run with real output:**
+- `tract assign`, `tract compare`, `tract hierarchy`, `tract export`, `tract prepare`, `tract validate`, `tract tutorial`, `tract propose-hubs --dry-run`
 
 ## Key stories to tell honestly
 - DeBERTa-v3-NLI complete failure (hit@1=0.000) — why NLI ≠ semantic similarity for this task
@@ -293,12 +329,14 @@ This is NOT a code dump. It is a narrative document following a problem → expl
 - ATLAS flat performance — model trades hits 1:1, hub disambiguation problem
 - R2's methodology error — 4-fold vs 5-fold comparison, caught by adversarial cross-examination
 - NIST AI massive improvement (0.107 → 0.429) — biggest single-fold gain
+- Phase 3 human review revealing model weaknesses: AIUC-1 at 29% acceptance vs CSA AICM at 99% — what does this tell us about domain coverage?
 
 ## Success criteria (PRD Section 11)
 - ≥128 cells, ≥24 figures, full story arc
 - All cells run top-to-bottom with identical output
 - Interactive 3D/animated figures with static fallbacks
 - Colorblind-accessible palettes throughout
+- CLI tutorial: all 3 workflows produce real output, every command explained for a first-time user
 
 Think deeply using the sequential-thinking MCP server. --ultrathink
 ```

@@ -649,7 +649,9 @@ tract-crosswalk-dataset/
 | 8. Final Results | Best model vs all baselines vs Opus, per-framework deep dive | Bootstrap CI comparison chart, confusion analysis (which hubs are hardest), per-framework waterfall |
 | 9. Error Analysis | Where the model fails and why, framework difficulty analysis | t-SNE/UMAP of misclassified controls, similarity distribution of errors vs correct predictions |
 | 10. Calibration | Temperature scaling, reliability diagrams, ECE | Reliability diagram (before/after calibration), confidence histogram |
-| 11. Conclusion & Next Steps | Summary, limitations, what Phase 1C needs | Summary metrics table, roadmap visualization |
+| 11. Human Review & Dataset Publication | Phase 3 review results, acceptance rates by framework, calibration quality | Per-framework acceptance rate bar chart, calibration agreement confusion matrix |
+| 12. Using TRACT (CLI Tutorial) | Hands-on walkthrough of all 18 CLI commands across 3 workflows: single-control assignment, new framework onboarding, crosswalk exploration | Shell cells with real `!tract ...` output, annotated step-by-step |
+| 13. Conclusion & Next Steps | Summary, limitations, future work | Summary metrics table, roadmap visualization |
 | Appendix A | Experiment log — every run with hyperparameters and metrics | Full results table linked to WandB |
 | Appendix B | Visual style guide — palette definitions, design principles with citations | Palette swatches, accessibility notes |
 
@@ -812,7 +814,7 @@ All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 
 | Phase 2 | AI/Traditional bridge hubs identified | At least 10 validated bridges |
 | Phase 3 | Human review coverage | ✅ 100% of predicted assignments reviewed (878/878) |
 | Phase 3 | Published dataset | ✅ Published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset |
-| Phase 3B | Experimental narrative notebook | ≥128 cells, ≥24 figures, full story arc from baselines to final model |
+| Phase 3B | Experimental narrative notebook | ≥128 cells, ≥24 figures, full story arc from baselines to final model + CLI tutorial |
 | Phase 3B | Notebook reproducibility | All cells run top-to-bottom with identical output |
 | Phase 3B | Visualization quality | Interactive 3D/animated figures with static fallbacks, colorblind-accessible palettes |
 | Phase 4 | API latency | < 500ms per single control assignment |
