@@ -106,7 +106,7 @@ class TestSectionsPresent:
             "Framework Coverage",
             "How It Was Made",
             "Review Methodology",
-            "Limitations",
+            "Known Limitations",
             "License",
             "Citation",
         ],
