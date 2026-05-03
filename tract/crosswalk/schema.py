@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS assignments (
     review_status TEXT DEFAULT 'pending',
     reviewer TEXT,
     review_date TEXT,
+    reviewer_notes TEXT,
+    original_hub_id TEXT,
     created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -93,3 +95,25 @@ def get_connection(db_path: Path) -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys=ON")
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def migrate_schema(db_path: Path) -> list[str]:
+    """Apply schema migrations idempotently. Returns list of migrations applied."""
+    conn = get_connection(db_path)
+    applied: list[str] = []
+    try:
+        existing = {
+            row[1] for row in conn.execute("PRAGMA table_info(assignments)").fetchall()
+        }
+        if "reviewer_notes" not in existing:
+            conn.execute("ALTER TABLE assignments ADD COLUMN reviewer_notes TEXT")
+            applied.append("reviewer_notes")
+            logger.info("Added reviewer_notes column to assignments")
+        if "original_hub_id" not in existing:
+            conn.execute("ALTER TABLE assignments ADD COLUMN original_hub_id TEXT")
+            applied.append("original_hub_id")
+            logger.info("Added original_hub_id column to assignments")
+        conn.commit()
+    finally:
+        conn.close()
+    return applied
