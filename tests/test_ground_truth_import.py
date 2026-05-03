@@ -738,7 +738,12 @@ def inference_db(tmp_path: Path) -> Path:
     return db_path
 
 
+UNCOVERED_IDS_PATCH = "tract.crosswalk.ground_truth.PHASE3_UNCOVERED_FRAMEWORK_IDS"
+_AIUC1_ONLY = frozenset({"aiuc_1"})
+
+
 class TestRunUncoveredInference:
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_basic_inference_inserts_assignments(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -758,6 +763,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_text_preparation(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -774,6 +780,7 @@ class TestRunUncoveredInference:
         assert "Another Control" in texts[2]
         assert "Medium description here" in texts[2]
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_confidence_stores_calibrated_value(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -790,6 +797,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_is_ood_stored_as_integer(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -807,6 +815,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_non_ood_stored_as_zero(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -824,6 +833,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_text_quality_warning_for_short_controls(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -840,6 +850,7 @@ class TestRunUncoveredInference:
         assert "aiuc_1:ctrl-2" in warning_ctrl_ids
         assert any("Short control text" in r.message for r in caplog.records)
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_model_version_set_from_artifacts(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -858,6 +869,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_provenance_and_review_status(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -876,6 +888,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_dry_run_does_not_modify_db(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -897,6 +910,7 @@ class TestRunUncoveredInference:
         finally:
             conn.close()
 
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
     @patch("tract.inference.TRACTPredictor")
     def test_per_framework_breakdown(
         self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
@@ -909,3 +923,24 @@ class TestRunUncoveredInference:
         assert "aiuc_1" in per_fw
         assert per_fw["aiuc_1"]["controls"] == 3
         assert per_fw["aiuc_1"]["inserted"] == 3
+
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
+    @patch("tract.inference.TRACTPredictor")
+    def test_idempotent_skips_duplicates(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        first = run_uncovered_inference(inference_db, tmp_path / "model")
+        assert first["total_inserted"] == 3
+        assert first["skipped_duplicate"] == 0
+
+        second = run_uncovered_inference(inference_db, tmp_path / "model")
+        assert second["total_inserted"] == 0
+        assert second["skipped_duplicate"] == 3
+
+        conn = get_connection(inference_db)
+        try:
+            count = conn.execute("SELECT COUNT(*) FROM assignments").fetchone()[0]
+            assert count == 3
+        finally:
+            conn.close()

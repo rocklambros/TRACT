@@ -280,8 +280,9 @@ def run_uncovered_inference(
 
     conn = get_connection(db_path)
     total_inserted = 0
+    skipped_duplicate = 0
     per_framework: dict[str, dict[str, int]] = {}
-    text_quality_warnings: list[dict[str, str]] = []
+    text_quality_warnings: list[dict[str, object]] = []
 
     try:
         for framework_id in sorted(PHASE3_UNCOVERED_FRAMEWORK_IDS):
@@ -307,7 +308,7 @@ def run_uncovered_inference(
                     text_quality_warnings.append({
                         "control_id": row["id"],
                         "framework_id": framework_id,
-                        "text_length": str(len(text)),
+                        "text_length": len(text),
                     })
                     logger.warning(
                         "Short control text (%d chars): %s",
@@ -317,8 +318,20 @@ def run_uncovered_inference(
             batch_results = predictor.predict_batch(texts, top_k=1)
 
             fw_inserted = 0
+            fw_skipped = 0
             for i, predictions in enumerate(batch_results):
                 prediction = predictions[0]
+
+                existing = conn.execute(
+                    "SELECT 1 FROM assignments WHERE control_id = ? AND hub_id = ?",
+                    (control_ids[i], prediction.hub_id),
+                ).fetchone()
+
+                if existing is not None:
+                    fw_skipped += 1
+                    skipped_duplicate += 1
+                    continue
+
                 conn.execute(
                     "INSERT INTO assignments "
                     "(control_id, hub_id, confidence, in_conformal_set, "
@@ -341,6 +354,7 @@ def run_uncovered_inference(
             per_framework[framework_id] = {
                 "controls": len(rows),
                 "inserted": fw_inserted,
+                "skipped_duplicate": fw_skipped,
             }
             logger.info(
                 "Framework %s: %d controls, %d predictions inserted",
@@ -362,6 +376,7 @@ def run_uncovered_inference(
 
     return {
         "total_inserted": total_inserted,
+        "skipped_duplicate": skipped_duplicate,
         "per_framework": per_framework,
         "text_quality_warnings": text_quality_warnings,
         "model_version": model_version,
