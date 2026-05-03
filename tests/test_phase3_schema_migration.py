@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sqlite3
+from pathlib import Path
 
 import pytest
 
@@ -58,7 +59,7 @@ CREATE TABLE IF NOT EXISTS snapshots (
 """
 
 
-def _create_old_db(db_path):
+def _create_old_db(db_path: Path) -> None:
     """Create a database with the old schema (no reviewer_notes/original_hub_id)."""
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path))
@@ -69,7 +70,7 @@ def _create_old_db(db_path):
     conn.close()
 
 
-def _get_column_names(db_path, table="assignments"):
+def _get_column_names(db_path: Path, table: str = "assignments") -> list[str]:
     """Get column names for a table."""
     conn = sqlite3.connect(str(db_path))
     cols = [row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()]
