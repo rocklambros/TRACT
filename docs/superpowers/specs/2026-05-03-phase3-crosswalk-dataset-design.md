@@ -2,11 +2,11 @@
 
 ## Goal
 
-Produce and publish a versioned, human-reviewed crosswalk dataset mapping security controls from 31 frameworks to 522 CRE hubs. The dataset includes 4,388 OpenCRE ground-truth links (18 unresolvable), ~878 model predictions reviewed by an outsourced expert, and 46 bridge relationships — published to HuggingFace Datasets with a Zenodo DOI.
+Produce and publish a versioned, human-reviewed crosswalk dataset mapping security controls from 31 frameworks to 522 CRE hubs. The dataset includes 4,388 OpenCRE ground-truth links (18 unresolvable), ~848 model predictions reviewed by an outsourced expert (+ 20 calibration items), and 46 bridge relationships — published to HuggingFace Datasets with a Zenodo DOI.
 
 ## Architecture
 
-Four new CLI commands, three new modules. Ground truth import populates crosswalk.db with all OpenCRE-linked assignments and runs model inference on the 5 uncovered AI frameworks. Review export generates a monolithic JSON file for an outsourced expert. Review import reads back the expert's decisions and computes quality metrics. Dataset publication bundles everything into a HuggingFace Datasets release.
+Five new CLI commands, three new modules. Ground truth import populates crosswalk.db with all OpenCRE-linked assignments and runs model inference on the 5 uncovered AI frameworks. Review export generates a monolithic JSON file for an outsourced expert. Review import reads back the expert's decisions and computes quality metrics. Dataset publication bundles everything into a HuggingFace Datasets release.
 
 ```
 hub_links_by_framework.json ──┐
@@ -70,14 +70,14 @@ For each resolved GT link:
 - `confidence`: `1.0` (ground truth is certain)
 - `provenance`: `"opencre_ground_truth"`
 - `review_status`: `"ground_truth"`
-- `source_link_id`: the `link_type` from GT data (`"LinkedTo"` or `"AutomaticallyLinkedTo"`)
+- `source_link_id`: the `link_type` from GT data (`"LinkedTo"` or `"AutomaticallyLinkedTo"`) — semantic repurpose of this column (originally meant for link IDs, but link_type is more useful for dataset export's `assignment_type` derivation)
 - `model_version`: `NULL`
 
 **Many-to-many handling:** One control can map to multiple hubs (CAPEC has up to 23 hubs per control). Each link becomes one assignment row. This is correct — the assignments table already supports this.
 
 **Deduplication:** Before inserting, check if `(control_id, hub_id)` already exists in assignments (from either `active_learning_round_2` or `ground_truth_T1-AI`). If so, skip the insert and log it as a "model-GT agreement" data point. The existing `ground_truth_T1-AI` provenance (78 assignments for mitre_atlas + owasp_llm_top10) will overlap with the incoming GT import. These 78 should be skipped since they're already present.
 
-**Existing duplicate handling:** 10 duplicate `(control_id, hub_id)` pairs already exist in the DB. The import must tolerate these gracefully — check before insert, never fail on duplicates.
+**Existing duplicate handling:** 36 duplicate `(control_id, hub_id)` groups already exist in the DB (including one 7-way duplicate for AML.M0008→364-516). Breakdown: 11 internal ground_truth_T1-AI duplicates, 24 GT-vs-AL overlaps (model independently confirmed GT), 1 seven-way GT duplicate. The import must tolerate these gracefully — use `SELECT EXISTS(SELECT 1 FROM assignments WHERE control_id=? AND hub_id=?)` before each insert, provenance-agnostic. Never fail on duplicates.
 
 ### 1.3 Inference on Uncovered Frameworks
 
@@ -99,13 +99,14 @@ if ctrl.full_text:
 text = " ".join(p for p in parts if p)
 ```
 
-**Inference:** Load `TRACTPredictor`, call `predict_batch()` with all control texts for each framework. Insert top-1 prediction per control as assignment:
+**Inference:** Load `TRACTPredictor` from `PHASE1D_DEPLOYMENT_MODEL_DIR`, call `predict_batch()` with all control texts for each framework. Insert top-1 prediction per control as assignment:
 - `provenance`: `"model_prediction"`
 - `review_status`: `"pending"`
-- `confidence`: `raw_similarity` from prediction
-- `calibrated_confidence` is NOT stored in DB (computed at export time from the stored confidence + calibration parameters)
+- `confidence`: `calibrated_confidence` from prediction (matching existing AL convention — `accept.py:108` stores calibrated softmax output, not raw cosine)
 - `is_ood`: stored in DB
 - `model_version`: git SHA of current deployment model
+
+**Critical note on confidence semantics:** The existing 558 `active_learning_round_2` assignments store **calibrated** confidence (softmax output) in the DB `confidence` column, not raw cosine similarity. New `model_prediction` assignments MUST use the same convention. The review export re-runs inference to get fresh, consistent values (see Section 2.2).
 
 **Text quality warning:** NIST AI RMF has 13/72 controls with descriptions under 50 characters. These will produce unreliable predictions. The review export flags these with `text_quality: "low"` so the reviewer knows to scrutinize them.
 
@@ -115,10 +116,12 @@ text = " ".join(p for p in parts if p)
 tract import-ground-truth [--dry-run]
 ```
 
+- **Backup:** Before any writes, copy `crosswalk.db` to `crosswalk.db.backup.{timestamp}`
 - Reads `data/training/hub_links_by_framework.json`
 - Resolves section IDs using multi-strategy resolver
-- Imports ground truth assignments (skipping duplicates)
-- Runs inference on uncovered frameworks
+- **Single transaction:** Wraps the entire GT import in one transaction — atomic rollback on any failure
+- Imports ground truth assignments (skipping duplicates via EXISTS check)
+- Runs inference on uncovered frameworks (separate transaction)
 - Reports: imported count, skipped duplicates, unresolvable links, inference results
 - `--dry-run`: report what would happen without modifying DB
 
@@ -128,11 +131,17 @@ tract import-ground-truth [--dry-run]
 
 ## 2. Review Export (`tract review-export`)
 
-### 2.1 Scope: ALL Model Predictions
+### 2.1 Scope: Model Predictions (Excluding GT-Confirmed)
 
-The review JSON includes ALL assignments with `provenance IN ("active_learning_round_2", "model_prediction")` — regardless of current `review_status`. The 558 AL-accepted predictions are re-reviewed by the expert. This is the entire point of Phase 3: independent human validation supersedes ML pipeline acceptance.
+The review JSON includes assignments with `provenance IN ("active_learning_round_2", "model_prediction")` — **excluding** any AL prediction where a ground truth assignment already exists for the same `(control_id, hub_id)`. Approximately 30 AL predictions for mitre_atlas overlap with GT links (the model independently arrived at the same answer as OpenCRE ground truth). These are already confirmed correct by a stronger source and do not need re-review.
 
-Additionally, ~20 calibration items from `provenance="ground_truth_T1-AI"` are included, disguised as regular predictions (see Section 2.3).
+Query: exclude where `EXISTS (SELECT 1 FROM assignments a2 WHERE a2.control_id = a.control_id AND a2.hub_id = a.hub_id AND a2.provenance = 'opencre_ground_truth')`.
+
+The remaining ~528 AL-accepted predictions plus ~320 new model predictions are re-reviewed by the expert. This is the entire point of Phase 3: independent human validation supersedes ML pipeline acceptance.
+
+Additionally, 20 calibration items from `provenance="ground_truth_T1-AI"` are included, disguised as regular predictions (see Section 2.3).
+
+**Re-export after partial import:** If a partial review has been imported, re-exporting excludes items where `reviewer IS NOT NULL` (already reviewed). This supports batch review workflows — the reviewer works on the original file and submits partial results.
 
 ### 2.2 Review JSON Structure
 
@@ -142,7 +151,7 @@ One monolithic file. Predictions sorted by framework (alphabetical), then by `ca
 {
   "metadata": {
     "generated_at": "2026-05-03T12:00:00Z",
-    "total_predictions": 898,
+    "total_predictions": 868,
     "calibration_items": 20,
     "frameworks": {
       "CSA AI Controls Matrix": 243,
@@ -184,23 +193,37 @@ One monolithic file. Predictions sorted by framework (alphabetical), then by `ca
 }
 ```
 
+**Re-inference at export time:** The export loads `TRACTPredictor` (from `PHASE1D_DEPLOYMENT_MODEL_DIR`) and runs `predict_batch()` on ALL control texts in scope. This provides fresh, consistent values for `confidence` (raw cosine similarity), `calibrated_confidence` (softmax output), and `alternative_hubs` (top-2 next-best). This avoids the dual-semantics problem: existing AL assignments store calibrated values in the DB `confidence` column, so re-calibrating from DB values would double-calibrate. Re-inference gives clean raw + calibrated values for all predictions uniformly.
+
 **Field specifications:**
 
 | Field | Source | Purpose |
 |-------|--------|---------|
 | `id` | `assignments.id` (integer PK) | Stable reference for import back |
-| `text_quality` | Computed from text length | `"high"` (>200 chars), `"medium"` (100-200), `"low"` (<100) |
-| `review_priority` | Computed from confidence + OOD + text_quality | `"routine"` (high conf, not OOD), `"careful"` (low conf or OOD), `"critical"` (low conf + low text quality) |
-| `calibrated_confidence` | `calibrate_similarities(confidence, T)` | Computed at export time, not stored in DB |
-| `alternative_hubs` | Top-2 next-best predictions | Re-computed at export time via `predict()` |
+| `text_quality` | Computed from **combined inference text** length (`" ".join([title, description, full_text])`) | `"high"` (>500 chars), `"medium"` (100-500), `"low"` (<100) |
+| `review_priority` | Computed from calibrated_confidence + OOD + text_quality | `"routine"` (calibrated_conf > `global_threshold` AND not OOD), `"careful"` (calibrated_conf ≤ `global_threshold` OR is_ood), `"critical"` (calibrated_conf ≤ `global_threshold` AND text_quality="low"). `global_threshold` from `calibration.json`. |
+| `confidence` | Fresh raw cosine similarity from re-inference | Model's raw similarity score |
+| `calibrated_confidence` | Fresh `calibrate_similarities(raw_sim, T)` from re-inference | Temperature-scaled probability |
+| `alternative_hubs` | Top-2 next-best predictions from re-inference | Gives reviewer options for reassignment |
 
 ### 2.3 Calibration Items
 
-Include ~20 items from `ground_truth_T1-AI` disguised as regular predictions. These have known correct hub assignments. Selection:
-- Draw proportionally from mitre_atlas (~15) and owasp_llm_top10 (~5)
-- Include a mix of "easy" (high similarity to correct hub) and "hard" (lower similarity) items
-- Assign them synthetic `id` values in a reserved range (e.g., negative IDs or IDs > 100000) so the import can identify and skip them
-- Set `status: "pending"` like all other predictions
+Include 20 items from `ground_truth_T1-AI` disguised as regular predictions. These have known correct hub assignments.
+
+**Confidence for calibration items:** All 78 ground_truth_T1-AI assignments have NULL confidence in the DB. To disguise these as real predictions, run inference on each calibration control's text to get the model's genuine confidence for the known-correct hub. This makes the item indistinguishable from a real prediction. If the model's top-1 disagrees with GT, the calibration item is doubly useful — it tests whether the reviewer correctly identifies the right hub despite a wrong model prediction.
+
+**Selection procedure (reproducible):**
+1. Run inference on all 78 ground_truth_T1-AI control texts
+2. For each, record the model's calibrated_confidence for the known-correct hub_id
+3. Sort by this confidence descending
+4. Take top-5 (easy — model strongly agrees with GT)
+5. Take bottom-5 (hard — model weakly agrees or disagrees)
+6. Take 10 random from the middle (seed: `PHASE3_CALIBRATION_SEED = 42` in config.py)
+7. `n_calibration = 20` as constant in config.py
+
+**Synthetic IDs:** Use negative IDs (`-1` to `-20`). These never collide with SQLite AUTOINCREMENT (always positive). The review import skips any item with `id < 0`.
+
+Set `status: "pending"` like all other predictions.
 
 At import time, compare reviewer decisions on calibration items to known ground truth. Report as "reviewer quality score" in metrics. If the reviewer rejects or reassigns known-correct mappings, flag for investigation.
 
@@ -249,20 +272,25 @@ Generated as `reviewer_guide.md`. Contents:
 - NIST AI RMF predictions are based on short control descriptions and may be less reliable.
 - Items flagged `text_quality: "low"` had sparse input text — predictions may be unreliable.
 
+**Editor requirement:** Use a JSON-aware editor (VS Code, Notepad++, Sublime Text) that highlights syntax errors. Do NOT edit in plain Notepad or a word processor. Common mistakes: missing commas between fields, extra trailing comma after last field, unclosed quotes. Run `tract review-validate` before submitting to catch JSON errors early.
+
 **Saving progress:** Work in batches. Leave unreviewed items as `"status": "pending"`. Partial files can be imported.
 
-**Time estimate:** ~900 predictions. Routine items (~60%) take ~1 min each. Careful/critical items (~40%) take 3-5 min. Estimated total: 25-40 hours.
+**Time estimate:** ~868 predictions. Routine items (~60%) take ~1 min each. Careful/critical items (~40%) take 3-5 min. Estimated total: 25-40 hours.
 
 ### 2.6 CLI Interface
 
 ```
-tract review-export --output results/review/review_predictions.json
+tract review-export --output results/review/review_predictions.json [--model-dir PATH]
 ```
 
-- Queries all model predictions from crosswalk.db
-- Inserts calibration items
+- `--model-dir`: Path to deployment model directory (default: `PHASE1D_DEPLOYMENT_MODEL_DIR`). Required for re-inference.
+- Loads `TRACTPredictor` and runs inference on all in-scope control texts
+- Queries model predictions from crosswalk.db (excluding GT-confirmed overlaps)
+- Computes fresh confidence + calibrated_confidence + alternative_hubs from inference
+- Inserts calibration items (with inference-derived confidence)
 - Generates review JSON, reviewer guide, and hub reference
-- Reports: total predictions, per-framework counts, calibration item count
+- Reports: total predictions, per-framework counts, calibration item count, excluded GT-overlap count
 
 **New files:** `tract/review/__init__.py`, `tract/review/export.py`, `tract/review/guide.py`
 
@@ -270,29 +298,46 @@ tract review-export --output results/review/review_predictions.json
 
 ## 3. Review Import (`tract review-import`)
 
+### 3.0 Schema Migration (prerequisite)
+
+Before any review import, the assignments table must be extended with two columns:
+
+```sql
+ALTER TABLE assignments ADD COLUMN reviewer_notes TEXT;
+ALTER TABLE assignments ADD COLUMN original_hub_id TEXT;
+```
+
+- `reviewer_notes`: Free-text notes from the reviewer (e.g., reasoning for rejection)
+- `original_hub_id`: Populated on reassignment — stores the model's original hub_id before the reviewer changed it. Used by dataset export to derive `assignment_type = "model_reassigned"` (queryable, no text parsing).
+
+Also update `SCHEMA_SQL` in `tract/crosswalk/schema.py` so new databases include both columns. The migration runs idempotently (check column existence before ALTER).
+
 ### 3.1 Validation
 
 Before any DB writes, validate:
+- JSON parse succeeds — if not, report the parse error with line number context so the reviewer can fix it. Consider a separate `tract review-validate` subcommand for pre-checking.
 - JSON structure matches schema (metadata + predictions array)
 - Every non-pending prediction has valid `status` (accepted/reassigned/rejected)
 - Every `corrected_hub_id` (on reassigned items) is a valid hub ID in DB
-- Every `id` matches an existing assignment in DB (skip calibration items with synthetic IDs)
+- Every `id` matches an existing assignment in DB (skip calibration items with `id < 0`)
 - Warn (don't fail) if some predictions are still `"pending"` — partial review is fine
 
 ### 3.2 DB Updates (Single Transaction)
+
+**Do NOT use `update_review_status()` from `store.py`.** That function uses "corrected" status and creates NEW rows (INSERT), which conflicts with this spec's UPDATE-in-place semantics. Write a new `apply_review_decisions()` function in `tract/review/import_review.py`.
 
 All updates in one transaction — atomic rollback on any failure.
 
 | Status | DB Update |
 |--------|-----------|
-| `accepted` | `review_status="accepted"`, `reviewer=<name>`, `review_date=now` |
-| `reassigned` | `hub_id=corrected_hub_id`, `confidence=NULL`, `review_status="accepted"`, `reviewer=<name>`, `review_date=now`, `reviewer_notes` includes original hub_id and confidence |
-| `rejected` | `review_status="rejected"`, `reviewer=<name>`, `review_date=now` |
+| `accepted` | `review_status="accepted"`, `reviewer=<name>`, `review_date=now`, `reviewer_notes=<notes>` |
+| `reassigned` | `original_hub_id=<old hub_id>`, `hub_id=corrected_hub_id`, `confidence=NULL`, `review_status="accepted"`, `reviewer=<name>`, `review_date=now`, `reviewer_notes=<notes>` |
+| `rejected` | `review_status="rejected"`, `reviewer=<name>`, `review_date=now`, `reviewer_notes=<notes>` |
 | `pending` | Skip — no update |
 
-**Idempotent:** Re-importing the same file produces the same DB state. Updates by assignment `id`, not inserts.
+**Idempotent:** Re-importing the same file produces the same DB state. Updates by assignment `id`, not inserts. If an assignment already has a non-NULL `reviewer` and the new import provides a different reviewer, log a warning but allow the override.
 
-**Reassignment confidence handling:** When a reviewer reassigns to a different hub, the stored confidence was for the ORIGINAL hub. Set `confidence=NULL` and append to `reviewer_notes`: `"[Reassigned from hub {original_hub_id} (confidence={original_conf:.3f})]"`.
+**Reassignment tracking:** When a reviewer reassigns to a different hub, the stored confidence was for the ORIGINAL hub. Set `original_hub_id` to the old hub_id (typed, queryable column), set `confidence=NULL`, and record in `reviewer_notes`: `"[Reassigned from hub {original_hub_id} (confidence={original_conf:.3f})]"`. The `original_hub_id` column is used by dataset export to derive `assignment_type = "model_reassigned"` without text parsing.
 
 ### 3.3 Review Metrics
 
@@ -303,8 +348,8 @@ Computed at import time and saved to `results/review/review_metrics.json`:
   "generated_at": "2026-05-15T...",
   "import_round": 1,
   "coverage": {
-    "total_predictions": 896,
-    "reviewed": 896,
+    "total_predictions": 848,
+    "reviewed": 848,
     "pending": 0,
     "completion_pct": 100.0
   },
@@ -393,14 +438,16 @@ One JSON line per assignment. Includes ALL assignments (ground truth + accepted 
 }
 ```
 
+**Deduplication:** For any `(control_id, hub_id)` appearing in multiple assignment rows (36 groups exist), keep the row with highest-priority provenance: `opencre_ground_truth` > `ground_truth_T1-AI` > `active_learning_round_2` > `model_prediction`. Output ONE row per unique `(control_id, hub_id)` pair.
+
 **`assignment_type` values** (provenance + review outcome combined):
 
-| Value | Meaning | Source |
-|-------|---------|--------|
-| `ground_truth_linked` | Expert-curated LinkedTo from OpenCRE | `source_link_id="LinkedTo"` |
-| `ground_truth_auto` | Transitive chain AutomaticallyLinkedTo from OpenCRE | `source_link_id="AutomaticallyLinkedTo"` |
-| `model_accepted` | Model prediction accepted by expert | `review_status="accepted"`, not reassigned |
-| `model_reassigned` | Model prediction corrected by expert | `review_status="accepted"`, hub_id differs from original |
+| Value | Meaning | Derivation |
+|-------|---------|------------|
+| `ground_truth_linked` | Expert-curated LinkedTo from OpenCRE | `provenance="opencre_ground_truth"` AND `source_link_id="LinkedTo"` |
+| `ground_truth_auto` | Transitive chain AutomaticallyLinkedTo from OpenCRE | `provenance="opencre_ground_truth"` AND `source_link_id="AutomaticallyLinkedTo"` |
+| `model_accepted` | Model prediction accepted by expert | `review_status="accepted"` AND `original_hub_id IS NULL` |
+| `model_reassigned` | Model prediction corrected by expert | `review_status="accepted"` AND `original_hub_id IS NOT NULL` (queryable column, no text parsing) |
 | `model_rejected` | Model prediction rejected by expert | `review_status="rejected"` |
 
 ### 4.3 framework_metadata.json
@@ -440,7 +487,7 @@ HuggingFace Datasets format. Novice-friendly, matching the model card quality. S
 4. **Framework Coverage Table** — all 31 frameworks with control counts and coverage types
 5. **How It Was Made** — model training (LOFO, bi-encoder), active learning, expert review, bridge analysis
 6. **Review Methodology** — who reviewed, criteria, quality score, acceptance rates
-7. **Limitations** — ATLAS hub disambiguation, short-text predictions, coverage gaps
+7. **Limitations** — ATLAS hub disambiguation, short-text predictions, coverage gaps, model_version NULL for initial AL predictions
 8. **License** — CC-BY-SA-4.0 (pending OpenCRE license verification)
 9. **Citation** — BibTeX
 
@@ -497,7 +544,7 @@ tract publish-dataset --repo-id rockCO78/tract-crosswalk-dataset [--dry-run] [--
 | `tract/crosswalk/ground_truth.py` | Multi-strategy resolver + GT import + inference orchestration |
 | `tract/review/__init__.py` | Review workflow orchestrator |
 | `tract/review/export.py` | Generate review JSON with calibration items |
-| `tract/review/import_review.py` | Parse reviewed JSON, validate, update DB |
+| `tract/review/import_review.py` | Parse reviewed JSON, validate, update DB via `apply_review_decisions()` (NOT `update_review_status()`) |
 | `tract/review/metrics.py` | Compute acceptance/rejection/quality metrics |
 | `tract/review/guide.py` | Generate reviewer guide markdown + hub reference JSON |
 | `tract/dataset/__init__.py` | Dataset publication orchestrator |
@@ -511,6 +558,7 @@ tract publish-dataset --repo-id rockCO78/tract-crosswalk-dataset [--dry-run] [--
 |---------|---------|
 | `tract import-ground-truth` | `_cmd_import_ground_truth` |
 | `tract review-export` | `_cmd_review_export` |
+| `tract review-validate` | `_cmd_review_validate` |
 | `tract review-import` | `_cmd_review_import` |
 | `tract publish-dataset` | `_cmd_publish_dataset` |
 
@@ -519,44 +567,68 @@ tract publish-dataset --repo-id rockCO78/tract-crosswalk-dataset [--dry-run] [--
 | Test File | Covers |
 |-----------|--------|
 | `tests/test_ground_truth_import.py` | Resolver strategies, dedup, GT insert, inference trigger |
-| `tests/test_review_export.py` | JSON structure, calibration items, text quality, priority |
-| `tests/test_review_import.py` | Validation, DB updates, reassignment, idempotency |
+| `tests/test_review_export.py` | JSON structure, calibration items, text quality, priority, re-inference consistency |
+| `tests/test_review_import.py` | Validation, DB updates, reassignment via original_hub_id, idempotency, schema migration |
 | `tests/test_review_metrics.py` | Metric computation, partial review handling |
-| `tests/test_dataset_bundle.py` | JSONL format, assignment_type, framework metadata |
+| `tests/test_dataset_bundle.py` | JSONL format, assignment_type derivation via original_hub_id, (control_id,hub_id) dedup, framework metadata |
 | `tests/test_dataset_card.py` | Card generation, field completeness |
 
 ---
 
 ## 6. Adversarial Review Findings (Incorporated)
 
-All findings from the 5-round adversarial review are incorporated into this spec:
+Two rounds of adversarial review conducted: Round 1 (5 agents, pre-spec) and Round 2 (3 agents + 2 cross-attack rounds, post-spec). All findings are incorporated into this spec.
 
-### MUST CHANGE (correctness)
+### Round 1 Findings (pre-spec, 12 findings)
 
 | # | Finding | Resolution | Spec Section |
 |---|---------|------------|-------------|
 | 1 | GT import needs multi-strategy section_id resolver | 5-strategy resolver with 99.59% match rate | 1.1 |
-| 2 | AL-accepted predictions must be re-reviewed | Review export includes ALL model predictions | 2.1 |
-| 3 | No reviewer quality assessment | ~20 calibration items from ground_truth_T1-AI | 2.3 |
+| 2 | AL-accepted predictions must be re-reviewed | Review export includes model predictions (excluding GT-confirmed) | 2.1 |
+| 3 | No reviewer quality assessment | 20 calibration items with inference-derived confidence | 2.3 |
 | 4 | License may be CC-BY-SA not CC-BY | Default CC-BY-SA-4.0, verify before publish | 4.5 |
-
-### SHOULD CHANGE (quality)
-
-| # | Finding | Resolution | Spec Section |
-|---|---------|------------|-------------|
 | 5 | Reviewer can't find hub IDs for reassignment | hub_reference.json generated alongside review | 2.4 |
-| 6 | No text quality signal | `text_quality` field (high/medium/low) | 2.2 |
-| 7 | Reassignment breaks confidence semantics | Set confidence=NULL, preserve original in notes | 3.2 |
-| 8 | JSONL missing provenance granularity | `assignment_type` field (5 values) | 4.2 |
-| 9 | No triage signal for reviewer | `review_priority` field (routine/careful/critical) | 2.2 |
+| 6 | No text quality signal | `text_quality` field from combined text (high/medium/low) | 2.2 |
+| 7 | Reassignment breaks confidence semantics | Set confidence=NULL, store original_hub_id in typed column | 3.0, 3.2 |
+| 8 | JSONL missing provenance granularity | `assignment_type` field (5 values, derived via original_hub_id) | 4.2 |
+| 9 | No triage signal for reviewer | `review_priority` using global_threshold from calibration.json | 2.2 |
+| 10 | Duplicate pairs in DB | 36 groups (corrected from 10), EXISTS-based dedup | 1.2 |
+| 11 | Partial review metrics misleading | Track import_round, caveat at <100% completion | 3.3 |
+| 12 | NIST AI RMF has 13 controls with <50 char text | Warning in reviewer guide + text_quality="low" | 2.5 |
 
-### NICE TO HAVE (clarity)
+### Round 2 Findings (post-spec, 17 consolidated from 34 raw across 3 agents)
+
+**MUST CHANGE (6 — will crash or produce wrong results):**
 
 | # | Finding | Resolution | Spec Section |
 |---|---------|------------|-------------|
-| 10 | 10 existing duplicate pairs in DB | Import checks before insert, skips duplicates | 1.2 |
-| 11 | Partial review metrics misleading | Track import_round, caveat at <100% completion | 3.3 |
-| 12 | NIST AI RMF has 13 controls with <50 char text | Warning in reviewer guide | 2.5 |
+| M1 | `reviewer_notes` + `original_hub_id` columns missing from DB | ALTER TABLE migration + schema.py update | 3.0 |
+| M2 | DB `confidence` is already calibrated (softmax), not raw. Re-calibrating = double-calibration. NULL confidence (85 rows) crashes export. | Re-run inference at export time for all predictions. Store calibrated_confidence for new predictions to match AL convention. | 1.3, 2.2 |
+| M3 | 36 duplicate (control_id, hub_id) groups, not 10 (one 7-way) | Corrected count, provenance-agnostic EXISTS check | 1.2 |
+| M4 | `update_review_status()` uses "corrected" + INSERT-new-row, conflicts with spec's UPDATE-in-place | Write new `apply_review_decisions()`, do NOT reuse existing function | 3.2 |
+| M5 | ~30 AL predictions overlap with GT for same (control_id, hub_id) — wastes reviewer time | Exclude GT-confirmed predictions from review export | 2.1 |
+| M6 | Dataset JSONL has no dedup — 36 pairs appear as multiple rows | Provenance-priority dedup: opencre_ground_truth > T1-AI > AL > model_prediction | 4.2 |
+
+**SHOULD CHANGE (7 — quality/reproducibility):**
+
+| # | Finding | Resolution | Spec Section |
+|---|---------|------------|-------------|
+| S1 | `review_priority` and `text_quality` thresholds undefined | Combined text thresholds; priority uses global_threshold from calibration.json | 2.2 |
+| S2 | Calibration item selection non-reproducible | Inference on 78 GT controls, stratified selection, seed=42 | 2.3 |
+| S3 | Calibration ID scheme ambiguous | Negative IDs only (-1 to -20) | 2.3 |
+| S4 | Review-export needs model path for re-inference | `--model-dir` argument defaulting to PHASE1D_DEPLOYMENT_MODEL_DIR | 2.6 |
+| S5 | No DB backup before 4,700+ inserts | Copy to .backup.{timestamp} before import | 1.4 |
+| S6 | GT import not in single transaction | Atomic transaction with rollback | 1.4 |
+| S7 | JSON editing error-prone for reviewer | Validation with line-level errors; recommend JSON-aware editor | 3.1 |
+
+**NICE TO HAVE (4 — implementer clarity):**
+
+| # | Finding | Resolution | Spec Section |
+|---|---------|------------|-------------|
+| N1 | Re-export after partial import undefined | Exclude items with reviewer IS NOT NULL | 2.1 |
+| N2 | `source_link_id` stores link_type, not an ID | Noted semantic repurpose | 1.2 |
+| N3 | `model_version` NULL for 636 existing assignments | Accept NULL, document in dataset card | 1.3, 4.4 |
+| N4 | Re-import with different reviewer overwrites attribution | Warn on mismatch, allow override | 3.2 |
 
 ---
 
@@ -572,7 +644,7 @@ All findings from the 5-round adversarial review are incorporated into this spec
 | NIST 800-53 | 300 | Title | 100% |
 | ASVS | 277 | Prefixed | 100% |
 | DSOMM | 214 | Prefixed | 100% |
-| WSTG | 118 | Prefixed + title | 97% |
+| WSTG | 118 | Title exact (prefix fails due to case: GT="WSTG-CRYP-04" vs DB="wstg:wstg-cryp-04") | 97% |
 | ISO 27001 | 94 | Title | 100% |
 | NIST 800-63 | 79 | Title | 100% |
 | OWASP Proactive Controls | 76 | Prefixed | 100% |
@@ -605,10 +677,10 @@ All findings from the 5-round adversarial review are incorporated into this spec
 
 | Source | Count | Review Status |
 |--------|-------|--------------|
-| AL round 2 (accepted) | 558 | Re-review by expert |
-| AL round 2 (inference on new frameworks) | ~320 | New expert review |
-| Ground truth T1-AI (calibration items) | ~20 | Disguised quality check |
-| **Total review items** | **~898** | |
+| AL round 2 (accepted, excluding ~30 GT-confirmed overlaps) | ~528 | Re-review by expert |
+| New model predictions (5 uncovered frameworks) | ~320 | New expert review |
+| Ground truth T1-AI (calibration items) | 20 | Disguised quality check |
+| **Total review items** | **~868** | |
 
 ### Published Dataset Target
 
