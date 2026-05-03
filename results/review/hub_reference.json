@@ -1,0 +1,3656 @@
+[
+  {
+    "hub_id": "546-564",
+    "is_leaf": false,
+    "name": "Cross-cutting concerns",
+    "parent_id": null,
+    "path": "Cross-cutting concerns"
+  },
+  {
+    "hub_id": "155-155",
+    "is_leaf": true,
+    "name": "Architecture",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Architecture"
+  },
+  {
+    "hub_id": "028-727",
+    "is_leaf": true,
+    "name": "CSRF protection",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > CSRF protection"
+  },
+  {
+    "hub_id": "486-813",
+    "is_leaf": true,
+    "name": "Configuration",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Configuration"
+  },
+  {
+    "hub_id": "170-772",
+    "is_leaf": true,
+    "name": "Cryptography",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Cryptography"
+  },
+  {
+    "hub_id": "623-550",
+    "is_leaf": true,
+    "name": "Denial Of Service protection",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Denial Of Service protection"
+  },
+  {
+    "hub_id": "760-764",
+    "is_leaf": true,
+    "name": "Injection protection",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Injection protection"
+  },
+  {
+    "hub_id": "362-550",
+    "is_leaf": true,
+    "name": "Personal data handling",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Personal data handling"
+  },
+  {
+    "hub_id": "803-457",
+    "is_leaf": false,
+    "name": "Protection against AI-Specfic Threats",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats"
+  },
+  {
+    "hub_id": "061-753",
+    "is_leaf": false,
+    "name": "AI model behaviour integrity threats",
+    "parent_id": "803-457",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats"
+  },
+  {
+    "hub_id": "073-507",
+    "is_leaf": false,
+    "name": "AI model behaviour integrity threats through inference",
+    "parent_id": "061-753",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model behaviour integrity threats through inference"
+  },
+  {
+    "hub_id": "686-110",
+    "is_leaf": true,
+    "name": "Direct prompt injection",
+    "parent_id": "073-507",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model behaviour integrity threats through inference > Direct prompt injection"
+  },
+  {
+    "hub_id": "370-877",
+    "is_leaf": true,
+    "name": "Evasion (e.g. adversarial examples)",
+    "parent_id": "073-507",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model behaviour integrity threats through inference > Evasion (e.g. adversarial examples)"
+  },
+  {
+    "hub_id": "012-625",
+    "is_leaf": true,
+    "name": "Indirect prompt injection",
+    "parent_id": "073-507",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model behaviour integrity threats through inference > Indirect prompt injection"
+  },
+  {
+    "hub_id": "481-710",
+    "is_leaf": false,
+    "name": "AI model poisoning",
+    "parent_id": "061-753",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning"
+  },
+  {
+    "hub_id": "615-663",
+    "is_leaf": true,
+    "name": "Data poisoning of train/finetune/augmentation data",
+    "parent_id": "481-710",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning > Data poisoning of train/finetune/augmentation data"
+  },
+  {
+    "hub_id": "867-642",
+    "is_leaf": true,
+    "name": "Direct development-time model poisoning",
+    "parent_id": "481-710",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning > Direct development-time model poisoning"
+  },
+  {
+    "hub_id": "020-540",
+    "is_leaf": true,
+    "name": "Direct runtime model poisoning",
+    "parent_id": "481-710",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning > Direct runtime model poisoning"
+  },
+  {
+    "hub_id": "701-654",
+    "is_leaf": true,
+    "name": "Supply-chain model poisoning",
+    "parent_id": "481-710",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI model behaviour integrity threats > AI model poisoning > Supply-chain model poisoning"
+  },
+  {
+    "hub_id": "230-318",
+    "is_leaf": true,
+    "name": "AI resource exhaustion attack",
+    "parent_id": "803-457",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > AI resource exhaustion attack"
+  },
+  {
+    "hub_id": "738-144",
+    "is_leaf": false,
+    "name": "Conventional threats to AI input, output and augmentation data",
+    "parent_id": "803-457",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data"
+  },
+  {
+    "hub_id": "173-554",
+    "is_leaf": true,
+    "name": "Augmentation data leak",
+    "parent_id": "738-144",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Augmentation data leak"
+  },
+  {
+    "hub_id": "217-163",
+    "is_leaf": true,
+    "name": "Augmentation data manipulation",
+    "parent_id": "738-144",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Augmentation data manipulation"
+  },
+  {
+    "hub_id": "077-235",
+    "is_leaf": true,
+    "name": "Model input leak",
+    "parent_id": "738-144",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Model input leak"
+  },
+  {
+    "hub_id": "780-757",
+    "is_leaf": true,
+    "name": "Model output contains conventional injection",
+    "parent_id": "738-144",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Conventional threats to AI input, output and augmentation data > Model output contains conventional injection"
+  },
+  {
+    "hub_id": "267-786",
+    "is_leaf": false,
+    "name": "Model confidentiality threats",
+    "parent_id": "803-457",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Model confidentiality threats"
+  },
+  {
+    "hub_id": "342-781",
+    "is_leaf": true,
+    "name": "Direct development-time model leak",
+    "parent_id": "267-786",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Model confidentiality threats > Direct development-time model leak"
+  },
+  {
+    "hub_id": "182-732",
+    "is_leaf": true,
+    "name": "Direct runtime model leak",
+    "parent_id": "267-786",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Model confidentiality threats > Direct runtime model leak"
+  },
+  {
+    "hub_id": "141-385",
+    "is_leaf": true,
+    "name": "Model exfiltration",
+    "parent_id": "267-786",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Model confidentiality threats > Model exfiltration"
+  },
+  {
+    "hub_id": "220-870",
+    "is_leaf": false,
+    "name": "Training data confidentiality threats",
+    "parent_id": "803-457",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats"
+  },
+  {
+    "hub_id": "077-772",
+    "is_leaf": true,
+    "name": "Direct training or test data leak",
+    "parent_id": "220-870",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats > Direct training or test data leak"
+  },
+  {
+    "hub_id": "475-586",
+    "is_leaf": false,
+    "name": "Training data confidentiality threats through inference",
+    "parent_id": "220-870",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats > Training data confidentiality threats through inference"
+  },
+  {
+    "hub_id": "044-202",
+    "is_leaf": true,
+    "name": "Data disclosure in model output",
+    "parent_id": "475-586",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats > Training data confidentiality threats through inference > Data disclosure in model output"
+  },
+  {
+    "hub_id": "034-540",
+    "is_leaf": true,
+    "name": "Model inversion / Membership inference",
+    "parent_id": "475-586",
+    "path": "Cross-cutting concerns > Protection against AI-Specfic Threats > Training data confidentiality threats > Training data confidentiality threats through inference > Model inversion / Membership inference"
+  },
+  {
+    "hub_id": "028-728",
+    "is_leaf": true,
+    "name": "SSRF protection",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > SSRF protection"
+  },
+  {
+    "hub_id": "058-527",
+    "is_leaf": true,
+    "name": "Secure name/address resolution service",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > Secure name/address resolution service"
+  },
+  {
+    "hub_id": "760-765",
+    "is_leaf": true,
+    "name": "XSS protection",
+    "parent_id": "546-564",
+    "path": "Cross-cutting concerns > XSS protection"
+  },
+  {
+    "hub_id": "616-305",
+    "is_leaf": false,
+    "name": "Development processes for security",
+    "parent_id": null,
+    "path": "Development processes for security"
+  },
+  {
+    "hub_id": "326-704",
+    "is_leaf": false,
+    "name": "Architecture/design processes",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Architecture/design processes"
+  },
+  {
+    "hub_id": "068-102",
+    "is_leaf": true,
+    "name": "Describe high-level system architecture and perform threat modeling on it every critical change and regularly",
+    "parent_id": "326-704",
+    "path": "Development processes for security > Architecture/design processes > Describe high-level system architecture and perform threat modeling on it every critical change and regularly"
+  },
+  {
+    "hub_id": "072-713",
+    "is_leaf": true,
+    "name": "Manage standard technologies and frameworks",
+    "parent_id": "326-704",
+    "path": "Development processes for security > Architecture/design processes > Manage standard technologies and frameworks"
+  },
+  {
+    "hub_id": "124-564",
+    "is_leaf": false,
+    "name": "Configuration Management",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Configuration Management"
+  },
+  {
+    "hub_id": "080-466",
+    "is_leaf": false,
+    "name": "Developer Configuration Management",
+    "parent_id": "124-564",
+    "path": "Development processes for security > Configuration Management > Developer Configuration Management"
+  },
+  {
+    "hub_id": "757-271",
+    "is_leaf": true,
+    "name": "Use source code control system with change traceability and access control",
+    "parent_id": "080-466",
+    "path": "Development processes for security > Configuration Management > Developer Configuration Management > Use source code control system with change traceability and access control"
+  },
+  {
+    "hub_id": "424-242",
+    "is_leaf": true,
+    "name": "Decommissioning",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Decommissioning"
+  },
+  {
+    "hub_id": "473-177",
+    "is_leaf": false,
+    "name": "Deploy/build",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Deploy/build"
+  },
+  {
+    "hub_id": "307-507",
+    "is_leaf": true,
+    "name": "Allow only trusted sources both build time and runtime; therefore perform integrity checks on all resources and code",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Allow only trusted sources both build time and runtime; therefore perform integrity checks on all resources and code"
+  },
+  {
+    "hub_id": "263-184",
+    "is_leaf": true,
+    "name": "Automate secure build and deployment, especially with SDI",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Automate secure build and deployment, especially with SDI"
+  },
+  {
+    "hub_id": "171-222",
+    "is_leaf": true,
+    "name": "Check binary integrity before deployment",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Check binary integrity before deployment"
+  },
+  {
+    "hub_id": "208-355",
+    "is_leaf": true,
+    "name": "Ensure repeatability of deployment",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Ensure repeatability of deployment"
+  },
+  {
+    "hub_id": "028-254",
+    "is_leaf": true,
+    "name": "Secure auto-updates over full stack",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Secure auto-updates over full stack"
+  },
+  {
+    "hub_id": "461-680",
+    "is_leaf": true,
+    "name": "Securely archive builds and build information",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Securely archive builds and build information"
+  },
+  {
+    "hub_id": "253-452",
+    "is_leaf": true,
+    "name": "Securely automate build and deployment in pipeline",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Securely automate build and deployment in pipeline"
+  },
+  {
+    "hub_id": "347-352",
+    "is_leaf": true,
+    "name": "Set and confirm integrity of security deployment configuration",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Set and confirm integrity of security deployment configuration"
+  },
+  {
+    "hub_id": "314-131",
+    "is_leaf": true,
+    "name": "Use features in compile and build tools for executable security",
+    "parent_id": "473-177",
+    "path": "Development processes for security > Deploy/build > Use features in compile and build tools for executable security"
+  },
+  {
+    "hub_id": "745-356",
+    "is_leaf": true,
+    "name": "Development process audit trail",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Development process audit trail"
+  },
+  {
+    "hub_id": "613-285",
+    "is_leaf": false,
+    "name": "Supply chain management",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Supply chain management"
+  },
+  {
+    "hub_id": "613-287",
+    "is_leaf": false,
+    "name": "Dependency integrity",
+    "parent_id": "613-285",
+    "path": "Development processes for security > Supply chain management > Dependency integrity"
+  },
+  {
+    "hub_id": "834-645",
+    "is_leaf": true,
+    "name": "Avoid unauthorized client data collection",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Avoid unauthorized client data collection"
+  },
+  {
+    "hub_id": "838-636",
+    "is_leaf": true,
+    "name": "Check source code and third party libraries to not contain backdoors",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Check source code and third party libraries to not contain backdoors"
+  },
+  {
+    "hub_id": "265-800",
+    "is_leaf": true,
+    "name": "Check source code and third party libraries to not contain malicious code",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Check source code and third party libraries to not contain malicious code"
+  },
+  {
+    "hub_id": "418-525",
+    "is_leaf": true,
+    "name": "Check source code and third party libraries to not contain timebombs",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Check source code and third party libraries to not contain timebombs"
+  },
+  {
+    "hub_id": "577-260",
+    "is_leaf": true,
+    "name": "Enforce integrity check for externally hosted assets (eg SRI)",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Enforce integrity check for externally hosted assets (eg SRI)"
+  },
+  {
+    "hub_id": "715-223",
+    "is_leaf": true,
+    "name": "Ensure trusted origin of third party resources",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Ensure trusted origin of third party resources"
+  },
+  {
+    "hub_id": "860-084",
+    "is_leaf": true,
+    "name": "Sandbox third party libraries",
+    "parent_id": "613-287",
+    "path": "Development processes for security > Supply chain management > Dependency integrity > Sandbox third party libraries"
+  },
+  {
+    "hub_id": "613-286",
+    "is_leaf": false,
+    "name": "Dependency management",
+    "parent_id": "613-285",
+    "path": "Development processes for security > Supply chain management > Dependency management"
+  },
+  {
+    "hub_id": "053-751",
+    "is_leaf": true,
+    "name": "Force build pipeline to check outdated/insecure components",
+    "parent_id": "613-286",
+    "path": "Development processes for security > Supply chain management > Dependency management > Force build pipeline to check outdated/insecure components"
+  },
+  {
+    "hub_id": "863-521",
+    "is_leaf": true,
+    "name": "Maintain/manage inventory of third party components",
+    "parent_id": "613-286",
+    "path": "Development processes for security > Supply chain management > Dependency management > Maintain/manage inventory of third party components"
+  },
+  {
+    "hub_id": "715-334",
+    "is_leaf": true,
+    "name": "Update third party components build- or compile time",
+    "parent_id": "613-286",
+    "path": "Development processes for security > Supply chain management > Dependency management > Update third party components build- or compile time"
+  },
+  {
+    "hub_id": "673-475",
+    "is_leaf": true,
+    "name": "Disallow unsupported/deprecated client-side technologies",
+    "parent_id": "613-285",
+    "path": "Development processes for security > Supply chain management > Disallow unsupported/deprecated client-side technologies"
+  },
+  {
+    "hub_id": "154-031",
+    "is_leaf": true,
+    "name": "Harden application by excluding unwanted functionality",
+    "parent_id": "613-285",
+    "path": "Development processes for security > Supply chain management > Harden application by excluding unwanted functionality"
+  },
+  {
+    "hub_id": "462-245",
+    "is_leaf": true,
+    "name": "Remove unnecessary elements from external components (e.g. features, documentation, configuration)",
+    "parent_id": "613-285",
+    "path": "Development processes for security > Supply chain management > Remove unnecessary elements from external components (e.g. features, documentation, configuration)"
+  },
+  {
+    "hub_id": "244-750",
+    "is_leaf": true,
+    "name": "Technical application security training",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Technical application security training"
+  },
+  {
+    "hub_id": "787-638",
+    "is_leaf": false,
+    "name": "Technical instructions",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Technical instructions"
+  },
+  {
+    "hub_id": "036-275",
+    "is_leaf": true,
+    "name": "Make (centrally) available secure coding resources for programmers",
+    "parent_id": "787-638",
+    "path": "Development processes for security > Technical instructions > Make (centrally) available secure coding resources for programmers"
+  },
+  {
+    "hub_id": "820-877",
+    "is_leaf": false,
+    "name": "Technical system documentation",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Technical system documentation"
+  },
+  {
+    "hub_id": "820-878",
+    "is_leaf": true,
+    "name": "Document all trust boundaries and significant data flows",
+    "parent_id": "820-877",
+    "path": "Development processes for security > Technical system documentation > Document all trust boundaries and significant data flows"
+  },
+  {
+    "hub_id": "287-305",
+    "is_leaf": true,
+    "name": "Document explicit key/secret management",
+    "parent_id": "820-877",
+    "path": "Development processes for security > Technical system documentation > Document explicit key/secret management"
+  },
+  {
+    "hub_id": "162-655",
+    "is_leaf": true,
+    "name": "Documentation of all components' business or security function",
+    "parent_id": "820-877",
+    "path": "Development processes for security > Technical system documentation > Documentation of all components' business or security function"
+  },
+  {
+    "hub_id": "433-442",
+    "is_leaf": false,
+    "name": "Verification",
+    "parent_id": "616-305",
+    "path": "Development processes for security > Verification"
+  },
+  {
+    "hub_id": "364-516",
+    "is_leaf": false,
+    "name": "AI security assurance & validation",
+    "parent_id": "433-442",
+    "path": "Development processes for security > Verification > AI security assurance & validation"
+  },
+  {
+    "hub_id": "547-824",
+    "is_leaf": true,
+    "name": "AI model performance validation",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > AI model performance validation"
+  },
+  {
+    "hub_id": "555-083",
+    "is_leaf": true,
+    "name": "Testing against backdoor poisoning",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against backdoor poisoning"
+  },
+  {
+    "hub_id": "536-158",
+    "is_leaf": true,
+    "name": "Testing against direct prompt injection",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against direct prompt injection"
+  },
+  {
+    "hub_id": "011-322",
+    "is_leaf": true,
+    "name": "Testing against evasion",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against evasion"
+  },
+  {
+    "hub_id": "483-253",
+    "is_leaf": true,
+    "name": "Testing against indirect prompt injection",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against indirect prompt injection"
+  },
+  {
+    "hub_id": "011-087",
+    "is_leaf": true,
+    "name": "Testing against membership inference",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against membership inference"
+  },
+  {
+    "hub_id": "532-102",
+    "is_leaf": true,
+    "name": "Testing against model inversion",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against model inversion"
+  },
+  {
+    "hub_id": "663-550",
+    "is_leaf": true,
+    "name": "Testing against model theft by inference",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against model theft by inference"
+  },
+  {
+    "hub_id": "043-703",
+    "is_leaf": true,
+    "name": "Testing against sensitive data extraction by inference",
+    "parent_id": "364-516",
+    "path": "Development processes for security > Verification > AI security assurance & validation > Testing against sensitive data extraction by inference"
+  },
+  {
+    "hub_id": "832-555",
+    "is_leaf": false,
+    "name": "Automated static security analysis of code and configuration",
+    "parent_id": "433-442",
+    "path": "Development processes for security > Verification > Automated static security analysis of code and configuration"
+  },
+  {
+    "hub_id": "611-158",
+    "is_leaf": true,
+    "name": "Use static analysis tooling to detect potentially malicious actions",
+    "parent_id": "832-555",
+    "path": "Development processes for security > Verification > Automated static security analysis of code and configuration > Use static analysis tooling to detect potentially malicious actions"
+  },
+  {
+    "hub_id": "626-250",
+    "is_leaf": true,
+    "name": "Design review",
+    "parent_id": "433-442",
+    "path": "Development processes for security > Verification > Design review"
+  },
+  {
+    "hub_id": "207-435",
+    "is_leaf": false,
+    "name": "Dynamic security testing",
+    "parent_id": "433-442",
+    "path": "Development processes for security > Verification > Dynamic security testing"
+  },
+  {
+    "hub_id": "088-377",
+    "is_leaf": true,
+    "name": "Automated dynamic security testing",
+    "parent_id": "207-435",
+    "path": "Development processes for security > Verification > Dynamic security testing > Automated dynamic security testing"
+  },
+  {
+    "hub_id": "570-487",
+    "is_leaf": true,
+    "name": "Manual penetration testing",
+    "parent_id": "207-435",
+    "path": "Development processes for security > Verification > Dynamic security testing > Manual penetration testing"
+  },
+  {
+    "hub_id": "411-684",
+    "is_leaf": true,
+    "name": "Manual code review",
+    "parent_id": "433-442",
+    "path": "Development processes for security > Verification > Manual code review"
+  },
+  {
+    "hub_id": "567-755",
+    "is_leaf": false,
+    "name": "Governance processes for security",
+    "parent_id": null,
+    "path": "Governance processes for security"
+  },
+  {
+    "hub_id": "464-513",
+    "is_leaf": false,
+    "name": "Assurance processes",
+    "parent_id": "567-755",
+    "path": "Governance processes for security > Assurance processes"
+  },
+  {
+    "hub_id": "217-168",
+    "is_leaf": false,
+    "name": "Audit & accountability",
+    "parent_id": "464-513",
+    "path": "Governance processes for security > Assurance processes > Audit & accountability"
+  },
+  {
+    "hub_id": "510-324",
+    "is_leaf": true,
+    "name": "Compliance",
+    "parent_id": "217-168",
+    "path": "Governance processes for security > Assurance processes > Audit & accountability > Compliance"
+  },
+  {
+    "hub_id": "225-553",
+    "is_leaf": false,
+    "name": "Organizational AI security controls",
+    "parent_id": "567-755",
+    "path": "Governance processes for security > Organizational AI security controls"
+  },
+  {
+    "hub_id": "755-340",
+    "is_leaf": false,
+    "name": "AI management system",
+    "parent_id": "225-553",
+    "path": "Governance processes for security > Organizational AI security controls > AI management system"
+  },
+  {
+    "hub_id": "646-285",
+    "is_leaf": true,
+    "name": "AI compliance management",
+    "parent_id": "755-340",
+    "path": "Governance processes for security > Organizational AI security controls > AI management system > AI compliance management"
+  },
+  {
+    "hub_id": "533-635",
+    "is_leaf": true,
+    "name": "AI security Education",
+    "parent_id": "755-340",
+    "path": "Governance processes for security > Organizational AI security controls > AI management system > AI security Education"
+  },
+  {
+    "hub_id": "766-162",
+    "is_leaf": false,
+    "name": "Security Analysis and documentation",
+    "parent_id": "567-755",
+    "path": "Governance processes for security > Security Analysis and documentation"
+  },
+  {
+    "hub_id": "287-823",
+    "is_leaf": false,
+    "name": "Asset management",
+    "parent_id": "766-162",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management"
+  },
+  {
+    "hub_id": "074-873",
+    "is_leaf": false,
+    "name": "Data classification and handling",
+    "parent_id": "287-823",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management > Data classification and handling"
+  },
+  {
+    "hub_id": "268-272",
+    "is_leaf": true,
+    "name": "Classify personal data regarding retention so that old or outdated data is deleted",
+    "parent_id": "074-873",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management > Data classification and handling > Classify personal data regarding retention so that old or outdated data is deleted"
+  },
+  {
+    "hub_id": "765-788",
+    "is_leaf": true,
+    "name": "Classify sensitive data in protection levels",
+    "parent_id": "074-873",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management > Data classification and handling > Classify sensitive data in protection levels"
+  },
+  {
+    "hub_id": "731-120",
+    "is_leaf": true,
+    "name": "Document requirements for (data) protection levels",
+    "parent_id": "074-873",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management > Data classification and handling > Document requirements for (data) protection levels"
+  },
+  {
+    "hub_id": "227-045",
+    "is_leaf": true,
+    "name": "Identify sensitive data and subject it to a policy",
+    "parent_id": "074-873",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management > Data classification and handling > Identify sensitive data and subject it to a policy"
+  },
+  {
+    "hub_id": "571-640",
+    "is_leaf": true,
+    "name": "Personal data handling management",
+    "parent_id": "287-823",
+    "path": "Governance processes for security > Security Analysis and documentation > Asset management > Personal data handling management"
+  },
+  {
+    "hub_id": "240-464",
+    "is_leaf": true,
+    "name": "Contingency planning",
+    "parent_id": "766-162",
+    "path": "Governance processes for security > Security Analysis and documentation > Contingency planning"
+  },
+  {
+    "hub_id": "847-247",
+    "is_leaf": true,
+    "name": "Interoperability and portability policy and procedures",
+    "parent_id": "766-162",
+    "path": "Governance processes for security > Security Analysis and documentation > Interoperability and portability policy and procedures"
+  },
+  {
+    "hub_id": "135-200",
+    "is_leaf": true,
+    "name": "Review of security policies",
+    "parent_id": "766-162",
+    "path": "Governance processes for security > Security Analysis and documentation > Review of security policies"
+  },
+  {
+    "hub_id": "004-517",
+    "is_leaf": false,
+    "name": "Security requirements",
+    "parent_id": "766-162",
+    "path": "Governance processes for security > Security Analysis and documentation > Security requirements"
+  },
+  {
+    "hub_id": "782-234",
+    "is_leaf": true,
+    "name": "Clear policy compliant I/O requirements",
+    "parent_id": "004-517",
+    "path": "Governance processes for security > Security Analysis and documentation > Security requirements > Clear policy compliant I/O requirements"
+  },
+  {
+    "hub_id": "307-242",
+    "is_leaf": false,
+    "name": "Security risk assessment",
+    "parent_id": "766-162",
+    "path": "Governance processes for security > Security Analysis and documentation > Security risk assessment"
+  },
+  {
+    "hub_id": "888-770",
+    "is_leaf": true,
+    "name": "Threat intelligence - stay up to date with new threats and consider them",
+    "parent_id": "307-242",
+    "path": "Governance processes for security > Security Analysis and documentation > Security risk assessment > Threat intelligence - stay up to date with new threats and consider them"
+  },
+  {
+    "hub_id": "427-113",
+    "is_leaf": false,
+    "name": "Security governance regarding people",
+    "parent_id": "567-755",
+    "path": "Governance processes for security > Security governance regarding people"
+  },
+  {
+    "hub_id": "172-101",
+    "is_leaf": true,
+    "name": "Personnel security",
+    "parent_id": "427-113",
+    "path": "Governance processes for security > Security governance regarding people > Personnel security"
+  },
+  {
+    "hub_id": "013-021",
+    "is_leaf": true,
+    "name": "Roles and responsibilities",
+    "parent_id": "427-113",
+    "path": "Governance processes for security > Security governance regarding people > Roles and responsibilities"
+  },
+  {
+    "hub_id": "428-544",
+    "is_leaf": true,
+    "name": "Security awareness training",
+    "parent_id": "427-113",
+    "path": "Governance processes for security > Security governance regarding people > Security awareness training"
+  },
+  {
+    "hub_id": "563-088",
+    "is_leaf": false,
+    "name": "Security organizing processes",
+    "parent_id": "567-755",
+    "path": "Governance processes for security > Security organizing processes"
+  },
+  {
+    "hub_id": "560-224",
+    "is_leaf": true,
+    "name": "Planning and resource management",
+    "parent_id": "563-088",
+    "path": "Governance processes for security > Security organizing processes > Planning and resource management"
+  },
+  {
+    "hub_id": "571-271",
+    "is_leaf": false,
+    "name": "Program management",
+    "parent_id": "563-088",
+    "path": "Governance processes for security > Security organizing processes > Program management"
+  },
+  {
+    "hub_id": "833-030",
+    "is_leaf": true,
+    "name": "Connect with the community",
+    "parent_id": "571-271",
+    "path": "Governance processes for security > Security organizing processes > Program management > Connect with the community"
+  },
+  {
+    "hub_id": "261-010",
+    "is_leaf": false,
+    "name": "Program management for secure software development",
+    "parent_id": "571-271",
+    "path": "Governance processes for security > Security organizing processes > Program management > Program management for secure software development"
+  },
+  {
+    "hub_id": "118-775",
+    "is_leaf": true,
+    "name": "Manage an internal secure software development community",
+    "parent_id": "261-010",
+    "path": "Governance processes for security > Security organizing processes > Program management > Program management for secure software development > Manage an internal secure software development community"
+  },
+  {
+    "hub_id": "251-446",
+    "is_leaf": true,
+    "name": "Organize stakeholder commitment for secure software development",
+    "parent_id": "261-010",
+    "path": "Governance processes for security > Security organizing processes > Program management > Program management for secure software development > Organize stakeholder commitment for secure software development"
+  },
+  {
+    "hub_id": "417-342",
+    "is_leaf": true,
+    "name": "Provide reusable application security controls",
+    "parent_id": "261-010",
+    "path": "Governance processes for security > Security organizing processes > Program management > Program management for secure software development > Provide reusable application security controls"
+  },
+  {
+    "hub_id": "148-853",
+    "is_leaf": true,
+    "name": "Setup and maintain a secure software development process",
+    "parent_id": "261-010",
+    "path": "Governance processes for security > Security organizing processes > Program management > Program management for secure software development > Setup and maintain a secure software development process"
+  },
+  {
+    "hub_id": "635-851",
+    "is_leaf": true,
+    "name": "Steer the secure software development program",
+    "parent_id": "261-010",
+    "path": "Governance processes for security > Security organizing processes > Program management > Program management for secure software development > Steer the secure software development program"
+  },
+  {
+    "hub_id": "862-452",
+    "is_leaf": false,
+    "name": "Operating processes for security",
+    "parent_id": null,
+    "path": "Operating processes for security"
+  },
+  {
+    "hub_id": "247-250",
+    "is_leaf": false,
+    "name": "Access control processes",
+    "parent_id": "862-452",
+    "path": "Operating processes for security > Access control processes"
+  },
+  {
+    "hub_id": "623-347",
+    "is_leaf": true,
+    "name": "Disallow shared high privileged accounts",
+    "parent_id": "247-250",
+    "path": "Operating processes for security > Access control processes > Disallow shared high privileged accounts"
+  },
+  {
+    "hub_id": "887-750",
+    "is_leaf": false,
+    "name": "Detect and respond",
+    "parent_id": "862-452",
+    "path": "Operating processes for security > Detect and respond"
+  },
+  {
+    "hub_id": "463-577",
+    "is_leaf": true,
+    "name": "Incident response",
+    "parent_id": "887-750",
+    "path": "Operating processes for security > Detect and respond > Incident response"
+  },
+  {
+    "hub_id": "058-083",
+    "is_leaf": true,
+    "name": "Monitoring",
+    "parent_id": "887-750",
+    "path": "Operating processes for security > Detect and respond > Monitoring"
+  },
+  {
+    "hub_id": "850-376",
+    "is_leaf": false,
+    "name": "Facilities management",
+    "parent_id": "862-452",
+    "path": "Operating processes for security > Facilities management"
+  },
+  {
+    "hub_id": "163-776",
+    "is_leaf": false,
+    "name": "Backup",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Backup"
+  },
+  {
+    "hub_id": "257-117",
+    "is_leaf": true,
+    "name": "Perform regular backups of important data and test restoration",
+    "parent_id": "163-776",
+    "path": "Operating processes for security > Facilities management > Backup > Perform regular backups of important data and test restoration"
+  },
+  {
+    "hub_id": "614-353",
+    "is_leaf": true,
+    "name": "Store backups securely",
+    "parent_id": "163-776",
+    "path": "Operating processes for security > Facilities management > Backup > Store backups securely"
+  },
+  {
+    "hub_id": "148-227",
+    "is_leaf": false,
+    "name": "Endpoint management",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Endpoint management"
+  },
+  {
+    "hub_id": "286-500",
+    "is_leaf": true,
+    "name": "OS security",
+    "parent_id": "148-227",
+    "path": "Operating processes for security > Facilities management > Endpoint management > OS security"
+  },
+  {
+    "hub_id": "007-274",
+    "is_leaf": true,
+    "name": "Patching and updating system components",
+    "parent_id": "148-227",
+    "path": "Operating processes for security > Facilities management > Endpoint management > Patching and updating system components"
+  },
+  {
+    "hub_id": "872-574",
+    "is_leaf": true,
+    "name": "Virus/malware protection",
+    "parent_id": "148-227",
+    "path": "Operating processes for security > Facilities management > Endpoint management > Virus/malware protection"
+  },
+  {
+    "hub_id": "157-587",
+    "is_leaf": false,
+    "name": "Equipment management",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Equipment management"
+  },
+  {
+    "hub_id": "114-853",
+    "is_leaf": true,
+    "name": "Maintenance",
+    "parent_id": "157-587",
+    "path": "Operating processes for security > Facilities management > Equipment management > Maintenance"
+  },
+  {
+    "hub_id": "522-616",
+    "is_leaf": true,
+    "name": "Media protection",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Media protection"
+  },
+  {
+    "hub_id": "467-784",
+    "is_leaf": false,
+    "name": "Network security",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Network security"
+  },
+  {
+    "hub_id": "132-146",
+    "is_leaf": true,
+    "name": "Apply defense-in-depth techniques/processes for protection, detection, and timely response to network-based attacks.",
+    "parent_id": "467-784",
+    "path": "Operating processes for security > Facilities management > Network security > Apply defense-in-depth techniques/processes for protection, detection, and timely response to network-based attacks."
+  },
+  {
+    "hub_id": "336-512",
+    "is_leaf": true,
+    "name": "Ensure integrity of DNS entries and domains",
+    "parent_id": "467-784",
+    "path": "Operating processes for security > Facilities management > Network security > Ensure integrity of DNS entries and domains"
+  },
+  {
+    "hub_id": "515-021",
+    "is_leaf": true,
+    "name": "Sandbox, containerize and/or isolate applications at the network level",
+    "parent_id": "467-784",
+    "path": "Operating processes for security > Facilities management > Network security > Sandbox, containerize and/or isolate applications at the network level"
+  },
+  {
+    "hub_id": "273-600",
+    "is_leaf": true,
+    "name": "Segregate components of differing trust levels",
+    "parent_id": "467-784",
+    "path": "Operating processes for security > Facilities management > Network security > Segregate components of differing trust levels"
+  },
+  {
+    "hub_id": "125-010",
+    "is_leaf": true,
+    "name": "Password management systems",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Password management systems"
+  },
+  {
+    "hub_id": "234-282",
+    "is_leaf": true,
+    "name": "Physical & environment protection",
+    "parent_id": "850-376",
+    "path": "Operating processes for security > Facilities management > Physical & environment protection"
+  },
+  {
+    "hub_id": "010-678",
+    "is_leaf": false,
+    "name": "Improvement management",
+    "parent_id": "862-452",
+    "path": "Operating processes for security > Improvement management"
+  },
+  {
+    "hub_id": "112-648",
+    "is_leaf": true,
+    "name": "Change management",
+    "parent_id": "010-678",
+    "path": "Operating processes for security > Improvement management > Change management"
+  },
+  {
+    "hub_id": "732-148",
+    "is_leaf": true,
+    "name": "Vulnerability management",
+    "parent_id": "010-678",
+    "path": "Operating processes for security > Improvement management > Vulnerability management"
+  },
+  {
+    "hub_id": "636-660",
+    "is_leaf": false,
+    "name": "Technical application security controls",
+    "parent_id": null,
+    "path": "Technical application security controls"
+  },
+  {
+    "hub_id": "633-428",
+    "is_leaf": false,
+    "name": "Authentication",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Authentication"
+  },
+  {
+    "hub_id": "270-568",
+    "is_leaf": false,
+    "name": "Authentication mechanism",
+    "parent_id": "633-428",
+    "path": "Technical application security controls > Authentication > Authentication mechanism"
+  },
+  {
+    "hub_id": "146-556",
+    "is_leaf": false,
+    "name": "Authenticate consistently",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Authenticate consistently"
+  },
+  {
+    "hub_id": "576-042",
+    "is_leaf": true,
+    "name": "Consistently apply authentication strength",
+    "parent_id": "146-556",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Authenticate consistently > Consistently apply authentication strength"
+  },
+  {
+    "hub_id": "278-413",
+    "is_leaf": true,
+    "name": "Mutually authenticate application components. Minimize privileges",
+    "parent_id": "146-556",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Authenticate consistently > Mutually authenticate application components. Minimize privileges"
+  },
+  {
+    "hub_id": "585-408",
+    "is_leaf": false,
+    "name": "Challenge nonce cryptography",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Challenge nonce cryptography"
+  },
+  {
+    "hub_id": "287-251",
+    "is_leaf": true,
+    "name": "Use a unique challenge nonce of sufficient size",
+    "parent_id": "585-408",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Challenge nonce cryptography > Use a unique challenge nonce of sufficient size"
+  },
+  {
+    "hub_id": "002-801",
+    "is_leaf": true,
+    "name": "Use approved cryptographic algorithms for generation, seeding and verification",
+    "parent_id": "585-408",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Challenge nonce cryptography > Use approved cryptographic algorithms for generation, seeding and verification"
+  },
+  {
+    "hub_id": "520-617",
+    "is_leaf": false,
+    "name": "Credential recovery",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Credential recovery"
+  },
+  {
+    "hub_id": "543-621",
+    "is_leaf": true,
+    "name": "Do not reveal the current password during password recovery",
+    "parent_id": "520-617",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Credential recovery > Do not reveal the current password during password recovery"
+  },
+  {
+    "hub_id": "772-358",
+    "is_leaf": true,
+    "name": "Do not use password hints or secret questions",
+    "parent_id": "520-617",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Credential recovery > Do not use password hints or secret questions"
+  },
+  {
+    "hub_id": "358-860",
+    "is_leaf": true,
+    "name": "Require proof of identity of the same level as during enrollment when recovering OTP or MFA",
+    "parent_id": "520-617",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Credential recovery > Require proof of identity of the same level as during enrollment when recovering OTP or MFA"
+  },
+  {
+    "hub_id": "270-634",
+    "is_leaf": true,
+    "name": "Send authentication secrets encrypted",
+    "parent_id": "520-617",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Credential recovery > Send authentication secrets encrypted"
+  },
+  {
+    "hub_id": "581-525",
+    "is_leaf": true,
+    "name": "Use secure recovery mechanisms for forgotten passwords",
+    "parent_id": "520-617",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Credential recovery > Use secure recovery mechanisms for forgotten passwords"
+  },
+  {
+    "hub_id": "789-320",
+    "is_leaf": false,
+    "name": "Login functionality",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Login functionality"
+  },
+  {
+    "hub_id": "630-577",
+    "is_leaf": true,
+    "name": "Allow password helpers, including paste functionality",
+    "parent_id": "789-320",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Login functionality > Allow password helpers, including paste functionality"
+  },
+  {
+    "hub_id": "487-305",
+    "is_leaf": true,
+    "name": "Provide options to view entire password or last typed character",
+    "parent_id": "789-320",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Login functionality > Provide options to view entire password or last typed character"
+  },
+  {
+    "hub_id": "062-850",
+    "is_leaf": false,
+    "name": "MFA/OTP",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP"
+  },
+  {
+    "hub_id": "525-361",
+    "is_leaf": true,
+    "name": "Authenticate by OTP token entry or user-initiated action on multi factor device",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Authenticate by OTP token entry or user-initiated action on multi factor device"
+  },
+  {
+    "hub_id": "076-470",
+    "is_leaf": true,
+    "name": "Biometric authenticators only as secondary factors",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Biometric authenticators only as secondary factors"
+  },
+  {
+    "hub_id": "102-811",
+    "is_leaf": true,
+    "name": "Communicate out of band multi factor authentication requests, codes or tokens independently and securely",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Communicate out of band multi factor authentication requests, codes or tokens independently and securely"
+  },
+  {
+    "hub_id": "681-823",
+    "is_leaf": true,
+    "name": "Defined lifetime of time-based one-time password",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Defined lifetime of time-based one-time password"
+  },
+  {
+    "hub_id": "354-753",
+    "is_leaf": true,
+    "name": "Do not offer weak (clear text) multi-factor authenticators by default",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Do not offer weak (clear text) multi-factor authenticators by default"
+  },
+  {
+    "hub_id": "440-361",
+    "is_leaf": true,
+    "name": "Ensure that physical single factor OTP generator can be revoked fully immediately when lost",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Ensure that physical single factor OTP generator can be revoked fully immediately when lost"
+  },
+  {
+    "hub_id": "816-631",
+    "is_leaf": true,
+    "name": "Ensure timely expiration of out of band authentication request, code, or tokens",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Ensure timely expiration of out of band authentication request, code, or tokens"
+  },
+  {
+    "hub_id": "622-835",
+    "is_leaf": true,
+    "name": "Generate initial passwords with sufficient secure random, short expiration time and do not allow to reuse the initial password.",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Generate initial passwords with sufficient secure random, short expiration time and do not allow to reuse the initial password."
+  },
+  {
+    "hub_id": "346-640",
+    "is_leaf": true,
+    "name": "Generate multi-factor lookup secrets with sufficient entropy",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Generate multi-factor lookup secrets with sufficient entropy"
+  },
+  {
+    "hub_id": "646-227",
+    "is_leaf": true,
+    "name": "Log and reject re-use of valid time-based OTP tokens and notify device holder.",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Log and reject re-use of valid time-based OTP tokens and notify device holder."
+  },
+  {
+    "hub_id": "524-446",
+    "is_leaf": true,
+    "name": "Mandate using multi factor authentication",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Mandate using multi factor authentication"
+  },
+  {
+    "hub_id": "342-764",
+    "is_leaf": true,
+    "name": "Only store hashed authentication codes",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Only store hashed authentication codes"
+  },
+  {
+    "hub_id": "354-752",
+    "is_leaf": true,
+    "name": "Prioritize strong multi-factor authenticators  (e.g. NOT SMS/mail) for critical access",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Prioritize strong multi-factor authenticators  (e.g. NOT SMS/mail) for critical access"
+  },
+  {
+    "hub_id": "553-413",
+    "is_leaf": true,
+    "name": "Support subscriber-provided authentication devices",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Support subscriber-provided authentication devices"
+  },
+  {
+    "hub_id": "841-757",
+    "is_leaf": true,
+    "name": "Use approved cryptographic algorithms in generation, seeding and verification of OTPs",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use approved cryptographic algorithms in generation, seeding and verification of OTPs"
+  },
+  {
+    "hub_id": "101-217",
+    "is_leaf": true,
+    "name": "Use lookup secrets only once",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use lookup secrets only once"
+  },
+  {
+    "hub_id": "168-186",
+    "is_leaf": true,
+    "name": "Use out of band authentication requests, codes or tokens only once",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use out of band authentication requests, codes or tokens only once"
+  },
+  {
+    "hub_id": "206-254",
+    "is_leaf": true,
+    "name": "Use secure random to generate initial authentication codes",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use secure random to generate initial authentication codes"
+  },
+  {
+    "hub_id": "543-428",
+    "is_leaf": true,
+    "name": "Use security module to store one-time password verification keys",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use security module to store one-time password verification keys"
+  },
+  {
+    "hub_id": "404-126",
+    "is_leaf": true,
+    "name": "Use time-based OTP only once",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use time-based OTP only once"
+  },
+  {
+    "hub_id": "513-845",
+    "is_leaf": true,
+    "name": "Use unpredictable multi-factor lookup secrets",
+    "parent_id": "062-850",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > MFA/OTP > Use unpredictable multi-factor lookup secrets"
+  },
+  {
+    "hub_id": "558-807",
+    "is_leaf": true,
+    "name": "Mutually authenticate application and credential service provider",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Mutually authenticate application and credential service provider"
+  },
+  {
+    "hub_id": "333-858",
+    "is_leaf": true,
+    "name": "Resist stolen credentials",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Resist stolen credentials"
+  },
+  {
+    "hub_id": "802-056",
+    "is_leaf": true,
+    "name": "Restrict excessive authentication",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Restrict excessive authentication"
+  },
+  {
+    "hub_id": "113-133",
+    "is_leaf": true,
+    "name": "Use centralized authentication mechanism",
+    "parent_id": "270-568",
+    "path": "Technical application security controls > Authentication > Authentication mechanism > Use centralized authentication mechanism"
+  },
+  {
+    "hub_id": "455-885",
+    "is_leaf": false,
+    "name": "Credentials directives",
+    "parent_id": "633-428",
+    "path": "Technical application security controls > Authentication > Credentials directives"
+  },
+  {
+    "hub_id": "158-874",
+    "is_leaf": true,
+    "name": "Allow long passwords",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Allow long passwords"
+  },
+  {
+    "hub_id": "103-707",
+    "is_leaf": true,
+    "name": "Allow unicode in passwords",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Allow unicode in passwords"
+  },
+  {
+    "hub_id": "715-681",
+    "is_leaf": true,
+    "name": "Avoid password truncation, with exception of consecutive spaces",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Avoid password truncation, with exception of consecutive spaces"
+  },
+  {
+    "hub_id": "338-370",
+    "is_leaf": true,
+    "name": "Do not enforce password rotation rules or history requirements",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Do not enforce password rotation rules or history requirements"
+  },
+  {
+    "hub_id": "807-565",
+    "is_leaf": true,
+    "name": "Do not limit character types for password composition",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Do not limit character types for password composition"
+  },
+  {
+    "hub_id": "027-555",
+    "is_leaf": true,
+    "name": "Enforce user passwords are of sufficient minimum length",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Enforce user passwords are of sufficient minimum length"
+  },
+  {
+    "hub_id": "604-025",
+    "is_leaf": true,
+    "name": "Provide a password strength meter",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Provide a password strength meter"
+  },
+  {
+    "hub_id": "576-651",
+    "is_leaf": true,
+    "name": "Validate new passwords are not in commonly breached passwords list",
+    "parent_id": "455-885",
+    "path": "Technical application security controls > Authentication > Credentials directives > Validate new passwords are not in commonly breached passwords list"
+  },
+  {
+    "hub_id": "233-748",
+    "is_leaf": false,
+    "name": "Configuration hardening",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Configuration hardening"
+  },
+  {
+    "hub_id": "636-347",
+    "is_leaf": false,
+    "name": "HTTP security headers",
+    "parent_id": "233-748",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers"
+  },
+  {
+    "hub_id": "257-668",
+    "is_leaf": true,
+    "name": "Configure CSP configuration properly",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Configure CSP configuration properly"
+  },
+  {
+    "hub_id": "036-147",
+    "is_leaf": true,
+    "name": "Configure HSTS configuration properly",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Configure HSTS configuration properly"
+  },
+  {
+    "hub_id": "268-100",
+    "is_leaf": true,
+    "name": "Configure Referrer-Policy properly",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Configure Referrer-Policy properly"
+  },
+  {
+    "hub_id": "065-388",
+    "is_leaf": true,
+    "name": "Configure X-Content-Type-Options properly",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Configure X-Content-Type-Options properly"
+  },
+  {
+    "hub_id": "480-071",
+    "is_leaf": true,
+    "name": "Prevent Click jacking through X-Frame-Options or CSP",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Prevent Click jacking through X-Frame-Options or CSP"
+  },
+  {
+    "hub_id": "036-725",
+    "is_leaf": true,
+    "name": "Set content HTTP response type",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Set content HTTP response type"
+  },
+  {
+    "hub_id": "736-237",
+    "is_leaf": true,
+    "name": "Set metadata/content-Disposition for API responses",
+    "parent_id": "636-347",
+    "path": "Technical application security controls > Configuration hardening > HTTP security headers > Set metadata/content-Disposition for API responses"
+  },
+  {
+    "hub_id": "180-488",
+    "is_leaf": true,
+    "name": "Proper Configuration for all applications and frameworks",
+    "parent_id": "233-748",
+    "path": "Technical application security controls > Configuration hardening > Proper Configuration for all applications and frameworks"
+  },
+  {
+    "hub_id": "814-322",
+    "is_leaf": true,
+    "name": "Whitelist data sources and sinks",
+    "parent_id": "233-748",
+    "path": "Technical application security controls > Configuration hardening > Whitelist data sources and sinks"
+  },
+  {
+    "hub_id": "503-455",
+    "is_leaf": false,
+    "name": "Input and output protection",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Input and output protection"
+  },
+  {
+    "hub_id": "118-110",
+    "is_leaf": false,
+    "name": "API/web services",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > API/web services"
+  },
+  {
+    "hub_id": "630-573",
+    "is_leaf": true,
+    "name": "Detect and protect against automation abuse",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > Detect and protect against automation abuse"
+  },
+  {
+    "hub_id": "061-186",
+    "is_leaf": true,
+    "name": "Force uniform encoders and parsers throughout system",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > Force uniform encoders and parsers throughout system"
+  },
+  {
+    "hub_id": "532-878",
+    "is_leaf": true,
+    "name": "Limit REST HTTP methods",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > Limit REST HTTP methods"
+  },
+  {
+    "hub_id": "071-288",
+    "is_leaf": false,
+    "name": "RESTful",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > RESTful"
+  },
+  {
+    "hub_id": "464-084",
+    "is_leaf": true,
+    "name": "Add CSRF protection for cookie based REST services",
+    "parent_id": "071-288",
+    "path": "Technical application security controls > Input and output protection > API/web services > RESTful > Add CSRF protection for cookie based REST services"
+  },
+  {
+    "hub_id": "543-512",
+    "is_leaf": true,
+    "name": "Verify content-type for REST services",
+    "parent_id": "071-288",
+    "path": "Technical application security controls > Input and output protection > API/web services > RESTful > Verify content-type for REST services"
+  },
+  {
+    "hub_id": "377-680",
+    "is_leaf": true,
+    "name": "Reject non-whitelisted content types",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > Reject non-whitelisted content types"
+  },
+  {
+    "hub_id": "080-373",
+    "is_leaf": false,
+    "name": "SOAP",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > SOAP"
+  },
+  {
+    "hub_id": "456-636",
+    "is_leaf": true,
+    "name": "Add integrity check to SOAP payload",
+    "parent_id": "080-373",
+    "path": "Technical application security controls > Input and output protection > API/web services > SOAP > Add integrity check to SOAP payload"
+  },
+  {
+    "hub_id": "611-051",
+    "is_leaf": true,
+    "name": "Enforce schema on XML structure/field",
+    "parent_id": "080-373",
+    "path": "Technical application security controls > Input and output protection > API/web services > SOAP > Enforce schema on XML structure/field"
+  },
+  {
+    "hub_id": "612-252",
+    "is_leaf": true,
+    "name": "Separate GraphQL (or similar) authorization logic from data layer",
+    "parent_id": "118-110",
+    "path": "Technical application security controls > Input and output protection > API/web services > Separate GraphQL (or similar) authorization logic from data layer"
+  },
+  {
+    "hub_id": "836-068",
+    "is_leaf": false,
+    "name": "Deserialization Prevention",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Deserialization Prevention"
+  },
+  {
+    "hub_id": "831-563",
+    "is_leaf": true,
+    "name": "Avoid deserialization logic",
+    "parent_id": "836-068",
+    "path": "Technical application security controls > Input and output protection > Deserialization Prevention > Avoid deserialization logic"
+  },
+  {
+    "hub_id": "736-554",
+    "is_leaf": true,
+    "name": "Block serialization of content from untrusted clients",
+    "parent_id": "836-068",
+    "path": "Technical application security controls > Input and output protection > Deserialization Prevention > Block serialization of content from untrusted clients"
+  },
+  {
+    "hub_id": "387-848",
+    "is_leaf": true,
+    "name": "Parse JSON safely",
+    "parent_id": "836-068",
+    "path": "Technical application security controls > Input and output protection > Deserialization Prevention > Parse JSON safely"
+  },
+  {
+    "hub_id": "762-616",
+    "is_leaf": true,
+    "name": "Secure serialized objects (e.g. integrity checks)",
+    "parent_id": "836-068",
+    "path": "Technical application security controls > Input and output protection > Deserialization Prevention > Secure serialized objects (e.g. integrity checks)"
+  },
+  {
+    "hub_id": "130-550",
+    "is_leaf": false,
+    "name": "File handling",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > File handling"
+  },
+  {
+    "hub_id": "545-243",
+    "is_leaf": true,
+    "name": "Block execution/output of uploaded files",
+    "parent_id": "130-550",
+    "path": "Technical application security controls > Input and output protection > File handling > Block execution/output of uploaded files"
+  },
+  {
+    "hub_id": "040-843",
+    "is_leaf": false,
+    "name": "File download",
+    "parent_id": "130-550",
+    "path": "Technical application security controls > Input and output protection > File handling > File download"
+  },
+  {
+    "hub_id": "314-701",
+    "is_leaf": true,
+    "name": "Whitelist file extensions served by web tier",
+    "parent_id": "040-843",
+    "path": "Technical application security controls > Input and output protection > File handling > File download > Whitelist file extensions served by web tier"
+  },
+  {
+    "hub_id": "451-082",
+    "is_leaf": false,
+    "name": "File execution",
+    "parent_id": "130-550",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution"
+  },
+  {
+    "hub_id": "683-722",
+    "is_leaf": true,
+    "name": "Block direct execution of file metadata from untrusted origin",
+    "parent_id": "451-082",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution > Block direct execution of file metadata from untrusted origin"
+  },
+  {
+    "hub_id": "737-086",
+    "is_leaf": true,
+    "name": "Ignore/at least validate  filename metadata from untrusted origin (local file context, eg LFI)",
+    "parent_id": "451-082",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution > Ignore/at least validate  filename metadata from untrusted origin (local file context, eg LFI)"
+  },
+  {
+    "hub_id": "742-056",
+    "is_leaf": true,
+    "name": "Ignore/at least validate  filename metadata from untrusted origin (remote file context, eg RFI)",
+    "parent_id": "451-082",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution > Ignore/at least validate  filename metadata from untrusted origin (remote file context, eg RFI)"
+  },
+  {
+    "hub_id": "421-513",
+    "is_leaf": true,
+    "name": "Ignore/at least validate filenames from untrusted origin (against RFD)",
+    "parent_id": "451-082",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution > Ignore/at least validate filenames from untrusted origin (against RFD)"
+  },
+  {
+    "hub_id": "777-470",
+    "is_leaf": true,
+    "name": "Ignore/block execution logic from untrusted sources",
+    "parent_id": "451-082",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution > Ignore/block execution logic from untrusted sources"
+  },
+  {
+    "hub_id": "675-168",
+    "is_leaf": true,
+    "name": "Sanitize filename metadata from untrusted origin if processing is required",
+    "parent_id": "451-082",
+    "path": "Technical application security controls > Input and output protection > File handling > File execution > Sanitize filename metadata from untrusted origin if processing is required"
+  },
+  {
+    "hub_id": "758-262",
+    "is_leaf": false,
+    "name": "File storage",
+    "parent_id": "130-550",
+    "path": "Technical application security controls > Input and output protection > File handling > File storage"
+  },
+  {
+    "hub_id": "307-111",
+    "is_leaf": true,
+    "name": "Securely store files with untrusted origin",
+    "parent_id": "758-262",
+    "path": "Technical application security controls > Input and output protection > File handling > File storage > Securely store files with untrusted origin"
+  },
+  {
+    "hub_id": "621-287",
+    "is_leaf": false,
+    "name": "File upload",
+    "parent_id": "130-550",
+    "path": "Technical application security controls > Input and output protection > File handling > File upload"
+  },
+  {
+    "hub_id": "163-518",
+    "is_leaf": true,
+    "name": "Check uploaded archives for decompression attacks (eg zip bombs)",
+    "parent_id": "621-287",
+    "path": "Technical application security controls > Input and output protection > File handling > File upload > Check uploaded archives for decompression attacks (eg zip bombs)"
+  },
+  {
+    "hub_id": "463-820",
+    "is_leaf": true,
+    "name": "Limit size and number of uploaded files",
+    "parent_id": "621-287",
+    "path": "Technical application security controls > Input and output protection > File handling > File upload > Limit size and number of uploaded files"
+  },
+  {
+    "hub_id": "112-273",
+    "is_leaf": true,
+    "name": "Scan untrusted files for malware",
+    "parent_id": "621-287",
+    "path": "Technical application security controls > Input and output protection > File handling > File upload > Scan untrusted files for malware"
+  },
+  {
+    "hub_id": "384-344",
+    "is_leaf": true,
+    "name": "Store and serve user-uploaded files such that they cannot execute/damage server or client",
+    "parent_id": "621-287",
+    "path": "Technical application security controls > Input and output protection > File handling > File upload > Store and serve user-uploaded files such that they cannot execute/damage server or client"
+  },
+  {
+    "hub_id": "660-052",
+    "is_leaf": true,
+    "name": "Validate max input/file sizes",
+    "parent_id": "621-287",
+    "path": "Technical application security controls > Input and output protection > File handling > File upload > Validate max input/file sizes"
+  },
+  {
+    "hub_id": "175-235",
+    "is_leaf": true,
+    "name": "Validate file type of data from untrusted sources",
+    "parent_id": "130-550",
+    "path": "Technical application security controls > Input and output protection > File handling > Validate file type of data from untrusted sources"
+  },
+  {
+    "hub_id": "010-308",
+    "is_leaf": false,
+    "name": "Input validation",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Input validation"
+  },
+  {
+    "hub_id": "146-706",
+    "is_leaf": true,
+    "name": "Enforce JSON schema before processing",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Enforce JSON schema before processing"
+  },
+  {
+    "hub_id": "848-711",
+    "is_leaf": true,
+    "name": "Enforce input validation on a trusted service layer",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Enforce input validation on a trusted service layer"
+  },
+  {
+    "hub_id": "653-242",
+    "is_leaf": true,
+    "name": "Enforce schema on type/contents of structured data",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Enforce schema on type/contents of structured data"
+  },
+  {
+    "hub_id": "176-154",
+    "is_leaf": true,
+    "name": "Monitor expectation of usage intensity (e.g. number of requests)",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Monitor expectation of usage intensity (e.g. number of requests)"
+  },
+  {
+    "hub_id": "042-550",
+    "is_leaf": true,
+    "name": "Protect against mass parameter assignment attack",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Protect against mass parameter assignment attack"
+  },
+  {
+    "hub_id": "743-237",
+    "is_leaf": true,
+    "name": "Validatie/enforce HTTP inputs (against HTTP parameter pollution attacks)",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Validatie/enforce HTTP inputs (against HTTP parameter pollution attacks)"
+  },
+  {
+    "hub_id": "031-447",
+    "is_leaf": true,
+    "name": "Whitelist all external (HTTP) input",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Whitelist all external (HTTP) input"
+  },
+  {
+    "hub_id": "232-217",
+    "is_leaf": true,
+    "name": "Whitelist redirected/forwarded URLs",
+    "parent_id": "010-308",
+    "path": "Technical application security controls > Input and output protection > Input validation > Whitelist redirected/forwarded URLs"
+  },
+  {
+    "hub_id": "866-553",
+    "is_leaf": false,
+    "name": "Memory, String, and Unmanaged Code",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Memory, String, and Unmanaged Code"
+  },
+  {
+    "hub_id": "482-771",
+    "is_leaf": true,
+    "name": "Check boundaries against integer overflow weaknesses",
+    "parent_id": "866-553",
+    "path": "Technical application security controls > Input and output protection > Memory, String, and Unmanaged Code > Check boundaries against integer overflow weaknesses"
+  },
+  {
+    "hub_id": "824-732",
+    "is_leaf": true,
+    "name": "Force format strings as constants",
+    "parent_id": "866-553",
+    "path": "Technical application security controls > Input and output protection > Memory, String, and Unmanaged Code > Force format strings as constants"
+  },
+  {
+    "hub_id": "831-570",
+    "is_leaf": true,
+    "name": "Use memory-safe functions exclusively",
+    "parent_id": "866-553",
+    "path": "Technical application security controls > Input and output protection > Memory, String, and Unmanaged Code > Use memory-safe functions exclusively"
+  },
+  {
+    "hub_id": "161-451",
+    "is_leaf": false,
+    "name": "Output encoding and injection prevention",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention"
+  },
+  {
+    "hub_id": "064-808",
+    "is_leaf": true,
+    "name": "Encode output context-specifically",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Encode output context-specifically"
+  },
+  {
+    "hub_id": "806-367",
+    "is_leaf": true,
+    "name": "Encode output near the consuming interpreter",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Encode output near the consuming interpreter"
+  },
+  {
+    "hub_id": "533-516",
+    "is_leaf": true,
+    "name": "Encode output while preserving user input formatting",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Encode output while preserving user input formatting"
+  },
+  {
+    "hub_id": "366-835",
+    "is_leaf": true,
+    "name": "Escape output against XSS",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Escape output against XSS"
+  },
+  {
+    "hub_id": "620-101",
+    "is_leaf": true,
+    "name": "Force output encoding for specific interpreter's context",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Force output encoding for specific interpreter's context"
+  },
+  {
+    "hub_id": "732-873",
+    "is_leaf": true,
+    "name": "Lock/precompile queries (parameterization) to avoid injection attacks",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Lock/precompile queries (parameterization) to avoid injection attacks"
+  },
+  {
+    "hub_id": "607-671",
+    "is_leaf": true,
+    "name": "Protect against JS or JSON injection attacks",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Protect against JS or JSON injection attacks"
+  },
+  {
+    "hub_id": "531-558",
+    "is_leaf": true,
+    "name": "Protect against LDAP injection",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Protect against LDAP injection"
+  },
+  {
+    "hub_id": "547-283",
+    "is_leaf": true,
+    "name": "Protect against LFI / RFI",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Protect against LFI / RFI"
+  },
+  {
+    "hub_id": "857-718",
+    "is_leaf": true,
+    "name": "Protect against OS command injection attack",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Protect against OS command injection attack"
+  },
+  {
+    "hub_id": "134-207",
+    "is_leaf": true,
+    "name": "Protect against XML/XPath injection",
+    "parent_id": "161-451",
+    "path": "Technical application security controls > Input and output protection > Output encoding and injection prevention > Protect against XML/XPath injection"
+  },
+  {
+    "hub_id": "308-515",
+    "is_leaf": false,
+    "name": "Prevent security disclosure",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Prevent security disclosure"
+  },
+  {
+    "hub_id": "208-805",
+    "is_leaf": true,
+    "name": "Disable debug mode in production",
+    "parent_id": "308-515",
+    "path": "Technical application security controls > Input and output protection > Prevent security disclosure > Disable debug mode in production"
+  },
+  {
+    "hub_id": "743-110",
+    "is_leaf": true,
+    "name": "Do not disclose technical information in HTTP header or response",
+    "parent_id": "308-515",
+    "path": "Technical application security controls > Input and output protection > Prevent security disclosure > Do not disclose technical information in HTTP header or response"
+  },
+  {
+    "hub_id": "764-507",
+    "is_leaf": true,
+    "name": "Restrict XML parsing (against XXE)",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Restrict XML parsing (against XXE)"
+  },
+  {
+    "hub_id": "764-765",
+    "is_leaf": false,
+    "name": "Sanitization and sandboxing",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing"
+  },
+  {
+    "hub_id": "657-084",
+    "is_leaf": true,
+    "name": "(SSRF) When depending on internal server input, use validation sanitization and whitelisting",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > (SSRF) When depending on internal server input, use validation sanitization and whitelisting"
+  },
+  {
+    "hub_id": "317-743",
+    "is_leaf": true,
+    "name": "Do not use eval or dynamic code execution functions",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Do not use eval or dynamic code execution functions"
+  },
+  {
+    "hub_id": "268-088",
+    "is_leaf": true,
+    "name": "Limit query impact GraphQL/data layer expression DoS",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Limit query impact GraphQL/data layer expression DoS"
+  },
+  {
+    "hub_id": "538-446",
+    "is_leaf": true,
+    "name": "Sanitize unstructured data",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Sanitize unstructured data"
+  },
+  {
+    "hub_id": "542-445",
+    "is_leaf": true,
+    "name": "Sanitize untrusted HTML input",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Sanitize untrusted HTML input"
+  },
+  {
+    "hub_id": "881-434",
+    "is_leaf": true,
+    "name": "Sanitize user input before passing content to mail systems (SMTP/IMAP injection)",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Sanitize user input before passing content to mail systems (SMTP/IMAP injection)"
+  },
+  {
+    "hub_id": "145-310",
+    "is_leaf": true,
+    "name": "Sanitize, disable, or sandbox untrusted SVG scriptable content",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Sanitize, disable, or sandbox untrusted SVG scriptable content"
+  },
+  {
+    "hub_id": "646-462",
+    "is_leaf": true,
+    "name": "Sanitize, disable, or sandbox untrusted scriptable or template language content",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Sanitize, disable, or sandbox untrusted scriptable or template language content"
+  },
+  {
+    "hub_id": "422-005",
+    "is_leaf": true,
+    "name": "Sanitize/sandbox user input where template-injection is a threat",
+    "parent_id": "764-765",
+    "path": "Technical application security controls > Input and output protection > Sanitization and sandboxing > Sanitize/sandbox user input where template-injection is a threat"
+  },
+  {
+    "hub_id": "541-441",
+    "is_leaf": false,
+    "name": "Validate HTTP request headers",
+    "parent_id": "503-455",
+    "path": "Technical application security controls > Input and output protection > Validate HTTP request headers"
+  },
+  {
+    "hub_id": "820-421",
+    "is_leaf": true,
+    "name": "Authenticate HTTP headers added by a trusted proxy or SSO device",
+    "parent_id": "541-441",
+    "path": "Technical application security controls > Input and output protection > Validate HTTP request headers > Authenticate HTTP headers added by a trusted proxy or SSO device"
+  },
+  {
+    "hub_id": "405-411",
+    "is_leaf": true,
+    "name": "Avoid using of Origin header for authentication of access control",
+    "parent_id": "541-441",
+    "path": "Technical application security controls > Input and output protection > Validate HTTP request headers > Avoid using of Origin header for authentication of access control"
+  },
+  {
+    "hub_id": "483-715",
+    "is_leaf": true,
+    "name": "White-list HTTP methods",
+    "parent_id": "541-441",
+    "path": "Technical application security controls > Input and output protection > Validate HTTP request headers > White-list HTTP methods"
+  },
+  {
+    "hub_id": "316-272",
+    "is_leaf": true,
+    "name": "Whitelist CORS resources",
+    "parent_id": "541-441",
+    "path": "Technical application security controls > Input and output protection > Validate HTTP request headers > Whitelist CORS resources"
+  },
+  {
+    "hub_id": "842-876",
+    "is_leaf": false,
+    "name": "Logging and error handling",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Logging and error handling"
+  },
+  {
+    "hub_id": "513-183",
+    "is_leaf": false,
+    "name": "Error handling",
+    "parent_id": "842-876",
+    "path": "Technical application security controls > Logging and error handling > Error handling"
+  },
+  {
+    "hub_id": "612-435",
+    "is_leaf": true,
+    "name": "Show generic message for security exceptions or unanticipated exceptions",
+    "parent_id": "513-183",
+    "path": "Technical application security controls > Logging and error handling > Error handling > Show generic message for security exceptions or unanticipated exceptions"
+  },
+  {
+    "hub_id": "118-602",
+    "is_leaf": true,
+    "name": "Use a standard last-resort error handler for unhandled errors",
+    "parent_id": "513-183",
+    "path": "Technical application security controls > Logging and error handling > Error handling > Use a standard last-resort error handler for unhandled errors"
+  },
+  {
+    "hub_id": "863-636",
+    "is_leaf": true,
+    "name": "Use exception handling uniformly",
+    "parent_id": "513-183",
+    "path": "Technical application security controls > Logging and error handling > Error handling > Use exception handling uniformly"
+  },
+  {
+    "hub_id": "141-555",
+    "is_leaf": true,
+    "name": "Fail securely",
+    "parent_id": "842-876",
+    "path": "Technical application security controls > Logging and error handling > Fail securely"
+  },
+  {
+    "hub_id": "843-841",
+    "is_leaf": false,
+    "name": "Log discretely",
+    "parent_id": "842-876",
+    "path": "Technical application security controls > Logging and error handling > Log discretely"
+  },
+  {
+    "hub_id": "067-050",
+    "is_leaf": true,
+    "name": "Do not log credentials or payment details",
+    "parent_id": "843-841",
+    "path": "Technical application security controls > Logging and error handling > Log discretely > Do not log credentials or payment details"
+  },
+  {
+    "hub_id": "240-274",
+    "is_leaf": true,
+    "name": "Log only non-sensitive data",
+    "parent_id": "843-841",
+    "path": "Technical application security controls > Logging and error handling > Log discretely > Log only non-sensitive data"
+  },
+  {
+    "hub_id": "148-420",
+    "is_leaf": false,
+    "name": "Log integrity",
+    "parent_id": "842-876",
+    "path": "Technical application security controls > Logging and error handling > Log integrity"
+  },
+  {
+    "hub_id": "713-684",
+    "is_leaf": false,
+    "name": "Log access protection",
+    "parent_id": "148-420",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log access protection"
+  },
+  {
+    "hub_id": "713-683",
+    "is_leaf": true,
+    "name": "Protect logs against unauthorized access",
+    "parent_id": "713-684",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log access protection > Protect logs against unauthorized access"
+  },
+  {
+    "hub_id": "260-200",
+    "is_leaf": true,
+    "name": "Log in consistent format across system",
+    "parent_id": "148-420",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log in consistent format across system"
+  },
+  {
+    "hub_id": "821-541",
+    "is_leaf": false,
+    "name": "Log injection protection",
+    "parent_id": "148-420",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log injection protection"
+  },
+  {
+    "hub_id": "048-612",
+    "is_leaf": true,
+    "name": "Encode user input before logging",
+    "parent_id": "821-541",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log injection protection > Encode user input before logging"
+  },
+  {
+    "hub_id": "770-362",
+    "is_leaf": false,
+    "name": "Log time synchronization",
+    "parent_id": "148-420",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log time synchronization"
+  },
+  {
+    "hub_id": "770-361",
+    "is_leaf": true,
+    "name": "Synchronize time zones for logs",
+    "parent_id": "770-362",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Log time synchronization > Synchronize time zones for logs"
+  },
+  {
+    "hub_id": "026-280",
+    "is_leaf": true,
+    "name": "Securely transfer logs (remotely)",
+    "parent_id": "148-420",
+    "path": "Technical application security controls > Logging and error handling > Log integrity > Securely transfer logs (remotely)"
+  },
+  {
+    "hub_id": "402-706",
+    "is_leaf": false,
+    "name": "Log relevant",
+    "parent_id": "842-876",
+    "path": "Technical application security controls > Logging and error handling > Log relevant"
+  },
+  {
+    "hub_id": "443-447",
+    "is_leaf": true,
+    "name": "Log access control decisions",
+    "parent_id": "402-706",
+    "path": "Technical application security controls > Logging and error handling > Log relevant > Log access control decisions"
+  },
+  {
+    "hub_id": "015-063",
+    "is_leaf": true,
+    "name": "Log access to sensitive data",
+    "parent_id": "402-706",
+    "path": "Technical application security controls > Logging and error handling > Log relevant > Log access to sensitive data"
+  },
+  {
+    "hub_id": "184-284",
+    "is_leaf": true,
+    "name": "Log all security relevant events",
+    "parent_id": "402-706",
+    "path": "Technical application security controls > Logging and error handling > Log relevant > Log all security relevant events"
+  },
+  {
+    "hub_id": "841-710",
+    "is_leaf": true,
+    "name": "Log authentication decisions without exposing sensitive data",
+    "parent_id": "402-706",
+    "path": "Technical application security controls > Logging and error handling > Log relevant > Log authentication decisions without exposing sensitive data"
+  },
+  {
+    "hub_id": "555-048",
+    "is_leaf": true,
+    "name": "Log events sufficiently to recreate their order",
+    "parent_id": "402-706",
+    "path": "Technical application security controls > Logging and error handling > Log relevant > Log events sufficiently to recreate their order"
+  },
+  {
+    "hub_id": "854-643",
+    "is_leaf": false,
+    "name": "Robust business logic",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Robust business logic"
+  },
+  {
+    "hub_id": "552-588",
+    "is_leaf": false,
+    "name": "Detect and prevent unusual activity",
+    "parent_id": "854-643",
+    "path": "Technical application security controls > Robust business logic > Detect and prevent unusual activity"
+  },
+  {
+    "hub_id": "725-682",
+    "is_leaf": true,
+    "name": "Enable configurable alert against usage anomalies",
+    "parent_id": "552-588",
+    "path": "Technical application security controls > Robust business logic > Detect and prevent unusual activity > Enable configurable alert against usage anomalies"
+  },
+  {
+    "hub_id": "534-605",
+    "is_leaf": true,
+    "name": "Enforce natural sequence of business flows to avoid abuse",
+    "parent_id": "552-588",
+    "path": "Technical application security controls > Robust business logic > Detect and prevent unusual activity > Enforce natural sequence of business flows to avoid abuse"
+  },
+  {
+    "hub_id": "660-867",
+    "is_leaf": true,
+    "name": "Implement business logic limits against identified business risks",
+    "parent_id": "552-588",
+    "path": "Technical application security controls > Robust business logic > Detect and prevent unusual activity > Implement business logic limits against identified business risks"
+  },
+  {
+    "hub_id": "456-535",
+    "is_leaf": true,
+    "name": "Monitor for realistic \"human time\" business logic flows",
+    "parent_id": "552-588",
+    "path": "Technical application security controls > Robust business logic > Detect and prevent unusual activity > Monitor for realistic \"human time\" business logic flows"
+  },
+  {
+    "hub_id": "418-853",
+    "is_leaf": true,
+    "name": "Monitor unusual activities on system",
+    "parent_id": "552-588",
+    "path": "Technical application security controls > Robust business logic > Detect and prevent unusual activity > Monitor unusual activities on system"
+  },
+  {
+    "hub_id": "356-282",
+    "is_leaf": true,
+    "name": "Minimize sensitive data scattering and retention",
+    "parent_id": "854-643",
+    "path": "Technical application security controls > Robust business logic > Minimize sensitive data scattering and retention"
+  },
+  {
+    "hub_id": "601-182",
+    "is_leaf": false,
+    "name": "Parallel execution robustness",
+    "parent_id": "854-643",
+    "path": "Technical application security controls > Robust business logic > Parallel execution robustness"
+  },
+  {
+    "hub_id": "670-660",
+    "is_leaf": true,
+    "name": "Do not share unsynchronized state on high-value logic flows",
+    "parent_id": "601-182",
+    "path": "Technical application security controls > Robust business logic > Parallel execution robustness > Do not share unsynchronized state on high-value logic flows"
+  },
+  {
+    "hub_id": "380-540",
+    "is_leaf": true,
+    "name": "Ensure business flows' thread safety/resistance to race conditions",
+    "parent_id": "601-182",
+    "path": "Technical application security controls > Robust business logic > Parallel execution robustness > Ensure business flows' thread safety/resistance to race conditions"
+  },
+  {
+    "hub_id": "134-412",
+    "is_leaf": true,
+    "name": "Protect sensitive functionalities against race conditions",
+    "parent_id": "601-182",
+    "path": "Technical application security controls > Robust business logic > Parallel execution robustness > Protect sensitive functionalities against race conditions"
+  },
+  {
+    "hub_id": "267-031",
+    "is_leaf": true,
+    "name": "Protect the availability of resources by providing more to higher-priority processes",
+    "parent_id": "601-182",
+    "path": "Technical application security controls > Robust business logic > Parallel execution robustness > Protect the availability of resources by providing more to higher-priority processes"
+  },
+  {
+    "hub_id": "447-083",
+    "is_leaf": false,
+    "name": "Privacy-preserving personal data logic",
+    "parent_id": "854-643",
+    "path": "Technical application security controls > Robust business logic > Privacy-preserving personal data logic"
+  },
+  {
+    "hub_id": "762-451",
+    "is_leaf": true,
+    "name": "Ensure users can remove or export their data",
+    "parent_id": "447-083",
+    "path": "Technical application security controls > Robust business logic > Privacy-preserving personal data logic > Ensure users can remove or export their data"
+  },
+  {
+    "hub_id": "082-327",
+    "is_leaf": true,
+    "name": "Inform users clearly about the collection and use of personal data,  and use it only after opt-in consent.",
+    "parent_id": "447-083",
+    "path": "Technical application security controls > Robust business logic > Privacy-preserving personal data logic > Inform users clearly about the collection and use of personal data,  and use it only after opt-in consent."
+  },
+  {
+    "hub_id": "278-646",
+    "is_leaf": false,
+    "name": "Secure communication",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Secure communication"
+  },
+  {
+    "hub_id": "634-733",
+    "is_leaf": false,
+    "name": "Communication authentication",
+    "parent_id": "278-646",
+    "path": "Technical application security controls > Secure communication > Communication authentication"
+  },
+  {
+    "hub_id": "605-735",
+    "is_leaf": true,
+    "name": "Authenticate all external connections",
+    "parent_id": "634-733",
+    "path": "Technical application security controls > Secure communication > Communication authentication > Authenticate all external connections"
+  },
+  {
+    "hub_id": "537-367",
+    "is_leaf": true,
+    "name": "Enable certification revocation",
+    "parent_id": "634-733",
+    "path": "Technical application security controls > Secure communication > Communication authentication > Enable certification revocation"
+  },
+  {
+    "hub_id": "530-671",
+    "is_leaf": true,
+    "name": "Mutually authenticate application components",
+    "parent_id": "634-733",
+    "path": "Technical application security controls > Secure communication > Communication authentication > Mutually authenticate application components"
+  },
+  {
+    "hub_id": "435-702",
+    "is_leaf": false,
+    "name": "Communication encryption",
+    "parent_id": "278-646",
+    "path": "Technical application security controls > Secure communication > Communication encryption"
+  },
+  {
+    "hub_id": "527-034",
+    "is_leaf": true,
+    "name": "Protect communication between application components",
+    "parent_id": "435-702",
+    "path": "Technical application security controls > Secure communication > Communication encryption > Protect communication between application components"
+  },
+  {
+    "hub_id": "426-842",
+    "is_leaf": true,
+    "name": "Verify the authenticity of both headers and payload",
+    "parent_id": "435-702",
+    "path": "Technical application security controls > Secure communication > Communication encryption > Verify the authenticity of both headers and payload"
+  },
+  {
+    "hub_id": "341-076",
+    "is_leaf": false,
+    "name": "Minimize communication",
+    "parent_id": "278-646",
+    "path": "Technical application security controls > Secure communication > Minimize communication"
+  },
+  {
+    "hub_id": "333-888",
+    "is_leaf": true,
+    "name": "Do not expose data through API URLs",
+    "parent_id": "341-076",
+    "path": "Technical application security controls > Secure communication > Minimize communication > Do not expose data through API URLs"
+  },
+  {
+    "hub_id": "186-540",
+    "is_leaf": true,
+    "name": "Do not expose data through HTTP verb",
+    "parent_id": "341-076",
+    "path": "Technical application security controls > Secure communication > Minimize communication > Do not expose data through HTTP verb"
+  },
+  {
+    "hub_id": "217-112",
+    "is_leaf": true,
+    "name": "Minimize the number of parameters in a request",
+    "parent_id": "341-076",
+    "path": "Technical application security controls > Secure communication > Minimize communication > Minimize the number of parameters in a request"
+  },
+  {
+    "hub_id": "228-551",
+    "is_leaf": false,
+    "name": "TLS",
+    "parent_id": "278-646",
+    "path": "Technical application security controls > Secure communication > TLS"
+  },
+  {
+    "hub_id": "248-646",
+    "is_leaf": true,
+    "name": "Disable insecure SSL/TLS versions",
+    "parent_id": "228-551",
+    "path": "Technical application security controls > Secure communication > TLS > Disable insecure SSL/TLS versions"
+  },
+  {
+    "hub_id": "745-045",
+    "is_leaf": true,
+    "name": "Do not fall back to insecure protocols in TCP",
+    "parent_id": "228-551",
+    "path": "Technical application security controls > Secure communication > TLS > Do not fall back to insecure protocols in TCP"
+  },
+  {
+    "hub_id": "636-854",
+    "is_leaf": true,
+    "name": "Encrypt all communications",
+    "parent_id": "228-551",
+    "path": "Technical application security controls > Secure communication > TLS > Encrypt all communications"
+  },
+  {
+    "hub_id": "668-364",
+    "is_leaf": true,
+    "name": "Log TLS connection failures",
+    "parent_id": "228-551",
+    "path": "Technical application security controls > Secure communication > TLS > Log TLS connection failures"
+  },
+  {
+    "hub_id": "430-636",
+    "is_leaf": true,
+    "name": "Verify TLS certificates and trust chain",
+    "parent_id": "228-551",
+    "path": "Technical application security controls > Secure communication > TLS > Verify TLS certificates and trust chain"
+  },
+  {
+    "hub_id": "767-701",
+    "is_leaf": true,
+    "name": "Verify strong TLS algorithms by testing",
+    "parent_id": "228-551",
+    "path": "Technical application security controls > Secure communication > TLS > Verify strong TLS algorithms by testing"
+  },
+  {
+    "hub_id": "683-036",
+    "is_leaf": true,
+    "name": "Wireless link protection",
+    "parent_id": "278-646",
+    "path": "Technical application security controls > Secure communication > Wireless link protection"
+  },
+  {
+    "hub_id": "126-668",
+    "is_leaf": false,
+    "name": "Secure data storage",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Secure data storage"
+  },
+  {
+    "hub_id": "538-770",
+    "is_leaf": false,
+    "name": "Data access control",
+    "parent_id": "126-668",
+    "path": "Technical application security controls > Secure data storage > Data access control"
+  },
+  {
+    "hub_id": "117-371",
+    "is_leaf": true,
+    "name": "Use a centralized access control mechanism",
+    "parent_id": "538-770",
+    "path": "Technical application security controls > Secure data storage > Data access control > Use a centralized access control mechanism"
+  },
+  {
+    "hub_id": "400-007",
+    "is_leaf": false,
+    "name": "Encrypt data at rest",
+    "parent_id": "126-668",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest"
+  },
+  {
+    "hub_id": "504-340",
+    "is_leaf": true,
+    "name": "Encrypt sensitive data with algorithms that provide both confidentiality and integrity",
+    "parent_id": "400-007",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encrypt sensitive data with algorithms that provide both confidentiality and integrity"
+  },
+  {
+    "hub_id": "742-432",
+    "is_leaf": false,
+    "name": "Encryption algorithms",
+    "parent_id": "400-007",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms"
+  },
+  {
+    "hub_id": "786-224",
+    "is_leaf": true,
+    "name": "Authenticate encrypted data",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Authenticate encrypted data"
+  },
+  {
+    "hub_id": "122-287",
+    "is_leaf": true,
+    "name": "Ensure cryptographic elements can be upgraded or replaced",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Ensure cryptographic elements can be upgraded or replaced"
+  },
+  {
+    "hub_id": "036-810",
+    "is_leaf": true,
+    "name": "Let cryptographic modules fail securely",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Let cryptographic modules fail securely"
+  },
+  {
+    "hub_id": "878-880",
+    "is_leaf": true,
+    "name": "Perform cryptographic operations in constant time",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Perform cryptographic operations in constant time"
+  },
+  {
+    "hub_id": "742-431",
+    "is_leaf": true,
+    "name": "Use approved cryptographic algorithms",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Use approved cryptographic algorithms"
+  },
+  {
+    "hub_id": "433-122",
+    "is_leaf": true,
+    "name": "Use nonces and initialization vectors only once",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Use nonces and initialization vectors only once"
+  },
+  {
+    "hub_id": "674-425",
+    "is_leaf": true,
+    "name": "Use state of the art cryptographic configuration",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Use state of the art cryptographic configuration"
+  },
+  {
+    "hub_id": "441-132",
+    "is_leaf": true,
+    "name": "Use weak crypto only for backwards compatibility",
+    "parent_id": "742-432",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Encryption algorithms > Use weak crypto only for backwards compatibility"
+  },
+  {
+    "hub_id": "275-483",
+    "is_leaf": false,
+    "name": "Securely store regulated data",
+    "parent_id": "400-007",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Securely store regulated data"
+  },
+  {
+    "hub_id": "267-468",
+    "is_leaf": true,
+    "name": "Encrypt financial data at rest",
+    "parent_id": "275-483",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Securely store regulated data > Encrypt financial data at rest"
+  },
+  {
+    "hub_id": "224-321",
+    "is_leaf": true,
+    "name": "Encrypt health data at rest",
+    "parent_id": "275-483",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Securely store regulated data > Encrypt health data at rest"
+  },
+  {
+    "hub_id": "482-866",
+    "is_leaf": true,
+    "name": "Encrypt personal data at rest",
+    "parent_id": "275-483",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Securely store regulated data > Encrypt personal data at rest"
+  },
+  {
+    "hub_id": "232-325",
+    "is_leaf": true,
+    "name": "Treat client-secrets as insecure",
+    "parent_id": "400-007",
+    "path": "Technical application security controls > Secure data storage > Encrypt data at rest > Treat client-secrets as insecure"
+  },
+  {
+    "hub_id": "208-830",
+    "is_leaf": false,
+    "name": "Manage temporary storage",
+    "parent_id": "126-668",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage"
+  },
+  {
+    "hub_id": "046-257",
+    "is_leaf": true,
+    "name": "Clear authentication data from client storage",
+    "parent_id": "208-830",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage > Clear authentication data from client storage"
+  },
+  {
+    "hub_id": "617-524",
+    "is_leaf": true,
+    "name": "Do not store sensitive data on client (browser) storage",
+    "parent_id": "208-830",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage > Do not store sensitive data on client (browser) storage"
+  },
+  {
+    "hub_id": "846-302",
+    "is_leaf": true,
+    "name": "Prevent caching of sensitive data in server components",
+    "parent_id": "208-830",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage > Prevent caching of sensitive data in server components"
+  },
+  {
+    "hub_id": "157-430",
+    "is_leaf": true,
+    "name": "Protect and clear cached sensitive data",
+    "parent_id": "208-830",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage > Protect and clear cached sensitive data"
+  },
+  {
+    "hub_id": "473-758",
+    "is_leaf": true,
+    "name": "Set sufficient anti-caching headers",
+    "parent_id": "208-830",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage > Set sufficient anti-caching headers"
+  },
+  {
+    "hub_id": "715-304",
+    "is_leaf": true,
+    "name": "Zeroize sensitive information in memory after use",
+    "parent_id": "208-830",
+    "path": "Technical application security controls > Secure data storage > Manage temporary storage > Zeroize sensitive information in memory after use"
+  },
+  {
+    "hub_id": "223-780",
+    "is_leaf": false,
+    "name": "Secret storage",
+    "parent_id": "126-668",
+    "path": "Technical application security controls > Secure data storage > Secret storage"
+  },
+  {
+    "hub_id": "774-888",
+    "is_leaf": true,
+    "name": "Do not store secrets in the code",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Do not store secrets in the code"
+  },
+  {
+    "hub_id": "821-832",
+    "is_leaf": true,
+    "name": "Ensure keys and passwords are replaceable",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Ensure keys and passwords are replaceable"
+  },
+  {
+    "hub_id": "767-435",
+    "is_leaf": true,
+    "name": "Set the highest feasible iteration count for PBKDF2",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Set the highest feasible iteration count for PBKDF2"
+  },
+  {
+    "hub_id": "078-427",
+    "is_leaf": true,
+    "name": "Set the highest feasible work factor for bcrypt",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Set the highest feasible work factor for bcrypt"
+  },
+  {
+    "hub_id": "881-321",
+    "is_leaf": true,
+    "name": "Store credentials securely",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Store credentials securely"
+  },
+  {
+    "hub_id": "783-255",
+    "is_leaf": true,
+    "name": "Store cryptographic keys securely",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Store cryptographic keys securely"
+  },
+  {
+    "hub_id": "622-203",
+    "is_leaf": true,
+    "name": "Store passwords salted and hashed",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Store passwords salted and hashed"
+  },
+  {
+    "hub_id": "340-375",
+    "is_leaf": true,
+    "name": "Use a dedicated secrets management solution",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Use a dedicated secrets management solution"
+  },
+  {
+    "hub_id": "032-213",
+    "is_leaf": true,
+    "name": "Use an isolated security module for cryptographic operations",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Use an isolated security module for cryptographic operations"
+  },
+  {
+    "hub_id": "508-702",
+    "is_leaf": true,
+    "name": "Use key vaults",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Use key vaults"
+  },
+  {
+    "hub_id": "077-781",
+    "is_leaf": true,
+    "name": "Use separately stored secret salt (pepper)",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Use separately stored secret salt (pepper)"
+  },
+  {
+    "hub_id": "082-530",
+    "is_leaf": true,
+    "name": "Use unique random salt with sufficient entropy for each credential",
+    "parent_id": "223-780",
+    "path": "Technical application security controls > Secure data storage > Secret storage > Use unique random salt with sufficient entropy for each credential"
+  },
+  {
+    "hub_id": "542-270",
+    "is_leaf": false,
+    "name": "Secure random values",
+    "parent_id": "126-668",
+    "path": "Technical application security controls > Secure data storage > Secure random values"
+  },
+  {
+    "hub_id": "027-210",
+    "is_leaf": true,
+    "name": "Create random GUIDs with cryptographically secure random number generators",
+    "parent_id": "542-270",
+    "path": "Technical application security controls > Secure data storage > Secure random values > Create random GUIDs with cryptographically secure random number generators"
+  },
+  {
+    "hub_id": "664-571",
+    "is_leaf": true,
+    "name": "Ensure proper generation of secure random",
+    "parent_id": "542-270",
+    "path": "Technical application security controls > Secure data storage > Secure random values > Ensure proper generation of secure random"
+  },
+  {
+    "hub_id": "542-488",
+    "is_leaf": true,
+    "name": "Use cryptographically secure random number generators",
+    "parent_id": "542-270",
+    "path": "Technical application security controls > Secure data storage > Secure random values > Use cryptographically secure random number generators"
+  },
+  {
+    "hub_id": "708-355",
+    "is_leaf": false,
+    "name": "Secure implemented architecture",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Secure implemented architecture"
+  },
+  {
+    "hub_id": "344-611",
+    "is_leaf": true,
+    "name": "Use centralized reusable security controls",
+    "parent_id": "708-355",
+    "path": "Technical application security controls > Secure implemented architecture > Use centralized reusable security controls"
+  },
+  {
+    "hub_id": "586-842",
+    "is_leaf": false,
+    "name": "Secure user management",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Secure user management"
+  },
+  {
+    "hub_id": "327-505",
+    "is_leaf": true,
+    "name": "Change password with presence of old and new password",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Change password with presence of old and new password"
+  },
+  {
+    "hub_id": "065-183",
+    "is_leaf": true,
+    "name": "Disallow default credentials",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Disallow default credentials"
+  },
+  {
+    "hub_id": "813-610",
+    "is_leaf": true,
+    "name": "Do not use static secrets",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Do not use static secrets"
+  },
+  {
+    "hub_id": "138-448",
+    "is_leaf": true,
+    "name": "Inform users for authentication renewal",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Inform users for authentication renewal"
+  },
+  {
+    "hub_id": "235-658",
+    "is_leaf": true,
+    "name": "Notify user about credential change",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Notify user about credential change"
+  },
+  {
+    "hub_id": "808-425",
+    "is_leaf": true,
+    "name": "Notify users about anomalies in their usage patterns",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Notify users about anomalies in their usage patterns"
+  },
+  {
+    "hub_id": "751-176",
+    "is_leaf": true,
+    "name": "Offer password changing functionality",
+    "parent_id": "586-842",
+    "path": "Technical application security controls > Secure user management > Offer password changing functionality"
+  },
+  {
+    "hub_id": "177-260",
+    "is_leaf": false,
+    "name": "Session management",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Session management"
+  },
+  {
+    "hub_id": "110-531",
+    "is_leaf": false,
+    "name": "Cookie-config",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Cookie-config"
+  },
+  {
+    "hub_id": "342-055",
+    "is_leaf": true,
+    "name": "Set \"samesite\" attribute for cookie-based session tokens",
+    "parent_id": "110-531",
+    "path": "Technical application security controls > Session management > Cookie-config > Set \"samesite\" attribute for cookie-based session tokens"
+  },
+  {
+    "hub_id": "688-081",
+    "is_leaf": true,
+    "name": "Set \"secure\" attribute for cookie-based session tokens",
+    "parent_id": "110-531",
+    "path": "Technical application security controls > Session management > Cookie-config > Set \"secure\" attribute for cookie-based session tokens"
+  },
+  {
+    "hub_id": "232-034",
+    "is_leaf": true,
+    "name": "Set '_Host'  prefix for cookie-based session tokens",
+    "parent_id": "110-531",
+    "path": "Technical application security controls > Session management > Cookie-config > Set '_Host'  prefix for cookie-based session tokens"
+  },
+  {
+    "hub_id": "804-220",
+    "is_leaf": true,
+    "name": "Set httponly attribute for cookie-based session tokens",
+    "parent_id": "110-531",
+    "path": "Technical application security controls > Session management > Cookie-config > Set httponly attribute for cookie-based session tokens"
+  },
+  {
+    "hub_id": "705-182",
+    "is_leaf": true,
+    "name": "Set path attribute in cookie-based session tokens as precise as possible",
+    "parent_id": "110-531",
+    "path": "Technical application security controls > Session management > Cookie-config > Set path attribute in cookie-based session tokens as precise as possible"
+  },
+  {
+    "hub_id": "402-133",
+    "is_leaf": true,
+    "name": "Do not expose session token in URL",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Do not expose session token in URL"
+  },
+  {
+    "hub_id": "470-731",
+    "is_leaf": false,
+    "name": "Minimize session life",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Minimize session life"
+  },
+  {
+    "hub_id": "673-736",
+    "is_leaf": true,
+    "name": "Enable option to log out from all active session",
+    "parent_id": "470-731",
+    "path": "Technical application security controls > Session management > Minimize session life > Enable option to log out from all active session"
+  },
+  {
+    "hub_id": "065-782",
+    "is_leaf": true,
+    "name": "Ensure session timeout (soft/hard)",
+    "parent_id": "470-731",
+    "path": "Technical application security controls > Session management > Minimize session life > Ensure session timeout (soft/hard)"
+  },
+  {
+    "hub_id": "238-346",
+    "is_leaf": true,
+    "name": "Terminate all sessions when password is changed",
+    "parent_id": "470-731",
+    "path": "Technical application security controls > Session management > Minimize session life > Terminate all sessions when password is changed"
+  },
+  {
+    "hub_id": "457-165",
+    "is_leaf": true,
+    "name": "Terminate session after logout",
+    "parent_id": "470-731",
+    "path": "Technical application security controls > Session management > Minimize session life > Terminate session after logout"
+  },
+  {
+    "hub_id": "582-541",
+    "is_leaf": true,
+    "name": "Re-authenticate before sensitive transactions",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Re-authenticate before sensitive transactions"
+  },
+  {
+    "hub_id": "258-115",
+    "is_leaf": false,
+    "name": "Re-authentication from federation or assertion",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Re-authentication from federation or assertion"
+  },
+  {
+    "hub_id": "551-400",
+    "is_leaf": true,
+    "name": "Allow user revocation of Oauth tokens",
+    "parent_id": "258-115",
+    "path": "Technical application security controls > Session management > Re-authentication from federation or assertion > Allow user revocation of Oauth tokens"
+  },
+  {
+    "hub_id": "618-403",
+    "is_leaf": true,
+    "name": "Enforce authentication timeout when dealing with an authentication third party (CSP)",
+    "parent_id": "258-115",
+    "path": "Technical application security controls > Session management > Re-authentication from federation or assertion > Enforce authentication timeout when dealing with an authentication third party (CSP)"
+  },
+  {
+    "hub_id": "052-821",
+    "is_leaf": true,
+    "name": "When using an authentication third party (CSP), relay last authentication event to other parties in the chain",
+    "parent_id": "258-115",
+    "path": "Technical application security controls > Session management > Re-authentication from federation or assertion > When using an authentication third party (CSP), relay last authentication event to other parties in the chain"
+  },
+  {
+    "hub_id": "114-277",
+    "is_leaf": false,
+    "name": "Session integrity",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Session integrity"
+  },
+  {
+    "hub_id": "551-054",
+    "is_leaf": true,
+    "name": "Use ephemeral secrets rather than static secrets",
+    "parent_id": "114-277",
+    "path": "Technical application security controls > Session management > Session integrity > Use ephemeral secrets rather than static secrets"
+  },
+  {
+    "hub_id": "483-883",
+    "is_leaf": true,
+    "name": "When using stateless tokens, ensure cryptographically secure characteristics",
+    "parent_id": "114-277",
+    "path": "Technical application security controls > Session management > Session integrity > When using stateless tokens, ensure cryptographically secure characteristics"
+  },
+  {
+    "hub_id": "716-526",
+    "is_leaf": false,
+    "name": "Session token generation",
+    "parent_id": "177-260",
+    "path": "Technical application security controls > Session management > Session token generation"
+  },
+  {
+    "hub_id": "704-530",
+    "is_leaf": true,
+    "name": "Enforce high entropy session tokens",
+    "parent_id": "716-526",
+    "path": "Technical application security controls > Session management > Session token generation > Enforce high entropy session tokens"
+  },
+  {
+    "hub_id": "727-043",
+    "is_leaf": true,
+    "name": "Ensure secure algorithms for generating session tokens",
+    "parent_id": "716-526",
+    "path": "Technical application security controls > Session management > Session token generation > Ensure secure algorithms for generating session tokens"
+  },
+  {
+    "hub_id": "002-630",
+    "is_leaf": true,
+    "name": "Generate a new session token after authentication",
+    "parent_id": "716-526",
+    "path": "Technical application security controls > Session management > Session token generation > Generate a new session token after authentication"
+  },
+  {
+    "hub_id": "455-358",
+    "is_leaf": true,
+    "name": "When storing session tokens in browser, use secure methods only",
+    "parent_id": "716-526",
+    "path": "Technical application security controls > Session management > Session token generation > When storing session tokens in browser, use secure methods only"
+  },
+  {
+    "hub_id": "663-200",
+    "is_leaf": false,
+    "name": "Technical AI security controls",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Technical AI security controls"
+  },
+  {
+    "hub_id": "041-173",
+    "is_leaf": false,
+    "name": "AI engineering controls",
+    "parent_id": "663-200",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls"
+  },
+  {
+    "hub_id": "881-234",
+    "is_leaf": false,
+    "name": "AI supply chain management",
+    "parent_id": "041-173",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > AI supply chain management"
+  },
+  {
+    "hub_id": "852-770",
+    "is_leaf": true,
+    "name": "AI model supply chain management",
+    "parent_id": "881-234",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > AI supply chain management > AI model supply chain management"
+  },
+  {
+    "hub_id": "423-055",
+    "is_leaf": true,
+    "name": "Data supply chain management",
+    "parent_id": "881-234",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > AI supply chain management > Data supply chain management"
+  },
+  {
+    "hub_id": "883-173",
+    "is_leaf": true,
+    "name": "Model hosting supply chain mannagement",
+    "parent_id": "881-234",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > AI supply chain management > Model hosting supply chain mannagement"
+  },
+  {
+    "hub_id": "041-188",
+    "is_leaf": true,
+    "name": "Data quality control",
+    "parent_id": "041-173",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Data quality control"
+  },
+  {
+    "hub_id": "384-015",
+    "is_leaf": false,
+    "name": "Evasion-preventing training",
+    "parent_id": "041-173",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Evasion-preventing training"
+  },
+  {
+    "hub_id": "467-215",
+    "is_leaf": true,
+    "name": "Adversarial robust distillation",
+    "parent_id": "384-015",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Evasion-preventing training > Adversarial robust distillation"
+  },
+  {
+    "hub_id": "408-838",
+    "is_leaf": true,
+    "name": "Adversarial training",
+    "parent_id": "384-015",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Evasion-preventing training > Adversarial training"
+  },
+  {
+    "hub_id": "860-723",
+    "is_leaf": true,
+    "name": "GenAI model alignment",
+    "parent_id": "041-173",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > GenAI model alignment"
+  },
+  {
+    "hub_id": "818-434",
+    "is_leaf": true,
+    "name": "Protection of technical AI information",
+    "parent_id": "041-173",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Protection of technical AI information"
+  },
+  {
+    "hub_id": "234-123",
+    "is_leaf": false,
+    "name": "Weakening training set backdoors",
+    "parent_id": "041-173",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors"
+  },
+  {
+    "hub_id": "854-183",
+    "is_leaf": true,
+    "name": "Benign fine-tuning and pruning",
+    "parent_id": "234-123",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors > Benign fine-tuning and pruning"
+  },
+  {
+    "hub_id": "444-058",
+    "is_leaf": true,
+    "name": "Benign train data increase",
+    "parent_id": "234-123",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors > Benign train data increase"
+  },
+  {
+    "hub_id": "788-323",
+    "is_leaf": true,
+    "name": "Model size reduction",
+    "parent_id": "234-123",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors > Model size reduction"
+  },
+  {
+    "hub_id": "567-025",
+    "is_leaf": true,
+    "name": "Train data distortion",
+    "parent_id": "234-123",
+    "path": "Technical application security controls > Technical AI security controls > AI engineering controls > Weakening training set backdoors > Train data distortion"
+  },
+  {
+    "hub_id": "436-325",
+    "is_leaf": false,
+    "name": "AI impact reduction controls",
+    "parent_id": "663-200",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls"
+  },
+  {
+    "hub_id": "563-186",
+    "is_leaf": false,
+    "name": "AI data reduction",
+    "parent_id": "436-325",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > AI data reduction"
+  },
+  {
+    "hub_id": "058-443",
+    "is_leaf": true,
+    "name": "Data minimization",
+    "parent_id": "563-186",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > AI data reduction > Data minimization"
+  },
+  {
+    "hub_id": "661-440",
+    "is_leaf": true,
+    "name": "Federated learning",
+    "parent_id": "563-186",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > AI data reduction > Federated learning"
+  },
+  {
+    "hub_id": "488-626",
+    "is_leaf": true,
+    "name": "Training data obfuscation",
+    "parent_id": "563-186",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > AI data reduction > Training data obfuscation"
+  },
+  {
+    "hub_id": "858-745",
+    "is_leaf": true,
+    "name": "Training data retention management",
+    "parent_id": "563-186",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > AI data reduction > Training data retention management"
+  },
+  {
+    "hub_id": "333-480",
+    "is_leaf": false,
+    "name": "Impact limitation of unwanted model behaviour",
+    "parent_id": "436-325",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour"
+  },
+  {
+    "hub_id": "810-884",
+    "is_leaf": true,
+    "name": "AI user transparency",
+    "parent_id": "333-480",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour > AI user transparency"
+  },
+  {
+    "hub_id": "205-522",
+    "is_leaf": true,
+    "name": "Automated AI oversight",
+    "parent_id": "333-480",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour > Automated AI oversight"
+  },
+  {
+    "hub_id": "202-604",
+    "is_leaf": true,
+    "name": "Human AI oversight",
+    "parent_id": "333-480",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour > Human AI oversight"
+  },
+  {
+    "hub_id": "220-442",
+    "is_leaf": true,
+    "name": "Model action privilege minimization",
+    "parent_id": "333-480",
+    "path": "Technical application security controls > Technical AI security controls > AI impact reduction controls > Impact limitation of unwanted model behaviour > Model action privilege minimization"
+  },
+  {
+    "hub_id": "582-035",
+    "is_leaf": false,
+    "name": "Conventional AI security controls on AI assets",
+    "parent_id": "663-200",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets"
+  },
+  {
+    "hub_id": "440-372",
+    "is_leaf": true,
+    "name": "Augmentation data confidentiality controls",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Augmentation data confidentiality controls"
+  },
+  {
+    "hub_id": "088-316",
+    "is_leaf": true,
+    "name": "Augmentation data integrity controls",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Augmentation data integrity controls"
+  },
+  {
+    "hub_id": "430-722",
+    "is_leaf": true,
+    "name": "Encode model output",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Encode model output"
+  },
+  {
+    "hub_id": "768-532",
+    "is_leaf": true,
+    "name": "Model input confidentiality controls",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Model input confidentiality controls"
+  },
+  {
+    "hub_id": "805-126",
+    "is_leaf": false,
+    "name": "Runtime model confidentiality controls",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Runtime model confidentiality controls"
+  },
+  {
+    "hub_id": "474-203",
+    "is_leaf": true,
+    "name": "Model obfuscation",
+    "parent_id": "805-126",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Runtime model confidentiality controls > Model obfuscation"
+  },
+  {
+    "hub_id": "276-748",
+    "is_leaf": true,
+    "name": "Runtime model integrity controls",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Runtime model integrity controls"
+  },
+  {
+    "hub_id": "130-171",
+    "is_leaf": true,
+    "name": "Runtime model io integrity controls",
+    "parent_id": "582-035",
+    "path": "Technical application security controls > Technical AI security controls > Conventional AI security controls on AI assets > Runtime model io integrity controls"
+  },
+  {
+    "hub_id": "382-481",
+    "is_leaf": false,
+    "name": "Secure AI inference",
+    "parent_id": "663-200",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference"
+  },
+  {
+    "hub_id": "641-760",
+    "is_leaf": true,
+    "name": "AI Input distortion",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > AI Input distortion"
+  },
+  {
+    "hub_id": "146-871",
+    "is_leaf": true,
+    "name": "Ensemble AI models",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Ensemble AI models"
+  },
+  {
+    "hub_id": "989-492",
+    "is_leaf": false,
+    "name": "Generic input attack controls at inference",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference"
+  },
+  {
+    "hub_id": "715-644",
+    "is_leaf": true,
+    "name": "Access control to AI inference",
+    "parent_id": "989-492",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference > Access control to AI inference"
+  },
+  {
+    "hub_id": "342-641",
+    "is_leaf": true,
+    "name": "Anomalous AI input handling",
+    "parent_id": "989-492",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference > Anomalous AI input handling"
+  },
+  {
+    "hub_id": "703-813",
+    "is_leaf": true,
+    "name": "Monitor inference",
+    "parent_id": "989-492",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference > Monitor inference"
+  },
+  {
+    "hub_id": "187-083",
+    "is_leaf": true,
+    "name": "Rate limiting against AI input attacks",
+    "parent_id": "989-492",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference > Rate limiting against AI input attacks"
+  },
+  {
+    "hub_id": "576-262",
+    "is_leaf": true,
+    "name": "Unwanted AI input series handling",
+    "parent_id": "989-492",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Generic input attack controls at inference > Unwanted AI input series handling"
+  },
+  {
+    "hub_id": "886-662",
+    "is_leaf": true,
+    "name": "Limit inference resources",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Limit inference resources"
+  },
+  {
+    "hub_id": "010-108",
+    "is_leaf": true,
+    "name": "Obscuring confidence in AI output",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Obscuring confidence in AI output"
+  },
+  {
+    "hub_id": "106-447",
+    "is_leaf": true,
+    "name": "Prompt input segregation",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Prompt input segregation"
+  },
+  {
+    "hub_id": "802-101",
+    "is_leaf": false,
+    "name": "Specific input attack controls at inference",
+    "parent_id": "382-481",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference"
+  },
+  {
+    "hub_id": "108-316",
+    "is_leaf": true,
+    "name": "AI resource exhaustion input handling",
+    "parent_id": "802-101",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > AI resource exhaustion input handling"
+  },
+  {
+    "hub_id": "761-417",
+    "is_leaf": true,
+    "name": "Evasion attack input handling",
+    "parent_id": "802-101",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > Evasion attack input handling"
+  },
+  {
+    "hub_id": "843-475",
+    "is_leaf": true,
+    "name": "Prompt injection I/O handling",
+    "parent_id": "802-101",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > Prompt injection I/O handling"
+  },
+  {
+    "hub_id": "204-272",
+    "is_leaf": true,
+    "name": "Sensitive AI output handling",
+    "parent_id": "802-101",
+    "path": "Technical application security controls > Technical AI security controls > Secure AI inference > Specific input attack controls at inference > Sensitive AI output handling"
+  },
+  {
+    "hub_id": "637-021",
+    "is_leaf": true,
+    "name": "Watermarking AI models",
+    "parent_id": "663-200",
+    "path": "Technical application security controls > Technical AI security controls > Watermarking AI models"
+  },
+  {
+    "hub_id": "724-770",
+    "is_leaf": false,
+    "name": "Technical application access control",
+    "parent_id": "636-660",
+    "path": "Technical application security controls > Technical application access control"
+  },
+  {
+    "hub_id": "123-124",
+    "is_leaf": false,
+    "name": "Minimize permissions",
+    "parent_id": "724-770",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions"
+  },
+  {
+    "hub_id": "817-808",
+    "is_leaf": true,
+    "name": "Deny new users by default",
+    "parent_id": "123-124",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions > Deny new users by default"
+  },
+  {
+    "hub_id": "368-633",
+    "is_leaf": true,
+    "name": "Enforce least privilege",
+    "parent_id": "123-124",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions > Enforce least privilege"
+  },
+  {
+    "hub_id": "540-566",
+    "is_leaf": true,
+    "name": "Let application request minimal permissions",
+    "parent_id": "123-124",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions > Let application request minimal permissions"
+  },
+  {
+    "hub_id": "152-725",
+    "is_leaf": true,
+    "name": "Limit access to admin/management functionality",
+    "parent_id": "123-124",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions > Limit access to admin/management functionality"
+  },
+  {
+    "hub_id": "524-603",
+    "is_leaf": true,
+    "name": "Limit modification of access controls to specifically authorized actors/users",
+    "parent_id": "123-124",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions > Limit modification of access controls to specifically authorized actors/users"
+  },
+  {
+    "hub_id": "330-281",
+    "is_leaf": true,
+    "name": "Use least privilege OS accounts for system (components)",
+    "parent_id": "123-124",
+    "path": "Technical application security controls > Technical application access control > Minimize permissions > Use least privilege OS accounts for system (components)"
+  },
+  {
+    "hub_id": "128-128",
+    "is_leaf": false,
+    "name": "Strong authorization checking",
+    "parent_id": "724-770",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking"
+  },
+  {
+    "hub_id": "822-100",
+    "is_leaf": true,
+    "name": "Constrain functional features based on user stories",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Constrain functional features based on user stories"
+  },
+  {
+    "hub_id": "640-364",
+    "is_leaf": true,
+    "name": "Enforce access control on trusted parts/serverside",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Enforce access control on trusted parts/serverside"
+  },
+  {
+    "hub_id": "650-560",
+    "is_leaf": true,
+    "name": "Enforce access control on trusted service layer",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Enforce access control on trusted service layer"
+  },
+  {
+    "hub_id": "284-521",
+    "is_leaf": true,
+    "name": "Enforce additional authorization and segregation of duties",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Enforce additional authorization and segregation of duties"
+  },
+  {
+    "hub_id": "664-080",
+    "is_leaf": true,
+    "name": "Enforce model-based authorization both at URI and final resource",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Enforce model-based authorization both at URI and final resource"
+  },
+  {
+    "hub_id": "166-151",
+    "is_leaf": true,
+    "name": "Ensure that secure fail-safe is in place for access control",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Ensure that secure fail-safe is in place for access control"
+  },
+  {
+    "hub_id": "746-705",
+    "is_leaf": true,
+    "name": "Limit/authorize user's access to functionality",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Limit/authorize user's access to functionality"
+  },
+  {
+    "hub_id": "304-667",
+    "is_leaf": true,
+    "name": "Protect API against unauthorized access/modification (IDOR)",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Protect API against unauthorized access/modification (IDOR)"
+  },
+  {
+    "hub_id": "615-744",
+    "is_leaf": true,
+    "name": "Protect against directory browsing/discovery attacks",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Protect against directory browsing/discovery attacks"
+  },
+  {
+    "hub_id": "801-310",
+    "is_leaf": true,
+    "name": "Use ABAC/FBAC on data/feature level, even when using RBAC for permissions",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Use ABAC/FBAC on data/feature level, even when using RBAC for permissions"
+  },
+  {
+    "hub_id": "060-472",
+    "is_leaf": true,
+    "name": "Use CSRF protection against authenticated functionality, add anti-automation controls for unauthenticated functionality",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Use CSRF protection against authenticated functionality, add anti-automation controls for unauthenticated functionality"
+  },
+  {
+    "hub_id": "201-246",
+    "is_leaf": true,
+    "name": "Use multifactor authentication on administrative interfaces",
+    "parent_id": "128-128",
+    "path": "Technical application security controls > Technical application access control > Strong authorization checking > Use multifactor authentication on administrative interfaces"
+  }
+]

@@ -1,0 +1,250 @@
+[
+  {
+    "assigned_controls": 132,
+    "assignment_count": 132,
+    "coverage_type": "model_prediction",
+    "framework_id": "aiuc_1",
+    "framework_name": "AIUC-1 Standard",
+    "total_controls": 132
+  },
+  {
+    "assigned_controls": 277,
+    "assignment_count": 277,
+    "coverage_type": "ground_truth",
+    "framework_id": "asvs",
+    "framework_name": "ASVS",
+    "total_controls": 277
+  },
+  {
+    "assigned_controls": 20,
+    "assignment_count": 21,
+    "coverage_type": "ground_truth",
+    "framework_id": "biml",
+    "framework_name": "BIML",
+    "total_controls": 20
+  },
+  {
+    "assigned_controls": 349,
+    "assignment_count": 1799,
+    "coverage_type": "ground_truth",
+    "framework_id": "capec",
+    "framework_name": "CAPEC",
+    "total_controls": 349
+  },
+  {
+    "assigned_controls": 55,
+    "assignment_count": 55,
+    "coverage_type": "model_prediction",
+    "framework_id": "cosai",
+    "framework_name": "CoSAI Landscape of AI Security Risk Map",
+    "total_controls": 55
+  },
+  {
+    "assigned_controls": 243,
+    "assignment_count": 243,
+    "coverage_type": "model_prediction",
+    "framework_id": "csa_aicm",
+    "framework_name": "CSA AI Controls Matrix",
+    "total_controls": 243
+  },
+  {
+    "assigned_controls": 29,
+    "assignment_count": 29,
+    "coverage_type": "ground_truth",
+    "framework_id": "csa_ccm",
+    "framework_name": "Cloud Controls Matrix",
+    "total_controls": 29
+  },
+  {
+    "assigned_controls": 246,
+    "assignment_count": 613,
+    "coverage_type": "ground_truth",
+    "framework_id": "cwe",
+    "framework_name": "CWE",
+    "total_controls": 246
+  },
+  {
+    "assigned_controls": 183,
+    "assignment_count": 214,
+    "coverage_type": "ground_truth",
+    "framework_id": "dsomm",
+    "framework_name": "DSOMM",
+    "total_controls": 183
+  },
+  {
+    "assigned_controls": 10,
+    "assignment_count": 66,
+    "coverage_type": "ground_truth",
+    "framework_id": "enisa",
+    "framework_name": "ENISA",
+    "total_controls": 38
+  },
+  {
+    "assigned_controls": 16,
+    "assignment_count": 35,
+    "coverage_type": "ground_truth",
+    "framework_id": "etsi",
+    "framework_name": "ETSI",
+    "total_controls": 27
+  },
+  {
+    "assigned_controls": 100,
+    "assignment_count": 100,
+    "coverage_type": "model_prediction",
+    "framework_id": "eu_ai_act",
+    "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
+    "total_controls": 126
+  },
+  {
+    "assigned_controls": 40,
+    "assignment_count": 40,
+    "coverage_type": "model_prediction",
+    "framework_id": "eu_gpai_cop",
+    "framework_name": "EU GPAI Code of Practice",
+    "total_controls": 40
+  },
+  {
+    "assigned_controls": 92,
+    "assignment_count": 93,
+    "coverage_type": "ground_truth",
+    "framework_id": "iso_27001",
+    "framework_name": "ISO 27001",
+    "total_controls": 93
+  },
+  {
+    "assigned_controls": 195,
+    "assignment_count": 281,
+    "coverage_type": "mixed",
+    "framework_id": "mitre_atlas",
+    "framework_name": "MITRE ATLAS",
+    "total_controls": 202
+  },
+  {
+    "assigned_controls": 300,
+    "assignment_count": 300,
+    "coverage_type": "ground_truth",
+    "framework_id": "nist_800_53",
+    "framework_name": "NIST 800-53",
+    "total_controls": 300
+  },
+  {
+    "assigned_controls": 25,
+    "assignment_count": 79,
+    "coverage_type": "ground_truth",
+    "framework_id": "nist_800_63",
+    "framework_name": "NIST 800-63",
+    "total_controls": 25
+  },
+  {
+    "assigned_controls": 20,
+    "assignment_count": 44,
+    "coverage_type": "ground_truth",
+    "framework_id": "nist_ai_100_2",
+    "framework_name": "NIST AI 100-2",
+    "total_controls": 28
+  },
+  {
+    "assigned_controls": 10,
+    "assignment_count": 10,
+    "coverage_type": "model_prediction",
+    "framework_id": "nist_ai_600_1",
+    "framework_name": "NIST AI 600-1 Generative AI Profile",
+    "total_controls": 12
+  },
+  {
+    "assigned_controls": 72,
+    "assignment_count": 72,
+    "coverage_type": "model_prediction",
+    "framework_id": "nist_ai_rmf",
+    "framework_name": "NIST AI Risk Management Framework",
+    "total_controls": 72
+  },
+  {
+    "assigned_controls": 44,
+    "assignment_count": 46,
+    "coverage_type": "ground_truth",
+    "framework_id": "nist_ssdf",
+    "framework_name": "NIST SSDF",
+    "total_controls": 44
+  },
+  {
+    "assigned_controls": 10,
+    "assignment_count": 10,
+    "coverage_type": "model_prediction",
+    "framework_id": "owasp_agentic_top10",
+    "framework_name": "OWASP Top 10 for Agentic Applications 2026",
+    "total_controls": 10
+  },
+  {
+    "assigned_controls": 46,
+    "assignment_count": 47,
+    "coverage_type": "ground_truth",
+    "framework_id": "owasp_ai_exchange",
+    "framework_name": "OWASP AI Exchange",
+    "total_controls": 54
+  },
+  {
+    "assigned_controls": 50,
+    "assignment_count": 391,
+    "coverage_type": "ground_truth",
+    "framework_id": "owasp_cheat_sheets",
+    "framework_name": "OWASP Cheat Sheets",
+    "total_controls": 50
+  },
+  {
+    "assigned_controls": 21,
+    "assignment_count": 21,
+    "coverage_type": "model_prediction",
+    "framework_id": "owasp_dsgai",
+    "framework_name": "OWASP GenAI Data Security Risks and Mitigations",
+    "total_controls": 21
+  },
+  {
+    "assigned_controls": 6,
+    "assignment_count": 18,
+    "coverage_type": "ground_truth",
+    "framework_id": "owasp_llm_top10",
+    "framework_name": "OWASP Top 10 for LLM Applications 2025",
+    "total_controls": 10
+  },
+  {
+    "assigned_controls": 7,
+    "assignment_count": 10,
+    "coverage_type": "ground_truth",
+    "framework_id": "owasp_ml_top10",
+    "framework_name": "OWASP Top10 for ML",
+    "total_controls": 7
+  },
+  {
+    "assigned_controls": 10,
+    "assignment_count": 76,
+    "coverage_type": "ground_truth",
+    "framework_id": "owasp_proactive_controls",
+    "framework_name": "OWASP Proactive Controls",
+    "total_controls": 10
+  },
+  {
+    "assigned_controls": 10,
+    "assignment_count": 17,
+    "coverage_type": "ground_truth",
+    "framework_id": "owasp_top10_2021",
+    "framework_name": "OWASP Top 10 2021",
+    "total_controls": 10
+  },
+  {
+    "assigned_controls": 30,
+    "assignment_count": 30,
+    "coverage_type": "ground_truth",
+    "framework_id": "samm",
+    "framework_name": "SAMM",
+    "total_controls": 30
+  },
+  {
+    "assigned_controls": 59,
+    "assignment_count": 118,
+    "coverage_type": "ground_truth",
+    "framework_id": "wstg",
+    "framework_name": "WSTG",
+    "total_controls": 59
+  }
+]

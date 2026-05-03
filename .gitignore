@@ -19,3 +19,4 @@ wandb/
 docs/session-prompts.md
 hub_proposals/
 .worktrees/
+notebooks/.ipynb_checkpoints/
