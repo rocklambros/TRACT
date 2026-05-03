@@ -10,11 +10,16 @@ from __future__ import annotations
 import json
 import logging
 import os
+import random
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 from tract.config import (
+    PHASE3_CALIBRATION_EASY_N,
+    PHASE3_CALIBRATION_HARD_N,
+    PHASE3_CALIBRATION_N_ITEMS,
+    PHASE3_CALIBRATION_SEED,
     PHASE3_GT_PROVENANCE,
     PHASE3_MODEL_PROVENANCE,
     PHASE3_TEXT_QUALITY_HIGH_THRESHOLD,
@@ -105,6 +110,159 @@ def _compute_review_priority(
     return "routine"
 
 
+_CALIBRATION_QUERY = """
+SELECT
+    a.id,
+    a.control_id,
+    a.hub_id,
+    a.provenance,
+    c.title,
+    c.description,
+    c.full_text,
+    c.framework_id,
+    c.section_id,
+    f.name AS framework_name
+FROM assignments a
+JOIN controls c ON a.control_id = c.id
+JOIN frameworks f ON c.framework_id = f.id
+WHERE a.provenance = 'ground_truth_T1-AI'
+ORDER BY a.id
+"""
+
+
+def _generate_calibration_items(
+    db_path: Path,
+    predictor: object,
+    global_threshold: float,
+    hub_meta: dict[str, dict[str, str]],
+) -> list[dict]:
+    """Generate calibration items from ground_truth_T1-AI assignments.
+
+    Runs inference to get model's genuine confidence for known-correct hubs.
+    Uses stratified selection: easy (top-N) + hard (bottom-N) + random middle.
+    Returns list of prediction dicts with negative IDs.
+    """
+    conn = get_connection(db_path)
+    try:
+        rows = conn.execute(_CALIBRATION_QUERY).fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        logger.warning("No ground_truth_T1-AI assignments found for calibration.")
+        return []
+
+    texts: list[str] = []
+    for row in rows:
+        combined = " ".join(
+            part for part in [row["title"], row["description"], row["full_text"]]
+            if part
+        )
+        texts.append(combined)
+
+    logger.info("Running calibration inference on %d GT texts (top_k=5)", len(texts))
+    batch_predictions = predictor.predict_batch(texts, top_k=5)  # type: ignore[union-attr]
+
+    scored: list[tuple[int, float, dict, str, list]] = []
+    for i, (row, preds) in enumerate(zip(rows, batch_predictions)):
+        known_hub_id: str = row["hub_id"]
+        confidence = 0.0
+        for p in preds:
+            if p.hub_id == known_hub_id:
+                confidence = float(p.calibrated_confidence)
+                break
+        scored.append((i, confidence, row, texts[i], preds))
+
+    scored.sort(key=lambda x: x[1], reverse=True)
+
+    n_total = min(PHASE3_CALIBRATION_N_ITEMS, len(scored))
+    n_easy = min(PHASE3_CALIBRATION_EASY_N, n_total)
+    n_hard = min(PHASE3_CALIBRATION_HARD_N, n_total - n_easy)
+    n_middle = n_total - n_easy - n_hard
+
+    easy = scored[:n_easy]
+    hard = scored[len(scored) - n_hard:] if n_hard > 0 else []
+    middle_pool = scored[n_easy:len(scored) - n_hard] if n_hard > 0 else scored[n_easy:]
+
+    rng = random.Random(PHASE3_CALIBRATION_SEED)
+    if n_middle > 0 and middle_pool:
+        middle = rng.sample(middle_pool, min(n_middle, len(middle_pool)))
+    else:
+        middle = []
+
+    selected = easy + middle + hard
+
+    calibration_items: list[dict] = []
+    for neg_id, (_, conf, row, text, preds) in enumerate(selected, start=1):
+        assigned_hub_id: str = row["hub_id"]
+        text_quality = _compute_text_quality(len(text))
+
+        assigned_pred = None
+        for p in preds:
+            if p.hub_id == assigned_hub_id:
+                assigned_pred = p
+                break
+
+        if assigned_pred is not None:
+            is_ood_val = bool(assigned_pred.is_ood)
+            in_conformal_set_val = bool(assigned_pred.in_conformal_set)
+            confidence_val = float(assigned_pred.calibrated_confidence)
+            raw_similarity_val = float(assigned_pred.raw_similarity)
+        else:
+            is_ood_val = True
+            in_conformal_set_val = False
+            confidence_val = 0.0
+            raw_similarity_val = 0.0
+
+        review_priority = _compute_review_priority(
+            confidence_val, is_ood_val, text_quality, global_threshold,
+        )
+
+        alternative_hubs: list[dict] = []
+        for p in preds:
+            if p.hub_id != assigned_hub_id:
+                alternative_hubs.append({
+                    "hub_id": p.hub_id,
+                    "hub_name": p.hub_name,
+                    "confidence": float(p.calibrated_confidence),
+                })
+            if len(alternative_hubs) >= 2:
+                break
+
+        hub_info = hub_meta.get(assigned_hub_id, {"name": assigned_hub_id, "path": ""})
+
+        calibration_items.append({
+            "id": -neg_id,
+            "control_id": row["control_id"],
+            "framework_id": row["framework_id"],
+            "framework_name": row["framework_name"],
+            "section_id": row["section_id"],
+            "control_title": row["title"] or "",
+            "control_text": text,
+            "assigned_hub_id": assigned_hub_id,
+            "assigned_hub_name": hub_info["name"],
+            "assigned_hub_path": hub_info["path"],
+            "confidence": confidence_val,
+            "raw_similarity": raw_similarity_val,
+            "is_ood": is_ood_val,
+            "in_conformal_set": in_conformal_set_val,
+            "text_quality": text_quality,
+            "review_priority": review_priority,
+            "provenance": row["provenance"],
+            "alternative_hubs": alternative_hubs,
+            "decision": None,
+            "reviewer_hub_id": None,
+            "reviewer_notes": None,
+            "status": "pending",
+        })
+
+    logger.info(
+        "Generated %d calibration items (easy=%d, middle=%d, hard=%d)",
+        len(calibration_items), n_easy, len(middle), n_hard,
+    )
+    return calibration_items
+
+
 def generate_review_export(
     db_path: Path,
     model_dir: Path,
@@ -157,14 +315,10 @@ def generate_review_export(
         rows = conn.execute(_REVIEW_QUERY).fetchall()
         logger.info("Found %d in-scope assignments for review export", len(rows))
 
-        # Fetch hub metadata (name, path) for all referenced hub IDs.
-        all_hub_ids: set[str] = {row["hub_id"] for row in rows}
+        # Fetch hub metadata for all hubs (needed for both main + calibration).
         hub_rows = conn.execute(
-            "SELECT id, name, path FROM hubs WHERE id IN ({})".format(
-                ",".join("?" * len(all_hub_ids))
-            ),
-            list(all_hub_ids),
-        ).fetchall() if all_hub_ids else []
+            "SELECT id, name, path FROM hubs",
+        ).fetchall()
         hub_meta: dict[str, dict[str, str]] = {
             r["id"]: {"name": r["name"], "path": r["path"] or ""}
             for r in hub_rows
@@ -280,11 +434,17 @@ def generate_review_export(
         framework_breakdown[framework_id] = framework_breakdown.get(framework_id, 0) + 1
         priority_breakdown[review_priority] = priority_breakdown.get(review_priority, 0) + 1
 
+    # ── Generate calibration items ──────────────────────────────────────
+    calibration_items = _generate_calibration_items(
+        db_path, predictor, global_threshold, hub_meta,
+    )
+    predictions.extend(calibration_items)
+
     metadata = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "model_version": model_version,
         "total_predictions": len(predictions),
-        "calibration_items": 0,
+        "calibration_items": len(calibration_items),
         "framework_breakdown": framework_breakdown,
         "priority_breakdown": priority_breakdown,
     }
@@ -293,8 +453,8 @@ def generate_review_export(
     _write_export(output_dir, export_doc)
 
     logger.info(
-        "Review export written: %d predictions (%s)",
-        len(predictions),
+        "Review export written: %d predictions (%d calibration) (%s)",
+        len(predictions), len(calibration_items),
         ", ".join(f"{k}={v}" for k, v in priority_breakdown.items()),
     )
     return metadata

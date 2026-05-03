@@ -15,6 +15,7 @@ from tract.inference import HubPrediction
 from tract.review.export import (
     _compute_review_priority,
     _compute_text_quality,
+    _generate_calibration_items,
     generate_review_export,
 )
 
@@ -614,3 +615,271 @@ class TestReturnValue:
         assert "total_predictions" in result
         assert "framework_breakdown" in result
         assert result["total_predictions"] == 3  # a1, a2, b1
+
+
+# ── Calibration item fixtures and tests ──────────────────────────────────────
+
+
+@pytest.fixture()
+def calibration_db(tmp_path: Path) -> Path:
+    """DB with 25 ground_truth_T1-AI assignments for calibration tests.
+
+    Each control has a unique text length to ensure deterministic sorting
+    by inference confidence. Also includes 2 AL assignments to verify
+    they're not confused with calibration items.
+    """
+    db_path = tmp_path / "cal_test.db"
+    create_database(db_path)
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO frameworks (id, name, version, fetch_date, control_count) "
+            "VALUES (?, ?, ?, ?, ?)",
+            ("fw_cal", "Cal Framework", "1.0", "2026-05-01", 27),
+        )
+
+        for i in range(1, 26):
+            ctrl_id = f"fw_cal:ctrl-{i}"
+            hub_id = f"hub-{i}"
+            conn.execute(
+                "INSERT INTO controls (id, framework_id, section_id, title, description, full_text) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (ctrl_id, "fw_cal", f"SEC-{i}", f"Control {i}", f"Desc for control {i}", "X" * (100 + i * 10)),
+            )
+            conn.execute(
+                "INSERT INTO hubs (id, name, path, parent_id) VALUES (?, ?, ?, ?)",
+                (hub_id, f"Hub {i}", f"/hub/{i}", None),
+            )
+            conn.execute(
+                "INSERT INTO assignments (control_id, hub_id, confidence, provenance) "
+                "VALUES (?, ?, ?, ?)",
+                (ctrl_id, hub_id, None, "ground_truth_T1-AI"),
+            )
+
+        # Add 2 AL assignments that should NOT be picked up by calibration
+        for i in range(26, 28):
+            ctrl_id = f"fw_cal:ctrl-{i}"
+            hub_id = f"hub-{i}"
+            conn.execute(
+                "INSERT INTO controls (id, framework_id, section_id, title, description, full_text) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (ctrl_id, "fw_cal", f"SEC-{i}", f"AL Control {i}", None, "Y" * 200),
+            )
+            conn.execute(
+                "INSERT INTO hubs (id, name, path, parent_id) VALUES (?, ?, ?, ?)",
+                (hub_id, f"Hub {i}", f"/hub/{i}", None),
+            )
+            conn.execute(
+                "INSERT INTO assignments (control_id, hub_id, confidence, provenance) "
+                "VALUES (?, ?, ?, ?)",
+                (ctrl_id, hub_id, 0.8, "active_learning_round_2"),
+            )
+
+        conn.commit()
+    finally:
+        conn.close()
+    return db_path
+
+
+def _make_calibration_predictor(n_items: int = 25) -> MagicMock:
+    """Mock predictor that returns deterministic varying confidences.
+
+    Item i gets confidence = i / n_items, so item 1 is hardest (0.04)
+    and item 25 is easiest (1.0). The hub_id matches the known-correct hub.
+    """
+    predictor = MagicMock()
+    predictor._artifacts = MagicMock()
+    predictor._artifacts.model_adapter_hash = "aabbccddeeff001122334455"
+
+    call_count = [0]
+
+    def mock_predict_batch(
+        texts: list[str], top_k: int = 5,
+    ) -> list[list[HubPrediction]]:
+        results: list[list[HubPrediction]] = []
+        for j, _ in enumerate(texts):
+            idx = call_count[0] + j + 1
+            conf = idx / n_items
+            results.append([
+                HubPrediction(
+                    hub_id=f"hub-{idx}",
+                    hub_name=f"Hub {idx}",
+                    hierarchy_path=f"/hub/{idx}",
+                    raw_similarity=conf * 0.8,
+                    calibrated_confidence=conf,
+                    in_conformal_set=True,
+                    is_ood=False,
+                ),
+                HubPrediction(
+                    hub_id=f"hub-alt-{idx}",
+                    hub_name=f"Alt Hub {idx}",
+                    hierarchy_path=f"/alt/{idx}",
+                    raw_similarity=conf * 0.5,
+                    calibrated_confidence=conf * 0.5,
+                    in_conformal_set=False,
+                    is_ood=False,
+                ),
+            ])
+        call_count[0] += len(texts)
+        return results
+
+    predictor.predict_batch.side_effect = mock_predict_batch
+    return predictor
+
+
+class TestCalibrationItems:
+    """Tests for calibration item generation from ground_truth_T1-AI."""
+
+    def test_exactly_20_calibration_items(
+        self, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        predictor = _make_calibration_predictor()
+        items = _generate_calibration_items(
+            calibration_db, predictor, 0.5, {},
+        )
+        assert len(items) == 20
+
+    def test_all_negative_ids(
+        self, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        predictor = _make_calibration_predictor()
+        items = _generate_calibration_items(
+            calibration_db, predictor, 0.5, {},
+        )
+        ids = {item["id"] for item in items}
+        assert all(i < 0 for i in ids)
+        assert ids == set(range(-1, -21, -1))
+
+    def test_stratified_selection(
+        self, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        """5 easy (highest conf) + 5 hard (lowest conf) + 10 random middle."""
+        predictor = _make_calibration_predictor()
+        items = _generate_calibration_items(
+            calibration_db, predictor, 0.5, {},
+        )
+        confidences = [item["confidence"] for item in items]
+
+        # First 5 should be the easiest (highest confidence)
+        easy = confidences[:5]
+        assert all(c > 0 for c in easy)
+
+        # Last 5 should be the hardest (lowest confidence)
+        hard = confidences[15:]
+        assert all(c <= max(easy) for c in hard)
+
+    def test_reproducibility_same_seed(
+        self, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        predictor1 = _make_calibration_predictor()
+        items1 = _generate_calibration_items(
+            calibration_db, predictor1, 0.5, {},
+        )
+        predictor2 = _make_calibration_predictor()
+        items2 = _generate_calibration_items(
+            calibration_db, predictor2, 0.5, {},
+        )
+        ids1 = [item["control_id"] for item in items1]
+        ids2 = [item["control_id"] for item in items2]
+        assert ids1 == ids2
+
+    def test_status_is_pending(
+        self, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        predictor = _make_calibration_predictor()
+        items = _generate_calibration_items(
+            calibration_db, predictor, 0.5, {},
+        )
+        assert all(item["status"] == "pending" for item in items)
+
+    def test_confidence_from_inference_not_null(
+        self, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        """DB stores NULL confidence for GT items; calibration must use inference values."""
+        predictor = _make_calibration_predictor()
+        items = _generate_calibration_items(
+            calibration_db, predictor, 0.5, {},
+        )
+        assert all(item["confidence"] is not None for item in items)
+        assert all(isinstance(item["confidence"], float) for item in items)
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_calibration_items_in_full_export(
+        self, mock_cls: MagicMock, calibration_db: Path, tmp_path: Path,
+    ) -> None:
+        """calibration_items count appears in metadata when using full export."""
+        # Need AL assignments for generate_review_export to find in-scope items
+        predictor = _make_calibration_predictor(n_items=27)
+        mock_cls.return_value = predictor
+
+        cal_path = tmp_path / "calibration.json"
+        cal_path.write_text(
+            json.dumps({"global_threshold": 0.5}),
+            encoding="utf-8",
+        )
+
+        result = generate_review_export(
+            calibration_db, tmp_path / "model", tmp_path / "out", cal_path,
+        )
+        assert result["calibration_items"] == 20
+
+        data = json.loads((tmp_path / "out" / "review_export.json").read_text(encoding="utf-8"))
+        negative_ids = [p for p in data["predictions"] if p["id"] < 0]
+        assert len(negative_ids) == 20
+
+    def test_no_gt_items_returns_empty(self, tmp_path: Path) -> None:
+        """When no ground_truth_T1-AI exists, returns empty list."""
+        db_path = tmp_path / "empty.db"
+        create_database(db_path)
+        predictor = MagicMock()
+        items = _generate_calibration_items(db_path, predictor, 0.5, {})
+        assert items == []
+
+    def test_fewer_than_20_gt_items(self, tmp_path: Path) -> None:
+        """When fewer than 20 GT items exist, returns all available."""
+        db_path = tmp_path / "small.db"
+        create_database(db_path)
+        conn = get_connection(db_path)
+        try:
+            conn.execute(
+                "INSERT INTO frameworks (id, name) VALUES (?, ?)",
+                ("fw_tiny", "Tiny"),
+            )
+            for i in range(1, 6):
+                conn.execute(
+                    "INSERT INTO controls (id, framework_id, section_id, title) "
+                    "VALUES (?, ?, ?, ?)",
+                    (f"fw_tiny:c{i}", "fw_tiny", f"S{i}", f"C{i}"),
+                )
+                conn.execute(
+                    "INSERT INTO hubs (id, name) VALUES (?, ?)",
+                    (f"h{i}", f"H{i}"),
+                )
+                conn.execute(
+                    "INSERT INTO assignments (control_id, hub_id, provenance) "
+                    "VALUES (?, ?, ?)",
+                    (f"fw_tiny:c{i}", f"h{i}", "ground_truth_T1-AI"),
+                )
+            conn.commit()
+        finally:
+            conn.close()
+
+        predictor = MagicMock()
+        predictor._artifacts = MagicMock()
+        predictor._artifacts.model_adapter_hash = "aabb"
+
+        def mock_batch(texts: list[str], top_k: int = 5) -> list[list[HubPrediction]]:
+            return [
+                [HubPrediction(
+                    hub_id=f"h{j+1}", hub_name=f"H{j+1}",
+                    hierarchy_path=f"/h{j+1}",
+                    raw_similarity=0.5, calibrated_confidence=0.5 + j * 0.1,
+                    in_conformal_set=True, is_ood=False,
+                )]
+                for j in range(len(texts))
+            ]
+
+        predictor.predict_batch.side_effect = mock_batch
+        items = _generate_calibration_items(db_path, predictor, 0.5, {})
+        assert len(items) == 5
+        assert all(item["id"] < 0 for item in items)
