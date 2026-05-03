@@ -206,6 +206,7 @@ def _upload_to_hub(repo_id: str, staging_dir: Path) -> None:
 
     try:
         api = HfApi(token=token)
+        api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
         api.upload_folder(
             folder_path=str(staging_dir),
             repo_id=repo_id,

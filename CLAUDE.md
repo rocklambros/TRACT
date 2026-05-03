@@ -114,7 +114,7 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Data Preparation:** COMPLETE
 - **Phase 0 (Zero-Shot Baselines):** COMPLETE — Gates A+B passed
 - **Phase 1A–1D:** COMPLETE — model trained (hit@1=0.531), 11 CLI subcommands, hub proposals, 553 tests
-- **Phase 2B (Bridge + HF Publication):** CODE COMPLETE — pipeline built and tested (640 tests, PR #22), execution pending
+- **Phase 2B (Bridge + HF Publication):** COMPLETE — 46/63 bridges accepted, model published to huggingface.co/rockCO78/tract-cre-assignment
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
