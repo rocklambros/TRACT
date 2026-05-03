@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from unittest.mock import MagicMock, patch
+
 from tract.crosswalk.ground_truth import (
     ResolverResult,
     _backup_database,
@@ -14,7 +16,9 @@ from tract.crosswalk.ground_truth import (
     import_ground_truth,
     resolve_framework_links,
     resolve_section_id,
+    run_uncovered_inference,
 )
+from tract.inference import HubPrediction
 from tract.crosswalk.schema import create_database, get_connection
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -641,3 +645,267 @@ class TestBackupDatabase:
             assert count == 1
         finally:
             backup_conn.close()
+
+
+# ── Inference on Uncovered Frameworks ────────────────────────────────────
+
+
+def _make_mock_predictor() -> MagicMock:
+    """Create a mock TRACTPredictor returning synthetic predictions."""
+    predictor = MagicMock()
+    predictor._artifacts = MagicMock()
+    predictor._artifacts.model_adapter_hash = "abc123def456ghijkl"
+
+    def mock_predict_batch(
+        texts: list[str], top_k: int = 1,
+    ) -> list[list[HubPrediction]]:
+        results: list[list[HubPrediction]] = []
+        for _ in texts:
+            results.append([HubPrediction(
+                hub_id="100-200",
+                hub_name="Hub A",
+                hierarchy_path="/a",
+                raw_similarity=0.75,
+                calibrated_confidence=0.85,
+                in_conformal_set=True,
+                is_ood=False,
+            )])
+        return results
+
+    predictor.predict_batch.side_effect = mock_predict_batch
+    return predictor
+
+
+def _make_ood_predictor() -> MagicMock:
+    """Create a mock TRACTPredictor returning OOD predictions."""
+    predictor = MagicMock()
+    predictor._artifacts = MagicMock()
+    predictor._artifacts.model_adapter_hash = "ood_hash_123456"
+
+    def mock_predict_batch(
+        texts: list[str], top_k: int = 1,
+    ) -> list[list[HubPrediction]]:
+        results: list[list[HubPrediction]] = []
+        for _ in texts:
+            results.append([HubPrediction(
+                hub_id="100-200",
+                hub_name="Hub A",
+                hierarchy_path="/a",
+                raw_similarity=0.30,
+                calibrated_confidence=0.15,
+                in_conformal_set=False,
+                is_ood=True,
+            )])
+        return results
+
+    predictor.predict_batch.side_effect = mock_predict_batch
+    return predictor
+
+
+@pytest.fixture()
+def inference_db(tmp_path: Path) -> Path:
+    """Create a test DB with controls in an uncovered framework (aiuc_1)."""
+    db_path = tmp_path / "inference_test.db"
+    create_database(db_path)
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO frameworks VALUES (?, ?, ?, ?, ?)",
+            ("aiuc_1", "AIUC-1", "1.0", "2024-01-01", 3),
+        )
+        controls = [
+            ("aiuc_1:ctrl-1", "aiuc_1", "CTRL-1",
+             "Long Title Here", "Good description of this control that is reasonably long",
+             "Full text with enough content to exceed the threshold for text quality"),
+            ("aiuc_1:ctrl-2", "aiuc_1", "CTRL-2",
+             "Short", None, None),
+            ("aiuc_1:ctrl-3", "aiuc_1", "CTRL-3",
+             "Another Control", "Medium description here", "Some text content"),
+        ]
+        for ctrl in controls:
+            conn.execute(
+                "INSERT INTO controls (id, framework_id, section_id, title, description, full_text) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                ctrl,
+            )
+        conn.execute(
+            "INSERT INTO hubs VALUES (?, ?, ?, ?)",
+            ("100-200", "Hub A", "/a", None),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return db_path
+
+
+class TestRunUncoveredInference:
+    @patch("tract.inference.TRACTPredictor")
+    def test_basic_inference_inserts_assignments(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        summary = run_uncovered_inference(inference_db, tmp_path / "model")
+
+        assert summary["total_inserted"] == 3
+        assert summary["dry_run"] is False
+
+        conn = get_connection(inference_db)
+        try:
+            rows = conn.execute(
+                "SELECT * FROM assignments ORDER BY control_id",
+            ).fetchall()
+            assert len(rows) == 3
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_text_preparation(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_pred = _make_mock_predictor()
+        mock_cls.return_value = mock_pred
+        run_uncovered_inference(inference_db, tmp_path / "model")
+
+        call_args = mock_pred.predict_batch.call_args
+        texts = call_args[0][0]
+        assert len(texts) == 3
+        assert texts[0] == "Long Title Here Good description of this control that is reasonably long Full text with enough content to exceed the threshold for text quality"
+        assert texts[1] == "Short"
+        assert "Another Control" in texts[2]
+        assert "Medium description here" in texts[2]
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_confidence_stores_calibrated_value(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        run_uncovered_inference(inference_db, tmp_path / "model")
+
+        conn = get_connection(inference_db)
+        try:
+            row = conn.execute(
+                "SELECT confidence FROM assignments LIMIT 1",
+            ).fetchone()
+            assert row["confidence"] == pytest.approx(0.85)
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_is_ood_stored_as_integer(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_ood_predictor()
+        run_uncovered_inference(inference_db, tmp_path / "model")
+
+        conn = get_connection(inference_db)
+        try:
+            row = conn.execute(
+                "SELECT is_ood, in_conformal_set FROM assignments LIMIT 1",
+            ).fetchone()
+            assert row["is_ood"] == 1
+            assert row["in_conformal_set"] == 0
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_non_ood_stored_as_zero(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        run_uncovered_inference(inference_db, tmp_path / "model")
+
+        conn = get_connection(inference_db)
+        try:
+            row = conn.execute(
+                "SELECT is_ood, in_conformal_set FROM assignments LIMIT 1",
+            ).fetchone()
+            assert row["is_ood"] == 0
+            assert row["in_conformal_set"] == 1
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_text_quality_warning_for_short_controls(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        import logging
+        with caplog.at_level(logging.WARNING):
+            summary = run_uncovered_inference(inference_db, tmp_path / "model")
+
+        warnings = summary["text_quality_warnings"]
+        assert isinstance(warnings, list)
+        warning_ctrl_ids = [w["control_id"] for w in warnings]
+        assert "aiuc_1:ctrl-2" in warning_ctrl_ids
+        assert any("Short control text" in r.message for r in caplog.records)
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_model_version_set_from_artifacts(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        summary = run_uncovered_inference(inference_db, tmp_path / "model")
+
+        assert summary["model_version"] == "abc123def456"
+
+        conn = get_connection(inference_db)
+        try:
+            row = conn.execute(
+                "SELECT model_version FROM assignments LIMIT 1",
+            ).fetchone()
+            assert row["model_version"] == "abc123def456"
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_provenance_and_review_status(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        run_uncovered_inference(inference_db, tmp_path / "model")
+
+        conn = get_connection(inference_db)
+        try:
+            rows = conn.execute(
+                "SELECT provenance, review_status FROM assignments",
+            ).fetchall()
+            for row in rows:
+                assert row["provenance"] == "model_prediction"
+                assert row["review_status"] == "pending"
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_dry_run_does_not_modify_db(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        summary = run_uncovered_inference(
+            inference_db, tmp_path / "model", dry_run=True,
+        )
+
+        assert summary["total_inserted"] == 3
+        assert summary["dry_run"] is True
+
+        conn = get_connection(inference_db)
+        try:
+            count = conn.execute(
+                "SELECT COUNT(*) FROM assignments",
+            ).fetchone()[0]
+            assert count == 0
+        finally:
+            conn.close()
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_per_framework_breakdown(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        mock_cls.return_value = _make_mock_predictor()
+        summary = run_uncovered_inference(inference_db, tmp_path / "model")
+
+        per_fw = summary["per_framework"]
+        assert isinstance(per_fw, dict)
+        assert "aiuc_1" in per_fw
+        assert per_fw["aiuc_1"]["controls"] == 3
+        assert per_fw["aiuc_1"]["inserted"] == 3

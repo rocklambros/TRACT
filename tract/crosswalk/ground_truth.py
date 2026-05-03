@@ -8,7 +8,12 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
-from tract.config import PHASE3_GT_PROVENANCE
+from tract.config import (
+    PHASE3_GT_PROVENANCE,
+    PHASE3_MODEL_PROVENANCE,
+    PHASE3_TEXT_QUALITY_LOW_THRESHOLD,
+    PHASE3_UNCOVERED_FRAMEWORK_IDS,
+)
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)
@@ -251,5 +256,114 @@ def import_ground_truth(
         "unresolved": total_unresolved,
         "per_framework": per_framework,
         "strategy_counts": all_strategy_counts,
+        "dry_run": dry_run,
+    }
+
+
+def run_uncovered_inference(
+    db_path: Path,
+    model_dir: Path,
+    *,
+    dry_run: bool = False,
+) -> dict[str, object]:
+    """Run inference on uncovered framework controls and insert as model_prediction.
+
+    Returns summary dict with per-framework counts and text quality warnings.
+    """
+    from tract.inference import TRACTPredictor
+
+    if not dry_run:
+        _backup_database(db_path)
+
+    predictor = TRACTPredictor(model_dir)
+    model_version = predictor._artifacts.model_adapter_hash[:12]
+
+    conn = get_connection(db_path)
+    total_inserted = 0
+    per_framework: dict[str, dict[str, int]] = {}
+    text_quality_warnings: list[dict[str, str]] = []
+
+    try:
+        for framework_id in sorted(PHASE3_UNCOVERED_FRAMEWORK_IDS):
+            rows = conn.execute(
+                "SELECT id, title, description, full_text "
+                "FROM controls WHERE framework_id = ?",
+                (framework_id,),
+            ).fetchall()
+
+            if not rows:
+                logger.info("No controls found for framework %s", framework_id)
+                per_framework[framework_id] = {"controls": 0, "inserted": 0}
+                continue
+
+            control_ids: list[str] = []
+            texts: list[str] = []
+            for row in rows:
+                control_ids.append(row["id"])
+                text = " ".join(filter(None, [row["title"], row["description"], row["full_text"]]))
+                texts.append(text)
+
+                if len(text) < PHASE3_TEXT_QUALITY_LOW_THRESHOLD:
+                    text_quality_warnings.append({
+                        "control_id": row["id"],
+                        "framework_id": framework_id,
+                        "text_length": str(len(text)),
+                    })
+                    logger.warning(
+                        "Short control text (%d chars): %s",
+                        len(text), row["id"],
+                    )
+
+            batch_results = predictor.predict_batch(texts, top_k=1)
+
+            fw_inserted = 0
+            for i, predictions in enumerate(batch_results):
+                prediction = predictions[0]
+                conn.execute(
+                    "INSERT INTO assignments "
+                    "(control_id, hub_id, confidence, in_conformal_set, "
+                    "is_ood, provenance, model_version, review_status) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        control_ids[i],
+                        prediction.hub_id,
+                        prediction.calibrated_confidence,
+                        1 if prediction.in_conformal_set else 0,
+                        1 if prediction.is_ood else 0,
+                        PHASE3_MODEL_PROVENANCE,
+                        model_version,
+                        "pending",
+                    ),
+                )
+                fw_inserted += 1
+
+            total_inserted += fw_inserted
+            per_framework[framework_id] = {
+                "controls": len(rows),
+                "inserted": fw_inserted,
+            }
+            logger.info(
+                "Framework %s: %d controls, %d predictions inserted",
+                framework_id, len(rows), fw_inserted,
+            )
+
+        if dry_run:
+            conn.rollback()
+            logger.info("Dry run — rolled back %d inference inserts", total_inserted)
+        else:
+            conn.commit()
+            logger.info("Committed %d inference predictions", total_inserted)
+
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+    return {
+        "total_inserted": total_inserted,
+        "per_framework": per_framework,
+        "text_quality_warnings": text_quality_warnings,
+        "model_version": model_version,
         "dry_run": dry_run,
     }
