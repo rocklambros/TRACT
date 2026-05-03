@@ -167,7 +167,7 @@ class FigureCounter:
 
 **Hierarchy paths help:** +7.6% when you prepend the hub's position in the CRE tree to its description. "Telling the model that 'Multi-factor Authentication' lives under 'Authentication > Verification methods' gives it structural context that pure text similarity misses."
 
-**The Opus ceiling:** Claude 3.5 Opus as a zero-shot classifier. Hit@1 = 0.465, Hit@5 = 0.722. "An LLM with security knowledge does better, but at $0.60 per control it's not scalable."
+**The Opus ceiling:** Claude Opus as a zero-shot classifier. Hit@1 = 0.553 (unfirewalled, n=197; summary.json reports 0.465 from partial eval of 99 controls). "An LLM with security knowledge does better, but at $0.60 per control it's not scalable."
 
 **Figures:**
 - Figure 3.1: Model comparison bar chart — hit@1 for all 6 models + Opus (matplotlib)
@@ -208,7 +208,7 @@ class FigureCounter:
 
 **Key findings:**
 - Hierarchy paths: +7.6% hit@1 (95% CI: 0.015–0.136, unfirewalled `all_198` aggregate, n=198). "Giving the model structural context about where a hub sits in the tree matters a lot — though the wide confidence interval means the true effect could be as small as 1.5%."
-- Hub descriptions: -2.1% hit@1 on zero-shot. "Surprisingly, adding human-written descriptions actually hurt the zero-shot model. The descriptions use different vocabulary than the controls, confusing the similarity calculation."
+- Hub descriptions: -4.8% hit@1 on zero-shot (delta_mean = -0.048, 95% CI: -0.124 to +0.028). "Surprisingly, adding human-written descriptions actually hurt the zero-shot model. The descriptions use different vocabulary than the controls, confusing the similarity calculation."
 - The implications: "Structure > prose for this task. We used hierarchy paths in fine-tuning based on this finding."
 
 **Figures:**
@@ -230,8 +230,8 @@ class FigureCounter:
 ### Section 8: Final Results — The Honest Picture (14 cells, 4 figures)
 
 **Two ways to measure improvement (both shown):**
-- **End-to-end:** Off-the-shelf BGE (0.348, unfirewalled) → fine-tuned with firewall (0.531). "+52% relative — this is what a practitioner gets by using TRACT instead of raw BGE."
-- **Controlled comparison:** Firewalled zero-shot (0.399) → firewalled fine-tuned (0.531). "+33% relative — this isolates the effect of fine-tuning, with identical evaluation methodology."
+- **End-to-end:** Off-the-shelf BGE (0.348, unfirewalled) → fine-tuned with firewall (0.537). "+54% relative — this is what a practitioner gets by using TRACT instead of raw BGE."
+- **Controlled comparison:** Firewalled zero-shot (0.399) → firewalled fine-tuned (0.537). "+35% relative — this isolates the effect of fine-tuning, with identical evaluation methodology."
 
 **Multi-hub evaluation note:** Hit@1 counts a prediction as correct if the top-predicted hub matches ANY of the control's ground-truth hubs (since 35% of controls validly map to multiple hubs). This is the most permissive scoring — hit@1 against a single designated primary hub would be lower.
 
@@ -244,7 +244,7 @@ class FigureCounter:
 
 **Small-fold caveat:** Both LLM Top 10 (n=6) and ML Top 10 (n=7) folds are too small for reliable conclusions. Bootstrap CIs at n<15 are extremely wide — interpret these as point estimates, not precise measurements. The apparent +0.285 for ML Top 10 is as uncertain as the +0.000 for LLM Top 10.
 
-**Comparison with Opus:** "The fine-tuned BGE model (hit@1=0.531) surpasses Opus zero-shot (0.465) at 1/1000th the cost per prediction."
+**Comparison with Opus:** "The fine-tuned BGE model (hit@1=0.537, firewalled LOFO) achieves comparable performance to Opus zero-shot (0.553, unfirewalled) at 1/1000th the cost — and with a stricter, more honest evaluation protocol."
 
 **Bootstrap confidence intervals:** "We don't just report point estimates — we resample 10,000 times to show the uncertainty. With only 147 eval items across 5 folds, some estimates are wide."
 
@@ -540,7 +540,7 @@ This spec underwent a 4-round adversarial review (9 specialized agents, cross-ex
 - CLI tutorial rewritten with verified argument syntax (`!python -m tract.cli`, correct flags)
 
 **Methodological corrections:**
-- Baseline comparison now presents both unfirewalled (0.348) and firewalled (0.399) → 0.531, clearly labeled
+- Baseline comparison now presents both unfirewalled (0.348) and firewalled (0.399) → 0.537, clearly labeled
 - Ablation marked as zero-shot scope with confidence interval
 - Calibration section computes Cohen's κ honestly (negative), explains why κ is a poor fit for multi-hub tasks
 - ECE reported with confidence interval (upper CI crosses 0.10 threshold)

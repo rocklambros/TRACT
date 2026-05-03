@@ -82,8 +82,9 @@ cp .worktrees/phase3/build/dataset/review_metrics.json build/dataset/
 # 3. Install kaleido
 pip install kaleido
 
-# 4. Create notebooks directory
+# 4. Create notebooks directory (as Python package for test imports)
 mkdir -p notebooks
+touch notebooks/__init__.py
 ```
 
 Add to `.gitignore`:
@@ -365,6 +366,9 @@ PREREQUISITE_PATHS = [
     PHASE0_DIR / "exp1_embedding_baseline_bge.json",
     PHASE0_DIR / "exp2_llm_probe.json",
     PHASE0_DIR / "exp5_knn_baseline.json",
+    PHASE0_DIR / "exp6_fewshot_sonnet.json",
+    PHASE0_DIR / "exp3_hierarchy_paths_bge.json",
+    PHASE0_DIR / "exp4_hub_descriptions.json",
     PHASE1B_DIR / "zero_shot_firewalled_baseline" / "aggregate_metrics.json",
     PHASE1C_DIR / "calibration" / "t_deploy_result.json",
     PHASE1C_DIR / "calibration" / "ece_gate.json",
@@ -975,13 +979,12 @@ Append to existing notebook via nbformat:
    for hub_id, hub in sorted(hubs.items()):
        ids.append(hub_id)
        names.append(hub["name"])
-       parents.append(hub.get("parent_id", ""))
+       parents.append(hub.get("parent_id") or "")
    
    fig = go.Figure(go.Sunburst(
        ids=ids,
        labels=names,
        parents=parents,
-       branchvalues="total",
        maxdepth=3,
    ))
    fig_num = fig_counter.next(1)
@@ -1045,13 +1048,48 @@ Append to existing notebook via nbformat:
    crosswalk = load_crosswalk()
    fw_metadata = load_framework_metadata()
    
-   # Group controls by framework and hub cluster (top-level CRE parent)
+   # Group controls by framework and top-level hub cluster
    hierarchy = load_cre_hierarchy()
-   # Build framework→hub_cluster flows for Sankey
-   # ... (derive from crosswalk rows + hierarchy parent lookup)
+   hubs = hierarchy["hubs"]
+   
+   def get_root_hub(hub_id: str) -> str:
+       """Walk up the hierarchy to find the root ancestor."""
+       current = hub_id
+       while current in hubs and (hubs[current].get("parent_id") or None):
+           current = hubs[current]["parent_id"]
+       return current
+   
+   # Count flows: framework_name → root_hub_name
+   from collections import Counter
+   flows = Counter()
+   for row in crosswalk:
+       root = get_root_hub(row["hub_id"])
+       root_name = hubs[root]["name"] if root in hubs else root
+       flows[(row["framework_name"], root_name)] += 1
+   
+   # Top 5 root hubs by total flow (avoid visual clutter)
+   root_totals = Counter()
+   for (fw, root), count in flows.items():
+       root_totals[root] += count
+   top_roots = {r for r, _ in root_totals.most_common(5)}
+   
+   # Build Sankey node/link arrays
+   fw_names = sorted({fw for fw, root in flows if root in top_roots})
+   root_names = sorted(top_roots)
+   labels = fw_names + root_names
+   label_idx = {name: i for i, name in enumerate(labels)}
+   
+   sources, targets, values = [], [], []
+   for (fw, root), count in flows.items():
+       if root in top_roots and fw in label_idx:
+           sources.append(label_idx[fw])
+           targets.append(label_idx[root])
+           values.append(count)
+   
+   colors = [OKABE_ITO[i % len(OKABE_ITO)] for i in range(len(labels))]
    
    fig = go.Figure(go.Sankey(
-       node=dict(label=labels, color=colors),
+       node=dict(label=labels, color=colors, pad=15),
        link=dict(source=sources, target=targets, value=values),
    ))
    fig_num = fig_counter.next(2)
@@ -1130,12 +1168,15 @@ Append to existing notebook via nbformat:
    fewshot = load_phase0_experiment("exp6_fewshot_sonnet")
    
    # Extract hit@1 for each model
+   # NOTE: Opus all_198 gives 0.553 (unfirewalled, n=197) but summary.json reports 0.465.
+   # Use summary.json value for Gate B context; use all_198 for direct comparison.
    models = {
-       "DeBERTa-v3-NLI": deberta["models"]["deberta-v3-large-nli"]["all_198"]["hit_at_1"]["mean"],
+       "DeBERTa-v3-NLI": deberta["models"]["deberta-v3-nli"]["all_198"]["hit_at_1"]["mean"],
        "kNN (k=5)": knn["k_values"]["k5"]["all"]["hit_at_1"]["mean"],
-       "GTE-large": gte["models"]["gte-large"]["all_198"]["hit_at_1"]["mean"],
+       "GTE-large": gte["models"]["gte-large-v1.5"]["all_198"]["hit_at_1"]["mean"],
        "BGE-large-v1.5": bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]["mean"],
-       "Few-shot Sonnet": fewshot["variants"]["3shot_with_descriptions"]["all"]["hit_at_1"]["mean"],
+       "Few-shot Sonnet (desc)": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"],
+       "Few-shot Sonnet (no desc)": fewshot["variants"]["sonnet-nodesc"]["all"]["hit_at_1"]["mean"],
        "Claude Opus": opus["all_198"]["hit_at_1"]["mean"],
    }
    ```
@@ -1148,14 +1189,14 @@ Append to existing notebook via nbformat:
    bge_folds = bge["models"]["bge-large-v1.5"]["per_fold"]
    # ... build radar chart for multiple models × frameworks
    ```
-7. **Markdown** — The Opus ceiling (hit@1=0.465 at $0.60/control)
+7. **Markdown** — The Opus ceiling (hit@1=0.553 unfirewalled at $0.60/control; summary.json reports 0.465 from partial evaluation of 99/197 controls)
 8. **Code** — Load hierarchy path ablation data
    ```python
    paths_bge = load_phase0_experiment("exp3_hierarchy_paths_bge")
    descs = load_phase0_experiment("exp4_hub_descriptions")
    ```
 9. **Code** — Figure 3.3: Hierarchy path impact (paired bar: with/without)
-10. **Markdown** — Hierarchy paths: +7.6%, descriptions: -2.1%
+10. **Markdown** — Hierarchy paths: +7.6%, descriptions: -4.8%
 11. **Markdown** — "Structure > prose for this task"
 12. **Markdown** — Key insight: BGE feasible but needs fine-tuning
 13. **Markdown** — Small-fold caveats
@@ -1182,9 +1223,14 @@ Append to existing notebook via nbformat:
 2. **Code** — Build performance matrix from Phase 0 per-fold data
 3. **Code** — Figure 4.1: Heatmap (seaborn/matplotlib, models × frameworks, colored by hit@1)
 4. **Markdown** — BGE-large selection rationale (highest aggregate, most consistent)
-5. **Code** — Load deployment embeddings + subsample for Plotly
+5. **Code** — Load BASE (pre-fine-tuning) embeddings for t-SNE
    ```python
-   hub_emb, ctrl_emb, hub_ids, ctrl_ids = load_deployment_embeddings()
+   # Use BASE BGE embeddings, not deployment (fine-tuned) embeddings.
+   # Section 4 is about model SELECTION, before fine-tuning happened.
+   base_path = RESULTS_DIR / "phase1b" / "base_bge_embeddings.npz"
+   base_data = np.load(str(base_path), allow_pickle=False)
+   ctrl_emb = base_data["control_embeddings"]
+   ctrl_ids = base_data["control_ids"]
    
    # Subsample to ~500 controls for Plotly performance
    rng = np.random.RandomState(42)
@@ -1318,16 +1364,24 @@ Append to existing notebook via nbformat:
 2. **Markdown** — Important scope note: ablation on zero-shot model, not fine-tuned
 3. **Code** — Load ablation data from Phase 0
    ```python
-   baseline_bge = load_phase0_experiment("exp1_embedding_baseline_bge")
    paths_bge = load_phase0_experiment("exp3_hierarchy_paths_bge")
    descs = load_phase0_experiment("exp4_hub_descriptions")
    
-   # Extract deltas and CIs
-   baseline_hit1 = baseline_bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]
-   paths_hit1 = paths_bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]
-   # delta = paths_hit1["mean"] - baseline_hit1["mean"]
+   # exp3 stores PRE-COMPUTED deltas (not absolute values)
+   # Key structure: models["bge-large-v1.5"]["deltas_all_198"]["hit_at_1"]
+   # with fields: delta_mean, ci_low, ci_high (NOT "mean")
+   paths_delta = paths_bge["models"]["bge-large-v1.5"]["deltas_all_198"]["hit_at_1"]
+   delta_paths = paths_delta["delta_mean"]      # +0.076
+   ci_low_paths = paths_delta["ci_low"]          # 0.015
+   ci_high_paths = paths_delta["ci_high"]        # 0.136
+   
+   # exp4 uses "deltas_subset" (evaluated on described-hub subset only)
+   descs_delta = descs["models"]["bge-large-v1.5"]["deltas_subset"]["hit_at_1"]
+   delta_descs = descs_delta["delta_mean"]       # -0.048
+   ci_low_descs = descs_delta["ci_low"]           # -0.124
+   ci_high_descs = descs_delta["ci_high"]         # 0.028
    ```
-4. **Code** — Figure 6.1: Forest plot (matplotlib, delta ± CI per ablation factor)
+4. **Code** — Figure 6.1: Ablation impact chart (matplotlib, delta ± CI per factor)
    ```python
    fig, ax = plt.subplots(figsize=(10, 5))
    # Each row: factor name, delta, ci_low, ci_high
@@ -1435,7 +1489,7 @@ Append to existing notebook via nbformat:
    ```
 8. **Code** — Figure 8.3: Heatmap or styled table of all metrics
 9. **Markdown** — Multi-hub evaluation note
-10. **Markdown** — Opus comparison: "hit@1=0.531 surpasses Opus 0.465 at 1/1000th cost"
+10. **Markdown** — Opus comparison: "The fine-tuned model (hit@1≈0.537, firewalled LOFO) achieves comparable performance to Opus zero-shot (0.553, unfirewalled) at 1/1000th the cost — and under a stricter evaluation protocol where the hub firewall prevents information leakage. These numbers are not directly comparable: firewalling makes the task harder, so the fine-tuned model's honest 0.537 may actually represent stronger performance than Opus's 0.553."
 11. **Code** — Figure 8.4: Forest plot comparing fine-tuned vs zero-shot vs Opus CIs
 12. **Markdown** — Bootstrap methodology note
 13. **Markdown** — The headline: +52% relative improvement end-to-end
@@ -1468,19 +1522,80 @@ Append to existing notebook via nbformat:
    hubs = hierarchy["hubs"]
    
    predictions = review["predictions"]
-   errors = [p for p in predictions if p.get("id", 0) >= 0 and p.get("review_decision") == "reassigned"]
-   correct = [p for p in predictions if p.get("id", 0) >= 0 and p.get("review_decision") == "accepted"]
+   # Filter: real predictions only (id >= 0 excludes 20 calibration items)
+   # review_export fields: assigned_hub_id (model prediction), reviewer_hub_id (expert correction),
+   # decision ("accepted"/"reassigned"), raw_similarity, confidence, control_text, framework_id
+   errors = [p for p in predictions if p.get("id", 0) >= 0 and p.get("decision") == "reassigned"]
+   correct = [p for p in predictions if p.get("id", 0) >= 0 and p.get("decision") == "accepted"]
+   
+   print(f"Accepted: {len(correct)}, Reassigned: {len(errors)}")
    ```
 4. **Code** — Classify errors by taxonomy (same-parent / same-grandparent / unrelated-subtree)
+   ```python
+   def classify_error(error: dict, hubs: dict) -> str:
+       """Classify reassignment by hub relationship in CRE hierarchy."""
+       model_hub = error["assigned_hub_id"]
+       expert_hub = error["reviewer_hub_id"]
+       
+       def get_ancestors(hub_id: str) -> list[str]:
+           path = []
+           current = hub_id
+           while current and current in hubs:
+               path.append(current)
+               current = hubs[current].get("parent_id") or None
+           return path
+       
+       model_ancestors = get_ancestors(model_hub)
+       expert_ancestors = get_ancestors(expert_hub)
+       
+       # Same parent = siblings in the tree
+       model_parent = model_ancestors[1] if len(model_ancestors) > 1 else None
+       expert_parent = expert_ancestors[1] if len(expert_ancestors) > 1 else None
+       if model_parent and model_parent == expert_parent:
+           return "same-parent"
+       
+       # Same grandparent = cousins
+       model_gp = model_ancestors[2] if len(model_ancestors) > 2 else None
+       expert_gp = expert_ancestors[2] if len(expert_ancestors) > 2 else None
+       if model_gp and model_gp == expert_gp:
+           return "same-grandparent"
+       
+       return "unrelated-subtree"
+   
+   error_types = [classify_error(e, hubs) for e in errors]
+   from collections import Counter
+   taxonomy = Counter(error_types)
+   print(f"Error taxonomy: {dict(taxonomy)}")
+   ```
 5. **Code** — Figure 9.1: Plotly scatter (t-SNE of errors + subsampled correct, hover shows details)
    ```python
-   # Subsample: keep ALL errors, subsample correct to ~400
+   # Subsample: keep ALL errors (~196), subsample correct to ~300
    # Total ~500 points for Plotly budget
+   rng = np.random.RandomState(42)
+   n_correct_sample = min(300, len(correct))
+   correct_sample = [correct[i] for i in rng.choice(len(correct), n_correct_sample, replace=False)]
+   all_items = errors + correct_sample
+   labels = ["error"] * len(errors) + ["correct"] * len(correct_sample)
+   
+   # Load deployment embeddings for t-SNE
+   hub_emb, ctrl_emb, hub_ids, ctrl_ids = load_deployment_embeddings()
+   # ... match control_ids to items, compute t-SNE, plot
    ```
 6. **Markdown** — ATLAS: "77% unrelated-subtree errors — confused at top level"
 7. **Code** — Figure 9.2: Hub confusion matrix (top confused pairs, seaborn heatmap)
+   ```python
+   # Build confusion pairs from reassigned items
+   confusion_pairs = [(e["assigned_hub_id"], e["reviewer_hub_id"]) for e in errors]
+   pair_counts = Counter(confusion_pairs)
+   # Show top 10 most confused hub pairs
+   ```
 8. **Markdown** — Attractor hubs explanation
 9. **Code** — Figure 9.3: Similarity distribution (KDE: correct vs errors)
+   ```python
+   correct_sims = [p["raw_similarity"] for p in correct]
+   error_sims = [p["raw_similarity"] for p in errors]
+   # KDE plot comparing distributions
+   ```
 10. **Markdown** — Per-control examples (ATLAS: "Validate AI Model" case study)
 11. **Markdown** — What this means for improvement
 12. **Markdown** — Plain English blockquote
@@ -1628,17 +1743,26 @@ Note: Commands that modify state (`bridge --commit`, `publish-hf`, `publish-data
 **Key cells:**
 
 1. **Markdown** — Journey recap (1 page, each step in 1-2 sentences)
-2. **Code** — Build master results table data
+2. **Code** — Build master results table from data files (no hardcoded values)
    ```python
+   # Load all results programmatically
+   deberta = load_phase0_experiment("exp1_embedding_baseline_deberta")
+   gte = load_phase0_experiment("exp1_embedding_baseline_gte")
+   bge = load_phase0_experiment("exp1_embedding_baseline_bge")
+   knn = load_phase0_experiment("exp5_knn_baseline")
+   fewshot = load_phase0_experiment("exp6_fewshot_sonnet")
+   opus = load_phase0_experiment("exp2_llm_probe")
+   firewalled = load_firewalled_baseline()
+   
    master_table = [
-       {"approach": "DeBERTa-v3-NLI", "hit1": 0.000, "lesson": "NLI ≠ semantic similarity"},
-       {"approach": "kNN (k=5)", "hit1": 0.234, "lesson": "Neighborhood helps but insufficient"},
-       {"approach": "GTE-large", "hit1": 0.314, "lesson": "Decent but inconsistent across folds"},
-       {"approach": "BGE-large-v1.5 (zero-shot)", "hit1": 0.348, "lesson": "Best off-the-shelf embedding model"},
-       {"approach": "Few-shot Sonnet", "hit1": 0.384, "lesson": "In-context learning works but expensive"},
-       {"approach": "BGE firewalled baseline", "hit1": 0.399, "lesson": "Firewall actually HELPS aggregate"},
-       {"approach": "Claude Opus (zero-shot)", "hit1": 0.465, "lesson": "LLM ceiling — $0.60/control"},
-       {"approach": "BGE fine-tuned (TRACT)", "hit1": 0.531, "lesson": "Contrastive training + LOFO = honest gains"},
+       {"approach": "DeBERTa-v3-NLI", "hit1": deberta["models"]["deberta-v3-nli"]["all_198"]["hit_at_1"]["mean"], "lesson": "NLI ≠ semantic similarity"},
+       {"approach": "kNN (k=5)", "hit1": knn["k_values"]["k5"]["all"]["hit_at_1"]["mean"], "lesson": "Neighborhood helps but insufficient"},
+       {"approach": "GTE-large", "hit1": gte["models"]["gte-large-v1.5"]["all_198"]["hit_at_1"]["mean"], "lesson": "Decent but inconsistent across folds"},
+       {"approach": "BGE-large-v1.5 (zero-shot)", "hit1": bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]["mean"], "lesson": "Best off-the-shelf embedding model"},
+       {"approach": "Few-shot Sonnet (desc)", "hit1": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"], "lesson": "In-context learning works but expensive"},
+       {"approach": "BGE firewalled baseline", "hit1": firewalled["aggregate_hit1"]["mean"], "lesson": "Firewall actually HELPS aggregate"},
+       {"approach": "Claude Opus (zero-shot)", "hit1": opus["all_198"]["hit_at_1"]["mean"], "lesson": "LLM ceiling — $0.60/control"},
+       {"approach": "BGE fine-tuned (TRACT)", "hit1": _load_json(PHASE1B_DIR / "phase1b_textaware" / "corrected_metrics.json")["aggregate_hit1"]["mean"], "lesson": "Contrastive training + LOFO = honest gains"},
    ]
    ```
 3. **Code** — Figure 13.2: Master comparison table (matplotlib table or heatmap)
@@ -1653,10 +1777,10 @@ Note: Commands that modify state (`bridge --commit`, `publish-hf`, `publish-data
        {"date": "2026-04-27", "event": "Data preparation — 9 parsers", "outcome": "success"},
        {"date": "2026-04-28", "event": "DeBERTa-v3-NLI: hit@1=0.000", "outcome": "failure"},
        {"date": "2026-04-28", "event": "BGE-large zero-shot: hit@1=0.348", "outcome": "success"},
-       {"date": "2026-04-28", "event": "Opus ceiling: hit@1=0.465", "outcome": "mixed"},
+       {"date": "2026-04-28", "event": "Opus ceiling: hit@1=0.553 (unfirewalled)", "outcome": "mixed"},
        {"date": "2026-04-28", "event": "Hierarchy paths: +7.6%", "outcome": "success"},
        {"date": "2026-04-29", "event": "Contrastive fine-tuning launched", "outcome": "success"},
-       {"date": "2026-04-29", "event": "LOFO evaluation: hit@1=0.531", "outcome": "success"},
+       {"date": "2026-04-29", "event": "LOFO evaluation: hit@1=0.537 (firewalled)", "outcome": "success"},
        {"date": "2026-04-30", "event": "Calibration: T=0.074, ECE=0.079", "outcome": "success"},
        {"date": "2026-04-30", "event": "OOD detection: 96.7% separation", "outcome": "success"},
        {"date": "2026-05-01", "event": "Framework prep pipeline", "outcome": "success"},
@@ -1691,14 +1815,39 @@ Note: Commands that modify state (`bridge --commit`, `publish-hf`, `publish-data
 **Appendix A cells:**
 
 1. **Markdown** — "Appendix A: Experiment Log" header
-2. **Code** — Build experiment log table from Phase 0 + Phase 1B data
+2. **Code** — Build experiment log table from data files (load dynamically, do not hardcode)
    ```python
+   # Load all experiment results programmatically
+   bge = load_phase0_experiment("exp1_embedding_baseline_bge")
+   gte = load_phase0_experiment("exp1_embedding_baseline_gte")
+   deberta = load_phase0_experiment("exp1_embedding_baseline_deberta")
+   opus = load_phase0_experiment("exp2_llm_probe")
+   knn = load_phase0_experiment("exp5_knn_baseline")
+   fewshot = load_phase0_experiment("exp6_fewshot_sonnet")
+   
    experiments = [
-       {"run": "exp1_bge", "model": "BGE-large-v1.5", "hit1": 0.348, "params": "1.3B", "notes": "Zero-shot"},
-       {"run": "exp1_gte", "model": "GTE-large", "hit1": 0.314, "params": "335M", "notes": "Zero-shot"},
-       {"run": "exp1_deberta", "model": "DeBERTa-v3", "hit1": 0.000, "params": "304M", "notes": "NLI — total failure"},
-       # ... all experiments
-       {"run": "phase1b_textaware", "model": "BGE-large + LoRA", "hit1": 0.531, "params": "+4.2M", "notes": "Final deployment"},
+       {"run": "exp1_bge", "model": "BGE-large-v1.5",
+        "hit1": bge["models"]["bge-large-v1.5"]["all_198"]["hit_at_1"]["mean"],
+        "params": "1.3B", "notes": "Zero-shot"},
+       {"run": "exp1_gte", "model": "GTE-large-v1.5",
+        "hit1": gte["models"]["gte-large-v1.5"]["all_198"]["hit_at_1"]["mean"],
+        "params": "335M", "notes": "Zero-shot"},
+       {"run": "exp1_deberta", "model": "DeBERTa-v3-NLI",
+        "hit1": deberta["models"]["deberta-v3-nli"]["all_198"]["hit_at_1"]["mean"],
+        "params": "304M", "notes": "NLI — total failure"},
+       {"run": "exp2_opus", "model": "Claude Opus",
+        "hit1": opus["all_198"]["hit_at_1"]["mean"],
+        "params": "N/A", "notes": "Zero-shot (unfirewalled)"},
+       {"run": "exp5_knn", "model": "kNN (k=5)",
+        "hit1": knn["k_values"]["k5"]["all"]["hit_at_1"]["mean"],
+        "params": "N/A", "notes": "Zero-shot"},
+       {"run": "exp6_sonnet_desc", "model": "Few-shot Sonnet (desc)",
+        "hit1": fewshot["variants"]["sonnet-desc"]["all"]["hit_at_1"]["mean"],
+        "params": "N/A", "notes": "3-shot with descriptions"},
+       # ... Phase 1B
+       {"run": "phase1b_textaware", "model": "BGE-large + LoRA",
+        "hit1": _load_json(PHASE1B_DIR / "phase1b_textaware" / "corrected_metrics.json")["aggregate_hit1"]["mean"],
+        "params": "+4.2M", "notes": "Final deployment (firewalled LOFO)"},
    ]
    ```
 3. **Code** — Figure A.1: Full experiment comparison table (matplotlib)
@@ -1819,15 +1968,25 @@ nbformat.write(nb, "notebooks/tract_experimental_narrative.ipynb")
 
 ### Data Structure Reference
 
-Frequently-accessed data structures (verified during spec review):
+Frequently-accessed data structures (verified empirically during adversarial review):
 
 - **exp1 per_fold**: `list[{framework: str, metrics: {hit_at_1: float, ...}, n_items: int}]`
+- **exp1 model keys**: `"bge-large-v1.5"`, `"gte-large-v1.5"`, `"deberta-v3-nli"` (NOT `"deberta-v3-large-nli"` or `"gte-large"`)
+- **exp2 (Opus)**: `all_198.hit_at_1 = {ci_high, ci_low, mean}` where mean=0.553 (unfirewalled, n=197). NOTE: summary.json reports 0.465 from partial evaluation (99/197 controls)
+- **exp3 ablation**: `models["bge-large-v1.5"]["deltas_all_198"]["hit_at_1"]` = `{ci_high, ci_low, delta_mean}` — note `delta_mean` NOT `mean`
+- **exp4 descriptions**: `models["bge-large-v1.5"]["deltas_subset"]["hit_at_1"]` = `{ci_high, ci_low, delta_mean}` (delta_mean = -0.048)
+- **exp6 few-shot**: variant keys are `"sonnet-desc"` and `"sonnet-nodesc"` (NOT `"3shot_with_descriptions"`)
 - **firewalled baseline per_fold**: `dict[str, {hit_at_1: float, ...}]` (framework name keys)
 - **fold metrics**: `{hit_at_1: float, hit_at_5: float, mrr: float, ndcg_at_10: float}`
+- **fold predictions.json**: `list[{control_text, framework, ground_truth_hub_id, predicted_top10}]` — NOT `{correct, predicted_hub, true_hub}`
 - **trainer_state log_history**: `list[{epoch: float, loss: float, grad_norm: float, learning_rate: float, step: int}]`
+- **review_export.json**: field is `"decision"` NOT `"review_decision"`, values: `"accepted"`, `"reassigned"`, `"rejected"`. Each prediction has: `assigned_hub_id` (model's choice), `reviewer_hub_id` (expert's correction, when reassigned), `raw_similarity`, `confidence`, `control_text`, `control_title`, `framework_id`, `framework_name`, `alternative_hubs` (list), `is_ood`, `in_conformal_set`
+- **corrected_metrics.json** (Phase 1B): `aggregate_hit1 = {ci_high, ci_low, mean, n_resamples, n_total}` where mean=0.5374 (NOT 0.531 — the 0.531 was from a different experiment's single fold)
 - **calibration items**: `review_export.predictions` entries where `id < 0` (20 items)
 - **review_metrics.overall**: `{accepted: 680, accepted_rate: 77.4, reassigned: 196, rejected: 2}`
 - **deployment_artifacts.npz**: `hub_embeddings (522,1024), control_embeddings (2802,1024), hub_ids (522,), control_ids (2802,)`
+- **cre_hierarchy.json**: root hubs have `parent_id: null` (Python None) — use `hub.get("parent_id") or ""` for Plotly
+- **control_id separators**: crosswalk JSONL uses single colon (`aiuc_1:A001.1`), deployment NPZ uses double colon (`aiuc_1::A001.1`) — beware when joining
 
 ### CLI Command Syntax (Verified)
 
