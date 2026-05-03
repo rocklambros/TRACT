@@ -538,18 +538,18 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 - Duplicate detection: cosine similarity > 0.95 to existing controls flagged during validation (requires model embeddings)
 - `framework_registry.json`: versioned list of all ingested frameworks with metadata, changelog, ingestion date
 
-### 7.2 HuggingFace Model Publication ✅ CODE COMPLETE (PR #22)
+### 7.2 HuggingFace Model Publication ✅ COMPLETE
 **Deliverable:** Published model repo at huggingface.co/rockCO78/tract-cre-assignment with:
-- Model weights (fine-tuned bi-encoder)
-- `hub_descriptions.json` and `cre_hierarchy.json` bundled with model
-- Model card (AIBOM-compliant, targeting 100/100): model description, intended use, architecture, training details, evaluation results, limitations, ethical considerations, environmental impact, usage code snippet, citation
-- `predict.py`: standalone inference script — takes control text, returns hub assignments
+- Merged model weights (~1.34GB, LoRA adapters merged into base BGE-large-v1.5 with cosine verification >0.9999)
+- `hub_descriptions.json` and `cre_hierarchy.json` (v1.1 with bridge links) bundled with model
+- Comprehensive model card: plain-English "What Is This?" section, architecture diagram, LOFO evaluation walkthrough, calibration explanation, bridge analysis summary, 3 usage examples, 10-term glossary — serves both novices and experts
+- `predict.py`: standalone inference script — takes control text, returns hub assignments with calibrated confidence
 - `train.py`: reproduction script with requirements.txt and data download instructions
 
-### 7.3 AI/Traditional Security Bridge ✅ CODE COMPLETE (PR #22)
+### 7.3 AI/Traditional Security Bridge ✅ COMPLETE
 **Deliverable:** Extended `cre_hierarchy.json` with bridge hubs + bridge validation report.
 
-**Implementation (PR #22, 640 tests):**
+**Implementation (PR #22, 654 tests):**
 1. Classify 522 CRE hubs by framework type → AI-only, traditional-only, both, unlinked
 2. Compute full cosine similarity matrix between AI-only and traditional-only hub embeddings (dot product — all embeddings unit-normalized)
 3. Extract top-3 traditional matches per AI hub (63 candidates total). No threshold — rank-based selection
@@ -559,7 +559,11 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 7. Publication gate enforces bridge completion before HuggingFace upload (no pending candidates, hierarchy updated)
 8. **Deliverables:** `bridge_candidates.json` (analysis output), `bridge_report.json` (after review), updated `cre_hierarchy.json`
 
-**Execution status:** Pipeline code complete and tested. Actual bridge analysis run, expert review, and hierarchy commit are pending.
+**Execution results:**
+- 5-round adversarial review: security architecture → methodology → implementation → cross-attack → convergence
+- 46/63 candidates accepted, 17 rejected (13 below p99 threshold of 0.45, 4 specious MFA/OTP bridges)
+- 51 hubs now have `related_hub_ids`, 92 total bidirectional edges in hierarchy v1.1
+- Mann-Whitney U test confirms AI-only top-3 similarities significantly higher than naturally-bridged top-3 (p=0.0098)
 
 ---
 
@@ -568,7 +572,7 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 **Deliverable:** Versioned dataset published to HuggingFace Datasets AND Zenodo.
 
 **Review workflow (concrete):**
-1. Export all model-predicted hub assignments from `crosswalk.db` (every control from all 22 frameworks)
+1. Export all hub assignments from `crosswalk.db` (636 model predictions across 6 AI frameworks) plus 4,406 ground-truth links from OpenCRE (22 traditional frameworks)
 2. Group by framework. For each framework, generate a review spreadsheet (CSV or web interface): control_id, control_text, predicted_hub_1 (confidence), predicted_hub_2 (confidence), ..., reviewer_decision, reviewer_notes
 3. Expert reviews one framework at a time. Per control: accept top prediction, select a different hub, flag for discussion, or mark "no good hub" (feeds into hub proposal system)
 4. Track: total controls reviewed, acceptance rate, edit rate, rejection rate, avg time per control
@@ -580,12 +584,13 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 ```
 tract-crosswalk-dataset/
   crosswalk_v1.0.jsonl          # Every control + hub assignment + confidence + review status
-  framework_metadata.json       # 22 framework descriptions, versions, sources
-  cre_hierarchy_v1.0.json       # Hub ontology at time of publication
+  framework_metadata.json       # 31 framework descriptions, versions, sources
+  cre_hierarchy_v1.1.json       # Hub ontology with bridge links at time of publication
   hub_descriptions_v1.0.json    # Validated hub descriptions
   review_metrics.json           # Acceptance rates, agreement metrics, reviewer effort
   README.md                     # Dataset card (HuggingFace Datasets format)
-  LICENSE                       # Apache 2.0 or CC-BY-4.0
+  bridge_report.json            # Bridge analysis evidence and review decisions
+  LICENSE                       # CC-BY-4.0
 ```
 
 **Contribute back to OpenCRE:** For the 5 AI frameworks with zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWASP Agentic), submit validated hub assignments as proposed LinkedTo links to the OpenCRE project.
