@@ -317,3 +317,31 @@ PHASE1B_CORRECTED_METRICS_PATH: Final[Path] = (
 PHASE1C_ECE_GATE_PATH: Final[Path] = (
     PHASE1C_RESULTS_DIR / "calibration" / "ece_gate.json"
 )
+
+# ── Phase 3: Crosswalk Dataset Publication ────────────────────────────
+
+PHASE3_REVIEW_OUTPUT_DIR: Final[Path] = PROJECT_ROOT / "results" / "review"
+PHASE3_DATASET_STAGING_DIR: Final[Path] = PROJECT_ROOT / "build" / "dataset"
+PHASE3_DATASET_REPO_ID: Final[str] = "rockCO78/tract-crosswalk-dataset"
+
+PHASE3_CALIBRATION_SEED: Final[int] = 42
+PHASE3_CALIBRATION_N_ITEMS: Final[int] = 20
+PHASE3_CALIBRATION_EASY_N: Final[int] = 5
+PHASE3_CALIBRATION_HARD_N: Final[int] = 5
+
+PHASE3_TEXT_QUALITY_HIGH_THRESHOLD: Final[int] = 500
+PHASE3_TEXT_QUALITY_LOW_THRESHOLD: Final[int] = 100
+
+PHASE3_UNCOVERED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "aiuc_1", "cosai", "eu_gpai_cop", "nist_ai_rmf", "owasp_dsgai",
+})
+
+PHASE3_GT_PROVENANCE: Final[str] = "opencre_ground_truth"
+PHASE3_MODEL_PROVENANCE: Final[str] = "model_prediction"
+
+PHASE3_PROVENANCE_PRIORITY: Final[list[str]] = [
+    "opencre_ground_truth",
+    "ground_truth_T1-AI",
+    "active_learning_round_2",
+    "model_prediction",
+]
