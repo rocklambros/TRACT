@@ -22,7 +22,7 @@
 | Cosine similarity | "How close two points are on the map. 1.0 = identical, 0.0 = completely unrelated" |
 | Contrastive fine-tuning | "We show the model thousands of pairs: 'these two controls are about the same thing, those aren't.' It adjusts its internal map until related controls cluster together" |
 | LOFO cross-validation | "To test fairly, we hide an entire framework and ask: can the model still figure out where its controls belong? If yes, it genuinely understands security concepts — it didn't memorize the answer sheet" |
-| Bi-encoder | "Two copies of the same model — one reads the control text, one reads the hub description. They each produce coordinates, and we check if they landed near each other" |
+| Bi-encoder | "The same model reads each text separately — first the control text, then the hub description. Each produces coordinates, and we check if they landed near each other" |
 | LoRA | "Instead of rewriting the entire model (1.3 billion parameters), we add a small adapter (a few million parameters) that nudges it toward our task. Like teaching a translator a new dialect without rewriting their entire vocabulary" |
 | Temperature scaling | "The model's raw scores aren't real probabilities — they're overconfident. Temperature scaling is like recalibrating a thermometer: we adjust the scale until a '70% confident' prediction is actually right ~70% of the time" |
 | OOD (out-of-distribution) | "The model saying 'I've never seen anything like this control before.' It's the difference between an uncertain answer and no answer at all" |
@@ -48,11 +48,23 @@
 
 ### Data Loading
 
-All data loaded from canonical project paths. No copies, no hardcoded values. One setup cell defines path constants:
+All data loaded from canonical project paths. No copies, no hardcoded values. `nb_helpers.py` defines `PROJECT_ROOT` via `Path(__file__).resolve().parent.parent` — this works in `.py` files but `__file__` is **undefined in Jupyter notebook cells**. The notebook imports path constants from `nb_helpers`:
 
 ```python
+import sys
 from pathlib import Path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent  # or manual
+sys.path.insert(0, str(Path.cwd()))  # ensure nb_helpers is importable
+from nb_helpers import (
+    PROJECT_ROOT, RESULTS_DIR, DATA_DIR,
+    PHASE0_DIR, PHASE1B_DIR, PHASE1C_DIR,
+    REVIEW_DIR, BRIDGE_DIR, DATASET_DIR,
+)
+```
+
+Path constants defined in `nb_helpers.py` (not in notebook cells):
+
+```python
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = PROJECT_ROOT / "results"
 DATA_DIR = PROJECT_ROOT / "data"
 PHASE0_DIR = RESULTS_DIR / "phase0"
@@ -63,7 +75,9 @@ BRIDGE_DIR = RESULTS_DIR / "bridge"
 DATASET_DIR = PROJECT_ROOT / "build" / "dataset"
 ```
 
-**Prerequisite:** Phase 3 review results must be copied from `.worktrees/phase3/results/review/` to `results/review/` on main before the notebook can run. The notebook's setup cell will check for required files and print a clear error message listing missing paths.
+**Prerequisite files:** Phase 3 review results must be copied to `results/review/` on main before the notebook can run (see Section 6 for exact commands). The notebook's setup cell checks all prerequisite paths and prints a clear error message listing missing files.
+
+**Shell cells:** All `!python -m tract.cli ...` shell cells assume the kernel's working directory is `notebooks/`. The setup cell verifies this and prints a warning if CWD is unexpected. Note: `tract` console script is not guaranteed to be on PATH — always use `!python -m tract.cli` instead of `!tract`.
 
 ### Visualization Strategy
 
@@ -76,7 +90,11 @@ DATASET_DIR = PROJECT_ROOT / "build" / "dataset"
 4. **Section 9:** Error analysis scatter — hover shows misclassified controls with predicted vs actual hub
 5. **Section 13:** Journey timeline — interactive walkthrough of approaches tried and their results
 
-Each Plotly figure has a static PNG fallback saved inline so the notebook renders meaningfully as HTML/PDF export.
+Each Plotly figure has a static PNG fallback saved inline so the notebook renders meaningfully as HTML/PDF export. Requires `kaleido` (`pip install kaleido` — aarch64 wheel available for v1.2.0).
+
+**Plotly data budget:** Subsample the two large scatter plots (Sections 4 and 9, each with ~3,300 points) to ~500 representative points to keep Plotly JSON under ~1.5 MB total. For Section 9 (error analysis), keep ALL misclassified controls and subsample only the correctly-classified background. Target total notebook size: < 5 MB for reliable GitHub rendering.
+
+**Figure hygiene:** Call `plt.close(fig)` after saving each matplotlib figure to avoid memory accumulation across 30+ figures.
 
 ### Color Palette
 
@@ -105,8 +123,8 @@ class FigureCounter:
 - `random.seed(42)`, `np.random.seed(42)` in setup cell
 - All JSON loads use `sort_keys=True` where order matters
 - t-SNE uses `random_state=42`
-- No network calls — all data loaded from local files
-- Full notebook runs top-to-bottom in < 10 minutes (pre-computed embeddings from deployment_artifacts.npz, no model inference)
+- No network calls — all data loaded from local files. The `load_dataset()` example in Section 12 is shown as a markdown code block, not an executed cell.
+- Full notebook runs top-to-bottom in < 10 minutes (pre-computed embeddings from deployment_artifacts.npz, no model inference). Expected t-SNE budget: ~55s for 4 runs on Tegra ARM64.
 
 ---
 
@@ -145,7 +163,7 @@ class FigureCounter:
 
 **The DeBERTa disaster:** Hit@1 = 0.000. Zero. "DeBERTa-v3 is designed for natural language inference — 'does sentence A entail sentence B?' That's a different question from 'do these two texts describe the same security concept?' NLI models classify logical relationships; we need semantic similarity. Wrong tool for the job."
 
-**BGE-large-v1.5 wins zero-shot:** Hit@1 = 0.348. "Not great, but it proves the concept is feasible — an embedding model CAN distinguish security concepts without any security-specific training."
+**BGE-large-v1.5 wins zero-shot:** Hit@1 = 0.348 (unfirewalled, all 198 controls). "Not great, but it proves the concept is feasible — an embedding model CAN distinguish security concepts without any security-specific training." Note: this is the unfirewalled aggregate — the firewalled zero-shot baseline (LOFO evaluation, apples-to-apples with fine-tuned) is 0.399. Both numbers appear in Section 8 with clear labels.
 
 **Hierarchy paths help:** +7.6% when you prepend the hub's position in the CRE tree to its description. "Telling the model that 'Multi-factor Authentication' lives under 'Authentication > Verification methods' gives it structural context that pure text similarity misses."
 
@@ -164,7 +182,7 @@ class FigureCounter:
 
 **Figures:**
 - Figure 4.1: Per-framework performance matrix heatmap (matplotlib) — models × frameworks, colored by hit@1
-- Figure 4.2: Embedding space t-SNE (Plotly interactive) — colored by framework, hover shows control text. Shows how controls cluster even without fine-tuning.
+- Figure 4.2: Embedding space t-SNE (Plotly interactive) — colored by framework, hover shows control text (truncated to ~100 chars). Shows how controls cluster even without fine-tuning. Subsampled to ~500 representative points. **t-SNE caveat (state once, here):** "t-SNE shows which controls cluster together, but distances between clusters are not meaningful — two far-apart clusters may actually be close in the original 1024-dimensional space. We use perplexity=30 and report it for reproducibility."
 
 ### Section 5: Teaching the Model (Contrastive Fine-Tuning) (12 cells, 3 figures)
 
@@ -178,18 +196,20 @@ class FigureCounter:
 **Training dynamics:** Loss curves, what they tell us (convergence in ~15 epochs), signs of overfitting or healthy learning.
 
 **Figures:**
-- Figure 5.1: Training loss curves across folds (matplotlib line plot)
-- Figure 5.2: Before/after embedding space (matplotlib side-by-side t-SNE) — same controls, showing how fine-tuning reorganizes the space
-- Figure 5.3: Negative sampling distribution — what the model actually trains against
+- Figure 5.1: Training loss curves across folds (matplotlib line plot). Data source: `trainer_state.json` in each fold's checkpoint directory (~226 log entries per fold with epoch, loss, grad_norm).
+- Figure 5.2: Before/after embedding space (matplotlib side-by-side t-SNE) — same controls, showing how fine-tuning reorganizes the space. **Prerequisite:** "Before" embeddings require loading base BGE-large-v1.5 and running inference on ~3,300 texts. These must be pre-computed and saved to `results/phase1b/base_bge_embeddings.npz` before the notebook can run (see Section 6 prerequisites). The "after" embeddings come from `deployment_artifacts.npz`.
+- Figure 5.3: Negative sampling distribution — computed from training data structure + batch size (MNRL uses in-batch negatives). This is derived/computed, not loaded from a file. Shows the effective number of negative examples per positive pair.
 
 ### Section 6: What Actually Mattered (Ablation Analysis) (10 cells, 2 figures)
 
 **The ablation approach:** "We turned features off one at a time to see what matters. This is how you separate 'this actually helps' from 'we got lucky.'"
 
+**Important scope note:** This ablation was performed on the **zero-shot** (pre-training) model, not the fine-tuned model. It answers: "which input features help the pre-trained BGE model?" This informed our fine-tuning design but does not directly measure fine-tuned feature importance.
+
 **Key findings:**
-- Hierarchy paths: +7.6% hit@1. "Giving the model structural context about where a hub sits in the tree matters a lot."
+- Hierarchy paths: +7.6% hit@1 (95% CI: 0.015–0.136, unfirewalled `all_198` aggregate, n=198). "Giving the model structural context about where a hub sits in the tree matters a lot — though the wide confidence interval means the true effect could be as small as 1.5%."
 - Hub descriptions: -2.1% hit@1 on zero-shot. "Surprisingly, adding human-written descriptions actually hurt the zero-shot model. The descriptions use different vocabulary than the controls, confusing the similarity calculation."
-- The implications: "Structure > prose for this task."
+- The implications: "Structure > prose for this task. We used hierarchy paths in fine-tuning based on this finding."
 
 **Figures:**
 - Figure 6.1: Ablation forest plot — paired deltas with 95% CIs (matplotlib). Each ablation factor as a row, delta from baseline with confidence interval.
@@ -209,14 +229,20 @@ class FigureCounter:
 
 ### Section 8: Final Results — The Honest Picture (14 cells, 4 figures)
 
-**The headline:** Hit@1 improved from 0.348 (zero-shot) to 0.531 (fine-tuned). "That's a +52% relative improvement. But averages lie — let's look per framework."
+**Two ways to measure improvement (both shown):**
+- **End-to-end:** Off-the-shelf BGE (0.348, unfirewalled) → fine-tuned with firewall (0.531). "+52% relative — this is what a practitioner gets by using TRACT instead of raw BGE."
+- **Controlled comparison:** Firewalled zero-shot (0.399) → firewalled fine-tuned (0.531). "+33% relative — this isolates the effect of fine-tuning, with identical evaluation methodology."
+
+**Multi-hub evaluation note:** Hit@1 counts a prediction as correct if the top-predicted hub matches ANY of the control's ground-truth hubs (since 35% of controls validly map to multiple hubs). This is the most permissive scoring — hit@1 against a single designated primary hub would be lower.
 
 **Per-fold deep dive:**
 - NIST AI: 0.107 → 0.429 (+0.322) — "The biggest single improvement. The model learned to distinguish AI risk management concepts."
 - OWASP AI Exchange: 0.619 → 0.762 (+0.143) — "Already the easiest fold (security-adjacent language close to training data)."
 - ATLAS: 0.273 → 0.279 (+0.006) — "Essentially flat. The model didn't learn ATLAS. This is the most important finding in the whole project, and we dedicate Section 9 to understanding why."
-- LLM Top 10: 0.333 → 0.333 (+0.000) — "Zero improvement, but n=6. Too small to draw conclusions."
+- LLM Top 10: 0.333 → 0.333 (+0.000) — "Zero improvement, but n=6."
 - ML Top 10: 0.429 → 0.714 (+0.285) — "Big improvement, but n=7."
+
+**Small-fold caveat:** Both LLM Top 10 (n=6) and ML Top 10 (n=7) folds are too small for reliable conclusions. Bootstrap CIs at n<15 are extremely wide — interpret these as point estimates, not precise measurements. The apparent +0.285 for ML Top 10 is as uncertain as the +0.000 for LLM Top 10.
 
 **Comparison with Opus:** "The fine-tuned BGE model (hit@1=0.531) surpasses Opus zero-shot (0.465) at 1/1000th the cost per prediction."
 
@@ -234,6 +260,11 @@ class FigureCounter:
 
 **Hub disambiguation:** "The model finds the right neighborhood (parent hub) but picks the wrong leaf. 77% of ATLAS misses are unrelated-subtree errors — the model is confused at the top level of the hierarchy, not at the leaf level."
 
+**Error taxonomy (defined here, used throughout):** An error is classified by the relationship between the predicted and true hub in the CRE tree:
+- **Same-parent:** predicted and true hub share a direct parent → model found the right subtree, wrong leaf
+- **Same-grandparent:** nearest common ancestor is depth-2 → model found the right region
+- **Unrelated-subtree:** nearest common ancestor is root or depth-1 → model is fundamentally confused
+
 **Attractor hubs:** "Some hubs attract predictions they shouldn't. They're broad enough that many controls are 'close enough' to match."
 
 **Per-control analysis:** Specific ATLAS examples showing what went wrong. "Control: 'Validate AI Model.' Predicted: 'Software Testing.' Actual: 'AI Model Validation.' The model sees 'validate' and 'model' and reaches for the nearest testing hub, missing the AI-specific one."
@@ -249,7 +280,7 @@ class FigureCounter:
 
 **Temperature scaling:** "We fit a single parameter (T=0.074) that transforms raw scores into calibrated probabilities. After calibration, a '70% confident' prediction is actually right about 70% of the time."
 
-**ECE (Expected Calibration Error):** ECE = 0.079, passing the < 0.10 gate. "If you bin predictions by confidence and check the actual accuracy in each bin, the average gap between predicted and actual is ~8 percentage points. Not perfect, but usable."
+**ECE (Expected Calibration Error):** ECE = 0.079 (95% CI: 0.049–0.111). "If you bin predictions by confidence and check the actual accuracy in each bin, the average gap between predicted and actual is ~8 percentage points." Note: the upper CI crosses the 0.10 threshold, meaning calibration quality is marginal rather than comfortably passing. The threshold itself is a project-internal gate, not an established standard.
 
 **OOD detection:** "Controls where the model's maximum similarity to any hub is below 0.568 are flagged as 'I don't know.' 96.7% of true OOD items (controls with no good hub) are caught by this threshold."
 
@@ -273,9 +304,15 @@ class FigureCounter:
 - AIUC-1: 29% acceptance — "The model struggled badly here. AIUC-1 uses unique terminology that doesn't map cleanly to existing CRE hubs."
 - CoSAI: 45% acceptance — "Similar story — newer AI governance concepts that the training data didn't cover well."
 
-**Calibration quality:** "We hid 20 ground-truth items among the predictions (the reviewer didn't know which were tests). The expert agreed with the known-correct answer 65% of the time. The 35% disagreement was all reassignments — the expert picked a different-but-valid hub. This tells us the task itself has legitimate ambiguity."
+**Calibration quality — honest assessment:** "We hid 20 ground-truth items among the predictions (the reviewer didn't know which were tests). The expert accepted 13/20 (65%) and reassigned 7/20 to different hubs. Zero were rejected."
 
-**What this means for trust:** "For traditional security frameworks mapped through OpenCRE ground truth — high trust. For AI frameworks where the model did well (CSA AICM, ATLAS) — trust with verification. For frameworks where the model struggled (AIUC-1, CoSAI) — the expert corrections ARE the value."
+Present the full 2×2 table: 13 accepted (agreed with ground truth), 7 reassigned (expert chose a different hub), 0 rejected. Cohen's κ against a naive baseline (reviewer's overall acceptance rate of 77.4%) is **negative** (κ ≈ -0.55), meaning the reviewer agreed with ground-truth items LESS often than their base rate. However, κ is a poor metric here because the CRE taxonomy has legitimate multi-hub ambiguity — a control about "encrypted authentication" validly maps to both Cryptography and Authentication hubs. The reviewer reassigning a ground-truth item to a different-but-valid hub is expert judgment, not error.
+
+Present this nuance honestly: "The reviewer was MORE critical of items they happened to review than their overall average suggests. This may indicate higher scrutiny on ambiguous items, not lower quality."
+
+**Single-reviewer limitation:** This dataset was reviewed by one domain expert. Without a second reviewer, we cannot compute inter-rater reliability. The negative κ on calibration items underscores this gap — we cannot distinguish "legitimate multi-hub ambiguity" from "reviewer inconsistency" without additional reviewers.
+
+**What this means for trust:** "For traditional security frameworks mapped through OpenCRE ground truth — high trust. For AI frameworks where the model did well (CSA AICM, ATLAS, EU AI Act) — trust with verification. For frameworks where the model struggled (AIUC-1, CoSAI) — the expert corrections ARE the value. For compliance decisions: this is a starting point, not a certification."
 
 **Figures:**
 - Figure 11.1: Per-framework acceptance rate bar chart — colored by acceptance rate tier (matplotlib)
@@ -286,25 +323,30 @@ class FigureCounter:
 
 **Transition:** "Enough theory. Let's use the tool."
 
-Uses `!tract ...` shell cells with real output. Three self-contained workflows:
+Uses `!python -m tract.cli ...` shell cells with real output (`tract` console script is not reliably on PATH). Three self-contained workflows:
 
 **Workflow A: "I have a control, what hub does it map to?"**
-- `tract assign "Implement multi-factor authentication for all privileged accounts"`
-- `tract hierarchy --hub <hub_id>` (from the result)
-- `tract compare --fw1 nist_800_53 --fw2 iso_27001`
+- `!python -m tract.cli assign "Implement multi-factor authentication for all privileged accounts"`
+- `!python -m tract.cli hierarchy --hub <hub_id>` (from the result)
+- `!python -m tract.cli compare --framework nist_800_53 --framework iso_27001`
 
 **Workflow B: "I have a new framework to onboard"**
-- `tract prepare --format csv --input examples/sample_framework.csv --output /tmp/demo.json`
-- `tract validate /tmp/demo.json`
-- `tract ingest /tmp/demo.json --dry-run`
+- `!python -m tract.cli prepare --file examples/sample_framework.csv --framework-id sample_fw --name "Sample Framework" --format csv --output /tmp/demo.json`
+- `!python -m tract.cli validate --file /tmp/demo.json`
+- `!python -m tract.cli ingest --file /tmp/demo.json`
 
 **Workflow C: "I want to explore the published crosswalk"**
-- `tract export --format jsonl --framework mitre_atlas`
-- Loading from HuggingFace: `load_dataset("rockCO78/tract-crosswalk-dataset")`
+- `!python -m tract.cli export --format jsonl --framework mitre_atlas`
+- Loading from HuggingFace (shown as markdown code block, not executed — this is a network call):
+  ```python
+  # Try this at home (requires internet):
+  from datasets import load_dataset
+  ds = load_dataset("rockCO78/tract-crosswalk-dataset")
+  ```
 
 Each command: markdown cell explaining what and when → shell cell with real output → markdown cell interpreting the output → Plain English blockquote.
 
-**Commands documented but not run** (modify state): `bridge --commit`, `publish-hf`, `publish-dataset`, `import-ground-truth`, `review-import`. Shown with example output.
+**Commands documented but not run** (modify state): `bridge --commit`, `publish-hf`, `publish-dataset`, `import-ground-truth`, `review-import`. Shown as markdown code blocks with example output, not executed cells.
 
 ### Section 13: What We Built and What We Learned (16 cells, 3 figures)
 
@@ -320,9 +362,9 @@ Each command: markdown cell explaining what and when → shell cell with real ou
 
 **Known limitations, concretely:**
 1. Training distribution bias (traditional security overrepresented)
-2. Single reviewer (no inter-rater reliability)
+2. Single reviewer (no inter-rater reliability) — with negative κ on calibration items, we cannot distinguish ambiguity from inconsistency
 3. Hub taxonomy gaps for AI-specific concepts
-4. Small evaluation folds (LLM Top 10: n=6)
+4. Small evaluation folds (LLM Top 10: n=6, ML Top 10: n=7) — both too small for reliable CIs
 
 **What would make this better:**
 - More training data from AI-specific frameworks
@@ -331,13 +373,13 @@ Each command: markdown cell explaining what and when → shell cell with real ou
 - Active learning with the reviewer's corrections feeding back into training
 
 **Figures:**
-- Figure 13.1: The full journey visualization (Plotly interactive timeline) — approaches tried, color-coded by success/failure, hover for details
+- Figure 13.1: The full journey visualization (Plotly interactive timeline) — approaches tried, color-coded by success/failure, hover for details. Hand-curated content (not data-driven) — approximately 15 milestones constructed manually in a code cell.
 - Figure 13.2: Master comparison table — all approaches × all metrics (matplotlib)
 - Figure 13.3: Trust level guide — framework × trust tier heatmap (matplotlib)
 
 ### Appendix A: Experiment Log (4 cells, 1 figure)
 
-Full table of every experiment run with hyperparameters, metrics, git SHA, and WandB link.
+Full table of every experiment run with hyperparameters, metrics, and git SHA. Reference run names (e.g., `phase1b_textaware_fold0`) but omit WandB URLs — they expose internal workspace infrastructure and would 404 for external readers.
 
 ### Appendix B: Visual Style Guide (4 cells, 1 figure)
 
@@ -347,32 +389,57 @@ Palette definitions with swatches, accessibility notes, font choices. Citations 
 
 ## 4. nb_helpers.py Module
 
-Shared utilities to keep notebook code cells short:
+Shared utilities to keep notebook code cells short. **This file defines `PROJECT_ROOT` and all path constants** — the notebook imports them rather than computing paths itself (since `__file__` is undefined in Jupyter cells).
 
 ```python
-# Palette
+from pathlib import Path
+import numpy as np
+
+# --- Paths (the notebook imports these) ---
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RESULTS_DIR = PROJECT_ROOT / "results"
+DATA_DIR = PROJECT_ROOT / "data"
+PHASE0_DIR = RESULTS_DIR / "phase0"
+PHASE1B_DIR = RESULTS_DIR / "phase1b"
+PHASE1C_DIR = RESULTS_DIR / "phase1c"
+REVIEW_DIR = RESULTS_DIR / "review"
+BRIDGE_DIR = RESULTS_DIR / "bridge"
+DATASET_DIR = PROJECT_ROOT / "build" / "dataset"
+
+# --- Palette ---
 OKABE_ITO = ["#E69F00", "#56B4E9", "#009E73", "#F0E442",
              "#0072B2", "#D55E00", "#CC79A7", "#999999"]
 SEQUENTIAL_BLUE = "Blues"
 SEQUENTIAL_ORANGE = "Oranges"
 DIVERGING = "RdBu_r"
 
-# Figure counter
-class FigureCounter: ...
+# --- Figure counter ---
+class FigureCounter:
+    """Instantiate ONCE in the notebook's setup cell. Call reset() for full re-runs."""
+    def __init__(self): self._counts = {}
+    def next(self, section: int) -> str:
+        self._counts[section] = self._counts.get(section, 0) + 1
+        return f"Figure {section}.{self._counts[section]}"
+    def reset(self): self._counts = {}
 
-# Consistent axis styling
+# --- Consistent axis styling ---
 def style_axes(ax, title, xlabel, ylabel, fig_num): ...
 
-# Plotly static fallback
+# --- Plotly static fallback (requires kaleido) ---
 def plotly_with_fallback(fig, fig_num, title, width=900, height=600): ...
 
-# Common data loaders (thin wrappers, no logic)
+# --- Common data loaders (thin wrappers, no logic) ---
 def load_phase0_summary() -> dict: ...
 def load_fold_predictions(run_name: str, fold: str) -> list[dict]: ...
 def load_corrected_metrics(run_name: str) -> dict: ...
 def load_calibration_data() -> dict: ...
-def load_deployment_embeddings() -> tuple[np.ndarray, np.ndarray, list[str], list[str]]: ...
+def load_deployment_embeddings() -> tuple[np.ndarray, np.ndarray, list[str], list[str]]:
+    """Load with allow_pickle=False explicitly."""
+    ...
 def load_review_metrics() -> dict: ...
+def load_training_logs(fold: str) -> list[dict]:
+    """Load trainer_state.json from fold checkpoint directory."""
+    ...
 ```
 
 ---
@@ -381,20 +448,40 @@ def load_review_metrics() -> dict: ...
 
 **Already installed:** plotly 5.24.1, matplotlib 3.10.8, seaborn 0.13.2, ipywidgets 7.8.1, nbformat 5.10.4, wandb 0.25.1, sklearn (for t-SNE)
 
-**Needs install:** `numba` (required by `umap-learn`). Since umap-learn fails without numba, use **sklearn t-SNE** instead. t-SNE is sufficient for 2D projections. If 3D projections are wanted later, install numba+umap-learn.
+**Needs install:** `kaleido` (for Plotly static PNG export via `plotly.io.to_image()`). Verified: `pip install kaleido` works on aarch64 — kaleido 1.2.0 has a `py3-none-any` wheel.
 
-**No new dependencies required.**
+**Not using umap-learn** — requires `numba` which is unavailable. Use **sklearn t-SNE** instead (sufficient for 2D projections, perplexity=30, random_state=42).
+
+**Install command:** `pip install kaleido`
 
 ---
 
 ## 6. Prerequisites Before Running
 
-1. Phase 3 review files must exist at `results/review/` (copy from `.worktrees/phase3/results/review/` if needed: `review_metrics.json`, `review_export.json`, `hub_reference.json`, `reviewer_guide.md`)
-2. Phase 3 dataset staging must exist at `build/dataset/` (copy from `.worktrees/phase3/build/dataset/` if needed: `crosswalk_v1.0.jsonl`, `framework_metadata.json`, `review_metrics.json`)
-3. Deployment model at `results/phase1c/deployment_model/`
-4. All Phase 0/1B results in `results/phase0/`, `results/phase1b/`
+**Required copy steps** (these directories do not exist in the main repo — they were created in the Phase 3 worktree):
 
-The notebook's setup cell checks all prerequisite paths and prints a clear checklist of what's missing.
+```bash
+# 1. Phase 3 review files
+mkdir -p results/review
+cp .worktrees/phase3/results/review/review_metrics.json results/review/
+cp .worktrees/phase3/results/review/review_export.json results/review/
+cp .worktrees/phase3/results/review/hub_reference.json results/review/
+cp .worktrees/phase3/results/review/reviewer_guide.md results/review/
+
+# 2. Phase 3 dataset staging
+mkdir -p build/dataset
+cp .worktrees/phase3/build/dataset/crosswalk_v1.0.jsonl build/dataset/
+cp .worktrees/phase3/build/dataset/framework_metadata.json build/dataset/
+cp .worktrees/phase3/build/dataset/review_metrics.json build/dataset/
+```
+
+**Pre-computed artifacts required:**
+
+3. Deployment model and embeddings at `results/phase1c/deployment_model/` (exists)
+4. All Phase 0/1B results in `results/phase0/`, `results/phase1b/` (exist)
+5. **Pre-fine-tuning embeddings** for Figure 5.2 "before/after" comparison: load base BGE-large-v1.5 and run inference on all ~3,300 texts, save to `results/phase1b/base_bge_embeddings.npz`. This requires a one-time model download (~1.3 GB) and ~2 minutes of inference. Script to generate: `scripts/precompute_base_embeddings.py` (created in implementation).
+
+**Verification:** The notebook's setup cell checks all prerequisite paths and prints a clear checklist of what's missing. It also verifies file freshness by checking that `results/review/review_metrics.json` contains expected keys.
 
 ---
 
@@ -429,11 +516,54 @@ Markdown-to-code ratio target: ≥ 1.5:1 (~100+ markdown cells, ~65 code cells).
 - ≥ 24 figures (target: ~35)
 - ≥ 1.5:1 markdown-to-code ratio
 - All cells run top-to-bottom with identical output (seeded, deterministic)
-- Full notebook runs in < 10 minutes
-- 5 Plotly interactive figures with static PNG fallbacks
+- Full notebook runs in < 10 minutes (t-SNE budget: ~55s for 4 runs at ~14s each on Tegra ARM64)
+- 5 Plotly interactive figures with static PNG fallbacks (via kaleido)
+- Total notebook file size < 5 MB (subsample large Plotly scatters to ~500 points)
 - Okabe-Ito palette throughout, no rainbow/jet
 - Every ML concept introduced with a plain-language analogy before the technical term
 - Plain English blockquote after every section
-- CLI tutorial: 3 workflows with real output
+- CLI tutorial: 3 workflows with real output using `!python -m tract.cli` (verified syntax)
 - Section 13 gives a nuanced, honest answer to "should I trust this?"
 - Practitioner voice throughout — no PhD-speak
+- Honest statistical reporting: firewalled vs unfirewalled baselines clearly labeled, bootstrap CIs with small-n caveats, ECE with confidence interval, Cohen's κ computed and explained
+- No absolute system paths (`/home/rock/...`) in committed notebook output
+- `notebooks/.ipynb_checkpoints/` in `.gitignore`
+
+---
+
+## 9. Adversarial Review Summary
+
+This spec underwent a 4-round adversarial review (9 specialized agents, cross-examination between rounds). All findings have been incorporated above. Key changes from the review:
+
+**Critical fixes applied:**
+- `Path(__file__)` replaced with `nb_helpers.py` import pattern (undefined in Jupyter cells)
+- CLI tutorial rewritten with verified argument syntax (`!python -m tract.cli`, correct flags)
+
+**Methodological corrections:**
+- Baseline comparison now presents both unfirewalled (0.348) and firewalled (0.399) → 0.531, clearly labeled
+- Ablation marked as zero-shot scope with confidence interval
+- Calibration section computes Cohen's κ honestly (negative), explains why κ is a poor fit for multi-hub tasks
+- ECE reported with confidence interval (upper CI crosses 0.10 threshold)
+- Small-fold caveat added for n=6 and n=7 folds (symmetric treatment)
+- Multi-hub evaluation semantics defined (hit@1 against ANY valid hub)
+- Error taxonomy formally defined (same-parent / same-grandparent / unrelated-subtree)
+- t-SNE distance caveat added
+
+**Implementation fixes:**
+- kaleido added to dependencies (verified installable on aarch64)
+- Plotly scatter subsampling to ~500 points (notebook < 5 MB)
+- Figure 5.2 prerequisite: pre-computed base BGE embeddings
+- `results/review/` copy step made explicit with exact commands
+- FigureCounter gets `reset()` method, instantiate once
+- `load_dataset()` shown as markdown, not executed (network call)
+- WandB URLs removed, run names retained
+- Bi-encoder jargon corrected
+
+**Empirically verified during review:**
+- kaleido 1.2.0 installs on aarch64 (py3-none-any wheel)
+- `tract` console script NOT on PATH (use `python -m tract.cli`)
+- t-SNE runtime: ~14s per run on Tegra ARM64 (~55s for 4 runs)
+- trainer_state.json exists in textaware fold checkpoints (loss curves available)
+- Sankey data derivable from crosswalk.db (framework prefix in control_id)
+- Unfirewalled per-framework metrics exist in Phase 0 exp1 data
+- `results/review/` does NOT exist in main repo (only in worktree)
