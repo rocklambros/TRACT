@@ -303,6 +303,10 @@ Published to HuggingFace Datasets AND Zenodo (for DOI):
 3. Track review decisions and metrics
 4. Freeze as crosswalk_reviewed_v1.0.jsonl
 
+### Step 5: Documentation Update
+1. Upon successful completion, update PRD.md to reflect the current project state and requirements
+2. Upon successful completion, update docs/session-prompts.md to reflect the current project state and remaining requirements
+
 ## Success criteria
 - crosswalk.db contains assignments for all 22+ OpenCRE-linked frameworks
 - Review tooling functional: export, review, track, atomic state
@@ -310,6 +314,7 @@ Published to HuggingFace Datasets AND Zenodo (for DOI):
 - Published dataset on HuggingFace Datasets with DOI from Zenodo
 - Review metrics documented (acceptance rate, edit rate, per-framework breakdown)
 - Dataset card comprehensive and novice-friendly (matching model card quality)
+- PRD.md and docs/session-prompts.md accurately reflect the current state of the project and remaining requirements.
 
 ## Anti-patterns — do NOT repeat
 - Do not conflate model publication (Phase 2B, done) with dataset publication (this phase). Different artifacts, different HuggingFace repo types (model vs dataset).
