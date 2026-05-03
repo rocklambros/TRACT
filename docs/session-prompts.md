@@ -13,15 +13,15 @@ Self-contained prompts for continuing the TRACT project in new Claude Code sessi
 - Framework Preparation Pipeline (PR #21): COMPLETE — `tract prepare` + `tract validate` + ingest integration, 553 tests total
 - Phase 2B (Bridge + HF Publication): COMPLETE — 46 bridges accepted (5-round adversarial review), model published to huggingface.co/rockCO78/tract-cre-assignment, 654 tests
 - ~~Phase 2A (Web UI):~~ CANCELLED — no web dashboard, CLI + API only
-- Phase 3 (Published Crosswalk Dataset): NOT STARTED
+- Phase 3 (Published Crosswalk Dataset): COMPLETE — 5,238 assignments, 31 frameworks, expert-reviewed, published to HuggingFace, 831 tests
 - Phase 3B (Experimental Narrative Notebook): NOT STARTED
 - Phase 4 (Secure API): NOT STARTED
-- Phase 5B (OpenCRE Upstream Contribution): BLOCKED on Phase 3
+- Phase 5B (OpenCRE Upstream Contribution): UNBLOCKED (Phase 3 complete)
 
 **Key results driving all remaining work:**
 - BGE-large-v1.5 + LoRA rank 16 + MNRL contrastive loss + text-aware batching
 - Per-fold deltas vs zero-shot: NIST +0.322, ML +0.285, OWASP-X +0.143, ATLAS +0.006, LLM-10 +0.000
-- 640 tests passing, 13 CLI subcommands, all code typed and validated
+- 831 tests passing, 18 CLI subcommands, all code typed and validated
 - CUDA determinism flags added to training loop
 - 5-round adversarial review completed — all findings resolved
 - Phase 5A: 411 assignments exported (conf ≥ 0.30, ATLAS ≥ 0.35), 192 controls excluded with reasons, all imported into local OpenCRE fork
@@ -217,112 +217,32 @@ Think deeply using the sequential-thinking MCP server. --ultrathink
 
 ---
 
-## Prompt 5: Phase 3 — Published Human-Reviewed Crosswalk Dataset
+## ~~Prompt 5: Phase 3 — Published Human-Reviewed Crosswalk Dataset~~ ✅ COMPLETE
 
-```
-TRACT Phase 3: Produce and publish the human-reviewed crosswalk dataset. PRD Section 8.
+**Completed 2026-05-03.** PR #23 merged. 19 commits, 6,715 lines, 831 tests (278 new).
 
-Read PRD.md Section 8. Read CLAUDE.md for code standards.
+**What was built:**
+- `tract/crosswalk/ground_truth.py` — GT import with multi-strategy section ID resolver, WAL-safe DB backup, dedup
+- `tract/review/export.py` — review export with re-inference (TRACTPredictor), calibration items, GT-confirmed exclusion
+- `tract/review/validate.py` — 6-check validation (JSON parse, structure, statuses, hub IDs, assignment IDs, pending warnings)
+- `tract/review/import_review.py` — apply_review_decisions() with UPDATE-in-place, original_hub_id tracking
+- `tract/review/metrics.py` — coverage, rates, per-framework breakdown, calibration quality, confidence analysis
+- `tract/review/guide.py` — reviewer guide markdown + hub reference JSON
+- `tract/dataset/bundle.py` — provenance-priority JSONL dedup, assignment_type derivation, framework metadata, Zenodo metadata
+- `tract/dataset/card.py` — 16-section HuggingFace dataset card (novice + expert audience)
+- `tract/dataset/publish.py` — HfApi upload with repo_type="dataset"
+- `tract/cli.py` — 5 new subcommands: import-ground-truth, review-export, review-validate, review-import, publish-dataset
+- Schema migration: reviewer_notes + original_hub_id columns on assignments table
 
-## Current state — verify before starting
-1. Phase 2B COMPLETE: model published to huggingface.co/rockCO78/tract-cre-assignment
-2. Bridge analysis COMPLETE: 46 bridges accepted, 17 rejected, hierarchy version 1.1
-3. crosswalk.db at results/phase1c/crosswalk.db has 636 assignments across 6 AI frameworks:
-   - MITRE ATLAS: 260, CSA AICM: 243, EU AI Act: 100, OWASP LLM Top 10: 13, OWASP Agentic: 10, NIST AI 600-1: 10
-   - Provenance: active_learning_round_2 (558 accepted) + ground_truth_T1-AI (78)
-   - 31 frameworks registered in DB, but only 6 have assignments
-4. Active learning: 2 rounds completed and converged
-5. Hub proposals: proposals.json exists at hub_proposals/round_1/ — review status needs verification
-6. Bridge relationships in cre_hierarchy.json: 51 hubs have related_hub_ids (92 bidirectional edges)
-7. 654 tests passing, 13 CLI subcommands
-8. Calibration: T=0.074, OOD threshold=0.568, ECE=0.079
+**Pipeline results:**
+- 4,331 GT links imported (57 duplicates skipped, 18 unresolvable OWASP AI Exchange)
+- 320 model predictions for 5 uncovered AI frameworks
+- 898 predictions exported (878 real + 20 calibration items)
+- Expert review: 680 accepted (77.4%), 196 reassigned (22.3%), 2 rejected (0.2%)
+- Calibration quality: 65% (13/20 agreed, 7 reassignment disagreements)
+- 5,238 deduplicated assignments published across 31 frameworks
 
-## What does NOT yet exist
-- No predictions for the 16 traditional (non-AI) OpenCRE-linked frameworks in crosswalk.db
-  (OWASP ASVS, NIST 800-53, CWE, CAPEC, etc. have 4,237 existing ground-truth links but
-  these are NOT in crosswalk.db — they live in data/training/hub_links_by_framework.json)
-- No review tooling for expert review workflow
-- No dataset publication pipeline (HuggingFace Datasets card, Zenodo DOI)
-- No formal review metrics tracking
-
-## Key context
-This phase has TWO parts:
-1. **Engineering** (~2-3 sessions): Build review tooling, populate crosswalk.db with ALL framework assignments (ground truth + model predictions), build dataset publication pipeline
-2. **Expert review** (~62+ hours, outside Claude Code): Human reviews all AI framework assignments. Traditional framework assignments from OpenCRE are ground truth and need no review.
-
-The engineering work must happen first to give the expert a review interface.
-
-## Data inventory for crosswalk population
-| Source | Frameworks | Controls | Status | Action |
-|--------|-----------|----------|--------|--------|
-| OpenCRE ground truth | 16 traditional + 1 AI (OWASP ML) | ~4,237 links | In hub_links_by_framework.json | Import as ground_truth |
-| Active learning round 2 | 6 AI frameworks | 636 assignments | In crosswalk.db | Already present |
-| Phase 5A export | 5 AI frameworks | 411 assignments (conf ≥ 0.30) | In results/phase1c/exports/ | Subset of AL assignments |
-
-Total target: ~4,873 assignments (4,237 ground truth + 636 AL predictions) across 22+ frameworks.
-
-## Results from all previous phases
-1. Model confidence per framework → prioritize review: start with highest-confidence frameworks
-2. Active learning acceptance rates → frameworks with low acceptance need more careful review
-3. Bridge hubs from Phase 2B → include 46 accepted bridge relationships in published dataset
-4. Calibration (T=0.074, ECE=0.079) → show calibrated probabilities to reviewer to guide effort allocation
-5. Per-hub prediction accuracy from LOFO → identify systematically difficult hubs (ATLAS hub disambiguation is the primary failure mode)
-6. 5 hub proposals from Phase 1D → check if any were accepted and integrate
-
-## Scope
-
-### Step 1: Populate crosswalk.db with ALL frameworks
-1. Import all 4,237 OpenCRE ground-truth links into crosswalk.db with review_status="ground_truth"
-2. Verify no duplicates between ground truth and existing AL assignments
-3. Register all 22+ frameworks with metadata (name, version, source, control count)
-4. Result: crosswalk.db has complete coverage of all OpenCRE-linked frameworks
-
-### Step 2: Review Tooling
-1. `tract review` CLI command: export predictions grouped by framework → review spreadsheets
-2. Each row: control_id, control_text, predicted_hub_1 (calibrated_conf), predicted_hub_2 (calibrated_conf), ..., reviewer_decision, reviewer_notes
-3. Review interface: accept top prediction, select different hub, flag for discussion, mark "no good hub"
-4. Track: total reviewed, acceptance rate, edit rate, rejection rate, time per control
-5. Second-pass consistency check for edited/rejected controls
-6. Inter-reviewer agreement metrics if multiple reviewers (Cohen's kappa)
-7. Atomic review state: review progress survives crashes (write-to-temp + os.replace pattern)
-
-### Step 3: Dataset Publication Pipeline
-Published to HuggingFace Datasets AND Zenodo (for DOI):
-- crosswalk_v1.0.jsonl — every control + hub assignment + confidence + review status
-- framework_metadata.json — all framework descriptions, versions, sources
-- cre_hierarchy_v1.1.json — hub ontology with bridge links at publication time
-- hub_descriptions_v1.0.json — validated descriptions
-- bridge_report.json — bridge analysis evidence and review decisions
-- review_metrics.json — acceptance rates, agreement, reviewer effort
-- README.md — dataset card (HuggingFace Datasets format, novice-friendly like model card)
-- LICENSE — CC-BY-4.0
-
-### Step 4: Expert Review (outside Claude Code)
-1. Expert reviews all 636 AI framework assignments using review tooling
-2. Ground truth assignments (4,237) are NOT reviewed — they are authoritative
-3. Track review decisions and metrics
-4. Freeze as crosswalk_reviewed_v1.0.jsonl
-
-### Step 5: Documentation Update
-1. Upon successful completion, update PRD.md to reflect the current project state and requirements
-2. Upon successful completion, update docs/session-prompts.md to reflect the current project state and remaining requirements
-
-## Success criteria
-- crosswalk.db contains assignments for all 22+ OpenCRE-linked frameworks
-- Review tooling functional: export, review, track, atomic state
-- 100% of AI framework predicted assignments reviewed by expert
-- Published dataset on HuggingFace Datasets with DOI from Zenodo
-- Review metrics documented (acceptance rate, edit rate, per-framework breakdown)
-- Dataset card comprehensive and novice-friendly (matching model card quality)
-- PRD.md and docs/session-prompts.md accurately reflect the current state of the project and remaining requirements.
-
-## Anti-patterns — do NOT repeat
-- Do not conflate model publication (Phase 2B, done) with dataset publication (this phase). Different artifacts, different HuggingFace repo types (model vs dataset).
-- Do not skip ground truth import — the published crosswalk needs ALL frameworks, not just AI.
-- Do not let review tooling complexity delay the expert review. Simple CSV export is acceptable as v1; fancy UI can come later.
-
-Think deeply using the sequential-thinking MCP server. --ultrathink
-```
+**Published to:** huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
 
 ---
 
@@ -335,9 +255,11 @@ Read PRD.md Section 8B for full requirements including visualization standards a
 
 ## Current state — verify before starting
 1. All training results available in results/phase0/, results/phase0r/, results/phase1b/
-2. Model published to HuggingFace (Phase 2B complete)
-3. Crosswalk reviewed and published (Phase 3 complete)
+2. Model published to HuggingFace (Phase 2B complete) — huggingface.co/rockCO78/tract-cre-assignment
+3. Crosswalk reviewed and published (Phase 3 complete) — huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
 4. All raw data for visualizations accessible
+5. 831 tests passing, 18 CLI subcommands
+6. Phase 3 review metrics: 77.4% acceptance, 22.3% reassignment, 0.2% rejection, 65% calibration quality
 
 ## Key context
 This is NOT a code dump. It is a narrative document following a problem → exploration → failure → insight → solution arc. Style reference: ai-security-framework-crosswalk/project1/COMP_4433_RockLambros_project1_crosswalk_eda.ipynb (128 cells, 82 markdown / 46 code, 24 figures).
@@ -392,9 +314,11 @@ Read PRD.md Section 9. Read CLAUDE.md for code standards (especially Security se
 
 ## Current state — verify before starting
 1. All Phase 1-3 complete: model trained, crosswalk reviewed, dataset published
-2. CLI commands working (`tract assign`, `tract compare`, `tract ingest`, `tract export`, `tract hierarchy`)
-3. Model published to HuggingFace (inference code available)
-4. Crosswalk.db finalized with reviewed assignments
+2. 18 CLI commands working (`tract assign`, `tract compare`, `tract ingest`, `tract export`, `tract hierarchy`, `tract import-ground-truth`, `tract review-export`, `tract review-validate`, `tract review-import`, `tract publish-dataset`, etc.)
+3. Model published to HuggingFace (huggingface.co/rockCO78/tract-cre-assignment)
+4. Dataset published to HuggingFace (huggingface.co/datasets/rockCO78/tract-crosswalk-dataset)
+5. Crosswalk.db finalized: 5,287 assignments (5,238 after dedup), 31 frameworks, expert-reviewed
+6. 831 tests passing
 
 ## Key principle
 The API wraps the SAME business logic as the CLI. tract/ library functions are the shared layer. The API adds: HTTP transport, authentication, rate limiting, OpenAPI docs. No new business logic in the API layer.
@@ -470,12 +394,13 @@ TRACT Phase 5B: Submit validated TRACT outputs as contributions to the OpenCRE p
 Read PRD.md Section 10 (especially Phase 5B subsection). Read CLAUDE.md for code standards.
 
 ## Current state — verify before starting
-1. Phase 3 complete: all assignments human-reviewed and published
+1. Phase 3 COMPLETE: 5,238 assignments human-reviewed and published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
 2. Phase 5A infrastructure exists: `tract export --opencre` generates CSVs, coverage_gaps.json, export_manifest.json
 3. Local OpenCRE fork at ~/github_projects/OpenCRE with pilot import (411 assignments from 2026-05-01)
 4. `scripts/direct_opencre_import.py` working for fork validation
 5. Hub proposals from Phase 1D available in hub_proposals/
-6. Bridge mappings from Phase 2B available (if Phase 2B is complete)
+6. Bridge mappings from Phase 2B COMPLETE: 46 bridges accepted, hierarchy v1.1
+7. 831 tests passing, 18 CLI subcommands
 
 ## Phase 5A results to incorporate
 1. Export pipeline tested: 411 assignments across 5 frameworks at conf ≥ 0.30 (ATLAS ≥ 0.35)
@@ -485,10 +410,11 @@ Read PRD.md Section 10 (especially Phase 5B subsection). Read CLAUDE.md for code
 5. Import path: direct SQLAlchemy script (~3s) preferred over REST API (requires Redis/graph loading)
 
 ## Phase 3 review results to incorporate
-1. Which assignments changed during human review? Regenerate CSVs with reviewed data.
-2. Review acceptance rate per framework → confidence in contribution quality
-3. Any new hub proposals accepted → include in contribution
-4. Did human review reveal systematic model errors? Document in contribution notes.
+1. Expert review: 680 accepted (77.4%), 196 reassigned (22.3%), 2 rejected (0.2%) — re-export CSVs with reviewed data
+2. Per-framework acceptance rates vary widely: CSA AICM 99%, EU AI Act 100%, MITRE ATLAS 91%, but AIUC-1 29%, CoSAI 45% — document in contribution notes
+3. 196 reassignments mean the expert chose different hubs — these are CORRECTIONS that improve contribution quality vs the Phase 5A pilot export
+4. Calibration quality 65% (7 disagreements were reassignments, not rejections) — suggests legitimate taxonomy interpretation differences
+5. Provenance-priority dedup resolved 49 duplicate (control_id, hub_id) pairs
 
 ## Scope
 
@@ -589,6 +515,17 @@ These compound across phases. Each prompt above incorporates the relevant subset
 - allow_pickle=False on all np.load calls. hub_ids dtype is `<U7` (fixed unicode), pickle never needed.
 - Token handling: `pass` → `HfApi(token=token)` → `del token` in finally. No os.environ leak.
 
+### Dataset Publication & Review Pipeline
+- DB stores calibrated confidence (softmax output), not raw cosine. Re-inference at export avoids double-calibration: `softmax(softmax(x))` would compress scores toward uniform.
+- Provenance-priority dedup is essential: same (control_id, hub_id) can appear from multiple sources. Keep highest-authority: `opencre_ground_truth > ground_truth_T1-AI > active_learning_round_2 > model_prediction`.
+- UPDATE-in-place semantics for review import — don't INSERT new rows, UPDATE existing assignments. Track `original_hub_id` for reassignments.
+- Calibration items with negative IDs (-1 to -20) let you measure reviewer quality without the reviewer knowing which items are tests. Stratified selection (easy + hard + middle) prevents sampling bias.
+- GT-confirmed exclusion: when ground truth already confirms a model prediction's (control_id, hub_id), exclude it from review — the reviewer would rubber-stamp it, wasting expert time.
+- WAL-safe SQLite backup: use `sqlite3.Connection.backup()` API, not file copy. File copy during WAL mode can produce a corrupt backup.
+- Assignment type derivation from DB columns (provenance + review_status + original_hub_id) is more reliable than storing type as a separate column — it stays consistent even after review decisions change.
+- Section ID resolution for GT import needs multiple strategies: exact match, prefix match, numeric-only extraction. OWASP AI Exchange has 18 unresolvable controls — log and skip rather than fail the entire import.
+- HuggingFace datasets use `repo_type="dataset"` (not "model"). Different quota, different card format, different URL pattern.
+
 ### Process
 - Adversarial review catches real methodology errors (R2's 4-fold vs 5-fold comparison, n_pairs vs eval count).
 - Cross-examination between critics is essential — without it, false findings persist.
@@ -596,3 +533,4 @@ These compound across phases. Each prompt above incorporates the relevant subset
 - Two-stage review (spec compliance + code quality) is an effective quality gate.
 - Marathon subagent runs (one subagent completing 10+ tasks) work when the plan is well-specified. The key enabler: complete code in every plan step, no placeholders.
 - Three-round adversarial review convergence: findings shift from "will produce wrong results" to "will confuse the implementer" → safe to stop.
+- 17-task subagent-driven plan (Phase 3) completed in a single session with 831 tests. Sequential task ordering (GT import → review export → review import → dataset publish) is critical when later tasks depend on DB state from earlier tasks.

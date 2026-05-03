@@ -2,9 +2,9 @@
 
 ## Product Requirements Document
 
-**Date:** 2026-05-02 (last updated)
+**Date:** 2026-05-03 (last updated)
 **Author:** Rock Lambros
-**Status:** Active — Phases 0–1D + 2B + 5A complete, Phase 3+ in queue
+**Status:** Active — Phases 0–1D + 2B + 3 + 5A complete, Phase 3B/4/5B in queue
 
 ---
 
@@ -567,9 +567,21 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 
 ---
 
-## 8. Phase 3: Published Human-Reviewed Crosswalk Dataset
+## 8. Phase 3: Published Human-Reviewed Crosswalk Dataset ✅ COMPLETE
 
 **Deliverable:** Versioned dataset published to HuggingFace Datasets AND Zenodo.
+
+**Completed 2026-05-03.** PR #23 merged. 19 commits, 6,715 lines, 831 tests (278 new).
+
+**Published to:** huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
+
+**Pipeline results:**
+- 4,331 ground truth links imported from OpenCRE (57 duplicates skipped, 18 unresolvable OWASP AI Exchange controls)
+- 320 model predictions generated for 5 uncovered AI frameworks via BGE-large-v1.5 inference
+- 898 predictions exported for review (878 real + 20 hidden calibration items)
+- Expert review: 680 accepted (77.4%), 196 reassigned (22.3%), 2 rejected (0.2%)
+- Calibration quality: 65% agreement (13/20 calibration items matched ground truth)
+- 5,238 deduplicated assignments published across 31 frameworks
 
 **Review workflow (concrete):**
 1. Export all hub assignments from `crosswalk.db` (636 model predictions across 6 AI frameworks) plus 4,406 ground-truth links from OpenCRE (22 traditional frameworks)
@@ -583,15 +595,30 @@ When the OOD detector (from 6.6 adversarial guardrails) flags controls that don'
 **Published dataset structure:**
 ```
 tract-crosswalk-dataset/
-  crosswalk_v1.0.jsonl          # Every control + hub assignment + confidence + review status
+  crosswalk_v1.0.jsonl          # 5,238 control-hub assignments (deduplicated)
   framework_metadata.json       # 31 framework descriptions, versions, sources
   cre_hierarchy_v1.1.json       # Hub ontology with bridge links at time of publication
   hub_descriptions_v1.0.json    # Validated hub descriptions
-  review_metrics.json           # Acceptance rates, agreement metrics, reviewer effort
-  README.md                     # Dataset card (HuggingFace Datasets format)
+  review_metrics.json           # Acceptance rates, calibration quality, per-framework breakdown
+  README.md                     # 16-section dataset card (novice + expert audience)
   bridge_report.json            # Bridge analysis evidence and review decisions
-  LICENSE                       # CC-BY-4.0
+  zenodo_metadata.json          # Metadata for Zenodo DOI registration
+  LICENSE                       # CC-BY-SA-4.0
 ```
+
+**New CLI commands (5):**
+- `tract import-ground-truth` — import OpenCRE ground truth into crosswalk.db
+- `tract review-export` — generate review JSON with re-inference and calibration items
+- `tract review-validate` — validate reviewed JSON before import
+- `tract review-import` — apply expert review decisions (UPDATE-in-place)
+- `tract publish-dataset` — bundle and upload to HuggingFace Hub
+
+**Key implementation details:**
+- Schema migration: `ALTER TABLE assignments ADD COLUMN reviewer_notes TEXT; ADD COLUMN original_hub_id TEXT`
+- Re-inference at export: loads TRACTPredictor, runs predict_batch() for fresh calibrated confidence values
+- Calibration items: 20 hidden GT items (negative IDs -1 to -20), stratified: 5 easy + 5 hard + 10 middle (seed=42)
+- Provenance-priority dedup: opencre_ground_truth > ground_truth_T1-AI > active_learning_round_2 > model_prediction
+- GT-confirmed exclusion: model predictions where ground truth already confirms the same (control_id, hub_id) pair are excluded from review
 
 **Contribute back to OpenCRE:** For the 5 AI frameworks with zero CRE coverage (AIUC-1, CSA AICM, CoSAI, EU GPAI CoP, OWASP Agentic), submit validated hub assignments as proposed LinkedTo links to the OpenCRE project.
 
@@ -722,13 +749,13 @@ All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 
 
 **Export format (resolved):** OpenCRE CSV with `CRE 0` column = `"hub_id|hub_name"` (pipe-delimited), standard columns = `StandardName|name`, `StandardName|id`, `StandardName|description`, `StandardName|hyperlink`. Consumed by OpenCRE's `export_format_parser.parse_export_format()`.
 
-### Phase 5B: Upstream Contribution (blocked on Phase 3 human review)
+### Phase 5B: Upstream Contribution (unblocked — Phase 3 complete)
 
 **Contribution scope:**
 
 | Contribution | Source | Format | Status |
 |-------------|--------|--------|--------|
-| New framework→hub assignments | Phase 3 human-reviewed crosswalk | OpenCRE CSV (per framework) | Blocked on Phase 3 |
+| New framework→hub assignments | Phase 3 human-reviewed crosswalk | OpenCRE CSV (per framework) | ✅ Phase 3 complete |
 | Hub proposals | Phase 1D HDBSCAN clustering of OOD controls | Proposed new CRE hubs with evidence | Proposals generated, needs upstream format |
 | AI/traditional bridge mappings | Phase 2B bridge analysis | Cross-domain Related links | Not started |
 | Confidence metadata | Phase 1C calibration | Per-assignment calibrated scores | Available now |
@@ -783,8 +810,8 @@ All 411 assignments imported into local fork DB. MITRE ATLAS handled correctly: 
 | Phase 1 | Crosswalk database complete | All 22 frameworks with hub assignments |
 | Phase 2 | HuggingFace AIBOM score | 100/100 |
 | Phase 2 | AI/Traditional bridge hubs identified | At least 10 validated bridges |
-| Phase 3 | Human review coverage | 100% of predicted assignments reviewed |
-| Phase 3 | Published dataset | Available on HuggingFace or Zenodo |
+| Phase 3 | Human review coverage | ✅ 100% of predicted assignments reviewed (878/878) |
+| Phase 3 | Published dataset | ✅ Published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset |
 | Phase 3B | Experimental narrative notebook | ≥128 cells, ≥24 figures, full story arc from baselines to final model |
 | Phase 3B | Notebook reproducibility | All cells run top-to-bottom with identical output |
 | Phase 3B | Visualization quality | Interactive 3D/animated figures with static fallbacks, colorblind-accessible palettes |

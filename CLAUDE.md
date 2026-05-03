@@ -113,10 +113,12 @@ claude-mem records observations as you work. These are valuable for continuity:
 
 - **Data Preparation:** COMPLETE
 - **Phase 0 (Zero-Shot Baselines):** COMPLETE — Gates A+B passed
-- **Phase 1A–1D:** COMPLETE — model trained (hit@1=0.531), 11 CLI subcommands, hub proposals, 553 tests
+- **Phase 1A–1D:** COMPLETE — model trained (hit@1=0.531), 11 CLI subcommands, hub proposals
 - **Phase 2B (Bridge + HF Publication):** COMPLETE — 46/63 bridges accepted, model published to huggingface.co/rockCO78/tract-cre-assignment
+- **Phase 3 (Crosswalk Dataset):** COMPLETE — 5,238 assignments across 31 frameworks, expert-reviewed, published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
+- **831 tests passing**, 18 CLI subcommands
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands
@@ -141,4 +143,11 @@ tract bridge --commit --candidates <path>         # Commit reviewed bridges to h
 # HuggingFace publication (Phase 2B)
 tract publish-hf --repo-id <repo> --dry-run       # Build staging dir without upload
 tract publish-hf --repo-id <repo> --gpu-hours N   # Full publish
+
+# Phase 3 — Review & Dataset Publication
+tract import-ground-truth                          # Import OpenCRE ground truth into crosswalk.db
+tract review-export                                # Export predictions for expert review
+tract review-validate <path>                       # Validate reviewed JSON
+tract review-import <path>                         # Apply review decisions to crosswalk.db
+tract publish-dataset --repo-id <repo>             # Bundle and upload dataset to HuggingFace
 ```
