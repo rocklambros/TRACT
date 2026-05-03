@@ -132,13 +132,18 @@ def resolve_framework_links(
 
 
 def _backup_database(db_path: Path) -> Path:
-    """Copy database to timestamped backup. Returns backup path."""
-    import shutil
+    """Copy database to timestamped backup using sqlite3 backup API (WAL-safe)."""
     from datetime import datetime, timezone
 
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    backup = db_path.with_suffix(f".backup.{ts}")
-    shutil.copy2(db_path, backup)
+    backup = db_path.with_name(f"{db_path.name}.backup.{ts}")
+    src = sqlite3.connect(str(db_path))
+    dst = sqlite3.connect(str(backup))
+    try:
+        src.backup(dst)
+    finally:
+        dst.close()
+        src.close()
     logger.info("Database backed up to %s", backup)
     return backup
 

@@ -498,7 +498,7 @@ class TestImportGroundTruth:
 
         backups = list(import_db.parent.glob("*.backup.*"))
         assert len(backups) == 1
-        assert backups[0].name.startswith("import_test.backup.")
+        assert backups[0].name.startswith("import_test.db.backup.")
 
     def test_dry_run_returns_counts_without_modifying_db(
         self, import_db: Path, tmp_path: Path,
@@ -565,6 +565,53 @@ class TestImportGroundTruth:
         summary = import_ground_truth(import_db, links_path)
         assert "direct" in summary["strategy_counts"]
         assert summary["strategy_counts"]["direct"] == 2
+
+
+class TestAtomicRollback:
+    def test_error_mid_import_rolls_back_all_inserts(
+        self, import_db: Path, tmp_path: Path
+    ) -> None:
+        from unittest.mock import patch
+
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("CTRL-2", "200-300"),
+            ],
+        })
+        conn = get_connection(import_db)
+        try:
+            count_before = conn.execute(
+                "SELECT COUNT(*) FROM assignments"
+            ).fetchone()[0]
+        finally:
+            conn.close()
+
+        # Patch resolve_framework_links to raise after the first link is processed.
+        # We do this by letting the real function run, then injecting an error
+        # in the iteration loop via a corrupted link dict (missing key).
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                {"section_id": "CTRL-2", "cre_id": "200-300", "link_type": "LinkedTo"},
+            ],
+            # Add a second framework that will cause a KeyError when accessed
+            "bad_fw": [{"bad_key": "will fail"}],
+        })
+
+        with pytest.raises(KeyError):
+            import_ground_truth(import_db, links_path)
+
+        conn = get_connection(import_db)
+        try:
+            count_after = conn.execute(
+                "SELECT COUNT(*) FROM assignments"
+            ).fetchone()[0]
+        finally:
+            conn.close()
+
+        assert count_after == count_before
 
 
 class TestBackupDatabase:
