@@ -1,12 +1,14 @@
 """Ground truth import — multi-strategy section ID resolver and assignment creation."""
 from __future__ import annotations
 
+import json
 import logging
 import re
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
+from tract.config import PHASE3_GT_PROVENANCE
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)
@@ -127,3 +129,122 @@ def resolve_framework_links(
         unresolved=unresolved,
         strategy_counts=strategy_counts,
     )
+
+
+def _backup_database(db_path: Path) -> Path:
+    """Copy database to timestamped backup. Returns backup path."""
+    import shutil
+    from datetime import datetime, timezone
+
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup = db_path.with_suffix(f".backup.{ts}")
+    shutil.copy2(db_path, backup)
+    logger.info("Database backed up to %s", backup)
+    return backup
+
+
+def import_ground_truth(
+    db_path: Path,
+    hub_links_path: Path,
+    *,
+    dry_run: bool = False,
+) -> dict[str, object]:
+    """Import OpenCRE ground truth links into crosswalk.db.
+
+    Returns summary dict with counts: imported, skipped_duplicate, unresolved,
+    per_framework breakdown, and strategy_counts.
+    """
+    hub_links_data = json.loads(hub_links_path.read_text(encoding="utf-8"))
+
+    if not dry_run:
+        _backup_database(db_path)
+
+    conn = get_connection(db_path)
+    imported = 0
+    skipped_duplicate = 0
+    total_unresolved = 0
+    per_framework: dict[str, dict[str, int]] = {}
+    all_strategy_counts: dict[str, int] = {}
+
+    try:
+        for framework_id, links in sorted(hub_links_data.items()):
+            result = resolve_framework_links(conn, framework_id, links)
+
+            fw_imported = 0
+            fw_skipped = 0
+
+            for link in links:
+                gt_key = f"{framework_id}:{link['section_id']}"
+                control_id = result.resolved.get(gt_key)
+                if control_id is None:
+                    continue
+
+                hub_id = link["cre_id"]
+
+                existing = conn.execute(
+                    "SELECT 1 FROM assignments WHERE control_id = ? AND hub_id = ?",
+                    (control_id, hub_id),
+                ).fetchone()
+
+                if existing is not None:
+                    fw_skipped += 1
+                    skipped_duplicate += 1
+                    continue
+
+                conn.execute(
+                    "INSERT INTO assignments "
+                    "(control_id, hub_id, confidence, provenance, "
+                    "source_link_id, review_status) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (
+                        control_id,
+                        hub_id,
+                        1.0,
+                        PHASE3_GT_PROVENANCE,
+                        link["link_type"],
+                        "ground_truth",
+                    ),
+                )
+                fw_imported += 1
+                imported += 1
+
+            total_unresolved += len(result.unresolved)
+
+            per_framework[framework_id] = {
+                "imported": fw_imported,
+                "skipped_duplicate": fw_skipped,
+                "unresolved": len(result.unresolved),
+                "total_links": len(links),
+            }
+
+            for strategy, count in result.strategy_counts.items():
+                all_strategy_counts[strategy] = (
+                    all_strategy_counts.get(strategy, 0) + count
+                )
+
+            logger.info(
+                "Framework %s: imported=%d, skipped=%d, unresolved=%d",
+                framework_id, fw_imported, fw_skipped, len(result.unresolved),
+            )
+
+        if dry_run:
+            conn.rollback()
+            logger.info("Dry run — rolled back %d inserts", imported)
+        else:
+            conn.commit()
+            logger.info("Committed %d ground truth assignments", imported)
+
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+    return {
+        "imported": imported,
+        "skipped_duplicate": skipped_duplicate,
+        "unresolved": total_unresolved,
+        "per_framework": per_framework,
+        "strategy_counts": all_strategy_counts,
+        "dry_run": dry_run,
+    }

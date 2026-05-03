@@ -9,7 +9,9 @@ import pytest
 
 from tract.crosswalk.ground_truth import (
     ResolverResult,
+    _backup_database,
     build_control_lookups,
+    import_ground_truth,
     resolve_framework_links,
     resolve_section_id,
 )
@@ -324,3 +326,271 @@ class TestResolveEdgeCases:
             assert result.strategy_counts == {}
         finally:
             conn.close()
+
+
+# ── Import tests ──────────────────────────────────────────────────────────
+
+
+@pytest.fixture()
+def import_db(tmp_path: Path) -> Path:
+    """Create a temporary DB with frameworks, controls, and hubs for import testing."""
+    db_path = tmp_path / "import_test.db"
+    create_database(db_path)
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO frameworks (id, name, version, fetch_date, control_count) "
+            "VALUES (?, ?, ?, ?, ?)",
+            ("test_fw", "Test Framework", "1.0", "2024-01-01", 3),
+        )
+        conn.execute(
+            "INSERT INTO frameworks (id, name, version, fetch_date, control_count) "
+            "VALUES (?, ?, ?, ?, ?)",
+            ("other_fw", "Other Framework", "1.0", "2024-01-01", 1),
+        )
+        controls = [
+            ("test_fw:ctrl-1", "test_fw", "CTRL-1", "Control One", "desc1", "full1"),
+            ("test_fw:ctrl-2", "test_fw", "CTRL-2", "Control Two", "desc2", "full2"),
+            ("test_fw:ctrl-3", "test_fw", "CTRL-3", "Control Three", "desc3", "full3"),
+            ("other_fw:ctrl-a", "other_fw", "CTRL-A", "Control A", "descA", "fullA"),
+        ]
+        for ctrl in controls:
+            conn.execute(
+                "INSERT INTO controls (id, framework_id, section_id, title, description, full_text) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                ctrl,
+            )
+        hubs = [
+            ("100-200", "Hub Alpha", "/security/alpha", None),
+            ("200-300", "Hub Beta", "/security/beta", None),
+            ("300-400", "Hub Gamma", "/security/gamma", None),
+            ("400-500", "Hub Delta", "/security/delta", None),
+        ]
+        for hub in hubs:
+            conn.execute(
+                "INSERT INTO hubs (id, name, path, parent_id) VALUES (?, ?, ?, ?)",
+                hub,
+            )
+        conn.commit()
+    finally:
+        conn.close()
+    return db_path
+
+
+def _write_hub_links(path: Path, data: dict[str, list[dict[str, str]]]) -> None:
+    """Write a hub_links JSON file for testing."""
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def _make_link(
+    section_id: str,
+    cre_id: str,
+    framework_id: str = "test_fw",
+    link_type: str = "LinkedTo",
+) -> dict[str, str]:
+    return {
+        "cre_id": cre_id,
+        "cre_name": "Test CRE",
+        "framework_id": framework_id,
+        "link_type": link_type,
+        "section_id": section_id,
+        "section_name": section_id,
+        "standard_name": "Test Framework",
+    }
+
+
+class TestImportGroundTruth:
+    def test_basic_import(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("CTRL-2", "200-300"),
+            ],
+        })
+        summary = import_ground_truth(import_db, links_path)
+        assert summary["imported"] == 2
+        assert summary["skipped_duplicate"] == 0
+        assert summary["unresolved"] == 0
+        assert summary["dry_run"] is False
+
+        conn = get_connection(import_db)
+        try:
+            count = conn.execute("SELECT COUNT(*) FROM assignments").fetchone()[0]
+            assert count == 2
+        finally:
+            conn.close()
+
+    def test_dedup_skips_existing_assignment(self, import_db: Path, tmp_path: Path) -> None:
+        conn = get_connection(import_db)
+        try:
+            conn.execute(
+                "INSERT INTO assignments (control_id, hub_id, confidence, provenance, review_status) "
+                "VALUES (?, ?, ?, ?, ?)",
+                ("test_fw:ctrl-1", "100-200", 0.9, "active_learning_round_2", "accepted"),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("CTRL-2", "200-300"),
+            ],
+        })
+        summary = import_ground_truth(import_db, links_path)
+        assert summary["imported"] == 1
+        assert summary["skipped_duplicate"] == 1
+
+        conn = get_connection(import_db)
+        try:
+            count = conn.execute("SELECT COUNT(*) FROM assignments").fetchone()[0]
+            assert count == 2  # 1 existing + 1 new
+        finally:
+            conn.close()
+
+    def test_source_link_id_stores_link_type(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200", link_type="LinkedTo"),
+                _make_link("CTRL-2", "200-300", link_type="AutomaticallyLinkedTo"),
+            ],
+        })
+        import_ground_truth(import_db, links_path)
+
+        conn = get_connection(import_db)
+        try:
+            rows = conn.execute(
+                "SELECT control_id, source_link_id FROM assignments ORDER BY control_id"
+            ).fetchall()
+            assert rows[0]["source_link_id"] == "LinkedTo"
+            assert rows[1]["source_link_id"] == "AutomaticallyLinkedTo"
+        finally:
+            conn.close()
+
+    def test_provenance_and_review_status(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [_make_link("CTRL-1", "100-200")],
+        })
+        import_ground_truth(import_db, links_path)
+
+        conn = get_connection(import_db)
+        try:
+            row = conn.execute(
+                "SELECT provenance, review_status, confidence FROM assignments"
+            ).fetchone()
+            assert row["provenance"] == "opencre_ground_truth"
+            assert row["review_status"] == "ground_truth"
+            assert row["confidence"] == pytest.approx(1.0)
+        finally:
+            conn.close()
+
+    def test_backup_creation(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [_make_link("CTRL-1", "100-200")],
+        })
+        import_ground_truth(import_db, links_path)
+
+        backups = list(import_db.parent.glob("*.backup.*"))
+        assert len(backups) == 1
+        assert backups[0].name.startswith("import_test.backup.")
+
+    def test_dry_run_returns_counts_without_modifying_db(
+        self, import_db: Path, tmp_path: Path,
+    ) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("CTRL-2", "200-300"),
+            ],
+        })
+        summary = import_ground_truth(import_db, links_path, dry_run=True)
+        assert summary["imported"] == 2
+        assert summary["dry_run"] is True
+
+        conn = get_connection(import_db)
+        try:
+            count = conn.execute("SELECT COUNT(*) FROM assignments").fetchone()[0]
+            assert count == 0
+        finally:
+            conn.close()
+
+        backups = list(import_db.parent.glob("*.backup.*"))
+        assert len(backups) == 0
+
+    def test_per_framework_breakdown(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("CTRL-2", "200-300"),
+            ],
+            "other_fw": [
+                _make_link("CTRL-A", "300-400", framework_id="other_fw"),
+            ],
+        })
+        summary = import_ground_truth(import_db, links_path)
+        assert summary["imported"] == 3
+        pf = summary["per_framework"]
+        assert pf["test_fw"]["imported"] == 2
+        assert pf["other_fw"]["imported"] == 1
+
+    def test_unresolved_links_counted(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("NONEXISTENT", "400-500"),
+            ],
+        })
+        summary = import_ground_truth(import_db, links_path)
+        assert summary["imported"] == 1
+        assert summary["unresolved"] == 1
+        assert summary["per_framework"]["test_fw"]["unresolved"] == 1
+
+    def test_strategy_counts_aggregated(self, import_db: Path, tmp_path: Path) -> None:
+        links_path = tmp_path / "hub_links.json"
+        _write_hub_links(links_path, {
+            "test_fw": [
+                _make_link("CTRL-1", "100-200"),
+                _make_link("CTRL-2", "200-300"),
+            ],
+        })
+        summary = import_ground_truth(import_db, links_path)
+        assert "direct" in summary["strategy_counts"]
+        assert summary["strategy_counts"]["direct"] == 2
+
+
+class TestBackupDatabase:
+    def test_backup_creates_timestamped_copy(self, import_db: Path) -> None:
+        backup_path = _backup_database(import_db)
+        assert backup_path.exists()
+        assert "backup" in backup_path.name
+        assert backup_path.stat().st_size == import_db.stat().st_size
+
+    def test_backup_preserves_content(self, import_db: Path) -> None:
+        conn = get_connection(import_db)
+        try:
+            conn.execute(
+                "INSERT INTO assignments (control_id, hub_id, confidence, provenance, review_status) "
+                "VALUES (?, ?, ?, ?, ?)",
+                ("test_fw:ctrl-1", "100-200", 0.5, "test", "pending"),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        backup_path = _backup_database(import_db)
+
+        backup_conn = sqlite3.connect(str(backup_path))
+        try:
+            count = backup_conn.execute("SELECT COUNT(*) FROM assignments").fetchone()[0]
+            assert count == 1
+        finally:
+            backup_conn.close()
