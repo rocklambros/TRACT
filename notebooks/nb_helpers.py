@@ -209,10 +209,10 @@ def load_review_export() -> dict:
 
 
 def load_cre_hierarchy() -> dict:
-    """Load CRE hierarchy (hubs, roots, label_space)."""
+    """Load OpenCRE hierarchy (hubs, roots, label_space)."""
     path = DATA_DIR / "processed" / "cre_hierarchy.json"
     if not path.exists():
-        raise FileNotFoundError(f"CRE hierarchy not found: {path}")
+        raise FileNotFoundError(f"OpenCRE hierarchy not found: {path}")
     return _load_json(path)
 
 
