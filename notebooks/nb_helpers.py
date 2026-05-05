@@ -88,10 +88,11 @@ def plotly_with_fallback(
     width: int = 900,
     height: int = 600,
 ) -> None:
-    """Display a Plotly figure with a static PNG fallback via kaleido.
+    """Display a Plotly figure.
 
-    Shows the interactive figure, then embeds a static PNG as an IPython
-    Image so the notebook renders meaningfully in HTML/PDF exports.
+    Uses fig.show() which embeds the interactive widget and Plotly JSON
+    in the cell output. GitHub, nbviewer, and JupyterLab all render the
+    Plotly JSON natively — no separate static PNG needed.
     """
     fig.update_layout(
         title=f"{fig_num}: {title}",
@@ -99,13 +100,6 @@ def plotly_with_fallback(
         height=height,
     )
     fig.show()
-
-    try:
-        from IPython.display import Image, display
-        png_bytes = fig.to_image(format="png", width=width, height=height)
-        display(Image(data=png_bytes))
-    except Exception:
-        logger.warning("kaleido not available — static PNG fallback skipped for %s", fig_num)
 
 
 # ─── Data Loaders ────────────────────────────────────────────────────
@@ -235,6 +229,25 @@ def load_framework_metadata() -> list[dict]:
     path = DATASET_DIR / "framework_metadata.json"
     if not path.exists():
         raise FileNotFoundError(f"Framework metadata not found: {path}")
+    return _load_json(path)
+
+
+CANONICAL_EXPORT_DIR = PROJECT_ROOT / "canonical_export"
+
+
+def load_canonical_snapshot(framework_id: str) -> dict:
+    """Load a canonical export snapshot for a specific framework."""
+    path = CANONICAL_EXPORT_DIR / framework_id / "snapshot.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Canonical snapshot not found: {path}")
+    return _load_json(path)
+
+
+def load_canonical_changeset(framework_id: str) -> dict:
+    """Load a canonical export changeset for a specific framework."""
+    path = CANONICAL_EXPORT_DIR / framework_id / "changeset.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Canonical changeset not found: {path}")
     return _load_json(path)
 
 

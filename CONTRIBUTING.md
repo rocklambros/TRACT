@@ -1,6 +1,6 @@
 # Contributing to TRACT
 
-Thank you for your interest in contributing to TRACT (Transitive Reconciliation and Assignment of CRE Taxonomies).
+Thank you for your interest in contributing to TRACT (Translating Requirements Across CRE Trees).
 
 ## Getting Started
 

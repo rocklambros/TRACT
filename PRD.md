@@ -1,4 +1,4 @@
-# TRACT — Transitive Reconciliation and Assignment of CRE Taxonomies
+# TRACT — Translating Requirements Across CRE Trees
 
 ## Product Requirements Document
 

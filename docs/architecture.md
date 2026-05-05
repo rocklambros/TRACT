@@ -224,3 +224,57 @@ Bridges reveal that many AI security concerns map to the same underlying concept
 **Not limitations:**
 - **AutomaticallyLinkedTo quality** — these deterministic transitive links (CAPEC → CWE → CRE) are expert-quality, not ML noise. Treating them as equivalent to human LinkedTo is correct.
 - **Dataset size** — 4,405 training links across 22 frameworks is sufficient for the 400-hub label space, especially with hard negative mining and LoRA's parameter efficiency.
+
+## 11. Canonical Export (OpenCRE RFC)
+
+TRACT's canonical export produces per-framework JSON snapshots designed for [OpenCRE's incremental import RFC](https://github.com/OWASP/OpenCRE/blob/main/docs/designs/easier-importing.md), replacing the traditional full-graph CSV import with incremental, reviewable changesets.
+
+### Export Pipeline
+
+```mermaid
+flowchart LR
+    DB["crosswalk.db"] --> FILTER["Filter pipeline<br/>(confidence, OOD,<br/>review status)"]
+    FILTER --> SNAP["StandardSnapshot<br/>(controls + mappings)"]
+    SNAP --> HASH["SHA-256<br/>content hash"]
+    SNAP --> DIFF["Diff against<br/>prior export"]
+    DIFF --> CS["Changeset<br/>(6 operation types)"]
+    HASH --> HIST["export_history<br/>table"]
+    CS --> IMPACT["Impact analysis<br/>(scope + co-mapped)"]
+
+    style DB fill:#f9f,stroke:#333
+    style SNAP fill:#9f9,stroke:#333
+    style CS fill:#9ff,stroke:#333
+```
+
+### Filter Pipeline
+
+Before building a snapshot, assignments are filtered through multiple gates:
+
+| Filter | Purpose |
+|--------|---------|
+| `review_status = 'accepted'` | Only expert-reviewed assignments |
+| `provenance != ground_truth_T1-AI` | Exclude ground truth (already in OpenCRE) |
+| `confidence IS NOT NULL` | Exclude uncalibrated predictions |
+| `is_ood != 1` | Exclude out-of-distribution controls |
+| `confidence >= floor` | Framework-specific confidence threshold |
+
+### Content Hashing
+
+Each snapshot includes a SHA-256 `content_hash` computed over all non-volatile fields (excluding `content_hash` itself and `export_date`). The hash uses deterministic JSON serialization (`sort_keys=True`, compact separators) for reproducibility. On deserialization from `export_history`, the hash is recomputed and verified — any mismatch raises an integrity error.
+
+### Changeset Format
+
+Changesets track 6 operation types across two entity kinds:
+
+| Operation | Identity Key | Mutable Fields |
+|-----------|-------------|----------------|
+| `ADD_CONTROL` / `UPDATE_CONTROL` / `DELETE_CONTROL` | `control_id` | title, description, hyperlink |
+| `ADD_MAPPING` / `UPDATE_MAPPING` / `DELETE_MAPPING` | `(control_id, hub_id)` | confidence, rank, provenance, model_version |
+
+Each changeset includes an **impact analysis** that identifies affected CRE hubs, co-mapped frameworks, and classifies the scope as minor (<10 ops), moderate (10–50 or any delete_mapping), or major (>50 or any delete_control).
+
+### Export History
+
+The `export_history` table in crosswalk.db stores the complete serialized snapshot after each successful (non-dry-run) export. This enables changeset generation against any prior state without external dependencies.
+
+> **For practitioners:** The canonical export is how TRACT's crosswalk data flows into OpenCRE. Instead of replacing the entire graph, OpenCRE reviewers see a changeset — "12 new mappings added, 3 confidence scores updated" — which is much easier to review than a 500-row CSV diff.
