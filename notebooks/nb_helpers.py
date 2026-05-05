@@ -238,6 +238,25 @@ def load_framework_metadata() -> list[dict]:
     return _load_json(path)
 
 
+CANONICAL_EXPORT_DIR = PROJECT_ROOT / "canonical_export"
+
+
+def load_canonical_snapshot(framework_id: str) -> dict:
+    """Load a canonical export snapshot for a specific framework."""
+    path = CANONICAL_EXPORT_DIR / framework_id / "snapshot.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Canonical snapshot not found: {path}")
+    return _load_json(path)
+
+
+def load_canonical_changeset(framework_id: str) -> dict:
+    """Load a canonical export changeset for a specific framework."""
+    path = CANONICAL_EXPORT_DIR / framework_id / "changeset.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Canonical changeset not found: {path}")
+    return _load_json(path)
+
+
 # ─── Prerequisite Checker ────────────────────────────────────────────
 PREREQUISITE_PATHS = [
     PHASE0_DIR / "exp1_embedding_baseline_bge.json",
