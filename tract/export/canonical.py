@@ -309,3 +309,65 @@ def diff_snapshots(
         summary=summary,
         impact=impact,
     )
+
+
+def save_to_export_history(db_path: Path, snapshot: StandardSnapshot) -> None:
+    """Persist a snapshot to the export_history table."""
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO export_history "
+            "(framework_id, content_hash, export_date, snapshot_json, "
+            "filter_policy_json, assignment_count, control_count, tract_version) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                snapshot.framework_id,
+                snapshot.content_hash,
+                snapshot.export_date,
+                snapshot.model_dump_json(),
+                snapshot.filter_policy.model_dump_json(),
+                len(snapshot.mappings),
+                len(snapshot.controls),
+                snapshot.tract_version,
+            ],
+        )
+        conn.commit()
+        logger.info(
+            "Saved export history: framework=%s hash=%s controls=%d mappings=%d",
+            snapshot.framework_id, snapshot.content_hash[:12],
+            len(snapshot.controls), len(snapshot.mappings),
+        )
+    finally:
+        conn.close()
+
+
+def load_prior_snapshot(db_path: Path, framework_id: str) -> StandardSnapshot | None:
+    """Load the most recent snapshot for a framework from export_history.
+
+    Verifies content_hash integrity after deserialization. Raises ValueError
+    if the stored hash doesn't match the recomputed hash (spec §6.2 step 5).
+    """
+    conn = get_connection(db_path)
+    try:
+        row = conn.execute(
+            "SELECT content_hash, snapshot_json FROM export_history "
+            "WHERE framework_id = ? ORDER BY export_date DESC LIMIT 1",
+            [framework_id],
+        ).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        return None
+
+    stored_hash = row["content_hash"]
+    snapshot = StandardSnapshot.model_validate_json(row["snapshot_json"])
+    recomputed = compute_content_hash(snapshot)
+
+    if stored_hash != recomputed:
+        raise ValueError(
+            f"export_history content_hash mismatch for {framework_id}: "
+            f"stored={stored_hash[:12]}... recomputed={recomputed[:12]}..."
+        )
+
+    return snapshot

@@ -299,3 +299,78 @@ class TestDiffSnapshots:
         cs = diff_snapshots(prior=None, current=current)
         assert cs.impact.scope == "minor"
         assert "004-517" in cs.impact.affected_hubs
+
+
+class TestExportHistory:
+    def test_ensure_table_idempotent(self, canonical_db) -> None:
+        from tract.export.canonical import ensure_export_history_table
+
+        ensure_export_history_table(canonical_db)
+        ensure_export_history_table(canonical_db)  # second call is safe
+
+    def test_save_and_load_snapshot(self, canonical_db) -> None:
+        from tract.export.canonical import (
+            build_snapshot,
+            ensure_export_history_table,
+            load_prior_snapshot,
+            save_to_export_history,
+        )
+
+        ensure_export_history_table(canonical_db)
+        snap = build_snapshot(
+            db_path=canonical_db,
+            framework_id="fw1",
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_name="FW1",
+        )
+        save_to_export_history(canonical_db, snap)
+        prior = load_prior_snapshot(canonical_db, "fw1")
+        assert prior is not None
+        assert prior.content_hash == snap.content_hash
+        assert prior.framework_id == "fw1"
+        assert len(prior.controls) == len(snap.controls)
+
+    def test_load_returns_none_when_empty(self, canonical_db) -> None:
+        from tract.export.canonical import ensure_export_history_table, load_prior_snapshot
+
+        ensure_export_history_table(canonical_db)
+        prior = load_prior_snapshot(canonical_db, "fw1")
+        assert prior is None
+
+    def test_content_hash_verified_on_load(self, canonical_db) -> None:
+        from tract.export.canonical import (
+            build_snapshot,
+            ensure_export_history_table,
+            load_prior_snapshot,
+            save_to_export_history,
+        )
+        from tract.crosswalk.schema import get_connection
+
+        ensure_export_history_table(canonical_db)
+        snap = build_snapshot(
+            db_path=canonical_db,
+            framework_id="fw1",
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_name="FW1",
+        )
+        save_to_export_history(canonical_db, snap)
+
+        conn = get_connection(canonical_db)
+        try:
+            conn.execute(
+                "UPDATE export_history SET content_hash = 'corrupted' WHERE framework_id = 'fw1'"
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        with pytest.raises(ValueError, match="content_hash mismatch"):
+            load_prior_snapshot(canonical_db, "fw1")
