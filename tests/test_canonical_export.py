@@ -14,6 +14,45 @@ from tract.crosswalk.store import (
 )
 
 
+def _make_control(
+    control_id: str = "fw1:c1",
+    framework_id: str = "fw1",
+    section_id: str = "c1",
+    title: str = "Control 1",
+    description: str = "Description 1",
+    hyperlink: str = "https://example.com",
+) -> dict:
+    return {
+        "control_id": control_id,
+        "framework_id": framework_id,
+        "section_id": section_id,
+        "title": title,
+        "description": description,
+        "hyperlink": hyperlink,
+    }
+
+
+def _make_mapping(
+    control_id: str = "fw1:c1",
+    hub_id: str = "004-517",
+    hub_name: str = "Security requirements",
+    confidence: float = 0.75,
+    rank: int = 1,
+    provenance: str = "active_learning_round_2",
+    model_version: str = "7e8b8f834db5",
+) -> dict:
+    return {
+        "control_id": control_id,
+        "hub_id": hub_id,
+        "hub_name": hub_name,
+        "confidence": confidence,
+        "rank": rank,
+        "link_type": "TRACT_ML_PREDICTED",
+        "provenance": provenance,
+        "model_version": model_version,
+    }
+
+
 @pytest.fixture
 def canonical_db(tmp_path):
     """DB with representative data for canonical export tests."""
@@ -139,3 +178,124 @@ class TestBuildSnapshot:
         )
         for c in snap.controls:
             assert c.hyperlink.startswith("https://example.com/fw1/")
+
+
+class TestDiffSnapshots:
+    def _make_snapshot(self, controls, mappings, framework_id="fw1"):
+        from tract.export.canonical_schema import (
+            CanonicalControl, CREMapping, FilterPolicy, StandardSnapshot, compute_content_hash,
+        )
+        snap = StandardSnapshot(
+            framework_id=framework_id,
+            framework_name="FW1",
+            export_date="2026-05-04T00:00:00Z",
+            content_hash="placeholder",
+            tract_version="abc123",
+            model_adapter_hash="abc123",
+            filter_policy=FilterPolicy(confidence_floor=0.3, confidence_override=None),
+            controls=[CanonicalControl(**c) for c in controls],
+            mappings=[CREMapping(**m) for m in mappings],
+        )
+        snap.content_hash = compute_content_hash(snap)
+        return snap
+
+    def test_initial_export_all_adds(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        current = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping()],
+        )
+        cs = diff_snapshots(prior=None, current=current)
+        assert cs.from_version is None
+        assert len(cs.operations) == 2
+        ops = {op.operation for op in cs.operations}
+        assert ops == {"ADD_CONTROL", "ADD_MAPPING"}
+        assert cs.summary.controls_added == 1
+        assert cs.summary.mappings_added == 1
+
+    def test_no_changes_empty_changeset(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        snap = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping()],
+        )
+        cs = diff_snapshots(prior=snap, current=snap)
+        assert len(cs.operations) == 0
+        assert cs.summary.controls_added == 0
+
+    def test_added_control_detected(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        prior = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping()],
+        )
+        c2 = _make_control(control_id="fw1:c2", section_id="c2", title="New")
+        m2 = _make_mapping(control_id="fw1:c2", hub_id="h2")
+        current = self._make_snapshot(
+            controls=[_make_control(), c2],
+            mappings=[_make_mapping(), m2],
+        )
+        cs = diff_snapshots(prior=prior, current=current)
+        add_ops = [op for op in cs.operations if op.operation.startswith("ADD_")]
+        assert len(add_ops) == 2
+
+    def test_deleted_control_detected(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        prior = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping()],
+        )
+        current = self._make_snapshot(controls=[], mappings=[])
+        cs = diff_snapshots(prior=prior, current=current)
+        del_ops = [op for op in cs.operations if op.operation.startswith("DELETE_")]
+        assert len(del_ops) == 2
+        assert cs.summary.controls_deleted == 1
+        assert cs.summary.mappings_deleted == 1
+
+    def test_updated_control_detected(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        prior = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping()],
+        )
+        updated_control = _make_control(title="Changed Title")
+        current = self._make_snapshot(
+            controls=[updated_control],
+            mappings=[_make_mapping()],
+        )
+        cs = diff_snapshots(prior=prior, current=current)
+        update_ops = [op for op in cs.operations if op.operation == "UPDATE_CONTROL"]
+        assert len(update_ops) == 1
+        assert update_ops[0].before is not None
+        assert update_ops[0].entity is not None
+
+    def test_updated_mapping_confidence_change(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        prior = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping(confidence=0.75)],
+        )
+        current = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping(confidence=0.85)],
+        )
+        cs = diff_snapshots(prior=prior, current=current)
+        update_ops = [op for op in cs.operations if op.operation == "UPDATE_MAPPING"]
+        assert len(update_ops) == 1
+
+    def test_impact_analysis_populated(self) -> None:
+        from tract.export.canonical import diff_snapshots
+
+        current = self._make_snapshot(
+            controls=[_make_control()],
+            mappings=[_make_mapping()],
+        )
+        cs = diff_snapshots(prior=None, current=current)
+        assert cs.impact.scope == "minor"
+        assert "004-517" in cs.impact.affected_hubs
