@@ -371,3 +371,41 @@ def load_prior_snapshot(db_path: Path, framework_id: str) -> StandardSnapshot | 
         )
 
     return snapshot
+
+
+def slice_embeddings_for_framework(
+    artifacts_path: Path,
+    canonical_control_ids: set[str],
+    model_adapter_hash: str,
+) -> dict:
+    """Slice deployment_artifacts.npz to a single framework's controls.
+
+    Normalizes :: to : in artifact IDs to match canonical format (spec §5.2).
+    Returns dict with keys: control_embeddings, control_ids, hub_embeddings,
+    hub_ids, model_adapter_hash.
+    """
+    import numpy as np
+
+    data = np.load(str(artifacts_path), allow_pickle=True)
+    stored_hash = str(data["model_adapter_hash"])
+
+    if stored_hash != model_adapter_hash:
+        raise ValueError(
+            f"model_adapter_hash mismatch: artifacts={stored_hash}, "
+            f"expected={model_adapter_hash}"
+        )
+
+    all_control_ids = data["control_ids"]
+    normalized_ids = [cid.replace("::", ":") for cid in all_control_ids]
+
+    mask = [nid in canonical_control_ids for nid in normalized_ids]
+    selected_ids = [nid for nid, m in zip(normalized_ids, mask) if m]
+    selected_embeddings = data["control_embeddings"][mask]
+
+    return {
+        "control_embeddings": selected_embeddings,
+        "control_ids": np.array(selected_ids),
+        "hub_embeddings": data["hub_embeddings"],
+        "hub_ids": data["hub_ids"],
+        "model_adapter_hash": model_adapter_hash,
+    }

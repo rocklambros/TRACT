@@ -374,3 +374,56 @@ class TestExportHistory:
 
         with pytest.raises(ValueError, match="content_hash mismatch"):
             load_prior_snapshot(canonical_db, "fw1")
+
+
+class TestEmbeddingSlicer:
+    def test_slices_correct_controls(self, tmp_path) -> None:
+        import numpy as np
+        from tract.export.canonical import slice_embeddings_for_framework
+
+        n_controls = 10
+        n_hubs = 3
+        dim = 1024
+        control_ids = [f"fw1::c{i}" for i in range(5)] + [f"fw2::c{i}" for i in range(5)]
+        hub_ids = [f"h{i}" for i in range(n_hubs)]
+
+        artifacts_path = tmp_path / "deployment_artifacts.npz"
+        np.savez(
+            str(artifacts_path),
+            control_embeddings=np.random.rand(n_controls, dim).astype(np.float32),
+            control_ids=np.array(control_ids),
+            hub_embeddings=np.random.rand(n_hubs, dim).astype(np.float32),
+            hub_ids=np.array(hub_ids),
+            model_adapter_hash=np.array("abc123"),
+        )
+
+        canonical_control_ids = {"fw1:c0", "fw1:c1", "fw1:c2", "fw1:c3", "fw1:c4"}
+        result = slice_embeddings_for_framework(
+            artifacts_path=artifacts_path,
+            canonical_control_ids=canonical_control_ids,
+            model_adapter_hash="abc123",
+        )
+        assert result["control_ids"].shape[0] == 5
+        assert result["control_embeddings"].shape == (5, dim)
+        assert result["hub_embeddings"].shape == (n_hubs, dim)
+        assert all("::" not in str(cid) for cid in result["control_ids"])
+
+    def test_raises_on_hash_mismatch(self, tmp_path) -> None:
+        import numpy as np
+        from tract.export.canonical import slice_embeddings_for_framework
+
+        artifacts_path = tmp_path / "deployment_artifacts.npz"
+        np.savez(
+            str(artifacts_path),
+            control_embeddings=np.random.rand(2, 1024).astype(np.float32),
+            control_ids=np.array(["fw1::c0", "fw1::c1"]),
+            hub_embeddings=np.random.rand(1, 1024).astype(np.float32),
+            hub_ids=np.array(["h0"]),
+            model_adapter_hash=np.array("abc123"),
+        )
+        with pytest.raises(ValueError, match="model_adapter_hash mismatch"):
+            slice_embeddings_for_framework(
+                artifacts_path=artifacts_path,
+                canonical_control_ids={"fw1:c0"},
+                model_adapter_hash="different_hash",
+            )
