@@ -427,3 +427,85 @@ class TestEmbeddingSlicer:
                 canonical_control_ids={"fw1:c0"},
                 model_adapter_hash="different_hash",
             )
+
+
+class TestExportCanonical:
+    def test_initial_export_creates_files(self, canonical_db, tmp_path) -> None:
+        from tract.export.canonical import export_canonical
+
+        output_dir = tmp_path / "output"
+        result = export_canonical(
+            db_path=canonical_db,
+            framework_ids=["fw1"],
+            output_dir=output_dir,
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_names={"fw1": "FW1"},
+        )
+        assert (output_dir / "fw1" / "snapshot.json").exists()
+        assert (output_dir / "fw1" / "changeset.json").exists()
+        assert result["fw1"]["changeset_summary"]["controls_added"] > 0
+
+    def test_second_export_detects_no_changes(self, canonical_db, tmp_path) -> None:
+        from tract.export.canonical import export_canonical
+
+        output_dir = tmp_path / "output"
+        kwargs = dict(
+            db_path=canonical_db,
+            framework_ids=["fw1"],
+            output_dir=output_dir,
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_names={"fw1": "FW1"},
+        )
+        export_canonical(**kwargs)
+        result = export_canonical(**kwargs)
+        summary = result["fw1"]["changeset_summary"]
+        assert summary["controls_added"] == 0
+        assert summary["mappings_added"] == 0
+
+    def test_dry_run_does_not_write(self, canonical_db, tmp_path) -> None:
+        from tract.export.canonical import export_canonical
+
+        output_dir = tmp_path / "output"
+        result = export_canonical(
+            db_path=canonical_db,
+            framework_ids=["fw1"],
+            output_dir=output_dir,
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_names={"fw1": "FW1"},
+            dry_run=True,
+        )
+        assert not (output_dir / "fw1" / "snapshot.json").exists()
+        assert "fw1" in result
+
+    def test_snapshot_json_validates(self, canonical_db, tmp_path) -> None:
+        from tract.export.canonical import export_canonical
+        from tract.export.canonical_schema import StandardSnapshot
+
+        output_dir = tmp_path / "output"
+        export_canonical(
+            db_path=canonical_db,
+            framework_ids=["fw1"],
+            output_dir=output_dir,
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_names={"fw1": "FW1"},
+        )
+        snap_path = output_dir / "fw1" / "snapshot.json"
+        snap = StandardSnapshot.model_validate_json(snap_path.read_text(encoding="utf-8"))
+        assert snap.framework_id == "fw1"
+        assert len(snap.content_hash) == 64

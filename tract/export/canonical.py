@@ -409,3 +409,97 @@ def slice_embeddings_for_framework(
         "hub_ids": data["hub_ids"],
         "model_adapter_hash": model_adapter_hash,
     }
+
+
+def export_canonical(
+    db_path: Path,
+    framework_ids: list[str],
+    output_dir: Path,
+    confidence_floor: float,
+    confidence_overrides: dict[str, float],
+    model_adapter_hash: str,
+    tract_version: str,
+    hyperlink_fn: Callable[[str, str], str],
+    framework_names: dict[str, str] | None = None,
+    artifacts_path: Path | None = None,
+    with_embeddings: bool = False,
+    dry_run: bool = False,
+) -> dict[str, dict]:
+    """Run the full canonical export pipeline for one or more frameworks.
+
+    Returns a dict keyed by framework_id with export metadata per framework.
+    """
+    ensure_export_history_table(db_path)
+    results: dict[str, dict] = {}
+
+    for fw_id in framework_ids:
+        fw_name = (framework_names or {}).get(fw_id)
+        snapshot = build_snapshot(
+            db_path=db_path,
+            framework_id=fw_id,
+            confidence_floor=confidence_floor,
+            confidence_overrides=confidence_overrides,
+            model_adapter_hash=model_adapter_hash,
+            tract_version=tract_version,
+            hyperlink_fn=hyperlink_fn,
+            framework_name=fw_name,
+        )
+
+        if not snapshot.controls and not snapshot.mappings:
+            logger.info("No exportable assignments for %s, skipping", fw_id)
+            continue
+
+        prior = load_prior_snapshot(db_path, fw_id)
+        changeset = diff_snapshots(prior=prior, current=snapshot, db_path=db_path)
+
+        results[fw_id] = {
+            "content_hash": snapshot.content_hash,
+            "controls": len(snapshot.controls),
+            "mappings": len(snapshot.mappings),
+            "changeset_summary": changeset.summary.model_dump(),
+            "impact_scope": changeset.impact.scope,
+        }
+
+        if dry_run:
+            continue
+
+        fw_dir = output_dir / fw_id
+        fw_dir.mkdir(parents=True, exist_ok=True)
+
+        snap_path = fw_dir / "snapshot.json"
+        snap_path.write_text(
+            snapshot.model_dump_json(indent=2), encoding="utf-8",
+        )
+
+        cs_path = fw_dir / "changeset.json"
+        cs_path.write_text(
+            changeset.model_dump_json(indent=2), encoding="utf-8",
+        )
+
+        if with_embeddings and artifacts_path is not None:
+            import numpy as np
+
+            control_ids = {c.control_id for c in snapshot.controls}
+            emb_data = slice_embeddings_for_framework(
+                artifacts_path=artifacts_path,
+                canonical_control_ids=control_ids,
+                model_adapter_hash=model_adapter_hash,
+            )
+            emb_path = fw_dir / "embeddings.npz"
+            np.savez(
+                str(emb_path),
+                control_embeddings=emb_data["control_embeddings"],
+                control_ids=emb_data["control_ids"],
+                hub_embeddings=emb_data["hub_embeddings"],
+                hub_ids=emb_data["hub_ids"],
+                model_adapter_hash=emb_data["model_adapter_hash"],
+            )
+
+        save_to_export_history(db_path, snapshot)
+        logger.info(
+            "Exported %s: %d controls, %d mappings, scope=%s",
+            fw_id, len(snapshot.controls), len(snapshot.mappings),
+            changeset.impact.scope,
+        )
+
+    return results
