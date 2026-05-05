@@ -19,6 +19,7 @@ from tract.config import (
     HF_STAGING_DIR,
     HUB_PROPOSALS_DIR,
     PHASE1C_CROSSWALK_DB_PATH,
+    PHASE1D_ARTIFACTS_PATH,
     PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
     PHASE1D_DEPLOYMENT_MODEL_DIR,
@@ -119,6 +120,28 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Show what would be exported without writing files")
     p_export.add_argument("--skip-staleness", action="store_true",
                           help="Skip pre-export staleness check (offline mode)")
+
+    # ── export-canonical ────────────────────────────────────────
+    p_export_canonical = subparsers.add_parser(
+        "export-canonical",
+        help="Export canonical JSON snapshots for OpenCRE RFC",
+        epilog=(
+            "Examples:\n"
+            "  tract export-canonical --dry-run\n"
+            "  tract export-canonical --framework csa_aicm --with-embeddings\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_export_canonical.add_argument(
+        "--framework", help="Export single framework (default: all mapped frameworks)")
+    p_export_canonical.add_argument(
+        "--output-dir", help="Output directory (default: ./canonical_export)")
+    p_export_canonical.add_argument(
+        "--with-embeddings", action="store_true",
+        help="Include .npz embedding files per framework")
+    p_export_canonical.add_argument(
+        "--dry-run", action="store_true",
+        help="Show what would be exported without writing files or updating history")
 
     # ── hierarchy ────────────────────────────────────────────────
     p_hierarchy = subparsers.add_parser(
@@ -993,6 +1016,91 @@ def _cmd_export_opencre_proposals(args: argparse.Namespace) -> None:
     print(f"Hub proposals written to {out_path}")
 
 
+def _cmd_export_canonical(args: argparse.Namespace) -> None:
+    import hashlib
+
+    from tract.config import (
+        PHASE5_CANONICAL_EXPORT_DIR,
+        PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR,
+        PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES,
+    )
+    from tract.export.canonical import export_canonical
+    from tract.export.opencre_names import (
+        TRACT_TO_OPENCRE_NAME,
+        build_hyperlink,
+    )
+
+    output_dir = Path(args.output_dir) if args.output_dir else PHASE5_CANONICAL_EXPORT_DIR
+
+    if args.framework:
+        if args.framework not in TRACT_TO_OPENCRE_NAME:
+            print(
+                f"Error: Framework '{args.framework}' has no OpenCRE name mapping",
+                file=sys.stderr,
+            )
+            print(
+                f"  Available: {', '.join(sorted(TRACT_TO_OPENCRE_NAME.keys()))}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        framework_ids = [args.framework]
+    else:
+        framework_ids = sorted(TRACT_TO_OPENCRE_NAME.keys())
+
+    model_hash = "unknown"
+    if PHASE1D_ARTIFACTS_PATH.exists():
+        model_hash = hashlib.sha256(
+            PHASE1D_ARTIFACTS_PATH.read_bytes()
+        ).hexdigest()[:12]
+
+    try:
+        tract_version = (
+            __import__("subprocess")
+            .check_output(["git", "rev-parse", "--short", "HEAD"], text=True)
+            .strip()
+        )
+    except Exception:
+        tract_version = "unknown"
+
+    result = export_canonical(
+        db_path=PHASE1C_CROSSWALK_DB_PATH,
+        framework_ids=framework_ids,
+        output_dir=output_dir,
+        confidence_floor=PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR,
+        confidence_overrides=dict(PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES),
+        model_adapter_hash=model_hash,
+        tract_version=tract_version,
+        hyperlink_fn=build_hyperlink,
+        framework_names=dict(TRACT_TO_OPENCRE_NAME),
+        artifacts_path=PHASE1D_ARTIFACTS_PATH if args.with_embeddings else None,
+        with_embeddings=args.with_embeddings,
+        dry_run=args.dry_run,
+    )
+
+    if args.dry_run:
+        print("\nDry run — would export:\n")
+
+    total_controls = 0
+    total_mappings = 0
+    for fw_id, info in sorted(result.items()):
+        summary = info["changeset_summary"]
+        total_controls += info["controls"]
+        total_mappings += info["mappings"]
+        change_parts = []
+        for k, v in summary.items():
+            if v > 0:
+                change_parts.append(f"{k}={v}")
+        changes_str = ", ".join(change_parts) if change_parts else "no changes"
+        print(f"  {fw_id}: {info['controls']} controls, {info['mappings']} mappings "
+              f"[{info['impact_scope']}] ({changes_str})")
+
+    print(f"\n  Total: {total_controls} controls, {total_mappings} mappings "
+          f"across {len(result)} frameworks")
+
+    if not args.dry_run:
+        print(f"  Output: {output_dir}")
+
+
 def _cmd_hierarchy(args: argparse.Namespace) -> None:
     from tract.crosswalk.schema import get_connection
     from tract.hierarchy import CREHierarchy
@@ -1507,6 +1615,7 @@ def main() -> None:
         "ingest": _cmd_ingest,
         "accept": _cmd_accept,
         "export": _cmd_export,
+        "export-canonical": _cmd_export_canonical,
         "hierarchy": _cmd_hierarchy,
         "import-ground-truth": _cmd_import_ground_truth,
         "propose-hubs": _cmd_propose_hubs,
