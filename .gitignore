@@ -20,3 +20,5 @@ docs/session-prompts.md
 hub_proposals/
 .worktrees/
 notebooks/.ipynb_checkpoints/
+docs/superpowers/
+docs/phase0-results.md

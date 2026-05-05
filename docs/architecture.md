@@ -104,7 +104,7 @@ Before training any model, TRACT established feasibility through two gates:
 | BGE + LLM descriptions | 0.357 [0.287, 0.433] | 0.592 [0.516, 0.669] | 0.464 [0.399, 0.529] | 0.516 [0.454, 0.580] |
 | **Opus LLM probe** | **0.465 [0.394, 0.535]** | **0.722 [0.662, 0.783]** | **0.568 [0.508, 0.628]** | **0.618 [0.561, 0.674]** |
 
-All confidence intervals are 95% bootstrap CIs (10,000 resamples). Full results in [Phase 0 Results](phase0-results.md) and [Experimental Narrative](../tract_experimental_narrative.ipynb) Section 3.
+All confidence intervals are 95% bootstrap CIs (10,000 resamples). Full experiment details in the [Experimental Narrative](../tract_experimental_narrative.ipynb) Section 3.
 
 **Key findings:**
 - **DeBERTa-v3-NLI fails completely** (hit@1 = 0.000). NLI-based cross-encoders and classification heads do not work for this task.

@@ -179,6 +179,7 @@ flowchart TD
 | Understand the model and methodology | [Architecture](docs/architecture.md) |
 | Look up a command | [CLI Reference](docs/cli-reference.md) |
 | Look up a term | [Glossary](docs/glossary.md) |
+| Review hub descriptions for quality | [Hub Description Review Guide](docs/hub-description-review-guide.md) |
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 | Report a security issue | [Security Policy](SECURITY.md) |
 
