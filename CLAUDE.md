@@ -1,4 +1,4 @@
-# TRACT — Transitive Reconciliation and Assignment of CRE Taxonomies
+# TRACT — Translating Requirements Across CRE Trees
 
 PRD.md is the master spec. All section numbers reference it. Read it before starting any phase.
 
@@ -117,8 +117,9 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Phase 2B (Bridge + HF Publication):** COMPLETE — 46/63 bridges accepted, model published to huggingface.co/rockCO78/tract-cre-assignment
 - **Phase 3 (Crosswalk Dataset):** COMPLETE — 5,238 assignments across 31 frameworks, expert-reviewed, published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
+- **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
-- **831 tests passing**, 18 CLI subcommands
+- **866 tests passing**, 19 CLI subcommands
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands
@@ -150,4 +151,9 @@ tract review-export                                # Export predictions for expe
 tract review-validate <path>                       # Validate reviewed JSON
 tract review-import <path>                         # Apply review decisions to crosswalk.db
 tract publish-dataset --repo-id <repo>             # Bundle and upload dataset to HuggingFace
+
+# Phase 5B — Canonical Export (OpenCRE RFC)
+tract export-canonical --dry-run                  # Preview what would be exported
+tract export-canonical --framework csa_aicm       # Export single framework
+tract export-canonical --with-embeddings           # Include .npz embedding files
 ```

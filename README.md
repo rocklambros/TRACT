@@ -1,4 +1,4 @@
-# TRACT — Transitive Reconciliation and Assignment of CRE Taxonomies
+# TRACT — Translating Requirements Across CRE Trees
 
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-green.svg)](https://www.python.org/downloads/)
@@ -119,7 +119,7 @@ TRACT processes **31 frameworks** with **2,802 controls** total.
 
 ## CLI Overview
 
-All 18 subcommands grouped by workflow stage:
+All 19 subcommands grouped by workflow stage:
 
 | Stage | Commands | Description |
 |-------|----------|-------------|
@@ -128,7 +128,7 @@ All 18 subcommands grouped by workflow stage:
 | **Assign** | `assign` `ingest` `accept` | Map controls to CRE hubs |
 | **Review** | `review-export` `review-validate` `review-import` `review-proposals` | Expert review workflow |
 | **Analyze** | `bridge` `propose-hubs` `import-ground-truth` | Discover connections, suggest new hubs |
-| **Export** | `export` | Output assignments (CSV, JSON, OpenCRE format) |
+| **Export** | `export` `export-canonical` | Output assignments (CSV, JSON, OpenCRE, canonical snapshot) |
 | **Publish** | `publish-hf` `publish-dataset` | Release model and dataset to HuggingFace |
 
 See [`docs/cli-reference.md`](docs/cli-reference.md) for full options and examples.
@@ -179,6 +179,7 @@ flowchart TD
 | Understand the model and methodology | [Architecture](docs/architecture.md) |
 | Look up a command | [CLI Reference](docs/cli-reference.md) |
 | Look up a term | [Glossary](docs/glossary.md) |
+| Understand canonical export schema | [Architecture § Canonical Export](docs/architecture.md#11-canonical-export-opencre-rfc) |
 | Review hub descriptions for quality | [Hub Description Review Guide](docs/hub-description-review-guide.md) |
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 | Report a security issue | [Security Policy](SECURITY.md) |
@@ -187,7 +188,54 @@ flowchart TD
 
 - **Model:** [rockCO78/tract-cre-assignment](https://huggingface.co/rockCO78/tract-cre-assignment) on HuggingFace
 - **Dataset:** [rockCO78/tract-crosswalk-dataset](https://huggingface.co/datasets/rockCO78/tract-crosswalk-dataset) on HuggingFace
-- **Experimental narrative:** [`tract_experimental_narrative.ipynb`](tract_experimental_narrative.ipynb) — 13-section Jupyter notebook covering the complete research journey
+- **Experimental narrative:** [`tract_experimental_narrative.ipynb`](tract_experimental_narrative.ipynb) — 14-section Jupyter notebook covering the complete research journey
+
+## Canonical Export (OpenCRE RFC)
+
+TRACT produces per-framework canonical JSON snapshots designed for [OpenCRE's incremental import RFC](https://github.com/OWASP/OpenCRE/blob/main/docs/designs/easier-importing.md). Each framework export contains:
+
+- **`snapshot.json`** — A `StandardSnapshot` with all controls, CRE mappings, filter policy, and a SHA-256 content hash for integrity verification
+- **`changeset.json`** — A keyed diff against the prior export with 6 operation types (ADD/UPDATE/DELETE for controls and mappings), impact analysis, and scope classification
+- **`embeddings.npz`** (optional) — Per-framework embedding slice from the deployment model
+
+### StandardSnapshot Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `schema_version` | string | Always "1.0" |
+| `framework_id` | string | Framework identifier (e.g., `csa_aicm`) |
+| `framework_name` | string | Human-readable name |
+| `export_date` | string | ISO 8601 UTC timestamp |
+| `content_hash` | string | SHA-256 of all non-volatile fields |
+| `tract_version` | string | Git SHA of TRACT at export time |
+| `model_adapter_hash` | string | SHA-256 of the LoRA adapter weights |
+| `filter_policy` | object | Confidence floor, OOD/ground-truth exclusion rules |
+| `controls` | array | `CanonicalControl` objects (id, title, description, hyperlink) |
+| `mappings` | array | `CREMapping` objects (control→hub with confidence, rank, provenance) |
+
+### Changeset Operations
+
+| Operation | Description |
+|-----------|-------------|
+| `ADD_CONTROL` | New control added to framework export |
+| `UPDATE_CONTROL` | Control title, description, or hyperlink changed |
+| `DELETE_CONTROL` | Control removed from export |
+| `ADD_MAPPING` | New control→hub mapping added |
+| `UPDATE_MAPPING` | Mapping confidence, rank, or provenance changed |
+| `DELETE_MAPPING` | Mapping removed |
+
+```bash
+# Preview canonical export
+tract export-canonical --dry-run
+
+# Export a single framework with embeddings
+tract export-canonical --framework csa_aicm --with-embeddings
+
+# Export all eligible frameworks
+tract export-canonical
+```
+
+See [`docs/cli-reference.md`](docs/cli-reference.md) for full options.
 
 ## License
 

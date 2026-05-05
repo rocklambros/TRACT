@@ -275,6 +275,7 @@ PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES: Final[dict[str, float]] = {
 PHASE5_OPENCRE_STALENESS_URL: Final[str] = "https://opencre.org/rest/v1/root_cres"
 PHASE5_OPENCRE_STALENESS_TIMEOUT_S: Final[int] = 30
 PHASE5_GROUND_TRUTH_PROVENANCE: Final[str] = "ground_truth_T1-AI"
+PHASE5_CANONICAL_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "canonical_export"
 
 # ── Phase 2B: Bridge Analysis ─────────────────────────────────────────
 

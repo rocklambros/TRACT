@@ -14,9 +14,15 @@ Cross-domain reference for terms used throughout TRACT documentation. Security p
 
 **Calibration** — The process of converting raw model outputs (cosine similarities) into meaningful probability estimates. TRACT uses temperature scaling (a form of Platt scaling) so that a reported confidence of 0.8 means the model is correct ~80% of the time. See also: *ECE*.
 
+**Canonical export** — TRACT's JSON-based export format for OpenCRE integration, producing per-framework `StandardSnapshot` and `Changeset` files. Designed for OpenCRE's incremental import RFC, enabling reviewable diffs instead of full-graph replacement. See [Architecture § Canonical Export](architecture.md#11-canonical-export-opencre-rfc).
+
+**Changeset** — A structured diff between two `StandardSnapshot` exports for the same framework. Contains 6 operation types (ADD/UPDATE/DELETE for controls and mappings), a summary with counts per operation, and an impact analysis classifying scope as minor, moderate, or major.
+
 **Conformal prediction** — A statistical method that produces prediction *sets* with guaranteed coverage. If configured for 90% coverage, the prediction set will contain the correct CRE hub at least 90% of the time, regardless of the underlying model's accuracy. The trade-off is that prediction sets may contain multiple candidates.
 
 **Contrastive fine-tuning** — A training approach where the model learns to place related items closer together and unrelated items farther apart in embedding space. TRACT trains with (control, correct_hub) positive pairs and hard negative hubs — hubs that are similar but incorrect — to sharpen the model's discrimination.
+
+**Content hash** — A SHA-256 digest computed from a `StandardSnapshot`'s non-volatile fields (excluding `content_hash` and `export_date`). Used to detect changes between exports and verify integrity when loading from `export_history`. Deterministic serialization ensures byte-identical hashes across platforms.
 
 **Control** — A single security requirement, technique, weakness, or practice within a framework. Examples: NIST 800-53 control "AC-1 Access Control Policy", MITRE ATLAS technique "AML.T0043 Adversarial ML Attack", CWE weakness "CWE-79 Cross-site Scripting." TRACT's atomic unit of analysis.
 
@@ -28,9 +34,13 @@ Cross-domain reference for terms used throughout TRACT documentation. Security p
 
 **ECE (Expected Calibration Error)** — A metric measuring how well a model's confidence scores match its actual accuracy. An ECE of 0.05 means the model's stated confidences are off by 5 percentage points on average. Lower is better. TRACT targets ECE < 0.10.
 
+**Export history** — A table in crosswalk.db that stores the complete serialized `StandardSnapshot` after each canonical export. Enables changeset generation against prior exports without external file dependencies. Each entry records framework_id, content_hash, export_date, assignment count, and tract_version.
+
 **Embedding** — A fixed-size numerical vector (1,024 dimensions for TRACT's BGE-large-v1.5) that captures the semantic meaning of a text. Similar texts produce similar embeddings. TRACT embeds both control texts and hub representations, then matches them by cosine similarity.
 
 **Framework** — A published collection of security controls, requirements, or practices. Examples: NIST 800-53, MITRE ATLAS, OWASP Top 10 for LLM Applications. TRACT processes 31 frameworks spanning AI-specific and traditional security domains.
+
+**Filter policy** — The set of exclusion rules applied when building a canonical `StandardSnapshot`. Filters remove ground truth assignments (already in OpenCRE), out-of-distribution controls, uncalibrated predictions, and assignments below the confidence floor. Documented in each snapshot's `filter_policy` field for reproducibility.
 
 **Hard negative** — During training, a CRE hub that is semantically similar to the correct hub but is actually incorrect for a given control. Training with hard negatives (rather than random negatives) forces the model to make fine-grained distinctions. TRACT samples 3 hard negatives per positive pair using temperature-scaled similarity.
 
@@ -41,6 +51,8 @@ Cross-domain reference for terms used throughout TRACT documentation. Security p
 **Hub firewall** — TRACT's evaluation integrity mechanism. When evaluating on framework X, all of X's linked sections are removed from CRE hub representations before computing embeddings. This prevents information leakage — the model cannot "cheat" by recognizing text it was trained on. Non-negotiable for honest evaluation.
 
 **Hub hierarchy path** — The path from the root of the OpenCRE hierarchy to a specific hub, expressed as a text string. Example: "Technical controls > Input validation > SQL injection prevention". Concatenated with hub descriptions to form hub representations. Adding hierarchy paths improved zero-shot hit@1 by +7.6%.
+
+**Impact analysis** — Part of a `Changeset` that identifies which CRE hubs and co-mapped frameworks are affected by the changes. Classifies the changeset scope as minor (<10 operations), moderate (10–50 or any mapping deletion), or major (>50 operations or any control deletion).
 
 **Hub proposal** — A suggested new CRE hub for controls that don't map well to any existing hub (out-of-distribution controls). Generated by clustering OOD control embeddings using HDBSCAN and naming clusters via LLM.
 
@@ -61,6 +73,8 @@ Cross-domain reference for terms used throughout TRACT documentation. Security p
 **Provenance** — The origin of a control-to-hub assignment in the crosswalk dataset. TRACT tracks four types: `opencre_ground_truth` (existing OpenCRE links), `ground_truth_T1-AI` (AI framework ground truth), `active_learning_round_2` (model predictions reviewed by experts), and `model_prediction` (accepted model output).
 
 **Temperature scaling** — A post-hoc calibration method that divides model logits by a learned temperature parameter T before applying softmax. T > 1 makes the model less confident (spreading probability mass); T < 1 makes it more confident. TRACT learns T on a held-out calibration set to minimize ECE.
+
+**StandardSnapshot** — The root Pydantic model for TRACT's canonical export format. Contains a framework's controls, CRE mappings, filter policy, model adapter hash, and a SHA-256 content hash. Each snapshot is a self-contained, integrity-verified representation of a framework's crosswalk state at a point in time.
 
 **Tier** — TRACT classifies frameworks into three tiers based on their relationship to OpenCRE:
 - **Tier 1:** Frameworks already linked to OpenCRE (19 frameworks, 4,405 curated links) — used as training signal.

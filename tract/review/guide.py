@@ -45,7 +45,7 @@ security requirements across standards. It organizes security topics into
 **522 hubs** arranged in a hierarchy — each hub represents a distinct security
 concept (e.g., "Cryptography > Key Management" or "Authentication > Multi-Factor").
 
-**TRACT** (Transitive Reconciliation and Assignment of CRE Taxonomies) maps
+**TRACT** (Translating Requirements Across CRE Trees) maps
 controls from **31 security frameworks** to CRE hubs using a fine-tuned
 bi-encoder model. Each mapping is called an **assignment** — it says "this
 control belongs under this hub."

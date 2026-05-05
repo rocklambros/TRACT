@@ -1,6 +1,6 @@
 # TRACT CLI Reference
 
-Complete reference for all 18 `tract` CLI subcommands.
+Complete reference for all 19 `tract` CLI subcommands.
 
 **Installation:**
 
@@ -32,11 +32,15 @@ flowchart TD
     ING --> PH["propose-hubs"]
     ING --> IGT["import-ground-truth"]
 
+    EC["export-canonical<br/>(per-framework)"]
+    ACC --> EC
+
     ACC --> PHF["publish-hf"]
     ACC --> PDS["publish-dataset"]
 
     style PREP fill:#f9f,stroke:#333
     style EXP fill:#9f9,stroke:#333
+    style EC fill:#9f9,stroke:#333
     style PHF fill:#9ff,stroke:#333
     style PDS fill:#9ff,stroke:#333
 ```
@@ -411,6 +415,51 @@ tract export --format jsonl --min-confidence 0.8 --output confident.jsonl
 tract export --opencre --output-dir ./opencre_export/
 ```
 
+### export-canonical
+
+Export per-framework canonical JSON snapshots for OpenCRE's incremental import RFC.
+
+**Prerequisites:** Requires crosswalk.db with accepted assignments and deployment model artifacts.
+
+```bash
+tract export-canonical [options]
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--framework` | string | all | Filter to a single framework ID |
+| `--output-dir` | path | canonical_export/ | Output directory |
+| `--with-embeddings` | flag | false | Include per-framework .npz embedding files |
+| `--dry-run` | flag | false | Show what would be exported without writing files |
+
+**Output structure:**
+```
+canonical_export/
+├── csa_aicm/
+│   ├── snapshot.json      # StandardSnapshot with controls + mappings
+│   ├── changeset.json     # Diff against prior export
+│   └── embeddings.npz     # (optional) per-framework embeddings
+├── mitre_atlas/
+│   ├── snapshot.json
+│   └── changeset.json
+└── ...
+```
+
+**Examples:**
+```bash
+# Preview without writing files
+tract export-canonical --dry-run
+
+# Export a single framework
+tract export-canonical --framework csa_aicm
+
+# Export all frameworks with embeddings
+tract export-canonical --with-embeddings
+
+# Export to a custom directory
+tract export-canonical --output-dir ./my_export/
+```
+
 ---
 
 ## Publish
@@ -504,6 +553,19 @@ tract compare --framework mitre_atlas --framework nist_800_53
 ```bash
 tract export --opencre --output-dir ./opencre_export/ --dry-run
 tract export --opencre --output-dir ./opencre_export/
+```
+
+#### Export canonical snapshots for OpenCRE RFC
+
+```bash
+# Initial export (all frameworks, creates snapshot + changeset per framework)
+tract export-canonical
+
+# Subsequent export (changeset shows what changed since last export)
+tract export-canonical --framework csa_aicm
+
+# Include embeddings for downstream consumers
+tract export-canonical --with-embeddings
 ```
 
 See the [Framework Guide](framework-guide.md) for detailed walkthroughs and the [Glossary](glossary.md) for term definitions.

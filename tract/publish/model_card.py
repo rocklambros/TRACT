@@ -88,7 +88,7 @@ model-index:
             value: {ece_val:.3f}
 ---
 
-# TRACT: Transitive Reconciliation and Assignment of CRE Taxonomies
+# TRACT: Translating Requirements Across CRE Trees
 
 ## What Is This?
 
@@ -492,7 +492,7 @@ for hub_id, hub in hierarchy["hubs"].items():
 
 ```bibtex
 @software{{tract2026,
-  title = {{TRACT: Transitive Reconciliation and Assignment of CRE Taxonomies}},
+  title = {{TRACT: Translating Requirements Across CRE Trees}},
   author = {{Rock}},
   year = {{2026}},
   url = {{https://github.com/rockcyber/TRACT}}

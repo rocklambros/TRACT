@@ -1,0 +1,505 @@
+"""Canonical export: snapshot builder, differ, and serializer (spec §§2-8).
+
+Produces per-framework JSON snapshots and changesets for OpenCRE's
+incremental import RFC. The export_history table tracks prior exports
+for changeset generation.
+"""
+from __future__ import annotations
+
+import json
+import logging
+from collections import defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Callable
+
+from tract.crosswalk.schema import get_connection
+from tract.export.canonical_schema import (
+    CanonicalControl,
+    Changeset,
+    ChangesetEntry,
+    ChangesetSummary,
+    CREMapping,
+    FilterPolicy,
+    ImpactAnalysis,
+    StandardSnapshot,
+    compute_content_hash,
+)
+
+logger = logging.getLogger(__name__)
+
+EXPORT_HISTORY_DDL = """
+CREATE TABLE IF NOT EXISTS export_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    framework_id TEXT NOT NULL,
+    content_hash TEXT NOT NULL,
+    export_date TEXT NOT NULL DEFAULT (datetime('now')),
+    snapshot_json TEXT NOT NULL,
+    filter_policy_json TEXT NOT NULL,
+    assignment_count INTEGER NOT NULL,
+    control_count INTEGER NOT NULL,
+    tract_version TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_export_history_fw
+    ON export_history(framework_id, export_date);
+"""
+
+
+def ensure_export_history_table(db_path: Path) -> None:
+    """Create the export_history table if it does not exist."""
+    conn = get_connection(db_path)
+    try:
+        conn.executescript(EXPORT_HISTORY_DDL)
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def _query_canonical_assignments(
+    db_path: Path,
+    framework_id: str,
+    confidence_floor: float,
+    confidence_overrides: dict[str, float],
+) -> list[dict]:
+    """Query assignments passing all export filters, returning fields needed for canonical export."""
+    from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE
+
+    conn = get_connection(db_path)
+    try:
+        floor = confidence_overrides.get(framework_id, confidence_floor)
+        rows = conn.execute(
+            "SELECT a.control_id, a.hub_id, h.name AS hub_name, "
+            "a.confidence, a.provenance, "
+            "c.framework_id, c.section_id, c.title, c.description "
+            "FROM assignments a "
+            "JOIN controls c ON a.control_id = c.id "
+            "JOIN hubs h ON a.hub_id = h.id "
+            "WHERE a.review_status = 'accepted' "
+            "AND a.provenance != ? "
+            "AND a.confidence IS NOT NULL "
+            "AND a.is_ood != 1 "
+            "AND c.framework_id = ? "
+            "AND a.confidence >= ? "
+            "ORDER BY a.hub_id, c.section_id",
+            [PHASE5_GROUND_TRUTH_PROVENANCE, framework_id, floor],
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def build_snapshot(
+    db_path: Path,
+    framework_id: str,
+    confidence_floor: float,
+    confidence_overrides: dict[str, float],
+    model_adapter_hash: str,
+    tract_version: str,
+    hyperlink_fn: Callable[[str, str], str],
+    framework_name: str | None = None,
+) -> StandardSnapshot:
+    """Build a StandardSnapshot from live DB data."""
+    if framework_name is None:
+        from tract.export.opencre_names import get_opencre_name
+        framework_name = get_opencre_name(framework_id)
+
+    rows = _query_canonical_assignments(
+        db_path, framework_id, confidence_floor, confidence_overrides,
+    )
+
+    seen_controls: dict[str, CanonicalControl] = {}
+    control_mappings: defaultdict[str, list[dict]] = defaultdict(list)
+
+    for row in rows:
+        cid = row["control_id"]
+        if cid not in seen_controls:
+            seen_controls[cid] = CanonicalControl(
+                control_id=cid,
+                framework_id=row["framework_id"],
+                section_id=row["section_id"],
+                title=row["title"],
+                description=row["description"],
+                hyperlink=hyperlink_fn(row["framework_id"], row["section_id"]),
+            )
+        control_mappings[cid].append(row)
+
+    controls = sorted(seen_controls.values(), key=lambda c: c.control_id)
+
+    mappings: list[CREMapping] = []
+    for cid in sorted(control_mappings.keys()):
+        ranked = sorted(control_mappings[cid], key=lambda r: -r["confidence"])
+        for rank_idx, row in enumerate(ranked, start=1):
+            mappings.append(CREMapping(
+                control_id=row["control_id"],
+                hub_id=row["hub_id"],
+                hub_name=row["hub_name"],
+                confidence=row["confidence"],
+                rank=rank_idx,
+                provenance=row["provenance"],
+                model_version=model_adapter_hash,
+            ))
+
+    filter_policy = FilterPolicy(
+        confidence_floor=confidence_floor,
+        confidence_override=confidence_overrides.get(framework_id),
+    )
+
+    snapshot = StandardSnapshot(
+        framework_id=framework_id,
+        framework_name=framework_name,
+        export_date=datetime.now(timezone.utc).isoformat(),
+        content_hash="placeholder",
+        tract_version=tract_version,
+        model_adapter_hash=model_adapter_hash,
+        filter_policy=filter_policy,
+        controls=controls,
+        mappings=mappings,
+    )
+    snapshot.content_hash = compute_content_hash(snapshot)
+    return snapshot
+
+
+# ── Control diff helpers ────────────────────────────────────────────────
+
+_CONTROL_MUTABLE_FIELDS = ("title", "description", "hyperlink")
+_MAPPING_MUTABLE_FIELDS = ("confidence", "rank", "provenance", "model_version")
+
+
+def _diff_controls(
+    prior_controls: dict[str, CanonicalControl],
+    current_controls: dict[str, CanonicalControl],
+) -> list[ChangesetEntry]:
+    ops: list[ChangesetEntry] = []
+    all_keys = sorted(set(prior_controls) | set(current_controls))
+    for key in all_keys:
+        old = prior_controls.get(key)
+        new = current_controls.get(key)
+        if old is None and new is not None:
+            ops.append(ChangesetEntry(operation="ADD_CONTROL", entity=new))
+        elif old is not None and new is None:
+            ops.append(ChangesetEntry(operation="DELETE_CONTROL", key=key))
+        elif old is not None and new is not None:
+            if any(getattr(old, f) != getattr(new, f) for f in _CONTROL_MUTABLE_FIELDS):
+                ops.append(ChangesetEntry(
+                    operation="UPDATE_CONTROL", entity=new, before=old,
+                ))
+    return ops
+
+
+def _diff_mappings(
+    prior_mappings: dict[tuple[str, str], CREMapping],
+    current_mappings: dict[tuple[str, str], CREMapping],
+) -> list[ChangesetEntry]:
+    ops: list[ChangesetEntry] = []
+    all_keys = sorted(set(prior_mappings) | set(current_mappings))
+    for key in all_keys:
+        old = prior_mappings.get(key)
+        new = current_mappings.get(key)
+        if old is None and new is not None:
+            ops.append(ChangesetEntry(operation="ADD_MAPPING", entity=new))
+        elif old is not None and new is None:
+            ops.append(ChangesetEntry(
+                operation="DELETE_MAPPING", key=f"{key[0]}|{key[1]}",
+            ))
+        elif old is not None and new is not None:
+            if any(getattr(old, f) != getattr(new, f) for f in _MAPPING_MUTABLE_FIELDS):
+                ops.append(ChangesetEntry(
+                    operation="UPDATE_MAPPING", entity=new, before=old,
+                ))
+    return ops
+
+
+def _compute_impact(
+    operations: list[ChangesetEntry],
+    framework_id: str,
+    db_path: Path | None = None,
+) -> ImpactAnalysis:
+    affected_hubs: set[str] = set()
+    for op in operations:
+        if op.entity and isinstance(op.entity, CREMapping):
+            affected_hubs.add(op.entity.hub_id)
+        if op.before and isinstance(op.before, CREMapping):
+            affected_hubs.add(op.before.hub_id)
+        if op.key and "|" in op.key:
+            affected_hubs.add(op.key.split("|")[1])
+
+    co_mapped = 0
+    affected_frameworks: list[str] = [framework_id]
+    if db_path is not None and affected_hubs:
+        conn = get_connection(db_path)
+        try:
+            placeholders = ",".join("?" for _ in affected_hubs)
+            rows = conn.execute(
+                f"SELECT DISTINCT c.framework_id FROM assignments a "
+                f"JOIN controls c ON a.control_id = c.id "
+                f"WHERE a.hub_id IN ({placeholders}) "
+                f"AND c.framework_id != ?",
+                [*affected_hubs, framework_id],
+            ).fetchall()
+            other_fws = [r["framework_id"] for r in rows]
+            affected_frameworks.extend(sorted(other_fws))
+            co_mapped_rows = conn.execute(
+                f"SELECT COUNT(DISTINCT a.control_id) FROM assignments a "
+                f"JOIN controls c ON a.control_id = c.id "
+                f"WHERE a.hub_id IN ({placeholders}) "
+                f"AND c.framework_id != ?",
+                [*affected_hubs, framework_id],
+            ).fetchone()
+            co_mapped = co_mapped_rows[0] if co_mapped_rows else 0
+        finally:
+            conn.close()
+
+    n_ops = len(operations)
+    has_delete_mapping = any(op.operation == "DELETE_MAPPING" for op in operations)
+    has_delete_control = any(op.operation == "DELETE_CONTROL" for op in operations)
+
+    if n_ops > 50 or has_delete_control:
+        scope = "major"
+    elif n_ops >= 10 or has_delete_mapping:
+        scope = "moderate"
+    else:
+        scope = "minor"
+
+    return ImpactAnalysis(
+        affected_hubs=sorted(affected_hubs),
+        affected_frameworks=affected_frameworks,
+        co_mapped_changes=co_mapped,
+        scope=scope,
+    )
+
+
+def diff_snapshots(
+    prior: StandardSnapshot | None,
+    current: StandardSnapshot,
+    db_path: Path | None = None,
+) -> Changeset:
+    """Compute changeset between two snapshots (spec §3)."""
+    if prior is None:
+        ops: list[ChangesetEntry] = []
+        for ctrl in current.controls:
+            ops.append(ChangesetEntry(operation="ADD_CONTROL", entity=ctrl))
+        for mapping in current.mappings:
+            ops.append(ChangesetEntry(operation="ADD_MAPPING", entity=mapping))
+    else:
+        prior_controls = {c.control_id: c for c in prior.controls}
+        current_controls = {c.control_id: c for c in current.controls}
+        prior_mappings = {(m.control_id, m.hub_id): m for m in prior.mappings}
+        current_mappings = {(m.control_id, m.hub_id): m for m in current.mappings}
+
+        ops = _diff_controls(prior_controls, current_controls)
+        ops.extend(_diff_mappings(prior_mappings, current_mappings))
+
+    summary = ChangesetSummary(
+        controls_added=sum(1 for o in ops if o.operation == "ADD_CONTROL"),
+        controls_updated=sum(1 for o in ops if o.operation == "UPDATE_CONTROL"),
+        controls_deleted=sum(1 for o in ops if o.operation == "DELETE_CONTROL"),
+        mappings_added=sum(1 for o in ops if o.operation == "ADD_MAPPING"),
+        mappings_updated=sum(1 for o in ops if o.operation == "UPDATE_MAPPING"),
+        mappings_deleted=sum(1 for o in ops if o.operation == "DELETE_MAPPING"),
+    )
+
+    impact = _compute_impact(ops, current.framework_id, db_path)
+
+    return Changeset(
+        framework_id=current.framework_id,
+        from_version=prior.content_hash if prior else None,
+        to_version=current.content_hash,
+        export_date=current.export_date,
+        operations=ops,
+        summary=summary,
+        impact=impact,
+    )
+
+
+def save_to_export_history(db_path: Path, snapshot: StandardSnapshot) -> None:
+    """Persist a snapshot to the export_history table."""
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO export_history "
+            "(framework_id, content_hash, export_date, snapshot_json, "
+            "filter_policy_json, assignment_count, control_count, tract_version) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                snapshot.framework_id,
+                snapshot.content_hash,
+                snapshot.export_date,
+                snapshot.model_dump_json(),
+                snapshot.filter_policy.model_dump_json(),
+                len(snapshot.mappings),
+                len(snapshot.controls),
+                snapshot.tract_version,
+            ],
+        )
+        conn.commit()
+        logger.info(
+            "Saved export history: framework=%s hash=%s controls=%d mappings=%d",
+            snapshot.framework_id, snapshot.content_hash[:12],
+            len(snapshot.controls), len(snapshot.mappings),
+        )
+    finally:
+        conn.close()
+
+
+def load_prior_snapshot(db_path: Path, framework_id: str) -> StandardSnapshot | None:
+    """Load the most recent snapshot for a framework from export_history.
+
+    Verifies content_hash integrity after deserialization. Raises ValueError
+    if the stored hash doesn't match the recomputed hash (spec §6.2 step 5).
+    """
+    conn = get_connection(db_path)
+    try:
+        row = conn.execute(
+            "SELECT content_hash, snapshot_json FROM export_history "
+            "WHERE framework_id = ? ORDER BY export_date DESC LIMIT 1",
+            [framework_id],
+        ).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        return None
+
+    stored_hash = row["content_hash"]
+    snapshot = StandardSnapshot.model_validate_json(row["snapshot_json"])
+    recomputed = compute_content_hash(snapshot)
+
+    if stored_hash != recomputed:
+        raise ValueError(
+            f"export_history content_hash mismatch for {framework_id}: "
+            f"stored={stored_hash[:12]}... recomputed={recomputed[:12]}..."
+        )
+
+    return snapshot
+
+
+def slice_embeddings_for_framework(
+    artifacts_path: Path,
+    canonical_control_ids: set[str],
+    model_adapter_hash: str,
+) -> dict:
+    """Slice deployment_artifacts.npz to a single framework's controls.
+
+    Normalizes :: to : in artifact IDs to match canonical format (spec §5.2).
+    Returns dict with keys: control_embeddings, control_ids, hub_embeddings,
+    hub_ids, model_adapter_hash.
+    """
+    import numpy as np
+
+    data = np.load(str(artifacts_path), allow_pickle=True)
+    stored_hash = str(data["model_adapter_hash"])
+
+    if stored_hash != model_adapter_hash:
+        raise ValueError(
+            f"model_adapter_hash mismatch: artifacts={stored_hash}, "
+            f"expected={model_adapter_hash}"
+        )
+
+    all_control_ids = data["control_ids"]
+    normalized_ids = [cid.replace("::", ":") for cid in all_control_ids]
+
+    mask = [nid in canonical_control_ids for nid in normalized_ids]
+    selected_ids = [nid for nid, m in zip(normalized_ids, mask) if m]
+    selected_embeddings = data["control_embeddings"][mask]
+
+    return {
+        "control_embeddings": selected_embeddings,
+        "control_ids": np.array(selected_ids),
+        "hub_embeddings": data["hub_embeddings"],
+        "hub_ids": data["hub_ids"],
+        "model_adapter_hash": model_adapter_hash,
+    }
+
+
+def export_canonical(
+    db_path: Path,
+    framework_ids: list[str],
+    output_dir: Path,
+    confidence_floor: float,
+    confidence_overrides: dict[str, float],
+    model_adapter_hash: str,
+    tract_version: str,
+    hyperlink_fn: Callable[[str, str], str],
+    framework_names: dict[str, str] | None = None,
+    artifacts_path: Path | None = None,
+    with_embeddings: bool = False,
+    dry_run: bool = False,
+) -> dict[str, dict]:
+    """Run the full canonical export pipeline for one or more frameworks.
+
+    Returns a dict keyed by framework_id with export metadata per framework.
+    """
+    ensure_export_history_table(db_path)
+    results: dict[str, dict] = {}
+
+    for fw_id in framework_ids:
+        fw_name = (framework_names or {}).get(fw_id)
+        snapshot = build_snapshot(
+            db_path=db_path,
+            framework_id=fw_id,
+            confidence_floor=confidence_floor,
+            confidence_overrides=confidence_overrides,
+            model_adapter_hash=model_adapter_hash,
+            tract_version=tract_version,
+            hyperlink_fn=hyperlink_fn,
+            framework_name=fw_name,
+        )
+
+        if not snapshot.controls and not snapshot.mappings:
+            logger.info("No exportable assignments for %s, skipping", fw_id)
+            continue
+
+        prior = load_prior_snapshot(db_path, fw_id)
+        changeset = diff_snapshots(prior=prior, current=snapshot, db_path=db_path)
+
+        results[fw_id] = {
+            "content_hash": snapshot.content_hash,
+            "controls": len(snapshot.controls),
+            "mappings": len(snapshot.mappings),
+            "changeset_summary": changeset.summary.model_dump(),
+            "impact_scope": changeset.impact.scope,
+        }
+
+        if dry_run:
+            continue
+
+        fw_dir = output_dir / fw_id
+        fw_dir.mkdir(parents=True, exist_ok=True)
+
+        snap_path = fw_dir / "snapshot.json"
+        snap_path.write_text(
+            snapshot.model_dump_json(indent=2), encoding="utf-8",
+        )
+
+        cs_path = fw_dir / "changeset.json"
+        cs_path.write_text(
+            changeset.model_dump_json(indent=2), encoding="utf-8",
+        )
+
+        if with_embeddings and artifacts_path is not None:
+            import numpy as np
+
+            control_ids = {c.control_id for c in snapshot.controls}
+            emb_data = slice_embeddings_for_framework(
+                artifacts_path=artifacts_path,
+                canonical_control_ids=control_ids,
+                model_adapter_hash=model_adapter_hash,
+            )
+            emb_path = fw_dir / "embeddings.npz"
+            np.savez(
+                str(emb_path),
+                control_embeddings=emb_data["control_embeddings"],
+                control_ids=emb_data["control_ids"],
+                hub_embeddings=emb_data["hub_embeddings"],
+                hub_ids=emb_data["hub_ids"],
+                model_adapter_hash=emb_data["model_adapter_hash"],
+            )
+
+        save_to_export_history(db_path, snapshot)
+        logger.info(
+            "Exported %s: %d controls, %d mappings, scope=%s",
+            fw_id, len(snapshot.controls), len(snapshot.mappings),
+            changeset.impact.scope,
+        )
+
+    return results
