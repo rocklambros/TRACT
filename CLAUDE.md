@@ -1,4 +1,4 @@
-# TRACT — Transitive Reconciliation and Assignment of CRE Taxonomies
+# TRACT — Translating Requirements Across CRE Trees
 
 PRD.md is the master spec. All section numbers reference it. Read it before starting any phase.
 

@@ -1,4 +1,4 @@
-# TRACT — Transitive Reconciliation and Assignment of CRE Taxonomies
+# TRACT — Translating Requirements Across CRE Trees
 
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-green.svg)](https://www.python.org/downloads/)

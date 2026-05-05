@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="tract",
-        description="TRACT — Transitive Reconciliation and Assignment of CRE Taxonomies",
+        description="TRACT — Translating Requirements Across CRE Trees",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
