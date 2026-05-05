@@ -10,7 +10,7 @@ anthropic==0.92.0
 # ML (Phase 2+)
 numpy==2.0.2
 safetensors==0.7.0
-wandb==0.25.1
+wandb==0.26.1
 hdbscan==0.8.42
 
 # Dev / CI
