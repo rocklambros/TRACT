@@ -4,7 +4,7 @@ pyyaml==6.0.3
 beautifulsoup4==4.12.3
 lxml==6.1.0
 requests==2.33.1
-jsonschema==4.23.0
+jsonschema==4.26.0
 anthropic==0.92.0
 
 # ML (Phase 2+)
