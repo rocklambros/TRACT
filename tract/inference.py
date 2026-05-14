@@ -142,6 +142,26 @@ class TRACTPredictor:
             )
         logger.info("TRACTPredictor initialized (health check cosine=%.3f)", max_cos)
 
+    @property
+    def hierarchy(self) -> CREHierarchy:
+        return self._hierarchy
+
+    @property
+    def model_adapter_hash(self) -> str:
+        return self._artifacts.model_adapter_hash
+
+    @property
+    def t_deploy(self) -> float:
+        return self._t_deploy
+
+    @property
+    def ood_threshold(self) -> float:
+        return self._ood_threshold
+
+    @property
+    def deployment_timestamp(self) -> str:
+        return self._artifacts.generation_timestamp
+
     def predict(self, text: str, top_k: int = PHASE1D_DEFAULT_TOP_K) -> list[HubPrediction]:
         """Single control text -> top-K hub assignments with calibrated confidence."""
         clean_text = sanitize_text(text)

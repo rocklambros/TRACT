@@ -61,6 +61,23 @@ def build_parser() -> argparse.ArgumentParser:
     p_assign.add_argument("--verbose", action="store_true", help="Show both metrics, conformal set, and OOD status")
     p_assign.add_argument("--json", action="store_true", help="Output as JSON")
 
+    # ── api ──────────────────────────────────────────────────────
+    p_api = subparsers.add_parser(
+        "api",
+        help="Run the TRACT REST API server",
+        epilog=(
+            "Examples:\n"
+            "  tract api\n"
+            "  tract api --host 0.0.0.0 --port 8080\n"
+            "  tract api --reload   # auto-reload on code change (dev only)\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_api.add_argument("--host", default=None, help="Override TRACT_API_HOST")
+    p_api.add_argument("--port", type=int, default=None, help="Override TRACT_API_PORT")
+    p_api.add_argument("--workers", type=int, default=None, help="Override TRACT_API_WORKERS")
+    p_api.add_argument("--reload", action="store_true", help="Auto-reload on code change (dev only, forces workers=1)")
+
     # ── compare ──────────────────────────────────────────────────
     p_compare = subparsers.add_parser(
         "compare",
@@ -449,6 +466,35 @@ def _cmd_assign(args: argparse.Namespace) -> None:
         print(format_predictions_json(preds))
     else:
         print(format_predictions_table(preds, raw=args.raw, verbose=args.verbose))
+
+def _cmd_api(args: argparse.Namespace) -> None:
+    """Start uvicorn with the TRACT API app."""
+    import os
+    import uvicorn
+    from tract.api.settings import get_settings
+
+    if args.reload and args.workers and args.workers > 1:
+        raise SystemExit("--reload and --workers > 1 are mutually exclusive")
+
+    # Apply CLI overrides via env vars so spawned uvicorn workers inherit them.
+    if args.host is not None:
+        os.environ["TRACT_API_HOST"] = args.host
+    if args.port is not None:
+        os.environ["TRACT_API_PORT"] = str(args.port)
+    if args.workers is not None:
+        os.environ["TRACT_API_WORKERS"] = str(args.workers)
+    get_settings.cache_clear()
+
+    settings = get_settings()
+    uvicorn.run(
+        "tract.api:create_app",
+        factory=True,
+        host=settings.host,
+        port=settings.port,
+        workers=1 if args.reload else settings.workers,
+        reload=args.reload,
+    )
+
 
 
 def _cmd_compare(args: argparse.Namespace) -> None:
@@ -1609,6 +1655,7 @@ def main() -> None:
     )
 
     handlers = {
+        "api": _cmd_api,
         "assign": _cmd_assign,
         "bridge": _cmd_bridge,
         "compare": _cmd_compare,

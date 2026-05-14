@@ -119,7 +119,7 @@ TRACT processes **31 frameworks** with **2,802 controls** total.
 
 ## CLI Overview
 
-All 19 subcommands grouped by workflow stage:
+All 20 subcommands grouped by workflow stage:
 
 | Stage | Commands | Description |
 |-------|----------|-------------|
@@ -130,8 +130,81 @@ All 19 subcommands grouped by workflow stage:
 | **Analyze** | `bridge` `propose-hubs` `import-ground-truth` | Discover connections, suggest new hubs |
 | **Export** | `export` `export-canonical` | Output assignments (CSV, JSON, OpenCRE, canonical snapshot) |
 | **Publish** | `publish-hf` `publish-dataset` | Release model and dataset to HuggingFace |
+| **Serve** | `api` | Run the REST API server for real-time assignment |
 
 See [`docs/cli-reference.md`](docs/cli-reference.md) for full options and examples.
+
+## REST API
+
+For interactive use or third-party integration, TRACT exposes the assignment model behind a small FastAPI server. The CLI subcommand `tract api` starts uvicorn and serves the model in-process. The API is read-only: predictions are not persisted to `crosswalk.db`. Anyone who wants persistence should keep using `tract ingest`.
+
+The API is opt-in. The base install does not include FastAPI or uvicorn.
+
+```bash
+pip install -e ".[api,phase0]"
+tract api                                 # binds 127.0.0.1:8000
+tract api --host 0.0.0.0 --port 9000      # custom binding
+tract api --reload                        # auto-reload during development
+```
+
+Once the server is running, the OpenAPI documentation is available at `http://127.0.0.1:8000/docs` and the raw schema at `/openapi.json`.
+
+### Endpoints
+
+All endpoints are versioned under `/v1/`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/v1/assign` | Assign a single control text to its top-K CRE hubs |
+| `POST` | `/v1/assign/batch` | Assign many controls in one request (up to 256) |
+| `POST` | `/v1/duplicates` | Find existing controls semantically close to the input |
+| `GET`  | `/v1/hubs` | Paginated list of all CRE hubs |
+| `GET`  | `/v1/hubs/{hub_id}` | Single hub with its parent and children |
+| `GET`  | `/v1/health` | Liveness probe, reports calibration parameters |
+| `GET`  | `/v1/version` | Build metadata for client cache-busting and bug reports |
+
+A minimal `/v1/assign` example:
+
+```bash
+curl -X POST http://127.0.0.1:8000/v1/assign \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Implement input validation for user-supplied data","top_k":3}'
+```
+
+Response envelopes always include the calibrated confidence (in [0, 1] after temperature scaling), an OOD flag with the underlying similarity score, and the model version. Per-prediction fields include the raw cosine similarity, the conformal-set membership flag, and a 1-indexed rank.
+
+### Configuration
+
+The server reads settings from environment variables prefixed with `TRACT_API_`. CLI flags override the corresponding env var when present.
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `TRACT_API_HOST` | `127.0.0.1` | Bind address |
+| `TRACT_API_PORT` | `8000` | Bind port |
+| `TRACT_API_WORKERS` | `1` | Uvicorn worker processes |
+| `TRACT_API_MODEL_DIR` | `results/phase1c/deployment_model/` | Where to load model artifacts from |
+| `TRACT_API_MODEL_VERSION` | `tract-cre-assignment-v1.0` | Reported in every response |
+| `TRACT_API_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| `TRACT_API_MAX_BATCH_SIZE` | `256` | Hard cap on `/v1/assign/batch` payload |
+| `TRACT_API_MAX_TEXT_LENGTH` | `8192` | Hard cap per control text |
+
+GPU users should keep `TRACT_API_WORKERS=1`. Multiple workers each hold their own model in memory and will compete for VRAM. Use batch endpoints for throughput, not parallel workers.
+
+### Security
+
+The v1 API ships without authentication, rate limiting, or per-request audit logging. This is a deliberate choice for a research-stage tool, not an oversight. Three deployment patterns are safe; anything else is not:
+
+- **Localhost only.** The default `TRACT_API_HOST=127.0.0.1` accepts connections only from the same machine. Suitable for developer use and notebook integration.
+- **Behind a reverse proxy that handles auth.** Put nginx, Cloudflare Access, Tailscale, or similar in front. Have it terminate TLS, enforce auth, and rate-limit before traffic reaches uvicorn.
+- **HuggingFace Spaces.** The Spaces platform fronts the service with TLS and platform-level rate limits at no operational cost.
+
+Do not put `tract api --host 0.0.0.0` on a public IP without one of the patterns above. The model will happily burn CPU or GPU cycles for any caller.
+
+The API also does not log request bodies. Control text submitted by users may describe internal company practices; do not add request-body logging without first reviewing what that data exposure means for your deployment.
+
+### When to use the API vs the CLI
+
+Use the CLI for batch work, reproducible pipelines, and anything that lives in a shell script. Use the API when something else needs to call TRACT programmatically over the wire — a web tool, a Slack bot, a vendor integration. Both surfaces wrap the same underlying model and return identical predictions.
 
 ## Project Structure
 
@@ -178,6 +251,7 @@ flowchart TD
 | Add a new framework | [Framework Guide](docs/framework-guide.md) |
 | Understand the model and methodology | [Architecture](docs/architecture.md) |
 | Look up a command | [CLI Reference](docs/cli-reference.md) |
+| Call TRACT over HTTP | [REST API](#rest-api) |
 | Look up a term | [Glossary](docs/glossary.md) |
 | Understand canonical export schema | [Architecture § Canonical Export](docs/architecture.md#11-canonical-export-opencre-rfc) |
 | Review hub descriptions for quality | [Hub Description Review Guide](docs/hub-description-review-guide.md) |

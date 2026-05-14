@@ -180,7 +180,7 @@ class CREHierarchy(BaseModel):
 
     def validate_integrity(self) -> None:
         """Validate the hierarchy tree. Raises ValueError on failure."""
-        # 1. No dangling references
+        #No dangling references
         for hub_id, node in self.hubs.items():
             if node.parent_id is not None and node.parent_id not in self.hubs:
                 raise ValueError(
@@ -192,7 +192,7 @@ class CREHierarchy(BaseModel):
                         f"Hub {hub_id} has dangling child_id: {child_id}"
                     )
 
-        # 2. Depth consistency
+        #Depth consistency
         for hub_id, node in self.hubs.items():
             if node.parent_id is not None:
                 parent = self.hubs[node.parent_id]
@@ -202,7 +202,7 @@ class CREHierarchy(BaseModel):
                         f"{node.parent_id} depth={parent.depth}"
                     )
 
-        # 3. All leaves reachable from a root
+        #All leaves reachable from a root
         for leaf_id in self.label_space:
             current: str | None = leaf_id
             visited: set[str] = set()
@@ -221,11 +221,11 @@ class CREHierarchy(BaseModel):
                     f"Leaf {leaf_id} not reachable from any root"
                 )
 
-        # 4. Label space determinism
+        #Label space determinism
         if self.label_space != sorted(self.label_space):
             raise ValueError("label_space is not sorted")
 
-        # 5. Related hub IDs: exist and are bidirectional
+        #Related hub IDs: exist and are bidirectional
         for hub_id, node in self.hubs.items():
             for related_id in node.related_hub_ids:
                 if related_id not in self.hubs:
@@ -238,7 +238,7 @@ class CREHierarchy(BaseModel):
                         f"{related_id} does not list {hub_id}"
                     )
 
-        # 6. Expected counts (warnings only)
+        #Expected counts (warnings only)
         if len(self.hubs) != 522:
             logger.warning(
                 "Expected 522 hubs, got %d", len(self.hubs)
@@ -252,7 +252,7 @@ class CREHierarchy(BaseModel):
                 "Expected 5 roots, got %d", len(self.roots)
             )
 
-    # ── Query methods ──────────────────────────────────────────────────
+    # Query methods
 
     def leaf_hub_ids(self) -> list[str]:
         """Return the label space (sorted leaf hub IDs)."""
@@ -297,8 +297,7 @@ class CREHierarchy(BaseModel):
                 return node
         return None
 
-    # ── Serialization ──────────────────────────────────────────────────
-
+    # Serialization
     def save(self, path: Path) -> None:
         """Atomically save hierarchy to JSON."""
         atomic_write_json(self.model_dump(), path)
