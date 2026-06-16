@@ -176,6 +176,7 @@ flowchart TD
 
 | I want to... | Go to... |
 |-------------|----------|
+| Try the examples | [Examples](examples/README.md) |
 | Add a new framework | [Framework Guide](docs/framework-guide.md) |
 | Understand the model and methodology | [Architecture](docs/architecture.md) |
 | Look up a command | [CLI Reference](docs/cli-reference.md) |

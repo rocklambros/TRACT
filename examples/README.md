@@ -68,7 +68,7 @@ tract validate --file example_md_prepared.json
 
 ## Tutorial 3: What Happens Next
 
-After `prepare` and `validate`, the next steps require the deployed model (see [Architecture](../docs/architecture.md) for model details):
+After `prepare` and `validate`, the next steps require the deployed model. Run `tract download` to fetch it from HuggingFace (see [Architecture](../docs/architecture.md) for model details):
 
 ```bash
 # Ingest: embed controls, assign to CRE hubs, generate review file
@@ -96,5 +96,5 @@ tract compare --framework example_csv --framework mitre_atlas
 ## Further Reading
 
 - [Framework Guide](../docs/framework-guide.md) — Complete walkthrough with both LLM-assisted and custom parser paths
-- [CLI Reference](../docs/cli-reference.md) — Full reference for all 18 commands
+- [CLI Reference](../docs/cli-reference.md) — Full reference for all 20 commands
 - [Glossary](../docs/glossary.md) — Cross-domain term definitions
