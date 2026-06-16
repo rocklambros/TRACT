@@ -292,7 +292,21 @@ HIERARCHY_BRIDGE_VERSION: Final[str] = "1.1"
 # ── Phase 2B: HuggingFace Publication ─────────────────────────────────
 
 HF_DEFAULT_REPO_ID: Final[str] = "rockCO78/tract-cre-assignment"
+HF_DATASET_REPO_ID: Final[str] = "rockCO78/tract-crosswalk-dataset"
 HF_STAGING_DIR: Final[Path] = PROJECT_ROOT / "build" / "hf_repo"
+
+HF_MODEL_FILES: Final[tuple[str, ...]] = (
+    "model.safetensors", "config.json", "tokenizer.json",
+    "tokenizer_config.json", "special_tokens_map.json", "vocab.txt",
+    "config_sentence_transformers.json", "modules.json",
+    "sentence_bert_config.json", "1_Pooling/config.json",
+)
+HF_DEPLOY_FILES: Final[tuple[str, ...]] = (
+    "deployment_artifacts.npz", "calibration.json",
+)
+HF_DATABASE_FILES: Final[tuple[str, ...]] = (
+    "crosswalk.db",
+)
 HF_BASE_MODEL: Final[str] = "BAAI/bge-large-en-v1.5"
 HF_SCAN_EXTENSIONS: Final[frozenset[str]] = frozenset({
     ".py", ".md", ".txt", ".yaml", ".yml", ".json",

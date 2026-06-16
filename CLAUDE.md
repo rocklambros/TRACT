@@ -119,12 +119,15 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
 - **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
-- **866 tests passing**, 19 CLI subcommands
+- **866 tests passing**, 20 CLI subcommands
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands
 
 ```bash
+# Download model and data artifacts from HuggingFace
+tract download                                     # Fetch everything (~250 MB)
+
 # Run all parsers
 for f in parsers/parse_*.py; do python "$f"; done
 

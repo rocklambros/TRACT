@@ -1,6 +1,6 @@
 # TRACT CLI Reference
 
-Complete reference for all 19 `tract` CLI subcommands.
+Complete reference for all 20 `tract` CLI subcommands.
 
 **Installation:**
 
@@ -15,6 +15,8 @@ pip install -e ".[dev]"       # Development tools (pytest, mypy)
 
 ```mermaid
 flowchart TD
+    DL["download"] -.-> |"fetches model<br/>+ crosswalk.db"| ASN
+    DL -.-> CMP
     PREP["prepare"] --> VAL["validate"]
     VAL --> ING["ingest"]
     ING --> RE["review-export"]
@@ -47,13 +49,36 @@ flowchart TD
 
 ---
 
+## Setup
+
+### download
+
+Download pre-trained model and data artifacts from HuggingFace Hub. Required before running `tract assign`, `tract compare`, `tract tutorial`, or any command that needs the deployment model or crosswalk database.
+
+```bash
+tract download                      # Download everything (~250 MB)
+tract download --model-only          # Model artifacts only (skip crosswalk.db)
+tract download --force               # Re-download even if files already exist
+```
+
+| Option | Description |
+|--------|-------------|
+| `--model-only` | Download model artifacts only (skip crosswalk.db) |
+| `--force` | Re-download even if files already exist |
+
+**Downloads from:**
+- Model + inference artifacts: [`rockCO78/tract-cre-assignment`](https://huggingface.co/rockCO78/tract-cre-assignment)
+- Crosswalk database: [`rockCO78/tract-crosswalk-dataset`](https://huggingface.co/datasets/rockCO78/tract-crosswalk-dataset)
+
+---
+
 ## Explore
 
 ### tutorial
 
 Guided walkthrough of TRACT capabilities.
 
-**Prerequisites:** Requires deployed model artifacts (Phase 1C pipeline output). Prints diagnostic if artifacts are missing.
+**Prerequisites:** Requires deployed model artifacts. Run `tract download` first if artifacts are missing.
 
 ```bash
 tract tutorial

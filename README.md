@@ -62,15 +62,15 @@ tract prepare --file examples/sample_framework.csv --framework-id demo --name "D
 tract validate --file demo_prepared.json
 ```
 
-**Full assignment workflow** (requires trained model artifacts):
+**Full assignment workflow** (downloads pre-trained model from HuggingFace):
 
 ```bash
 pip install -e ".[phase0]"
-tract tutorial                    # Guided walkthrough (checks prerequisites)
+tract download                    # Fetch model + crosswalk.db from HuggingFace
 tract assign "Implement input validation for AI model training data"
 ```
 
-> **Note:** `tract assign` and `tract tutorial` require model artifacts from the training pipeline. `tract prepare` and `tract validate` work immediately after install.
+> **Note:** `tract download` fetches ~250 MB of model artifacts. Use `tract download --model-only` to skip the crosswalk database.
 
 ## Framework Coverage
 
@@ -119,10 +119,11 @@ TRACT processes **31 frameworks** with **2,802 controls** total.
 
 ## CLI Overview
 
-All 19 subcommands grouped by workflow stage:
+All 20 subcommands grouped by workflow stage:
 
 | Stage | Commands | Description |
 |-------|----------|-------------|
+| **Setup** | `download` | Fetch model and data artifacts from HuggingFace |
 | **Explore** | `tutorial` `hierarchy` `compare` | Learn TRACT, inspect hubs, compare frameworks |
 | **Prepare** | `prepare` `validate` | Extract and validate framework controls |
 | **Assign** | `assign` `ingest` `accept` | Map controls to CRE hubs |

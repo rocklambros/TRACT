@@ -15,10 +15,15 @@ from pathlib import Path
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
     BRIDGE_TOP_K,
+    HF_DATABASE_FILES,
+    HF_DATASET_REPO_ID,
     HF_DEFAULT_REPO_ID,
+    HF_DEPLOY_FILES,
+    HF_MODEL_FILES,
     HF_STAGING_DIR,
     HUB_PROPOSALS_DIR,
     PHASE1C_CROSSWALK_DB_PATH,
+    PHASE1C_RESULTS_DIR,
     PHASE1D_ARTIFACTS_PATH,
     PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
@@ -40,6 +45,27 @@ def build_parser() -> argparse.ArgumentParser:
         description="TRACT — Translating Requirements Across CRE Trees",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # ── download ─────────────────────────────────────────────────
+    p_download = subparsers.add_parser(
+        "download",
+        help="Download model and data artifacts from HuggingFace",
+        epilog=(
+            "Examples:\n"
+            "  tract download                      # Download everything\n"
+            "  tract download --model-only          # Model artifacts only\n"
+            "  tract download --force               # Re-download even if present\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_download.add_argument(
+        "--model-only", action="store_true",
+        help="Download model artifacts only (skip crosswalk.db)",
+    )
+    p_download.add_argument(
+        "--force", action="store_true",
+        help="Re-download even if files already exist",
+    )
 
     # ── assign ───────────────────────────────────────────────────
     p_assign = subparsers.add_parser(
@@ -409,6 +435,67 @@ def format_predictions_json(preds: list) -> str:
 
 
 # ── Command Handlers ────────────────────────────────────────────────
+
+
+def _cmd_download(args: argparse.Namespace) -> None:
+    from huggingface_hub import hf_hub_download
+
+    model_dir = PHASE1D_DEPLOYMENT_MODEL_DIR
+    st_model_dir = model_dir / "model"
+
+    existing_model = all(
+        (st_model_dir / f).exists() for f in HF_MODEL_FILES
+    ) and all(
+        (model_dir / f).exists() for f in HF_DEPLOY_FILES
+    )
+    existing_db = PHASE1C_CROSSWALK_DB_PATH.exists()
+
+    if existing_model and (args.model_only or existing_db) and not args.force:
+        print("All artifacts already present. Use --force to re-download.")
+        return
+
+    if not existing_model or args.force:
+        print(f"Downloading model from {HF_DEFAULT_REPO_ID}...")
+        st_model_dir.mkdir(parents=True, exist_ok=True)
+        for filename in HF_MODEL_FILES:
+            hf_hub_download(
+                repo_id=HF_DEFAULT_REPO_ID,
+                filename=filename,
+                local_dir=str(st_model_dir),
+            )
+            print(f"  {filename}")
+
+        model_dir.mkdir(parents=True, exist_ok=True)
+        for filename in HF_DEPLOY_FILES:
+            hf_hub_download(
+                repo_id=HF_DEFAULT_REPO_ID,
+                filename=filename,
+                local_dir=str(model_dir),
+            )
+            print(f"  {filename}")
+        print(f"Model artifacts saved to {model_dir}")
+    else:
+        print("Model artifacts already present (skipping).")
+
+    if not args.model_only:
+        if existing_db and not args.force:
+            print(f"crosswalk.db already present at {PHASE1C_CROSSWALK_DB_PATH}")
+        else:
+            print(f"Downloading crosswalk.db from {HF_DATASET_REPO_ID}...")
+            PHASE1C_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+            for filename in HF_DATABASE_FILES:
+                hf_hub_download(
+                    repo_id=HF_DATASET_REPO_ID,
+                    repo_type="dataset",
+                    filename=filename,
+                    local_dir=str(PHASE1C_RESULTS_DIR),
+                )
+                print(f"  {filename}")
+            print(f"Database saved to {PHASE1C_CROSSWALK_DB_PATH}")
+
+    print("\nDone. You can now run:")
+    print("  tract assign 'Ensure AI models are tested for bias'")
+    print("  tract tutorial")
 
 
 def _cmd_assign(args: argparse.Namespace) -> None:
@@ -1270,7 +1357,7 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
             print(f"  - Crosswalk database: {PHASE1C_CROSSWALK_DB_PATH}")
         if not hierarchy_exists:
             print(f"  - CRE hierarchy: {PROCESSED_DIR / 'cre_hierarchy.json'}")
-        print("\nRun Phase 1C pipeline first to generate these artifacts.")
+        print("\nRun 'tract download' to fetch these from HuggingFace.")
         return
 
     print("\nTRACT maps security framework controls to CRE (Common Requirements Enumeration)")
@@ -1313,7 +1400,7 @@ def _cmd_tutorial(args: argparse.Namespace) -> None:
     print("  Try: tract propose-hubs")
     print("  Clusters OOD controls to suggest new taxonomy extensions.\n")
 
-    print("For more: https://github.com/rockcyber/TRACT")
+    print("For more: https://github.com/rocklambros/TRACT")
 
 
 def _cmd_publish_hf(args: argparse.Namespace) -> None:
@@ -1611,6 +1698,7 @@ def main() -> None:
     handlers = {
         "assign": _cmd_assign,
         "bridge": _cmd_bridge,
+        "download": _cmd_download,
         "compare": _cmd_compare,
         "ingest": _cmd_ingest,
         "accept": _cmd_accept,

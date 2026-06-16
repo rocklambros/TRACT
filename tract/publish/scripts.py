@@ -160,7 +160,7 @@ This script documents the exact configuration used for training.
 # ── Reproduction Steps ──────────────────────────────────────────────────
 #
 # 1. Clone the TRACT repository:
-#    git clone https://github.com/rockcyber/TRACT.git
+#    git clone https://github.com/rocklambros/TRACT.git
 #    cd TRACT
 #    pip install -e ".[train]"
 #
