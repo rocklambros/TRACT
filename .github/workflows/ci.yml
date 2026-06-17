@@ -71,3 +71,11 @@ jobs:
 
       - name: Audit dependencies
         run: pip-audit --desc
+  model-pins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install "huggingface_hub>=0.24,<1" -e .
+      - run: python -m pytest tests/test_model_pins_consistency.py -m integration -q
