@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -39,6 +40,7 @@ from tract.config import (
     TRACT_MODEL_PINNED_REVISION,
     TRAINING_DIR,
 )
+import tract as _tract_pkg
 from tract.model_resolver import ensure_deployment_model
 
 logger = logging.getLogger(__name__)
@@ -58,6 +60,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="tract",
         description="TRACT — Translating Requirements Across CRE Trees",
+    )
+    _repo = os.environ.get("TRACT_MODEL_REPO_ID", HF_DEFAULT_REPO_ID)
+    _rev = os.environ.get("TRACT_MODEL_REVISION", TRACT_MODEL_PINNED_REVISION)
+    parser.add_argument(
+        "--version", action="version",
+        version=f"tract {_tract_pkg.__version__}\nmodel: {_repo}@{_rev}",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -1742,9 +1750,9 @@ def _cmd_publish_dataset(args: argparse.Namespace) -> None:
         print(f"Published to {args.repo_id}")
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.command:
         parser.print_help()

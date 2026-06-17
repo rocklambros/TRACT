@@ -240,3 +240,13 @@ def test_download_pins_revision(tmp_path, monkeypatch):
 def test_version_is_a_nonempty_string():
     import tract
     assert isinstance(tract.__version__, str) and tract.__version__
+
+
+def test_tract_version_flag(capsys):
+    import tract.cli as cli
+    with pytest.raises(SystemExit) as e:
+        cli.main(["--version"])
+    assert e.value.code == 0
+    out = capsys.readouterr().out
+    assert out.startswith("tract ")
+    assert "model:" in out
