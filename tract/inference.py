@@ -19,10 +19,7 @@ from tract.calibration.ood import flag_ood_items
 from tract.calibration.temperature import calibrate_similarities
 from tract.config import (
     PROCESSED_DIR,
-    PHASE1D_ARTIFACTS_PATH,
-    PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
-    PHASE1D_DEPLOYMENT_MODEL_DIR,
     PHASE1D_DUPLICATE_THRESHOLD,
     PHASE1D_HEALTH_CHECK_FLOOR,
     PHASE1D_SIMILAR_THRESHOLD,

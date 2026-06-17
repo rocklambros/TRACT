@@ -43,7 +43,6 @@ from tract.config import (
     TRAINING_DIR,
 )
 import tract as _tract_pkg
-from tract.model_resolver import ensure_deployment_model
 
 logger = logging.getLogger(__name__)
 
@@ -1341,7 +1340,6 @@ def _cmd_hierarchy(args: argparse.Namespace) -> None:
 
 
 def _cmd_propose_hubs(args: argparse.Namespace) -> None:
-    import numpy as np
 
     from tract.config import PHASE1D_ARTIFACTS_PATH, PHASE1D_CALIBRATION_PATH
     from tract.hierarchy import CREHierarchy
