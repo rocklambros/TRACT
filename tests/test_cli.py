@@ -235,3 +235,8 @@ def test_download_pins_revision(tmp_path, monkeypatch):
         assert dl.call_count >= 1
         for _, kwargs in dl.call_args_list:
             assert kwargs.get("revision") == config.TRACT_MODEL_PINNED_REVISION
+
+
+def test_version_is_a_nonempty_string():
+    import tract
+    assert isinstance(tract.__version__, str) and tract.__version__
