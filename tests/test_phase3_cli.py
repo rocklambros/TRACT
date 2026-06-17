@@ -38,7 +38,9 @@ class TestReviewExport:
         args = parser.parse_args(["review-export"])
         assert args.command == "review-export"
         assert args.output is not None
-        assert args.model_dir is not None
+        # --model-dir defaults to None: when omitted, the command resolves the
+        # deployment model via ensure_deployment_model() at runtime.
+        assert args.model_dir is None
 
 
 class TestReviewValidate:
