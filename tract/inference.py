@@ -56,7 +56,12 @@ def find_st_model_root(model_dir: Path) -> Path:
 def verify_hierarchy_hash(hierarchy_path: Path, calibration: dict[str, Any]) -> None:
     """Cross-check the loaded hierarchy against the hash recorded in calibration.
 
-    Catches a stale hierarchy shadowing the snapshot's. No-op for older calibration
+    Surfaces a hierarchy that differs from the one calibration was built against.
+    This is a WARNING, not a hard failure: a byte-level file-hash difference is
+    provenance drift (regenerated metadata, key ordering, hubs the model does not
+    predict over), not necessarily a correctness break. The genuine failure mode —
+    a hub_id the model predicts that the hierarchy cannot resolve — is handled where
+    names are looked up (the hub falls back to its id). No-op for older calibration
     bundles that predate the hierarchy_hash field.
     """
     expected = calibration.get("hierarchy_hash")
@@ -64,9 +69,10 @@ def verify_hierarchy_hash(hierarchy_path: Path, calibration: dict[str, Any]) -> 
         return
     actual = hashlib.sha256(hierarchy_path.read_bytes()).hexdigest()
     if actual != expected:
-        raise ValueError(
-            f"hierarchy_hash mismatch: calibration={expected[:12]}… vs "
-            f"loaded {hierarchy_path}={actual[:12]}…"
+        logger.warning(
+            "hierarchy_hash mismatch (provenance drift): calibration=%s… vs "
+            "loaded %s=%s… — proceeding; hub names resolve from the loaded hierarchy",
+            expected[:12], hierarchy_path, actual[:12],
         )
 
 

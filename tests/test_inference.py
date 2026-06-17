@@ -342,13 +342,19 @@ def test_verify_hierarchy_hash_match(tmp_path: Path) -> None:
     verify_hierarchy_hash(h, {"hierarchy_hash": digest})  # no raise
 
 
-def test_verify_hierarchy_hash_mismatch_raises(tmp_path: Path) -> None:
+def test_verify_hierarchy_hash_mismatch_warns_not_raises(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    import logging
+
     from tract.inference import verify_hierarchy_hash
 
     h = tmp_path / "cre_hierarchy.json"
     h.write_text("{}", encoding="utf-8")
-    with pytest.raises(ValueError, match="hierarchy_hash"):
+    # Provenance drift must WARN, not block a semantically-valid model.
+    with caplog.at_level(logging.WARNING, logger="tract.inference"):
         verify_hierarchy_hash(h, {"hierarchy_hash": "0" * 64})
+    assert any("hierarchy_hash mismatch" in r.message for r in caplog.records)
 
 
 def test_verify_hierarchy_hash_absent_key_is_noop(tmp_path: Path) -> None:
