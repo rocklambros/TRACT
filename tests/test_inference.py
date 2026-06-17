@@ -255,3 +255,53 @@ class TestTRACTPredictor:
                 raise AssertionError("encode called on empty input")
         pred._model = _Boom()
         assert pred.predict_batch([]) == []
+
+
+def _make_st_dir(d: Path) -> None:
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "modules.json").write_text("[]", encoding="utf-8")
+    (d / "config_sentence_transformers.json").write_text("{}", encoding="utf-8")
+
+
+def test_find_st_model_root_flat(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    _make_st_dir(tmp_path)
+    assert find_st_model_root(tmp_path) == tmp_path
+
+
+def test_find_st_model_root_single_nest(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    _make_st_dir(tmp_path / "model")
+    assert find_st_model_root(tmp_path) == tmp_path / "model"
+
+
+def test_find_st_model_root_double_nest_wins_over_outer(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    _make_st_dir(tmp_path / "model" / "model")
+    assert find_st_model_root(tmp_path) == tmp_path / "model" / "model"
+
+
+def test_find_st_model_root_missing_raises(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    with pytest.raises(FileNotFoundError):
+        find_st_model_root(tmp_path)
+
+
+def test_resolve_hierarchy_download_prefers_snapshot_root(tmp_path: Path) -> None:
+    from tract.inference import resolve_hierarchy_path
+
+    (tmp_path / "cre_hierarchy.json").write_text("{}", encoding="utf-8")
+    assert resolve_hierarchy_path(tmp_path, "download") == tmp_path / "cre_hierarchy.json"
+
+
+def test_resolve_hierarchy_missing_raises_listing_candidates(tmp_path: Path) -> None:
+    from tract.inference import resolve_hierarchy_path
+
+    with patch("tract.inference.PROCESSED_DIR", tmp_path / "nonexistent_processed"):
+        with pytest.raises(FileNotFoundError) as e:
+            resolve_hierarchy_path(tmp_path, "download")
+        assert "cre_hierarchy.json" in str(e.value)

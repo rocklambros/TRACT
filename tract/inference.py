@@ -33,6 +33,46 @@ from tract.sanitize import sanitize_text
 
 logger = logging.getLogger(__name__)
 
+_ST_MARKERS = ("modules.json", "config_sentence_transformers.json")
+
+
+def find_st_model_root(model_dir: Path) -> Path:
+    """Return the SentenceTransformer root, tolerating flat/nested layouts.
+
+    Probes most-nested first so a double-nested dev tree is not shadowed by an
+    outer dir. Requires both ST marker files to avoid loading a partial dir.
+    """
+    candidates = [model_dir / "model" / "model", model_dir / "model", model_dir]
+    for cand in candidates:
+        if all((cand / marker).exists() for marker in _ST_MARKERS):
+            return cand
+    raise FileNotFoundError(
+        f"No SentenceTransformer root under {model_dir} "
+        f"(need {' + '.join(_ST_MARKERS)} in one of: "
+        f"{', '.join(str(c) for c in candidates)})"
+    )
+
+
+def resolve_hierarchy_path(model_dir: Path, source: str) -> Path:
+    """Resolve cre_hierarchy.json. For a downloaded snapshot, prefer the
+    revision-pinned copy at the snapshot root over a possibly-stale dev copy.
+    """
+    snapshot_root = model_dir / "cre_hierarchy.json"
+    data_processed = model_dir.parent.parent / "data" / "processed" / "cre_hierarchy.json"
+    package_processed = PROCESSED_DIR / "cre_hierarchy.json"
+    order = (
+        [snapshot_root, data_processed, package_processed]
+        if source == "download"
+        else [data_processed, snapshot_root, package_processed]
+    )
+    for cand in order:
+        if cand.exists():
+            return cand
+    raise FileNotFoundError(
+        "cre_hierarchy.json not found in any of: "
+        + ", ".join(str(c) for c in order)
+    )
+
 
 @dataclass(frozen=True)
 class HubPrediction:
