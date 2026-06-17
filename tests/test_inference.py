@@ -245,3 +245,13 @@ class TestTRACTPredictor:
         results = predictor.predict_batch(["text 1", "text 2", "text 3"])
         assert len(results) == 3
         assert all(len(preds) == 5 for preds in results)
+
+    def test_predict_batch_empty_returns_empty_without_model_call(self) -> None:
+        from tract.inference import TRACTPredictor
+        # A predictor whose model would raise if .encode were called proves we short-circuit.
+        pred = TRACTPredictor.__new__(TRACTPredictor)  # bypass __init__ (no model load)
+        class _Boom:
+            def encode(self, *a, **k):  # pragma: no cover - must never be called
+                raise AssertionError("encode called on empty input")
+        pred._model = _Boom()
+        assert pred.predict_batch([]) == []

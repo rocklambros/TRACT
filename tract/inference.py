@@ -189,6 +189,8 @@ class TRACTPredictor:
         self, texts: list[str], top_k: int = PHASE1D_DEFAULT_TOP_K,
     ) -> list[list[HubPrediction]]:
         """Batch prediction for tract ingest."""
+        if not texts:
+            return []
         clean_texts = [sanitize_text(t) for t in texts]
 
         query_embs = self._model.encode(
