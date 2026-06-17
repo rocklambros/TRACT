@@ -53,6 +53,23 @@ def find_st_model_root(model_dir: Path) -> Path:
     )
 
 
+def verify_hierarchy_hash(hierarchy_path: Path, calibration: dict[str, Any]) -> None:
+    """Cross-check the loaded hierarchy against the hash recorded in calibration.
+
+    Catches a stale hierarchy shadowing the snapshot's. No-op for older calibration
+    bundles that predate the hierarchy_hash field.
+    """
+    expected = calibration.get("hierarchy_hash")
+    if not expected:
+        return
+    actual = hashlib.sha256(hierarchy_path.read_bytes()).hexdigest()
+    if actual != expected:
+        raise ValueError(
+            f"hierarchy_hash mismatch: calibration={expected[:12]}… vs "
+            f"loaded {hierarchy_path}={actual[:12]}…"
+        )
+
+
 def resolve_hierarchy_path(model_dir: Path, source: str) -> Path:
     """Resolve cre_hierarchy.json. For a downloaded snapshot, prefer the
     revision-pinned copy at the snapshot root over a possibly-stale dev copy.
@@ -126,7 +143,7 @@ def load_deployment_artifacts(artifacts_path: Path) -> DeploymentArtifacts:
 class TRACTPredictor:
     """Loads deployment model + cached artifacts. Stateful — holds model in memory."""
 
-    def __init__(self, model_dir: Path) -> None:
+    def __init__(self, model_dir: Path, source: str = "local") -> None:
         from tract.active_learning.model_io import load_deployment_model
 
         self._model_dir = model_dir
@@ -145,14 +162,11 @@ class TRACTPredictor:
         self._ood_threshold: float = self._calibration["ood_threshold"]
         self._conformal_quantile: float = self._calibration["conformal_quantile"]
 
-        hierarchy_path = model_dir.parent.parent / "data" / "processed" / "cre_hierarchy.json"
-        if not hierarchy_path.exists():
-            hierarchy_path = PROCESSED_DIR / "cre_hierarchy.json"
+        hierarchy_path = resolve_hierarchy_path(model_dir, source=source)
+        verify_hierarchy_hash(hierarchy_path, self._calibration)
         self._hierarchy = CREHierarchy.load(hierarchy_path)
 
-        st_model_dir = model_dir / "model"
-        if (st_model_dir / "model").exists():
-            st_model_dir = st_model_dir / "model"
+        st_model_dir = find_st_model_root(model_dir)
 
         adapter_path = st_model_dir / "adapter_model.safetensors"
         if not adapter_path.exists():

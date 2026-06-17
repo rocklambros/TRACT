@@ -137,9 +137,13 @@ def predictor_dir(tmp_path: Path) -> Path:
 
     model_dir = tmp_path / "deployment_model"
     model_dir.mkdir()
-    (model_dir / "model").mkdir()
+    st_dir = model_dir / "model"
+    st_dir.mkdir()
+    # ST marker files required by find_st_model_root
+    (st_dir / "modules.json").write_text("[]", encoding="utf-8")
+    (st_dir / "config_sentence_transformers.json").write_text("{}", encoding="utf-8")
 
-    adapter_path = model_dir / "model" / "adapter_model.safetensors"
+    adapter_path = st_dir / "adapter_model.safetensors"
     adapter_path.write_bytes(b"fake-adapter")
     adapter_hash = hashlib.sha256(b"fake-adapter").hexdigest()
 
@@ -323,3 +327,33 @@ def test_load_deployment_artifacts_rejects_pickled_object(tmp_path: Path) -> Non
     )
     with pytest.raises(ValueError):
         load_deployment_artifacts(npz)
+
+
+# ---------------------------------------------------------------------------
+# verify_hierarchy_hash
+# ---------------------------------------------------------------------------
+
+def test_verify_hierarchy_hash_match(tmp_path: Path) -> None:
+    from tract.inference import verify_hierarchy_hash
+
+    h = tmp_path / "cre_hierarchy.json"
+    h.write_text("{}", encoding="utf-8")
+    digest = hashlib.sha256(h.read_bytes()).hexdigest()
+    verify_hierarchy_hash(h, {"hierarchy_hash": digest})  # no raise
+
+
+def test_verify_hierarchy_hash_mismatch_raises(tmp_path: Path) -> None:
+    from tract.inference import verify_hierarchy_hash
+
+    h = tmp_path / "cre_hierarchy.json"
+    h.write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError, match="hierarchy_hash"):
+        verify_hierarchy_hash(h, {"hierarchy_hash": "0" * 64})
+
+
+def test_verify_hierarchy_hash_absent_key_is_noop(tmp_path: Path) -> None:
+    from tract.inference import verify_hierarchy_hash
+
+    h = tmp_path / "cre_hierarchy.json"
+    h.write_text("{}", encoding="utf-8")
+    verify_hierarchy_hash(h, {})  # older bundle: no raise
