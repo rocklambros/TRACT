@@ -1,9 +1,19 @@
 """TRACT — Translating Requirements Across CRE Trees."""
 from __future__ import annotations
 
+import os as _os
 import subprocess
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 from pathlib import Path
+
+# Force transformers to the PyTorch backend before it (or sentence-transformers)
+# is ever imported. TRACT is torch-only. If TensorFlow is also installed,
+# transformers auto-imports it during model loading; a broken/conflicting TF
+# native library deadlocks on an abseil mutex (tensorflow pywrap preload_check)
+# on macOS, wedging `import sentence_transformers`. setdefault respects an
+# explicit operator override (USE_TF=1).
+_os.environ.setdefault("USE_TF", "0")
+_os.environ.setdefault("USE_FLAX", "0")
 
 
 def _git_short_sha() -> str | None:
