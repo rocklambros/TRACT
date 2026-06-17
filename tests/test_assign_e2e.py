@@ -90,7 +90,7 @@ def _run_assign_file(
     monkeypatch.setattr(
         cli,
         "ensure_deployment_model",
-        lambda: type("R", (), {"path": tmp_path})(),
+        lambda: type("R", (), {"path": tmp_path, "source": "local"})(),
         raising=False,
     )
     args = argparse.Namespace(
