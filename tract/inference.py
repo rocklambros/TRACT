@@ -112,7 +112,7 @@ class DeploymentArtifacts:
 
 def load_deployment_artifacts(artifacts_path: Path) -> DeploymentArtifacts:
     """Load NPZ without model. For proposal pipeline (no inference needed)."""
-    data = np.load(str(artifacts_path), allow_pickle=True)
+    data = np.load(str(artifacts_path), allow_pickle=False)
     return DeploymentArtifacts(
         hub_embeddings=data["hub_embeddings"],
         control_embeddings=data["control_embeddings"],

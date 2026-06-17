@@ -386,7 +386,7 @@ def slice_embeddings_for_framework(
     """
     import numpy as np
 
-    data = np.load(str(artifacts_path), allow_pickle=True)
+    data = np.load(str(artifacts_path), allow_pickle=False)
     stored_hash = str(data["model_adapter_hash"])
 
     if stored_hash != model_adapter_hash:

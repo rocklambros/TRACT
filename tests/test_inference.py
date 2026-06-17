@@ -181,7 +181,7 @@ class TestTRACTPredictor:
 
         health_emb = np.load(
             str(predictor_dir / "deployment_model" / "deployment_artifacts.npz"),
-            allow_pickle=True,
+            allow_pickle=False,
         )["hub_embeddings"][0:1]
         mock_model.encode.side_effect = [health_emb]
 
@@ -305,3 +305,21 @@ def test_resolve_hierarchy_missing_raises_listing_candidates(tmp_path: Path) -> 
         with pytest.raises(FileNotFoundError) as e:
             resolve_hierarchy_path(tmp_path, "download")
         assert "cre_hierarchy.json" in str(e.value)
+
+
+def test_load_deployment_artifacts_rejects_pickled_object(tmp_path: Path) -> None:
+    from tract.inference import load_deployment_artifacts
+
+    npz = tmp_path / "deployment_artifacts.npz"
+    # An object array forces pickle on load; allow_pickle=False must refuse it.
+    np.savez(
+        str(npz),
+        hub_embeddings=np.array([object()], dtype=object),
+        control_embeddings=np.zeros((1, 10)),
+        hub_ids=np.array(["test"]),
+        control_ids=np.array(["test"]),
+        model_adapter_hash=np.array("test"),
+        generation_timestamp=np.array("test"),
+    )
+    with pytest.raises(ValueError):
+        load_deployment_artifacts(npz)
