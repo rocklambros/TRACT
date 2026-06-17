@@ -205,3 +205,18 @@ class TestExportOpenCRECLI:
         parser = build_parser()
         args = parser.parse_args(["export", "--opencre-proposals", "--output-dir", "/tmp/test"])
         assert args.opencre_proposals is True
+
+
+import importlib.util
+import tract.cli as cli
+
+
+def test_require_runtime_exits_before_download(monkeypatch):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: None)  # torch "absent"
+    called = {"download": False}
+    monkeypatch.setattr(cli, "ensure_deployment_model",
+                        lambda: called.__setitem__("download", True), raising=False)
+    with pytest.raises(SystemExit) as e:
+        cli._require_inference_runtime()
+    assert e.value.code == cli.EXIT_MISSING_RUNTIME
+    assert called["download"] is False  # guard fired before any resolve/download

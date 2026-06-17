@@ -15,6 +15,7 @@ from pathlib import Path
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
     BRIDGE_TOP_K,
+    EXIT_MISSING_RUNTIME,
     EXIT_USER_ERROR,
     HF_DATABASE_FILES,
     HF_DATASET_REPO_ID,
@@ -37,8 +38,19 @@ from tract.config import (
     PROCESSED_DIR,
     TRAINING_DIR,
 )
+from tract.model_resolver import ensure_deployment_model
 
 logger = logging.getLogger(__name__)
+
+
+def _require_inference_runtime() -> None:
+    """Fail fast (before any download) if the phase0 inference runtime is missing."""
+    import importlib.util
+    if (importlib.util.find_spec("torch") is None
+            or importlib.util.find_spec("sentence_transformers") is None):
+        print("Inference needs the phase0 runtime: pip install 'tract[phase0]'",
+              file=sys.stderr)
+        sys.exit(EXIT_MISSING_RUNTIME)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -323,7 +335,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output directory for review files",
     )
     p_review_export.add_argument(
-        "--model-dir", default=str(PHASE1D_DEPLOYMENT_MODEL_DIR),
+        "--model-dir", default=None,
         help="Path to deployment model directory",
     )
 
@@ -503,7 +515,9 @@ def _cmd_download(args: argparse.Namespace) -> None:
 def _cmd_assign(args: argparse.Namespace) -> None:
     from tract.inference import TRACTPredictor
 
-    predictor = TRACTPredictor(PHASE1D_DEPLOYMENT_MODEL_DIR)
+    _require_inference_runtime()
+    resolved = ensure_deployment_model()
+    predictor = TRACTPredictor(resolved.path, source=resolved.source)
 
     if args.file:
         file_path = Path(args.file)
@@ -683,7 +697,9 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         print(f"Error: Framework '{fw.framework_id}' already exists. Use --force to overwrite.", file=sys.stderr)
         sys.exit(1)
 
-    predictor = TRACTPredictor(PHASE1D_DEPLOYMENT_MODEL_DIR)
+    _require_inference_runtime()
+    resolved = ensure_deployment_model()
+    predictor = TRACTPredictor(resolved.path, source=resolved.source)
 
     texts = []
     for ctrl in fw.controls:
@@ -1601,10 +1617,10 @@ def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
     )
 
     if not args.dry_run:
+        _require_inference_runtime()
+        resolved = ensure_deployment_model()
         inf_summary = run_uncovered_inference(
-            PHASE1C_CROSSWALK_DB_PATH,
-            PHASE1D_DEPLOYMENT_MODEL_DIR,
-            dry_run=args.dry_run,
+            PHASE1C_CROSSWALK_DB_PATH, resolved.path, dry_run=args.dry_run,
         )
         logger.info("Uncovered inference: %s", inf_summary)
         print(
@@ -1618,7 +1634,11 @@ def _cmd_review_export(args: argparse.Namespace) -> None:
     from tract.review.guide import generate_hub_reference, generate_reviewer_guide
 
     output_dir = Path(args.output)
-    model_dir = Path(args.model_dir)
+    if args.model_dir is None:
+        _require_inference_runtime()
+        model_dir = ensure_deployment_model().path
+    else:
+        model_dir = Path(args.model_dir)
 
     metadata = generate_review_export(
         PHASE1C_CROSSWALK_DB_PATH,
