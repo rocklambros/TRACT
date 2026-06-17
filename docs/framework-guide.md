@@ -210,7 +210,7 @@ tract ingest --file my_fw_prepared.json
 3. Top-k hub assignments are generated with calibrated confidence scores
 4. A **review file** is written (JSON) containing each control's proposed assignment
 
-**Note:** Ingestion requires model artifacts. Run `tract download` to fetch them from HuggingFace. See [Architecture](architecture.md) for model details.
+**Note:** Ingestion needs the `phase0` inference runtime. The model downloads automatically on first use; no manual `tract download` is required (run it only to pre-warm the cache). See [Architecture](architecture.md) for model details.
 
 ## Review & Accept
 
