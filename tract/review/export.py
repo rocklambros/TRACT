@@ -268,6 +268,8 @@ def generate_review_export(
     model_dir: Path,
     output_dir: Path,
     calibration_path: Path,
+    *,
+    source: str = "local",
 ) -> dict:
     """Build reviewer-ready JSON from in-scope assignments.
 
@@ -280,6 +282,8 @@ def generate_review_export(
         model_dir: Directory containing the deployment model and artifacts.
         output_dir: Directory to write review_export.json into.
         calibration_path: Path to calibration.json with global_threshold.
+        source: Model source identifier passed to TRACTPredictor ("local" or
+            "download"). Defaults to "local".
 
     Returns:
         The metadata dict (same object written into the JSON file).
@@ -305,8 +309,8 @@ def generate_review_export(
         )
     global_threshold: float = float(calibration["global_threshold"])
 
-    logger.info("Loading TRACTPredictor from %s", model_dir)
-    predictor = TRACTPredictor(model_dir)
+    logger.info("Loading TRACTPredictor from %s (source=%s)", model_dir, source)
+    predictor = TRACTPredictor(model_dir, source=source)
     model_version: str = predictor._artifacts.model_adapter_hash[:12]
 
     # ── Query in-scope assignments ─────────────────────────────────────────

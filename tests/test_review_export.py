@@ -835,6 +835,76 @@ class TestCalibrationItems:
         items = _generate_calibration_items(db_path, predictor, 0.5, {})
         assert items == []
 
+
+# ── I1: generate_review_export forwards source to TRACTPredictor ─────────────
+
+
+class TestGenerateReviewExportSourceForwarding:
+    """generate_review_export accepts a source parameter and passes it to
+    TRACTPredictor so a downloaded snapshot is identified correctly.
+    """
+
+    def test_source_parameter_accepted(
+        self, review_db: Path, calibration_json: Path, tmp_path: Path,
+    ) -> None:
+        """generate_review_export must accept a source keyword argument."""
+        import inspect
+        sig = inspect.signature(generate_review_export)
+        assert "source" in sig.parameters, (
+            "generate_review_export must have a 'source' parameter"
+        )
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_source_forwarded_to_predictor(
+        self,
+        mock_cls: MagicMock,
+        review_db: Path,
+        calibration_json: Path,
+        tmp_path: Path,
+        mock_predictor: MagicMock,
+    ) -> None:
+        """The source argument must be passed through to TRACTPredictor."""
+        mock_cls.return_value = mock_predictor
+
+        generate_review_export(
+            review_db,
+            tmp_path / "model",
+            tmp_path / "out",
+            calibration_json,
+            source="download",
+        )
+
+        mock_cls.assert_called_once()
+        _, kwargs = mock_cls.call_args
+        assert kwargs.get("source") == "download", (
+            f"Expected TRACTPredictor to receive source='download', got: {mock_cls.call_args}"
+        )
+
+    @patch("tract.inference.TRACTPredictor")
+    def test_default_source_is_local(
+        self,
+        mock_cls: MagicMock,
+        review_db: Path,
+        calibration_json: Path,
+        tmp_path: Path,
+        mock_predictor: MagicMock,
+    ) -> None:
+        """When source is omitted, TRACTPredictor must receive source='local'."""
+        mock_cls.return_value = mock_predictor
+
+        generate_review_export(
+            review_db,
+            tmp_path / "model",
+            tmp_path / "out",
+            calibration_json,
+        )
+
+        mock_cls.assert_called_once()
+        _, kwargs = mock_cls.call_args
+        assert kwargs.get("source") == "local", (
+            f"Expected default source='local', got: {mock_cls.call_args}"
+        )
+
     def test_fewer_than_20_gt_items(self, tmp_path: Path) -> None:
         """When fewer than 20 GT items exist, returns all available."""
         db_path = tmp_path / "small.db"

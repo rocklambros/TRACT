@@ -9,12 +9,17 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
     BRIDGE_TOP_K,
+    EXIT_INTEGRITY,
+    EXIT_MISSING_RUNTIME,
+    EXIT_OFFLINE,
+    EXIT_USER_ERROR,
     HF_DATABASE_FILES,
     HF_DATASET_REPO_ID,
     HF_DEFAULT_REPO_ID,
@@ -28,21 +33,65 @@ from tract.config import (
     PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
     PHASE1D_DEPLOYMENT_MODEL_DIR,
+    PHASE1D_INGEST_MAX_FILE_SIZE,
     PHASE1D_PROPOSAL_BUDGET_CAP,
     PHASE3_DATASET_REPO_ID,
     PHASE3_DATASET_STAGING_DIR,
     PHASE3_REVIEW_OUTPUT_DIR,
     PROCESSED_DIR,
+    TRACT_MODEL_PINNED_REVISION,
     TRAINING_DIR,
 )
+import tract as _tract_pkg
 
 logger = logging.getLogger(__name__)
+
+
+def _require_inference_runtime() -> None:
+    """Fail fast (before any download) if the phase0 inference runtime is missing."""
+    import importlib.util
+    if (importlib.util.find_spec("torch") is None
+            or importlib.util.find_spec("sentence_transformers") is None):
+        print("Inference needs the phase0 runtime: pip install 'tract[phase0]'",
+              file=sys.stderr)
+        sys.exit(EXIT_MISSING_RUNTIME)
+
+
+def _resolve_model_or_exit():
+    """Resolve the deployment model, translating resolver exceptions to exit codes.
+
+    Wraps ensure_deployment_model() and maps:
+        OfflineModelError  → EXIT_OFFLINE  (3) — model not cached, hub offline
+        ModelIntegrityError → EXIT_INTEGRITY (4) — sha256 mismatch on downloaded artifact
+
+    Returns:
+        ResolvedModel from ensure_deployment_model().
+    """
+    from tract.model_resolver import (
+        ModelIntegrityError,
+        OfflineModelError,
+        ensure_deployment_model,
+    )
+    try:
+        return ensure_deployment_model()
+    except OfflineModelError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(EXIT_OFFLINE)
+    except ModelIntegrityError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(EXIT_INTEGRITY)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="tract",
         description="TRACT — Translating Requirements Across CRE Trees",
+    )
+    _repo = os.environ.get("TRACT_MODEL_REPO_ID", HF_DEFAULT_REPO_ID)
+    _rev = os.environ.get("TRACT_MODEL_REVISION", TRACT_MODEL_PINNED_REVISION)
+    parser.add_argument(
+        "--version", action="version",
+        version=f"tract {_tract_pkg.__version__}\nmodel: {_repo}@{_rev}",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -321,7 +370,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output directory for review files",
     )
     p_review_export.add_argument(
-        "--model-dir", default=str(PHASE1D_DEPLOYMENT_MODEL_DIR),
+        "--model-dir", default=None,
         help="Path to deployment model directory",
     )
 
@@ -462,6 +511,7 @@ def _cmd_download(args: argparse.Namespace) -> None:
                 repo_id=HF_DEFAULT_REPO_ID,
                 filename=filename,
                 local_dir=str(st_model_dir),
+                revision=TRACT_MODEL_PINNED_REVISION,
             )
             print(f"  {filename}")
 
@@ -471,6 +521,7 @@ def _cmd_download(args: argparse.Namespace) -> None:
                 repo_id=HF_DEFAULT_REPO_ID,
                 filename=filename,
                 local_dir=str(model_dir),
+                revision=TRACT_MODEL_PINNED_REVISION,
             )
             print(f"  {filename}")
         print(f"Model artifacts saved to {model_dir}")
@@ -501,29 +552,66 @@ def _cmd_download(args: argparse.Namespace) -> None:
 def _cmd_assign(args: argparse.Namespace) -> None:
     from tract.inference import TRACTPredictor
 
-    predictor = TRACTPredictor(PHASE1D_DEPLOYMENT_MODEL_DIR)
+    _require_inference_runtime()
+    resolved = _resolve_model_or_exit()
+    predictor = TRACTPredictor(resolved.path, source=resolved.source)
 
     if args.file:
         file_path = Path(args.file)
         if not file_path.exists():
             print(f"Error: File not found: {file_path}", file=sys.stderr)
-            sys.exit(1)
+            sys.exit(EXIT_USER_ERROR)
+        if file_path.stat().st_size > PHASE1D_INGEST_MAX_FILE_SIZE:
+            print(
+                f"Error: --file exceeds {PHASE1D_INGEST_MAX_FILE_SIZE} bytes",
+                file=sys.stderr,
+            )
+            sys.exit(EXIT_USER_ERROR)
 
-        texts = [line.strip() for line in file_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        raw_lines = file_path.read_text(encoding="utf-8").splitlines()
+        # Preserve 1-based source-file line numbers; strip only to detect blank lines,
+        # then store the stripped text as the canonical control string.
+        indexed = [(n, ln.strip()) for n, ln in enumerate(raw_lines, start=1) if ln.strip()]
+
+        output_path = (
+            Path(args.output)
+            if args.output
+            else file_path.with_suffix(".jsonl").with_stem(file_path.stem + "_assignments")
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if not indexed:
+            print("Wrote 0 assignments (no non-blank input lines).")
+            return
+
+        line_numbers = [n for n, _ in indexed]
+        texts = [t for _, t in indexed]
         results = predictor.predict_batch(texts, top_k=args.top_k)
 
-        output_path = Path(args.output) if args.output else file_path.with_suffix(".jsonl").with_stem(file_path.stem + "_assignments")
-
-        output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
-            for text, preds in sorted(zip(texts, results), key=lambda tp: tp[1][0].raw_similarity if tp[1] else 0):
-                line = {"text": text[:100], "predictions": [p.to_dict() for p in preds]}
-                f.write(json.dumps(line, ensure_ascii=False) + "\n")
+            for input_index, text, preds in zip(line_numbers, texts, results):
+                f.write(
+                    json.dumps(
+                        {
+                            "input_index": input_index,
+                            "text": text,
+                            "predictions": [p.to_dict() for p in preds],
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
 
-        ood_count = sum(1 for r in results if r and r[0].is_ood)
-        high_conf = sum(1 for r in results if r and r[0].calibrated_confidence > 0.5)
+        # getattr guards tolerate prediction objects that predate is_ood / calibrated_confidence
+        ood_count = sum(1 for r in results if r and getattr(r[0], "is_ood", False))
+        high_conf = sum(
+            1 for r in results if r and getattr(r[0], "calibrated_confidence", 0.0) > 0.5
+        )
         print(f"Wrote {len(results)} assignments to {output_path}")
-        print(f"{ood_count}/{len(results)} controls flagged OOD, {high_conf}/{len(results)} high confidence")
+        print(
+            f"{ood_count}/{len(results)} controls flagged OOD, "
+            f"{high_conf}/{len(results)} high confidence"
+        )
         return
 
     if not args.text:
@@ -646,7 +734,9 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         print(f"Error: Framework '{fw.framework_id}' already exists. Use --force to overwrite.", file=sys.stderr)
         sys.exit(1)
 
-    predictor = TRACTPredictor(PHASE1D_DEPLOYMENT_MODEL_DIR)
+    _require_inference_runtime()
+    resolved = _resolve_model_or_exit()
+    predictor = TRACTPredictor(resolved.path, source=resolved.source)
 
     texts = []
     for ctrl in fw.controls:
@@ -1250,7 +1340,6 @@ def _cmd_hierarchy(args: argparse.Namespace) -> None:
 
 
 def _cmd_propose_hubs(args: argparse.Namespace) -> None:
-    import numpy as np
 
     from tract.config import PHASE1D_ARTIFACTS_PATH, PHASE1D_CALIBRATION_PATH
     from tract.hierarchy import CREHierarchy
@@ -1564,10 +1653,11 @@ def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
     )
 
     if not args.dry_run:
+        _require_inference_runtime()
+        resolved = _resolve_model_or_exit()
         inf_summary = run_uncovered_inference(
-            PHASE1C_CROSSWALK_DB_PATH,
-            PHASE1D_DEPLOYMENT_MODEL_DIR,
-            dry_run=args.dry_run,
+            PHASE1C_CROSSWALK_DB_PATH, resolved.path, dry_run=args.dry_run,
+            source=resolved.source,
         )
         logger.info("Uncovered inference: %s", inf_summary)
         print(
@@ -1581,13 +1671,21 @@ def _cmd_review_export(args: argparse.Namespace) -> None:
     from tract.review.guide import generate_hub_reference, generate_reviewer_guide
 
     output_dir = Path(args.output)
-    model_dir = Path(args.model_dir)
+    if args.model_dir is None:
+        _require_inference_runtime()
+        resolved = _resolve_model_or_exit()
+        model_dir = resolved.path
+        source = resolved.source
+    else:
+        model_dir = Path(args.model_dir)
+        source = "local"
 
     metadata = generate_review_export(
         PHASE1C_CROSSWALK_DB_PATH,
         model_dir,
         output_dir,
         PHASE1D_CALIBRATION_PATH,
+        source=source,
     )
     generate_reviewer_guide(output_dir, metadata)
     generate_hub_reference(PHASE1C_CROSSWALK_DB_PATH, output_dir)
@@ -1682,9 +1780,9 @@ def _cmd_publish_dataset(args: argparse.Namespace) -> None:
         print(f"Published to {args.repo_id}")
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.command:
         parser.print_help()

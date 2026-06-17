@@ -137,9 +137,13 @@ def predictor_dir(tmp_path: Path) -> Path:
 
     model_dir = tmp_path / "deployment_model"
     model_dir.mkdir()
-    (model_dir / "model").mkdir()
+    st_dir = model_dir / "model"
+    st_dir.mkdir()
+    # ST marker files required by find_st_model_root
+    (st_dir / "modules.json").write_text("[]", encoding="utf-8")
+    (st_dir / "config_sentence_transformers.json").write_text("{}", encoding="utf-8")
 
-    adapter_path = model_dir / "model" / "adapter_model.safetensors"
+    adapter_path = st_dir / "adapter_model.safetensors"
     adapter_path.write_bytes(b"fake-adapter")
     adapter_hash = hashlib.sha256(b"fake-adapter").hexdigest()
 
@@ -181,7 +185,7 @@ class TestTRACTPredictor:
 
         health_emb = np.load(
             str(predictor_dir / "deployment_model" / "deployment_artifacts.npz"),
-            allow_pickle=True,
+            allow_pickle=False,
         )["hub_embeddings"][0:1]
         mock_model.encode.side_effect = [health_emb]
 
@@ -245,3 +249,117 @@ class TestTRACTPredictor:
         results = predictor.predict_batch(["text 1", "text 2", "text 3"])
         assert len(results) == 3
         assert all(len(preds) == 5 for preds in results)
+
+    def test_predict_batch_empty_returns_empty_without_model_call(self) -> None:
+        from tract.inference import TRACTPredictor
+        # A predictor whose model would raise if .encode were called proves we short-circuit.
+        pred = TRACTPredictor.__new__(TRACTPredictor)  # bypass __init__ (no model load)
+        class _Boom:
+            def encode(self, *a, **k):  # pragma: no cover - must never be called
+                raise AssertionError("encode called on empty input")
+        pred._model = _Boom()
+        assert pred.predict_batch([]) == []
+
+
+def _make_st_dir(d: Path) -> None:
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "modules.json").write_text("[]", encoding="utf-8")
+    (d / "config_sentence_transformers.json").write_text("{}", encoding="utf-8")
+
+
+def test_find_st_model_root_flat(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    _make_st_dir(tmp_path)
+    assert find_st_model_root(tmp_path) == tmp_path
+
+
+def test_find_st_model_root_single_nest(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    _make_st_dir(tmp_path / "model")
+    assert find_st_model_root(tmp_path) == tmp_path / "model"
+
+
+def test_find_st_model_root_double_nest_wins_over_outer(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    _make_st_dir(tmp_path / "model" / "model")
+    assert find_st_model_root(tmp_path) == tmp_path / "model" / "model"
+
+
+def test_find_st_model_root_missing_raises(tmp_path: Path) -> None:
+    from tract.inference import find_st_model_root
+
+    with pytest.raises(FileNotFoundError):
+        find_st_model_root(tmp_path)
+
+
+def test_resolve_hierarchy_download_prefers_snapshot_root(tmp_path: Path) -> None:
+    from tract.inference import resolve_hierarchy_path
+
+    (tmp_path / "cre_hierarchy.json").write_text("{}", encoding="utf-8")
+    assert resolve_hierarchy_path(tmp_path, "download") == tmp_path / "cre_hierarchy.json"
+
+
+def test_resolve_hierarchy_missing_raises_listing_candidates(tmp_path: Path) -> None:
+    from tract.inference import resolve_hierarchy_path
+
+    with patch("tract.inference.PROCESSED_DIR", tmp_path / "nonexistent_processed"):
+        with pytest.raises(FileNotFoundError) as e:
+            resolve_hierarchy_path(tmp_path, "download")
+        assert "cre_hierarchy.json" in str(e.value)
+
+
+def test_load_deployment_artifacts_rejects_pickled_object(tmp_path: Path) -> None:
+    from tract.inference import load_deployment_artifacts
+
+    npz = tmp_path / "deployment_artifacts.npz"
+    # An object array forces pickle on load; allow_pickle=False must refuse it.
+    np.savez(
+        str(npz),
+        hub_embeddings=np.array([object()], dtype=object),
+        control_embeddings=np.zeros((1, 10)),
+        hub_ids=np.array(["test"]),
+        control_ids=np.array(["test"]),
+        model_adapter_hash=np.array("test"),
+        generation_timestamp=np.array("test"),
+    )
+    with pytest.raises(ValueError):
+        load_deployment_artifacts(npz)
+
+
+# ---------------------------------------------------------------------------
+# verify_hierarchy_hash
+# ---------------------------------------------------------------------------
+
+def test_verify_hierarchy_hash_match(tmp_path: Path) -> None:
+    from tract.inference import verify_hierarchy_hash
+
+    h = tmp_path / "cre_hierarchy.json"
+    h.write_text("{}", encoding="utf-8")
+    digest = hashlib.sha256(h.read_bytes()).hexdigest()
+    verify_hierarchy_hash(h, {"hierarchy_hash": digest})  # no raise
+
+
+def test_verify_hierarchy_hash_mismatch_warns_not_raises(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    import logging
+
+    from tract.inference import verify_hierarchy_hash
+
+    h = tmp_path / "cre_hierarchy.json"
+    h.write_text("{}", encoding="utf-8")
+    # Provenance drift must WARN, not block a semantically-valid model.
+    with caplog.at_level(logging.WARNING, logger="tract.inference"):
+        verify_hierarchy_hash(h, {"hierarchy_hash": "0" * 64})
+    assert any("hierarchy_hash mismatch" in r.message for r in caplog.records)
+
+
+def test_verify_hierarchy_hash_absent_key_is_noop(tmp_path: Path) -> None:
+    from tract.inference import verify_hierarchy_hash
+
+    h = tmp_path / "cre_hierarchy.json"
+    h.write_text("{}", encoding="utf-8")
+    verify_hierarchy_hash(h, {})  # older bundle: no raise
