@@ -1043,7 +1043,7 @@ from tract import config
 def test_download_pins_revision(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "PHASE1D_DEPLOYMENT_MODEL_DIR", tmp_path / "dm")
     monkeypatch.setattr(config, "PHASE1C_CROSSWALK_DB_PATH", tmp_path / "x.db")
-    with patch("tract.cli.hf_hub_download" if hasattr(cli, "hf_hub_download") else "huggingface_hub.hf_hub_download") as dl:
+    with patch("huggingface_hub.hf_hub_download") as dl:   # _cmd_download imports it locally
         dl.return_value = str(tmp_path / "f")
         cli._cmd_download(argparse.Namespace(model_only=True, force=True))
         assert dl.call_count >= 1
@@ -1325,24 +1325,24 @@ git commit -m "feat(cli): tract --version prints package + pinned model revision
 
 ```python
 # tests/test_export_manifest.py
-def test_manifest_tract_version_uses_package_version():
-    import tract
-    from tract.export.manifest import build_manifest
-    m = build_manifest(
+def test_manifest_tract_version_uses_package_version(monkeypatch):
+    import tract.export.manifest as man
+    monkeypatch.setattr(man, "__version__", "9.9.9-test")   # sentinel != hardcoded 0.1.0
+    m = man.build_manifest(
         per_framework_stats={}, confidence_floor=0.3, confidence_overrides={},
         staleness_result={}, model_adapter_hash="deadbeef",
     )
-    assert m["tract_version"] == tract.__version__
+    assert m["tract_version"] == "9.9.9-test"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_export_manifest.py::test_manifest_tract_version_uses_package_version -v`
-Expected: FAIL (returns hardcoded `"0.1.0"`; assert fails only if `__version__ != "0.1.0"`; to make the test meaningful regardless, the implementation must reference `__version__`, so the test asserts identity of source — keep as written, it passes once sourced from `__version__`).
+Expected: FAIL (returns the hardcoded `"0.1.0"`, not the sentinel `"9.9.9-test"`). The monkeypatch only takes effect once `build_manifest` reads `__version__` as a module global, which the implementation below makes it do.
 
 - [ ] **Step 3: Write minimal implementation**
 
-In `tract/export/manifest.py`, add `from tract import __version__` at the top, and change line 46:
+In `tract/export/manifest.py`, add `from tract import __version__` at the top (module global, so the test's monkeypatch binds), and change line 46:
 
 ```python
         "tract_version": __version__,
