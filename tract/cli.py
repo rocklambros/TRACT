@@ -15,6 +15,7 @@ from pathlib import Path
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
     BRIDGE_TOP_K,
+    EXIT_USER_ERROR,
     HF_DATABASE_FILES,
     HF_DATASET_REPO_ID,
     HF_DEFAULT_REPO_ID,
@@ -28,6 +29,7 @@ from tract.config import (
     PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
     PHASE1D_DEPLOYMENT_MODEL_DIR,
+    PHASE1D_INGEST_MAX_FILE_SIZE,
     PHASE1D_PROPOSAL_BUDGET_CAP,
     PHASE3_DATASET_REPO_ID,
     PHASE3_DATASET_STAGING_DIR,
@@ -507,23 +509,58 @@ def _cmd_assign(args: argparse.Namespace) -> None:
         file_path = Path(args.file)
         if not file_path.exists():
             print(f"Error: File not found: {file_path}", file=sys.stderr)
-            sys.exit(1)
+            sys.exit(EXIT_USER_ERROR)
+        if file_path.stat().st_size > PHASE1D_INGEST_MAX_FILE_SIZE:
+            print(
+                f"Error: --file exceeds {PHASE1D_INGEST_MAX_FILE_SIZE} bytes",
+                file=sys.stderr,
+            )
+            sys.exit(EXIT_USER_ERROR)
 
-        texts = [line.strip() for line in file_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        raw_lines = file_path.read_text(encoding="utf-8").splitlines()
+        # Preserve 1-based source-file line numbers; strip only to detect blank lines,
+        # then store the stripped text as the canonical control string.
+        indexed = [(n, ln.strip()) for n, ln in enumerate(raw_lines, start=1) if ln.strip()]
+
+        output_path = (
+            Path(args.output)
+            if args.output
+            else file_path.with_suffix(".jsonl").with_stem(file_path.stem + "_assignments")
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if not indexed:
+            print("Wrote 0 assignments (no non-blank input lines).")
+            return
+
+        line_numbers = [n for n, _ in indexed]
+        texts = [t for _, t in indexed]
         results = predictor.predict_batch(texts, top_k=args.top_k)
 
-        output_path = Path(args.output) if args.output else file_path.with_suffix(".jsonl").with_stem(file_path.stem + "_assignments")
-
-        output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
-            for text, preds in sorted(zip(texts, results), key=lambda tp: tp[1][0].raw_similarity if tp[1] else 0):
-                line = {"text": text[:100], "predictions": [p.to_dict() for p in preds]}
-                f.write(json.dumps(line, ensure_ascii=False) + "\n")
+            for input_index, text, preds in zip(line_numbers, texts, results):
+                f.write(
+                    json.dumps(
+                        {
+                            "input_index": input_index,
+                            "text": text,
+                            "predictions": [p.to_dict() for p in preds],
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
 
-        ood_count = sum(1 for r in results if r and r[0].is_ood)
-        high_conf = sum(1 for r in results if r and r[0].calibrated_confidence > 0.5)
+        # getattr guards tolerate prediction objects that predate is_ood / calibrated_confidence
+        ood_count = sum(1 for r in results if r and getattr(r[0], "is_ood", False))
+        high_conf = sum(
+            1 for r in results if r and getattr(r[0], "calibrated_confidence", 0.0) > 0.5
+        )
         print(f"Wrote {len(results)} assignments to {output_path}")
-        print(f"{ood_count}/{len(results)} controls flagged OOD, {high_conf}/{len(results)} high confidence")
+        print(
+            f"{ood_count}/{len(results)} controls flagged OOD, "
+            f"{high_conf}/{len(results)} high confidence"
+        )
         return
 
     if not args.text:
