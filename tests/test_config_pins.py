@@ -1,4 +1,6 @@
 import re
+import tomllib
+from pathlib import Path
 from tract import config
 
 
@@ -21,3 +23,9 @@ def test_exit_codes_distinct():
     codes = {config.EXIT_USER_ERROR, config.EXIT_OFFLINE,
              config.EXIT_INTEGRITY, config.EXIT_MISSING_RUNTIME}
     assert codes == {2, 3, 4, 5}
+
+
+def test_huggingface_hub_is_a_default_dependency():
+    data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    deps = data["project"]["dependencies"]
+    assert any(d.startswith("huggingface_hub") or d.startswith("huggingface-hub") for d in deps), deps

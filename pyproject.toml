@@ -13,6 +13,7 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "lxml>=5.0",
     "requests>=2.31",
+    "huggingface_hub>=0.24,<1",
 ]
 
 [project.optional-dependencies]
