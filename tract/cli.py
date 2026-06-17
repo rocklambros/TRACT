@@ -36,6 +36,7 @@ from tract.config import (
     PHASE3_DATASET_STAGING_DIR,
     PHASE3_REVIEW_OUTPUT_DIR,
     PROCESSED_DIR,
+    TRACT_MODEL_PINNED_REVISION,
     TRAINING_DIR,
 )
 from tract.model_resolver import ensure_deployment_model
@@ -476,6 +477,7 @@ def _cmd_download(args: argparse.Namespace) -> None:
                 repo_id=HF_DEFAULT_REPO_ID,
                 filename=filename,
                 local_dir=str(st_model_dir),
+                revision=TRACT_MODEL_PINNED_REVISION,
             )
             print(f"  {filename}")
 
@@ -485,6 +487,7 @@ def _cmd_download(args: argparse.Namespace) -> None:
                 repo_id=HF_DEFAULT_REPO_ID,
                 filename=filename,
                 local_dir=str(model_dir),
+                revision=TRACT_MODEL_PINNED_REVISION,
             )
             print(f"  {filename}")
         print(f"Model artifacts saved to {model_dir}")

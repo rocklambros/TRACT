@@ -220,3 +220,18 @@ def test_require_runtime_exits_before_download(monkeypatch):
         cli._require_inference_runtime()
     assert e.value.code == cli.EXIT_MISSING_RUNTIME
     assert called["download"] is False  # guard fired before any resolve/download
+
+
+def test_download_pins_revision(tmp_path, monkeypatch):
+    import argparse
+    from unittest.mock import patch
+    from tract import config
+
+    monkeypatch.setattr(config, "PHASE1D_DEPLOYMENT_MODEL_DIR", tmp_path / "dm")
+    monkeypatch.setattr(config, "PHASE1C_CROSSWALK_DB_PATH", tmp_path / "x.db")
+    with patch("huggingface_hub.hf_hub_download") as dl:   # _cmd_download imports it locally
+        dl.return_value = str(tmp_path / "f")
+        cli._cmd_download(argparse.Namespace(model_only=True, force=True))
+        assert dl.call_count >= 1
+        for _, kwargs in dl.call_args_list:
+            assert kwargs.get("revision") == config.TRACT_MODEL_PINNED_REVISION
