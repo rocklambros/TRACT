@@ -1,6 +1,7 @@
 """Tests for model loading utilities."""
 from __future__ import annotations
 
+import json
 import pytest
 from pathlib import Path
 
@@ -41,3 +42,12 @@ class TestLoadDeploymentModel:
 
         with pytest.raises(FileNotFoundError):
             load_deployment_model(Path("/nonexistent/model"))
+
+    def test_load_deployment_model_rejects_auto_map(self, tmp_path: Path) -> None:
+        from tract.active_learning.model_io import load_deployment_model
+
+        (tmp_path / "config.json").write_text(
+            json.dumps({"auto_map": {"AutoModel": "evil--repo.modeling.Evil"}}),
+            encoding="utf-8")
+        with pytest.raises(ValueError, match="custom code"):
+            load_deployment_model(tmp_path)

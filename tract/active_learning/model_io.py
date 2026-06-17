@@ -1,6 +1,7 @@
 """Model loading utilities for Phase 1C orchestration."""
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 
@@ -38,11 +39,24 @@ def load_deployment_model(model_dir: Path) -> SentenceTransformer:
 
     Args:
         model_dir: Path containing the saved model (with adapter files or full weights).
+
+    Raises:
+        FileNotFoundError: If model_dir does not exist.
+        ValueError: If config.json declares auto_map or custom_pipelines (custom code injection).
     """
     if not model_dir.exists():
         raise FileNotFoundError(f"Model directory not found: {model_dir}")
 
-    model = SentenceTransformer(str(model_dir))
+    config_path = model_dir / "config.json"
+    if config_path.exists():
+        cfg = json.loads(config_path.read_text(encoding="utf-8"))
+        if cfg.get("auto_map") or cfg.get("custom_pipelines"):
+            raise ValueError(
+                f"Refusing to load model with custom code (auto_map/custom_pipelines) "
+                f"in {config_path}"
+            )
+
+    model = SentenceTransformer(str(model_dir), trust_remote_code=False)
     model.max_seq_length = 512
 
     emb = model.encode(["smoke test"], normalize_embeddings=True, show_progress_bar=False)
