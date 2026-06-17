@@ -250,3 +250,59 @@ def test_tract_version_flag(capsys):
     out = capsys.readouterr().out
     assert out.startswith("tract ")
     assert "model:" in out
+
+
+# ── C1: _resolve_model_or_exit maps exceptions to exit codes ─────────────────
+
+
+class TestResolveModelOrExit:
+    """_resolve_model_or_exit translates OfflineModelError → EXIT_OFFLINE
+    and ModelIntegrityError → EXIT_INTEGRITY instead of letting them escape
+    as uncaught tracebacks.
+    """
+
+    def test_offline_error_exits_with_exit_offline(self, monkeypatch, capsys):
+        from tract.model_resolver import OfflineModelError
+
+        monkeypatch.setattr(
+            "tract.model_resolver.ensure_deployment_model",
+            lambda: (_ for _ in ()).throw(OfflineModelError("hub unreachable")),
+        )
+        with pytest.raises(SystemExit) as exc:
+            cli._resolve_model_or_exit()
+        assert exc.value.code == cli.EXIT_OFFLINE
+        err = capsys.readouterr().err
+        assert "hub unreachable" in err
+
+    def test_integrity_error_exits_with_exit_integrity(self, monkeypatch, capsys):
+        from tract.model_resolver import ModelIntegrityError
+
+        monkeypatch.setattr(
+            "tract.model_resolver.ensure_deployment_model",
+            lambda: (_ for _ in ()).throw(ModelIntegrityError("sha mismatch")),
+        )
+        with pytest.raises(SystemExit) as exc:
+            cli._resolve_model_or_exit()
+        assert exc.value.code == cli.EXIT_INTEGRITY
+        err = capsys.readouterr().err
+        assert "sha mismatch" in err
+
+    def test_success_returns_resolved_model(self, monkeypatch):
+        from pathlib import Path
+        from tract.model_resolver import ResolvedModel
+
+        fake = ResolvedModel(path=Path("/fake"), revision="abc123", source="local")
+        monkeypatch.setattr(
+            "tract.model_resolver.ensure_deployment_model",
+            lambda: fake,
+        )
+        result = cli._resolve_model_or_exit()
+        assert result is fake
+
+    def test_exit_offline_constant_is_imported(self):
+        """EXIT_OFFLINE and EXIT_INTEGRITY must be importable from cli module."""
+        assert hasattr(cli, "EXIT_OFFLINE"), "EXIT_OFFLINE not imported in cli.py"
+        assert hasattr(cli, "EXIT_INTEGRITY"), "EXIT_INTEGRITY not imported in cli.py"
+        from tract.config import EXIT_OFFLINE, EXIT_INTEGRITY
+        assert cli.EXIT_OFFLINE == EXIT_OFFLINE
+        assert cli.EXIT_INTEGRITY == EXIT_INTEGRITY

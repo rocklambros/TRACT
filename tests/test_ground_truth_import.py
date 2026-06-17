@@ -944,3 +944,52 @@ class TestRunUncoveredInference:
             assert count == 3
         finally:
             conn.close()
+
+
+# ── I1: run_uncovered_inference forwards source to TRACTPredictor ─────────────
+
+
+class TestRunUncoveredInferenceSourceForwarding:
+    """run_uncovered_inference accepts a source parameter and passes it to
+    TRACTPredictor so a downloaded snapshot is identified correctly.
+    """
+
+    def test_source_parameter_accepted(self) -> None:
+        """run_uncovered_inference must accept a source keyword argument."""
+        import inspect
+        sig = inspect.signature(run_uncovered_inference)
+        assert "source" in sig.parameters, (
+            "run_uncovered_inference must have a 'source' parameter"
+        )
+
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
+    @patch("tract.inference.TRACTPredictor")
+    def test_source_forwarded_to_predictor(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        """The source argument must be passed through to TRACTPredictor."""
+        mock_cls.return_value = _make_mock_predictor()
+
+        run_uncovered_inference(inference_db, tmp_path / "model", source="download")
+
+        mock_cls.assert_called_once()
+        _, kwargs = mock_cls.call_args
+        assert kwargs.get("source") == "download", (
+            f"Expected TRACTPredictor to receive source='download', got: {mock_cls.call_args}"
+        )
+
+    @patch(UNCOVERED_IDS_PATCH, _AIUC1_ONLY)
+    @patch("tract.inference.TRACTPredictor")
+    def test_default_source_is_local(
+        self, mock_cls: MagicMock, inference_db: Path, tmp_path: Path,
+    ) -> None:
+        """When source is omitted, TRACTPredictor must receive source='local'."""
+        mock_cls.return_value = _make_mock_predictor()
+
+        run_uncovered_inference(inference_db, tmp_path / "model")
+
+        mock_cls.assert_called_once()
+        _, kwargs = mock_cls.call_args
+        assert kwargs.get("source") == "local", (
+            f"Expected default source='local', got: {mock_cls.call_args}"
+        )

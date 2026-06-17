@@ -16,7 +16,9 @@ from pathlib import Path
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
     BRIDGE_TOP_K,
+    EXIT_INTEGRITY,
     EXIT_MISSING_RUNTIME,
+    EXIT_OFFLINE,
     EXIT_USER_ERROR,
     HF_DATABASE_FILES,
     HF_DATASET_REPO_ID,
@@ -54,6 +56,31 @@ def _require_inference_runtime() -> None:
         print("Inference needs the phase0 runtime: pip install 'tract[phase0]'",
               file=sys.stderr)
         sys.exit(EXIT_MISSING_RUNTIME)
+
+
+def _resolve_model_or_exit():
+    """Resolve the deployment model, translating resolver exceptions to exit codes.
+
+    Wraps ensure_deployment_model() and maps:
+        OfflineModelError  → EXIT_OFFLINE  (3) — model not cached, hub offline
+        ModelIntegrityError → EXIT_INTEGRITY (4) — sha256 mismatch on downloaded artifact
+
+    Returns:
+        ResolvedModel from ensure_deployment_model().
+    """
+    from tract.model_resolver import (
+        ModelIntegrityError,
+        OfflineModelError,
+        ensure_deployment_model,
+    )
+    try:
+        return ensure_deployment_model()
+    except OfflineModelError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(EXIT_OFFLINE)
+    except ModelIntegrityError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(EXIT_INTEGRITY)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -527,7 +554,7 @@ def _cmd_assign(args: argparse.Namespace) -> None:
     from tract.inference import TRACTPredictor
 
     _require_inference_runtime()
-    resolved = ensure_deployment_model()
+    resolved = _resolve_model_or_exit()
     predictor = TRACTPredictor(resolved.path, source=resolved.source)
 
     if args.file:
@@ -709,7 +736,7 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     _require_inference_runtime()
-    resolved = ensure_deployment_model()
+    resolved = _resolve_model_or_exit()
     predictor = TRACTPredictor(resolved.path, source=resolved.source)
 
     texts = []
@@ -1629,9 +1656,10 @@ def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
 
     if not args.dry_run:
         _require_inference_runtime()
-        resolved = ensure_deployment_model()
+        resolved = _resolve_model_or_exit()
         inf_summary = run_uncovered_inference(
             PHASE1C_CROSSWALK_DB_PATH, resolved.path, dry_run=args.dry_run,
+            source=resolved.source,
         )
         logger.info("Uncovered inference: %s", inf_summary)
         print(
@@ -1647,15 +1675,19 @@ def _cmd_review_export(args: argparse.Namespace) -> None:
     output_dir = Path(args.output)
     if args.model_dir is None:
         _require_inference_runtime()
-        model_dir = ensure_deployment_model().path
+        resolved = _resolve_model_or_exit()
+        model_dir = resolved.path
+        source = resolved.source
     else:
         model_dir = Path(args.model_dir)
+        source = "local"
 
     metadata = generate_review_export(
         PHASE1C_CROSSWALK_DB_PATH,
         model_dir,
         output_dir,
         PHASE1D_CALIBRATION_PATH,
+        source=source,
     )
     generate_reviewer_guide(output_dir, metadata)
     generate_hub_reference(PHASE1C_CROSSWALK_DB_PATH, output_dir)

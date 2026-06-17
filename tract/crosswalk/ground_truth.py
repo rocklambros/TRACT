@@ -265,17 +265,26 @@ def run_uncovered_inference(
     model_dir: Path,
     *,
     dry_run: bool = False,
+    source: str = "local",
 ) -> dict[str, object]:
     """Run inference on uncovered framework controls and insert as model_prediction.
 
-    Returns summary dict with per-framework counts and text quality warnings.
+    Args:
+        db_path: Path to crosswalk.db.
+        model_dir: Directory containing the deployment model and artifacts.
+        dry_run: If True, rollback all inserts after counting them.
+        source: Model source identifier passed to TRACTPredictor ("local" or
+            "download"). Defaults to "local".
+
+    Returns:
+        Summary dict with per-framework counts and text quality warnings.
     """
     from tract.inference import TRACTPredictor
 
     if not dry_run:
         _backup_database(db_path)
 
-    predictor = TRACTPredictor(model_dir)
+    predictor = TRACTPredictor(model_dir, source=source)
     model_version = predictor._artifacts.model_adapter_hash[:12]
 
     conn = get_connection(db_path)
