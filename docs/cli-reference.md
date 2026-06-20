@@ -1,6 +1,6 @@
 # TRACT CLI Reference
 
-Complete reference for all 19 `tract` CLI subcommands.
+Complete reference for all 20 `tract` CLI subcommands.
 
 **Installation:**
 
@@ -11,10 +11,29 @@ pip install -e ".[llm]"       # LLM-assisted prepare (--llm flag)
 pip install -e ".[dev]"       # Development tools (pytest, mypy)
 ```
 
+`huggingface_hub` ships in the base install, so `tract download` and the first-use auto-download work without the full ML stack. Inference (`assign`, `ingest`, `compare`) needs the `phase0` extra.
+
+**Global flags and environment:**
+
+```bash
+tract --version        # Package version + pinned model revision (repo@sha), no download
+tract --help           # List all subcommands
+tract <cmd> --help     # Options for one subcommand
+```
+
+| Variable | Effect |
+|----------|--------|
+| `TRACT_MODEL_REVISION` | Override the pinned model revision (skips recorded-hash integrity; logs a warning) |
+| `TRACT_MODEL_REPO_ID` | Override the model repo, e.g. a mirror |
+| `HF_HUB_OFFLINE=1` | Never reach the Hub; a cold cache then exits with code 3 and an actionable message |
+| `USE_TF` | TRACT sets `USE_TF=0` at import (PyTorch only); set `USE_TF=1` to let `transformers` use TensorFlow |
+
 ## Command Flow
 
 ```mermaid
 flowchart TD
+    DL["download"] -.-> |"fetches model<br/>+ crosswalk.db"| ASN
+    DL -.-> CMP
     PREP["prepare"] --> VAL["validate"]
     VAL --> ING["ingest"]
     ING --> RE["review-export"]
@@ -47,13 +66,36 @@ flowchart TD
 
 ---
 
+## Setup
+
+### download
+
+Pre-fetch the pinned model and the crosswalk database from HuggingFace Hub. This is **optional**: `tract assign` and `tract ingest` download the model automatically on first use. Run `download` to warm the cache ahead of time (CI, an airgapped host) or to also pull the crosswalk database. The download is pinned to the model revision recorded in `tract/config.py`.
+
+```bash
+tract download                      # Model (~1.3 GB) + crosswalk.db
+tract download --model-only          # Model artifacts only (skip crosswalk.db)
+tract download --force               # Re-download even if files already exist
+```
+
+| Option | Description |
+|--------|-------------|
+| `--model-only` | Download model artifacts only (skip crosswalk.db) |
+| `--force` | Re-download even if files already exist |
+
+**Downloads from:**
+- Model + inference artifacts: [`rockCO78/tract-cre-assignment`](https://huggingface.co/rockCO78/tract-cre-assignment)
+- Crosswalk database: [`rockCO78/tract-crosswalk-dataset`](https://huggingface.co/datasets/rockCO78/tract-crosswalk-dataset)
+
+---
+
 ## Explore
 
 ### tutorial
 
 Guided walkthrough of TRACT capabilities.
 
-**Prerequisites:** Requires deployed model artifacts (Phase 1C pipeline output). Prints diagnostic if artifacts are missing.
+**Prerequisites:** the model and the crosswalk database. `tract assign` downloads the model on first use, but the tutorial also walks the crosswalk database, so run `tract download` first to fetch both.
 
 ```bash
 tract tutorial
@@ -168,7 +210,7 @@ tract validate --file prepared.json --json
 
 Assign control text to CRE hubs using the trained model.
 
-**Prerequisites:** Requires deployed model artifacts.
+**Prerequisites:** the `phase0` inference runtime (`pip install '.[phase0]'`). The model itself downloads automatically on the first call (~1.3 GB, sha256-verified, cached for reuse); no manual `download` step is needed. The runtime check fails fast with exit code 5 before any download if `torch`/`sentence-transformers` are missing.
 
 ```bash
 tract assign [text] [options]
@@ -196,11 +238,15 @@ tract assign --file controls.txt --output results.jsonl
 tract assign "Access control policy" --raw --verbose --top-k 10
 ```
 
+**Batch output (`--file`).** One JSON object per non-blank input line, in input order, each carrying `input_index` (the 1-based source-file line number), the full untruncated `text`, and the `predictions`. Blank lines are skipped, so `input_index` has gaps where they were. Rejoin downstream by `input_index`, never by position. Files larger than the ingest size cap are rejected with exit code 2.
+
+**Exit codes** (shared by the inference commands): `0` success, `2` user error (bad input/file), `3` model unreachable while offline (`HF_HUB_OFFLINE` set and not cached), `4` integrity check failed on a downloaded artifact, `5` missing inference runtime.
+
 ### ingest
 
 Ingest a validated framework and generate CRE hub assignments for review.
 
-**Prerequisites:** Requires deployed model artifacts.
+**Prerequisites:** the `phase0` inference runtime. Like `assign`, the model downloads automatically on first use (no manual `tract download` needed).
 
 ```bash
 tract ingest --file <path> [--force] [--json]

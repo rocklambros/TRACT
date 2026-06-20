@@ -17,7 +17,7 @@ TRACT is a CLI tool that assigns security framework controls to CRE hubs using a
 
 ```
 tract/                  # Core library
-├── cli.py              # CLI entry point (18 subcommands)
+├── cli.py              # CLI entry point (20 subcommands)
 ├── config.py           # All constants, paths, thresholds
 ├── schema.py           # Pydantic models (Control, FrameworkOutput)
 ├── hierarchy.py        # CRE hub hierarchy operations
@@ -59,7 +59,7 @@ tests/                  # Test suite
 ├── test_parse_*.py     # Parser tests
 ├── test_schema.py      # Schema validation tests
 ├── test_sanitize.py    # Sanitization tests
-└── ... (871 tests total)
+└── ... (894 tests total)
 
 data/
 ├── raw/                # Immutable source data (never modify after fetch)

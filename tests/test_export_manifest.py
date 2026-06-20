@@ -63,3 +63,13 @@ class TestExportManifest:
         sha = manifest["tract_git_sha"]
         assert isinstance(sha, str)
         assert len(sha) >= 7 or sha == "unknown"
+
+
+def test_manifest_tract_version_uses_package_version(monkeypatch):
+    import tract.export.manifest as man
+    monkeypatch.setattr(man, "__version__", "9.9.9-test")   # sentinel != hardcoded 0.1.0
+    m = man.build_manifest(
+        per_framework_stats={}, confidence_floor=0.3, confidence_overrides={},
+        staleness_result={}, model_adapter_hash="deadbeef",
+    )
+    assert m["tract_version"] == "9.9.9-test"

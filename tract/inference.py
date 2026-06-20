@@ -19,10 +19,7 @@ from tract.calibration.ood import flag_ood_items
 from tract.calibration.temperature import calibrate_similarities
 from tract.config import (
     PROCESSED_DIR,
-    PHASE1D_ARTIFACTS_PATH,
-    PHASE1D_CALIBRATION_PATH,
     PHASE1D_DEFAULT_TOP_K,
-    PHASE1D_DEPLOYMENT_MODEL_DIR,
     PHASE1D_DUPLICATE_THRESHOLD,
     PHASE1D_HEALTH_CHECK_FLOOR,
     PHASE1D_SIMILAR_THRESHOLD,
@@ -32,6 +29,69 @@ from tract.io import load_json
 from tract.sanitize import sanitize_text
 
 logger = logging.getLogger(__name__)
+
+_ST_MARKERS = ("modules.json", "config_sentence_transformers.json")
+
+
+def find_st_model_root(model_dir: Path) -> Path:
+    """Return the SentenceTransformer root, tolerating flat/nested layouts.
+
+    Probes most-nested first so a double-nested dev tree is not shadowed by an
+    outer dir. Requires both ST marker files to avoid loading a partial dir.
+    """
+    candidates = [model_dir / "model" / "model", model_dir / "model", model_dir]
+    for cand in candidates:
+        if all((cand / marker).exists() for marker in _ST_MARKERS):
+            return cand
+    raise FileNotFoundError(
+        f"No SentenceTransformer root under {model_dir} "
+        f"(need {' + '.join(_ST_MARKERS)} in one of: "
+        f"{', '.join(str(c) for c in candidates)})"
+    )
+
+
+def verify_hierarchy_hash(hierarchy_path: Path, calibration: dict[str, Any]) -> None:
+    """Cross-check the loaded hierarchy against the hash recorded in calibration.
+
+    Surfaces a hierarchy that differs from the one calibration was built against.
+    This is a WARNING, not a hard failure: a byte-level file-hash difference is
+    provenance drift (regenerated metadata, key ordering, hubs the model does not
+    predict over), not necessarily a correctness break. The genuine failure mode —
+    a hub_id the model predicts that the hierarchy cannot resolve — is handled where
+    names are looked up (the hub falls back to its id). No-op for older calibration
+    bundles that predate the hierarchy_hash field.
+    """
+    expected = calibration.get("hierarchy_hash")
+    if not expected:
+        return
+    actual = hashlib.sha256(hierarchy_path.read_bytes()).hexdigest()
+    if actual != expected:
+        logger.warning(
+            "hierarchy_hash mismatch (provenance drift): calibration=%s… vs "
+            "loaded %s=%s… — proceeding; hub names resolve from the loaded hierarchy",
+            expected[:12], hierarchy_path, actual[:12],
+        )
+
+
+def resolve_hierarchy_path(model_dir: Path, source: str) -> Path:
+    """Resolve cre_hierarchy.json. For a downloaded snapshot, prefer the
+    revision-pinned copy at the snapshot root over a possibly-stale dev copy.
+    """
+    snapshot_root = model_dir / "cre_hierarchy.json"
+    data_processed = model_dir.parent.parent / "data" / "processed" / "cre_hierarchy.json"
+    package_processed = PROCESSED_DIR / "cre_hierarchy.json"
+    order = (
+        [snapshot_root, data_processed, package_processed]
+        if source == "download"
+        else [data_processed, snapshot_root, package_processed]
+    )
+    for cand in order:
+        if cand.exists():
+            return cand
+    raise FileNotFoundError(
+        "cre_hierarchy.json not found in any of: "
+        + ", ".join(str(c) for c in order)
+    )
 
 
 @dataclass(frozen=True)
@@ -72,7 +132,7 @@ class DeploymentArtifacts:
 
 def load_deployment_artifacts(artifacts_path: Path) -> DeploymentArtifacts:
     """Load NPZ without model. For proposal pipeline (no inference needed)."""
-    data = np.load(str(artifacts_path), allow_pickle=True)
+    data = np.load(str(artifacts_path), allow_pickle=False)
     return DeploymentArtifacts(
         hub_embeddings=data["hub_embeddings"],
         control_embeddings=data["control_embeddings"],
@@ -86,7 +146,7 @@ def load_deployment_artifacts(artifacts_path: Path) -> DeploymentArtifacts:
 class TRACTPredictor:
     """Loads deployment model + cached artifacts. Stateful — holds model in memory."""
 
-    def __init__(self, model_dir: Path) -> None:
+    def __init__(self, model_dir: Path, source: str = "local") -> None:
         from tract.active_learning.model_io import load_deployment_model
 
         self._model_dir = model_dir
@@ -105,14 +165,11 @@ class TRACTPredictor:
         self._ood_threshold: float = self._calibration["ood_threshold"]
         self._conformal_quantile: float = self._calibration["conformal_quantile"]
 
-        hierarchy_path = model_dir.parent.parent / "data" / "processed" / "cre_hierarchy.json"
-        if not hierarchy_path.exists():
-            hierarchy_path = PROCESSED_DIR / "cre_hierarchy.json"
+        hierarchy_path = resolve_hierarchy_path(model_dir, source=source)
+        verify_hierarchy_hash(hierarchy_path, self._calibration)
         self._hierarchy = CREHierarchy.load(hierarchy_path)
 
-        st_model_dir = model_dir / "model"
-        if (st_model_dir / "model").exists():
-            st_model_dir = st_model_dir / "model"
+        st_model_dir = find_st_model_root(model_dir)
 
         adapter_path = st_model_dir / "adapter_model.safetensors"
         if not adapter_path.exists():
@@ -209,6 +266,8 @@ class TRACTPredictor:
         self, texts: list[str], top_k: int = PHASE1D_DEFAULT_TOP_K,
     ) -> list[list[HubPrediction]]:
         """Batch prediction for tract ingest."""
+        if not texts:
+            return []
         clean_texts = [sanitize_text(t) for t in texts]
 
         query_embs = self._model.encode(

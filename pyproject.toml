@@ -13,6 +13,7 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "lxml>=5.0",
     "requests>=2.31",
+    "huggingface_hub>=0.24,<1",
 ]
 
 [project.optional-dependencies]
@@ -30,7 +31,7 @@ dev = [
 phase0 = [
     "torch>=2.2,<3",
     "transformers>=4.40,<5",
-    "sentence-transformers>=3.0,<4",
+    "sentence-transformers>=3.0,<6",
     "anthropic>=0.25,<1",
     "numpy>=1.26,<3",
     "scipy>=1.12,<2",

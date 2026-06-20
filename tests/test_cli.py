@@ -205,3 +205,104 @@ class TestExportOpenCRECLI:
         parser = build_parser()
         args = parser.parse_args(["export", "--opencre-proposals", "--output-dir", "/tmp/test"])
         assert args.opencre_proposals is True
+
+
+import importlib.util
+import tract.cli as cli
+
+
+def test_require_runtime_exits_before_download(monkeypatch):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: None)  # torch "absent"
+    called = {"download": False}
+    monkeypatch.setattr(cli, "ensure_deployment_model",
+                        lambda: called.__setitem__("download", True), raising=False)
+    with pytest.raises(SystemExit) as e:
+        cli._require_inference_runtime()
+    assert e.value.code == cli.EXIT_MISSING_RUNTIME
+    assert called["download"] is False  # guard fired before any resolve/download
+
+
+def test_download_pins_revision(tmp_path, monkeypatch):
+    import argparse
+    from unittest.mock import patch
+    from tract import config
+
+    monkeypatch.setattr(config, "PHASE1D_DEPLOYMENT_MODEL_DIR", tmp_path / "dm")
+    monkeypatch.setattr(config, "PHASE1C_CROSSWALK_DB_PATH", tmp_path / "x.db")
+    with patch("huggingface_hub.hf_hub_download") as dl:   # _cmd_download imports it locally
+        dl.return_value = str(tmp_path / "f")
+        cli._cmd_download(argparse.Namespace(model_only=True, force=True))
+        assert dl.call_count >= 1
+        for _, kwargs in dl.call_args_list:
+            assert kwargs.get("revision") == config.TRACT_MODEL_PINNED_REVISION
+
+
+def test_version_is_a_nonempty_string():
+    import tract
+    assert isinstance(tract.__version__, str) and tract.__version__
+
+
+def test_tract_version_flag(capsys):
+    import tract.cli as cli
+    with pytest.raises(SystemExit) as e:
+        cli.main(["--version"])
+    assert e.value.code == 0
+    out = capsys.readouterr().out
+    assert out.startswith("tract ")
+    assert "model:" in out
+
+
+# ── C1: _resolve_model_or_exit maps exceptions to exit codes ─────────────────
+
+
+class TestResolveModelOrExit:
+    """_resolve_model_or_exit translates OfflineModelError → EXIT_OFFLINE
+    and ModelIntegrityError → EXIT_INTEGRITY instead of letting them escape
+    as uncaught tracebacks.
+    """
+
+    def test_offline_error_exits_with_exit_offline(self, monkeypatch, capsys):
+        from tract.model_resolver import OfflineModelError
+
+        monkeypatch.setattr(
+            "tract.model_resolver.ensure_deployment_model",
+            lambda: (_ for _ in ()).throw(OfflineModelError("hub unreachable")),
+        )
+        with pytest.raises(SystemExit) as exc:
+            cli._resolve_model_or_exit()
+        assert exc.value.code == cli.EXIT_OFFLINE
+        err = capsys.readouterr().err
+        assert "hub unreachable" in err
+
+    def test_integrity_error_exits_with_exit_integrity(self, monkeypatch, capsys):
+        from tract.model_resolver import ModelIntegrityError
+
+        monkeypatch.setattr(
+            "tract.model_resolver.ensure_deployment_model",
+            lambda: (_ for _ in ()).throw(ModelIntegrityError("sha mismatch")),
+        )
+        with pytest.raises(SystemExit) as exc:
+            cli._resolve_model_or_exit()
+        assert exc.value.code == cli.EXIT_INTEGRITY
+        err = capsys.readouterr().err
+        assert "sha mismatch" in err
+
+    def test_success_returns_resolved_model(self, monkeypatch):
+        from pathlib import Path
+        from tract.model_resolver import ResolvedModel
+
+        fake = ResolvedModel(path=Path("/fake"), revision="abc123", source="local")
+        monkeypatch.setattr(
+            "tract.model_resolver.ensure_deployment_model",
+            lambda: fake,
+        )
+        result = cli._resolve_model_or_exit()
+        assert result is fake
+
+    def test_exit_offline_constant_is_imported(self):
+        """EXIT_OFFLINE and EXIT_INTEGRITY must be importable from cli module."""
+        assert hasattr(cli, "EXIT_OFFLINE"), "EXIT_OFFLINE not imported in cli.py"
+        assert hasattr(cli, "EXIT_INTEGRITY"), "EXIT_INTEGRITY not imported in cli.py"
+        from tract.config import EXIT_OFFLINE, EXIT_INTEGRITY
+        assert cli.EXIT_OFFLINE == EXIT_OFFLINE
+        assert cli.EXIT_INTEGRITY == EXIT_INTEGRITY

@@ -9,6 +9,8 @@ import logging
 import subprocess
 from datetime import datetime, timezone
 
+from tract import __version__
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +45,7 @@ def build_manifest(
     )
 
     return {
-        "tract_version": "0.1.0",
+        "tract_version": __version__,
         "model_adapter_hash": model_adapter_hash,
         "confidence_floor": confidence_floor,
         "confidence_overrides": confidence_overrides,

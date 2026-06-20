@@ -49,6 +49,9 @@ def bundle_inference_data(
     if not artifacts.exists():
         raise FileNotFoundError(f"Artifacts not found: {artifacts}")
 
+    shutil.copy2(artifacts, staging_dir / "deployment_artifacts.npz")
+    logger.info("Copied %s -> deployment_artifacts.npz", artifacts.name)
+
     data = np.load(str(artifacts), allow_pickle=False)
     hub_ids = list(data["hub_ids"])
     hub_embeddings = data["hub_embeddings"]

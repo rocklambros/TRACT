@@ -62,15 +62,18 @@ tract prepare --file examples/sample_framework.csv --framework-id demo --name "D
 tract validate --file demo_prepared.json
 ```
 
-**Full assignment workflow** (requires trained model artifacts):
+**Full assignment workflow** — `tract assign` downloads the model on first use, no manual setup:
 
 ```bash
 pip install -e ".[phase0]"
-tract tutorial                    # Guided walkthrough (checks prerequisites)
 tract assign "Implement input validation for AI model training data"
 ```
 
-> **Note:** `tract assign` and `tract tutorial` require model artifacts from the training pipeline. `tract prepare` and `tract validate` work immediately after install.
+The first `tract assign` downloads the pinned model (~1.3 GB) from HuggingFace into the shared HuggingFace cache, verifies its checksums, then runs the prediction. Later runs reuse the cache. `tract --version` prints the package version and the pinned model revision in use.
+
+To pre-fetch the model (for CI, an airgapped host, or to also pull the crosswalk database), run `tract download` first; `tract assign` then uses what is already there.
+
+> **No TensorFlow needed.** TRACT runs on PyTorch only. It sets `USE_TF=0` at import so `transformers` never loads a TensorFlow that happens to be installed alongside it (a TF import deadlocks `sentence-transformers` on some macOS setups). Set `USE_TF=1` to override.
 
 ## Framework Coverage
 
@@ -123,6 +126,7 @@ All 20 subcommands grouped by workflow stage:
 
 | Stage | Commands | Description |
 |-------|----------|-------------|
+| **Setup** | `download` | Optional pre-fetch of model + crosswalk database (`assign` auto-downloads the model on first use) |
 | **Explore** | `tutorial` `hierarchy` `compare` | Learn TRACT, inspect hubs, compare frameworks |
 | **Prepare** | `prepare` `validate` | Extract and validate framework controls |
 | **Assign** | `assign` `ingest` `accept` | Map controls to CRE hubs |
@@ -248,6 +252,7 @@ flowchart TD
 
 | I want to... | Go to... |
 |-------------|----------|
+| Try the examples | [Examples](examples/README.md) |
 | Add a new framework | [Framework Guide](docs/framework-guide.md) |
 | Understand the model and methodology | [Architecture](docs/architecture.md) |
 | Look up a command | [CLI Reference](docs/cli-reference.md) |

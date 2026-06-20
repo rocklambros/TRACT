@@ -119,12 +119,21 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
 - **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
-- **866 tests passing**, 19 CLI subcommands
+- **Lazy Model Auto-Download:** COMPLETE — `tract assign` downloads the pinned model from HuggingFace on first use (sha256-verified, sentinel-gated), tolerates the published flat layout, and adds `tract --version`. Forces the PyTorch backend (`USE_TF=0` at import) to avoid a TensorFlow import deadlock in `sentence-transformers`. `assign --file` preserves input order and carries an `input_index`. Distinct exit codes: 2 user error, 3 offline, 4 integrity, 5 missing runtime.
+- **920 tests**, 20 CLI subcommands
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands
 
 ```bash
+# Assign a control to CRE hubs — downloads the pinned model (~1.3 GB) on first use
+tract assign "Implement input validation for AI model training data"
+tract --version                                    # Package version + pinned model revision
+
+# Optional: pre-fetch model + crosswalk.db (CI / airgapped; assign auto-downloads otherwise)
+tract download                                     # Everything (model ~1.3 GB + crosswalk.db)
+tract download --model-only                        # Model artifacts only
+
 # Run all parsers
 for f in parsers/parse_*.py; do python "$f"; done
 

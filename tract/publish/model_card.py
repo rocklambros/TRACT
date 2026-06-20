@@ -336,7 +336,7 @@ This repository contains the model plus all data needed for standalone inference
 
 ### Reproducing the Model
 
-See `train.py` for the exact configuration. Full reproduction requires cloning the [TRACT repository](https://github.com/rockcyber/TRACT) which contains custom training procedures (text-aware batch sampling, LOFO cross-validation with hub firewall, temperature-scaled contrastive loss).
+See `train.py` for the exact configuration. Full reproduction requires cloning the [TRACT repository](https://github.com/rocklambros/TRACT) which contains custom training procedures (text-aware batch sampling, LOFO cross-validation with hub firewall, temperature-scaled contrastive loss).
 
 ---
 
@@ -495,7 +495,7 @@ for hub_id, hub in hierarchy["hubs"].items():
   title = {{TRACT: Translating Requirements Across CRE Trees}},
   author = {{Rock}},
   year = {{2026}},
-  url = {{https://github.com/rockcyber/TRACT}}
+  url = {{https://github.com/rocklambros/TRACT}}
 }}
 ```
 
