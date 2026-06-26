@@ -1,0 +1,22 @@
+# Default — maintainer reviews everything unless overridden below
+
+*                       @rocklambros
+
+# Critical paths — require maintainer review (no override possible)
+
+/tract/api/ @rocklambros
+/tract/inference.py @rocklambros
+/tract/calibration/ @rocklambros
+/tract/hierarchy.py @rocklambros
+/pyproject.toml @rocklambros
+/CLAUDE.md @rocklambros
+/PRD.md @rocklambros
+
+# CI and security configuration
+
+/.github/ @rocklambros
+/.semgrep/ @rocklambros
+
+# Documentation requires review but is less critical
+
+*.md @rocklambros
