@@ -214,6 +214,10 @@ All PRs require passing CI before merge. The maintainer will review for:
 - Security considerations (sanitization, no injection vectors)
 - Consistency with existing patterns
 
+Changes to `tract/api/`, `tract/inference.py`, `tract/calibration/`, and dependency declarations
+require explicit maintainer review under CODEOWNERS. PR turnaround on these paths is typically
+1–3 business days. For larger contributions (>500 LOC), please open an issue first to align on scope.
+
 ## Reporting Issues
 
 - **Bugs**: Use the [Bug Report](https://github.com/rocklambros/TRACT/issues/new?template=bug_report.yml) template

@@ -22,3 +22,4 @@ hub_proposals/
 notebooks/.ipynb_checkpoints/
 docs/superpowers/
 docs/phase0-results.md
+venv/
