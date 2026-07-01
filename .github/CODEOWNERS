@@ -4,7 +4,6 @@
 
 # Critical paths — require maintainer review (no override possible)
 
-/tract/api/ @rocklambros
 /tract/inference.py @rocklambros
 /tract/calibration/ @rocklambros
 /tract/hierarchy.py @rocklambros
@@ -15,6 +14,12 @@
 # CI and security configuration
 
 /.github/ @rocklambros
+
+# Reserved — planned paths not yet present in the tree. GitHub reports these as
+# "no matching files" until the module lands; each rule activates automatically
+# once its path is created, pre-committing maintainer review before first code.
+
+/tract/api/ @rocklambros
 /.semgrep/ @rocklambros
 
 # Documentation requires review but is less critical
