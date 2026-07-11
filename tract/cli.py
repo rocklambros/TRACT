@@ -642,6 +642,9 @@ def _cmd_assign(args: argparse.Namespace) -> None:
     else:
         print(format_predictions_table(preds, raw=args.raw, verbose=args.verbose))
 
+
+LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1"}
+
 def _cmd_api(args: argparse.Namespace) -> None:
     """Start uvicorn with the TRACT API app."""
     import os
@@ -661,6 +664,14 @@ def _cmd_api(args: argparse.Namespace) -> None:
     get_settings.cache_clear()
 
     settings = get_settings()
+    if settings.host not in LOOPBACK_HOSTS and not settings.auth_token:
+        raise SystemExit(
+            "tract api: refusing to bind to a non-loopback host without auth.\n"
+            "Pick one:\n"
+            "  - Local-only dev:        TRACT_API_HOST=127.0.0.1 (this is the safe default)\n"
+            "  - Shared-secret auth:    TRACT_API_AUTH_TOKEN=<random-secret-32-bytes>\n"
+            "  - Behind reverse proxy:  bind to 127.0.0.1, let the proxy do auth + TLS termination"
+        )
     uvicorn.run(
         "tract.api:create_app",
         factory=True,

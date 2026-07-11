@@ -39,14 +39,14 @@ flowchart LR
 
 ## Key Results
 
-| Metric | Value |
-|--------|-------|
-| **Assignment accuracy (hit@1)** | 0.537 [0.463, 0.612] |
-| **Improvement over zero-shot** | +0.139 (baseline: 0.399) |
-| **Crosswalk assignments** | 5,238 across 31 frameworks |
-| **Assignment breakdown** | 4,390 ground truth · 528 expert-reviewed · 320 model predictions |
-| **AI↔traditional bridges** | 46 accepted (of 63 candidates) |
-| **Evaluation** | LOFO cross-validation with hub firewall |
+| Metric                          | Value                                                            |
+| ------------------------------- | ---------------------------------------------------------------- |
+| **Assignment accuracy (hit@1)** | 0.537 [0.463, 0.612]                                             |
+| **Improvement over zero-shot**  | +0.139 (baseline: 0.399)                                         |
+| **Crosswalk assignments**       | 5,238 across 31 frameworks                                       |
+| **Assignment breakdown**        | 4,390 ground truth · 528 expert-reviewed · 320 model predictions |
+| **AI↔traditional bridges**      | 46 accepted (of 63 candidates)                                   |
+| **Evaluation**                  | LOFO cross-validation with hub firewall                          |
 
 All metrics use 95% bootstrap confidence intervals (10,000 resamples). Full experiment narrative in [`tract_experimental_narrative.ipynb`](tract_experimental_narrative.ipynb).
 
@@ -81,60 +81,60 @@ TRACT processes **31 frameworks** with **2,802 controls** total.
 
 ### AI Security Frameworks (12 frameworks, 977 controls)
 
-| Framework | ID | Controls |
-|-----------|----|----------|
-| CSA AI Controls Matrix | `csa_aicm` | 243 |
-| MITRE ATLAS | `mitre_atlas` | 202 |
-| AIUC-1 Standard | `aiuc_1` | 132 |
-| EU AI Act | `eu_ai_act` | 126 |
-| NIST AI Risk Management Framework | `nist_ai_rmf` | 72 |
-| CoSAI AI Security Risk Map | `cosai` | 55 |
-| OWASP AI Exchange | `owasp_ai_exchange` | 54 |
-| EU GPAI Code of Practice | `eu_gpai_cop` | 40 |
-| OWASP GenAI Data Security | `owasp_dsgai` | 21 |
-| NIST AI 600-1 GenAI Profile | `nist_ai_600_1` | 12 |
-| OWASP Top 10 for LLM | `owasp_llm_top10` | 10 |
-| OWASP Top 10 for Agentic Apps | `owasp_agentic_top10` | 10 |
+| Framework                         | ID                    | Controls |
+| --------------------------------- | --------------------- | -------- |
+| CSA AI Controls Matrix            | `csa_aicm`            | 243      |
+| MITRE ATLAS                       | `mitre_atlas`         | 202      |
+| AIUC-1 Standard                   | `aiuc_1`              | 132      |
+| EU AI Act                         | `eu_ai_act`           | 126      |
+| NIST AI Risk Management Framework | `nist_ai_rmf`         | 72       |
+| CoSAI AI Security Risk Map        | `cosai`               | 55       |
+| OWASP AI Exchange                 | `owasp_ai_exchange`   | 54       |
+| EU GPAI Code of Practice          | `eu_gpai_cop`         | 40       |
+| OWASP GenAI Data Security         | `owasp_dsgai`         | 21       |
+| NIST AI 600-1 GenAI Profile       | `nist_ai_600_1`       | 12       |
+| OWASP Top 10 for LLM              | `owasp_llm_top10`     | 10       |
+| OWASP Top 10 for Agentic Apps     | `owasp_agentic_top10` | 10       |
 
 ### Traditional Security Frameworks (19 frameworks, 1,825 controls)
 
-| Framework | ID | Controls |
-|-----------|----|----------|
-| CAPEC | `capec` | 349 |
-| NIST 800-53 | `nist_800_53` | 300 |
-| ASVS | `asvs` | 277 |
-| CWE | `cwe` | 246 |
-| DSOMM | `dsomm` | 183 |
-| ISO 27001 | `iso_27001` | 93 |
-| WSTG | `wstg` | 59 |
-| OWASP Cheat Sheets | `owasp_cheat_sheets` | 50 |
-| NIST SSDF | `nist_ssdf` | 44 |
-| ENISA | `enisa` | 38 |
-| SAMM | `samm` | 30 |
-| CSA Cloud Controls Matrix | `csa_ccm` | 29 |
-| NIST AI 100-2 | `nist_ai_100_2` | 28 |
-| ETSI | `etsi` | 27 |
-| NIST 800-63 | `nist_800_63` | 25 |
-| BIML | `biml` | 20 |
-| OWASP Top 10 2021 | `owasp_top10_2021` | 10 |
-| OWASP Proactive Controls | `owasp_proactive_controls` | 10 |
-| OWASP Top 10 for ML | `owasp_ml_top10` | 7 |
+| Framework                 | ID                         | Controls |
+| ------------------------- | -------------------------- | -------- |
+| CAPEC                     | `capec`                    | 349      |
+| NIST 800-53               | `nist_800_53`              | 300      |
+| ASVS                      | `asvs`                     | 277      |
+| CWE                       | `cwe`                      | 246      |
+| DSOMM                     | `dsomm`                    | 183      |
+| ISO 27001                 | `iso_27001`                | 93       |
+| WSTG                      | `wstg`                     | 59       |
+| OWASP Cheat Sheets        | `owasp_cheat_sheets`       | 50       |
+| NIST SSDF                 | `nist_ssdf`                | 44       |
+| ENISA                     | `enisa`                    | 38       |
+| SAMM                      | `samm`                     | 30       |
+| CSA Cloud Controls Matrix | `csa_ccm`                  | 29       |
+| NIST AI 100-2             | `nist_ai_100_2`            | 28       |
+| ETSI                      | `etsi`                     | 27       |
+| NIST 800-63               | `nist_800_63`              | 25       |
+| BIML                      | `biml`                     | 20       |
+| OWASP Top 10 2021         | `owasp_top10_2021`         | 10       |
+| OWASP Proactive Controls  | `owasp_proactive_controls` | 10       |
+| OWASP Top 10 for ML       | `owasp_ml_top10`           | 7        |
 
 ## CLI Overview
 
 All 20 subcommands grouped by workflow stage:
 
-| Stage | Commands | Description |
-|-------|----------|-------------|
-| **Setup** | `download` | Optional pre-fetch of model + crosswalk database (`assign` auto-downloads the model on first use) |
-| **Explore** | `tutorial` `hierarchy` `compare` | Learn TRACT, inspect hubs, compare frameworks |
-| **Prepare** | `prepare` `validate` | Extract and validate framework controls |
-| **Assign** | `assign` `ingest` `accept` | Map controls to CRE hubs |
-| **Review** | `review-export` `review-validate` `review-import` `review-proposals` | Expert review workflow |
-| **Analyze** | `bridge` `propose-hubs` `import-ground-truth` | Discover connections, suggest new hubs |
-| **Export** | `export` `export-canonical` | Output assignments (CSV, JSON, OpenCRE, canonical snapshot) |
-| **Publish** | `publish-hf` `publish-dataset` | Release model and dataset to HuggingFace |
-| **Serve** | `api` | Run the REST API server for real-time assignment |
+| Stage       | Commands                                                             | Description                                                                                       |
+| ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Setup**   | `download`                                                           | Optional pre-fetch of model + crosswalk database (`assign` auto-downloads the model on first use) |
+| **Explore** | `tutorial` `hierarchy` `compare`                                     | Learn TRACT, inspect hubs, compare frameworks                                                     |
+| **Prepare** | `prepare` `validate`                                                 | Extract and validate framework controls                                                           |
+| **Assign**  | `assign` `ingest` `accept`                                           | Map controls to CRE hubs                                                                          |
+| **Review**  | `review-export` `review-validate` `review-import` `review-proposals` | Expert review workflow                                                                            |
+| **Analyze** | `bridge` `propose-hubs` `import-ground-truth`                        | Discover connections, suggest new hubs                                                            |
+| **Export**  | `export` `export-canonical`                                          | Output assignments (CSV, JSON, OpenCRE, canonical snapshot)                                       |
+| **Publish** | `publish-hf` `publish-dataset`                                       | Release model and dataset to HuggingFace                                                          |
+| **Serve**   | `api`                                                                | Run the REST API server for real-time assignment                                                  |
 
 See [`docs/cli-reference.md`](docs/cli-reference.md) for full options and examples.
 
@@ -145,7 +145,8 @@ For interactive use or third-party integration, TRACT exposes the assignment mod
 The API is opt-in. The base install does not include FastAPI or uvicorn.
 
 ```bash
-pip install -e ".[api,phase0]"
+pip install -e ".[api,phase0]"            # for prod
+# pip install -e ".[api,test-api]"        # for dev
 tract api                                 # binds 127.0.0.1:8000
 tract api --host 0.0.0.0 --port 9000      # custom binding
 tract api --reload                        # auto-reload during development
@@ -157,15 +158,16 @@ Once the server is running, the OpenAPI documentation is available at `http://12
 
 All endpoints are versioned under `/v1/`.
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| `POST` | `/v1/assign` | Assign a single control text to its top-K CRE hubs |
-| `POST` | `/v1/assign/batch` | Assign many controls in one request (up to 256) |
-| `POST` | `/v1/duplicates` | Find existing controls semantically close to the input |
-| `GET`  | `/v1/hubs` | Paginated list of all CRE hubs |
-| `GET`  | `/v1/hubs/{hub_id}` | Single hub with its parent and children |
-| `GET`  | `/v1/health` | Liveness probe, reports calibration parameters |
-| `GET`  | `/v1/version` | Build metadata for client cache-busting and bug reports |
+| Method | Path                | Purpose                                                                        |
+| ------ | ------------------- | ------------------------------------------------------------------------------ |
+| `POST` | `/v1/assign`        | Assign a single control text to its top-K CRE hubs                             |
+| `POST` | `/v1/assign/batch`  | Assign many controls in one request (up to 256)                                |
+| `POST` | `/v1/duplicates`    | Find existing controls semantically close to the input                         |
+| `GET`  | `/v1/hubs`          | Paginated list of all CRE hubs                                                 |
+| `GET`  | `/v1/hubs/{hub_id}` | Single hub with its parent and children                                        |
+| `GET`  | `/v1/health`        | Readiness probe, reports calibration parameters                                |
+| `GET`  | `/v1/version`       | Build metadata for client cache-busting and bug reports                        |
+| `GET`  | `/v1/livez`         | Liveness Probe , proves the process is responding. Does NOT verify model load. |
 
 A minimal `/v1/assign` example:
 
@@ -177,20 +179,51 @@ curl -X POST http://127.0.0.1:8000/v1/assign \
 
 Response envelopes always include the calibrated confidence (in [0, 1] after temperature scaling), an OOD flag with the underlying similarity score, and the model version. Per-prediction fields include the raw cosine similarity, the conformal-set membership flag, and a 1-indexed rank.
 
+### Kubernetes health probes
+
+`/v1/livez` and `/v1/health` are separate on purpose: `livez` only proves the process is responding (no model access), so it can't false-positive on a slow model load; `health` additionally checks that the predictor is loaded and reports calibration parameters, so it's the one that should gate traffic.
+
+```yaml
+startupProbe:
+  httpGet: { path: /v1/livez, port: 8000 }
+  failureThreshold: 60 # tolerate up to 10 minutes for cold start
+  periodSeconds: 10
+livenessProbe:
+  httpGet: { path: /v1/livez, port: 8000 }
+  periodSeconds: 30
+readinessProbe:
+  httpGet: { path: /v1/health, port: 8000 }
+  periodSeconds: 10
+```
+
+> **Auth note:** both probe routes sit behind `require_auth`. `tract api` refuses to bind a non-loopback host (the normal case inside a pod) without `TRACT_API_AUTH_TOKEN` set — and a bare `httpGet` probe has no way to send that token. If you set the token, add it as a probe header instead of leaving `httpGet` bare:
+>
+> ```yaml
+> httpGet:
+>   path: /v1/livez
+>   port: 8000
+>   httpHeaders:
+>     - name: X-Tract-Auth-Token
+>       value: <token>
+> ```
+
 ### Configuration
 
 The server reads settings from environment variables prefixed with `TRACT_API_`. CLI flags override the corresponding env var when present.
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `TRACT_API_HOST` | `127.0.0.1` | Bind address |
-| `TRACT_API_PORT` | `8000` | Bind port |
-| `TRACT_API_WORKERS` | `1` | Uvicorn worker processes |
-| `TRACT_API_MODEL_DIR` | `results/phase1c/deployment_model/` | Where to load model artifacts from |
-| `TRACT_API_MODEL_VERSION` | `tract-cre-assignment-v1.0` | Reported in every response |
-| `TRACT_API_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
-| `TRACT_API_MAX_BATCH_SIZE` | `256` | Hard cap on `/v1/assign/batch` payload |
-| `TRACT_API_MAX_TEXT_LENGTH` | `8192` | Hard cap per control text |
+| Variable                    | Default                             | Purpose                                                                    |
+| --------------------------- | ----------------------------------- | -------------------------------------------------------------------------- |
+| `TRACT_API_HOST`            | `127.0.0.1`                         | Bind address                                                               |
+| `TRACT_API_PORT`            | `8000`                              | Bind port                                                                  |
+| `TRACT_API_WORKERS`         | `1`                                 | Uvicorn worker processes                                                   |
+| `TRACT_API_MODEL_DIR`       | `results/phase1c/deployment_model/` | Where to load model artifacts from                                         |
+| `TRACT_API_MODEL_VERSION`   | `tract-cre-assignment-v1.0`         | Reported in every response                                                 |
+| `TRACT_API_CORS_ORIGINS`    | `*`                                 | Comma-separated allowed origins                                            |
+| `TRACT_API_MAX_BATCH_SIZE`  | `256`                               | Hard cap on `/v1/assign/batch` payload                                     |
+| `TRACT_API_MAX_TEXT_LENGTH` | `8192`                              | Hard cap per control text                                                  |
+| `TRACT_API_MAX_BODY_BYTES`  | `4194304`                           | Hard cap on raw request body size (bytes), rejected with 413               |
+| `TRACT_API_AUTH_TOKEN`      | `<Random 32 Bytes Hex >`            | Required if TRACT_API_HOST is anything other than 127.0.0.1/localhost/::1. |
+| `TRACT_API_AUDIT_LOG`       | `example- /tmp/audit.jsonl`         | Address where you want to store logs                                       |
 
 GPU users should keep `TRACT_API_WORKERS=1`. Multiple workers each hold their own model in memory and will compete for VRAM. Use batch endpoints for throughput, not parallel workers.
 
@@ -209,6 +242,24 @@ The API also does not log request bodies. Control text submitted by users may de
 ### When to use the API vs the CLI
 
 Use the CLI for batch work, reproducible pipelines, and anything that lives in a shell script. Use the API when something else needs to call TRACT programmatically over the wire — a web tool, a Slack bot, a vendor integration. Both surfaces wrap the same underlying model and return identical predictions.
+
+### Suitable use
+
+The TRACT API returns hub assignments that are **advisory, not authoritative**.
+The current model achieves hit@1 = 0.531 on the LOFO evaluation
+(see the [model card](https://huggingface.co/rockCO78/tract-cre-assignment)).
+
+- ✅ Appropriate: surfacing candidate hubs to a human reviewer,
+  accelerating manual control mapping, populating a draft crosswalk
+  for expert review, exploratory analysis of control families.
+- ❌ Inappropriate: directly populating audit packages, compliance
+  attestations, regulatory disclosures, or any decision that is not
+  subsequently reviewed by a qualified person.
+
+For any use in a regulated compliance workflow (SOC 2, ISO 27001,
+FedRAMP, EU AI Act), the human reviewer remains the decision-maker
+of record. The TRACT prediction is an input to that decision, not
+the decision itself.
 
 ## Project Structure
 
@@ -250,18 +301,18 @@ flowchart TD
 
 ## Where to Go Next
 
-| I want to... | Go to... |
-|-------------|----------|
-| Try the examples | [Examples](examples/README.md) |
-| Add a new framework | [Framework Guide](docs/framework-guide.md) |
-| Understand the model and methodology | [Architecture](docs/architecture.md) |
-| Look up a command | [CLI Reference](docs/cli-reference.md) |
-| Call TRACT over HTTP | [REST API](#rest-api) |
-| Look up a term | [Glossary](docs/glossary.md) |
-| Understand canonical export schema | [Architecture § Canonical Export](docs/architecture.md#11-canonical-export-opencre-rfc) |
-| Review hub descriptions for quality | [Hub Description Review Guide](docs/hub-description-review-guide.md) |
-| Contribute code | [Contributing](CONTRIBUTING.md) |
-| Report a security issue | [Security Policy](SECURITY.md) |
+| I want to...                         | Go to...                                                                                |
+| ------------------------------------ | --------------------------------------------------------------------------------------- |
+| Try the examples                     | [Examples](examples/README.md)                                                          |
+| Add a new framework                  | [Framework Guide](docs/framework-guide.md)                                              |
+| Understand the model and methodology | [Architecture](docs/architecture.md)                                                    |
+| Look up a command                    | [CLI Reference](docs/cli-reference.md)                                                  |
+| Call TRACT over HTTP                 | [REST API](#rest-api)                                                                   |
+| Look up a term                       | [Glossary](docs/glossary.md)                                                            |
+| Understand canonical export schema   | [Architecture § Canonical Export](docs/architecture.md#11-canonical-export-opencre-rfc) |
+| Review hub descriptions for quality  | [Hub Description Review Guide](docs/hub-description-review-guide.md)                    |
+| Contribute code                      | [Contributing](CONTRIBUTING.md)                                                         |
+| Report a security issue              | [Security Policy](SECURITY.md)                                                          |
 
 ## Published Artifacts
 
@@ -279,29 +330,29 @@ TRACT produces per-framework canonical JSON snapshots designed for [OpenCRE's in
 
 ### StandardSnapshot Schema
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `schema_version` | string | Always "1.0" |
-| `framework_id` | string | Framework identifier (e.g., `csa_aicm`) |
-| `framework_name` | string | Human-readable name |
-| `export_date` | string | ISO 8601 UTC timestamp |
-| `content_hash` | string | SHA-256 of all non-volatile fields |
-| `tract_version` | string | Git SHA of TRACT at export time |
-| `model_adapter_hash` | string | SHA-256 of the LoRA adapter weights |
-| `filter_policy` | object | Confidence floor, OOD/ground-truth exclusion rules |
-| `controls` | array | `CanonicalControl` objects (id, title, description, hyperlink) |
-| `mappings` | array | `CREMapping` objects (control→hub with confidence, rank, provenance) |
+| Field                | Type   | Description                                                          |
+| -------------------- | ------ | -------------------------------------------------------------------- |
+| `schema_version`     | string | Always "1.0"                                                         |
+| `framework_id`       | string | Framework identifier (e.g., `csa_aicm`)                              |
+| `framework_name`     | string | Human-readable name                                                  |
+| `export_date`        | string | ISO 8601 UTC timestamp                                               |
+| `content_hash`       | string | SHA-256 of all non-volatile fields                                   |
+| `tract_version`      | string | Git SHA of TRACT at export time                                      |
+| `model_adapter_hash` | string | SHA-256 of the LoRA adapter weights                                  |
+| `filter_policy`      | object | Confidence floor, OOD/ground-truth exclusion rules                   |
+| `controls`           | array  | `CanonicalControl` objects (id, title, description, hyperlink)       |
+| `mappings`           | array  | `CREMapping` objects (control→hub with confidence, rank, provenance) |
 
 ### Changeset Operations
 
-| Operation | Description |
-|-----------|-------------|
-| `ADD_CONTROL` | New control added to framework export |
+| Operation        | Description                                      |
+| ---------------- | ------------------------------------------------ |
+| `ADD_CONTROL`    | New control added to framework export            |
 | `UPDATE_CONTROL` | Control title, description, or hyperlink changed |
-| `DELETE_CONTROL` | Control removed from export |
-| `ADD_MAPPING` | New control→hub mapping added |
-| `UPDATE_MAPPING` | Mapping confidence, rank, or provenance changed |
-| `DELETE_MAPPING` | Mapping removed |
+| `DELETE_CONTROL` | Control removed from export                      |
+| `ADD_MAPPING`    | New control→hub mapping added                    |
+| `UPDATE_MAPPING` | Mapping confidence, rank, or provenance changed  |
+| `DELETE_MAPPING` | Mapping removed                                  |
 
 ```bash
 # Preview canonical export

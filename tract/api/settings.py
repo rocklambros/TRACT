@@ -24,7 +24,18 @@ class ApiSettings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=lambda: ["*"])
     max_batch_size: int = 256
     max_text_length: int = 8192
-    max_top_k: int = 50
+    max_top_k: int = 10
+    max_body_bytes: int = 4 * 1024 * 1024  # 4 MiB
+    audit_log_path: Path | None = Field(
+        default=None,
+        description="If set, write append-only JSONL audit records per request. Recommended: /var/log/tract/audit.jsonl",
+    )
+    auth_token: str | None = Field(
+        default=None,
+        description="Required if host is not loopback. Compared with X-Tract-Auth-Token via constant-time match.",
+    )
+    duplicates_min_threshold: float = Field(default=0.85, ge=0.0, le=1.0)
+
 
     # avoiding privileged ports until given root access
     @field_validator("port")
