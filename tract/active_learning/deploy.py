@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import logging
 
+from typing import Any
+
 import numpy as np
 
 from tract.config import (
@@ -57,7 +59,7 @@ def select_holdout(
     if max_fw_pct > 0.5:
         logger.warning(
             "Holdout dominated by single framework: %s (%.0f%%)",
-            max(fw_counts, key=fw_counts.get), max_fw_pct * 100,
+            max(fw_counts, key=lambda fw: fw_counts[fw]), max_fw_pct * 100,
         )
 
     logger.info(
@@ -67,7 +69,7 @@ def select_holdout(
     return calibration, canaries, remaining
 
 
-def holdout_to_eval(link: TieredLink) -> dict:
+def holdout_to_eval(link: TieredLink) -> dict[str, Any]:
     """Convert a TieredLink to an eval-compatible record.
 
     Returns dict with keys: control_text, framework, valid_hub_ids.

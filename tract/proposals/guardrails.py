@@ -95,7 +95,7 @@ def apply_guardrails(
     hierarchy: CREHierarchy,
     hub_embeddings: NDArray[np.floating[Any]],
     hub_ids: list[str],
-    control_metadata: dict[str, dict],
+    control_metadata: dict[str, dict[str, Any]],
     budget_cap: int = PHASE1D_PROPOSAL_BUDGET_CAP,
 ) -> list[GuardrailResult]:
     """Apply 6 guardrails to each cluster."""

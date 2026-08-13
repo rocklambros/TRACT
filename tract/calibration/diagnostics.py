@@ -10,6 +10,7 @@ from numpy.typing import NDArray
 from scipy.stats import ks_2samp
 
 from tract.config import PHASE1C_ECE_BOOTSTRAP_N, PHASE1C_ECE_N_BINS
+from tract.calibration.types import ECEResult, KSTestResult
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,7 @@ def bootstrap_ece(
     n_bins: int = PHASE1C_ECE_N_BINS,
     n_bootstrap: int = PHASE1C_ECE_BOOTSTRAP_N,
     seed: int = 42,
-) -> dict:
+) -> ECEResult:
     """Bootstrap 95% CI for ECE."""
     rng = np.random.default_rng(seed)
     n = len(confidences)
@@ -72,10 +73,10 @@ def bootstrap_ece(
 def ks_test_similarity_distributions(
     traditional_max_sims: NDArray[np.floating[Any]],
     ai_max_sims: NDArray[np.floating[Any]],
-) -> dict:
+) -> KSTestResult:
     """Two-sample KS test between traditional and AI max-cosine similarity distributions."""
     stat, p_value = ks_2samp(traditional_max_sims, ai_max_sims)
-    result = {
+    result: KSTestResult = {
         "ks_statistic": float(stat),
         "p_value": float(p_value),
         "n_traditional": len(traditional_max_sims),

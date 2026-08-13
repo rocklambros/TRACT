@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Any
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -12,13 +13,13 @@ def load_unmapped_controls(
     frameworks_dir: Path,
     framework_file_ids: list[str],
     framework_display_names: dict[str, str],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Load all controls from unmapped AI frameworks.
 
     Each control gets a composite control_id (framework_file_id:original_id)
     and a control_text built from title + full_text (or description as fallback).
     """
-    all_controls: list[dict] = []
+    all_controls: list[dict[str, Any]] = []
 
     for fid in sorted(framework_file_ids):
         fw_path = frameworks_dir / f"{fid}.json"

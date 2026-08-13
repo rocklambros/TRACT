@@ -13,6 +13,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from tract.config import PHASE1C_OOD_PERCENTILE, PHASE1C_OOD_SEPARATION_GATE
+from tract.calibration.types import OODValidation
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ def validate_ood_threshold(
     ood_max_sims: NDArray[np.floating[Any]],
     threshold: float,
     gate: float = PHASE1C_OOD_SEPARATION_GATE,
-) -> dict:
+) -> OODValidation:
     """Validate OOD threshold against synthetic non-security texts.
 
     Returns dict with separation_rate, n_below, n_total, gate_passed.

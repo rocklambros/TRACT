@@ -6,6 +6,12 @@ placeholder names based on nearest hub.
 from __future__ import annotations
 
 import logging
+from typing import Any, TYPE_CHECKING
+
+from anthropic.types import TextBlock
+
+if TYPE_CHECKING:
+    import anthropic
 
 from tract.config import PHASE1D_PROPOSAL_NAMING_MODEL
 from tract.hierarchy import CREHierarchy
@@ -14,15 +20,16 @@ from tract.proposals.guardrails import GuardrailResult
 logger = logging.getLogger(__name__)
 
 
-def _get_anthropic_client():
+def _get_anthropic_client() -> anthropic.Anthropic:
     import anthropic
+
     return anthropic.Anthropic()
 
 
 def generate_hub_names(
     results: list[GuardrailResult],
     hierarchy: CREHierarchy,
-    control_metadata: dict[str, dict],
+    control_metadata: dict[str, dict[str, Any]],
     model: str = PHASE1D_PROPOSAL_NAMING_MODEL,
 ) -> dict[int, str]:
     """Call Claude API to generate hub names for passing clusters."""
@@ -62,7 +69,14 @@ def generate_hub_names(
             max_tokens=50,
             messages=[{"role": "user", "content": prompt}],
         )
-        name = response.content[0].text.strip()
+        # Same content-block union as the other Anthropic call sites: reading
+        # .text unguarded breaks whenever the API leads with a non-text block.
+        content_block = response.content[0]
+        if not isinstance(content_block, TextBlock):
+            raise TypeError(
+                f"Expected TextBlock, got {type(content_block).__name__}"
+            )
+        name = content_block.text.strip()
         names[cluster.cluster_id] = name
         logger.info("Named cluster %d: %s", cluster.cluster_id, name)
 

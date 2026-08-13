@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from tract.config import (
     PHASE1B_BASE_MODEL,
@@ -53,7 +54,7 @@ class TrainingConfig:
     hub_rep_format: str = "path+name"
     data_hash: str = ""
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize for WandB/JSON logging."""
         return {
             "name": self.name,

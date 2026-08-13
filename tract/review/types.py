@@ -11,7 +11,7 @@ identifier column is TEXT.
 """
 from __future__ import annotations
 
-from typing import Any, NotRequired, TypedDict
+from typing import Any, Final, NotRequired, TypedDict
 
 
 class AlternativeHub(TypedDict):
@@ -222,3 +222,39 @@ class ReviewMetrics(TypedDict):
     per_framework: dict[str, FrameworkRates]
     reviewer_quality: CalibrationQuality
     confidence_analysis: ConfidenceAnalysis
+
+
+# Used when review_metrics.json is absent. `tract publish-dataset` previously
+# passed a bare {} in that case and the card reader papered over it with .get
+# defaults; now that the card indexes the document directly, the fallback has
+# to be a well-formed empty record rather than an empty dict.
+EMPTY_REVIEW_METRICS: Final[ReviewMetrics] = {
+    "import_round": 0,
+    "coverage": {
+        "total_predictions": 0,
+        "reviewed": 0,
+        "pending": 0,
+        "completion_pct": 0.0,
+    },
+    "overall": {
+        "accepted": 0,
+        "accepted_rate": 0.0,
+        "rejected": 0,
+        "rejected_rate": 0.0,
+        "reassigned": 0,
+        "reassigned_rate": 0.0,
+    },
+    "per_framework": {},
+    "reviewer_quality": {
+        "total_calibration": 0,
+        "reviewed": 0,
+        "agreed": 0,
+        "quality_score": None,
+        "disagreements": [],
+    },
+    "confidence_analysis": {
+        "high_confidence": {"total": 0, "accepted": 0, "acceptance_rate": 0.0},
+        "low_confidence": {"total": 0, "accepted": 0, "acceptance_rate": 0.0},
+        "ood_items": {"total": 0, "accepted": 0, "acceptance_rate": 0.0},
+    },
+}

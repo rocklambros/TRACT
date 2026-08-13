@@ -21,7 +21,7 @@ from __future__ import annotations
 import html
 import re
 import unicodedata
-from typing import Literal, overload
+from typing import Any, Literal, overload
 
 # ── PDF ligature replacements ──────────────────────────────────────────────
 # Order matters: longer ligatures first to avoid partial replacement.
@@ -168,7 +168,7 @@ def sanitize_text(
     return cleaned
 
 
-def sanitize_control(control: dict) -> dict:
+def sanitize_control(control: dict[str, Any]) -> dict[str, Any]:
     """Sanitize all text fields in a control dict, preserving non-text fields.
 
     Applies sanitize_text() to title, description, and full_text.

@@ -6,6 +6,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 
 from tract.crosswalk.schema import get_connection
 from tract.review.types import ExportMetadata
@@ -144,7 +145,7 @@ def generate_hub_reference(db_path: Path, output_dir: Path) -> Path:
 
         parent_ids: set[str | None] = {row["parent_id"] for row in rows}
 
-        hubs: list[dict] = []
+        hubs: list[dict[str, Any]] = []
         for row in rows:
             hubs.append({
                 "hub_id": row["id"],

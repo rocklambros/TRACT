@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import json
 import logging
+from typing import Any
 import os
 import tempfile
 from collections import defaultdict
@@ -44,7 +45,7 @@ def _export_json(db_path: Path, output_path: Path) -> Path:
     finally:
         conn.close()
 
-    result: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
+    result: dict[str, dict[str, list[dict[str, Any]]]] = defaultdict(lambda: defaultdict(list))
     for row in rows:
         result[row["framework_name"]][row["control_id"]].append({
             "hub_id": row["hub_id"],

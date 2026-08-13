@@ -12,7 +12,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     # Both modules pull in the phase0 runtime (sentence-transformers/torch),
@@ -21,7 +21,12 @@ if TYPE_CHECKING:
     from tract.model_resolver import ResolvedModel
 
 from tract.export.filters import ExportableAssignment
-from tract.review.types import IngestControl, IngestReviewDocument
+from tract.review.types import (
+    EMPTY_REVIEW_METRICS,
+    IngestControl,
+    IngestReviewDocument,
+    ReviewMetrics,
+)
 
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
@@ -1540,7 +1545,7 @@ def _load_fold_results(
     textaware_dir: Path,
     corrected_path: Path,
     zero_shot_path: Path | None = None,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Load LOFO fold results from Phase 1B artifacts.
 
     eval count comes from len(predictions.json), NOT n_pairs.
@@ -1752,7 +1757,7 @@ def _cmd_review_import(args: argparse.Namespace) -> None:
     )
     print(
         f"Metrics: completion={metrics['coverage']['completion_pct']:.1f}%, "
-        f"quality_score={metrics.get('calibration', {}).get('quality_score', 'N/A')}"
+        f"quality_score={metrics['reviewer_quality']['quality_score']}"
     )
 
 
@@ -1776,7 +1781,11 @@ def _cmd_publish_dataset(args: argparse.Namespace) -> None:
     fm_path = staging_dir / "framework_metadata.json"
     rm_path = staging_dir / "review_metrics.json"
     framework_metadata = json.loads(fm_path.read_text(encoding="utf-8")) if fm_path.exists() else []
-    review_metrics = json.loads(rm_path.read_text(encoding="utf-8")) if rm_path.exists() else {}
+    review_metrics: ReviewMetrics = (
+        cast(ReviewMetrics, json.loads(rm_path.read_text(encoding="utf-8")))
+        if rm_path.exists()
+        else EMPTY_REVIEW_METRICS
+    )
 
     generate_dataset_card(staging_dir, framework_metadata, review_metrics, stats)
     print(f"Dataset card generated at {staging_dir / 'README.md'}")

@@ -186,7 +186,9 @@ class LlmExtractor:
 
                 for block in response.content:
                     if getattr(block, "type", None) == "tool_use":
-                        return block.input.get("controls", [])
+                        # The tool-use payload is untyped JSON from the API.
+                        controls: list[dict[str, Any]] = block.input.get("controls", [])
+                        return controls
 
                 logger.warning("API response had no tool_use block on attempt %d", attempt)
                 return []

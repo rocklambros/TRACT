@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from tract.hierarchy import CREHierarchy
 from tract.training.data_quality import TieredLink
@@ -9,7 +10,7 @@ from tract.training.data_quality import TieredLink
 logger = logging.getLogger(__name__)
 
 
-def build_hub_records(hierarchy: CREHierarchy) -> list[dict]:
+def build_hub_records(hierarchy: CREHierarchy) -> list[dict[str, Any]]:
     """Convert CREHierarchy hubs to insert_hubs() format.
 
     Topologically sorted: parents before children (required by FK constraint).
@@ -42,7 +43,7 @@ def build_hub_records(hierarchy: CREHierarchy) -> list[dict]:
     return records
 
 
-def build_framework_records(frameworks_data: list[dict]) -> list[dict]:
+def build_framework_records(frameworks_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Convert parsed framework JSON metadata to insert_frameworks() format."""
     records = []
     for fw in frameworks_data:
@@ -56,7 +57,7 @@ def build_framework_records(frameworks_data: list[dict]) -> list[dict]:
     return records
 
 
-def build_control_records(frameworks_data: list[dict]) -> list[dict]:
+def build_control_records(frameworks_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Convert parsed framework controls to insert_controls() format.
 
     Each control gets a composite ID: framework_id:control_id.
@@ -86,7 +87,7 @@ def build_control_records(frameworks_data: list[dict]) -> list[dict]:
 def build_training_assignments(
     tiered_links: list[TieredLink],
     control_id_map: dict[tuple[str, str], str],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Convert TieredLinks to insert_assignments() format.
 
     Args:
