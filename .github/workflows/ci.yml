@@ -46,8 +46,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # pyproject defines the integration marker as "requiring real deployment
+      # model and artifacts (deselect with '-m not integration')", and those
+      # artifacts are not in the repo. The model-pins job below runs the one
+      # integration test that can stand alone. This job never deselected them,
+      # which nobody noticed while lint kept the job from starting.
       - name: Run tests
-        run: pytest tests/ -x -q --timeout=60
+        run: pytest tests/ -x -q --timeout=60 -m "not integration"
 
   audit:
     runs-on: ubuntu-latest
