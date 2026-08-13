@@ -147,3 +147,78 @@ class ReviewExportDocument(TypedDict):
 
     metadata: ExportMetadata
     predictions: list[ReviewItem]
+
+
+class CoverageMetrics(TypedDict):
+    """Review completion counts."""
+
+    total_predictions: int
+    reviewed: int
+    pending: int
+    completion_pct: float
+
+
+class OverallRates(TypedDict):
+    """Accept/reject/reassign counts and percentages across all frameworks."""
+
+    accepted: int
+    accepted_rate: float
+    rejected: int
+    rejected_rate: float
+    reassigned: int
+    reassigned_rate: float
+
+
+class FrameworkRates(TypedDict):
+    """Per-framework decision counters."""
+
+    framework_name: str
+    accepted: int
+    rejected: int
+    reassigned: int
+
+
+class CalibrationDisagreement(TypedDict):
+    """A calibration item the reviewer did not agree with."""
+
+    id: int | None
+    assigned_hub_id: str | None
+    status: str
+    reviewer_hub_id: str | None
+
+
+class CalibrationQuality(TypedDict):
+    """Reviewer quality measured against the seeded calibration items."""
+
+    total_calibration: int
+    reviewed: int
+    agreed: int
+    quality_score: float | None
+    disagreements: list[CalibrationDisagreement]
+
+
+class AcceptanceRate(TypedDict):
+    """Acceptance counts for one confidence band."""
+
+    total: int
+    accepted: int
+    acceptance_rate: float
+
+
+class ConfidenceAnalysis(TypedDict):
+    """Acceptance broken out by confidence band and OOD flag."""
+
+    high_confidence: AcceptanceRate
+    low_confidence: AcceptanceRate
+    ood_items: AcceptanceRate
+
+
+class ReviewMetrics(TypedDict):
+    """Top level of review_metrics.json."""
+
+    import_round: int
+    coverage: CoverageMetrics
+    overall: OverallRates
+    per_framework: dict[str, FrameworkRates]
+    reviewer_quality: CalibrationQuality
+    confidence_analysis: ConfidenceAnalysis

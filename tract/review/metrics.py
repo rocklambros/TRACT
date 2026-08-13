@@ -7,6 +7,19 @@ import os
 import tempfile
 from pathlib import Path
 
+from tract.review.types import (
+    AcceptanceRate,
+    CalibrationDisagreement,
+    CalibrationQuality,
+    ConfidenceAnalysis,
+    CoverageMetrics,
+    FrameworkRates,
+    OverallRates,
+    ReviewExportDocument,
+    ReviewItem,
+    ReviewMetrics,
+)
+
 logger = logging.getLogger(__name__)
 
 _DEFAULT_CONFIDENCE_THRESHOLD = 0.5
@@ -14,9 +27,9 @@ _DEFAULT_CONFIDENCE_THRESHOLD = 0.5
 
 def compute_review_metrics(
     db_path: Path,
-    review_data: dict,
+    review_data: ReviewExportDocument,
     output_path: Path,
-) -> dict:
+) -> ReviewMetrics:
     """Compute review metrics and save to JSON.
 
     Includes: coverage, overall rates, per-framework breakdown,
@@ -49,7 +62,7 @@ def compute_review_metrics(
         except (json.JSONDecodeError, OSError):
             pass
 
-    metrics: dict = {
+    metrics: ReviewMetrics = {
         "import_round": import_round,
         "coverage": coverage,
         "overall": overall,
@@ -69,7 +82,7 @@ def compute_review_metrics(
     return metrics
 
 
-def _compute_coverage(real: list[dict]) -> dict:
+def _compute_coverage(real: list[ReviewItem]) -> CoverageMetrics:
     total = len(real)
     reviewed = sum(1 for p in real if p.get("status") != "pending")
     pending = total - reviewed
@@ -82,7 +95,7 @@ def _compute_coverage(real: list[dict]) -> dict:
     }
 
 
-def _compute_overall_rates(real: list[dict]) -> dict:
+def _compute_overall_rates(real: list[ReviewItem]) -> OverallRates:
     reviewed = [p for p in real if p.get("status") != "pending"]
     n = len(reviewed)
     accepted = sum(1 for p in reviewed if p.get("status") == "accepted")
@@ -98,8 +111,8 @@ def _compute_overall_rates(real: list[dict]) -> dict:
     }
 
 
-def _compute_per_framework(real: list[dict]) -> dict[str, dict]:
-    frameworks: dict[str, dict] = {}
+def _compute_per_framework(real: list[ReviewItem]) -> dict[str, FrameworkRates]:
+    frameworks: dict[str, FrameworkRates] = {}
     for p in real:
         if p.get("status") == "pending":
             continue
@@ -111,13 +124,18 @@ def _compute_per_framework(real: list[dict]) -> dict[str, dict]:
                 "rejected": 0,
                 "reassigned": 0,
             }
+        # Explicit branches: a TypedDict cannot be indexed by a str variable.
         status = p.get("status")
-        if status in ("accepted", "rejected", "reassigned"):
-            frameworks[fw_id][status] += 1
+        if status == "accepted":
+            frameworks[fw_id]["accepted"] += 1
+        elif status == "rejected":
+            frameworks[fw_id]["rejected"] += 1
+        elif status == "reassigned":
+            frameworks[fw_id]["reassigned"] += 1
     return frameworks
 
 
-def _compute_calibration_quality(calibration: list[dict]) -> dict:
+def _compute_calibration_quality(calibration: list[ReviewItem]) -> CalibrationQuality:
     reviewed = [c for c in calibration if c.get("status") != "pending"]
     if not reviewed:
         return {
@@ -129,7 +147,7 @@ def _compute_calibration_quality(calibration: list[dict]) -> dict:
         }
 
     agreed = 0
-    disagreements: list[dict] = []
+    disagreements: list[CalibrationDisagreement] = []
     for c in reviewed:
         status = c.get("status")
         if status == "accepted":
@@ -152,7 +170,7 @@ def _compute_calibration_quality(calibration: list[dict]) -> dict:
     }
 
 
-def _compute_confidence_analysis(real: list[dict]) -> dict:
+def _compute_confidence_analysis(real: list[ReviewItem]) -> ConfidenceAnalysis:
     reviewed = [p for p in real if p.get("status") != "pending"]
     if not reviewed:
         return {
@@ -167,7 +185,7 @@ def _compute_confidence_analysis(real: list[dict]) -> dict:
     low = [p for p in reviewed if (p.get("confidence") or 0) <= threshold]
     ood = [p for p in reviewed if p.get("is_ood")]
 
-    def _rate(items: list[dict]) -> dict:
+    def _rate(items: list[ReviewItem]) -> AcceptanceRate:
         total = len(items)
         accepted = sum(1 for i in items if i.get("status") == "accepted")
         return {
@@ -183,7 +201,7 @@ def _compute_confidence_analysis(real: list[dict]) -> dict:
     }
 
 
-def _write_metrics(output_path: Path, data: dict) -> None:
+def _write_metrics(output_path: Path, data: ReviewMetrics) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(
         dir=output_path.parent,
