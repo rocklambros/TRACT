@@ -6,6 +6,8 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
+from anthropic.types import TextBlock
+
 from tract.proposals.cluster import Cluster
 from tract.proposals.guardrails import GuardrailResult
 
@@ -37,7 +39,7 @@ class TestGenerateHubNames:
 
         mock_client = MagicMock()
         mock_response = MagicMock()
-        mock_response.content = [MagicMock(text="AI Model Governance")]
+        mock_response.content = [MagicMock(spec=TextBlock, text="AI Model Governance")]
         mock_client.messages.create.return_value = mock_response
 
         with patch("tract.proposals.naming._get_anthropic_client", return_value=mock_client):

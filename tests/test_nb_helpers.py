@@ -7,6 +7,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+# These need the optional `phase0` extra (and matplotlib for the notebook
+# helpers), which the default CI test job does not install. Skip visibly
+# rather than failing collection; run them with
+# `pip install -e '.[phase0]' matplotlib`.
+pytest.importorskip("matplotlib", reason="needs the phase0 extra")
+
 
 @pytest.fixture(autouse=True)
 def _patch_project_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

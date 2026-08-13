@@ -5,9 +5,9 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from collections.abc import Mapping
 from typing import Any
 
-from tract.review.types import FrameworkRates, ReviewMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ pretty_name: TRACT Security Framework Crosswalk
 def generate_dataset_card(
     staging_dir: Path,
     framework_metadata: list[dict[str, Any]],
-    review_metrics: ReviewMetrics,
+    review_metrics: Mapping[str, Any],
     bundle_stats: dict[str, Any],
 ) -> Path:
     """Generate HuggingFace Datasets card as README.md.
@@ -59,8 +59,7 @@ def generate_dataset_card(
 
     overall = review_metrics.get("overall", {})
     coverage = review_metrics.get("coverage", {})
-    # The key is reviewer_quality; the old "calibration" spelling never existed.
-    calibration = review_metrics["reviewer_quality"]
+    calibration = review_metrics.get("calibration", review_metrics.get("reviewer_quality", {}))
     confidence = review_metrics.get("confidence_analysis", {})
     per_fw = review_metrics.get("per_framework", {})
 
@@ -483,7 +482,7 @@ def _build_framework_table(framework_metadata: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def _build_review_framework_table(per_fw: dict[str, FrameworkRates]) -> str:
+def _build_review_framework_table(per_fw: Mapping[str, Any]) -> str:
     """Build per-framework review breakdown table."""
     lines: list[str] = []
     for fw_id in sorted(per_fw, key=lambda k: per_fw[k].get("framework_name", k)):

@@ -7,6 +7,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+# tract.training.data imports torch at module scope, and torch, datasets and
+# sentence-transformers all live in the optional `phase0` extra rather than
+# requirements.txt. The default CI test job installs the base set only, so
+# skip this module there instead of failing collection. Run it with
+# `pip install -e '.[phase0]'`. Every other test module keeps its top-level
+# imports free of the ML stack for the same reason.
+pytest.importorskip("torch", reason="needs the phase0 extra")
+pytest.importorskip("datasets", reason="needs the phase0 extra")
+
 from datasets import Dataset
 
 from tract.training.data import (

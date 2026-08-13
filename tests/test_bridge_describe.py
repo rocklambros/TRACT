@@ -6,6 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from anthropic.types import TextBlock
+
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "bridge_mini_hub_links.json"
 
 
@@ -39,7 +41,7 @@ class TestGenerateBridgeDescriptions:
     def test_adds_description_field(self, mini_hierarchy, hub_links) -> None:
         from tract.bridge.describe import generate_bridge_descriptions
         mock_resp = MagicMock()
-        mock_resp.content = [MagicMock(text="Both hubs address access control concerns.")]
+        mock_resp.content = [MagicMock(spec=TextBlock, text="Both hubs address access control concerns.")]
         mock_client = MagicMock()
         mock_client.messages.create.return_value = mock_resp
 
@@ -55,7 +57,7 @@ class TestGenerateBridgeDescriptions:
     def test_sanitizes_description(self, mini_hierarchy, hub_links) -> None:
         from tract.bridge.describe import generate_bridge_descriptions
         mock_resp = MagicMock()
-        mock_resp.content = [MagicMock(text="  Has  <b>tags</b>  and   spaces  ")]
+        mock_resp.content = [MagicMock(spec=TextBlock, text="  Has  <b>tags</b>  and   spaces  ")]
         mock_client = MagicMock()
         mock_client.messages.create.return_value = mock_resp
 
@@ -105,7 +107,7 @@ class TestGenerateNegativeDescriptions:
     def test_returns_one_per_ai_hub(self, mini_hierarchy, hub_links) -> None:
         from tract.bridge.describe import generate_negative_descriptions
         mock_resp = MagicMock()
-        mock_resp.content = [MagicMock(text="These hubs are unrelated.")]
+        mock_resp.content = [MagicMock(spec=TextBlock, text="These hubs are unrelated.")]
         mock_client = MagicMock()
         mock_client.messages.create.return_value = mock_resp
 
