@@ -50,6 +50,24 @@ include = ["tract*"]
 strict = true
 python_version = "3.11"
 
+# The heavy ML stack is deliberately absent from the lint job's environment
+# (requirements-lint.txt), so mypy cannot see these modules. They ship no
+# stubs worth installing a multi-hundred-megabyte torch wheel for on every
+# CI run. numpy and huggingface_hub are NOT listed here: both ship py.typed
+# and are installed, so they get real checking.
+[[tool.mypy.overrides]]
+module = [
+    "datasets.*",
+    "hdbscan.*",
+    "peft.*",
+    "scipy.*",
+    "sentence_transformers.*",
+    "torch.*",
+    "transformers.*",
+    "wandb.*",
+]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [

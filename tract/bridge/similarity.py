@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import logging
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -12,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 def compute_bridge_similarities(
-    hub_embeddings: NDArray[np.floating],
+    hub_embeddings: NDArray[np.floating[Any]],
     hub_ids: list[str],
     ai_only_ids: list[str],
     trad_only_ids: list[str],
-) -> NDArray[np.floating]:
+) -> NDArray[np.floating[Any]]:
     """Compute cosine similarity matrix between AI-only and trad-only hubs.
 
     All hub embeddings are unit-normalized, so cosine = dot product.
@@ -35,7 +37,7 @@ def compute_bridge_similarities(
 
 
 def extract_top_k(
-    similarity_matrix: NDArray[np.floating],
+    similarity_matrix: NDArray[np.floating[Any]],
     ai_hub_ids: list[str],
     trad_hub_ids: list[str],
     k: int = 3,
@@ -60,7 +62,7 @@ def extract_top_k(
 
 
 def extract_negatives(
-    similarity_matrix: NDArray[np.floating],
+    similarity_matrix: NDArray[np.floating[Any]],
     ai_hub_ids: list[str],
     trad_hub_ids: list[str],
 ) -> list[RawNegative]:
@@ -83,7 +85,7 @@ def extract_negatives(
 
 
 def compute_similarity_stats(
-    similarity_matrix: NDArray[np.floating],
+    similarity_matrix: NDArray[np.floating[Any]],
 ) -> SimilarityStats:
     """Compute summary statistics for the similarity matrix."""
     return {

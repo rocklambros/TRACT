@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Final
 
 import numpy as np
+from numpy.typing import NDArray
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -569,7 +570,7 @@ def score_predictions(
 
 
 def bootstrap_ci(
-    values: np.ndarray,
+    values: NDArray[np.floating[Any]],
     n_resamples: int = BOOTSTRAP_N_RESAMPLES,
     ci_level: float = BOOTSTRAP_CI_LEVEL,
     seed: int = BOOTSTRAP_SEED,
@@ -596,8 +597,8 @@ def bootstrap_ci(
 
 
 def bootstrap_paired_delta(
-    values_a: np.ndarray,
-    values_b: np.ndarray,
+    values_a: NDArray[np.floating[Any]],
+    values_b: NDArray[np.floating[Any]],
     n_resamples: int = BOOTSTRAP_N_RESAMPLES,
     ci_level: float = BOOTSTRAP_CI_LEVEL,
     seed: int = BOOTSTRAP_SEED,

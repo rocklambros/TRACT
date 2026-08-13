@@ -14,7 +14,9 @@ wandb==0.25.1
 hdbscan==0.8.42
 
 # Dev / CI
+# ruff and mypy must match requirements-lint.txt, which constrains against
+# this file. CI was running 0.15.x against a declared 0.11.12 for months.
 pytest==9.0.3
-mypy==1.11.2
-ruff==0.11.12
+mypy==2.2.0
+ruff==0.15.21
 pip-audit==2.9.0

@@ -9,7 +9,7 @@ import hashlib
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -26,6 +26,7 @@ from tract.config import (
 )
 from tract.hierarchy import CREHierarchy
 from tract.io import load_json
+from tract.review.types import HubPredictionDict
 from tract.sanitize import sanitize_text
 
 logger = logging.getLogger(__name__)
@@ -104,8 +105,10 @@ class HubPrediction:
     in_conformal_set: bool
     is_ood: bool
 
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+    def to_dict(self) -> HubPredictionDict:
+        # Declared as the TypedDict rather than dict[str, Any] so callers
+        # indexing this payload are checked against the real key names.
+        return cast(HubPredictionDict, asdict(self))
 
 
 @dataclass(frozen=True)
@@ -122,8 +125,8 @@ class DuplicateMatch:
 
 @dataclass
 class DeploymentArtifacts:
-    hub_embeddings: NDArray[np.floating]
-    control_embeddings: NDArray[np.floating]
+    hub_embeddings: NDArray[np.floating[Any]]
+    control_embeddings: NDArray[np.floating[Any]]
     hub_ids: list[str]
     control_ids: list[str]
     model_adapter_hash: str

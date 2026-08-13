@@ -4,7 +4,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import sqlite3
 from pathlib import Path
 
 from tract.crosswalk.schema import get_connection

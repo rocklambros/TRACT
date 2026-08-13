@@ -20,7 +20,7 @@ from datasets import Dataset
 from sentence_transformers.sampler import DefaultBatchSampler
 
 from tract.hierarchy import CREHierarchy
-from tract.training.data_quality import QualityTier, TieredLink
+from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
 

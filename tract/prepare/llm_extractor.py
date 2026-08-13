@@ -8,7 +8,6 @@ Public API:
 """
 from __future__ import annotations
 
-import json
 import logging
 import os
 import subprocess
@@ -17,7 +16,6 @@ from pathlib import Path
 from typing import Any
 
 from tract.config import (
-    PREPARE_LLM_CHUNK_TOKEN_LIMIT,
     PREPARE_LLM_MAX_RETRIES,
     PREPARE_LLM_MODEL,
     PREPARE_LLM_RETRY_BACKOFF_FACTOR,

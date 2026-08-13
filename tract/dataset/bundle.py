@@ -8,7 +8,6 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from tract.config import PHASE3_PROVENANCE_PRIORITY
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)

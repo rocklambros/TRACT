@@ -8,6 +8,8 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -23,18 +25,18 @@ logger = logging.getLogger(__name__)
 class Cluster:
     cluster_id: int
     control_ids: list[str]
-    centroid: NDArray[np.floating]
+    centroid: NDArray[np.floating[Any]]
     nearest_hub_id: str
     nearest_hub_similarity: float
     member_frameworks: set[str] = field(default_factory=set)
 
 
 def cluster_ood_controls(
-    embeddings: NDArray[np.floating],
+    embeddings: NDArray[np.floating[Any]],
     control_ids: list[str],
     min_cluster_size: int = PHASE1D_HDBSCAN_MIN_CLUSTER_SIZE,
     min_samples: int = PHASE1D_HDBSCAN_MIN_SAMPLES,
-    hub_embeddings: NDArray[np.floating] | None = None,
+    hub_embeddings: NDArray[np.floating[Any]] | None = None,
     hub_ids: list[str] | None = None,
 ) -> list[Cluster]:
     """HDBSCAN clustering on OOD control embeddings.

@@ -9,6 +9,8 @@ from __future__ import annotations
 import logging
 import math
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 from scipy.special import softmax
@@ -23,16 +25,16 @@ logger = logging.getLogger(__name__)
 
 
 def calibrate_similarities(
-    similarities: NDArray[np.floating],
+    similarities: NDArray[np.floating[Any]],
     temperature: float,
-) -> NDArray[np.floating]:
+) -> NDArray[np.floating[Any]]:
     """Convert cosine similarities to calibrated probabilities via softmax."""
     scaled = similarities / temperature
     return softmax(scaled, axis=1)
 
 
 def multi_label_nll(
-    probs: NDArray[np.floating],
+    probs: NDArray[np.floating[Any]],
     valid_hub_indices: list[list[int]],
 ) -> float:
     """Multi-label NLL: -log(sum(P(hub) for hub in valid_hubs)) per item.
@@ -54,12 +56,12 @@ def multi_label_nll(
 
 
 def fit_temperature(
-    similarities: NDArray[np.floating],
+    similarities: NDArray[np.floating[Any]],
     valid_hub_indices: list[list[int]],
     n_grid: int = PHASE1C_T_GRID_N,
     t_min: float = PHASE1C_T_GRID_MIN,
     t_max: float = PHASE1C_T_GRID_MAX,
-    weights: NDArray[np.floating] | None = None,
+    weights: NDArray[np.floating[Any]] | None = None,
 ) -> dict:
     """Find temperature T that minimizes (weighted) multi-label NLL via log-spaced grid search.
 
@@ -101,7 +103,7 @@ def fit_temperature(
 
 
 def fit_t_lofo(
-    fold_sims: dict[str, NDArray[np.floating]],
+    fold_sims: dict[str, NDArray[np.floating[Any]]],
     fold_valid_indices: dict[str, list[list[int]]],
     n_grid: int = PHASE1C_T_GRID_N,
     t_min: float = PHASE1C_T_GRID_MIN,
@@ -145,7 +147,7 @@ def fit_t_lofo(
 
 
 def find_global_threshold(
-    similarities: NDArray[np.floating],
+    similarities: NDArray[np.floating[Any]],
     valid_hub_indices: list[list[int]],
     temperature: float,
     n_thresholds: int = 200,

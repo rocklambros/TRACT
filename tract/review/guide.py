@@ -8,11 +8,12 @@ import tempfile
 from pathlib import Path
 
 from tract.crosswalk.schema import get_connection
+from tract.review.types import ExportMetadata
 
 logger = logging.getLogger(__name__)
 
 
-def generate_reviewer_guide(output_dir: Path, metadata: dict) -> Path:
+def generate_reviewer_guide(output_dir: Path, metadata: ExportMetadata) -> Path:
     """Generate reviewer_guide.md with instructions, decision criteria, and common pitfalls.
 
     Args:

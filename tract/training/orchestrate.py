@@ -23,8 +23,6 @@ from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
     build_evaluation_corpus,
     load_curated_links,
-    load_opencre_cres,
-    score_predictions,
 )
 from tract.config import (
     PHASE1B_RESULTS_DIR,
@@ -153,7 +151,6 @@ def run_experiment(config: TrainingConfig) -> dict[str, Any]:
     hierarchy = CREHierarchy.model_validate(load_json(PROCESSED_DIR / "cre_hierarchy.json"))
     hub_ids = sorted(hierarchy.hubs.keys())
 
-    cres = load_opencre_cres()
     links = load_curated_links()
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {})
 

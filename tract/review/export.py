@@ -14,19 +14,31 @@ import random
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import sqlite3
+
+    # tract.inference pulls in the sentence-transformers/torch stack, so the
+    # runtime import stays deferred inside the functions that need it.
+    from tract.inference import HubPrediction, TRACTPredictor
 
 from tract.config import (
     PHASE3_CALIBRATION_EASY_N,
     PHASE3_CALIBRATION_HARD_N,
     PHASE3_CALIBRATION_N_ITEMS,
     PHASE3_CALIBRATION_SEED,
-    PHASE3_GT_PROVENANCE,
-    PHASE3_MODEL_PROVENANCE,
     PHASE3_TEXT_QUALITY_HIGH_THRESHOLD,
     PHASE3_TEXT_QUALITY_LOW_THRESHOLD,
 )
 from tract.crosswalk.schema import get_connection
 from tract.io import load_json
+from tract.review.types import (
+    AlternativeHub,
+    ExportMetadata,
+    ReviewExportDocument,
+    ReviewItem,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -132,10 +144,10 @@ ORDER BY a.id
 
 def _generate_calibration_items(
     db_path: Path,
-    predictor: object,
+    predictor: TRACTPredictor,
     global_threshold: float,
     hub_meta: dict[str, dict[str, str]],
-) -> list[dict]:
+) -> list[ReviewItem]:
     """Generate calibration items from ground_truth_T1-AI assignments.
 
     Runs inference to get model's genuine confidence for known-correct hubs.
@@ -161,9 +173,9 @@ def _generate_calibration_items(
         texts.append(combined)
 
     logger.info("Running calibration inference on %d GT texts (top_k=5)", len(texts))
-    batch_predictions = predictor.predict_batch(texts, top_k=5)  # type: ignore[union-attr]
+    batch_predictions = predictor.predict_batch(texts, top_k=5)
 
-    scored: list[tuple[int, float, dict, str, list]] = []
+    scored: list[tuple[int, float, sqlite3.Row, str, list[HubPrediction]]] = []
     for i, (row, preds) in enumerate(zip(rows, batch_predictions)):
         known_hub_id: str = row["hub_id"]
         confidence = 0.0
@@ -192,7 +204,7 @@ def _generate_calibration_items(
 
     selected = easy + middle + hard
 
-    calibration_items: list[dict] = []
+    calibration_items: list[ReviewItem] = []
     for neg_id, (_, conf, row, text, preds) in enumerate(selected, start=1):
         assigned_hub_id: str = row["hub_id"]
         text_quality = _compute_text_quality(len(text))
@@ -218,7 +230,7 @@ def _generate_calibration_items(
             confidence_val, is_ood_val, text_quality, global_threshold,
         )
 
-        alternative_hubs: list[dict] = []
+        alternative_hubs: list[AlternativeHub] = []
         for p in preds:
             if p.hub_id != assigned_hub_id:
                 alternative_hubs.append({
@@ -270,7 +282,7 @@ def generate_review_export(
     calibration_path: Path,
     *,
     source: str = "local",
-) -> dict:
+) -> ExportMetadata:
     """Build reviewer-ready JSON from in-scope assignments.
 
     Queries unreviewed, non-GT-confirmed assignments, re-runs inference to
@@ -332,7 +344,7 @@ def generate_review_export(
 
     if not rows:
         logger.warning("No assignments found for review export.")
-        metadata: dict = {
+        metadata: ExportMetadata = {
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "model_version": model_version,
             "total_predictions": 0,
@@ -356,7 +368,7 @@ def generate_review_export(
     batch_predictions = predictor.predict_batch(texts, top_k=3)
 
     # ── Build prediction records ──────────────────────────────────────────
-    predictions: list[dict] = []
+    predictions: list[ReviewItem] = []
     framework_breakdown: dict[str, int] = {}
     priority_breakdown: dict[str, int] = {"critical": 0, "careful": 0, "routine": 0}
 
@@ -396,7 +408,7 @@ def generate_review_export(
         )
 
         # Collect alternative hubs: top-3 excluding the assigned hub.
-        alternative_hubs: list[dict] = []
+        alternative_hubs: list[AlternativeHub] = []
         for p in preds:
             if p.hub_id != assigned_hub_id:
                 alternative_hubs.append({
@@ -453,7 +465,7 @@ def generate_review_export(
         "priority_breakdown": priority_breakdown,
     }
 
-    export_doc: dict = {"metadata": metadata, "predictions": predictions}
+    export_doc: ReviewExportDocument = {"metadata": metadata, "predictions": predictions}
     _write_export(output_dir, export_doc)
 
     logger.info(
@@ -464,7 +476,7 @@ def generate_review_export(
     return metadata
 
 
-def _write_export(output_dir: Path, data: dict) -> Path:
+def _write_export(output_dir: Path, data: ReviewExportDocument) -> Path:
     """Atomically write export_doc to output_dir/review_export.json.
 
     Uses write-to-temp-then-rename to prevent partial writes on crash.

@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import logging
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -16,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def compute_ood_threshold(
-    max_sims: NDArray[np.floating],
+    max_sims: NDArray[np.floating[Any]],
     percentile: int = PHASE1C_OOD_PERCENTILE,
 ) -> float:
     """Compute OOD threshold as the p-th percentile of in-distribution max cosine similarities."""
@@ -29,7 +31,7 @@ def compute_ood_threshold(
 
 
 def validate_ood_threshold(
-    ood_max_sims: NDArray[np.floating],
+    ood_max_sims: NDArray[np.floating[Any]],
     threshold: float,
     gate: float = PHASE1C_OOD_SEPARATION_GATE,
 ) -> dict:
@@ -63,7 +65,7 @@ def validate_ood_threshold(
 
 
 def flag_ood_items(
-    max_sims: NDArray[np.floating],
+    max_sims: NDArray[np.floating[Any]],
     threshold: float,
 ) -> list[bool]:
     """Flag items as OOD if their max cosine similarity is below threshold."""

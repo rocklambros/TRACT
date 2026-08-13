@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 import numpy as np
 
@@ -28,8 +27,8 @@ def select_holdout(
     Returns:
         (calibration_links, canary_links, remaining_links)
     """
-    traditional = [l for l in tiered_links if l.link.get("standard_name", "") not in AI_FRAMEWORK_NAMES]
-    ai_links = [l for l in tiered_links if l.link.get("standard_name", "") in AI_FRAMEWORK_NAMES]
+    traditional = [tl for tl in tiered_links if tl.link.get("standard_name", "") not in AI_FRAMEWORK_NAMES]
+    ai_links = [tl for tl in tiered_links if tl.link.get("standard_name", "") in AI_FRAMEWORK_NAMES]
 
     n_total = n_cal + n_canary
     if len(traditional) < n_total:

@@ -8,6 +8,8 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -19,7 +21,7 @@ logger = logging.getLogger(__name__)
 def generate_review_json(
     items: list[dict],
     hub_ids: list[str],
-    probs: NDArray[np.floating],
+    probs: NDArray[np.floating[Any]],
     conformal_sets: list[set[str]],
     ood_flags: list[bool],
     threshold: float,

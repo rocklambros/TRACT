@@ -17,13 +17,13 @@ def prepare_deployment_training_data(
     Uses (section_name, cre_id) as the identity key for matching.
     """
     holdout_keys = {
-        (l.link.get("section_name", ""), l.link.get("cre_id", ""))
-        for l in holdout_links
+        (tl.link.get("section_name", ""), tl.link.get("cre_id", ""))
+        for tl in holdout_links
     }
 
     remaining = [
-        l for l in all_links
-        if (l.link.get("section_name", ""), l.link.get("cre_id", "")) not in holdout_keys
+        tl for tl in all_links
+        if (tl.link.get("section_name", ""), tl.link.get("cre_id", "")) not in holdout_keys
     ]
 
     logger.info(

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import logging
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import ks_2samp
@@ -13,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 def expected_calibration_error(
-    confidences: NDArray[np.floating],
-    accuracies: NDArray[np.floating],
+    confidences: NDArray[np.floating[Any]],
+    accuracies: NDArray[np.floating[Any]],
     n_bins: int = PHASE1C_ECE_N_BINS,
 ) -> float:
     """Equal-width binned Expected Calibration Error."""
@@ -41,8 +43,8 @@ def expected_calibration_error(
 
 
 def bootstrap_ece(
-    confidences: NDArray[np.floating],
-    accuracies: NDArray[np.floating],
+    confidences: NDArray[np.floating[Any]],
+    accuracies: NDArray[np.floating[Any]],
     n_bins: int = PHASE1C_ECE_N_BINS,
     n_bootstrap: int = PHASE1C_ECE_BOOTSTRAP_N,
     seed: int = 42,
@@ -68,8 +70,8 @@ def bootstrap_ece(
 
 
 def ks_test_similarity_distributions(
-    traditional_max_sims: NDArray[np.floating],
-    ai_max_sims: NDArray[np.floating],
+    traditional_max_sims: NDArray[np.floating[Any]],
+    ai_max_sims: NDArray[np.floating[Any]],
 ) -> dict:
     """Two-sample KS test between traditional and AI max-cosine similarity distributions."""
     stat, p_value = ks_2samp(traditional_max_sims, ai_max_sims)

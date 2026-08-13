@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 
 import anthropic
+from anthropic.types import TextBlock
 
 from tract.bridge.types import BridgeCandidate, NegativeControl
 from tract.config import BRIDGE_LLM_MODEL, BRIDGE_LLM_TEMPERATURE
@@ -76,8 +77,22 @@ def generate_bridge_descriptions(
                 max_tokens=300,
                 messages=[{"role": "user", "content": prompt}],
             )
-            raw_text = response.content[0].text
-            candidate["description"] = sanitize_text(raw_text, max_length=500)
+            # response.content is a union of block types. Reading .text off
+            # the first element unguarded raised AttributeError whenever the
+            # API led with a thinking or tool-use block, which contradicts the
+            # no-crash contract in this function's docstring.
+            content_block = response.content[0]
+            if isinstance(content_block, TextBlock):
+                candidate["description"] = sanitize_text(
+                    content_block.text, max_length=500,
+                )
+            else:
+                logger.warning(
+                    "LLM returned %s rather than a text block for %s -> %s",
+                    type(content_block).__name__,
+                    candidate["ai_hub_id"], candidate["trad_hub_id"],
+                )
+                candidate["description"] = ""
         except anthropic.APIError:
             logger.warning(
                 "LLM description failed for %s -> %s",
