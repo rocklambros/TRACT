@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 from tract.config import HIERARCHY_BRIDGE_VERSION
 from tract.hierarchy import CREHierarchy
@@ -15,8 +16,8 @@ VALID_STATUSES = {"accepted", "rejected"}
 
 
 def validate_candidates(
-    candidates_data: dict,
-    hierarchy_data: dict,
+    candidates_data: dict[str, Any],
+    hierarchy_data: dict[str, Any],
 ) -> list[str]:
     """Validate reviewed candidates. Returns list of error messages (empty = valid).
 
@@ -52,10 +53,10 @@ def validate_candidates(
 
 
 def commit_bridges(
-    candidates_data: dict,
+    candidates_data: dict[str, Any],
     hierarchy_path: Path,
     report_path: Path,
-) -> dict:
+) -> dict[str, Any]:
     """Commit accepted bridges to hierarchy and write bridge_report.json.
 
     Args:

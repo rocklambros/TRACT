@@ -7,6 +7,7 @@ from pathlib import Path
 
 from tract.config import BRIDGE_AI_FRAMEWORK_IDS
 from tract.io import load_json
+from tract.bridge.similarity import HubLinks
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ def classify_hubs(
     Returns:
         HubClassification with sorted lists of hub IDs per category.
     """
-    hub_links: dict[str, list[dict]] = load_json(hub_links_path)
+    hub_links: HubLinks = load_json(hub_links_path)
 
     ai_hubs: set[str] = set()
     trad_hubs: set[str] = set()

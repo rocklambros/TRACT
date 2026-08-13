@@ -8,13 +8,15 @@ from pathlib import Path
 import numpy as np
 
 from tract.bridge.classify import classify_hubs
-from tract.bridge.describe import count_controls_for_hub
 from tract.bridge.similarity import (
     compute_bridge_similarities,
     compute_similarity_stats,
+    count_controls_for_hub,
+    enrich_negatives,
     extract_negatives,
     extract_top_k,
 )
+from tract.bridge.types import BridgeCandidate
 from tract.io import atomic_write_json
 
 logger = logging.getLogger(__name__)
@@ -57,37 +59,44 @@ def run_bridge_analysis(
     )
     stats = compute_similarity_stats(sim_matrix)
 
-    candidates = extract_top_k(
+    raw_candidates = extract_top_k(
         sim_matrix, classification.ai_only, classification.trad_only, k=top_k,
     )
 
-    for candidate in candidates:
-        ai_id = candidate["ai_hub_id"]
-        trad_id = candidate["trad_hub_id"]
-        candidate["ai_hub_name"] = hierarchy.hubs[ai_id].name
-        candidate["trad_hub_name"] = hierarchy.hubs[trad_id].name
-        candidate["seed_evidence"] = {
-            "ai_controls_linked": count_controls_for_hub(ai_id, hub_links),
-            "trad_controls_linked": count_controls_for_hub(trad_id, hub_links),
-        }
-        candidate["status"] = "pending"
-        candidate["reviewer_notes"] = ""
+    # Build BridgeCandidate records rather than bolting keys onto the
+    # RawCandidate dicts in place. description starts empty so the two paths
+    # below (describe or skip) produce the same shape either way.
+    candidates: list[BridgeCandidate] = []
+    for raw in raw_candidates:
+        ai_id = raw["ai_hub_id"]
+        trad_id = raw["trad_hub_id"]
+        candidates.append({
+            "ai_hub_id": ai_id,
+            "trad_hub_id": trad_id,
+            "cosine_similarity": raw["cosine_similarity"],
+            "rank_for_ai_hub": raw["rank_for_ai_hub"],
+            "ai_hub_name": hierarchy.hubs[ai_id].name,
+            "trad_hub_name": hierarchy.hubs[trad_id].name,
+            "seed_evidence": {
+                "ai_controls_linked": count_controls_for_hub(ai_id, hub_links),
+                "trad_controls_linked": count_controls_for_hub(trad_id, hub_links),
+            },
+            "status": "pending",
+            "reviewer_notes": "",
+            "description": "",
+        })
 
     negatives_raw = extract_negatives(
         sim_matrix, classification.ai_only, classification.trad_only,
     )
+    # enrich_negatives lives in similarity.py, not describe.py, so this path
+    # does not drag in anthropic when descriptions are skipped.
+    negatives = enrich_negatives(negatives_raw, hierarchy)
     if not skip_descriptions:
-        from tract.bridge.describe import (
-            generate_bridge_descriptions,
-            generate_negative_descriptions,
-        )
+        from tract.bridge.describe import generate_bridge_descriptions
+
         generate_bridge_descriptions(candidates, hierarchy, hub_links)
-        generate_negative_descriptions(negatives_raw, hierarchy, hub_links)
-    else:
-        for c in candidates:
-            c.setdefault("description", "")
-        for n in negatives_raw:
-            n.setdefault("description", "")
+        generate_bridge_descriptions(negatives, hierarchy, hub_links)
 
     unclassified_leaves = [
         h for h in classification.unlinked
@@ -100,7 +109,7 @@ def run_bridge_analysis(
         "top_k": top_k,
         "similarity_stats": stats,
         "candidates": candidates,
-        "negative_controls": negatives_raw,
+        "negative_controls": negatives,
         "unclassified_leaf_hubs": unclassified_leaves,
     }
 

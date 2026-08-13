@@ -8,13 +8,19 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)
 
+# sqlite3 rows converted with dict(row). Columns span TEXT, REAL, INTEGER and
+# NULL, so the value type is genuinely heterogeneous; Any is the accurate
+# annotation for a row here, not a stand-in for one.
+Row = dict[str, Any]
 
-def insert_hubs(db_path: Path, hubs: list[dict]) -> int:
+
+def insert_hubs(db_path: Path, hubs: list[Row]) -> int:
     """Insert hub records. Returns count inserted."""
     conn = get_connection(db_path)
     try:
@@ -28,7 +34,7 @@ def insert_hubs(db_path: Path, hubs: list[dict]) -> int:
         conn.close()
 
 
-def get_hub(db_path: Path, hub_id: str) -> dict | None:
+def get_hub(db_path: Path, hub_id: str) -> Row | None:
     """Get a single hub by ID."""
     conn = get_connection(db_path)
     try:
@@ -42,12 +48,12 @@ def count_hubs(db_path: Path) -> int:
     """Count total hubs."""
     conn = get_connection(db_path)
     try:
-        return conn.execute("SELECT COUNT(*) FROM hubs").fetchone()[0]
+        return int(conn.execute("SELECT COUNT(*) FROM hubs").fetchone()[0])
     finally:
         conn.close()
 
 
-def insert_frameworks(db_path: Path, frameworks: list[dict]) -> int:
+def insert_frameworks(db_path: Path, frameworks: list[Row]) -> int:
     """Insert framework records. Returns count inserted."""
     conn = get_connection(db_path)
     try:
@@ -66,12 +72,12 @@ def count_frameworks(db_path: Path) -> int:
     """Count total frameworks."""
     conn = get_connection(db_path)
     try:
-        return conn.execute("SELECT COUNT(*) FROM frameworks").fetchone()[0]
+        return int(conn.execute("SELECT COUNT(*) FROM frameworks").fetchone()[0])
     finally:
         conn.close()
 
 
-def insert_controls(db_path: Path, controls: list[dict]) -> int:
+def insert_controls(db_path: Path, controls: list[Row]) -> int:
     """Insert control records. Returns count inserted."""
     conn = get_connection(db_path)
     try:
@@ -86,7 +92,7 @@ def insert_controls(db_path: Path, controls: list[dict]) -> int:
         conn.close()
 
 
-def get_controls_by_framework(db_path: Path, framework_id: str) -> list[dict]:
+def get_controls_by_framework(db_path: Path, framework_id: str) -> list[Row]:
     """Get all controls for a framework."""
     conn = get_connection(db_path)
     try:
@@ -98,7 +104,7 @@ def get_controls_by_framework(db_path: Path, framework_id: str) -> list[dict]:
         conn.close()
 
 
-def insert_assignments(db_path: Path, assignments: list[dict]) -> int:
+def insert_assignments(db_path: Path, assignments: list[Row]) -> int:
     """Insert assignment records atomically. Returns count inserted."""
     conn = get_connection(db_path)
     try:
@@ -120,7 +126,7 @@ def insert_assignments(db_path: Path, assignments: list[dict]) -> int:
         conn.close()
 
 
-def get_assignments_by_control(db_path: Path, control_id: str) -> list[dict]:
+def get_assignments_by_control(db_path: Path, control_id: str) -> list[Row]:
     """Get all assignments for a control."""
     conn = get_connection(db_path)
     try:
@@ -132,7 +138,7 @@ def get_assignments_by_control(db_path: Path, control_id: str) -> list[dict]:
         conn.close()
 
 
-def get_assignments_by_provenance(db_path: Path, provenance: str) -> list[dict]:
+def get_assignments_by_provenance(db_path: Path, provenance: str) -> list[Row]:
     """Get all assignments with a given provenance."""
     conn = get_connection(db_path)
     try:
@@ -144,7 +150,7 @@ def get_assignments_by_provenance(db_path: Path, provenance: str) -> list[dict]:
         conn.close()
 
 
-def get_assignments_by_status(db_path: Path, status: str) -> list[dict]:
+def get_assignments_by_status(db_path: Path, status: str) -> list[Row]:
     """Get all assignments with a given review status."""
     conn = get_connection(db_path)
     try:
