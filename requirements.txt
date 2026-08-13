@@ -17,6 +17,9 @@ hdbscan==0.8.42
 # ruff and mypy must match requirements-lint.txt, which constrains against
 # this file. CI was running 0.15.x against a declared 0.11.12 for months.
 pytest==9.0.3
+# The CI test job runs pytest --timeout=60, which needs this plugin. It was
+# never declared, and the job never ran to notice, because lint failed first.
+pytest-timeout==2.4.0
 mypy==2.2.0
 ruff==0.15.21
 pip-audit==2.9.0
