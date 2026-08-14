@@ -122,3 +122,72 @@ class TestMergeLoraAdapters:
         with patch("tract.publish.merge.SentenceTransformer", return_value=mock_model):
             with pytest.raises(RuntimeError, match="Merge verification failed"):
                 merge_lora_adapters(model_dir, output_dir)
+
+
+class TestMergeRealAdapter:
+    """End-to-end merge against a real adapter-only checkpoint.
+
+    Every other test in this file mocks SentenceTransformer, so none of them can
+    see that sentence-transformers 5.7 made `auto_model` a read-only property.
+    Under 5.7 the loaded model carries an injected adapter rather than a
+    PeftModel wrapper, so merge_and_unload is absent, and the assignment the old
+    code used to recover from that was silently discarded -- publishing would
+    have raised AttributeError. Only a real model exercises that path.
+    """
+
+    SMALL_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+
+    def _adapter_checkpoint(self, path: Path):
+        import torch
+        from peft import LoraConfig, TaskType
+        from sentence_transformers import SentenceTransformer
+
+        torch.manual_seed(42)
+        model = SentenceTransformer(self.SMALL_MODEL)
+        model.max_seq_length = 64
+        model.add_adapter(LoraConfig(
+            r=8, lora_alpha=16, lora_dropout=0.0,
+            target_modules=["query", "key", "value"],
+            task_type=TaskType.FEATURE_EXTRACTION,
+        ))
+        # lora_B initialises to zero, making the adapter an identity map. Perturb
+        # it so a dropped adapter is actually observable in the embeddings.
+        generator = torch.Generator().manual_seed(0)
+        for name, param in model.named_parameters():
+            if "lora_B" in name:
+                with torch.no_grad():
+                    param.copy_(torch.randn(param.shape, generator=generator) * 0.05)
+        model.save(str(path))
+        return model
+
+    @pytest.mark.slow
+    def test_merges_adapter_only_checkpoint(self, tmp_path) -> None:
+        from sentence_transformers import SentenceTransformer
+
+        from tract.publish.merge import MERGE_VERIFICATION_TEXTS, merge_lora_adapters
+
+        model_dir = tmp_path / "checkpoint"
+        output_dir = tmp_path / "merged"
+        model = self._adapter_checkpoint(model_dir)
+        assert (model_dir / "adapter_config.json").exists(), "expected an adapter-only checkpoint"
+
+        before = model.encode(
+            MERGE_VERIFICATION_TEXTS, normalize_embeddings=True, show_progress_bar=False,
+        )
+
+        merge_lora_adapters(model_dir, output_dir)
+
+        # validate_merged_output already asserts these, but state them here so a
+        # regression names the artifact rather than a helper.
+        assert not (output_dir / "adapter_config.json").exists()
+        assert (output_dir / "model.safetensors").exists()
+
+        merged = SentenceTransformer(str(output_dir))
+        merged.max_seq_length = 64
+        after = merged.encode(
+            MERGE_VERIFICATION_TEXTS, normalize_embeddings=True, show_progress_bar=False,
+        )
+        cosines = np.sum(before * after, axis=1)
+        assert float(np.min(cosines)) >= 0.999, (
+            f"merged model does not reproduce the adapter model: {cosines.tolist()}"
+        )

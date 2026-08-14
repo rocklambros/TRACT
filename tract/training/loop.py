@@ -15,7 +15,7 @@ from typing import Any
 import numpy as np
 import torch
 from datasets import Dataset
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, TaskType
 from sentence_transformers import (
     SentenceTransformer,
     SentenceTransformerTrainer,
@@ -28,6 +28,17 @@ from tract.training.config import TrainingConfig
 from tract.training.data import HubAwareTemperatureSampler
 
 logger = logging.getLogger(__name__)
+
+# Probes for the save/reload check in save_checkpoint. Mirrors the pattern in
+# tract/publish/merge.py. Content is arbitrary; only the embeddings matter.
+CHECKPOINT_PROBE_TEXTS = [
+    "Implement access controls for AI model training pipelines",
+    "Data encryption at rest using AES-256",
+    "Regularly audit AI system outputs for bias and fairness",
+]
+# Same bar the merge path uses for "these are the same model". Float32 reload
+# noise sits many orders of magnitude below this; a lost adapter lands near 0.4.
+CHECKPOINT_COSINE_THRESHOLD = 0.999
 
 
 def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
@@ -46,10 +57,34 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
             target_modules=config.lora_target_modules,
             task_type=TaskType.FEATURE_EXTRACTION,
         )
-        model[0].auto_model = get_peft_model(model[0].auto_model, lora_config)
+        # Do NOT assign to model[0].auto_model. sentence-transformers 5.7 made
+        # auto_model a read-only property aliasing `.model`, and
+        # nn.Module.__setattr__ accepts an assignment to a property name without
+        # raising -- it files the value into _modules, which property reads never
+        # consult. Training still worked (get_peft_model mutates the module tree
+        # in place) but save_pretrained ran against the unwrapped backbone and
+        # wrote peft-mangled keys with no adapter_config.json, so the checkpoint
+        # reloaded with randomly initialised q/k/v. Measured cosine on reload was
+        # 0.38. add_adapter is the supported surface and exists on
+        # PeftAdapterMixin in every sentence-transformers version we pin.
+        model.add_adapter(lora_config)
 
         trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
         total = sum(p.numel() for p in model.parameters())
+        # A silent no-op here is the exact failure this migration fixes, so make
+        # "no adapter attached" and "base model not frozen" both loud.
+        if trainable == 0:
+            raise RuntimeError(
+                "LoRA adapter did not attach: no trainable parameters after "
+                f"add_adapter with target_modules={config.lora_target_modules}. "
+                "Check that the target module names match this architecture."
+            )
+        if trainable >= total:
+            raise RuntimeError(
+                f"LoRA adapter attached but the base model was not frozen: "
+                f"{trainable:,} trainable of {total:,} total. This would train "
+                "every weight rather than the adapter."
+            )
         logger.info("LoRA applied: %s trainable / %s total (%.2f%%)",
                     f"{trainable:,}", f"{total:,}", 100 * trainable / total)
     else:
@@ -139,17 +174,65 @@ def train_model(
     return model
 
 
+def verify_checkpoint_roundtrip(
+    model: SentenceTransformer,
+    saved_dir: Path,
+    threshold: float = CHECKPOINT_COSINE_THRESHOLD,
+) -> float:
+    """Prove the saved directory reproduces the in-memory model's embeddings.
+
+    Folds evaluate the live model and then save it, so an artifact that does not
+    match the evaluated model reports a healthy score for something that was
+    never written to disk. That is exactly how a lost LoRA adapter stayed
+    invisible. Reload what was just written and compare.
+
+    Returns the minimum per-probe cosine. Raises RuntimeError below threshold.
+    """
+    reference = model.encode(
+        CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
+    )
+    reloaded = SentenceTransformer(str(saved_dir))
+    reloaded.max_seq_length = model.max_seq_length
+    actual = reloaded.encode(
+        CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
+    )
+
+    cosines = np.sum(reference * actual, axis=1)
+    min_cosine = float(np.min(cosines))
+    if min_cosine < threshold:
+        raise RuntimeError(
+            f"Checkpoint at {saved_dir} does not reproduce the in-memory model: "
+            f"min cosine {min_cosine:.6f} < {threshold}. Per-probe cosines: "
+            f"{cosines.tolist()}. The evaluated model and the saved artifact are "
+            "not the same model, so any metric measured against the live model "
+            "does not describe this checkpoint."
+        )
+    logger.info("Checkpoint round-trip verified: min cosine = %.6f", min_cosine)
+    return min_cosine
+
+
 def save_checkpoint(
     model: SentenceTransformer,
     config: TrainingConfig,
     metrics: dict[str, Any],
     output_dir: Path,
     git_sha: str = "unknown",
+    verify_roundtrip: bool = True,
 ) -> Path:
-    """Save model checkpoint with full metadata for reproducibility."""
+    """Save model checkpoint with full metadata for reproducibility.
+
+    Args:
+        verify_roundtrip: Reload the saved model and assert it reproduces the
+            in-memory embeddings. Costs one model load. Leave enabled for any
+            run whose metrics will be reported.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    model.save(str(output_dir / "model"))
+    model_dir = output_dir / "model"
+    model.save(str(model_dir))
+
+    if verify_roundtrip:
+        verify_checkpoint_roundtrip(model, model_dir)
 
     metadata = {
         "config": config.to_dict(),

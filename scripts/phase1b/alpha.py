@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from datasets import Dataset
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, TaskType
 from sentence_transformers import (
     SentenceTransformer,
     SentenceTransformerTrainer,
@@ -129,7 +129,9 @@ def main() -> None:
         target_modules=["query", "key", "value"],
         task_type=TaskType.FEATURE_EXTRACTION,
     )
-    model[0].auto_model = get_peft_model(model[0].auto_model, lora_config)
+    # See tract/training/loop.py: assigning to auto_model is silently discarded
+    # on sentence-transformers 5.7 and the adapter never reaches the checkpoint.
+    model.add_adapter(lora_config)
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     total = sum(p.numel() for p in model.parameters())
     logger.info("Trainable params: %s / %s (%.2f%%)", f"{trainable:,}", f"{total:,}", 100 * trainable / total)

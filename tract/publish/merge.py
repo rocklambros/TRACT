@@ -17,6 +17,31 @@ MERGE_VERIFICATION_TEXTS = [
 MERGE_COSINE_THRESHOLD = 0.9999
 
 
+def _set_backbone(module: object, new_model: object) -> None:
+    """Replace the transformer backbone inside a SentenceTransformer module.
+
+    sentence-transformers 5.7 turned ``auto_model`` into a read-only property
+    aliasing ``.model``. ``nn.Module.__setattr__`` accepts an assignment to a
+    property name without raising -- it files the value into ``_modules``, which
+    property reads never consult -- so a plain assignment is silently discarded
+    and the caller keeps operating on the old backbone. Write to whichever
+    attribute is actually the storage, then prove the swap took effect.
+    """
+    attr = (
+        "model"
+        if isinstance(getattr(type(module), "auto_model", None), property)
+        else "auto_model"
+    )
+    setattr(module, attr, new_model)
+    if getattr(module, "auto_model") is not new_model:
+        raise RuntimeError(
+            f"Could not replace the transformer backbone: assigned to '{attr}' but "
+            f"auto_model still reads back as {type(getattr(module, 'auto_model')).__name__}. "
+            "The sentence-transformers internal layout has changed; the merge "
+            "would otherwise silently publish an unmerged model."
+        )
+
+
 def validate_merged_output(output_dir: Path) -> None:
     """Validate that a merged model directory is correctly structured.
 
@@ -70,23 +95,12 @@ def merge_lora_adapters(
     model = SentenceTransformer(str(model_dir))
 
     inner = model[0].auto_model
-    if not hasattr(inner, "merge_and_unload"):
-        adapter_config = model_dir / "adapter_config.json"
-        if adapter_config.exists():
-            logger.info("SentenceTransformer did not auto-detect PEFT; loading adapter manually")
-            import json
-
-            from peft import PeftModel as _PeftModel
-            from transformers import AutoModel
-            config = json.loads(adapter_config.read_text(encoding="utf-8"))
-            base = AutoModel.from_pretrained(config["base_model_name_or_path"])
-            peft_model = _PeftModel.from_pretrained(base, str(model_dir))
-            model[0].auto_model = peft_model
-        else:
-            raise RuntimeError(
-                f"No PEFT adapter found at {model_dir}. "
-                "Expected adapter_config.json + adapter_model.safetensors."
-            )
+    adapter_config = model_dir / "adapter_config.json"
+    if not hasattr(inner, "merge_and_unload") and not adapter_config.exists():
+        raise RuntimeError(
+            f"No PEFT adapter found at {model_dir}. "
+            "Expected adapter_config.json + adapter_model.safetensors."
+        )
 
     logger.info("Computing pre-merge reference embeddings")
     pre_merge_emb = model.encode(
@@ -96,10 +110,26 @@ def merge_lora_adapters(
     )
 
     logger.info("Merging LoRA adapters into base weights")
-    merged = model[0].auto_model.merge_and_unload()
+    if hasattr(inner, "merge_and_unload"):
+        merged = inner.merge_and_unload()
+    else:
+        # sentence-transformers 5.7 injects the adapter straight into the
+        # backbone instead of wrapping it in a PeftModel, so the loaded model
+        # embeds correctly but exposes no merge_and_unload. Rebuild the wrapper
+        # from base + adapter and let peft's own merge path do the arithmetic,
+        # rather than hand-rolling layer surgery on the live module tree.
+        logger.info("Backbone carries an injected adapter; rebuilding a PeftModel to merge")
+        import json
+
+        from peft import PeftModel as _PeftModel
+        from transformers import AutoModel
+        config = json.loads(adapter_config.read_text(encoding="utf-8"))
+        base = AutoModel.from_pretrained(config["base_model_name_or_path"])
+        merged = _PeftModel.from_pretrained(base, str(model_dir)).merge_and_unload()
+
     if hasattr(merged, "peft_config"):
         delattr(merged, "peft_config")
-    model[0].auto_model = merged
+    _set_backbone(model[0], merged)
 
     logger.info("Computing post-merge embeddings for verification")
     post_merge_emb = model.encode(
