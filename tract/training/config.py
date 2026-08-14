@@ -39,11 +39,12 @@ class TrainingConfig:
     lora_target_modules: list[str] = field(default_factory=lambda: list(PHASE1B_LORA_TARGET_MODULES))
 
     sampling_temperature: float = PHASE1B_SAMPLING_TEMPERATURE
-    # Derived from use_prose rather than stored. It was a constant default that
+    # control_text_source is NOT a field. It was a constant default that
     # nothing ever assigned, so every prose run recorded
     # "control_text_source": "section_name" beside "use_prose": true in the
-    # same object -- and it is the field whose name invites you to trust it.
-    _control_text_source_unused: str = "section_name"
+    # same object. to_dict() now derives it from use_prose. Keeping it as a
+    # field, even renamed, left `TrainingConfig(control_text_source=...)`
+    # looking like it worked while changing nothing.
 
     batch_size: int = PHASE1B_BATCH_SIZE
     learning_rate: float = PHASE1B_LEARNING_RATE

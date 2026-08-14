@@ -11,7 +11,7 @@ import re
 import socket
 import subprocess
 import time
-from typing import Final
+from typing import Any, Final
 
 import requests
 
@@ -49,8 +49,8 @@ def _headers() -> dict[str, str]:
     }
 
 
-def _gql(query: str, variables: dict | None = None) -> dict:
-    payload: dict = {"query": query}
+def _gql(query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload: dict[str, Any] = {"query": query}
     if variables:
         payload["variables"] = variables
     resp = requests.post(GRAPHQL_URL, headers=_headers(), json=payload, timeout=30)
@@ -60,10 +60,11 @@ def _gql(query: str, variables: dict | None = None) -> dict:
         critical = [e for e in data["errors"] if "lowestPrice" not in str(e.get("path", []))]
         if critical:
             raise RuntimeError(f"GraphQL errors: {critical}")
-    return data.get("data", {})
+    result: dict[str, Any] = data.get("data", {})
+    return result
 
 
-def list_available_gpus(min_vram_gb: int = 48) -> list[dict]:
+def list_available_gpus(min_vram_gb: int = 48) -> list[dict[str, Any]]:
     data = _gql("query { gpuTypes { id displayName memoryInGb secureCloud communityCloud } }")
     return [
         g for g in data.get("gpuTypes", [])
@@ -186,7 +187,7 @@ def create_pod(
     gpu_count: int = 1,
     volume_gb: int = 50,
     container_disk_gb: int = 20,
-) -> dict:
+) -> dict[str, Any]:
     """Create a RunPod pod with retry. Returns {pod_id, ip, port, gpu_type, name}."""
     max_attempts = 3
     for attempt in range(1, max_attempts + 1):
@@ -237,7 +238,7 @@ def create_pod(
     }
 
 
-def _wait_for_ssh(pod_id: str) -> dict:
+def _wait_for_ssh(pod_id: str) -> dict[str, Any]:
     _validate_pod_id(pod_id)
     start = time.time()
     while time.time() - start < SSH_POLL_TIMEOUT_S:
@@ -271,7 +272,7 @@ def _wait_for_ssh(pod_id: str) -> dict:
     raise TimeoutError(f"Pod {pod_id} SSH not ready within {SSH_POLL_TIMEOUT_S}s")
 
 
-def get_running_pods() -> list[dict]:
+def get_running_pods() -> list[dict[str, Any]]:
     data = _gql(
         "query { myself { pods { id name desiredStatus "
         "runtime { ports { ip publicPort privatePort } } "
@@ -289,7 +290,7 @@ def create_pods_parallel(
     volume_gb: int = 50,
     container_disk_gb: int = 20,
     max_workers: int = 8,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Create multiple RunPod pods concurrently.
 
     Each config dict must have 'name' and 'role' keys.
@@ -297,7 +298,7 @@ def create_pods_parallel(
     """
     import concurrent.futures
 
-    def _create_one(cfg: dict[str, str]) -> dict:
+    def _create_one(cfg: dict[str, str]) -> dict[str, Any]:
         pod = create_pod(
             gpu_type_id, name=cfg["name"], image=image,
             gpu_count=gpu_count, volume_gb=volume_gb,
@@ -309,7 +310,7 @@ def create_pods_parallel(
 
     workers = min(max_workers, len(configs))
     logger.info("Creating %d pods in parallel (workers=%d)...", len(configs), workers)
-    pods: list[dict] = [{}] * len(configs)
+    pods: list[dict[str, Any]] = [{}] * len(configs)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
         future_to_idx = {
@@ -396,7 +397,9 @@ if __name__ == "__main__":
     elif args.running:
         for pod in get_running_pods():
             ports = pod.get("runtime", {}).get("ports", [])
-            ssh_port = next((p for p in ports if p.get("privatePort") == 22), {})
+            ssh_port: dict[str, Any] = next(
+                (p for p in ports if p.get("privatePort") == 22), {}
+            )
             ip = ssh_port.get("ip", "pending")
             port = ssh_port.get("publicPort", "?")
             gpu = pod.get("machine", {}).get("gpuDisplayName", "?")

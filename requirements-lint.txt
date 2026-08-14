@@ -40,6 +40,11 @@ huggingface_hub
 # Type stubs. Not runtime dependencies and absent from requirements.txt, so
 # these are the only entries that carry their own pin.
 types-beautifulsoup4==4.12.0.20250516
+# The CAPEC and CWE parsers use defusedxml, and CLAUDE.md documents the
+# type-check command as `mypy parsers/ scripts/ --strict`. Without these
+# stubs that command fails while CI, which checks only tract/ and
+# scripts/phase1a/, stays green.
+types-defusedxml==0.7.0.20260504
 types-jsonschema==4.26.0.20260518
 types-PyYAML==6.0.12.20260724
 types-requests==2.33.0.20260712

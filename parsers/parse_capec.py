@@ -59,6 +59,8 @@ class CapecParser(BaseParser):
     def parse(self) -> list[Control]:
         source = self.raw_dir / "capec_latest.xml"
         root = parse_xml(source).getroot()
+        if root is None:
+            raise ValueError(f"{source} parsed to an empty XML tree.")
         namespace = {"c": root.tag.split("}")[0].strip("{")}
         catalog_version = root.get("Version") or self.version
 

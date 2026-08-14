@@ -21,10 +21,19 @@ jobs:
         run: pip install -r requirements-lint.txt
 
       - name: Ruff check
-        run: ruff check tract/ scripts/phase1a/ parsers/
+        run: >
+          ruff check tract/ parsers/ scripts/phase1a/ scripts/phase1b/
+          scripts/phase0/runpod_provision.py
 
-      - name: Mypy strict (Phase 1A)
-        run: mypy tract/ scripts/phase1a/ --strict
+      # Everything the LOFO run executes. parsers/ was linted by ruff but never
+      # type-checked, and scripts/phase1b/ was covered by neither -- which is
+      # how ablation.py kept passing a TrainingConfig kwarg that no longer
+      # existed. scripts/phase0/exp*.py is finished Phase 0 experiment code and
+      # stays out of scope on purpose.
+      - name: Mypy strict (run path)
+        run: >
+          mypy tract/ parsers/ scripts/phase1a/ scripts/phase1b/
+          scripts/phase0/runpod_provision.py --strict
 
   test:
     needs: lint

@@ -167,7 +167,7 @@ python parsers/validate_all.py
 python -m pytest tests/ -q
 
 # Type check
-mypy parsers/ scripts/ --strict
+mypy tract/ parsers/ scripts/phase1a/ scripts/phase1b/ scripts/phase0/runpod_provision.py --strict
 
 # Bridge analysis (Phase 2B)
 tract bridge --top-k 3                           # Generate bridge candidates

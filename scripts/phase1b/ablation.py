@@ -57,7 +57,8 @@ def get_ablation_configs(ablation_id: str) -> list[TrainingConfig]:
             TrainingConfig(name="ablation_A9_full_ft", lora_rank=0),
         ],
         "A10": [
-            TrainingConfig(name="ablation_A10_full_text", control_text_source="full_parsed"),
+            TrainingConfig(name="ablation_A10_full_text", use_prose=True),
+            TrainingConfig(name="ablation_A10_section_title", use_prose=False),
         ],
     }
 

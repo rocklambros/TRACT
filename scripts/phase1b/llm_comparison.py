@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from typing import Any
 import logging
 from pathlib import Path
 
@@ -21,9 +22,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 
-def load_model_predictions(results_dir: Path) -> dict[str, dict]:
+def load_model_predictions(results_dir: Path) -> dict[str, dict[str, Any]]:
     """Load per-item predictions from all fold directories."""
-    predictions: dict[str, dict] = {}
+    predictions: dict[str, dict[str, Any]] = {}
     for fold_dir in sorted(results_dir.iterdir()):
         if not fold_dir.is_dir() or not fold_dir.name.startswith("fold_"):
             continue
@@ -38,11 +39,11 @@ def load_model_predictions(results_dir: Path) -> dict[str, dict]:
 
 
 def compare_predictions(
-    model_preds: dict[str, dict],
-    sonnet_preds: dict[str, dict],
-) -> dict[str, list[dict]]:
+    model_preds: dict[str, dict[str, Any]],
+    sonnet_preds: dict[str, dict[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
     """Compare model vs Sonnet predictions per item."""
-    categories: dict[str, list[dict]] = {
+    categories: dict[str, list[dict[str, Any]]] = {
         "both_correct": [],
         "both_wrong": [],
         "model_only_correct": [],

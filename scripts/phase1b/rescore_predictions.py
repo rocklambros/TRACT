@@ -7,6 +7,7 @@ without retraining.
 from __future__ import annotations
 
 import logging
+from typing import Any
 from pathlib import Path
 
 import numpy as np
@@ -36,7 +37,7 @@ def rescore_experiment(experiment_dir: Path) -> None:
     for item in corpus:
         valid_hubs_by_text[item.control_text] = item.valid_hub_ids
 
-    fold_results: list[dict] = []
+    fold_results: list[dict[str, Any]] = []
     for fw_name in sorted(AI_FRAMEWORK_NAMES):
         fold_dir = experiment_dir / f"fold_{fw_name.replace(' ', '_')}"
         pred_path = fold_dir / "predictions.json"

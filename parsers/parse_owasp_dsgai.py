@@ -13,6 +13,7 @@ import json
 import logging
 import re
 from pathlib import Path
+from typing import Any
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -67,7 +68,7 @@ class OwaspDsgaiParser(BaseParser):
             raise FileNotFoundError(f"MANIFEST.json not found at {manifest_path}")
 
         with manifest_path.open(encoding="utf-8") as fh:
-            manifest: dict = json.load(fh)
+            manifest: dict[str, Any] = json.load(fh)
 
         source_file: str = manifest.get("source_file", "")
         if not source_file:
@@ -107,7 +108,7 @@ class OwaspDsgaiParser(BaseParser):
 
         # Deduplicate: first occurrence of each ID is the real section.
         seen_ids: set[str] = set()
-        unique_matches: list[re.Match] = []
+        unique_matches: list[re.Match[str]] = []
         for m in matches:
             cid = m.group(1)
             if cid not in seen_ids:

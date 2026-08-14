@@ -33,7 +33,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from scripts.phase0.runpod_provision import (
     create_pods_parallel,
@@ -154,7 +154,7 @@ def _ssh(
     check: bool = True,
     env: dict[str, str] | None = None,
     timeout: int = SSH_DEFAULT_TIMEOUT_S,
-) -> subprocess.CompletedProcess:
+) -> subprocess.CompletedProcess[str]:
     _require_ssh_key()
     ip, port = validate_ssh_endpoint(ip, port)
     env_lines = ""
@@ -238,7 +238,9 @@ def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
     )
 
 
-def _save_pod_state(pods: list[dict], meta: dict | None = None) -> None:
+def _save_pod_state(
+    pods: list[dict[str, Any]], meta: dict[str, Any] | None = None,
+) -> None:
     POD_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {"pods": pods, "meta": meta or {}}
     POD_STATE_FILE.write_text(json.dumps(payload, indent=2, sort_keys=True))
@@ -248,21 +250,27 @@ def _save_pod_state(pods: list[dict], meta: dict | None = None) -> None:
     logger.info("Pod state saved to %s (%d pods)", POD_STATE_FILE, len(pods))
 
 
-def _read_pod_state() -> dict:
+def _read_pod_state() -> dict[str, Any]:
     if not POD_STATE_FILE.exists():
         raise FileNotFoundError(
             f"No pod state file at {POD_STATE_FILE} — run 'provision' first"
         )
-    raw = json.loads(POD_STATE_FILE.read_text())
+    raw: Any = json.loads(POD_STATE_FILE.read_text())
     # Tolerate the previous bare-list format so a state file written by an
     # older run can still be read to tear its pods down.
     if isinstance(raw, list):
         return {"pods": raw, "meta": {}}
-    return raw
+    if not isinstance(raw, dict):
+        raise ValueError(
+            f"{POD_STATE_FILE} holds {type(raw).__name__}, not a pod-state "
+            f"object. Refusing to read pod identity from it."
+        )
+    state: dict[str, Any] = raw
+    return state
 
 
-def _load_pod_state() -> list[dict]:
-    pods = _read_pod_state()["pods"]
+def _load_pod_state() -> list[dict[str, Any]]:
+    pods: list[dict[str, Any]] = _read_pod_state()["pods"]
     for pod in pods:
         # These came from a remote API and are about to be interpolated into
         # shell commands. Re-validate on the way out of storage as well.
@@ -282,7 +290,7 @@ def _check_deadline() -> None:
         )
 
 
-def _check_budget(gpu_type: str, n_pods: int) -> dict:
+def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     """Refuse to provision a fleet whose worst case exceeds the budget.
 
     There was no price query, no spend poll and no abort anywhere in this
@@ -340,7 +348,7 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict:
     }
 
 
-def provision() -> list[dict]:
+def provision() -> list[dict[str, Any]]:
     logger.info("Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
     gpu_type = find_fastest_available(
@@ -384,7 +392,7 @@ def provision() -> list[dict]:
     return pods
 
 
-def _bootstrap_pod(pod: dict) -> None:
+def _bootstrap_pod(pod: dict[str, Any]) -> None:
     ip, port, role = pod["ip"], pod["port"], pod["role"]
     logger.info("Bootstrapping pod for fold '%s' (%s:%d)...", role, ip, port)
 
@@ -418,8 +426,8 @@ def _bootstrap_pod(pod: dict) -> None:
 
 
 def _run_fold_on_pod(
-    pod: dict, config_name: str, arm_flags: tuple[str, ...] = (),
-) -> dict:
+    pod: dict[str, Any], config_name: str, arm_flags: tuple[str, ...] = (),
+) -> dict[str, Any]:
     ip, port = pod["ip"], pod["port"]
     framework = pod["role"]
 
@@ -462,9 +470,11 @@ def run_folds(
     # four kept billing.
     bootstrap_errors: dict[str, str] = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
-        futures = {ex.submit(_bootstrap_pod, pod): pod["role"] for pod in pods}
-        for future in concurrent.futures.as_completed(futures):
-            role = futures[future]
+        bootstrap_futures = {
+            ex.submit(_bootstrap_pod, pod): pod["role"] for pod in pods
+        }
+        for future in concurrent.futures.as_completed(bootstrap_futures):
+            role = bootstrap_futures[future]
             try:
                 future.result()
             except Exception as exc:  # noqa: BLE001 - collect all, decide after
@@ -488,14 +498,14 @@ def run_folds(
     logger.info("=" * 60)
 
     start = time.time()
-    fold_results: list[dict] = []
+    fold_results: list[dict[str, Any]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
-        futures = {
+        fold_futures = {
             ex.submit(_run_fold_on_pod, pod, config_name, arm_flags): pod["role"]
             for pod in pods
         }
-        for f in concurrent.futures.as_completed(futures):
-            role = futures[f]
+        for f in concurrent.futures.as_completed(fold_futures):
+            role = fold_futures[f]
             result = f.result()
             fold_results.append(result)
             logger.info("  [%s] %s (%.1fm)", role, result["status"], result["elapsed_s"] / 60)
@@ -541,7 +551,7 @@ def collect(config_name: str = "phase1b_primary") -> list[str]:
     return failed
 
 
-def aggregate(config_name: str = "phase1b_primary") -> dict:
+def aggregate(config_name: str = "phase1b_primary") -> dict[str, Any]:
     """Micro-average the collected folds and write the experiment record.
 
     The RunPod path had no aggregation step at all. Averaging the five fold

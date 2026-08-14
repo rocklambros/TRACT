@@ -11,6 +11,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from typing import Any
 import logging
 import time
 from pathlib import Path
@@ -46,7 +47,7 @@ SEED: int = 42
 
 def evaluate_model(
     model: SentenceTransformer,
-    eval_items: list,
+    eval_items: list[Any],
     hub_ids: list[str],
     hub_texts: dict[str, str],
 ) -> dict[str, float]:

@@ -64,6 +64,9 @@ python_version = "3.11"
 module = [
     "datasets.*",
     "hdbscan.*",
+    # pdfplumber ships no stubs and pulls pdfminer.six behind it. Only
+    # parse_nist_ai_100_2.py imports it, and only to read a PDF at fetch time.
+    "pdfplumber.*",
     "peft.*",
     "scipy.*",
     "sentence_transformers.*",
