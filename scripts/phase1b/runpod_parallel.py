@@ -584,6 +584,77 @@ def aggregate(config_name: str = "phase1b_primary") -> dict[str, Any]:
     return record
 
 
+def track(config_name: str = "phase1b_primary") -> int:
+    """Log every collected fold to WandB from this machine.
+
+    Tracking runs here rather than on the pods on purpose. _get_pod_env ships
+    no credentials, and a WandB API key is account-wide: handing one to five
+    rented hosts to get live loss curves puts a reusable credential on machines
+    the operator does not control, and buys telemetry that the collected fold
+    records already contain. The trade is live streaming for credential
+    containment, and containment wins.
+
+    Idempotent by run name, so re-running after a partial collect adds the
+    missing folds rather than duplicating the present ones.
+    """
+    from tract.config import LOFO_WANDB_ENTITY, LOFO_WANDB_PROJECT
+    from tract.io import load_json
+    from tract.training.orchestrate import FOLD_RESULT_FILENAME
+    from tract.training.tracking import finish_run, init_run, log_fold
+
+    local_results = RESULTS_DIR / config_name
+    paths = sorted(local_results.glob(f"fold_*/{FOLD_RESULT_FILENAME}"))
+    if not paths:
+        logger.error(
+            "No %s under %s. Run 'collect' first; there is nothing to track.",
+            FOLD_RESULT_FILENAME, local_results,
+        )
+        return 1
+
+    logged = 0
+    for path in paths:
+        record = load_json(path)
+        config = record.get("config") or {}
+        arm = _arm_from_config(config)
+        framework = record.get("held_out_framework", path.parent.name)
+        run = init_run(
+            project=LOFO_WANDB_PROJECT,
+            entity=LOFO_WANDB_ENTITY,
+            name=f"{arm}/{framework}",
+            config={
+                **config,
+                "held_out_framework": framework,
+                "arm": arm,
+                "config_name": config_name,
+                "git_sha": record.get("git_sha"),
+                **{f"inputs/{k}": v for k, v in (record.get("inputs") or {}).items()},
+            },
+            tags=[arm, framework, "lofo"],
+        )
+        log_fold(run, record)
+        finish_run(run)
+        logged += 1
+
+    logger.info("Logged %d folds to WandB project %s", logged, LOFO_WANDB_PROJECT)
+    return 0
+
+
+def _arm_from_config(config: dict[str, Any]) -> str:
+    """Recover the arm label from a fold record's config block.
+
+    Kept in step with run_fold._arm_label by a test rather than by discipline:
+    two labels for one arm would split a campaign across two names in the UI.
+    """
+    if not config.get("use_prose", True):
+        return "title-only"
+    parts = ["prose"]
+    if config.get("use_description_only"):
+        parts.append("desconly")
+    if config.get("use_stopword_filter"):
+        parts.append("stopwords")
+    return "-".join(parts)
+
+
 def teardown() -> None:
     """Terminate only the pods this run created.
 
@@ -722,6 +793,17 @@ def full_pipeline(
     logger.info("Total pipeline time: %.1fm", elapsed / 60)
 
     aggregate(config_name)
+    # Tracking is last and non-fatal. The fold records are on disk and
+    # aggregated by this point, so a WandB outage must not fail a run whose
+    # results are already safe. `track` re-runs cleanly on its own.
+    try:
+        track(config_name)
+    except Exception as exc:
+        logger.error(
+            "WandB logging failed: %s. Results are collected and aggregated; "
+            "re-run `python -m scripts.phase1b.runpod_parallel track "
+            "--config-name %s` once it is resolved.", exc, config_name,
+        )
 
 
 def main() -> int:
@@ -735,7 +817,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Phase 1B RunPod parallel fold executor")
     parser.add_argument("action", nargs="?", default="full",
                         choices=["full", "provision", "run", "collect", "aggregate",
-                                 "teardown", "reap", "price"])
+                                 "track", "teardown", "reap", "price"])
     parser.add_argument("--config-name", type=str, default="phase1b_primary",
                         help="Experiment config name")
     parser.add_argument("--confirm", action="store_true",
@@ -782,6 +864,8 @@ def main() -> int:
             return 1
     elif args.action == "aggregate":
         aggregate(args.config_name)
+    elif args.action == "track":
+        return track(args.config_name)
     elif args.action == "teardown":
         teardown()
     elif args.action == "reap":

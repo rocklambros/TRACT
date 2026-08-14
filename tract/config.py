@@ -250,6 +250,15 @@ PHASE1B_MODELS_DIR: Final[Path] = MODELS_DIR / "phase1b"
 
 PHASE1B_WANDB_PROJECT: Final[str] = "tract-phase1b"
 
+# The LOFO re-derivation gets its own project. It supersedes the tract-phase1b
+# runs rather than extending them: the anchors changed from section titles to
+# full control prose, four frameworks were added to the corpus, and the LoRA
+# adapter now actually reaches the saved checkpoint. Charting the new folds
+# beside the old ones in one project would put two incomparable experiments on
+# a single axis, which is the mistake the published card already made once.
+LOFO_WANDB_PROJECT: Final[str] = "tract-lofo-rederivation"
+LOFO_WANDB_ENTITY: Final[str | None] = None
+
 PHASE1B_DROPPED_FRAMEWORKS: Final[frozenset[str]] = frozenset({
     "nist_800_63",
     "owasp_proactive_controls",

@@ -264,3 +264,39 @@ class TestInputProvenance:
 
         assert len(records) == 2
         assert "data snapshot" in caplog.text
+
+
+class TestArmLabelling:
+    """One arm must not appear under two names in the WandB UI.
+
+    run_fold labels from a TrainingConfig before the run; runpod_parallel
+    labels from the persisted config block after it. They are separate
+    functions in separate modules, so agreement is asserted, not assumed.
+    """
+
+    def test_both_labellers_agree_on_every_arm(self) -> None:
+        from scripts.phase1b.run_fold import _arm_label
+        from scripts.phase1b.runpod_parallel import _arm_from_config
+        from tract.training.config import TrainingConfig
+
+        seen: set[str] = set()
+        for use_prose in (True, False):
+            for stopwords in (True, False):
+                for desc_only in (True, False):
+                    config = TrainingConfig(
+                        name="t",
+                        use_prose=use_prose,
+                        use_stopword_filter=stopwords,
+                        use_description_only=desc_only,
+                    )
+                    before = _arm_label(config)
+                    after = _arm_from_config(config.to_dict())
+                    assert before == after, (use_prose, stopwords, desc_only)
+                    seen.add(before)
+
+        # The four arms of this campaign, plus the title-only baseline's
+        # collapse: with use_prose off the other flags do not apply.
+        assert "title-only" in seen
+        assert "prose" in seen
+        assert "prose-stopwords" in seen
+        assert "prose-desconly" in seen
