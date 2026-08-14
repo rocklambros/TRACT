@@ -281,7 +281,7 @@ For 10 frameworks with no OpenCRE coverage (primarily newer AI security framewor
 Key model details:
 - Architecture: BGE-large-v1.5 with LoRA adapters, contrastive fine-tuning
 - Training data: OpenCRE ground truth links (leave-one-framework-out cross-validation)
-- Performance: hit@1 = 0.531 on held-out frameworks
+- Performance: see the [model card](https://huggingface.co/rockCO78/tract-cre-assignment) for measured hit@1 and its confidence interval
 - Confidence: Platt-scaled (temperature calibration) — NOT raw cosine similarity
 
 ### Stage 3: Expert Human Review

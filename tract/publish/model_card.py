@@ -8,6 +8,52 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
+def _measured(source: dict[str, Any], key: str, origin: str) -> Any:
+    """Read a measured value, refusing to substitute a plausible-looking default.
+
+    These reads used to be `source.get(key, <hardcoded number>)`. A missing
+    input therefore published a number that was never measured, and nothing in
+    the rendered card distinguished it from a real one. A card that will not
+    build is a better outcome than a card that quietly invents its evidence.
+    """
+    if key not in source:
+        raise ValueError(
+            f"Model card cannot be built: '{key}' is absent from {origin}. "
+            f"Every published figure must come from a measurement. Run the "
+            f"stage that produces {origin} rather than publishing a default."
+        )
+    return source[key]
+
+
+def _measured_ci(fold_results: list[dict[str, Any]]) -> dict[str, float]:
+    """Compute the aggregate hit@1 interval by fold-stratified bootstrap.
+
+    Previously the card rendered `[micro_hit1 - 0.075, micro_hit1 + 0.075]`
+    while asserting "10,000 resamples, 95% CI" in the same sentence. That
+    interval was arithmetic on the point estimate: fixed width, symmetric, and
+    invariant to sample size. The real implementation already existed in
+    tract.training.evaluate and was simply never called from here.
+
+    Requires per-fold hit@1 indicator arrays. The RunPod fold path currently
+    discards them, so this raises until that path persists them.
+    """
+    import numpy as np
+
+    from tract.training.evaluate import fold_stratified_bootstrap_ci
+
+    indicators = []
+    for fold in fold_results:
+        if "hit1_indicators" not in fold:
+            raise ValueError(
+                f"Model card cannot be built: fold '{fold.get('fold', '?')}' has "
+                "no 'hit1_indicators', so the aggregate hit@1 confidence "
+                "interval cannot be computed. Persist the per-item indicator "
+                "array from each fold; do not substitute a fixed-width band."
+            )
+        indicators.append(np.asarray(fold["hit1_indicators"], dtype=float))
+    return fold_stratified_bootstrap_ci(indicators)
+
+
 def generate_model_card(
     staging_dir: Path,
     *,
@@ -42,13 +88,17 @@ def generate_model_card(
         f"| **{micro_delta:+.3f}** | {hit_any_str} | **{total_n}** |\n"
     )
 
-    t_val = calibration.get("t_deploy", 0.074)
-    ood_val = calibration.get("ood_threshold", 0.568)
-    conformal_val = calibration.get("conformal_quantile", 0.997)
-    ece_val = ece_data.get("ece", 0.079)
-    ece_ci = ece_data.get("ece_ci", {})
-    ece_low = ece_ci.get("ci_low", 0.049)
-    ece_high = ece_ci.get("ci_high", 0.111)
+    t_val = _measured(calibration, "t_deploy", "calibration.json")
+    ood_val = _measured(calibration, "ood_threshold", "calibration.json")
+    conformal_val = _measured(calibration, "conformal_quantile", "calibration.json")
+    ece_val = _measured(ece_data, "ece", "ECE results")
+    ece_ci = _measured(ece_data, "ece_ci", "ECE results")
+    ece_low = _measured(ece_ci, "ci_low", "ECE results ece_ci")
+    ece_high = _measured(ece_ci, "ci_high", "ECE results ece_ci")
+
+    # The aggregate hit@1 interval must come from the fold-stratified bootstrap
+    # in tract.training.evaluate, not from arithmetic on the point estimate.
+    hit1_ci = _measured_ci(fold_results)
 
     bridge_counts = bridge_summary.get("counts", {})
     n_accepted = bridge_counts.get("accepted", 0)
@@ -239,7 +289,7 @@ This simulates the real use case: mapping a **brand-new framework** the model ha
 
 ### Confidence Intervals
 
-All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{micro_hit1 - 0.075:.3f}, {micro_hit1 + 0.075:.3f}], reflecting the relatively small evaluation set ({total_n} controls across 5 AI frameworks).
+All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{hit1_ci['ci_low']:.3f}, {hit1_ci['ci_high']:.3f}], computed by fold-stratified bootstrap over the per-fold hit@1 indicators, reflecting the relatively small evaluation set ({total_n} controls across 5 AI frameworks).
 
 ---
 

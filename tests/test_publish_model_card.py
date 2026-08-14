@@ -13,6 +13,13 @@ SAMPLE_FOLD_RESULTS = [
     {"fold": "OWASP Top10 for ML", "hit1": 0.714, "zs_hit1": 0.429, "n": 7, "hit_any": 0.86},
 ]
 
+# The card computes the aggregate hit@1 interval by fold-stratified bootstrap,
+# so each fold must carry its per-item indicators. Derived from the fold's own
+# hit1 and n to keep the fixture self-consistent.
+for _f in SAMPLE_FOLD_RESULTS:
+    _hits = round(_f["hit1"] * _f["n"])
+    _f["hit1_indicators"] = [1.0] * _hits + [0.0] * (_f["n"] - _hits)
+
 SAMPLE_CALIBRATION = {
     "t_deploy": 0.074,
     "ood_threshold": 0.568,
