@@ -112,11 +112,19 @@ def assert_firewall(
         if len(control_text) < 5:
             continue
         control_lower = control_text.lower()
-        # Skip if control text overlaps with any CRE hub name
-        if any(
-            control_lower in name or name in control_lower
-            for name in hub_names_lower
-        ):
+        # A control that is itself CRE vocabulary is not a leak: "Adversarial
+        # training" measured against a hub named "Adversarial training" matches
+        # because CRE named the concept, not because the framework text reached
+        # the hub. Exempt controls that are a substring of some hub name.
+        #
+        # The converse test, `name in control_lower`, was also part of this
+        # condition and was far too broad. Real hub names include short generic
+        # nouns -- "Data", "Logging" -- so any control sentence that happened to
+        # mention one was skipped against EVERY hub, including a hub carrying a
+        # verbatim copy of that control. It exempted a whole sentence on the
+        # strength of a single shared word, which is most of what the firewall
+        # was supposed to catch.
+        if any(control_lower in name for name in hub_names_lower):
             continue
         for hub_id, text in hub_texts.items():
             if scan_appended_only:

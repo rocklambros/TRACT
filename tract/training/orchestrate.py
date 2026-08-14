@@ -67,6 +67,7 @@ def run_single_fold(
     eval_items: list[EvalItem],
     hub_ids: list[str],
     output_dir: Path,
+    standard_sections: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
     """Train and evaluate one LOFO fold. Returns fold result dict."""
     logger.info("=== FOLD: %s ===", held_out_framework)
@@ -81,9 +82,6 @@ def run_single_fold(
             for hid, d in desc_data.get("descriptions", {}).items()
         }
 
-    # Descriptions are CRE-authored and don't need firewalling.
-    # base_hub_texts is only meaningful when standards are included, because
-    # standards content is framework-derived and therefore the leakage surface.
     include_standards = config.hub_rep_format == "path+name+standards"
     if include_standards and standard_sections is None:
         # Previously both builds below were called with an identical argument
@@ -105,13 +103,19 @@ def run_single_fold(
         standard_sections=standard_sections,
     )
 
+    # Any augmentation makes the appended slice the leakage surface, so build the
+    # plain "path | name" base to subtract from it. Descriptions are CRE-authored
+    # and were previously left unfirewalled, but passing base_hub_texts=None for
+    # them does not merely skip the check -- assert_firewall then derives hub
+    # names from the full text, so the description becomes part of the "hub name"
+    # and a control text leaked into it is skipped as a hub-name match. The base
+    # must be the base format, not the format minus one augmentation.
     base_hub_texts = None
-    if include_standards:
+    if include_standards or include_desc:
         base_hub_texts = build_all_hub_texts(
             hierarchy,
             excluded_framework=held_out_framework,
-            include_description=include_desc,
-            descriptions=descriptions,
+            include_description=False,
             include_standards=False,
         )
     assert_firewall(hub_texts, eval_items, held_out_framework, base_hub_texts)
