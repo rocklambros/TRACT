@@ -34,6 +34,7 @@ def _write_fold(
     indicators: list[int],
     git_sha: str = "abc1234",
     zero_shot: list[int] | None = None,
+    inputs: dict[str, str | None] | None = None,
 ) -> None:
     fold_dir = root / f"fold_{framework.replace(' ', '_')}"
     fold_dir.mkdir(parents=True, exist_ok=True)
@@ -46,6 +47,8 @@ def _write_fold(
         "elapsed_s": 1.0,
         "git_sha": git_sha,
     }
+    if inputs is not None:
+        record["inputs"] = inputs
     if zero_shot is not None:
         record["zero_shot"] = {"hit1_indicators": zero_shot}
     (fold_dir / FOLD_RESULT_FILENAME).write_text(json.dumps(record), encoding="utf-8")
@@ -184,3 +187,80 @@ class TestLoadFoldResults:
         """An empty results directory must not quietly produce a number."""
         with pytest.raises(ValueError, match="Nothing to aggregate"):
             load_fold_results(tmp_path, expected_frameworks={"MITRE ATLAS"})
+
+
+class TestInputProvenance:
+    """A fold's git SHA pins its code. Nothing pinned its data."""
+
+    _FRAMEWORKS = {"A", "B"}
+
+    def test_folds_from_one_snapshot_aggregate(self, tmp_path: Path) -> None:
+        same = {"curated_links_sha256": "aa", "all_controls_sha256": "bb",
+                "stopwords_sha256": None}
+        _write_fold(tmp_path, "A", [1, 0], inputs=same)
+        _write_fold(tmp_path, "B", [1, 1], inputs=same)
+
+        records = load_fold_results(tmp_path, expected_frameworks=self._FRAMEWORKS)
+
+        assert len(records) == 2
+        assert records[0]["inputs"] == same
+
+    def test_a_reparsed_corpus_mid_run_is_refused(self, tmp_path: Path) -> None:
+        """Re-running a parser changes the anchors without moving the SHA.
+
+        A fold trained before the fix and one trained after are two
+        experiments wearing the same commit, and averaging them describes
+        neither.
+        """
+        _write_fold(tmp_path, "A", [1, 0], inputs={
+            "curated_links_sha256": "aa", "all_controls_sha256": "OLD",
+            "stopwords_sha256": None,
+        })
+        _write_fold(tmp_path, "B", [1, 1], inputs={
+            "curated_links_sha256": "aa", "all_controls_sha256": "NEW",
+            "stopwords_sha256": None,
+        })
+
+        with pytest.raises(ValueError, match="different input data"):
+            load_fold_results(tmp_path, expected_frameworks=self._FRAMEWORKS)
+
+    def test_the_error_names_the_artifact_that_moved(self, tmp_path: Path) -> None:
+        _write_fold(tmp_path, "A", [1, 0], inputs={
+            "curated_links_sha256": "same", "stopwords_sha256": "OLD",
+        })
+        _write_fold(tmp_path, "B", [1, 1], inputs={
+            "curated_links_sha256": "same", "stopwords_sha256": "NEW",
+        })
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks=self._FRAMEWORKS)
+
+        message = str(excinfo.value)
+        assert "stopwords_sha256" in message
+        # The artifact that did NOT move must not be blamed.
+        assert "curated_links_sha256" not in message
+
+    def test_a_stopword_arm_cannot_absorb_a_plain_fold(self, tmp_path: Path) -> None:
+        """Same corpus, one fold filtered and one not, is still two arms."""
+        _write_fold(tmp_path, "A", [1, 0], inputs={
+            "curated_links_sha256": "aa", "stopwords_sha256": "ff",
+        })
+        _write_fold(tmp_path, "B", [1, 1], inputs={
+            "curated_links_sha256": "aa", "stopwords_sha256": None,
+        })
+
+        with pytest.raises(ValueError, match="different input data"):
+            load_fold_results(tmp_path, expected_frameworks=self._FRAMEWORKS)
+
+    def test_records_without_provenance_still_load_with_a_warning(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """Older records predate the inputs block; refusing them helps nobody."""
+        _write_fold(tmp_path, "A", [1, 0])
+        _write_fold(tmp_path, "B", [1, 1])
+
+        with caplog.at_level("WARNING"):
+            records = load_fold_results(tmp_path, expected_frameworks=self._FRAMEWORKS)
+
+        assert len(records) == 2
+        assert "data snapshot" in caplog.text

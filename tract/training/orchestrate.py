@@ -11,6 +11,7 @@ Orchestrates the full Phase 1B pipeline:
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import subprocess
 import time
@@ -38,13 +39,16 @@ from tract.training.data import (
     build_training_pairs,
     pairs_to_dataset,
 )
-from tract.training.data_quality import load_and_filter_curated_links
+from tract.training.data_quality import (
+    CURATED_PATH,
+    load_and_filter_curated_links,
+)
 from tract.training.evaluate import (
     evaluate_on_fold,
     fold_stratified_bootstrap_ci,
     paired_bootstrap_delta,
 )
-from tract.stopwords import load_stopwords
+from tract.stopwords import STOPWORDS_PATH, load_stopwords
 from tract.text_selection import (
     ProseIndex,
     SelectionStats,
@@ -85,6 +89,13 @@ def _get_git_sha() -> str:
         return result.stdout.strip() if result.returncode == 0 else "unknown"
     except Exception:
         return "unknown"
+
+
+def _artifact_sha256(path: Path) -> str | None:
+    """Hash an input artifact, or None if the arm did not read it."""
+    if not path.exists():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def run_single_fold(
@@ -285,6 +296,23 @@ def run_single_fold(
         "by_source": dict(eval_selection.by_source),
         "n_truncated_at_encoder_budget": n_truncated,
     }
+    # And which files produced those anchors. TrainingConfig.data_hash exists
+    # but nothing ever assigned it, so every record carried "data_hash": "" --
+    # a field named for the guarantee CLAUDE.md requires, holding nothing. The
+    # git SHA pins the code; these pin the data the code was pointed at, which
+    # is the half that changes when a parser is re-run. Hashing the files
+    # rather than the parsed objects means anyone with the repo can re-derive
+    # them with sha256sum.
+    fold_record["inputs"] = {
+        "curated_links_sha256": _artifact_sha256(CURATED_PATH),
+        "all_controls_sha256": (
+            _artifact_sha256(PROCESSED_DIR / "all_controls.json")
+            if prose_index is not None else None
+        ),
+        "stopwords_sha256": (
+            _artifact_sha256(STOPWORDS_PATH) if stopwords is not None else None
+        ),
+    }
     atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
 
     return result
@@ -375,6 +403,30 @@ def load_fold_results(
             "differ by a runtime flag on one commit, so the git_sha check "
             "below cannot separate them. Aggregating them would produce a "
             "number describing no single configuration."
+        )
+
+    # Same argument as the arm check, one layer down: the arms differ by a
+    # runtime flag and the input data differs by a parser re-run, and neither
+    # moves the git SHA. A fold trained before a parser was fixed and one
+    # trained after are two experiments wearing the same commit.
+    input_sets = {
+        tuple(sorted((r.get("inputs") or {}).items())) for r in records
+    }
+    if len(input_sets) > 1:
+        differing = sorted({
+            key
+            for key in {k for s in input_sets for k, _ in s}
+            if len({dict(s).get(key) for s in input_sets}) > 1
+        })
+        raise ValueError(
+            f"Folds under {results_dir} were built from different input data: "
+            f"{differing} differ across folds. Re-run every fold against one "
+            "snapshot, or aggregate the runs separately."
+        )
+    if input_sets == {()}:
+        logger.warning(
+            "No fold records an 'inputs' block; the aggregate cannot be tied "
+            "to the data snapshot that produced it."
         )
 
     shas = {r.get("git_sha", "unknown") for r in records}
