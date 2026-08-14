@@ -3,6 +3,12 @@ from __future__ import annotations
 
 import json
 import pytest
+
+# These need the optional `phase0` extra (and matplotlib for the notebook
+# helpers), which the default CI test job does not install. Skip visibly
+# rather than failing collection; run them with
+# `pip install -e '.[phase0]' matplotlib`.
+pytest.importorskip("sentence_transformers", reason="needs the phase0 extra")
 from pathlib import Path
 
 

@@ -3,20 +3,29 @@ from __future__ import annotations
 
 import logging
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
-from tract.bridge.types import RawCandidate, RawNegative, SimilarityStats
+from tract.bridge.types import NegativeControl, RawCandidate, RawNegative, SimilarityStats
+from tract.hierarchy import CREHierarchy
 
 logger = logging.getLogger(__name__)
 
+# hub_links is the OpenCRE hub -> linked-sections map loaded straight from
+# JSON, so its inner records are heterogeneous external data. Defined here
+# rather than in describe.py so callers that skip descriptions never import
+# that module, which imports anthropic at module scope.
+HubLinks = dict[str, list[dict[str, Any]]]
+
 
 def compute_bridge_similarities(
-    hub_embeddings: NDArray[np.floating],
+    hub_embeddings: NDArray[np.floating[Any]],
     hub_ids: list[str],
     ai_only_ids: list[str],
     trad_only_ids: list[str],
-) -> NDArray[np.floating]:
+) -> NDArray[np.floating[Any]]:
     """Compute cosine similarity matrix between AI-only and trad-only hubs.
 
     All hub embeddings are unit-normalized, so cosine = dot product.
@@ -35,7 +44,7 @@ def compute_bridge_similarities(
 
 
 def extract_top_k(
-    similarity_matrix: NDArray[np.floating],
+    similarity_matrix: NDArray[np.floating[Any]],
     ai_hub_ids: list[str],
     trad_hub_ids: list[str],
     k: int = 3,
@@ -60,7 +69,7 @@ def extract_top_k(
 
 
 def extract_negatives(
-    similarity_matrix: NDArray[np.floating],
+    similarity_matrix: NDArray[np.floating[Any]],
     ai_hub_ids: list[str],
     trad_hub_ids: list[str],
 ) -> list[RawNegative]:
@@ -83,7 +92,7 @@ def extract_negatives(
 
 
 def compute_similarity_stats(
-    similarity_matrix: NDArray[np.floating],
+    similarity_matrix: NDArray[np.floating[Any]],
 ) -> SimilarityStats:
     """Compute summary statistics for the similarity matrix."""
     return {
@@ -97,3 +106,40 @@ def compute_similarity_stats(
             for p in [25, 50, 75, 90, 95, 99]
         },
     }
+
+
+def enrich_negatives(
+    negatives: list[RawNegative],
+    hierarchy: CREHierarchy,
+) -> list[NegativeControl]:
+    """Attach hub names and an empty description to raw negatives.
+
+    Lives here rather than in describe.py so the skip-descriptions path does
+    not have to import that module, which imports anthropic at module scope.
+    """
+    enriched: list[NegativeControl] = []
+    for neg in negatives:
+        ai_id = neg["ai_hub_id"]
+        trad_id = neg["trad_hub_id"]
+        enriched.append({
+            "ai_hub_id": ai_id,
+            "trad_hub_id": trad_id,
+            "cosine_similarity": neg["cosine_similarity"],
+            "is_negative": neg["is_negative"],
+            "ai_hub_name": hierarchy.hubs[ai_id].name if ai_id in hierarchy.hubs else ai_id,
+            "trad_hub_name": hierarchy.hubs[trad_id].name if trad_id in hierarchy.hubs else trad_id,
+            "description": "",
+        })
+    return enriched
+
+
+def count_controls_for_hub(
+    cre_id: str,
+    hub_links: HubLinks,
+) -> int:
+    """Count total controls linked to a hub across all frameworks."""
+    return sum(
+        1 for links in hub_links.values()
+        for link in links
+        if link["cre_id"] == cre_id
+    )

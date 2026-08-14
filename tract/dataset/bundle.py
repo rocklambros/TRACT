@@ -3,12 +3,12 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Any
 import os
 import shutil
 import tempfile
 from pathlib import Path
 
-from tract.config import PHASE3_PROVENANCE_PRIORITY
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ Full text: https://creativecommons.org/licenses/by-sa/4.0/legalcode
 """
 
 
-def _derive_assignment_type(row: dict) -> str:
+def _derive_assignment_type(row: dict[str, Any]) -> str:
     """Derive assignment_type from provenance, review_status, and original_hub_id."""
     provenance = row["provenance"]
     review_status = row["review_status"]
@@ -147,7 +147,7 @@ def _build_crosswalk_jsonl(db_path: Path, output_path: Path) -> int:
     return count
 
 
-def _build_framework_metadata(db_path: Path, output_path: Path) -> list[dict]:
+def _build_framework_metadata(db_path: Path, output_path: Path) -> list[dict[str, Any]]:
     """Generate per-framework statistics.
 
     Returns list of framework metadata dicts, also written to output_path.
@@ -158,7 +158,7 @@ def _build_framework_metadata(db_path: Path, output_path: Path) -> list[dict]:
             "SELECT id, name, control_count FROM frameworks ORDER BY id"
         ).fetchall()
 
-        metadata: list[dict] = []
+        metadata: list[dict[str, Any]] = []
         for fw in frameworks:
             fw_id = fw["id"]
 
@@ -261,7 +261,7 @@ def bundle_dataset(
     hub_descriptions_path: Path,
     bridge_report_path: Path,
     review_metrics_path: Path,
-) -> dict:
+) -> dict[str, Any]:
     """Assemble staging directory with all dataset files.
 
     Creates: crosswalk_v1.0.jsonl, framework_metadata.json,

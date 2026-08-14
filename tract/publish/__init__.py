@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 from pathlib import Path
 
 from tract.config import HIERARCHY_BRIDGE_VERSION
@@ -73,7 +74,7 @@ def publish_to_huggingface(
     calibration_path: Path,
     ece_gate_path: Path,
     bridge_report_path: Path,
-    fold_results: list[dict],
+    fold_results: list[dict[str, Any]],
     gpu_hours: float,
     dry_run: bool = False,
     skip_upload: bool = False,

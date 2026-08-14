@@ -7,18 +7,20 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 from tract.crosswalk.schema import get_connection
 from tract.crosswalk.store import insert_assignments, insert_controls, insert_frameworks
+from tract.review.types import IngestReviewDocument
 
 logger = logging.getLogger(__name__)
 
 
 def accept_review(
     db_path: Path,
-    review_data: dict,
+    review_data: IngestReviewDocument,
     force: bool = False,
-) -> dict:
+) -> dict[str, Any]:
     """Process reviewed ingest file and commit to crosswalk DB.
 
     Args:
@@ -55,8 +57,8 @@ def accept_review(
         _delete_framework_data(db_path, fw_id)
         logger.info("Deleted existing framework data for '%s'", fw_id)
 
-    controls_to_insert: list[dict] = []
-    assignments_to_insert: list[dict] = []
+    controls_to_insert: list[dict[str, Any]] = []
+    assignments_to_insert: list[dict[str, Any]] = []
     accepted_count = 0
     rejected_count = 0
     corrected_count = 0

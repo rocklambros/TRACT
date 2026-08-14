@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from tract.config import (
     PHASE1C_AL_ACCEPTANCE_GATE,
@@ -19,7 +20,7 @@ def evaluate_stopping_criteria(
     acceptance_gate: float = PHASE1C_AL_ACCEPTANCE_GATE,
     canary_gate: float = PHASE1C_AL_CANARY_ACCURACY_GATE,
     diversity_gate: int = PHASE1C_AL_HUB_DIVERSITY_GATE,
-) -> dict:
+) -> dict[str, Any]:
     """Evaluate whether AL loop should stop.
 
     All three criteria must be met:

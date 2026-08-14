@@ -13,8 +13,21 @@ class RawCandidate(TypedDict):
     rank_for_ai_hub: int
 
 
+class SeedEvidence(TypedDict):
+    """Control counts backing a candidate, nested under seed_evidence."""
+
+    ai_controls_linked: int
+    trad_controls_linked: int
+
+
 class BridgeCandidate(TypedDict):
-    """Fully enriched bridge candidate with all fields set."""
+    """Fully enriched bridge candidate with all fields set.
+
+    ai_controls_linked and trad_controls_linked used to be declared flat here
+    while the orchestrator wrote them nested under seed_evidence. Nothing read
+    the flat spelling, so the declaration was simply describing an object that
+    never existed. It now matches bridge_candidates.json.
+    """
 
     ai_hub_id: str
     trad_hub_id: str
@@ -22,8 +35,7 @@ class BridgeCandidate(TypedDict):
     rank_for_ai_hub: int
     ai_hub_name: str
     trad_hub_name: str
-    ai_controls_linked: int
-    trad_controls_linked: int
+    seed_evidence: SeedEvidence
     status: str
     reviewer_notes: str
     description: str

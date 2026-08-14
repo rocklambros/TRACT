@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -10,10 +11,10 @@ logger = logging.getLogger(__name__)
 def generate_model_card(
     staging_dir: Path,
     *,
-    fold_results: list[dict],
-    calibration: dict,
-    ece_data: dict,
-    bridge_summary: dict,
+    fold_results: list[dict[str, Any]],
+    calibration: dict[str, Any],
+    ece_data: dict[str, Any],
+    bridge_summary: dict[str, Any],
     gpu_hours: float,
 ) -> None:
     """Generate README.md model card in the staging directory."""

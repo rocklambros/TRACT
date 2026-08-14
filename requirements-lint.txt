@@ -1,0 +1,45 @@
+# Lint and type-check toolchain for the CI `lint` job.
+#
+# Why this file exists: the lint job used to run `pip install ruff mypy` with
+# no version constraint, so the gate's definition changed under the repo
+# without a commit. Main's 2026-07-01 run installed ruff 0.15.20 and its
+# 2026-07-11 run installed 0.15.21, while requirements.txt declared 0.11.12.
+# CI was enforcing a linter the project never agreed to. Pinned per QC.1
+# (NIST SP 800-218).
+#
+# Kept separate from requirements.txt so the lint job stays fast: it does not
+# need numpy, wandb, or hdbscan, and hdbscan compiles from source.
+#
+# The runtime packages below are the subset mypy needs to resolve imports.
+# Their versions are canonical in requirements.txt, and the -c constraint
+# makes a mismatch a hard pip error instead of a silent double-pin. Bump a
+# runtime version in requirements.txt and CI will tell you to bump it here.
+-c requirements.txt
+
+# Linters. Bump these two together with requirements.txt so a developer
+# running `ruff check` locally sees exactly what CI sees.
+ruff==0.15.21
+mypy==2.2.0
+
+# Runtime deps mypy imports during --strict analysis. numpy and
+# huggingface_hub ship py.typed, so installing them buys real type checking
+# on ~36 call sites instead of an ignore_missing_imports blanket. The heavy
+# ML stack (torch, sentence-transformers, peft, datasets, transformers,
+# wandb, hdbscan) stays out and is silenced by the mypy overrides in
+# pyproject.toml, because pulling torch into a lint job is not worth minutes
+# of CI time per run.
+pydantic==2.12.5
+anthropic==0.92.0
+jsonschema==4.23.0
+pyyaml==6.0.3
+beautifulsoup4==4.12.3
+lxml==6.1.0
+requests==2.33.1
+numpy==2.0.2
+huggingface_hub==0.36.2
+
+# Type stubs. Not runtime dependencies, so they are pinned here only.
+types-beautifulsoup4==4.12.0.20250516
+types-jsonschema==4.26.0.20260518
+types-PyYAML==6.0.12.20260724
+types-requests==2.33.0.20260712

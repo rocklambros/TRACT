@@ -6,8 +6,9 @@ library function. Queries crosswalk.db live — no cached data.
 from __future__ import annotations
 
 import logging
+from typing import Any
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from tract.crosswalk.schema import get_connection
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 class Equivalence:
     hub_id: str
     hub_name: str
-    controls: list[dict]  # [{control_id, framework_id, title}]
+    controls: list[dict[str, Any]]  # [{control_id, framework_id, title}]
     frameworks: list[str]
 
 
@@ -29,8 +30,8 @@ class RelatedPair:
     hub_a: str
     hub_b: str
     parent_hub: str
-    controls_a: list[dict]
-    controls_b: list[dict]
+    controls_a: list[dict[str, Any]]
+    controls_b: list[dict[str, Any]]
 
 
 @dataclass
@@ -72,7 +73,7 @@ def cross_framework_matrix(
     finally:
         conn.close()
 
-    hub_to_controls: dict[str, list[dict]] = defaultdict(list)
+    hub_to_controls: dict[str, list[dict[str, Any]]] = defaultdict(list)
     control_hubs: dict[str, str] = {}
     all_control_ids_by_fw: dict[str, set[str]] = defaultdict(set)
 

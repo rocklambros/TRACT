@@ -12,6 +12,21 @@ import logging
 import os
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    # Both modules pull in the phase0 runtime (sentence-transformers/torch),
+    # so their runtime imports stay deferred inside the handlers that use them.
+    from tract.inference import HubPrediction
+    from tract.model_resolver import ResolvedModel
+
+from tract.export.filters import ExportableAssignment
+from tract.review.types import (
+    EMPTY_REVIEW_METRICS,
+    IngestControl,
+    IngestReviewDocument,
+    ReviewMetrics,
+)
 
 from tract.config import (
     BRIDGE_OUTPUT_DIR,
@@ -57,7 +72,7 @@ def _require_inference_runtime() -> None:
         sys.exit(EXIT_MISSING_RUNTIME)
 
 
-def _resolve_model_or_exit():
+def _resolve_model_or_exit() -> ResolvedModel:
     """Resolve the deployment model, translating resolver exceptions to exit codes.
 
     Wraps ensure_deployment_model() and maps:
@@ -437,7 +452,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def format_predictions_table(
-    preds: list,
+    preds: list[HubPrediction],
     raw: bool = False,
     verbose: bool = False,
 ) -> str:
@@ -478,7 +493,7 @@ def format_predictions_table(
     return "\n".join(lines)
 
 
-def format_predictions_json(preds: list) -> str:
+def format_predictions_json(preds: list[HubPrediction]) -> str:
     """Format predictions as JSON."""
     return json.dumps([p.to_dict() for p in preds], indent=2)
 
@@ -747,7 +762,7 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
 
     batch_preds = predictor.predict_batch(texts, top_k=PHASE1D_DEFAULT_TOP_K)
 
-    controls_output = []
+    controls_output: list[IngestControl] = []
     ood_count = 0
     dup_count = 0
     sim_count = 0
@@ -783,7 +798,7 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
             "review": {"status": "pending"},
         })
 
-    review_data = {
+    review_data: IngestReviewDocument = {
         "framework_id": fw.framework_id,
         "framework_name": fw.framework_name,
         "version": fw.version,
@@ -812,7 +827,7 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
         )
 
     max_sims = [
-        ctrl["predictions"][0]["confidence"]
+        ctrl["predictions"][0]["calibrated_confidence"]
         for ctrl in controls_output
         if ctrl.get("predictions")
     ]
@@ -1073,7 +1088,7 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
     else:
         frameworks = sorted(TRACT_TO_OPENCRE_NAME.keys())
 
-    all_rows: dict[str, list[dict]] = {}
+    all_rows: dict[str, list[ExportableAssignment]] = {}
     for fw_id in frameworks:
         rows = query_exportable_assignments(
             PHASE1C_CROSSWALK_DB_PATH,
@@ -1530,7 +1545,7 @@ def _load_fold_results(
     textaware_dir: Path,
     corrected_path: Path,
     zero_shot_path: Path | None = None,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Load LOFO fold results from Phase 1B artifacts.
 
     eval count comes from len(predictions.json), NOT n_pairs.
@@ -1742,7 +1757,7 @@ def _cmd_review_import(args: argparse.Namespace) -> None:
     )
     print(
         f"Metrics: completion={metrics['coverage']['completion_pct']:.1f}%, "
-        f"quality_score={metrics.get('calibration', {}).get('quality_score', 'N/A')}"
+        f"quality_score={metrics['reviewer_quality']['quality_score']}"
     )
 
 
@@ -1766,7 +1781,11 @@ def _cmd_publish_dataset(args: argparse.Namespace) -> None:
     fm_path = staging_dir / "framework_metadata.json"
     rm_path = staging_dir / "review_metrics.json"
     framework_metadata = json.loads(fm_path.read_text(encoding="utf-8")) if fm_path.exists() else []
-    review_metrics = json.loads(rm_path.read_text(encoding="utf-8")) if rm_path.exists() else {}
+    review_metrics: ReviewMetrics = (
+        cast(ReviewMetrics, json.loads(rm_path.read_text(encoding="utf-8")))
+        if rm_path.exists()
+        else EMPTY_REVIEW_METRICS
+    )
 
     generate_dataset_card(staging_dir, framework_metadata, review_metrics, stats)
     print(f"Dataset card generated at {staging_dir / 'README.md'}")

@@ -7,6 +7,7 @@ Two canary types:
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import numpy as np
 
@@ -16,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 def select_ai_canaries(
-    unmapped_controls: list[dict],
+    unmapped_controls: list[dict[str, Any]],
     n: int = PHASE1C_N_AI_CANARIES,
     seed: int = 42,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Select n controls from the unmapped pool for canary pre-labeling.
 
     Returns the selected controls (expert must label these before AL begins).
@@ -39,7 +40,7 @@ def select_ai_canaries(
 
 def evaluate_canary_accuracy(
     canary_labels: dict[str, frozenset[str]],
-    review_items: list[dict],
+    review_items: list[dict[str, Any]],
 ) -> float:
     """Evaluate expert accuracy on canary items.
 

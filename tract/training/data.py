@@ -12,7 +12,7 @@ import logging
 import math
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import ClassVar, Iterator
+from typing import Any, ClassVar, Iterator
 
 import numpy as np
 import torch
@@ -20,7 +20,7 @@ from datasets import Dataset
 from sentence_transformers.sampler import DefaultBatchSampler
 
 from tract.hierarchy import CREHierarchy
-from tract.training.data_quality import QualityTier, TieredLink
+from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
 
@@ -161,7 +161,8 @@ def build_training_pairs(
     return pairs
 
 
-class HubAwareTemperatureSampler(DefaultBatchSampler):
+# DefaultBatchSampler is Any because sentence-transformers ships no stubs.
+class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
     """Batch sampler preventing hub AND anchor-text collisions with AI upsampling.
 
     Prevents two sources of MNRL false negatives:
@@ -323,7 +324,8 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):
             yield batch
 
     def __len__(self) -> int:
-        return math.ceil(self.n / self.batch_size)
+        n_batches: int = math.ceil(self.n / self.batch_size)
+        return n_batches
 
 
 def pairs_to_dataset(
@@ -336,9 +338,9 @@ def pairs_to_dataset(
 
     Output columns: anchor, positive, negative_1..N, hub_id, is_ai, anchor_key
     """
-    records: list[dict] = []
+    records: list[dict[str, Any]] = []
     for pair in pairs:
-        record: dict = {
+        record: dict[str, Any] = {
             "anchor": pair.control_text,
             "positive": pair.hub_representation,
             "hub_id": pair.hub_id,

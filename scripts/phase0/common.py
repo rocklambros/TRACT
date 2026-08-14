@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Final
 
 import numpy as np
+from numpy.typing import NDArray
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -159,7 +160,7 @@ MAX_TEXT_LENGTH: Final[int] = 10_000
 MAX_BOOTSTRAP_ARRAY_SIZE: Final[int] = 100_000
 
 
-def _validate_cre_record(cre: dict, index: int) -> None:
+def _validate_cre_record(cre: dict[str, Any], index: int) -> None:
     """Validate a CRE record has required keys."""
     for key in ("id", "name", "doctype"):
         if key not in cre:
@@ -185,7 +186,7 @@ TRAINING_LINK_TYPES: Final[frozenset[str]] = frozenset({
 })
 
 
-def build_hierarchy(cres: list[dict]) -> CREHierarchy:
+def build_hierarchy(cres: list[dict[str, Any]]) -> CREHierarchy:
     """Build CRE hierarchy tree from raw OpenCRE CRE list."""
     tree = CREHierarchy()
 
@@ -233,7 +234,7 @@ def build_hierarchy(cres: list[dict]) -> CREHierarchy:
 # ── Link Extraction ─────────────────────────────────────────────────────────
 
 
-def extract_hub_standard_links(cres: list[dict]) -> list[HubStandardLink]:
+def extract_hub_standard_links(cres: list[dict[str, Any]]) -> list[HubStandardLink]:
     """Extract all standard-to-hub links from CRE data."""
     links: list[HubStandardLink] = []
 
@@ -433,7 +434,7 @@ def build_evaluation_corpus(
 # ── I/O Helpers ─────────────────────────────────────────────────────────────
 
 
-def load_opencre_cres(path: Path | None = None) -> list[dict]:
+def load_opencre_cres(path: Path | None = None) -> list[dict[str, Any]]:
     """Load CRE list from OpenCRE JSON dump."""
     p = path or OPENCRE_PATH
     with open(p, encoding="utf-8") as f:
@@ -569,7 +570,7 @@ def score_predictions(
 
 
 def bootstrap_ci(
-    values: np.ndarray,
+    values: NDArray[np.floating[Any]],
     n_resamples: int = BOOTSTRAP_N_RESAMPLES,
     ci_level: float = BOOTSTRAP_CI_LEVEL,
     seed: int = BOOTSTRAP_SEED,
@@ -596,8 +597,8 @@ def bootstrap_ci(
 
 
 def bootstrap_paired_delta(
-    values_a: np.ndarray,
-    values_b: np.ndarray,
+    values_a: NDArray[np.floating[Any]],
+    values_b: NDArray[np.floating[Any]],
     n_resamples: int = BOOTSTRAP_N_RESAMPLES,
     ci_level: float = BOOTSTRAP_CI_LEVEL,
     seed: int = BOOTSTRAP_SEED,
@@ -682,7 +683,7 @@ def build_lofo_folds(
 
 
 def aggregate_lofo_metrics(
-    fold_results: list[dict],
+    fold_results: list[dict[int, list[str]]],
     folds: list[LOFOFold],
     track_filter: str | None = None,
 ) -> dict[str, dict[str, float]]:
@@ -750,7 +751,7 @@ def aggregate_lofo_metrics(
 # ── Results I/O ─────────────────────────────────────────────────────────────
 
 
-def save_results(results: dict, filename: str) -> Path:
+def save_results(results: dict[str, Any], filename: str) -> Path:
     """Save results dict to results/phase0/ as formatted JSON (atomic write)."""
     if os.sep in filename or filename.startswith("."):
         raise ValueError(f"Invalid filename: {filename}")
@@ -813,7 +814,7 @@ def get_git_sha() -> str:
 
 def init_wandb(
     experiment_name: str,
-    config: dict | None = None,
+    config: dict[str, Any] | None = None,
     tags: list[str] | None = None,
     curated: bool = False,
 ) -> object | None:
@@ -858,7 +859,8 @@ def init_wandb(
         reinit=True,
     )
     logger.info("WandB run initialized: %s", run.url if run else "None")
-    return run
+    initialized: object | None = run
+    return initialized
 
 
 def log_fold_metrics(
@@ -900,7 +902,7 @@ def log_aggregate_metrics(
 
 def log_wandb_summary_table(
     run: object | None,
-    rows: list[dict],
+    rows: list[dict[str, Any]],
     table_name: str = "model_comparison",
 ) -> None:
     """Log a summary comparison table to WandB."""

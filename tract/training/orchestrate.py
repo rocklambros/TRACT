@@ -21,10 +21,9 @@ import numpy as np
 
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
+    EvalItem,
     build_evaluation_corpus,
     load_curated_links,
-    load_opencre_cres,
-    score_predictions,
 )
 from tract.config import (
     PHASE1B_RESULTS_DIR,
@@ -44,6 +43,7 @@ from tract.training.evaluate import (
 )
 from tract.training.firewall import assert_firewall, build_all_hub_texts
 from tract.training.loop import save_checkpoint, train_model
+from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +62,9 @@ def _get_git_sha() -> str:
 def run_single_fold(
     config: TrainingConfig,
     held_out_framework: str,
-    tiered_links: list,
+    tiered_links: list[TieredLink],
     hierarchy: CREHierarchy,
-    eval_items: list,
+    eval_items: list[EvalItem],
     hub_ids: list[str],
     output_dir: Path,
 ) -> dict[str, Any]:
@@ -153,11 +153,10 @@ def run_experiment(config: TrainingConfig) -> dict[str, Any]:
     hierarchy = CREHierarchy.model_validate(load_json(PROCESSED_DIR / "cre_hierarchy.json"))
     hub_ids = sorted(hierarchy.hubs.keys())
 
-    cres = load_opencre_cres()
     links = load_curated_links()
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {})
 
-    eval_by_fw: dict[str, list] = {}
+    eval_by_fw: dict[str, list[EvalItem]] = {}
     for item in corpus:
         eval_by_fw.setdefault(item.framework_name, []).append(item)
 

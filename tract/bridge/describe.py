@@ -2,33 +2,33 @@
 from __future__ import annotations
 
 import logging
+from typing import TypeVar
 
 import anthropic
+from anthropic.types import TextBlock
 
-from tract.bridge.types import BridgeCandidate, NegativeControl
+from tract.bridge.similarity import (
+    HubLinks,
+    count_controls_for_hub,
+    enrich_negatives,
+)
+from tract.bridge.types import BridgeCandidate, NegativeControl, RawNegative
 from tract.config import BRIDGE_LLM_MODEL, BRIDGE_LLM_TEMPERATURE
 from tract.hierarchy import CREHierarchy
 from tract.sanitize import sanitize_text
 
 logger = logging.getLogger(__name__)
 
-
-def count_controls_for_hub(
-    cre_id: str,
-    hub_links: dict[str, list[dict]],
-) -> int:
-    """Count total controls linked to a hub across all frameworks."""
-    return sum(
-        1 for links in hub_links.values()
-        for link in links
-        if link["cre_id"] == cre_id
-    )
+# Both record types carry ai_hub_id, trad_hub_id and description, which is all
+# the description pass touches. A value-restricted TypeVar lets one function
+# mutate either without widening the element type at the call sites.
+DescribableT = TypeVar("DescribableT", BridgeCandidate, NegativeControl)
 
 
 def _build_prompt(
-    candidate: dict,
+    candidate: BridgeCandidate | NegativeControl,
     hierarchy: CREHierarchy,
-    hub_links: dict[str, list[dict]],
+    hub_links: HubLinks,
 ) -> str:
     ai_id = candidate["ai_hub_id"]
     trad_id = candidate["trad_hub_id"]
@@ -55,9 +55,9 @@ def _build_prompt(
 
 
 def generate_bridge_descriptions(
-    candidates: list[BridgeCandidate],
+    candidates: list[DescribableT],
     hierarchy: CREHierarchy,
-    hub_links: dict[str, list[dict]],
+    hub_links: HubLinks,
 ) -> None:
     """Add 'description' field to each candidate. Modifies in-place.
 
@@ -76,8 +76,22 @@ def generate_bridge_descriptions(
                 max_tokens=300,
                 messages=[{"role": "user", "content": prompt}],
             )
-            raw_text = response.content[0].text
-            candidate["description"] = sanitize_text(raw_text, max_length=500)
+            # response.content is a union of block types. Reading .text off
+            # the first element unguarded raised AttributeError whenever the
+            # API led with a thinking or tool-use block, which contradicts the
+            # no-crash contract in this function's docstring.
+            content_block = response.content[0]
+            if isinstance(content_block, TextBlock):
+                candidate["description"] = sanitize_text(
+                    content_block.text, max_length=500,
+                )
+            else:
+                logger.warning(
+                    "LLM returned %s rather than a text block for %s -> %s",
+                    type(content_block).__name__,
+                    candidate["ai_hub_id"], candidate["trad_hub_id"],
+                )
+                candidate["description"] = ""
         except anthropic.APIError:
             logger.warning(
                 "LLM description failed for %s -> %s",
@@ -87,9 +101,9 @@ def generate_bridge_descriptions(
 
 
 def generate_negative_descriptions(
-    negatives: list[NegativeControl],
+    negatives: list[RawNegative],
     hierarchy: CREHierarchy,
-    hub_links: dict[str, list[dict]],
+    hub_links: HubLinks,
 ) -> list[NegativeControl]:
     """Add descriptions to negative control candidates.
 
@@ -100,11 +114,6 @@ def generate_negative_descriptions(
     Returns:
         The same list with hub names and descriptions added.
     """
-    for neg in negatives:
-        ai_id = neg["ai_hub_id"]
-        trad_id = neg["trad_hub_id"]
-        neg["ai_hub_name"] = hierarchy.hubs[ai_id].name if ai_id in hierarchy.hubs else ai_id
-        neg["trad_hub_name"] = hierarchy.hubs[trad_id].name if trad_id in hierarchy.hubs else trad_id
-
-    generate_bridge_descriptions(negatives, hierarchy, hub_links)
-    return negatives
+    enriched = enrich_negatives(negatives, hierarchy)
+    generate_bridge_descriptions(enriched, hierarchy, hub_links)
+    return enriched

@@ -19,7 +19,7 @@ import os
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from tract.config import (
     PHASE1B_DROPPED_FRAMEWORKS,
@@ -102,7 +102,7 @@ def filter_training_links(links: list[dict[str, str]]) -> list[TieredLink]:
     return result
 
 
-def compute_data_hash(data: list[dict]) -> str:
+def compute_data_hash(data: list[dict[str, Any]]) -> str:
     """Compute deterministic SHA-256 hash of structured data."""
     canonical = json.dumps(data, sort_keys=True, ensure_ascii=True)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -147,7 +147,7 @@ def save_training_links(
     Returns SHA-256 hash of the output data.
     """
     p = path or TRAINING_OUTPUT_PATH
-    output_records: list[dict] = []
+    output_records: list[dict[str, Any]] = []
     for tiered in links:
         record = dict(tiered.link)
         record["quality_tier"] = tiered.tier.value

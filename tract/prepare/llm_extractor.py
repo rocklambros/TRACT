@@ -8,7 +8,6 @@ Public API:
 """
 from __future__ import annotations
 
-import json
 import logging
 import os
 import subprocess
@@ -17,7 +16,6 @@ from pathlib import Path
 from typing import Any
 
 from tract.config import (
-    PREPARE_LLM_CHUNK_TOKEN_LIMIT,
     PREPARE_LLM_MAX_RETRIES,
     PREPARE_LLM_MODEL,
     PREPARE_LLM_RETRY_BACKOFF_FACTOR,
@@ -188,7 +186,9 @@ class LlmExtractor:
 
                 for block in response.content:
                     if getattr(block, "type", None) == "tool_use":
-                        return block.input.get("controls", [])
+                        # The tool-use payload is untyped JSON from the API.
+                        controls: list[dict[str, Any]] = block.input.get("controls", [])
+                        return controls
 
                 logger.warning("API response had no tool_use block on attempt %d", attempt)
                 return []

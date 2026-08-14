@@ -13,6 +13,8 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -91,9 +93,9 @@ def _check_inter_cluster_separation(
 def apply_guardrails(
     clusters: list[Cluster],
     hierarchy: CREHierarchy,
-    hub_embeddings: NDArray[np.floating],
+    hub_embeddings: NDArray[np.floating[Any]],
     hub_ids: list[str],
-    control_metadata: dict[str, dict],
+    control_metadata: dict[str, dict[str, Any]],
     budget_cap: int = PHASE1D_PROPOSAL_BUDGET_CAP,
 ) -> list[GuardrailResult]:
     """Apply 6 guardrails to each cluster."""

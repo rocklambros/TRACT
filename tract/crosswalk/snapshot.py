@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import sqlite3
+from typing import Any
 from pathlib import Path
 
 from tract.crosswalk.schema import get_connection
@@ -22,7 +22,7 @@ def compute_db_hash(db_path: Path) -> str:
     """
     conn = get_connection(db_path)
     try:
-        state: dict[str, list[list]] = {}
+        state: dict[str, list[list[Any]]] = {}
         for table in SNAPSHOT_TABLES:
             rows = conn.execute(
                 f"SELECT * FROM {table} ORDER BY rowid"  # noqa: S608
@@ -35,7 +35,7 @@ def compute_db_hash(db_path: Path) -> str:
         conn.close()
 
 
-def take_snapshot(db_path: Path, round_number: int, description: str) -> dict:
+def take_snapshot(db_path: Path, round_number: int, description: str) -> dict[str, Any]:
     """Record a snapshot of the current database state.
 
     Returns the snapshot record as a dict.

@@ -163,7 +163,15 @@ async def _generate_all(
                     timeout=PHASE1A_DESCRIPTION_TIMEOUT_S,
                 )
                 content_block = response.content[0]
-                if TextBlock is not None and not isinstance(content_block, TextBlock):
+                # Two sequential checks, not one `and`. mypy cannot narrow
+                # content_block through a compound condition, and the narrowing
+                # is what proves .text exists on this branch of the block union.
+                if TextBlock is None:
+                    raise RuntimeError(
+                        "anthropic.types.TextBlock is unavailable; "
+                        "install a supported anthropic version"
+                    )
+                if not isinstance(content_block, TextBlock):
                     raise TypeError(
                         f"Expected TextBlock, got {type(content_block).__name__}"
                     )

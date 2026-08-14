@@ -6,28 +6,33 @@ validation split (same split used for early stopping).
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy.special import softmax
 
 logger = logging.getLogger(__name__)
 
 
 def calibrate_similarities(
-    similarities: np.ndarray,
+    similarities: NDArray[np.floating[Any]],
     temperature: float,
-) -> np.ndarray:
+) -> NDArray[np.floating[Any]]:
     """Convert cosine similarities to calibrated probabilities.
 
     P(hub_i | control) = exp(sim_i / T) / sum(exp(sim_j / T))
     """
     scaled = similarities / temperature
-    return softmax(scaled, axis=1)
+    # scipy ships no stubs, so softmax is untyped here. Bind the result to a
+    # declared name rather than returning Any straight out of a typed function.
+    probs: NDArray[np.floating[Any]] = softmax(scaled, axis=1)
+    return probs
 
 
 def _negative_log_likelihood(
-    similarities: np.ndarray,
-    ground_truth_indices: np.ndarray,
+    similarities: NDArray[np.floating[Any]],
+    ground_truth_indices: NDArray[np.integer[Any]],
     temperature: float,
 ) -> float:
     """Compute NLL for a given temperature."""
@@ -37,8 +42,8 @@ def _negative_log_likelihood(
 
 
 def find_optimal_temperature(
-    similarities: np.ndarray,
-    ground_truth_indices: np.ndarray,
+    similarities: NDArray[np.floating[Any]],
+    ground_truth_indices: NDArray[np.integer[Any]],
     t_min: float = 0.01,
     t_max: float = 5.0,
     n_grid: int = 200,
@@ -60,8 +65,8 @@ def find_optimal_temperature(
 
 
 def find_global_threshold(
-    similarities: np.ndarray,
-    ground_truth_indices: np.ndarray,
+    similarities: NDArray[np.floating[Any]],
+    ground_truth_indices: NDArray[np.integer[Any]],
     temperature: float,
     n_thresholds: int = 200,
 ) -> float:

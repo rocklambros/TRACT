@@ -6,12 +6,11 @@ for changeset generation.
 """
 from __future__ import annotations
 
-import json
 import logging
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from tract.crosswalk.schema import get_connection
 from tract.export.canonical_schema import (
@@ -60,7 +59,7 @@ def _query_canonical_assignments(
     framework_id: str,
     confidence_floor: float,
     confidence_overrides: dict[str, float],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Query assignments passing all export filters, returning fields needed for canonical export."""
     from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE
 
@@ -108,7 +107,7 @@ def build_snapshot(
     )
 
     seen_controls: dict[str, CanonicalControl] = {}
-    control_mappings: defaultdict[str, list[dict]] = defaultdict(list)
+    control_mappings: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
 
     for row in rows:
         cid = row["control_id"]
@@ -377,7 +376,7 @@ def slice_embeddings_for_framework(
     artifacts_path: Path,
     canonical_control_ids: set[str],
     model_adapter_hash: str,
-) -> dict:
+) -> dict[str, Any]:
     """Slice deployment_artifacts.npz to a single framework's controls.
 
     Normalizes :: to : in artifact IDs to match canonical format (spec §5.2).
@@ -424,13 +423,13 @@ def export_canonical(
     artifacts_path: Path | None = None,
     with_embeddings: bool = False,
     dry_run: bool = False,
-) -> dict[str, dict]:
+) -> dict[str, dict[str, Any]]:
     """Run the full canonical export pipeline for one or more frameworks.
 
     Returns a dict keyed by framework_id with export metadata per framework.
     """
     ensure_export_history_table(db_path)
-    results: dict[str, dict] = {}
+    results: dict[str, dict[str, Any]] = {}
 
     for fw_id in framework_ids:
         fw_name = (framework_names or {}).get(fw_id)

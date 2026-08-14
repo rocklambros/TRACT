@@ -5,6 +5,9 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from collections.abc import Mapping
+from typing import Any
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +39,9 @@ pretty_name: TRACT Security Framework Crosswalk
 
 def generate_dataset_card(
     staging_dir: Path,
-    framework_metadata: list[dict],
-    review_metrics: dict,
-    bundle_stats: dict,
+    framework_metadata: list[dict[str, Any]],
+    review_metrics: Mapping[str, Any],
+    bundle_stats: dict[str, Any],
 ) -> Path:
     """Generate HuggingFace Datasets card as README.md.
 
@@ -467,7 +470,7 @@ Under the following terms:
     return target
 
 
-def _build_framework_table(framework_metadata: list[dict]) -> str:
+def _build_framework_table(framework_metadata: list[dict[str, Any]]) -> str:
     """Build markdown table rows from framework metadata."""
     lines: list[str] = []
     for fw in sorted(framework_metadata, key=lambda x: x.get("framework_name", "")):
@@ -479,7 +482,7 @@ def _build_framework_table(framework_metadata: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _build_review_framework_table(per_fw: dict[str, dict]) -> str:
+def _build_review_framework_table(per_fw: Mapping[str, Any]) -> str:
     """Build per-framework review breakdown table."""
     lines: list[str] = []
     for fw_id in sorted(per_fw, key=lambda k: per_fw[k].get("framework_name", k)):

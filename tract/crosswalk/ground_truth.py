@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Any
 import re
 import sqlite3
 from dataclasses import dataclass
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ResolverResult:
     resolved: dict[str, str]           # gt_key → control_id
-    unresolved: list[dict]             # list of unresolvable GT links
+    unresolved: list[dict[str, Any]]             # list of unresolvable GT links
     strategy_counts: dict[str, int]    # strategy_name → count
 
 
@@ -99,7 +100,7 @@ def resolve_section_id(
 def resolve_framework_links(
     conn: sqlite3.Connection,
     framework_id: str,
-    links: list[dict],
+    links: list[dict[str, Any]],
 ) -> ResolverResult:
     """Resolve all GT links for a single framework.
 
@@ -108,7 +109,7 @@ def resolve_framework_links(
     section_id_map, title_map, normalized_map = build_control_lookups(conn, framework_id)
 
     resolved: dict[str, str] = {}
-    unresolved: list[dict] = []
+    unresolved: list[dict[str, Any]] = []
     strategy_counts: dict[str, int] = {}
 
     for link in links:

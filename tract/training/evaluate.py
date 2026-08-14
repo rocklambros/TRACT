@@ -16,8 +16,6 @@ import numpy as np
 from numpy.typing import NDArray
 
 from scripts.phase0.common import (
-    ndcg_at_k,
-    reciprocal_rank,
     score_predictions,
 )
 from tract.config import (

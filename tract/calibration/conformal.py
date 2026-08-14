@@ -8,6 +8,8 @@ from __future__ import annotations
 import logging
 import math
 
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -17,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def compute_conformal_quantile(
-    probs: NDArray[np.floating],
+    probs: NDArray[np.floating[Any]],
     valid_hub_indices: list[list[int]],
     alpha: float = PHASE1C_CONFORMAL_ALPHA,
 ) -> float:
@@ -44,7 +46,7 @@ def compute_conformal_quantile(
 
 
 def build_prediction_sets(
-    probs: NDArray[np.floating],
+    probs: NDArray[np.floating[Any]],
     hub_ids: list[str],
     quantile: float,
 ) -> list[set[str]]:

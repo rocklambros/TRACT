@@ -7,11 +7,36 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any, TypedDict
 
 from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)
+
+# Rows come back from sqlite3 via dict(row), so the value type is genuinely
+# heterogeneous (TEXT, REAL, INTEGER, NULL) and Any is the honest annotation
+# rather than a placeholder.
+AssignmentRow = dict[str, Any]
+ControlRow = dict[str, Any]
+
+
+class MissingControl(TypedDict):
+    """One control that did not make it into the export, and why."""
+
+    section_id: str
+    title: str
+    reason: str
+    detail: str
+
+
+class FrameworkCoverage(TypedDict):
+    """Per-framework coverage block of coverage_gaps.json."""
+
+    total_controls: int
+    exported_controls: int
+    coverage_pct: float
+    missing_controls: list[MissingControl]
 
 
 def query_coverage_gaps(
@@ -20,7 +45,7 @@ def query_coverage_gaps(
     confidence_floor: float,
     confidence_overrides: dict[str, float],
     framework_ids: list[str],
-) -> dict[str, object]:
+) -> dict[str, FrameworkCoverage]:
     """Build per-framework coverage gaps report.
 
     Returns a dict keyed by framework_id, each containing:
@@ -53,21 +78,21 @@ def query_coverage_gaps(
     finally:
         conn.close()
 
-    assignments_by_control: dict[str, list[dict]] = {}
+    assignments_by_control: dict[str, list[AssignmentRow]] = {}
     for a in assignments:
         assignments_by_control.setdefault(a["control_id"], []).append(dict(a))
 
-    controls_by_fw: dict[str, list[dict]] = {}
+    controls_by_fw: dict[str, list[ControlRow]] = {}
     for c in controls:
         controls_by_fw.setdefault(c["framework_id"], []).append(dict(c))
 
     exported_control_ids = {cid for cid, _ in exported_keys}
 
-    report: dict[str, object] = {}
+    report: dict[str, FrameworkCoverage] = {}
     for fw_id in framework_ids:
         fw_controls = controls_by_fw.get(fw_id, [])
         floor = confidence_overrides.get(fw_id, confidence_floor)
-        missing = []
+        missing: list[MissingControl] = []
 
         for ctrl in fw_controls:
             if ctrl["id"] in exported_control_ids:
@@ -94,7 +119,7 @@ def query_coverage_gaps(
 
 
 def _classify_gap(
-    assignments: list[dict],
+    assignments: list[AssignmentRow],
     confidence_floor: float,
 ) -> tuple[str, str]:
     """Determine why a control was excluded from export.
@@ -104,7 +129,7 @@ def _classify_gap(
     if not assignments:
         return "no_assignment", "No hub assignment exists for this control"
 
-    dominated_by: dict[str, list] = {
+    dominated_by: dict[str, list[AssignmentRow]] = {
         "not_accepted": [],
         "ground_truth": [],
         "null_confidence": [],

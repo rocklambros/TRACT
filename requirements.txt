@@ -7,6 +7,10 @@ requests==2.33.1
 jsonschema==4.23.0
 anthropic==0.92.0
 
+# huggingface_hub is a core dependency in pyproject.toml but was never
+# mirrored here, so the CI test job could not import tract.model_resolver.
+huggingface_hub==0.36.2
+
 # ML (Phase 2+)
 numpy==2.0.2
 safetensors==0.7.0
@@ -14,7 +18,12 @@ wandb==0.25.1
 hdbscan==0.8.42
 
 # Dev / CI
+# ruff and mypy must match requirements-lint.txt, which constrains against
+# this file. CI was running 0.15.x against a declared 0.11.12 for months.
 pytest==9.0.3
-mypy==1.11.2
-ruff==0.11.12
+# The CI test job runs pytest --timeout=60, which needs this plugin. It was
+# never declared, and the job never ran to notice, because lint failed first.
+pytest-timeout==2.4.0
+mypy==2.2.0
+ruff==0.15.21
 pip-audit==2.9.0

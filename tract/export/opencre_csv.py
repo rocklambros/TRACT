@@ -17,14 +17,14 @@ import os
 import tempfile
 from io import StringIO
 from pathlib import Path
-from typing import Any
 
+from tract.export.filters import ExportableAssignment
 from tract.export.opencre_names import build_hyperlink, get_opencre_name
 
 logger = logging.getLogger(__name__)
 
 
-def generate_opencre_csv(rows: list[dict[str, Any]], framework_id: str) -> str:
+def generate_opencre_csv(rows: list[ExportableAssignment], framework_id: str) -> str:
     """Generate OpenCRE CSV string from filtered assignment rows."""
     opencre_name = get_opencre_name(framework_id)
 
@@ -58,7 +58,7 @@ def generate_opencre_csv(rows: list[dict[str, Any]], framework_id: str) -> str:
 
 
 def write_opencre_csv(
-    rows: list[dict[str, Any]],
+    rows: list[ExportableAssignment],
     framework_id: str,
     output_dir: Path,
 ) -> Path:

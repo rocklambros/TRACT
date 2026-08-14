@@ -5,13 +5,12 @@ run_review_session: interactive CLI loop for accept/reject/edit/skip per proposa
 """
 from __future__ import annotations
 
-import json
 import logging
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
-from tract.config import HUB_PROPOSALS_DIR
 from tract.io import atomic_write_json
 from tract.proposals.guardrails import GuardrailResult
 
@@ -64,7 +63,7 @@ def run_review_session(
     hierarchy: object,
     db_path: Path,
     dry_run: bool = False,
-) -> dict:
+) -> dict[str, Any]:
     """Interactive CLI review loop.
 
     Per proposal: [a]ccept, [r]eject, [e]dit name, [s]kip

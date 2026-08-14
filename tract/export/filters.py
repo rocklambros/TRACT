@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import TypedDict, cast
 
 from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE
 from tract.crosswalk.schema import get_connection
@@ -18,12 +19,33 @@ from tract.crosswalk.schema import get_connection
 logger = logging.getLogger(__name__)
 
 
+class ExportableAssignment(TypedDict):
+    """One assignment row that passed every export filter.
+
+    Mirrors the SELECT column list in query_exportable_assignments. Declared
+    so downstream consumers (the export manifest, coverage gaps) index it
+    against real key names instead of dict[str, object], which erased the
+    value types and made every read unindexable.
+    """
+
+    control_id: str
+    hub_id: str
+    hub_name: str
+    confidence: float
+    is_ood: int
+    provenance: str
+    framework_id: str
+    section_id: str
+    title: str
+    description: str
+
+
 def query_exportable_assignments(
     db_path: Path,
     confidence_floor: float,
     confidence_overrides: dict[str, float],
     framework_filter: str | None = None,
-) -> list[dict[str, object]]:
+) -> list[ExportableAssignment]:
     """Query assignments passing all export filters.
 
     Returns list of dicts with keys: control_id, hub_id, hub_name,
@@ -55,7 +77,7 @@ def query_exportable_assignments(
     finally:
         conn.close()
 
-    results = []
+    results: list[ExportableAssignment] = []
     for row in rows:
         fw_id = row["framework_id"]
         floor = confidence_overrides.get(fw_id, confidence_floor)
@@ -65,7 +87,7 @@ def query_exportable_assignments(
                 row["control_id"], row["confidence"], floor, fw_id,
             )
             continue
-        results.append(dict(row))
+        results.append(cast(ExportableAssignment, dict(row)))
 
     logger.info(
         "Export filter: %d assignments passed (%d excluded by confidence floor)",
@@ -76,7 +98,7 @@ def query_exportable_assignments(
 
 def compute_filter_stats(
     db_path: Path,
-    exported_rows: list[dict[str, object]],
+    exported_rows: list[ExportableAssignment],
     confidence_floor: float,
     confidence_overrides: dict[str, float],
 ) -> dict[str, dict[str, int]]:

@@ -24,7 +24,7 @@ import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from tract.config import (
     PHASE1A_DESCRIPTION_MAX_CONCURRENT,
@@ -68,7 +68,7 @@ OUTPUT_PATH: Final[Path] = PROCESSED_DIR / "hub_descriptions_reviewed.json"
 BACKUP_PATH: Final[Path] = PROCESSED_DIR / "hub_descriptions_reviewed.pre_regen.json"
 
 
-def _load_links(path: Path) -> list[dict]:
+def _load_links(path: Path) -> list[dict[str, Any]]:
     links = []
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -76,7 +76,7 @@ def _load_links(path: Path) -> list[dict]:
     return links
 
 
-def _hub_section_map(links: list[dict]) -> dict[str, set[tuple[str, str]]]:
+def _hub_section_map(links: list[dict[str, Any]]) -> dict[str, set[tuple[str, str]]]:
     """Build hub_id -> set of (standard_name, section_name) for AI frameworks."""
     result: dict[str, set[tuple[str, str]]] = defaultdict(set)
     for link in links:
@@ -87,7 +87,7 @@ def _hub_section_map(links: list[dict]) -> dict[str, set[tuple[str, str]]]:
     return dict(result)
 
 
-def _hub_all_section_names(links: list[dict]) -> dict[str, set[str]]:
+def _hub_all_section_names(links: list[dict[str, Any]]) -> dict[str, set[str]]:
     """Build hub_id -> set of all section names (all frameworks)."""
     result: dict[str, set[str]] = defaultdict(set)
     for link in links:
@@ -206,7 +206,15 @@ async def regenerate_descriptions(
                     timeout=PHASE1A_DESCRIPTION_TIMEOUT_S,
                 )
                 content_block = response.content[0]
-                if TextBlock is not None and not isinstance(content_block, TextBlock):
+                # Two sequential checks, not one `and`. mypy cannot narrow
+                # content_block through a compound condition, and the narrowing
+                # is what proves .text exists on this branch of the block union.
+                if TextBlock is None:
+                    raise RuntimeError(
+                        "anthropic.types.TextBlock is unavailable; "
+                        "install a supported anthropic version"
+                    )
+                if not isinstance(content_block, TextBlock):
                     raise TypeError(f"Expected TextBlock, got {type(content_block).__name__}")
                 raw_text = content_block.text.strip()
                 clean_text = sanitize_text(raw_text)
