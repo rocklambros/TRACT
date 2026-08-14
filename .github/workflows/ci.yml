@@ -72,8 +72,14 @@ jobs:
       # pip-audit comes from requirements.txt (pinned). The bare
       # `pip install pip-audit` that used to sit here silently upgraded it
       # past that pin on every run.
+      # -r audits a requirements file by resolving it, without installing it,
+      # so the pinned ML stack gets scanned without pulling torch into CI. It
+      # also fails if requirements-ml.txt stops resolving, which keeps the pin
+      # from rotting silently.
       - name: Audit dependencies
-        run: pip-audit --desc
+        run: |
+          pip-audit --desc
+          pip-audit --desc -r requirements-ml.txt
   model-pins:
     runs-on: ubuntu-latest
     steps:
