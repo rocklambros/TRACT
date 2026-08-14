@@ -128,8 +128,22 @@ class ProseIndex:
                 control_id = str(control.get("control_id") or "").strip()
                 if control_id:
                     self._by_id[(framework, control_id)] = selection
-                if title.strip():
-                    self._by_title[(framework, title.strip().lower())] = selection
+
+                # A section heading and the name OpenCRE links it under are
+                # often the same concept spelled differently: "Evasion Attacks
+                # and Mitigations" against "Evasion Attacks". Parsers declare
+                # those variants rather than the index guessing at them, since
+                # a fuzzy match here would silently attach the wrong prose.
+                metadata = control.get("metadata") or {}
+                alternates = metadata.get("alt_titles") or []
+                if isinstance(alternates, str):
+                    alternates = [alternates]
+                for name in [title, *alternates]:
+                    key = str(name).strip().lower()
+                    # First writer wins: the real title is offered first, so an
+                    # alternate can add a name but never displace one.
+                    if key and (framework, key) not in self._by_title:
+                        self._by_title[(framework, key)] = selection
 
     @classmethod
     def load(cls, path: Path | None = None) -> ProseIndex:
