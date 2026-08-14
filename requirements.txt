@@ -2,6 +2,9 @@
 pydantic==2.12.5
 pyyaml==6.0.3
 beautifulsoup4==4.14.3
+# XML parsing for MITRE CAPEC/CWE catalogs. The stdlib xml module is
+# vulnerable to XXE and entity-expansion, and these are downloaded files.
+defusedxml==0.7.1
 lxml==6.1.0
 requests==2.33.1
 jsonschema==4.26.0

@@ -1,0 +1,60 @@
+{
+  "sources": {
+    "asvs": {
+      "bytes": "114056004",
+      "fetched_date": "2026-08-14",
+      "filename": "asvs.zip",
+      "note": "OWASP ASVS requirements",
+      "sha256": "ec4af168324e1d859040276a3cafff5fb70d31e0b004f200119956023181202e",
+      "url": "https://github.com/OWASP/ASVS/archive/refs/heads/master.zip"
+    },
+    "capec": {
+      "bytes": "3849998",
+      "fetched_date": "2026-08-14",
+      "filename": "capec_latest.xml",
+      "note": "MITRE CAPEC attack patterns, full descriptions",
+      "sha256": "70279a2dff0cb0ad79e546adb07828335a704ad5210e047e09e986172fc9e34d",
+      "url": "https://capec.mitre.org/data/xml/capec_latest.xml"
+    },
+    "cwe": {
+      "bytes": "2021351",
+      "fetched_date": "2026-08-14",
+      "filename": "cwec_latest.xml.zip",
+      "note": "MITRE CWE weaknesses, full descriptions",
+      "sha256": "3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50",
+      "url": "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip"
+    },
+    "nist_800_53": {
+      "bytes": "10442037",
+      "fetched_date": "2026-08-14",
+      "filename": "nist_800_53_catalog.json",
+      "note": "NIST SP 800-53 rev5 OSCAL catalog, full control text",
+      "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
+      "url": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json"
+    },
+    "nist_ai_100_2": {
+      "bytes": "995939",
+      "fetched_date": "2026-08-14",
+      "filename": "nist_ai_100_2_e2023.pdf",
+      "note": "NIST AI 100-2e2023 adversarial ML taxonomy. LOFO eval fold.",
+      "sha256": "d1086f53a1634d6787c59510c117b22bb7e1a242f920d2830a0d334058b0cb78",
+      "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2023.pdf"
+    },
+    "owasp_cheat_sheets": {
+      "bytes": "16338045",
+      "fetched_date": "2026-08-14",
+      "filename": "cheatsheets.zip",
+      "note": "OWASP Cheat Sheet Series markdown",
+      "sha256": "5bcaa82245dc14fc1900c0afe9708396dbc362b533adaf2156f36219d3a98770",
+      "url": "https://github.com/OWASP/CheatSheetSeries/archive/refs/heads/master.zip"
+    },
+    "owasp_ml_top10": {
+      "bytes": "53027622",
+      "fetched_date": "2026-08-14",
+      "filename": "owasp_ml_top10.zip",
+      "note": "OWASP ML Security Top 10. LOFO eval fold.",
+      "sha256": "045d7146954612463f4163b83cb419902fd8a0513ef98a8ff1a81d117e6b8444",
+      "url": "https://github.com/OWASP/www-project-machine-learning-security-top-10/archive/refs/heads/master.zip"
+    }
+  }
+}

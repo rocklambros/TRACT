@@ -12,6 +12,7 @@ dependencies = [
     "pyyaml>=6.0",
     "beautifulsoup4>=4.14.3",
     "lxml>=5.0",
+    "defusedxml>=0.7.1",
     "requests>=2.31",
     "huggingface_hub>=0.24,<1",
 ]
