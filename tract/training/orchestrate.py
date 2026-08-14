@@ -81,16 +81,30 @@ def run_single_fold(
             for hid, d in desc_data.get("descriptions", {}).items()
         }
 
+    # Descriptions are CRE-authored and don't need firewalling.
+    # base_hub_texts is only meaningful when standards are included, because
+    # standards content is framework-derived and therefore the leakage surface.
+    include_standards = config.hub_rep_format == "path+name+standards"
+    if include_standards and standard_sections is None:
+        # Previously both builds below were called with an identical argument
+        # list, so hub_texts == base_hub_texts, every appended slice was empty,
+        # and the breach check was unreachable. Failing loudly is better than
+        # silently producing a format the config asked for and never built.
+        raise ValueError(
+            "hub_rep_format='path+name+standards' requires standard_sections; "
+            "none were supplied, so the standards format cannot be built and "
+            "the firewall would have nothing to check"
+        )
+
     hub_texts = build_all_hub_texts(
         hierarchy,
         excluded_framework=held_out_framework,
         include_description=include_desc,
         descriptions=descriptions,
+        include_standards=include_standards,
+        standard_sections=standard_sections,
     )
 
-    # Descriptions are CRE-authored and don't need firewalling.
-    # Only build base_hub_texts when standards are included (framework-derived).
-    include_standards = config.hub_rep_format == "path+name+standards"
     base_hub_texts = None
     if include_standards:
         base_hub_texts = build_all_hub_texts(
@@ -98,6 +112,7 @@ def run_single_fold(
             excluded_framework=held_out_framework,
             include_description=include_desc,
             descriptions=descriptions,
+            include_standards=False,
         )
     assert_firewall(hub_texts, eval_items, held_out_framework, base_hub_texts)
 

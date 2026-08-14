@@ -90,22 +90,20 @@ def assert_firewall(
     safe by construction. When hub texts include additional content (descriptions,
     standards), we check only the appended portion by subtracting the base text.
 
-    If base_hub_texts is None, the hub texts are assumed to be base-format-only
-    and no check is needed beyond logging.
+    If base_hub_texts is None the hub texts are base-format only, so the whole
+    text is scanned rather than an appended slice. This function previously
+    returned here after logging a pass, which meant the default configuration
+    (hub_rep_format="path+name") asserted nothing at all: the firewall CLAUDE.md
+    calls non-negotiable could not fail on any code path. Scanning the full text
+    costs one substring test per (item, hub) pair and makes the base case a real
+    assertion.
     """
-    if base_hub_texts is None:
-        logger.info(
-            "Firewall assertion passed (base format only — CRE-native content): "
-            "%d items, %d hubs",
-            len(eval_items),
-            len(hub_texts),
-        )
-        return
+    scan_appended_only = base_hub_texts is not None
 
     # Collect all hub names from base texts — these are CRE-native concepts.
     # Descriptions legitimately reference hub names for disambiguation.
     hub_names_lower: set[str] = set()
-    for base in base_hub_texts.values():
+    for base in (base_hub_texts or hub_texts).values():
         if " | " in base:
             hub_names_lower.add(base.split(" | ", 1)[1].lower())
 
@@ -121,15 +119,21 @@ def assert_firewall(
         ):
             continue
         for hub_id, text in hub_texts.items():
-            base = base_hub_texts.get(hub_id, "")
-            appended = text[len(base):]
-            if not appended:
+            if scan_appended_only:
+                assert base_hub_texts is not None
+                base = base_hub_texts.get(hub_id, "")
+                haystack = text[len(base):]
+                where = "appended text"
+            else:
+                haystack = text
+                where = "hub text"
+            if not haystack:
                 continue
-            if control_text in appended:
+            if control_text in haystack:
                 raise AssertionError(
                     f"Firewall breach: control '{control_text[:50]}' "
                     f"(framework={held_out_framework}) found in hub {hub_id} "
-                    f"appended text"
+                    f"{where}"
                 )
     logger.info(
         "Firewall assertion passed: %d items checked against %d hubs "
