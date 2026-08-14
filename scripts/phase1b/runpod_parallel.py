@@ -30,6 +30,7 @@ import logging
 import os
 import shlex
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Final
@@ -38,6 +39,7 @@ from scripts.phase0.runpod_provision import (
     create_pods_parallel,
     find_fastest_available,
     get_gpu_price,
+    get_running_pods,
     terminate_pods,
     validate_ssh_endpoint,
 )
@@ -97,6 +99,9 @@ RSYNC_ATTEMPTS: Final[int] = 3
 # One fold: LoRA training plus a paired zero-shot pass.
 FOLD_TIMEOUT_S: Final[int] = 7200
 
+# Default per-command SSH ceiling; bootstrap issues several.
+SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
+
 FOLD_FRAMEWORKS: Final[list[str]] = [
     "MITRE ATLAS",
     "NIST AI 100-2",
@@ -148,7 +153,7 @@ def _ssh(
     ip: str, port: int, cmd: str,
     check: bool = True,
     env: dict[str, str] | None = None,
-    timeout: int = 3600,
+    timeout: int = SSH_DEFAULT_TIMEOUT_S,
 ) -> subprocess.CompletedProcess:
     _require_ssh_key()
     ip, port = validate_ssh_endpoint(ip, port)
@@ -179,10 +184,20 @@ def _ssh(
 
 def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
     ip, port = validate_ssh_endpoint(ip, port)
+    # The exclude list is what stands between the operator's working tree and
+    # five rented hosts, so it has to cover everything .gitignore does. The
+    # sharpest omission was .pod_state.json: it is chmod 600 locally precisely
+    # because it holds every pod's live IP and SSH port, and it was being copied
+    # to all of them, so owning one pod disclosed the address of the rest.
+    excludes = " ".join(f"--exclude={pat!r}" for pat in (
+        "__pycache__", "*.pyc", ".git", "results", ".mypy_cache", "models",
+        "wandb", ".wandb", ".env", "*.db", "data/raw", ".claude", "venv",
+        ".venv", ".pod_state.json", ".runpod_known_hosts", "build",
+        ".ipynb_checkpoints", ".pytest_cache", ".ruff_cache", "*.egg-info",
+        ".DS_Store",
+    ))
     cmd = (
-        f"rsync -rltz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
-        f"--exclude='results' --exclude='.mypy_cache' --exclude='models' "
-        f"--exclude='wandb' --exclude='.wandb' "
+        f"rsync -rltz {excludes} "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     logger.info("[rsync to] %s:%d %s", ip, port, remote_path)
@@ -197,8 +212,12 @@ def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
     has already been paid for, so it retries rather than giving up first time.
     """
     ip, port = validate_ssh_endpoint(ip, port)
+    # --safe-links drops any symlink pointing outside the transfer. Without it a
+    # compromised pod can ship `x -> /Users/<op>/.ssh` and a later pass writes
+    # through it, which turns retrieving results into an arbitrary write on the
+    # operator's machine. -l is kept because the tree may hold internal links.
     cmd = (
-        f"rsync -rltz --partial --timeout=120 "
+        f"rsync -rltz --safe-links --partial --timeout=120 "
         f"-e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
     )
     last_error: Exception | None = None
@@ -272,21 +291,43 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict:
     """
     price_per_pod = get_gpu_price(gpu_type)
     fleet_hourly = price_per_pod * n_pods
-    worst_case = fleet_hourly * MAX_RUN_HOURS
+
+    # Price the wall the code can actually reach, not the one it intends to.
+    # The bounding timeouts are: bootstrap (three _ssh at SSH_DEFAULT_TIMEOUT_S
+    # plus one rsync), the fold itself, and a SERIAL collect across pods. A
+    # budget check against MAX_RUN_HOURS alone understated the permitted spend
+    # by more than a factor of two, which made the gate unreachable: the $12/hr
+    # part filter already caps worst case below the $1000 budget, so the check
+    # could never fire on any input the caller could produce.
+    bootstrap_h = (3 * SSH_DEFAULT_TIMEOUT_S + RSYNC_TIMEOUT_S) / 3600
+    fold_h = FOLD_TIMEOUT_S / 3600
+    collect_h = n_pods * RSYNC_ATTEMPTS * RSYNC_TIMEOUT_S / 3600
+    reachable_h = bootstrap_h + fold_h + collect_h
+    worst_case = fleet_hourly * reachable_h
 
     logger.info("Budget check:")
     logger.info("  %s at $%.2f/hr x %d pods = $%.2f/hr",
                 gpu_type, price_per_pod, n_pods, fleet_hourly)
-    logger.info("  worst case over %.1fh = $%.2f (budget $%.2f)",
-                MAX_RUN_HOURS, worst_case, BUDGET_USD)
+    logger.info("  reachable wall time = %.1fh (bootstrap %.1f + fold %.1f + "
+                "serial collect %.1f), declared cap %.1fh",
+                reachable_h, bootstrap_h, fold_h, collect_h, MAX_RUN_HOURS)
+    logger.info("  worst case = $%.2f against budget $%.2f",
+                worst_case, BUDGET_USD)
+
+    if reachable_h > MAX_RUN_HOURS:
+        logger.warning(
+            "The timeouts permit %.1fh but MAX_RUN_HOURS is %.1fh. The deadline "
+            "is the intent; the timeouts are what actually bound spend.",
+            reachable_h, MAX_RUN_HOURS,
+        )
 
     if worst_case > BUDGET_USD:
         raise RuntimeError(
             f"Refusing to provision: {n_pods} x {gpu_type} at "
-            f"${price_per_pod:.2f}/hr would cost ${worst_case:.2f} over the "
-            f"{MAX_RUN_HOURS}h cap, above the ${BUDGET_USD:.2f} budget. Raise "
-            f"TRACT_RUNPOD_BUDGET_USD, lower TRACT_RUNPOD_MAX_HOURS, or pick a "
-            f"cheaper part."
+            f"${price_per_pod:.2f}/hr could reach ${worst_case:.2f} over the "
+            f"{reachable_h:.1f}h the configured timeouts permit, above the "
+            f"${BUDGET_USD:.2f} budget. Raise TRACT_RUNPOD_BUDGET_USD, lower "
+            f"the timeouts, or pick a cheaper part."
         )
     return {
         "gpu_type": gpu_type,
@@ -295,6 +336,7 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict:
         "worst_case_usd": worst_case,
         "budget_usd": BUDGET_USD,
         "max_run_hours": MAX_RUN_HOURS,
+        "reachable_hours": reachable_h,
     }
 
 
@@ -579,14 +621,42 @@ def reap(confirm: bool = False) -> None:
         logger.info("  %s (%s) role=%s",
                     pod.get("pod_id"), pod.get("name"), pod.get("role"))
 
-    if not confirm:
-        logger.warning("Dry run. Re-run with --confirm to terminate these pods.")
+    # The state file records pods=[] between "intent to provision" and "all pods
+    # up". That is exactly the window a crash during provisioning lands in, and
+    # exactly when reap is reached for. Terminating an empty list and reporting
+    # "reaped cleanly" would hand back a false all-clear in the one case this
+    # command exists for. Fall back to matching the account's running pods by
+    # the deterministic names in POD_CONFIGS.
+    known_ids = {p["pod_id"] for p in pods if p.get("pod_id")}
+    expected_names = {c["name"] for c in POD_CONFIGS}
+    orphans = [
+        p for p in get_running_pods()
+        if p.get("name") in expected_names and p.get("id") not in known_ids
+    ]
+    if orphans:
+        logger.warning(
+            "Found %d running pod(s) matching this run's names but absent from "
+            "the state file: %s", len(orphans),
+            [(p.get("id"), p.get("name")) for p in orphans],
+        )
+
+    targets = sorted(known_ids | {p["id"] for p in orphans})
+    if not targets:
+        logger.info("No pods from this run are running. Nothing to reap.")
+        POD_STATE_FILE.unlink(missing_ok=True)
         return
 
-    failed = terminate_pods([p["pod_id"] for p in pods if p.get("pod_id")])
-    if not failed:
-        POD_STATE_FILE.unlink(missing_ok=True)
-        logger.info("Reaped cleanly.")
+    if not confirm:
+        logger.warning("Dry run: would terminate %s. Re-run with --confirm.", targets)
+        return
+
+    failed = terminate_pods(targets)
+    if failed:
+        raise RuntimeError(
+            f"{len(failed)} pod(s) did not terminate and are still billing: {failed}"
+        )
+    POD_STATE_FILE.unlink(missing_ok=True)
+    logger.info("Reaped %d pod(s) cleanly.", len(targets))
 
 
 def full_pipeline(config_name: str = "phase1b_primary") -> None:
@@ -599,9 +669,11 @@ def full_pipeline(config_name: str = "phase1b_primary") -> None:
     # sequence. Any exception between the first and last call orphaned the
     # whole fleet, which then billed until someone noticed. The sibling
     # scripts/phase0/runpod_orchestrate.py already did this correctly.
-    provision()
     results_are_safe = False
     try:
+        # provision() was outside this try, so the stage with the highest
+        # orphan rate was the one the finally never covered.
+        provision()
         run_folds(config_name)
         uncollected = collect(config_name)
         if uncollected:
@@ -633,7 +705,14 @@ def full_pipeline(config_name: str = "phase1b_primary") -> None:
     aggregate(config_name)
 
 
-def main() -> None:
+def main() -> int:
+    """Return a non-zero exit code on failure.
+
+    Every action used to return 0 regardless. The recovery runbook this module
+    prints tells the operator to run `collect` and then `teardown`; with a
+    silent exit, a partially failed collect looked identical to a clean one and
+    the next command destroyed the pods holding the missing results.
+    """
     parser = argparse.ArgumentParser(description="Phase 1B RunPod parallel fold executor")
     parser.add_argument("action", nargs="?", default="full",
                         choices=["full", "provision", "run", "collect", "aggregate",
@@ -651,7 +730,13 @@ def main() -> None:
     elif args.action == "run":
         run_folds(args.config_name)
     elif args.action == "collect":
-        collect(args.config_name)
+        uncollected = collect(args.config_name)
+        if uncollected:
+            logger.error(
+                "Collection incomplete for %s. Do NOT tear down: those pods hold "
+                "the only copy of their fold.", uncollected,
+            )
+            return 1
     elif args.action == "aggregate":
         aggregate(args.config_name)
     elif args.action == "teardown":
@@ -664,7 +749,13 @@ def main() -> None:
             min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
         )
         _check_budget(gpu_type, len(POD_CONFIGS))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        sys.exit(main())
+    except Exception:
+        # Anything that reaches here left pods running or results uncollected.
+        logger.exception("FAILED. Check for running pods: reap --confirm")
+        sys.exit(1)

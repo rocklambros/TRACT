@@ -228,12 +228,24 @@ def run_single_fold(
     return result
 
 
-def load_fold_results(results_dir: Path) -> list[dict[str, Any]]:
+def load_fold_results(
+    results_dir: Path,
+    expected_frameworks: set[str] | None = None,
+) -> list[dict[str, Any]]:
     """Load every persisted per-fold record under results_dir.
 
     Sorted by held-out framework so aggregation is order-independent and
     therefore reproducible regardless of the order folds finished in.
+
+    Args:
+        expected_frameworks: The exact set of folds this run must contain.
+            Defaults to AI_FRAMEWORK_NAMES. A missing fold is not a smaller
+            result, it is a different experiment: "leave one framework out"
+            over four frameworks is not the claim being published.
     """
+    expected = set(
+        AI_FRAMEWORK_NAMES if expected_frameworks is None else expected_frameworks
+    )
     records = []
     for path in sorted(results_dir.glob(f"fold_*/{FOLD_RESULT_FILENAME}")):
         record = load_json(path)
@@ -250,11 +262,55 @@ def load_fold_results(results_dir: Path) -> list[dict[str, Any]]:
                 f"{record['n_eval_items']} eval items. The fold record is "
                 "internally inconsistent; refusing to aggregate it."
             )
+        zero_shot = record.get("zero_shot") or {}
+        zs_indicators = zero_shot.get("hit1_indicators")
+        if zs_indicators is not None and len(zs_indicators) != record["n_eval_items"]:
+            # Equal length is what makes the delta paired. A baseline array of
+            # the wrong length cannot be aligned item-for-item with the trained
+            # one, and a mis-paired delta gets a paired interval it has not
+            # earned.
+            raise ValueError(
+                f"{path}: {len(zs_indicators)} zero-shot indicators for "
+                f"{record['n_eval_items']} eval items. The baseline is not "
+                "paired with the trained run; refusing to aggregate it."
+            )
         records.append(record)
+
     if not records:
         raise ValueError(
             f"No {FOLD_RESULT_FILENAME} files under {results_dir}. Nothing to "
             "aggregate: either no fold completed or the results were not collected."
+        )
+
+    found = {r["held_out_framework"] for r in records}
+    if len(found) != len(records):
+        raise ValueError(
+            f"Duplicate folds under {results_dir}: {len(records)} records for "
+            f"{len(found)} frameworks."
+        )
+    if found != expected:
+        # Averaging whatever came back is how a four-fold number gets published
+        # as a five-fold LOFO result, with the pods that held the missing fold
+        # already terminated.
+        raise ValueError(
+            f"Fold set mismatch under {results_dir}. Missing: "
+            f"{sorted(expected - found) or 'none'}; unexpected: "
+            f"{sorted(found - expected) or 'none'}. Refusing to aggregate a "
+            "partial cross-validation into a headline number."
+        )
+
+    shas = {r.get("git_sha", "unknown") for r in records}
+    if len(shas) > 1:
+        raise ValueError(
+            f"Folds under {results_dir} were produced by different code: "
+            f"git_sha {sorted(shas)}. This is the signature of a stale "
+            f"{FOLD_RESULT_FILENAME} left from an earlier run. Clear the "
+            "directory and re-run, or aggregate the runs separately."
+        )
+    if shas == {"unknown"}:
+        logger.warning(
+            "Every fold records git_sha='unknown'; the aggregate cannot be tied "
+            "to a commit."
         )
     return records
 

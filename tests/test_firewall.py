@@ -286,6 +286,10 @@ class TestFirewallCanActuallyFail:
         the breach check was unreachable. Asking for the standards format without
         the sections that define it now fails loudly instead.
         """
+        # orchestrate pulls in torch and datasets; the rest of this file needs
+        # neither, so guard here rather than skipping the whole module.
+        pytest.importorskip("torch", reason="needs the phase0 extra")
+        pytest.importorskip("datasets", reason="needs the phase0 extra")
         from tract.training.config import TrainingConfig
         from tract.training.orchestrate import run_single_fold
 
@@ -339,6 +343,8 @@ class TestFirewallCanActuallyFail:
 
         The firewall runs before any training, so this needs no model.
         """
+        pytest.importorskip("torch", reason="needs the phase0 extra")
+        pytest.importorskip("datasets", reason="needs the phase0 extra")
         from tract.training import orchestrate as orch
         from tract.training.config import TrainingConfig
 

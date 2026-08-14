@@ -11,7 +11,11 @@ from __future__ import annotations
 
 import pytest
 
+# See tests/test_fold_aggregation.py: orchestrate pulls in torch and datasets,
+# and CI runs pytest with -x, so an unguarded import aborts the entire job.
 pytest.importorskip("numpy")
+pytest.importorskip("torch", reason="needs the phase0 extra")
+pytest.importorskip("datasets", reason="needs the phase0 extra")
 
 from tract.training.orchestrate import gate_decision
 

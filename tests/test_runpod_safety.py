@@ -60,7 +60,10 @@ class TestBudgetGate:
             budget = rp._check_budget("NVIDIA H100 80GB HBM3", 5)
         assert budget["usd_per_hour_per_pod"] == 3.0
         assert budget["fleet_usd_per_hour"] == 15.0
-        assert budget["worst_case_usd"] == pytest.approx(15.0 * rp.MAX_RUN_HOURS)
+        # Priced against the wall time the timeouts actually permit, not the
+        # declared cap: the gate was unreachable when priced on MAX_RUN_HOURS.
+        assert budget["worst_case_usd"] == pytest.approx(15.0 * budget["reachable_hours"])
+        assert budget["reachable_hours"] > rp.MAX_RUN_HOURS
         assert budget["worst_case_usd"] <= budget["budget_usd"]
 
     def test_unknown_price_is_not_treated_as_free(self) -> None:

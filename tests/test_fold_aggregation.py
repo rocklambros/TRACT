@@ -13,7 +13,13 @@ from pathlib import Path
 
 import pytest
 
+# orchestrate imports tract.training.data, which imports torch and datasets.
+# The default CI test job installs requirements.txt only, and it runs pytest
+# with -x, so an unguarded import here does not skip this file -- it aborts the
+# whole job at collection. Guard on what is actually imported, not on numpy.
 pytest.importorskip("numpy")
+pytest.importorskip("torch", reason="needs the phase0 extra")
+pytest.importorskip("datasets", reason="needs the phase0 extra")
 
 from tract.training.orchestrate import (
     FOLD_RESULT_FILENAME,
@@ -22,7 +28,13 @@ from tract.training.orchestrate import (
 )
 
 
-def _write_fold(root: Path, framework: str, indicators: list[int]) -> None:
+def _write_fold(
+    root: Path,
+    framework: str,
+    indicators: list[int],
+    git_sha: str = "abc1234",
+    zero_shot: list[int] | None = None,
+) -> None:
     fold_dir = root / f"fold_{framework.replace(' ', '_')}"
     fold_dir.mkdir(parents=True, exist_ok=True)
     record = {
@@ -32,7 +44,10 @@ def _write_fold(root: Path, framework: str, indicators: list[int]) -> None:
         "n_eval_items": len(indicators),
         "n_training_pairs": 100,
         "elapsed_s": 1.0,
+        "git_sha": git_sha,
     }
+    if zero_shot is not None:
+        record["zero_shot"] = {"hit1_indicators": zero_shot}
     (fold_dir / FOLD_RESULT_FILENAME).write_text(json.dumps(record), encoding="utf-8")
 
 
@@ -85,10 +100,55 @@ class TestLoadFoldResults:
         _write_fold(tmp_path, "OWASP Top10 for LLM", [1, 0, 1])
         _write_fold(tmp_path, "MITRE ATLAS", [1, 1])
 
-        records = load_fold_results(tmp_path)
+        records = load_fold_results(
+            tmp_path, expected_frameworks={"MITRE ATLAS", "OWASP Top10 for LLM"},
+        )
         assert [r["held_out_framework"] for r in records] == [
             "MITRE ATLAS", "OWASP Top10 for LLM",
         ]
+
+    def test_refuses_a_partial_cross_validation(self, tmp_path: Path) -> None:
+        """Four folds of five is a different experiment, not a smaller one.
+
+        A fold that OOMs leaves an empty directory that rsyncs cleanly, so the
+        aggregate would otherwise publish as LOFO with the pod that held the
+        missing fold already terminated.
+        """
+        _write_fold(tmp_path, "MITRE ATLAS", [1, 1])
+        _write_fold(tmp_path, "NIST AI 100-2", [1, 0])
+
+        with pytest.raises(ValueError, match="Fold set mismatch"):
+            load_fold_results(
+                tmp_path,
+                expected_frameworks={"MITRE ATLAS", "NIST AI 100-2", "OWASP AI Exchange"},
+            )
+
+    def test_refuses_folds_from_different_commits(self, tmp_path: Path) -> None:
+        """A stale fold_result.json from an earlier run must not aggregate.
+
+        collect() rsyncs without --delete into a directory that is never
+        cleaned, so a re-run of four folds leaves the fifth behind. Mixed
+        git_sha is that situation's fingerprint.
+        """
+        _write_fold(tmp_path, "MITRE ATLAS", [1, 1], git_sha="deadbee")
+        _write_fold(tmp_path, "NIST AI 100-2", [1, 1, 1, 1], git_sha="0ldsha1")
+
+        with pytest.raises(ValueError, match="produced by different code"):
+            load_fold_results(
+                tmp_path, expected_frameworks={"MITRE ATLAS", "NIST AI 100-2"},
+            )
+
+    def test_rejects_a_misaligned_zero_shot_baseline(self, tmp_path: Path) -> None:
+        """Equal length is what makes the delta paired.
+
+        A baseline of the wrong length cannot be aligned item-for-item, and a
+        mis-paired delta would be reported with a paired interval it has not
+        earned.
+        """
+        _write_fold(tmp_path, "MITRE ATLAS", [1, 1, 0], zero_shot=[1, 0])
+
+        with pytest.raises(ValueError, match="not paired"):
+            load_fold_results(tmp_path, expected_frameworks={"MITRE ATLAS"})
 
     def test_rejects_a_record_missing_indicators(self, tmp_path: Path) -> None:
         """This is the shape the old RunPod summary wrote."""
@@ -103,7 +163,7 @@ class TestLoadFoldResults:
             encoding="utf-8",
         )
         with pytest.raises(ValueError, match="hit1_indicators"):
-            load_fold_results(tmp_path)
+            load_fold_results(tmp_path, expected_frameworks={"MITRE ATLAS"})
 
     def test_rejects_inconsistent_indicator_count(self, tmp_path: Path) -> None:
         fold_dir = tmp_path / "fold_MITRE_ATLAS"
@@ -118,9 +178,9 @@ class TestLoadFoldResults:
             encoding="utf-8",
         )
         with pytest.raises(ValueError, match="internally inconsistent"):
-            load_fold_results(tmp_path)
+            load_fold_results(tmp_path, expected_frameworks={"MITRE ATLAS"})
 
     def test_refuses_to_aggregate_nothing(self, tmp_path: Path) -> None:
         """An empty results directory must not quietly produce a number."""
         with pytest.raises(ValueError, match="Nothing to aggregate"):
-            load_fold_results(tmp_path)
+            load_fold_results(tmp_path, expected_frameworks={"MITRE ATLAS"})

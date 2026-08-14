@@ -90,3 +90,49 @@ jobs:
       # ">=0.24,<1" range resolved to. A range is not a pin.
       - run: pip install pytest==9.0.3 huggingface_hub==0.36.2 -e .
       - run: python -m pytest tests/test_model_pins_consistency.py -m integration -q
+
+  # The `test` job installs requirements.txt, which carries none of the ML
+  # stack, so every training test skips there. That left the LoRA save/reload
+  # regression -- the one guarding a defect that silently shipped a checkpoint
+  # scoring at chance -- as documentation rather than enforcement. This job
+  # installs the pinned training stack and runs those tests for real. The
+  # regression tests use all-MiniLM-L6-v2 (~90MB), not BGE-large.
+  training-stack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install the pinned training stack
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt -r requirements-train.txt
+          pip install -e . pytest pytest-timeout
+      - name: Assert the pins actually resolved
+        run: |
+          python - <<'PY'
+          import torch, transformers, sentence_transformers, peft, tokenizers
+          expected = {
+              "torch": ("2.13.0", torch.__version__.split("+")[0]),
+              "transformers": ("4.57.6", transformers.__version__),
+              "sentence-transformers": ("5.7.0", sentence_transformers.__version__),
+              "peft": ("0.20.0", peft.__version__),
+              "tokenizers": ("0.22.2", tokenizers.__version__),
+          }
+          bad = {k: v for k, (want, got) in expected.items() if (v := got) != want}
+          if bad:
+              raise SystemExit(f"pins did not resolve: {bad}")
+          print("pinned stack verified:", {k: g for k, (_, g) in expected.items()})
+          PY
+      - name: Run the training regression tests
+        env:
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          python -m pytest tests/test_training_loop.py tests/test_firewall.py \
+            tests/test_fold_aggregation.py tests/test_gate_decision.py \
+            tests/test_runpod_safety.py tests/test_publish_merge.py \
+            -q --timeout=900 -m "not integration"
