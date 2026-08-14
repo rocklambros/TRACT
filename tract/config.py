@@ -184,6 +184,27 @@ PHASE1B_BOOTSTRAP_CI_LEVEL: Final[float] = 0.95
 
 PHASE1B_BH_FDR_Q: Final[float] = 0.10
 
+# ── Framework name reconciliation ─────────────────────────────────────
+# hub_links_curated.jsonl carries the standard_name OpenCRE uses; the parsed
+# corpus carries the name the framework calls itself. Where they disagree, a
+# control's prose cannot be joined to its own link and the pipeline silently
+# falls back to the section title. Maps the link-side spelling to the
+# control-side one. Keyed and compared case-insensitively after whitespace
+# collapse; this table only needs the cases that differ by more than that.
+FRAMEWORK_NAME_ALIASES: Final[dict[str, str]] = {
+    "nist 800-53 v5": "NIST 800-53",
+    "devsecops maturity model (dsomm)": "DSOMM",
+    "owasp web security testing guide (wstg)": "WSTG",
+    "owasp top10 for llm": "OWASP Top 10 for LLM Applications 2025",
+    "owasp top10 for ml": "OWASP Top10 for ML",
+    "owasp top10 for agentic ai": "OWASP Top 10 for Agentic Applications 2026",
+}
+
+# A control's description counts as prose only when it carries meaningfully more
+# than its own title. Nineteen frameworks arrive from OpenCRE with description
+# set to the title verbatim, and those must not be mistaken for full text.
+PROSE_MIN_EXTRA_CHARS: Final[int] = 20
+
 PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70
