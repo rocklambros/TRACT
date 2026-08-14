@@ -28,6 +28,7 @@ def build_firewalled_hub_text(
     descriptions: dict[str, str] | None = None,
     include_standards: bool = False,
     standard_sections: dict[str, list[str]] | None = None,
+    stopwords: frozenset[str] | None = None,
 ) -> str:
     """Build a single hub's text representation with firewall.
 
@@ -36,6 +37,11 @@ def build_firewalled_hub_text(
     If include_description=True (ablation A6): appends description.
     If include_standards=True (ablation A3): appends standard names,
     excluding the held-out framework.
+
+    stopwords, when given, must be the same set applied to control text.
+    assert_firewall compares the two by exact substring, so filtering one side
+    only would make a genuine leak unmatchable and the check would pass on a
+    breach.
     """
     node = hierarchy.hubs[hub_id]
     text = f"{node.hierarchy_path} | {node.name}"
@@ -52,6 +58,11 @@ def build_firewalled_hub_text(
         if sections:
             text = f"{text}. Standards: {', '.join(sorted(sections))}"
 
+    if stopwords:
+        from tract.stopwords import filter_stopwords
+
+        text = filter_stopwords(text, stopwords)
+
     return text
 
 
@@ -62,6 +73,7 @@ def build_all_hub_texts(
     descriptions: dict[str, str] | None = None,
     include_standards: bool = False,
     standard_sections: dict[str, list[str]] | None = None,
+    stopwords: frozenset[str] | None = None,
 ) -> dict[str, str]:
     """Build text representations for all hubs with firewall applied."""
     texts: dict[str, str] = {}
@@ -74,6 +86,7 @@ def build_all_hub_texts(
             descriptions,
             include_standards,
             standard_sections,
+            stopwords,
         )
     return texts
 

@@ -54,6 +54,19 @@ class TrainingConfig:
     hub_rep_format: str = "path+name"
     data_hash: str = ""
 
+    # Text-selection arms. Both are recorded in to_dict(), so a run's anchors
+    # can be reconstructed from its checkpoint metadata rather than inferred.
+    #
+    # use_prose: take each control's full text instead of its section title.
+    # The pipeline read section_name unconditionally, training on three-word
+    # titles while production is handed paragraphs.
+    use_prose: bool = True
+    # use_stopword_filter: strip corpus-derived boilerplate from control AND
+    # hub text. Off by default and carried as an ablation arm: removing
+    # function words moves input off the distribution a contextual encoder was
+    # pretrained on, so the trade has to be measured rather than assumed.
+    use_stopword_filter: bool = False
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize for WandB/JSON logging."""
         return {
@@ -77,5 +90,7 @@ class TrainingConfig:
             "hard_negatives": self.hard_negatives,
             "seed": self.seed,
             "hub_rep_format": self.hub_rep_format,
+            "use_prose": self.use_prose,
+            "use_stopword_filter": self.use_stopword_filter,
             "data_hash": self.data_hash,
         }

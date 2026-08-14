@@ -6,6 +6,8 @@ and a word that names a CRE hub is never treated as boilerplate.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import pytest
 
 from tract.stopwords import (
@@ -211,3 +213,121 @@ class TestCommittedStopwordList:
         assert len(words) > 10
         assert not (words & PROTECTED_WORDS), "a protected word reached the list"
         assert all(len(w) >= 3 for w in words)
+
+
+class TestArmIdentityInvariant:
+    """The property every arm comparison depends on.
+
+    build_evaluation_corpus de-duplicates on control text, so building it once
+    per arm lets the anchor decide how many items exist. Substituting prose
+    collapsed 147 items to 144, because several NIST AI 100-2 sections share
+    wording once expanded and three distinct items became one. Arms measured
+    over different item sets cannot be compared, and paired_bootstrap_delta
+    raises outright on unequal per-fold lengths.
+
+    apply_prose_to_corpus fixes identity first and swaps text second.
+    """
+
+    @dataclass
+    class Item:
+        control_text: str
+        ground_truth_hub_id: str
+        valid_hub_ids: frozenset
+        ground_truth_hub_name: str
+        framework_name: str
+        section_id: str
+        track: str
+
+    def _corpus(self):
+        return [
+            self.Item("Data Poisoning", "h1", frozenset({"h1"}), "Poisoning",
+                      "MITRE ATLAS", "AML.T0001", "all"),
+            self.Item("Model Exfiltration", "h2", frozenset({"h2"}), "Exfil",
+                      "MITRE ATLAS", "AML.T0002", "all"),
+            self.Item("Prompt Injection", "h3", frozenset({"h3"}), "Injection",
+                      "OWASP Top10 for LLM", "LLM01:2025", "all"),
+        ]
+
+    def test_item_count_and_identity_survive_substitution(self) -> None:
+        from tract.text_selection import ProseIndex, apply_prose_to_corpus
+
+        index = ProseIndex(CONTROLS)
+        before = self._corpus()
+        after = apply_prose_to_corpus(before, index)
+
+        assert len(after) == len(before)
+        assert [i.section_id for i in after] == [i.section_id for i in before]
+        assert [i.ground_truth_hub_id for i in after] == [
+            i.ground_truth_hub_id for i in before
+        ]
+
+    def test_two_items_sharing_prose_do_not_collapse(self) -> None:
+        """The exact failure: distinct items whose prose happens to match."""
+        from tract.text_selection import ProseIndex, apply_prose_to_corpus
+
+        shared = "The same paragraph describes both of these sections."
+        index = ProseIndex([{
+            "framework_name": "NIST AI 100-2",
+            "controls": [
+                {"control_id": "2.2", "title": "Alpha", "description": shared},
+                {"control_id": "2.3", "title": "Beta", "description": shared},
+            ],
+        }])
+        corpus = [
+            self.Item("Alpha", "h1", frozenset({"h1"}), "A", "NIST AI 100-2", "2.2", "all"),
+            self.Item("Beta", "h2", frozenset({"h2"}), "B", "NIST AI 100-2", "2.3", "all"),
+        ]
+        after = apply_prose_to_corpus(corpus, index)
+
+        assert len(after) == 2, "identical prose must not merge two eval items"
+        assert after[0].control_text == after[1].control_text
+        assert after[0].ground_truth_hub_id != after[1].ground_truth_hub_id
+
+    def test_no_index_is_a_passthrough(self) -> None:
+        from tract.text_selection import apply_prose_to_corpus
+
+        before = self._corpus()
+        assert apply_prose_to_corpus(before, None) is before
+
+    def test_items_without_prose_keep_their_title(self) -> None:
+        from tract.text_selection import ProseIndex, apply_prose_to_corpus
+
+        index = ProseIndex(CONTROLS)
+        after = apply_prose_to_corpus(self._corpus(), index)
+        exfil = next(i for i in after if i.section_id == "AML.T0002")
+        # description restates the title, so it is not prose
+        assert exfil.control_text == "Model Exfiltration"
+        assert exfil.track == "all"
+
+    def test_stopword_arm_preserves_identity_too(self) -> None:
+        from tract.text_selection import ProseIndex, apply_prose_to_corpus
+
+        index = ProseIndex(CONTROLS)
+        plain = apply_prose_to_corpus(self._corpus(), index)
+        filtered = apply_prose_to_corpus(self._corpus(), index, frozenset({"the", "a"}))
+        assert [i.section_id for i in plain] == [i.section_id for i in filtered]
+        assert len(plain) == len(filtered)
+
+
+class TestLookupPrecedence:
+
+    def test_section_name_wins_over_a_coarser_section_id(self) -> None:
+        """NIST links three techniques under one Mitigations section id.
+
+        Resolving by id first handed all three the same paragraph.
+        """
+        from tract.text_selection import ProseIndex
+
+        index = ProseIndex([{
+            "framework_name": "NIST AI 100-2",
+            "controls": [
+                {"control_id": "2.2.4", "title": "Mitigations",
+                 "description": "A general discussion of evasion mitigations, at length."},
+                {"control_id": "technique:adversarial_training",
+                 "title": "Adversarial training",
+                 "description": "Introduced by Goodfellow et al., training on adversarial examples."},
+            ],
+        }])
+        hit = index.lookup("NIST AI 100-2", "2.2.4", "Adversarial training")
+        assert hit is not None
+        assert "Goodfellow" in hit.text, "the specific name must beat the coarser id"

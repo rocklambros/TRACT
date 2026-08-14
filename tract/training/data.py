@@ -20,6 +20,7 @@ from datasets import Dataset
 from sentence_transformers.sampler import DefaultBatchSampler
 
 from tract.hierarchy import CREHierarchy
+from tract.text_selection import ProseIndex, SelectionStats, select_control_text
 from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
@@ -83,6 +84,8 @@ def build_training_pairs(
     tiered_links: list[TieredLink],
     hub_texts: dict[str, str],
     excluded_framework: str | None = None,
+    prose_index: ProseIndex | None = None,
+    stopwords: frozenset[str] | None = None,
 ) -> list[TrainingPair]:
     """Build TrainingPair objects from filtered links, deduplicated per text+hub.
 
@@ -96,9 +99,16 @@ def build_training_pairs(
         tiered_links: Quality-filtered links with tier metadata.
         hub_texts: Firewalled hub text representations.
         excluded_framework: Framework to exclude (the LOFO held-out framework).
+        prose_index: When given, each anchor is the control's full text rather
+            than its section title. The pipeline previously took section_name
+            unconditionally, which trains on three-word titles while production
+            is handed paragraphs.
+        stopwords: When given, low-information words are filtered from anchors.
+            The same set must be applied to hub_texts by the caller.
     """
     raw_pairs: list[TrainingPair] = []
     skipped = 0
+    selection_stats = SelectionStats()
 
     for tiered in tiered_links:
         link = tiered.link
@@ -107,7 +117,18 @@ def build_training_pairs(
         if excluded_framework and standard_name == excluded_framework:
             continue
 
-        control_text = link.get("section_name") or link.get("section_id", "")
+        try:
+            control_text = select_control_text(
+                prose_index,
+                standard_name,
+                link.get("section_id"),
+                link.get("section_name"),
+                stats=selection_stats,
+                stopwords=stopwords,
+            ).text
+        except ValueError:
+            skipped += 1
+            continue
         if not control_text or len(control_text) < 3:
             skipped += 1
             continue
@@ -129,6 +150,7 @@ def build_training_pairs(
 
     if skipped:
         logger.info("Skipped %d links (empty text or missing hub)", skipped)
+    selection_stats.log_summary("Training anchors")
 
     pair_groups: dict[tuple[str, str], list[TrainingPair]] = defaultdict(list)
     for pair in raw_pairs:

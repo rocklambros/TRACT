@@ -43,6 +43,8 @@ from tract.training.evaluate import (
     fold_stratified_bootstrap_ci,
     paired_bootstrap_delta,
 )
+from tract.stopwords import load_stopwords
+from tract.text_selection import ProseIndex, apply_prose_to_corpus
 from tract.training.firewall import assert_firewall, build_all_hub_texts
 from tract.training.loop import save_checkpoint, train_model
 from tract.training.data_quality import TieredLink
@@ -120,6 +122,13 @@ def run_single_fold(
             "the firewall would have nothing to check"
         )
 
+    # Both sides of the comparison get the same treatment. assert_firewall
+    # matches control text against hub text by exact substring, so filtering one
+    # and not the other would make a real leak unmatchable and the check would
+    # pass on a breach.
+    stopwords = load_stopwords() if config.use_stopword_filter else None
+    prose_index = ProseIndex.load() if config.use_prose else None
+
     hub_texts = build_all_hub_texts(
         hierarchy,
         excluded_framework=held_out_framework,
@@ -127,6 +136,7 @@ def run_single_fold(
         descriptions=descriptions,
         include_standards=include_standards,
         standard_sections=standard_sections,
+        stopwords=stopwords,
     )
 
     # Any augmentation makes the appended slice the leakage surface, so build the
@@ -143,10 +153,14 @@ def run_single_fold(
             excluded_framework=held_out_framework,
             include_description=False,
             include_standards=False,
+            stopwords=stopwords,
         )
     assert_firewall(hub_texts, eval_items, held_out_framework, base_hub_texts)
 
-    pairs = build_training_pairs(tiered_links, hub_texts, excluded_framework=held_out_framework)
+    pairs = build_training_pairs(
+        tiered_links, hub_texts, excluded_framework=held_out_framework,
+        prose_index=prose_index, stopwords=stopwords,
+    )
     dataset = pairs_to_dataset(pairs, hierarchy, hub_texts, n_hard_negatives=config.hard_negatives)
 
     fold_output = output_dir / f"fold_{held_out_framework.replace(' ', '_')}"
@@ -474,7 +488,15 @@ def run_experiment(
     hub_ids = sorted(hierarchy.hubs.keys())
 
     links = load_curated_links()
+    # Corpus identity is fixed from titles, then anchors are swapped. See
+    # apply_prose_to_corpus: building per arm lets the anchor change the item
+    # count, which breaks the paired delta.
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {})
+    corpus = apply_prose_to_corpus(
+        corpus,
+        ProseIndex.load() if config.use_prose else None,
+        load_stopwords() if config.use_stopword_filter else None,
+    )
 
     eval_by_fw: dict[str, list[EvalItem]] = {}
     for item in corpus:

@@ -18,7 +18,7 @@ import re
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Iterable, Literal
 
 from tract.config import (
     FRAMEWORK_NAME_ALIASES,
@@ -164,13 +164,27 @@ class ProseIndex:
     def lookup(
         self, framework: str, section_id: str | None, section_name: str | None,
     ) -> TextSelection | None:
+        """Resolve a link to its control's prose. Title first, then id.
+
+        The order matters and is not arbitrary. A link's section_id is
+        sometimes coarser than the thing it links: NIST AI 100-2 links
+        "Adversarial training", "Formal verification" and "Randomized
+        smoothing" all carry the section id of the Mitigations subsection that
+        contains them. Resolving by id first handed all three the same
+        paragraph, and because the eval corpus de-duplicates on control text,
+        three distinct eval items silently collapsed into one.
+
+        The section name identifies the specific item, so it is tried first. An
+        id lookup remains the fallback for frameworks whose links carry no
+        usable name.
+        """
         canonical = canonical_framework(framework)
-        if section_id:
-            hit = self._by_id.get((canonical, str(section_id).strip()))
-            if hit:
-                return hit
         if section_name:
             hit = self._by_title.get((canonical, str(section_name).strip().lower()))
+            if hit:
+                return hit
+        if section_id:
+            hit = self._by_id.get((canonical, str(section_id).strip()))
             if hit:
                 return hit
         return None
@@ -182,6 +196,7 @@ def select_control_text(
     section_id: str | None,
     section_name: str | None,
     stats: SelectionStats | None = None,
+    stopwords: frozenset[str] | None = None,
 ) -> TextSelection:
     """Choose the richest available text for one control.
 
@@ -189,6 +204,13 @@ def select_control_text(
     a restatement of the title, then the section title. Raises when there is no
     text at all, rather than returning an empty anchor that would train on
     nothing.
+
+    Args:
+        stopwords: When given, low-information words are filtered from the
+            chosen text. Callers must apply the same set to hub texts: the
+            firewall compares control text against hub text by exact substring,
+            so filtering one side and not the other would make a real leak
+            unmatchable.
     """
     selection = index.lookup(framework, section_id, section_name) if index else None
     if selection is None:
@@ -200,6 +222,129 @@ def select_control_text(
             )
         selection = TextSelection(fallback, "title")
 
+    if stopwords:
+        from tract.stopwords import filter_stopwords
+
+        selection = TextSelection(
+            filter_stopwords(selection.text, stopwords), selection.source,
+        )
+
     if stats is not None:
         stats.record(canonical_framework(framework), selection)
     return selection
+
+
+def build_parsed_controls(
+    links: Iterable[Any],
+    index: ProseIndex | None = None,
+    stopwords: frozenset[str] | None = None,
+) -> dict[tuple[str, str], str]:
+    """Map (framework, section_id) to prose, in the shape the eval corpus wants.
+
+    scripts/phase0/common.build_evaluation_corpus already accepts exactly this
+    dict and prefers it over the section title. Every Phase 1B caller was
+    passing an empty one, which is why the evaluation measured three-word
+    titles while production is handed paragraphs. Supplying it is the whole
+    change; the corpus builder needed no edit.
+
+    Only entries with real prose are returned. A title would round-trip to the
+    same fallback the corpus builder already applies, and including it would
+    make the "full-text" track it reports meaningless.
+    """
+    resolved: dict[tuple[str, str], str] = {}
+    if index is None:
+        return resolved
+
+    # A section_id is not always unique per linked item. NIST AI 100-2 links
+    # "Adversarial training", "Formal verification" and "Randomized smoothing"
+    # under the id of the Mitigations subsection that contains all three, so
+    # keying on section_id alone would give all three whichever text won.
+    #
+    # Prefer apply_prose_to_corpus for evaluation. This function feeds
+    # build_evaluation_corpus, which de-duplicates on control text and so can
+    # change the item count when the anchor changes.
+    candidates: dict[tuple[str, str], set[str]] = {}
+    for link in links:
+        framework = getattr(link, "standard_name", None) or ""
+        section_id = getattr(link, "section_id", None)
+        section_name = getattr(link, "section_name", None)
+        if not framework or section_id is None:
+            continue
+
+        selection = index.lookup(framework, section_id, section_name)
+        if selection is None:
+            continue
+        text = selection.text
+        if stopwords:
+            from tract.stopwords import filter_stopwords
+
+            text = filter_stopwords(text, stopwords)
+        candidates.setdefault((framework, str(section_id)), set()).add(text)
+
+    ambiguous = 0
+    for key, texts in candidates.items():
+        if len(texts) == 1:
+            resolved[key] = next(iter(texts))
+        else:
+            ambiguous += 1
+
+    logger.info(
+        "Prose available for %d link sections (%d dropped: one section id, "
+        "several distinct controls)", len(resolved), ambiguous,
+    )
+    return resolved
+
+
+def apply_prose_to_corpus(
+    corpus: list[Any],
+    index: ProseIndex | None,
+    stopwords: frozenset[str] | None = None,
+    stats: SelectionStats | None = None,
+) -> list[Any]:
+    """Swap each eval item's anchor for its control's prose, in place of nothing else.
+
+    The item set is decided before this runs and is not touched: same items,
+    same order, same ground truth, same valid hub sets. Only control_text
+    changes.
+
+    That property is the whole point. build_evaluation_corpus de-duplicates on
+    control text, so building the corpus separately per arm lets the anchor
+    decide how many items exist: substituting prose collapsed 147 items to 144
+    because several NIST sections share wording once expanded. Comparing arms
+    over different item sets is not a paired comparison, and paired_bootstrap_delta
+    requires equal per-fold lengths to run at all.
+
+    So the corpus is built once from titles, which fixes identity, and the text
+    is swapped afterwards.
+    """
+    if index is None:
+        return corpus
+
+    from dataclasses import replace
+
+    updated: list[Any] = []
+    for item in corpus:
+        selection = index.lookup(
+            item.framework_name, item.section_id, item.control_text,
+        )
+        if selection is None:
+            if stats is not None:
+                stats.record(
+                    canonical_framework(item.framework_name),
+                    TextSelection(item.control_text, "title"),
+                )
+            updated.append(item)
+            continue
+
+        text = selection.text
+        if stopwords:
+            from tract.stopwords import filter_stopwords
+
+            text = filter_stopwords(text, stopwords)
+        if stats is not None:
+            stats.record(canonical_framework(item.framework_name),
+                         TextSelection(text, selection.source))
+        # track is part of the record the evaluation reports, so keep it honest.
+        updated.append(replace(item, control_text=text, track="full-text"))
+
+    return updated
