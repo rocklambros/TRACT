@@ -1,0 +1,49 @@
+# Pinned model training and serving stack (the `phase0` extra, made exact).
+#
+# Why this file exists: torch, transformers, sentence-transformers,
+# scikit-learn, scipy, datasets, einops and peft were pinned nowhere. The
+# published model is fetched by revision with sha256 verification, so the
+# weights are reproducible, but the runtime that interprets them was whatever
+# pip resolved on the day. Two people could get different embeddings, and so
+# different hit@1, from the same verified weights.
+#
+# PROVENANCE OF THE ENCODER PINS
+# These are not "whatever resolves today". They are the versions the published
+# model records for itself, read from
+# huggingface.co/rockCO78/tract-cre-assignment/config_sentence_transformers.json:
+#
+#     "sentence_transformers": "5.3.0"
+#     "transformers":          "4.49.0"
+#     "pytorch":               "2.8.0a0+gitba56102"
+#
+# config.json agrees on transformers 4.49.0.
+#
+# CAVEAT ON TORCH: the recorded build is a nightly compiled from git commit
+# ba56102, not a PyPI release, so it cannot be pinned exactly. 2.8.0 is the
+# matching stable release and the closest honest approximation. Anyone
+# re-deriving the published metrics should expect that difference to be the
+# largest single source of numerical drift.
+#
+# The remaining pins (scipy, scikit-learn, datasets, einops, peft) are not
+# recorded anywhere in the artifact. They serve calibration, clustering and
+# training rather than the encoder, so they are pinned at the versions the
+# declared ranges resolve to as of 2026-08-14, and are labelled as such.
+#
+# Install:  pip install -r requirements.txt -r requirements-ml.txt
+-c requirements.txt
+
+# --- Encoder stack: versions recorded inside the published model ---
+torch==2.8.0
+transformers==4.49.0
+sentence-transformers==5.3.0
+
+# --- Training and analysis: resolved 2026-08-14, not artifact-recorded ---
+# peft is imported by tract/training/loop.py and scripts/phase1b/alpha.py but
+# was previously declared in no dependency list at all, so a clean
+# `pip install -e '.[phase0]'` produced a training environment that failed on
+# import.
+peft==0.20.0
+scipy==1.18.0
+scikit-learn==1.9.0
+datasets==3.6.0
+einops==0.8.2

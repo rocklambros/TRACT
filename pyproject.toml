@@ -38,6 +38,10 @@ phase0 = [
     "scikit-learn>=1.4,<2",
     "datasets>=2.18,<4",
     "einops>=0.7,<1",
+    # Imported by tract/training/loop.py and scripts/phase1b/alpha.py. Absent
+    # from this list until now, so the extra never installed a working
+    # training environment.
+    "peft>=0.10,<1",
 ]
 
 [project.scripts]
