@@ -32,7 +32,13 @@ class CosaiParser(BaseParser):
     def parse(self) -> list[Control]:
         controls: list[Control] = []
 
-        with open(self.raw_dir / "controls.yaml", encoding="utf-8") as f:
+        # The CoSAI checkout keeps its taxonomy under risk-map/, matching the
+        # upstream repo layout recorded in SOURCE_MANIFEST.md. Reading from the
+        # framework root found nothing, so this parser could not run against a
+        # faithful copy of its own source.
+        risk_map = self.raw_dir / "risk-map"
+
+        with open(risk_map / "controls.yaml", encoding="utf-8") as f:
             ctrl_data = yaml.safe_load(f)
         for ctrl in ctrl_data.get("controls", []):
             description = _flatten_yaml_text(ctrl.get("description", ""))
@@ -48,7 +54,7 @@ class CosaiParser(BaseParser):
                 },
             ))
 
-        with open(self.raw_dir / "risks.yaml", encoding="utf-8") as f:
+        with open(risk_map / "risks.yaml", encoding="utf-8") as f:
             risk_data = yaml.safe_load(f)
         for risk in risk_data.get("risks", []):
             description = _flatten_yaml_text(risk.get("shortDescription", ""))

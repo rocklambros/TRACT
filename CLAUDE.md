@@ -41,6 +41,29 @@ You are a senior data scientist and ML engineer building production-grade resear
 - **Calibration.** Raw model outputs are cosine similarities, not probabilities. Always calibrate (temperature/Platt scaling) before reporting confidence scores.
 - **Model architecture.** BGE-large-v1.5 bi-encoder with contrastive fine-tuning. Phase 0 proved: DeBERTa-v3-NLI fails completely (hit@1=0.000); hierarchy paths help (+7.6%); descriptions hurt zero-shot. Do not use classification heads, NLI models, or RoBERTa — these are old-project patterns.
 
+## Standing Rules
+
+**All inference and training runs on RunPod. Never locally.** This Mac is the
+owner's daily driver and its resources are not available. That covers model
+loading, embedding, fine-tuning, evaluation, and calibration sweeps. Writing
+code, running unit tests that do not load a model, linting, and type checking
+are fine locally. Anything that would allocate a model goes to a pod. CI runs
+on GitHub runners, which is not this machine and is allowed.
+
+**Consider all available prose, always.** Prefer a control's full text over its
+title everywhere text is selected, for training anchors and eval items alike.
+Falling back to `section_name` is a last resort, not a default, and any fallback
+is logged and counted. `data/processed/all_controls.json` is the source of
+prose; join to it before reaching for the title.
+
+**Stop word removal.** Filter common low-information words from control and hub
+text during processing so the model sees the distinctive terms. The list is
+generated from this corpus rather than borrowed, so it reflects actual security
+boilerplate ("shall", "system", "ensure") and not just English function words.
+Implemented as a toggle and measured as an ablation arm, because removing
+function words moves input off the distribution a contextual encoder was
+pretrained on and that trade has to be shown, not assumed.
+
 ## Core Constraint
 
 Assignment paradigm only: `g(control_text) -> CRE_position`. NEVER pairwise `f(A,B) -> relationship`. If you find yourself comparing two controls directly, you're doing it wrong — map each to CRE hubs independently.
@@ -57,7 +80,7 @@ Assignment paradigm only: `g(control_text) -> CRE_position`. NEVER pairwise `f(A
 
 ## Operational
 
-- **Old project:** `/home/rock/github_projects/ai-security-framework-crosswalk/` — data source only, no runtime dependencies
+- **Old project:** `~/github_projects/ai-security-framework-crosswalk/` — data source only, no runtime dependencies. Written relative to home on purpose: the absolute path here used to be the Jetson's, under a different account, and resolved on no other machine. Use `~` for any path under a home directory.
 - **Credentials:** `pass` password manager (not .env). `pass huggingface/token`, `pass runpod/api-key`, `pass wandb/api-key`
 - **OpenCRE API:** Paginated JSON. Retry with exponential backoff. Endpoint changed from /rest/v1/all to /rest/v1/all_cres (the old one returns HTML now).
 

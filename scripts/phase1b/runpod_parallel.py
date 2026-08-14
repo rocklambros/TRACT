@@ -83,7 +83,7 @@ DOCKER_IMAGE: Final[str] = (
 )
 
 # Budget controls. The $1000 ceiling was prose; these make it a gate.
-BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "1000"))
+BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "2000"))
 # Refuse a part whose rate would burn the budget faster than the run can finish.
 MAX_USD_PER_HOUR_PER_POD: Final[float] = float(
     os.environ.get("TRACT_RUNPOD_MAX_HOURLY", "12")

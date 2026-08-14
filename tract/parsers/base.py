@@ -47,6 +47,40 @@ class BaseParser(ABC):
     source_url: ClassVar[str]
     mapping_unit_level: ClassVar[str]
     expected_count: ClassVar[int]
+    # Set only when the raw directory is not the framework_id in either
+    # underscore or hyphen form. Kept explicit rather than guessed.
+    raw_dir_name: ClassVar[str | None] = None
+
+    @classmethod
+    def resolve_raw_dir(cls) -> Path:
+        """Locate this framework's raw directory.
+
+        framework_id uses underscores; the raw tree, which is copied from the
+        upstream project, uses hyphens. Eleven of the twelve parsers could not
+        find their own input after a restore because of that alone. Try the
+        declared name, then both separator conventions, and fail with the list
+        of what was tried rather than with a bare FileNotFoundError from
+        whichever read happens first inside parse().
+        """
+        candidates = []
+        if cls.raw_dir_name:
+            candidates.append(cls.raw_dir_name)
+        candidates += [cls.framework_id, cls.framework_id.replace("_", "-")]
+
+        seen: list[Path] = []
+        for name in candidates:
+            path = RAW_FRAMEWORKS_DIR / name
+            if path not in seen:
+                seen.append(path)
+            if path.is_dir():
+                return path
+
+        raise FileNotFoundError(
+            f"No raw directory for {cls.framework_id}. Tried: "
+            f"{[str(p) for p in seen]}. data/raw/ is gitignored, so a fresh "
+            f"checkout starts empty; repopulate it from the source recorded in "
+            f"data/raw/PROVENANCE.txt."
+        )
 
     def __init__(
         self,
@@ -57,12 +91,24 @@ class BaseParser(ABC):
 
         Args:
             raw_dir: Directory containing raw framework files.
-                Defaults to DATA_DIR/raw/frameworks/<framework_id>.
+                Defaults to the resolved DATA_DIR/raw/frameworks/<framework>.
             output_dir: Directory for processed output.
                 Defaults to DATA_DIR/processed/frameworks.
         """
-        self.raw_dir = raw_dir or RAW_FRAMEWORKS_DIR / self.framework_id
+        self._raw_dir: Path | None = raw_dir
         self.output_dir = output_dir or PROCESSED_FRAMEWORKS_DIR
+
+    @property
+    def raw_dir(self) -> Path:
+        """The framework's raw directory, resolved on first use.
+
+        Lazy on purpose. Constructing a parser must not require the raw tree to
+        be present, since data/raw/ is gitignored and plenty of callers only
+        want the class metadata.
+        """
+        if self._raw_dir is None:
+            self._raw_dir = self.resolve_raw_dir()
+        return self._raw_dir
 
     @abstractmethod
     def parse(self) -> list[Control]:

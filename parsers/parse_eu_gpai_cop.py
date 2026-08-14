@@ -23,6 +23,8 @@ CHAPTER_PREFIX: dict[str, str] = {
 
 class EuGpaiCopParser(BaseParser):
     framework_id = "eu_gpai_cop"
+    # The raw tree spells this one out in full.
+    raw_dir_name = "eu-gpai-code-of-practice"
     framework_name = "EU GPAI Code of Practice"
     version = "2025"
     source_url = "https://digital-strategy.ec.europa.eu/en/policies/ai-pact"
