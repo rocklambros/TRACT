@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -80,7 +81,29 @@ def _free_gpu_memory() -> None:
         pass
 
 
+# The flags that make one arm different from another. load_fold_results
+# refuses to aggregate across them.
+ARM_DEFINING_KEYS: tuple[str, ...] = (
+    "use_prose",
+    "use_stopword_filter",
+    "use_description_only",
+)
+
+
 def _get_git_sha() -> str:
+    """Short SHA of the code that produced this fold.
+
+    Prefers TRACT_GIT_SHA. The orchestrator rsyncs the working tree to each
+    pod with --exclude=.git, so `git rev-parse` there has no repository to
+    read and returned "unknown" for every fold of every RunPod run. That made
+    the whole fleet agree on "unknown", which load_fold_results treats as a
+    warning rather than a mismatch, so the stale-fold check was dead on the
+    only path that spends money. The orchestrator knows the SHA of the tree it
+    shipped and passes it in.
+    """
+    injected = os.environ.get("TRACT_GIT_SHA", "").strip()
+    if injected:
+        return injected
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
@@ -389,17 +412,20 @@ def load_fold_results(
             "partial cross-validation into a headline number."
         )
 
+    # Every flag that defines an arm belongs here. This listed two of them
+    # while the campaign runs four arms, so prose and prose-desconly both
+    # hashed to (True, False) and would have aggregated into a single number
+    # describing neither. Derived from a named tuple of keys so adding a fifth
+    # arm flag without extending the guard is a visible omission rather than a
+    # silent one.
     arms = {
-        (
-            r.get("config", {}).get("use_prose"),
-            r.get("config", {}).get("use_stopword_filter"),
-        )
+        tuple(r.get("config", {}).get(key) for key in ARM_DEFINING_KEYS)
         for r in records
     }
     if len(arms) > 1:
         raise ValueError(
             f"Folds under {results_dir} come from different arms: "
-            f"(use_prose, use_stopword_filter) = {sorted(arms)}. The arms "
+            f"{ARM_DEFINING_KEYS} = {sorted(arms)}. The arms "
             "differ by a runtime flag on one commit, so the git_sha check "
             "below cannot separate them. Aggregating them would produce a "
             "number describing no single configuration."

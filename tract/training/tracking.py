@@ -17,6 +17,7 @@ Owner: TRACT. See PRD Section 6.4.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import subprocess
@@ -83,29 +84,47 @@ def resolve_api_key() -> str:
 WANDB_KEY_LENGTH = 40
 
 
+def stable_run_id(*parts: str) -> str:
+    """Deterministic WandB run id for a (campaign, arm, fold) triple.
+
+    WandB names are not unique keys: wandb.init creates a fresh run every call
+    whatever the name, so re-running the logging step after a partial collect
+    would have produced a second copy of every fold already present, and the
+    project would show two populations of the same experiment. A run id IS a
+    key, so deriving one from the identity of the fold makes re-logging an
+    update rather than a duplicate.
+    """
+    digest = hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()
+    # WandB ids must be short and filesystem-safe.
+    return digest[:16]
+
+
 def init_run(
     project: str,
     name: str,
     config: dict[str, Any],
     tags: list[str] | None = None,
     entity: str | None = None,
+    run_id: str | None = None,
 ) -> WandbRun:
     """Start a tracked run, or raise.
 
     Args:
         project: WandB project. One project per experiment campaign, so a
             re-derivation does not land beside the runs it supersedes.
-        name: Run name, unique within the project. Fold and arm belong here.
+        name: Run name, shown in the UI. Fold and arm belong here.
         config: Hyperparameters and provenance. Logged verbatim.
         tags: Filter handles, typically the arm and the held-out framework.
         entity: WandB team. None uses the key's default entity.
+        run_id: Stable id. Supply one from stable_run_id() to make re-logging
+            the same fold overwrite rather than duplicate.
     """
     try:
         import wandb
     except ImportError as exc:
         raise RuntimeError(
-            "wandb is not installed but tracking was requested. Install it "
-            "or pass --no-wandb to run untracked."
+            "wandb is not installed but tracking was requested. Install it, "
+            "or drop --wandb to run untracked."
         ) from exc
 
     os.environ["WANDB_API_KEY"] = resolve_api_key()
@@ -116,6 +135,10 @@ def init_run(
         config=config,
         tags=tags or [],
         reinit=True,
+        id=run_id,
+        # "allow" attaches to the existing run when the id is already present
+        # and creates it otherwise, which is what makes re-logging idempotent.
+        resume="allow" if run_id else None,
     )
     if run is None:
         raise RuntimeError(

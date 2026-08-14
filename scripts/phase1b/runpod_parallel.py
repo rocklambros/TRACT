@@ -28,6 +28,7 @@ import concurrent.futures
 import json
 import logging
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -98,6 +99,12 @@ RSYNC_ATTEMPTS: Final[int] = 3
 
 # One fold: LoRA training plus a paired zero-shot pass.
 FOLD_TIMEOUT_S: Final[int] = 7200
+# The fold runs detached and the orchestrator polls for its exit sentinel.
+FOLD_POLL_INTERVAL_S: Final[int] = 60
+SSH_POLL_TIMEOUT_S: Final[int] = 120
+# A poll failure means the network blinked, not that the fold died; the fold
+# is detached and still running. Only a sustained outage is treated as fatal.
+MAX_CONSECUTIVE_POLL_ERRORS: Final[int] = 10
 
 # Default per-command SSH ceiling; bootstrap issues several.
 SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
@@ -158,7 +165,31 @@ def _get_pod_env() -> dict[str, str]:
         "TOKENIZERS_PARALLELISM": "false",
         # Determinism, per PRD 6.4.2.
         "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+        # _rsync_to excludes .git, so `git rev-parse` on the pod has no
+        # repository to read and every fold recorded git_sha="unknown". A
+        # fleet that unanimously says "unknown" passes load_fold_results'
+        # stale-fold check as a warning, so the check was dead on the only
+        # path that spends money. This is the SHA of the tree being shipped.
+        "TRACT_GIT_SHA": _local_git_sha(),
     }
+
+
+def _local_git_sha() -> str:
+    """Short SHA of the working tree this orchestrator is shipping."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=10, cwd=str(PROJECT_ROOT),
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+    except Exception:
+        pass
+    logger.warning(
+        "Could not resolve the local git SHA; folds will record 'unknown' and "
+        "the aggregate cannot be tied to a commit."
+    )
+    return "unknown"
 
 
 def _require_ssh_key() -> None:
@@ -467,24 +498,101 @@ def _run_fold_on_pod(
         + "".join(f" {flag}" for flag in arm_flags)
     )
 
-    logger.info("[%s] Starting fold training...", framework)
+    # Detach the fold from the SSH session that starts it. Previously the
+    # training ran in the foreground of a single long-lived SSH connection, so
+    # a laptop sleeping, a wifi change, or any transient network drop killed
+    # the process on the pod and lost an hour of paid GPU time that had
+    # already produced most of a result. setsid plus nohup means the fold
+    # outlives its shell, and the orchestrator polls for the sentinel instead
+    # of holding a connection open.
+    remote_dir = "/workspace/tract"
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", framework)
+    log_path = f"{remote_dir}/fold_{slug}.log"
+    exit_path = f"{remote_dir}/fold_{slug}.exit"
+    launch = (
+        f"cd {remote_dir} && rm -f {shlex.quote(exit_path)} && "
+        f"setsid nohup bash -c {shlex.quote(fold_cmd + f'; echo $? > {exit_path}')} "
+        f"> {shlex.quote(log_path)} 2>&1 < /dev/null & echo started"
+    )
+
+    logger.info("[%s] Launching fold (detached)...", framework)
     start = time.time()
     env = _get_pod_env()
     try:
-        _ssh(ip, port, fold_cmd, env=env, timeout=FOLD_TIMEOUT_S)
-        elapsed = time.time() - start
-        logger.info("[%s] COMPLETE in %.1fm", framework, elapsed / 60)
-        return {"fold": framework, "status": "ok", "elapsed_s": elapsed}
+        _ssh(ip, port, launch, env=env, timeout=SSH_DEFAULT_TIMEOUT_S)
     except Exception as e:
         elapsed = time.time() - start
-        logger.error("[%s] FAILED after %.1fm: %s", framework, elapsed / 60, e)
-        return {"fold": framework, "status": "failed", "error": str(e), "elapsed_s": elapsed}
+        logger.error("[%s] LAUNCH FAILED after %.1fm: %s", framework, elapsed / 60, e)
+        return {"fold": framework, "status": "failed",
+                "error": f"launch: {e}", "elapsed_s": elapsed}
+
+    # Poll for the sentinel. A dropped poll is retried rather than fatal: the
+    # fold is still running on the pod either way, and treating a transient
+    # SSH error as a fold failure is what this change exists to prevent.
+    consecutive_poll_errors = 0
+    while True:
+        elapsed = time.time() - start
+        if elapsed > FOLD_TIMEOUT_S:
+            logger.error("[%s] TIMEOUT after %.1fm", framework, elapsed / 60)
+            return {"fold": framework, "status": "failed",
+                    "error": f"exceeded FOLD_TIMEOUT_S={FOLD_TIMEOUT_S}s",
+                    "elapsed_s": elapsed}
+        time.sleep(FOLD_POLL_INTERVAL_S)
+        try:
+            probe = _ssh(
+                ip, port,
+                f"cat {shlex.quote(exit_path)} 2>/dev/null || echo RUNNING",
+                check=False, timeout=SSH_POLL_TIMEOUT_S,
+            )
+            consecutive_poll_errors = 0
+        except Exception as e:  # noqa: BLE001 - transient network, keep polling
+            consecutive_poll_errors += 1
+            if consecutive_poll_errors >= MAX_CONSECUTIVE_POLL_ERRORS:
+                logger.error("[%s] UNREACHABLE after %d polls: %s",
+                             framework, consecutive_poll_errors, e)
+                return {"fold": framework, "status": "failed",
+                        "error": f"pod unreachable: {e}", "elapsed_s": elapsed}
+            logger.warning("[%s] poll %d/%d failed (%s); fold continues on the pod",
+                           framework, consecutive_poll_errors,
+                           MAX_CONSECUTIVE_POLL_ERRORS, e)
+            continue
+
+        marker = (probe.stdout or "").strip().splitlines()
+        status = marker[-1] if marker else "RUNNING"
+        if status == "RUNNING":
+            continue
+
+        elapsed = time.time() - start
+        if status == "0":
+            logger.info("[%s] COMPLETE in %.1fm", framework, elapsed / 60)
+            return {"fold": framework, "status": "ok", "elapsed_s": elapsed}
+
+        # Bring back the tail of the remote log; without it the operator has
+        # only an exit code and has to SSH in to find out what happened.
+        tail = ""
+        try:
+            tail = (_ssh(ip, port, f"tail -n 40 {shlex.quote(log_path)}",
+                         check=False, timeout=SSH_POLL_TIMEOUT_S).stdout or "")
+        except Exception:  # noqa: BLE001 - diagnostics only
+            pass
+        logger.error("[%s] FAILED (exit %s) after %.1fm:\n%s",
+                     framework, status, elapsed / 60, tail[-2000:])
+        return {"fold": framework, "status": "failed",
+                "error": f"exit={status}: {tail[-500:]}", "elapsed_s": elapsed}
 
 
 def run_folds(
     config_name: str = "phase1b_primary",
     arm_flags: tuple[str, ...] = (),
-) -> None:
+) -> list[str]:
+    """Run every fold on its pod. Returns the roles that FAILED.
+
+    The return value used to be None and fold failures were logged and
+    dropped. full_pipeline then collected whatever existed, set
+    results_are_safe, and tore the fleet down -- so two failed folds out of
+    five destroyed the pods and the failure surfaced later, at aggregation,
+    with nothing left to retry on.
+    """
     pods = _load_pod_state()
     _check_deadline()
 
@@ -533,16 +641,26 @@ def run_folds(
             result = f.result()
             fold_results.append(result)
             logger.info("  [%s] %s (%.1fm)", role, result["status"], result["elapsed_s"] / 60)
+            # The deadline was checked once, before the first fold started,
+            # and never again, so MAX_RUN_HOURS bounded nothing once the
+            # fleet was running. Report every time a fold lands; the in-flight
+            # folds are already paid for, so this warns rather than aborts.
+            try:
+                _check_deadline()
+            except RuntimeError as exc:
+                logger.error("DEADLINE EXCEEDED mid-run: %s", exc)
 
     elapsed = time.time() - start
     ok = sum(1 for r in fold_results if r["status"] == "ok")
-    failed = sum(1 for r in fold_results if r["status"] == "failed")
+    failed_roles = [r["fold"] for r in fold_results if r["status"] == "failed"]
     logger.info("=" * 60)
-    logger.info("ALL FOLDS COMPLETE: %d OK, %d FAILED in %.1fm", ok, failed, elapsed / 60)
+    logger.info("ALL FOLDS COMPLETE: %d OK, %d FAILED in %.1fm",
+                ok, len(failed_roles), elapsed / 60)
     for r in fold_results:
         if r["status"] == "failed":
             logger.error("  FAILED: %s — %s", r["fold"], r.get("error", "")[:200])
     logger.info("=" * 60)
+    return failed_roles
 
 
 def collect(config_name: str = "phase1b_primary") -> list[str]:
@@ -634,13 +752,21 @@ def track(config_name: str = "phase1b_primary") -> int:
     records already contain. The trade is live streaming for credential
     containment, and containment wins.
 
-    Idempotent by run name, so re-running after a partial collect adds the
-    missing folds rather than duplicating the present ones.
+    Idempotent by run id. WandB names are not unique keys -- wandb.init makes
+    a fresh run on every call whatever the name -- so this keys each run on
+    (config_name, arm, framework). Re-running after a partial collect updates
+    the folds already logged and adds the missing ones, instead of leaving two
+    populations of the same experiment in the project.
     """
     from tract.config import LOFO_WANDB_ENTITY, LOFO_WANDB_PROJECT
     from tract.io import load_json
     from tract.training.orchestrate import FOLD_RESULT_FILENAME
-    from tract.training.tracking import finish_run, init_run, log_fold
+    from tract.training.tracking import (
+        finish_run,
+        init_run,
+        log_fold,
+        stable_run_id,
+    )
 
     local_results = RESULTS_DIR / config_name
     paths = sorted(local_results.glob(f"fold_*/{FOLD_RESULT_FILENAME}"))
@@ -670,6 +796,7 @@ def track(config_name: str = "phase1b_primary") -> int:
                 **{f"inputs/{k}": v for k, v in (record.get("inputs") or {}).items()},
             },
             tags=[arm, framework, "lofo"],
+            run_id=stable_run_id(config_name, arm, framework),
         )
         log_fold(run, record)
         finish_run(run)
@@ -805,7 +932,9 @@ def full_pipeline(
         # provision() was outside this try, so the stage with the highest
         # orphan rate was the one the finally never covered.
         provision(folds)
-        run_folds(config_name, arm_flags)
+        failed_folds = run_folds(config_name, arm_flags)
+        # Collect BEFORE reacting to failures: the folds that did succeed are
+        # already paid for and their indicators live only on the pods.
         uncollected = collect(config_name)
         if uncollected:
             # Every fold that did not come back is a paid-for GPU hour whose
@@ -813,6 +942,19 @@ def full_pipeline(
             raise RuntimeError(
                 f"Results were not collected from {uncollected}. Retry with "
                 f"'collect' before tearing anything down."
+            )
+        if failed_folds:
+            # A partial fold set cannot produce a LOFO number, and tearing the
+            # fleet down here would mean re-provisioning and re-bootstrapping
+            # to retry a fold whose pod is still warm and still has the model
+            # cached.
+            raise RuntimeError(
+                f"{len(failed_folds)} fold(s) failed: {sorted(failed_folds)}. "
+                f"The successful folds have been collected. Pods are still up "
+                f"so the failures can be retried on them:\n"
+                f"  retry : python -m scripts.phase1b.runpod_parallel run "
+                f"--config-name {config_name}\n"
+                f"  or end: python -m scripts.phase1b.runpod_parallel teardown"
             )
         results_are_safe = True
     finally:

@@ -143,3 +143,53 @@ class TestLogFold:
         run = _FakeRun()
         finish_run(run, exit_code=1)
         assert run.exit_code == 1
+
+
+class TestStableRunId:
+    """WandB names are not unique keys; ids are.
+
+    Without a stable id, re-running the logging step after a partial collect
+    creates a second copy of every fold already present, and the project shows
+    two populations of the same experiment.
+    """
+
+    def test_the_same_fold_yields_the_same_id(self) -> None:
+        from tract.training.tracking import stable_run_id
+
+        first = stable_run_id("campaign", "prose", "MITRE ATLAS")
+        second = stable_run_id("campaign", "prose", "MITRE ATLAS")
+        assert first == second
+
+    def test_different_arms_do_not_collide(self) -> None:
+        from tract.training.tracking import stable_run_id
+
+        assert stable_run_id("c", "prose", "ATLAS") != stable_run_id(
+            "c", "prose-stopwords", "ATLAS"
+        )
+
+    def test_different_folds_do_not_collide(self) -> None:
+        from tract.training.tracking import stable_run_id
+
+        assert stable_run_id("c", "prose", "ATLAS") != stable_run_id(
+            "c", "prose", "NIST AI 100-2"
+        )
+
+    def test_different_campaigns_do_not_collide(self) -> None:
+        from tract.training.tracking import stable_run_id
+
+        assert stable_run_id("a", "prose", "ATLAS") != stable_run_id(
+            "b", "prose", "ATLAS"
+        )
+
+    def test_parts_cannot_be_confused_by_concatenation(self) -> None:
+        """("ab","c") and ("a","bc") must not hash alike."""
+        from tract.training.tracking import stable_run_id
+
+        assert stable_run_id("ab", "c") != stable_run_id("a", "bc")
+
+    def test_the_id_is_wandb_safe(self) -> None:
+        from tract.training.tracking import stable_run_id
+
+        run_id = stable_run_id("c", "prose", "OWASP Top10 for LLM")
+        assert run_id.isalnum()
+        assert len(run_id) == 16

@@ -35,6 +35,7 @@ def _write_fold(
     git_sha: str = "abc1234",
     zero_shot: list[int] | None = None,
     inputs: dict[str, str | None] | None = None,
+    config: dict[str, object] | None = None,
 ) -> None:
     fold_dir = root / f"fold_{framework.replace(' ', '_')}"
     fold_dir.mkdir(parents=True, exist_ok=True)
@@ -47,6 +48,8 @@ def _write_fold(
         "elapsed_s": 1.0,
         "git_sha": git_sha,
     }
+    if config is not None:
+        record["config"] = config
     if inputs is not None:
         record["inputs"] = inputs
     if zero_shot is not None:
@@ -300,3 +303,86 @@ class TestArmLabelling:
         assert "prose" in seen
         assert "prose-stopwords" in seen
         assert "prose-desconly" in seen
+
+
+class TestArmSeparation:
+    """Every flag that defines an arm must separate folds.
+
+    The guard listed use_prose and use_stopword_filter while the campaign runs
+    four arms, so prose and prose-desconly both hashed to (True, False) and
+    would have aggregated into one number describing neither.
+    """
+
+    _FRAMEWORKS = {"A", "B"}
+
+    def _config(self, **flags: object) -> dict[str, object]:
+        base: dict[str, object] = {
+            "use_prose": True,
+            "use_stopword_filter": False,
+            "use_description_only": False,
+        }
+        base.update(flags)
+        return base
+
+    def test_one_arm_aggregates(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            _write_fold(root, "A", [1, 0], config=self._config())
+            _write_fold(root, "B", [1, 1], config=self._config())
+            assert len(load_fold_results(root, expected_frameworks=self._FRAMEWORKS)) == 2
+
+    def test_prose_and_description_only_do_not_merge(self) -> None:
+        """The exact pair the old guard could not tell apart."""
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            _write_fold(root, "A", [1, 0], config=self._config())
+            _write_fold(root, "B", [1, 1],
+                        config=self._config(use_description_only=True))
+            with pytest.raises(ValueError, match="different arms"):
+                load_fold_results(root, expected_frameworks=self._FRAMEWORKS)
+
+    def test_prose_and_stopwords_do_not_merge(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            _write_fold(root, "A", [1, 0], config=self._config())
+            _write_fold(root, "B", [1, 1],
+                        config=self._config(use_stopword_filter=True))
+            with pytest.raises(ValueError, match="different arms"):
+                load_fold_results(root, expected_frameworks=self._FRAMEWORKS)
+
+    def test_title_only_and_prose_do_not_merge(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            _write_fold(root, "A", [1, 0], config=self._config(use_prose=False))
+            _write_fold(root, "B", [1, 1], config=self._config())
+            with pytest.raises(ValueError, match="different arms"):
+                load_fold_results(root, expected_frameworks=self._FRAMEWORKS)
+
+    def test_the_guard_covers_every_arm_flag_the_config_defines(self) -> None:
+        """Adding a fifth arm flag without extending the guard is a bug.
+
+        Asserted structurally so the omission shows up here rather than as two
+        arms quietly averaging together.
+        """
+        from tract.training.config import TrainingConfig
+        from tract.training.orchestrate import ARM_DEFINING_KEYS
+
+        serialized = TrainingConfig(name="t").to_dict()
+        for key in ARM_DEFINING_KEYS:
+            assert key in serialized, key
+        arm_flags = {
+            k for k in serialized
+            if k.startswith("use_") and isinstance(serialized[k], bool)
+        }
+        assert arm_flags == set(ARM_DEFINING_KEYS), (
+            f"TrainingConfig has boolean use_* flags {sorted(arm_flags)} but "
+            f"the guard checks {sorted(ARM_DEFINING_KEYS)}"
+        )

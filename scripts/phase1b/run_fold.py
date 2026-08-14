@@ -38,7 +38,12 @@ from tract.text_selection import (
 from tract.training.config import TrainingConfig
 from tract.training.data_quality import load_and_filter_curated_links
 from tract.training.orchestrate import FOLD_RESULT_FILENAME, run_single_fold
-from tract.training.tracking import finish_run, init_run, log_fold
+from tract.training.tracking import (
+    finish_run,
+    init_run,
+    log_fold,
+    stable_run_id,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -169,6 +174,9 @@ def main() -> int:
                 "eval_prose_fraction": selection_stats.prose_fraction,
             },
             tags=[arm, args.framework, "lofo"],
+            # Same key the orchestrator uses, so a pod-side run and a
+            # later `track` of the same fold are one run, not two.
+            run_id=stable_run_id(args.config_name, arm, args.framework),
         )
 
     exit_code = 0
