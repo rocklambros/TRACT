@@ -47,6 +47,24 @@ from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
 
+# Written per fold, and the only artifact carrying the per-item hit@1
+# indicators needed to micro-average across folds.
+FOLD_RESULT_FILENAME = "fold_result.json"
+
+
+def _free_gpu_memory() -> None:
+    """Release the baseline model's VRAM before training allocates its own."""
+    import gc
+
+    gc.collect()
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except ImportError:
+        pass
+
 
 def _get_git_sha() -> str:
     try:
@@ -68,8 +86,14 @@ def run_single_fold(
     hub_ids: list[str],
     output_dir: Path,
     standard_sections: dict[str, list[str]] | None = None,
+    include_zero_shot: bool = False,
 ) -> dict[str, Any]:
-    """Train and evaluate one LOFO fold. Returns fold result dict."""
+    """Train and evaluate one LOFO fold. Returns fold result dict.
+
+    Args:
+        include_zero_shot: Also evaluate the untrained base model on this fold,
+            producing a per-item indicator array paired with the trained one.
+    """
     logger.info("=== FOLD: %s ===", held_out_framework)
     fold_start = time.time()
 
@@ -126,6 +150,31 @@ def run_single_fold(
     fold_output = output_dir / f"fold_{held_out_framework.replace(' ', '_')}"
     fold_output.mkdir(parents=True, exist_ok=True)
 
+    zero_shot: dict[str, Any] | None = None
+    if include_zero_shot:
+        # Measure the untrained base model on the SAME eval items, hub ids and
+        # firewalled hub texts, in the same process, before training touches
+        # anything. paired_bootstrap_delta requires the two indicator arrays to
+        # be aligned item by item; a baseline computed in a separate job cannot
+        # guarantee that alignment, and an unpaired delta is what put the
+        # pre-registered gate inside its own confidence interval.
+        from sentence_transformers import SentenceTransformer
+
+        logger.info("Fold %s: measuring zero-shot baseline", held_out_framework)
+        base_model = SentenceTransformer(config.base_model)
+        base_model.max_seq_length = config.max_seq_length
+        zs_metrics, _zs_predictions, zs_hit1 = evaluate_on_fold(
+            base_model, eval_items, hub_ids, hub_texts,
+        )
+        zero_shot = {
+            "metrics": zs_metrics,
+            "hit1_indicators": [int(x) for x in zs_hit1],
+        }
+        logger.info("Fold %s zero-shot: hit@1=%.3f", held_out_framework,
+                    zs_metrics["hit_at_1"])
+        del base_model
+        _free_gpu_memory()
+
     model = train_model(config, dataset, fold_output)
 
     metrics, predictions, hit1_indicators = evaluate_on_fold(
@@ -151,7 +200,7 @@ def run_single_fold(
     elapsed = time.time() - fold_start
     logger.info("Fold %s complete in %.1fs", held_out_framework, elapsed)
 
-    return {
+    result: dict[str, Any] = {
         "held_out_framework": held_out_framework,
         "metrics": metrics,
         "predictions": predictions,
@@ -160,6 +209,79 @@ def run_single_fold(
         "n_training_pairs": len(pairs),
         "elapsed_s": elapsed,
     }
+    if zero_shot is not None:
+        result["zero_shot"] = zero_shot
+
+    # Persist the per-item indicators, not just the fold's summary metrics.
+    # Averaging five fold summaries is a MACRO average: it weights a 6-item fold
+    # the same as a 60-item one. The aggregate hit@1 TRACT reports is a MICRO
+    # average, which needs the raw indicator array from every fold. Any path that
+    # only keeps metrics.json cannot reconstruct it, and the model card now
+    # refuses to build without it.
+    fold_record = {k: v for k, v in result.items() if k != "predictions"}
+    fold_record["hit1_indicators"] = [int(x) for x in hit1_indicators]
+    fold_record["git_sha"] = _get_git_sha()
+    atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
+
+    return result
+
+
+def load_fold_results(results_dir: Path) -> list[dict[str, Any]]:
+    """Load every persisted per-fold record under results_dir.
+
+    Sorted by held-out framework so aggregation is order-independent and
+    therefore reproducible regardless of the order folds finished in.
+    """
+    records = []
+    for path in sorted(results_dir.glob(f"fold_*/{FOLD_RESULT_FILENAME}")):
+        record = load_json(path)
+        missing = {"held_out_framework", "hit1_indicators", "n_eval_items"} - set(record)
+        if missing:
+            raise ValueError(
+                f"{path} is missing {sorted(missing)}. It was written by a version "
+                "that dropped the per-item indicators, so the aggregate hit@1 "
+                "cannot be micro-averaged from it."
+            )
+        if len(record["hit1_indicators"]) != record["n_eval_items"]:
+            raise ValueError(
+                f"{path}: {len(record['hit1_indicators'])} indicators for "
+                f"{record['n_eval_items']} eval items. The fold record is "
+                "internally inconsistent; refusing to aggregate it."
+            )
+        records.append(record)
+    if not records:
+        raise ValueError(
+            f"No {FOLD_RESULT_FILENAME} files under {results_dir}. Nothing to "
+            "aggregate: either no fold completed or the results were not collected."
+        )
+    return records
+
+
+def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]:
+    """Micro-average hit@1 across folds with a fold-stratified bootstrap CI.
+
+    Pools per-item indicators rather than averaging per-fold rates, so each
+    eval item carries equal weight. With TRACT's fold sizes the difference is
+    not cosmetic: the smallest fold would otherwise count for 1/5 of the
+    headline number instead of its share of the items.
+    """
+    fold_hit1s = [np.asarray(r["hit1_indicators"], dtype=float) for r in fold_results]
+    aggregate: dict[str, Any] = dict(fold_stratified_bootstrap_ci(fold_hit1s))
+
+    # Report the macro figure alongside it. They differ only through fold-size
+    # imbalance, so a wide gap is a signal about the folds, not a second result.
+    macro = float(np.mean([float(np.mean(f)) for f in fold_hit1s]))
+    aggregate["macro_mean"] = macro
+    aggregate["n_folds"] = len(fold_hit1s)
+    aggregate["fold_sizes"] = {
+        r["held_out_framework"]: int(r["n_eval_items"]) for r in fold_results
+    }
+    logger.info(
+        "AGGREGATE hit@1 (micro): %.4f [%.4f, %.4f] over n=%d | macro: %.4f",
+        aggregate["mean"], aggregate["ci_low"], aggregate["ci_high"],
+        aggregate["n_total"], macro,
+    )
+    return aggregate
 
 
 def run_experiment(config: TrainingConfig) -> dict[str, Any]:
@@ -200,10 +322,7 @@ def run_experiment(config: TrainingConfig) -> dict[str, Any]:
         )
         fold_results.append(result)
 
-    fold_hit1s = [np.array(r["hit1_indicators"]) for r in fold_results]
-    aggregate = fold_stratified_bootstrap_ci(fold_hit1s)
-    logger.info("AGGREGATE hit@1: %.3f [%.3f, %.3f]",
-                aggregate["mean"], aggregate["ci_low"], aggregate["ci_high"])
+    aggregate = aggregate_fold_results(fold_results)
 
     experiment_result = {
         "config": config.to_dict(),

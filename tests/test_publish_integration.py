@@ -92,8 +92,16 @@ class TestPublishDryRun:
 
         ws = _setup_publish_workspace(tmp_path)
 
+        # hit1_indicators is required, not decorative: the card computes the
+        # aggregate CI by bootstrapping these per-item values. It used to accept
+        # a fold without them and print a fixed-width band around the point
+        # estimate instead. Five hits in ten items matches hit1=0.5.
         fold_results = [
-            {"fold": "Test Fold", "hit1": 0.5, "zs_hit1": 0.3, "n": 10, "hit_any": 0.6},
+            {
+                "fold": "Test Fold", "hit1": 0.5, "zs_hit1": 0.3, "n": 10,
+                "hit_any": 0.6,
+                "hit1_indicators": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+            },
         ]
 
         with patch("tract.publish.merge.merge_lora_adapters", side_effect=_fake_merge):

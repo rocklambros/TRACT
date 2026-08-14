@@ -17,6 +17,7 @@ import concurrent.futures
 import json
 import logging
 import os
+import shlex
 import subprocess
 import sys
 import time
@@ -186,34 +187,16 @@ def _bootstrap_pod(pod: dict) -> None:
 def _run_fold_on_pod(pod: dict, config_name: str) -> dict:
     ip, port = pod["ip"], pod["port"]
     framework = pod["role"]
-    fw_safe = framework.replace(" ", "_")
 
+    # A module invocation, not an inline program. run_fold.py persists the full
+    # per-fold record, including the per-item hit@1 indicators the aggregate CI
+    # needs; the string this replaced kept only the summary metrics, which can
+    # be averaged into a macro figure but never a micro one.
     fold_cmd = (
-        f"cd /workspace/tract && python -c \""
-        f"import logging; logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s'); "
-        f"from tract.training.config import TrainingConfig; "
-        f"from tract.training.orchestrate import run_single_fold; "
-        f"from tract.training.data_quality import load_and_filter_curated_links; "
-        f"from tract.hierarchy import CREHierarchy; "
-        f"from tract.io import load_json, atomic_write_json; "
-        f"from tract.config import PROCESSED_DIR; "
-        f"from scripts.phase0.common import AI_FRAMEWORK_NAMES, build_evaluation_corpus, load_curated_links, load_opencre_cres; "
-        f"from pathlib import Path; "
-        f"import json; "
-        f"config = TrainingConfig(name='{config_name}'); "
-        f"tiered_links, raw_hash = load_and_filter_curated_links(); "
-        f"hierarchy = CREHierarchy.model_validate(load_json(PROCESSED_DIR / 'cre_hierarchy.json')); "
-        f"hub_ids = sorted(hierarchy.hubs.keys()); "
-        f"cres = load_opencre_cres(); "
-        f"links = load_curated_links(); "
-        f"corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {{}}); "
-        f"eval_items = [i for i in corpus if i.framework_name == '{framework}']; "
-        f"output_dir = Path('results/phase1b/{config_name}'); "
-        f"output_dir.mkdir(parents=True, exist_ok=True); "
-        f"result = run_single_fold(config, '{framework}', tiered_links, hierarchy, eval_items, hub_ids, output_dir); "
-        f"print(f'FOLD COMPLETE: {framework} hit@1={{result[\\\"metrics\\\"][\\\"hit_at_1\\\"]:.3f}}'); "
-        f"atomic_write_json({{\\\"fold\\\": '{framework}', \\\"metrics\\\": result[\\\"metrics\\\"], \\\"n_pairs\\\": result[\\\"n_training_pairs\\\"], \\\"elapsed\\\": result[\\\"elapsed_s\\\"]}}, output_dir / 'fold_{fw_safe}_summary.json')"
-        f"\""
+        f"cd /workspace/tract && python -m scripts.phase1b.run_fold "
+        f"--framework {shlex.quote(framework)} "
+        f"--config-name {shlex.quote(config_name)} "
+        f"--zero-shot"
     )
 
     logger.info("[%s] Starting fold training...", framework)
@@ -266,13 +249,19 @@ def run_folds(config_name: str = "phase1b_primary") -> None:
     logger.info("=" * 60)
 
 
-def collect(config_name: str = "phase1b_primary") -> None:
+def collect(config_name: str = "phase1b_primary") -> list[str]:
+    """Retrieve every fold's results. Returns the roles that failed to collect.
+
+    Collection failure is not cosmetic: the fold ran, the GPU hour was paid for,
+    and the per-item indicators live only on the pod. teardown() must not
+    terminate a pod whose results are still on it.
+    """
     pods = _load_pod_state()
     local_results = RESULTS_DIR / config_name
     local_results.mkdir(parents=True, exist_ok=True)
 
+    failed: list[str] = []
     for pod in pods:
-        fw_safe = pod["role"].replace(" ", "_")
         logger.info("Collecting fold '%s' from %s:%d...", pod["role"], pod["ip"], pod["port"])
         try:
             _rsync_from(
@@ -281,9 +270,41 @@ def collect(config_name: str = "phase1b_primary") -> None:
                 f"{local_results}/",
             )
         except Exception as e:
-            logger.warning("Collection from %s failed: %s", pod["role"], e)
+            logger.error("Collection from %s FAILED: %s", pod["role"], e)
+            failed.append(pod["role"])
 
     logger.info("Results collected to %s", local_results)
+    if failed:
+        logger.error("Collection failed for %d fold(s): %s", len(failed), failed)
+    return failed
+
+
+def aggregate(config_name: str = "phase1b_primary") -> dict:
+    """Micro-average the collected folds and write the experiment record.
+
+    The RunPod path had no aggregation step at all. Averaging the five fold
+    summaries by hand gives a macro average, which weights every fold equally
+    regardless of how many eval items it holds. This pools the per-item
+    indicators instead, and reports the paired delta against the zero-shot
+    baseline measured on the same items.
+    """
+    from tract.io import atomic_write_json
+    from tract.training.orchestrate import aggregate_fold_results, load_fold_results
+
+    local_results = RESULTS_DIR / config_name
+    fold_results = load_fold_results(local_results)
+    logger.info("Aggregating %d folds from %s", len(fold_results), local_results)
+
+    record = {
+        "config_name": config_name,
+        "aggregate_hit1": aggregate_fold_results(fold_results),
+        "per_fold": {
+            r["held_out_framework"]: r["metrics"] for r in fold_results
+        },
+    }
+    atomic_write_json(record, local_results / "aggregate_metrics.json")
+    logger.info("Wrote %s", local_results / "aggregate_metrics.json")
+    return record
 
 
 def teardown() -> None:
@@ -302,35 +323,30 @@ def full_pipeline(config_name: str = "phase1b_primary") -> None:
 
     pods = provision()
     run_folds(config_name)
-    collect(config_name)
+    uncollected = collect(config_name)
+    if uncollected:
+        # Every fold that did not come back is a paid-for GPU hour whose only
+        # copy of the per-item indicators is still on the pod. Terminating now
+        # destroys it. Leave the pods up and make the operator decide.
+        raise RuntimeError(
+            f"Results were not collected from {uncollected}. Pods are still "
+            f"running and have NOT been terminated so the results can be "
+            f"retrieved: python -m scripts.phase1b.runpod_parallel collect. "
+            f"Tear down with 'teardown' once they are safe."
+        )
     teardown()
 
     elapsed = time.time() - start
     logger.info("Total pipeline time: %.1fm", elapsed / 60)
 
-    summary_files = list((RESULTS_DIR / config_name).glob("fold_*_summary.json"))
-    if summary_files:
-        logger.info("=" * 60)
-        logger.info("FOLD RESULTS:")
-        for sf in sorted(summary_files):
-            data = json.loads(sf.read_text())
-            metrics = data.get("metrics", {})
-            logger.info(
-                "  %s: hit@1=%.3f hit@5=%.3f MRR=%.3f (%.0fs, %d pairs)",
-                data["fold"],
-                metrics.get("hit_at_1", 0),
-                metrics.get("hit_at_5", 0),
-                metrics.get("mrr", 0),
-                data.get("elapsed", 0),
-                data.get("n_pairs", 0),
-            )
-        logger.info("=" * 60)
+    aggregate(config_name)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Phase 1B RunPod parallel fold executor")
     parser.add_argument("action", nargs="?", default="full",
-                        choices=["full", "provision", "run", "collect", "teardown"])
+                        choices=["full", "provision", "run", "collect", "aggregate",
+                                 "teardown"])
     parser.add_argument("--config-name", type=str, default="phase1b_primary",
                         help="Experiment config name")
     args = parser.parse_args()
@@ -343,6 +359,8 @@ def main() -> None:
         run_folds(args.config_name)
     elif args.action == "collect":
         collect(args.config_name)
+    elif args.action == "aggregate":
+        aggregate(args.config_name)
     elif args.action == "teardown":
         teardown()
 
