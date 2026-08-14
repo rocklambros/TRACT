@@ -227,7 +227,23 @@ def create_pod(
     _validate_pod_id(pod_id)
     logger.info("Pod created: %s (%s) — waiting for SSH...", pod_id, gpu_type_id)
 
-    ssh_info = _wait_for_ssh(pod_id)
+    try:
+        ssh_info = _wait_for_ssh(pod_id)
+    except Exception:
+        # The pod exists and is billing from the moment it was created. If SSH
+        # never comes up there is nothing on it worth keeping and nobody
+        # holding its id, so leaving it running bills indefinitely for a host
+        # the caller cannot even reach. Terminate before re-raising; a failure
+        # to terminate is logged and does not mask the original error.
+        logger.error("SSH never came up for pod %s; terminating it.", pod_id)
+        try:
+            terminate_pod(pod_id)
+        except Exception:
+            logger.exception(
+                "Could not terminate unreachable pod %s. It is STILL BILLING; "
+                "terminate it by hand.", pod_id,
+            )
+        raise
 
     return {
         "pod_id": pod_id,

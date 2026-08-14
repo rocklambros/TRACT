@@ -101,7 +101,9 @@ RSYNC_ATTEMPTS: Final[int] = 3
 FOLD_TIMEOUT_S: Final[int] = 7200
 # The fold runs detached and the orchestrator polls for its exit sentinel.
 FOLD_POLL_INTERVAL_S: Final[int] = 60
-SSH_POLL_TIMEOUT_S: Final[int] = 120
+# Named apart from runpod_provision.SSH_POLL_TIMEOUT_S, which is the much
+# longer ceiling for a pod's SSH coming up in the first place.
+FOLD_POLL_SSH_TIMEOUT_S: Final[int] = 120
 # A poll failure means the network blinked, not that the fold died; the fold
 # is detached and still running. Only a sustained outage is treated as fatal.
 MAX_CONSECUTIVE_POLL_ERRORS: Final[int] = 10
@@ -402,7 +404,37 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     }
 
 
+def _preflight_tracking() -> None:
+    """Fail before any pod exists if the campaign could not be tracked.
+
+    Tracking runs at the very end, after collect and aggregate, and its
+    failure is deliberately non-fatal there because the results are already
+    safe by that point. The consequence is that an unusable WandB key costs a
+    full campaign of GPU time before anyone learns the runs were never going
+    to appear. Checking the credential here moves that discovery to before the
+    first dollar. TRACT_SKIP_WANDB=1 opts out for a deliberately untracked
+    run.
+    """
+    if os.environ.get("TRACT_SKIP_WANDB", "").strip() == "1":
+        logger.warning(
+            "TRACT_SKIP_WANDB=1: this campaign will not be tracked in WandB."
+        )
+        return
+    from tract.training.tracking import resolve_api_key
+
+    try:
+        resolve_api_key()
+    except RuntimeError as exc:
+        raise RuntimeError(
+            f"WandB credential preflight failed, so this campaign could not be "
+            f"tracked: {exc}\nFix the key, or set TRACT_SKIP_WANDB=1 to run "
+            f"untracked on purpose."
+        ) from exc
+    logger.info("WandB credential preflight passed.")
+
+
 def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
+    _preflight_tracking()
     configs = select_pod_configs(folds)
     logger.info("Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
@@ -542,7 +574,7 @@ def _run_fold_on_pod(
             probe = _ssh(
                 ip, port,
                 f"cat {shlex.quote(exit_path)} 2>/dev/null || echo RUNNING",
-                check=False, timeout=SSH_POLL_TIMEOUT_S,
+                check=False, timeout=FOLD_POLL_SSH_TIMEOUT_S,
             )
             consecutive_poll_errors = 0
         except Exception as e:  # noqa: BLE001 - transient network, keep polling
@@ -572,7 +604,7 @@ def _run_fold_on_pod(
         tail = ""
         try:
             tail = (_ssh(ip, port, f"tail -n 40 {shlex.quote(log_path)}",
-                         check=False, timeout=SSH_POLL_TIMEOUT_S).stdout or "")
+                         check=False, timeout=FOLD_POLL_SSH_TIMEOUT_S).stdout or "")
         except Exception:  # noqa: BLE001 - diagnostics only
             pass
         logger.error("[%s] FAILED (exit %s) after %.1fm:\n%s",
