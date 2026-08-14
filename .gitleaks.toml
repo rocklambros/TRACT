@@ -1,0 +1,28 @@
+# Secret-scanning config for TRACT (QC.1, NIST SP 800-218).
+#
+# TRACT's processed corpus is the text of public security standards, parsed
+# verbatim. That text is full of things shaped like credentials: example keys
+# in code samples, category identifiers that look like tokens, and advice
+# quoting the format of a secret it tells you not to commit. Every entry below
+# is a pattern from that source material, not an exemption for a path.
+#
+# The allowlists are deliberately regex-scoped rather than path-scoped. A blunt
+# `paths = ["data/processed/.*"]` would also hide a real key that a parser
+# copied out of a source document, which is a live risk: parsers read untrusted
+# upstream repositories.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"
+
+  [[rules.allowlists]]
+  description = """
+  OWASP Top 10 category identifiers. "A3:2017-Sensitive Data Exposure" and its
+  siblings appear throughout the Cheat Sheet Series prose and match
+  generic-api-key on the colon-delimited alphanumeric run. The year makes the
+  pattern specific enough that it cannot cover a real key.
+  """
+  regexTarget = "match"
+  regexes = ['''A\d{1,2}:20\d{2}-[A-Za-z]''']

@@ -2,6 +2,10 @@
 pydantic==2.12.5
 pyyaml==6.0.3
 beautifulsoup4==4.14.3
+# parse_nist_ai_100_2.py reads the NIST AI 100-2 PDF. Pinned like
+# everything else here: pyproject.toml carries floors for the
+# distributable, this file carries the exact environment.
+pdfplumber==0.11.10
 # XML parsing for MITRE CAPEC/CWE catalogs. The stdlib xml module is
 # vulnerable to XXE and entity-expansion, and these are downloaded files.
 defusedxml==0.7.1

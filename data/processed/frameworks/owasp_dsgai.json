@@ -148,7 +148,7 @@
       "title": "Disinformation & Integrity Attacks via Data Poisoning"
     }
   ],
-  "fetched_date": "2026-04-28",
+  "fetched_date": "2026-08-14",
   "framework_id": "owasp_dsgai",
   "framework_name": "OWASP GenAI Data Security Risks and Mitigations",
   "mapping_unit_level": "risk",
