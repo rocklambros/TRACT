@@ -316,8 +316,13 @@ HF_SECRET_PATTERNS: Final[list[re.Pattern[str]]] = [
     re.compile(r"hf_[a-zA-Z0-9]{20,}"),
     re.compile(r"wandb_[a-zA-Z0-9]{10,}"),
     re.compile(r"AKIA[0-9A-Z]{16}"),
-    re.compile(r"/home/rock"),
-    re.compile(r"/Users/rock"),
+    # Any home directory, not two specific ones. These were pinned to /home/rock
+    # and /Users/rock, the usernames of the original Jetson and its macOS
+    # counterpart. This repo now lives under a different account, so a leaked
+    # local path would have passed the pre-publication scan unnoticed. Matching
+    # the shape of a home path rather than an enumerated list keeps the check
+    # working wherever the repo is checked out.
+    re.compile(r"/(?:home|Users)/[^/\s\"'`]+"),
     re.compile(r"^pass\s+\w+/\w+", re.MULTILINE),
     re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"),
     re.compile(r"(HF_TOKEN|WANDB_API_KEY|ANTHROPIC_API_KEY)\s*="),

@@ -16,7 +16,13 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Final
 
-CURATED_PATH: Final[Path] = Path("/home/rock/github_projects/TRACT/data/training/hub_links_curated.jsonl")
+from tract.config import TRAINING_DIR
+
+# Derived from the package's own PROJECT_ROOT rather than hardcoded. This was an
+# absolute path under a home directory from the original Jetson environment, so
+# the script could not run anywhere else, including the Mac this repo now lives
+# on.
+CURATED_PATH: Final[Path] = TRAINING_DIR / "hub_links_curated.jsonl"
 
 AI_FRAMEWORKS: Final[frozenset[str]] = frozenset({
     "MITRE ATLAS",

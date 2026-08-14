@@ -1,1 +1,20 @@
-Raw framework files copied from /home/rock/github_projects/ai-security-framework-crosswalk/data/frameworks/ on 2026-04-28
+Raw framework files copied from ~/github_projects/ai-security-framework-crosswalk/data/frameworks/ on 2026-04-28
+
+Paths here are written relative to the home directory on purpose. The original
+copy ran on the Jetson, where this tree lived under a different account, and the
+absolute path recorded previously did not resolve on any other machine.
+
+This directory is gitignored, so a fresh checkout starts empty and none of the
+parsers in parsers/parse_*.py can run until it is repopulated from the source
+above.
+
+Frameworks with a raw source, and therefore full control text:
+    mitre-atlas, owasp-ai-exchange, owasp-llm-top10, owasp-agentic-top10,
+    owasp-dsgai, eu-ai-act, eu-gpai-code-of-practice, nist-ai-600-1,
+    nist-ai-rmf, nist-800-53, aiuc-1, cosai, csa-aicm
+
+Every other framework in data/processed/all_controls.json comes from
+parsers/fetch_opencre.py. OpenCRE supplies the link graph and each section's
+name, not the standard's text, so those frameworks carry titles only. Notably
+this includes NIST AI 100-2 and OWASP Top10 for ML, which are LOFO evaluation
+folds; neither has ever had a raw source in this project or its predecessor.
