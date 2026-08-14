@@ -32,6 +32,9 @@ from tract.io import atomic_write_json, load_json
 
 logger = logging.getLogger(__name__)
 
+# Collapses the gaps left where stop words were removed.
+_WHITESPACE: Final[re.Pattern[str]] = re.compile(r"\s+")
+
 STOPWORDS_PATH: Final[Path] = PROCESSED_DIR / "stopwords.json"
 
 # A word must appear in at least this fraction of documents to count as
@@ -129,13 +132,25 @@ def filter_stopwords(text: str, stopwords: frozenset[str]) -> str:
     """
     if not text:
         return text
-    kept: list[str] = []
-    for match in _TOKEN.finditer(text):
-        if match.group(0).lower() not in stopwords:
-            kept.append(match.group(0))
-    if not kept:
+
+    # Delete the stop words in place rather than rebuilding the string from
+    # matched tokens. _TOKEN matches alphabetic runs only, so re-joining its
+    # matches silently discarded every digit and every punctuation mark in the
+    # text: "AC-1" became "AC", "CWE-79" became "CWE", "V1.1.1" became "V",
+    # "ML01:2023" became "ML", and "99.9%" vanished. In a corpus of security
+    # controls the identifiers and thresholds are among the most distinctive
+    # tokens there are, so the filter was destroying exactly what stop word
+    # removal is supposed to leave behind. It also erased the " | " separator
+    # that firewall.py recovers hub names from.
+    filtered = _TOKEN.sub(
+        lambda m: "" if m.group(0).lower() in stopwords else m.group(0), text,
+    )
+    filtered = _WHITESPACE.sub(" ", filtered).strip()
+    if not filtered or not _TOKEN.search(filtered):
+        # A control reduced to nothing, or to punctuation alone, is not a
+        # cheaper control; it is an unusable one.
         return text
-    return " ".join(kept)
+    return filtered
 
 
 def load_stopwords(path: Path | None = None) -> frozenset[str]:

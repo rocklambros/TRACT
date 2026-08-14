@@ -116,6 +116,29 @@ POD_CONFIGS: Final[list[dict[str, str]]] = [
 ]
 
 
+def select_pod_configs(folds: list[str] | None = None) -> list[dict[str, str]]:
+    """Pod configs for a subset of folds, preserving the canonical names.
+
+    Exists so a canary is a supported operation rather than a hand-edit of
+    POD_CONFIGS. Before this, provision() always created all five pods, so the
+    only way to validate the machinery end to end was to pay for the whole
+    fleet -- which is the opposite of what a canary is for.
+
+    Pod names stay tied to the framework's index in FOLD_FRAMEWORKS, not to
+    its position in the filtered list, so a canary pod and the same fold in a
+    later full run carry the same name and `reap` recognises both.
+    """
+    if not folds:
+        return list(POD_CONFIGS)
+    unknown = [f for f in folds if f not in FOLD_FRAMEWORKS]
+    if unknown:
+        raise ValueError(
+            f"Unknown fold(s) {unknown}. Expected any of {FOLD_FRAMEWORKS}."
+        )
+    wanted = set(folds)
+    return [c for c in POD_CONFIGS if c["role"] in wanted]
+
+
 def _get_pod_env() -> dict[str, str]:
     """Environment exported on the pod before the fold command runs.
 
@@ -348,13 +371,14 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     }
 
 
-def provision() -> list[dict[str, Any]]:
+def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
+    configs = select_pod_configs(folds)
     logger.info("Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
     gpu_type = find_fastest_available(
         min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
     )
-    budget = _check_budget(gpu_type, len(POD_CONFIGS))
+    budget = _check_budget(gpu_type, len(configs))
 
     # Record the intent BEFORE creating anything. create_pods_parallel returns
     # only once every pod is up, so a partial failure previously left running
@@ -363,12 +387,12 @@ def provision() -> list[dict[str, Any]]:
         "budget": budget,
         "started_at": time.time(),
         "state": "provisioning",
-        "requested": [c["name"] for c in POD_CONFIGS],
+        "requested": [c["name"] for c in configs],
     })
 
     try:
         pods = create_pods_parallel(
-            POD_CONFIGS, gpu_type, image=DOCKER_IMAGE,
+            configs, gpu_type, image=DOCKER_IMAGE,
             volume_gb=50,
             # ~12GB of site-packages plus a pip cache and HF downloads. 20GB
             # left no headroom and the failure mode is a fold dying late.
@@ -551,7 +575,10 @@ def collect(config_name: str = "phase1b_primary") -> list[str]:
     return failed
 
 
-def aggregate(config_name: str = "phase1b_primary") -> dict[str, Any]:
+def aggregate(
+    config_name: str = "phase1b_primary",
+    folds: list[str] | None = None,
+) -> dict[str, Any]:
     """Micro-average the collected folds and write the experiment record.
 
     The RunPod path had no aggregation step at all. Averaging the five fold
@@ -568,11 +595,24 @@ def aggregate(config_name: str = "phase1b_primary") -> dict[str, Any]:
     )
 
     local_results = RESULTS_DIR / config_name
-    fold_results = load_fold_results(local_results)
+    # An explicitly scoped run declares its own fold set; anything else must
+    # match the full LOFO set, so a partial cross-validation cannot be
+    # aggregated into a headline number by omission.
+    fold_results = load_fold_results(
+        local_results, expected_frameworks=set(folds) if folds else None,
+    )
+    if folds:
+        logger.warning(
+            "Aggregating a SCOPED run over %s. This is not a LOFO result and "
+            "must not be reported as one.", sorted(folds),
+        )
     logger.info("Aggregating %d folds from %s", len(fold_results), local_results)
 
     record = {
         "config_name": config_name,
+        # Marks the record itself, so a scoped run cannot be mistaken for a
+        # full cross-validation once it is read back out of the file.
+        "scoped_to_folds": sorted(folds) if folds else None,
         "aggregate_hit1": aggregate_fold_results(fold_results),
         "gate": gate_decision(fold_results),
         "per_fold": {
@@ -749,6 +789,7 @@ def reap(confirm: bool = False) -> None:
 def full_pipeline(
     config_name: str = "phase1b_primary",
     arm_flags: tuple[str, ...] = (),
+    folds: list[str] | None = None,
 ) -> None:
     logger.info("=" * 60)
     logger.info("PHASE 1B PARALLEL FOLD EXECUTION")
@@ -763,7 +804,7 @@ def full_pipeline(
     try:
         # provision() was outside this try, so the stage with the highest
         # orphan rate was the one the finally never covered.
-        provision()
+        provision(folds)
         run_folds(config_name, arm_flags)
         uncollected = collect(config_name)
         if uncollected:
@@ -792,7 +833,7 @@ def full_pipeline(
     elapsed = time.time() - start
     logger.info("Total pipeline time: %.1fm", elapsed / 60)
 
-    aggregate(config_name)
+    aggregate(config_name, folds)
     # Tracking is last and non-fatal. The fold records are on disk and
     # aggregated by this point, so a WandB outage must not fail a run whose
     # results are already safe. `track` re-runs cleanly on its own.
@@ -822,6 +863,11 @@ def main() -> int:
                         help="Experiment config name")
     parser.add_argument("--confirm", action="store_true",
                         help="Required by 'reap' to actually terminate pods")
+    parser.add_argument("--folds", type=str, default=None,
+                        help="Comma-separated subset of folds to provision and "
+                             "run, for a canary. Omit for the full LOFO set. "
+                             "A scoped aggregate is labelled as such and is "
+                             "not a cross-validation result.")
     # The arm has to reach the pod. Without these the orchestrator ran the
     # prose arm whatever --config-name said, so a three-arm ablation would have
     # been three identical runs in three differently named directories.
@@ -833,6 +879,11 @@ def main() -> int:
                         help="Ablation arm: cut each control at its first "
                              "remediation heading")
     args = parser.parse_args()
+
+    folds = (
+        [f.strip() for f in args.folds.split(",") if f.strip()]
+        if args.folds else None
+    )
 
     arm_flags = tuple(
         flag for flag, on in (("--no-prose", args.no_prose),
@@ -849,9 +900,9 @@ def main() -> int:
         )
 
     if args.action == "full":
-        full_pipeline(args.config_name, arm_flags)
+        full_pipeline(args.config_name, arm_flags, folds)
     elif args.action == "provision":
-        provision()
+        provision(folds)
     elif args.action == "run":
         run_folds(args.config_name, arm_flags)
     elif args.action == "collect":
@@ -863,7 +914,7 @@ def main() -> int:
             )
             return 1
     elif args.action == "aggregate":
-        aggregate(args.config_name)
+        aggregate(args.config_name, folds)
     elif args.action == "track":
         return track(args.config_name)
     elif args.action == "teardown":
@@ -875,7 +926,7 @@ def main() -> int:
         gpu_type = find_fastest_available(
             min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
         )
-        _check_budget(gpu_type, len(POD_CONFIGS))
+        _check_budget(gpu_type, len(select_pod_configs(folds)))
     return 0
 
 

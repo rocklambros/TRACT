@@ -430,4 +430,55 @@ def apply_prose_to_corpus(
         # track is part of the record the evaluation reports, so keep it honest.
         updated.append(replace(item, control_text=text, track="full-text"))
 
-    return updated
+    return _keep_items_resolvable(corpus, updated, stats)
+
+
+def _keep_items_resolvable(
+    original: list[Any],
+    updated: list[Any],
+    stats: SelectionStats | None = None,
+) -> list[Any]:
+    """Revert any substitution that made two items indistinguishable.
+
+    Identity preservation is not sufficient on its own. Several NIST AI 100-2
+    sections expand to the same paragraph, so after substitution ten eval items
+    formed groups that share an anchor while pointing at DIFFERENT ground-truth
+    hubs. No model can score better than one item per group, which puts a
+    ceiling on the prose arms that the title arm does not have -- the comparison
+    would then be measuring a data collision rather than the anchor.
+
+    Items whose prose collides with a different answer keep their title, which
+    is unique by construction. Colliding items that share the SAME answer are
+    left alone: they are genuinely the same question asked twice, and the
+    grader treats them identically either way.
+    """
+    from collections import defaultdict
+
+    answers_by_text: dict[str, set[str]] = defaultdict(set)
+    for item in updated:
+        answers_by_text[item.control_text].add(item.ground_truth_hub_id)
+
+    conflicted = {t for t, hubs in answers_by_text.items() if len(hubs) > 1}
+    if not conflicted:
+        return updated
+
+    resolved: list[Any] = []
+    reverted = 0
+    for before, after in zip(original, updated):
+        if after.control_text in conflicted:
+            resolved.append(before)
+            reverted += 1
+            if stats is not None:
+                stats.record(
+                    canonical_framework(before.framework_name),
+                    TextSelection(before.control_text, "title"),
+                )
+        else:
+            resolved.append(after)
+
+    logger.warning(
+        "Reverted %d eval item(s) to their title: their prose was shared with "
+        "an item having a different ground-truth hub, which would have capped "
+        "accuracy on those items by construction.", reverted,
+    )
+    return resolved

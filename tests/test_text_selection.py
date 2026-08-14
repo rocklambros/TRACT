@@ -261,8 +261,17 @@ class TestArmIdentityInvariant:
             i.ground_truth_hub_id for i in before
         ]
 
-    def test_two_items_sharing_prose_do_not_collapse(self) -> None:
-        """The exact failure: distinct items whose prose happens to match."""
+    def test_two_items_sharing_prose_stay_distinguishable(self) -> None:
+        """Distinct items whose prose happens to match.
+
+        Originally this asserted only that the two items did not merge, and
+        accepted that both ended up carrying the same anchor. That is not
+        enough: two items with one anchor and two different correct answers
+        cap accuracy at one of the pair no matter what the model does, and the
+        cap applies to the prose arms and not to the title arm, so the arm
+        comparison measures the collision rather than the anchor. They must
+        stay both present AND separable.
+        """
         from tract.text_selection import ProseIndex, apply_prose_to_corpus
 
         shared = "The same paragraph describes both of these sections."
@@ -280,8 +289,14 @@ class TestArmIdentityInvariant:
         after = apply_prose_to_corpus(corpus, index)
 
         assert len(after) == 2, "identical prose must not merge two eval items"
-        assert after[0].control_text == after[1].control_text
         assert after[0].ground_truth_hub_id != after[1].ground_truth_hub_id
+        assert after[0].control_text != after[1].control_text, (
+            "two anchors with different correct answers must not be identical"
+        )
+        # Reverting to the title is how they stay separable; titles are unique
+        # by construction because the corpus was de-duplicated on them.
+        assert after[0].control_text == "Alpha"
+        assert after[1].control_text == "Beta"
 
     def test_no_index_is_a_passthrough(self) -> None:
         from tract.text_selection import apply_prose_to_corpus
