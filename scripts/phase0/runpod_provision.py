@@ -11,7 +11,6 @@ import re
 import socket
 import subprocess
 import time
-from pathlib import Path
 from typing import Final
 
 import requests
@@ -73,24 +72,111 @@ def list_available_gpus(min_vram_gb: int = 48) -> list[dict]:
     ]
 
 
-def find_fastest_available(min_vram_gb: int = 48) -> str:
+def get_gpu_price(gpu_type_id: str, gpu_count: int = 1) -> float:
+    """On-demand USD/hour for one pod of this GPU type.
+
+    Raises if the price cannot be read. A run whose hourly rate is unknown
+    cannot be checked against a budget, and "unknown" must not silently become
+    "free" -- that is how a fleet of the most expensive part on the market gets
+    provisioned against a ceiling that exists only in prose.
+    """
+    data = _gql(
+        "query GpuPrice($id: String, $input: GpuLowestPriceInput) { "
+        "  gpuTypes(input: {id: $id}) { "
+        "    id displayName "
+        "    lowestPrice(input: $input) { uninterruptablePrice minimumBidPrice } "
+        "  } "
+        "}",
+        {"id": gpu_type_id, "input": {"gpuCount": gpu_count}},
+    )
+    types = data.get("gpuTypes") or []
+    if not types:
+        raise RuntimeError(f"No price information returned for GPU type {gpu_type_id!r}")
+
+    lowest = types[0].get("lowestPrice") or {}
+    price = lowest.get("uninterruptablePrice")
+    if price is None:
+        raise RuntimeError(
+            f"RunPod returned no on-demand price for {gpu_type_id!r} "
+            f"(lowestPrice={lowest!r}). Refusing to provision against an "
+            "unknown hourly rate."
+        )
+    return float(price)
+
+
+def find_fastest_available(
+    min_vram_gb: int = 48,
+    max_usd_per_hour: float | None = None,
+    gpu_count: int = 1,
+) -> str:
+    """Select a GPU type, honouring the preference order and a price ceiling.
+
+    Args:
+        max_usd_per_hour: Reject any GPU type above this on-demand rate. The
+            previous fallback was "largest VRAM wins", which can select a part
+            several times the rate of an H100 when the preferred types are all
+            unavailable.
+    """
     gpus = list_available_gpus(min_vram_gb)
+    if not gpus:
+        raise RuntimeError(f"No GPU with >= {min_vram_gb}GB VRAM available")
+
     available_ids = {g["id"] for g in gpus}
+    ordered = [p for p in GPU_PREFERENCE if p in available_ids]
+    # Preference order first, then remaining candidates by VRAM.
+    ordered += [
+        g["id"] for g in sorted(gpus, key=lambda g: -(g.get("memoryInGb") or 0))
+        if g["id"] not in GPU_PREFERENCE
+    ]
 
-    for pref in GPU_PREFERENCE:
-        if pref in available_ids:
-            return pref
+    rejected: list[str] = []
+    for gpu_id in ordered:
+        try:
+            price = get_gpu_price(gpu_id, gpu_count)
+        except RuntimeError as exc:
+            logger.warning("Skipping %s: %s", gpu_id, exc)
+            rejected.append(f"{gpu_id} (no price)")
+            continue
+        if max_usd_per_hour is not None and price > max_usd_per_hour:
+            logger.warning("Skipping %s: $%.2f/hr exceeds the $%.2f/hr ceiling",
+                           gpu_id, price, max_usd_per_hour)
+            rejected.append(f"{gpu_id} (${price:.2f}/hr)")
+            continue
+        logger.info("Selected GPU %s at $%.2f/hr", gpu_id, price)
+        return gpu_id
 
-    if gpus:
-        gpus.sort(key=lambda g: -(g.get("memoryInGb") or 0))
-        return gpus[0]["id"]
-
-    raise RuntimeError(f"No GPU with >= {min_vram_gb}GB VRAM available")
+    raise RuntimeError(
+        f"No GPU with >= {min_vram_gb}GB VRAM is available within "
+        f"${max_usd_per_hour}/hr. Rejected: {rejected}"
+    )
 
 
 def _validate_pod_id(pod_id: str) -> None:
     if not re.match(r'^[a-zA-Z0-9_-]+$', pod_id):
         raise ValueError(f"Invalid pod_id: {pod_id}")
+
+
+def validate_ssh_endpoint(ip: str, port: int) -> tuple[str, int]:
+    """Validate an API-supplied SSH endpoint before it reaches a shell.
+
+    publicIp and portMappings come from a remote API and are interpolated into
+    shell commands. Parse the address rather than pattern-matching it, so a
+    value carrying shell metacharacters cannot reach `ssh`/`rsync` at all.
+    Returns the normalised (ip, port).
+    """
+    import ipaddress
+
+    try:
+        address = ipaddress.ip_address(ip)
+    except ValueError as exc:
+        raise ValueError(
+            f"RunPod returned a public IP that is not an IP address: {ip!r}"
+        ) from exc
+
+    if not isinstance(port, int) or not 1 <= port <= 65535:
+        raise ValueError(f"RunPod returned an out-of-range SSH port: {port!r}")
+
+    return str(address), int(port)
 
 
 def create_pod(
@@ -165,10 +251,13 @@ def _wait_for_ssh(pod_id: str) -> dict:
         port_mappings = pod.get("portMappings", {})
         ssh_port = port_mappings.get("22")
         if ip and ssh_port:
+            # Validate before the endpoint is stored, so nothing downstream can
+            # interpolate an unvalidated API value into a shell command.
+            safe_ip, safe_port = validate_ssh_endpoint(ip, int(ssh_port))
             try:
-                s = socket.create_connection((ip, int(ssh_port)), timeout=5)
+                s = socket.create_connection((safe_ip, safe_port), timeout=5)
                 s.close()
-                return {"ip": ip, "port": int(ssh_port)}
+                return {"ip": safe_ip, "port": safe_port}
             except (OSError, socket.timeout):
                 pass
         elapsed = int(time.time() - start)
@@ -244,9 +333,40 @@ def terminate_pod(pod_id: str) -> None:
     logger.info("Terminated pod %s", pod_id)
 
 
+def terminate_pods(pod_ids: list[str]) -> list[str]:
+    """Terminate exactly these pods. Returns the ids that failed to terminate.
+
+    Scoped teardown. Prefer this to terminate_all in anything automated: this
+    account may be running work that has nothing to do with the caller.
+    Continues past a failure so one unreachable pod cannot strand the rest,
+    and reports what is still up rather than leaving it billing silently.
+    """
+    failed: list[str] = []
+    for pod_id in pod_ids:
+        try:
+            terminate_pod(pod_id)
+        except Exception as exc:  # noqa: BLE001 - report every failure, stop for none
+            logger.error("Failed to terminate pod %s: %s", pod_id, exc)
+            failed.append(pod_id)
+    if failed:
+        logger.error(
+            "STILL RUNNING and billing: %s. Terminate them from the RunPod "
+            "console or with --terminate <id>.", failed,
+        )
+    return failed
+
+
 def terminate_all() -> None:
-    for pod in get_running_pods():
-        terminate_pod(pod["id"])
+    """Terminate every running pod on the account.
+
+    Account-wide and indiscriminate: it will kill pods belonging to unrelated
+    work. Kept for manual console-style use. Automated teardown should call
+    terminate_pods with the ids it created.
+    """
+    pods = get_running_pods()
+    logger.warning("terminate_all: terminating ALL %d running pods on this "
+                   "account, including any not created by this run", len(pods))
+    terminate_pods([p["id"] for p in pods])
 
 
 if __name__ == "__main__":

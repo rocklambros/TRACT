@@ -1,14 +1,25 @@
 """Phase 1B RunPod parallel fold executor.
 
-Provisions 5 H100 pods (one per LOFO fold), bootstraps them in parallel,
-runs training + evaluation simultaneously, collects results, tears down.
+Provisions one pod per LOFO fold, bootstraps them in parallel, runs training
+and evaluation simultaneously, collects results, aggregates, tears down.
 
 Usage:
-    python -m scripts.phase1b.runpod_parallel                    # full pipeline
-    python -m scripts.phase1b.runpod_parallel provision          # create pods only
-    python -m scripts.phase1b.runpod_parallel run                # bootstrap + run on existing pods
-    python -m scripts.phase1b.runpod_parallel collect            # rsync results back
-    python -m scripts.phase1b.runpod_parallel teardown           # terminate all pods
+    python -m scripts.phase1b.runpod_parallel                 # full pipeline
+    python -m scripts.phase1b.runpod_parallel price           # budget check only, creates nothing
+    python -m scripts.phase1b.runpod_parallel provision       # create pods only
+    python -m scripts.phase1b.runpod_parallel run             # bootstrap + run on existing pods
+    python -m scripts.phase1b.runpod_parallel collect         # rsync results back
+    python -m scripts.phase1b.runpod_parallel aggregate       # micro-average + gate decision
+    python -m scripts.phase1b.runpod_parallel teardown        # terminate THIS RUN's pods
+    python -m scripts.phase1b.runpod_parallel reap --confirm  # recover from a dead orchestrator
+
+Before the first run:
+    ssh-keygen -t ed25519 -f ~/.ssh/tract_runpod -N ''
+and register ~/.ssh/tract_runpod.pub with the RunPod account.
+
+Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 1000),
+TRACT_RUNPOD_MAX_HOURLY (12), TRACT_RUNPOD_MAX_HOURS (6),
+TRACT_RUNPOD_SSH_KEY.
 """
 from __future__ import annotations
 
@@ -19,7 +30,6 @@ import logging
 import os
 import shlex
 import subprocess
-import sys
 import time
 from pathlib import Path
 from typing import Final
@@ -27,9 +37,9 @@ from typing import Final
 from scripts.phase0.runpod_provision import (
     create_pods_parallel,
     find_fastest_available,
-    get_running_pods,
-    terminate_all,
-    terminate_pod,
+    get_gpu_price,
+    terminate_pods,
+    validate_ssh_endpoint,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -39,14 +49,53 @@ PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase1b"
 POD_STATE_FILE: Final[Path] = PROJECT_ROOT / "scripts" / "phase1b" / ".pod_state.json"
 
-SSH_KEY: Final[str] = os.path.expanduser("~/.ssh/id_ed25519")
+# A run-scoped key, not the operator's general-purpose identity. The default
+# used to be ~/.ssh/id_ed25519, offered on every handshake to a host whose key
+# was never checked. Override for a different path; provision it with
+# `ssh-keygen -t ed25519 -f ~/.ssh/tract_runpod -N ""` and register the public
+# half with RunPod.
+SSH_KEY: Final[str] = os.environ.get(
+    "TRACT_RUNPOD_SSH_KEY", os.path.expanduser("~/.ssh/tract_runpod")
+)
+# Host keys are recorded per run rather than discarded to /dev/null, so a pod
+# whose key changes mid-run is a hard failure instead of a silent reconnect to
+# something else. accept-new trusts first contact, which is the best available
+# posture given RunPod publishes no host key in advance.
+KNOWN_HOSTS_FILE: Final[Path] = (
+    Path(__file__).resolve().parent / ".runpod_known_hosts"
+)
 SSH_OPTS: Final[str] = (
-    f"-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
+    f"-o StrictHostKeyChecking=accept-new "
+    f"-o UserKnownHostsFile={KNOWN_HOSTS_FILE} "
+    f"-o IdentitiesOnly=yes "
     f"-o LogLevel=ERROR -o ServerAliveInterval=60 -o ServerAliveCountMax=10 "
     f"-i {SSH_KEY}"
 )
 
-DOCKER_IMAGE: Final[str] = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
+# Digest-pinned. A mutable tag let the image change under the run: the previous
+# tag shipped torch 2.4.0, which cannot run the pinned stack (torch 2.13
+# requires CUDA 13). See the ml-stack pin for how these digests were resolved.
+DOCKER_IMAGE: Final[str] = (
+    "runpod/pytorch@sha256:"
+    "bf9f4b90f4a8cd55d902b74003859fd6bce06255bb135acd964a7b71bf31fa05"
+)
+
+# Budget controls. The $1000 ceiling was prose; these make it a gate.
+BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "1000"))
+# Refuse a part whose rate would burn the budget faster than the run can finish.
+MAX_USD_PER_HOUR_PER_POD: Final[float] = float(
+    os.environ.get("TRACT_RUNPOD_MAX_HOURLY", "12")
+)
+# Folds are expected in well under this; it is the wall the watchdog enforces.
+MAX_RUN_HOURS: Final[float] = float(os.environ.get("TRACT_RUNPOD_MAX_HOURS", "6"))
+
+# A fold's results run to gigabytes; the previous 300s was optimistic. Retries
+# because a failed collection destroys work that has already been paid for.
+RSYNC_TIMEOUT_S: Final[int] = 1800
+RSYNC_ATTEMPTS: Final[int] = 3
+
+# One fold: LoRA training plus a paired zero-shot pass.
+FOLD_TIMEOUT_S: Final[int] = 7200
 
 FOLD_FRAMEWORKS: Final[list[str]] = [
     "MITRE ATLAS",
@@ -62,27 +111,37 @@ POD_CONFIGS: Final[list[dict[str, str]]] = [
 ]
 
 
-def _get_credential(name: str) -> str:
-    result = subprocess.run(
-        ["pass", name], capture_output=True, text=True, check=True, timeout=10,
-    )
-    value = result.stdout.strip()
-    if not value:
-        raise RuntimeError(f"pass returned empty value for {name}")
-    return value
-
-
 def _get_pod_env() -> dict[str, str]:
-    env: dict[str, str] = {}
-    try:
-        env["WANDB_API_KEY"] = _get_credential("wandb/api-key")
-    except Exception as e:
-        logger.warning("Could not get WandB API key: %s", e)
-    try:
-        env["HF_TOKEN"] = _get_credential("huggingface/token")
-    except Exception as e:
-        logger.warning("Could not get HuggingFace token: %s", e)
-    return env
+    """Environment exported on the pod before the fold command runs.
+
+    Deliberately carries no credentials. The fold needs neither:
+    BAAI/bge-large-en-v1.5 is a public repo that fetches anonymously, and
+    tract/training/loop.py sets report_to="none", so WandB is never
+    initialised on this path. Shipping a HuggingFace write token and a WandB
+    key to five rented hosts bought nothing and put both on a machine the
+    operator does not control.
+
+    HF_HOME is redirected onto the 50GB volume; the container disk is not
+    where a multi-gigabyte model cache belongs.
+    """
+    return {
+        "HF_HOME": "/workspace/.cache/huggingface",
+        "HF_HUB_DISABLE_TELEMETRY": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        # Determinism, per PRD 6.4.2.
+        "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+    }
+
+
+def _require_ssh_key() -> None:
+    if not os.path.exists(SSH_KEY):
+        raise FileNotFoundError(
+            f"No SSH key at {SSH_KEY}. This run uses a dedicated key rather "
+            f"than the operator's general-purpose identity. Create one:\n"
+            f"  ssh-keygen -t ed25519 -f {SSH_KEY} -N ''\n"
+            f"then add {SSH_KEY}.pub to the RunPod account's SSH keys. Set "
+            f"TRACT_RUNPOD_SSH_KEY to use a different path."
+        )
 
 
 def _ssh(
@@ -91,6 +150,8 @@ def _ssh(
     env: dict[str, str] | None = None,
     timeout: int = 3600,
 ) -> subprocess.CompletedProcess:
+    _require_ssh_key()
+    ip, port = validate_ssh_endpoint(ip, port)
     env_lines = ""
     if env:
         env_lines = "\n".join(f'export {k}="{v}"' for k, v in env.items()) + "\n"
@@ -117,6 +178,7 @@ def _ssh(
 
 
 def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
+    ip, port = validate_ssh_endpoint(ip, port)
     cmd = (
         f"rsync -rltz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
         f"--exclude='results' --exclude='.mypy_cache' --exclude='models' "
@@ -124,38 +186,158 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     logger.info("[rsync to] %s:%d %s", ip, port, remote_path)
-    subprocess.run(cmd, shell=True, check=True, timeout=300)
+    subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
 
 
 def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
-    cmd = f"rsync -rltz -e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
-    logger.info("[rsync from] %s:%d %s", ip, port, remote_path)
-    subprocess.run(cmd, shell=True, check=True, timeout=300)
+    """Retrieve results, with retries.
+
+    A fold's output runs to gigabytes and the old 300s timeout was optimistic
+    for it. Collection is also the one step whose failure destroys work that
+    has already been paid for, so it retries rather than giving up first time.
+    """
+    ip, port = validate_ssh_endpoint(ip, port)
+    cmd = (
+        f"rsync -rltz --partial --timeout=120 "
+        f"-e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
+    )
+    last_error: Exception | None = None
+    for attempt in range(1, RSYNC_ATTEMPTS + 1):
+        logger.info("[rsync from] %s:%d %s (attempt %d/%d)",
+                    ip, port, remote_path, attempt, RSYNC_ATTEMPTS)
+        try:
+            subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+            return
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+            last_error = exc
+            logger.warning("  rsync attempt %d failed: %s", attempt, exc)
+            if attempt < RSYNC_ATTEMPTS:
+                time.sleep(10 * attempt)
+    raise RuntimeError(
+        f"Failed to collect {remote_path} from {ip}:{port} after "
+        f"{RSYNC_ATTEMPTS} attempts: {last_error}"
+    )
 
 
-def _save_pod_state(pods: list[dict]) -> None:
+def _save_pod_state(pods: list[dict], meta: dict | None = None) -> None:
     POD_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    POD_STATE_FILE.write_text(json.dumps(pods, indent=2, sort_keys=True))
-    logger.info("Pod state saved to %s", POD_STATE_FILE)
+    payload = {"pods": pods, "meta": meta or {}}
+    POD_STATE_FILE.write_text(json.dumps(payload, indent=2, sort_keys=True))
+    # Contains live pod IPs and SSH ports. .gitignore covers it; chmod keeps it
+    # off other local accounts too.
+    POD_STATE_FILE.chmod(0o600)
+    logger.info("Pod state saved to %s (%d pods)", POD_STATE_FILE, len(pods))
+
+
+def _read_pod_state() -> dict:
+    if not POD_STATE_FILE.exists():
+        raise FileNotFoundError(
+            f"No pod state file at {POD_STATE_FILE} — run 'provision' first"
+        )
+    raw = json.loads(POD_STATE_FILE.read_text())
+    # Tolerate the previous bare-list format so a state file written by an
+    # older run can still be read to tear its pods down.
+    if isinstance(raw, list):
+        return {"pods": raw, "meta": {}}
+    return raw
 
 
 def _load_pod_state() -> list[dict]:
-    if not POD_STATE_FILE.exists():
-        raise FileNotFoundError(f"No pod state file at {POD_STATE_FILE} — run 'provision' first")
-    return json.loads(POD_STATE_FILE.read_text())
+    pods = _read_pod_state()["pods"]
+    for pod in pods:
+        # These came from a remote API and are about to be interpolated into
+        # shell commands. Re-validate on the way out of storage as well.
+        pod["ip"], pod["port"] = validate_ssh_endpoint(pod["ip"], int(pod["port"]))
+    return pods
+
+
+def _check_deadline() -> None:
+    """Abort if the run has outlived its budgeted wall time."""
+    deadline = _read_pod_state().get("meta", {}).get("deadline")
+    if deadline and time.time() > deadline:
+        raise RuntimeError(
+            f"Run exceeded its {MAX_RUN_HOURS}h budget window. Pods are still "
+            "up. Collect what finished, then tear down: "
+            "python -m scripts.phase1b.runpod_parallel collect && "
+            "python -m scripts.phase1b.runpod_parallel teardown"
+        )
+
+
+def _check_budget(gpu_type: str, n_pods: int) -> dict:
+    """Refuse to provision a fleet whose worst case exceeds the budget.
+
+    There was no price query, no spend poll and no abort anywhere in this
+    module; the ceiling existed only in prose. This converts it into a
+    precondition that runs before any pod is created.
+    """
+    price_per_pod = get_gpu_price(gpu_type)
+    fleet_hourly = price_per_pod * n_pods
+    worst_case = fleet_hourly * MAX_RUN_HOURS
+
+    logger.info("Budget check:")
+    logger.info("  %s at $%.2f/hr x %d pods = $%.2f/hr",
+                gpu_type, price_per_pod, n_pods, fleet_hourly)
+    logger.info("  worst case over %.1fh = $%.2f (budget $%.2f)",
+                MAX_RUN_HOURS, worst_case, BUDGET_USD)
+
+    if worst_case > BUDGET_USD:
+        raise RuntimeError(
+            f"Refusing to provision: {n_pods} x {gpu_type} at "
+            f"${price_per_pod:.2f}/hr would cost ${worst_case:.2f} over the "
+            f"{MAX_RUN_HOURS}h cap, above the ${BUDGET_USD:.2f} budget. Raise "
+            f"TRACT_RUNPOD_BUDGET_USD, lower TRACT_RUNPOD_MAX_HOURS, or pick a "
+            f"cheaper part."
+        )
+    return {
+        "gpu_type": gpu_type,
+        "usd_per_hour_per_pod": price_per_pod,
+        "fleet_usd_per_hour": fleet_hourly,
+        "worst_case_usd": worst_case,
+        "budget_usd": BUDGET_USD,
+        "max_run_hours": MAX_RUN_HOURS,
+    }
 
 
 def provision() -> list[dict]:
-    logger.info("Finding fastest available GPU (>= 48GB VRAM)...")
-    gpu_type = find_fastest_available(min_vram_gb=48)
-    logger.info("Selected GPU: %s", gpu_type)
-
-    pods = create_pods_parallel(
-        POD_CONFIGS, gpu_type, image=DOCKER_IMAGE,
-        volume_gb=50, container_disk_gb=20,
+    logger.info("Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
+                MAX_USD_PER_HOUR_PER_POD)
+    gpu_type = find_fastest_available(
+        min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
     )
+    budget = _check_budget(gpu_type, len(POD_CONFIGS))
 
-    _save_pod_state(pods)
+    # Record the intent BEFORE creating anything. create_pods_parallel returns
+    # only once every pod is up, so a partial failure previously left running
+    # pods with no local record and nothing to terminate them by.
+    _save_pod_state([], meta={
+        "budget": budget,
+        "started_at": time.time(),
+        "state": "provisioning",
+        "requested": [c["name"] for c in POD_CONFIGS],
+    })
+
+    try:
+        pods = create_pods_parallel(
+            POD_CONFIGS, gpu_type, image=DOCKER_IMAGE,
+            volume_gb=50,
+            # ~12GB of site-packages plus a pip cache and HF downloads. 20GB
+            # left no headroom and the failure mode is a fold dying late.
+            container_disk_gb=60,
+        )
+    except Exception:
+        logger.error(
+            "Provisioning failed. Any pods that were created are ORPHANED and "
+            "still billing. Reap them: python -m scripts.phase1b.runpod_parallel "
+            "reap --confirm"
+        )
+        raise
+
+    _save_pod_state(pods, meta={
+        "budget": budget,
+        "started_at": time.time(),
+        "state": "running",
+        "deadline": time.time() + MAX_RUN_HOURS * 3600,
+    })
     logger.info("All %d pods provisioned and SSH-ready.", len(pods))
     return pods
 
@@ -169,17 +351,26 @@ def _bootstrap_pod(pod: dict) -> None:
     _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
 
     _ssh(ip, port, (
+        "mkdir -p /workspace/.cache/huggingface && "
         "cd /workspace/tract && "
         "pip install --quiet -e '.[phase0]' && "
-        "pip install --quiet sentence-transformers==5.3.0 peft datasets accelerate"
+        "pip install --quiet -r requirements-train.txt"
     ))
 
+    # Fatal, not advisory. This probe used to run with check=False while
+    # tract/training/loop.py sets fp16=torch.cuda.is_available(): a driver
+    # mismatch therefore degraded silently to CPU, and the first symptom would
+    # have been five GPUs billing for an hour while every fold timed out.
     _ssh(ip, port, (
-        "python --version && nvidia-smi --query-gpu=name,memory.total --format=csv,noheader "
-        "&& python -c 'import torch; import sentence_transformers; import peft; "
-        "print(f\"torch={torch.__version__} cuda={torch.cuda.is_available()} "
+        "nvidia-smi --query-gpu=name,memory.total --format=csv,noheader && "
+        "cd /workspace/tract && python -c "
+        "'import torch, sentence_transformers, peft, transformers; "
+        "assert torch.cuda.is_available(), \"CUDA unavailable: this pod would "
+        "train on CPU\"; "
+        "print(f\"torch={torch.__version__} cuda={torch.version.cuda} "
+        "gpu={torch.cuda.get_device_name(0)} tf={transformers.__version__} "
         "st={sentence_transformers.__version__} peft={peft.__version__}\")'"
-    ), check=False)
+    ))
 
     logger.info("Bootstrap complete for fold '%s'", role)
 
@@ -203,7 +394,7 @@ def _run_fold_on_pod(pod: dict, config_name: str) -> dict:
     start = time.time()
     env = _get_pod_env()
     try:
-        result = _ssh(ip, port, fold_cmd, env=env, timeout=3600)
+        _ssh(ip, port, fold_cmd, env=env, timeout=FOLD_TIMEOUT_S)
         elapsed = time.time() - start
         logger.info("[%s] COMPLETE in %.1fm", framework, elapsed / 60)
         return {"fold": framework, "status": "ok", "elapsed_s": elapsed}
@@ -215,11 +406,34 @@ def _run_fold_on_pod(pod: dict, config_name: str) -> dict:
 
 def run_folds(config_name: str = "phase1b_primary") -> None:
     pods = _load_pod_state()
+    _check_deadline()
 
     logger.info("Bootstrapping %d pods in parallel...", len(pods))
+    # Isolate failures. list(ex.map(...)) re-raises the first exception and
+    # abandons the rest, so one bad pod aborted the whole fleet while the other
+    # four kept billing.
+    bootstrap_errors: dict[str, str] = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
-        list(ex.map(_bootstrap_pod, pods))
-    logger.info("All pods bootstrapped.")
+        futures = {ex.submit(_bootstrap_pod, pod): pod["role"] for pod in pods}
+        for future in concurrent.futures.as_completed(futures):
+            role = futures[future]
+            try:
+                future.result()
+            except Exception as exc:  # noqa: BLE001 - collect all, decide after
+                logger.error("Bootstrap FAILED for '%s': %s", role, exc)
+                bootstrap_errors[role] = str(exc)
+
+    if bootstrap_errors:
+        # Every fold is needed for the aggregate, so a partial fleet cannot
+        # produce the number. Stop before paying for training on it.
+        raise RuntimeError(
+            f"{len(bootstrap_errors)} of {len(pods)} pods failed to bootstrap: "
+            f"{sorted(bootstrap_errors)}. Every fold is required for the "
+            f"aggregate, so training on the rest would buy nothing. Pods are "
+            f"still up; tear down with 'teardown' or investigate first. "
+            f"Errors: {bootstrap_errors}"
+        )
+    logger.info("All %d pods bootstrapped.", len(pods))
 
     logger.info("=" * 60)
     logger.info("RUNNING 5 FOLDS IN PARALLEL")
@@ -313,11 +527,66 @@ def aggregate(config_name: str = "phase1b_primary") -> dict:
 
 
 def teardown() -> None:
-    logger.info("Terminating all running pods...")
-    terminate_all()
-    if POD_STATE_FILE.exists():
-        POD_STATE_FILE.unlink()
-    logger.info("All pods terminated.")
+    """Terminate only the pods this run created.
+
+    Previously called terminate_all(), which kills every running pod on the
+    account including work belonging to someone else. It also deleted the state
+    file unconditionally, so a pod that failed to terminate lost its only local
+    record and kept billing unnoticed.
+    """
+    state = _read_pod_state()
+    pod_ids = [p["pod_id"] for p in state["pods"] if p.get("pod_id")]
+    if not pod_ids:
+        logger.warning("No pod ids in %s; nothing scoped to terminate", POD_STATE_FILE)
+        return
+
+    logger.info("Terminating %d pods from this run...", len(pod_ids))
+    failed = terminate_pods(pod_ids)
+
+    if failed:
+        # Keep the record. It is the only thing that names what is still up.
+        state["meta"]["state"] = "teardown_failed"
+        state["meta"]["still_running"] = failed
+        _save_pod_state(state["pods"], state["meta"])
+        raise RuntimeError(
+            f"{len(failed)} pod(s) did not terminate and are still billing: "
+            f"{failed}. State kept at {POD_STATE_FILE}."
+        )
+
+    POD_STATE_FILE.unlink()
+    logger.info("All %d pods terminated.", len(pod_ids))
+
+
+def reap(confirm: bool = False) -> None:
+    """Terminate every pod named by this run's state file.
+
+    Nothing reaps pods if the orchestrating process dies: the RunPod create
+    payload carries no server-side TTL, so a killed orchestrator leaves the
+    fleet billing until someone notices. This is the recovery path, and it
+    works from the state file alone.
+    """
+    try:
+        state = _read_pod_state()
+    except FileNotFoundError:
+        logger.info("No state file; nothing to reap from this run.")
+        return
+
+    pods = state["pods"]
+    meta = state.get("meta", {})
+    logger.info("State file records %d pod(s), state=%s, started_at=%s",
+                len(pods), meta.get("state"), meta.get("started_at"))
+    for pod in pods:
+        logger.info("  %s (%s) role=%s",
+                    pod.get("pod_id"), pod.get("name"), pod.get("role"))
+
+    if not confirm:
+        logger.warning("Dry run. Re-run with --confirm to terminate these pods.")
+        return
+
+    failed = terminate_pods([p["pod_id"] for p in pods if p.get("pod_id")])
+    if not failed:
+        POD_STATE_FILE.unlink(missing_ok=True)
+        logger.info("Reaped cleanly.")
 
 
 def full_pipeline(config_name: str = "phase1b_primary") -> None:
@@ -326,20 +595,37 @@ def full_pipeline(config_name: str = "phase1b_primary") -> None:
     logger.info("=" * 60)
     start = time.time()
 
-    pods = provision()
-    run_folds(config_name)
-    uncollected = collect(config_name)
-    if uncollected:
-        # Every fold that did not come back is a paid-for GPU hour whose only
-        # copy of the per-item indicators is still on the pod. Terminating now
-        # destroys it. Leave the pods up and make the operator decide.
-        raise RuntimeError(
-            f"Results were not collected from {uncollected}. Pods are still "
-            f"running and have NOT been terminated so the results can be "
-            f"retrieved: python -m scripts.phase1b.runpod_parallel collect. "
-            f"Tear down with 'teardown' once they are safe."
-        )
-    teardown()
+    # provision(); run_folds(); collect(); teardown() used to be a bare
+    # sequence. Any exception between the first and last call orphaned the
+    # whole fleet, which then billed until someone noticed. The sibling
+    # scripts/phase0/runpod_orchestrate.py already did this correctly.
+    provision()
+    results_are_safe = False
+    try:
+        run_folds(config_name)
+        uncollected = collect(config_name)
+        if uncollected:
+            # Every fold that did not come back is a paid-for GPU hour whose
+            # only copy of the per-item indicators is still on the pod.
+            raise RuntimeError(
+                f"Results were not collected from {uncollected}. Retry with "
+                f"'collect' before tearing anything down."
+            )
+        results_are_safe = True
+    finally:
+        if results_are_safe:
+            teardown()
+        else:
+            # Do not destroy results that were paid for and never retrieved.
+            # Leaving pods up costs money; terminating them costs the run.
+            logger.error(
+                "Pipeline did not reach a state where results are safely "
+                "collected. Pods have been LEFT RUNNING and are still billing "
+                "so the results can be recovered.\n"
+                "  retrieve : python -m scripts.phase1b.runpod_parallel collect\n"
+                "  then     : python -m scripts.phase1b.runpod_parallel teardown\n"
+                "  give up  : python -m scripts.phase1b.runpod_parallel reap --confirm"
+            )
 
     elapsed = time.time() - start
     logger.info("Total pipeline time: %.1fm", elapsed / 60)
@@ -351,9 +637,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Phase 1B RunPod parallel fold executor")
     parser.add_argument("action", nargs="?", default="full",
                         choices=["full", "provision", "run", "collect", "aggregate",
-                                 "teardown"])
+                                 "teardown", "reap", "price"])
     parser.add_argument("--config-name", type=str, default="phase1b_primary",
                         help="Experiment config name")
+    parser.add_argument("--confirm", action="store_true",
+                        help="Required by 'reap' to actually terminate pods")
     args = parser.parse_args()
 
     if args.action == "full":
@@ -368,6 +656,14 @@ def main() -> None:
         aggregate(args.config_name)
     elif args.action == "teardown":
         teardown()
+    elif args.action == "reap":
+        reap(confirm=args.confirm)
+    elif args.action == "price":
+        # Dry-run the budget gate without creating anything.
+        gpu_type = find_fastest_available(
+            min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
+        )
+        _check_budget(gpu_type, len(POD_CONFIGS))
 
 
 if __name__ == "__main__":
