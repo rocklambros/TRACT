@@ -53,19 +53,21 @@ def main() -> None:
     agg = result["aggregate_hit1"]
     logger.info("=" * 60)
     logger.info("EXPERIMENT COMPLETE: %s", config.name)
-    logger.info("  Aggregate hit@1: %.3f [%.3f, %.3f]",
-                agg["mean"], agg["ci_low"], agg["ci_high"])
+    logger.info("  Aggregate hit@1 (micro): %.4f [%.4f, %.4f] over n=%d",
+                agg["mean"], agg["ci_low"], agg["ci_high"], agg["n_total"])
+    logger.info("  Aggregate hit@1 (macro): %.4f", agg["macro_mean"])
 
-    zs_baseline = 0.399
-    gate_threshold = zs_baseline + 0.10
-    delta = agg["mean"] - zs_baseline
-    gate_pass = delta > 0.10
-    if gate_pass:
-        logger.info("  GATE: PASS (delta=%.3f > 0.10, trained=%.3f vs zero-shot=%.3f)",
-                    delta, agg["mean"], zs_baseline)
-    else:
-        logger.info("  GATE: FAIL (delta=%.3f, trained=%.3f, threshold=%.3f)",
-                    delta, agg["mean"], gate_threshold)
+    # gate_decision logs the full arithmetic, including both verdicts and any
+    # disagreement between them. The baseline is the paired one measured on the
+    # same items in the same run, not a constant carried over from a prior one:
+    # the delta used to be computed against a hardcoded 0.399, which cannot
+    # track a change in the eval set, the stack or the seed.
+    if "gate" not in result:
+        raise RuntimeError(
+            "No gate decision in the experiment result. The run was made "
+            "without the paired zero-shot baseline, so Gate 1 cannot be "
+            "evaluated from it."
+        )
     logger.info("=" * 60)
 
 

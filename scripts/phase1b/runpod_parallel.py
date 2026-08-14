@@ -289,7 +289,11 @@ def aggregate(config_name: str = "phase1b_primary") -> dict:
     baseline measured on the same items.
     """
     from tract.io import atomic_write_json
-    from tract.training.orchestrate import aggregate_fold_results, load_fold_results
+    from tract.training.orchestrate import (
+        aggregate_fold_results,
+        gate_decision,
+        load_fold_results,
+    )
 
     local_results = RESULTS_DIR / config_name
     fold_results = load_fold_results(local_results)
@@ -298,6 +302,7 @@ def aggregate(config_name: str = "phase1b_primary") -> dict:
     record = {
         "config_name": config_name,
         "aggregate_hit1": aggregate_fold_results(fold_results),
+        "gate": gate_decision(fold_results),
         "per_fold": {
             r["held_out_framework"]: r["metrics"] for r in fold_results
         },

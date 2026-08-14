@@ -26,6 +26,7 @@ from scripts.phase0.common import (
     load_curated_links,
 )
 from tract.config import (
+    PHASE1B_GATE_HIT1_DELTA,
     PHASE1B_RESULTS_DIR,
     PROCESSED_DIR,
 )
@@ -40,6 +41,7 @@ from tract.training.data_quality import load_and_filter_curated_links
 from tract.training.evaluate import (
     evaluate_on_fold,
     fold_stratified_bootstrap_ci,
+    paired_bootstrap_delta,
 )
 from tract.training.firewall import assert_firewall, build_all_hub_texts
 from tract.training.loop import save_checkpoint, train_model
@@ -284,8 +286,129 @@ def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]
     return aggregate
 
 
-def run_experiment(config: TrainingConfig) -> dict[str, Any]:
-    """Run a full LOFO experiment with the given config."""
+def gate_decision(
+    fold_results: list[dict[str, Any]],
+    threshold: float = PHASE1B_GATE_HIT1_DELTA,
+) -> dict[str, Any]:
+    """Evaluate Gate 1 against the paired zero-shot baseline.
+
+    PRD Section 6.4 pre-registers the criterion as "Micro-averaged
+    (sample-weighted) hit@1 delta > 0.10 over zero-shot baseline", with
+    per-fold delta, macro average and worst-fold delta reported as diagnostics,
+    and any fold whose delta is negative flagged for investigation.
+
+    Two verdicts are computed and BOTH are returned. They are never merged:
+
+    - ``point_estimate_pass`` is the pre-registered criterion exactly as
+      written: does the micro delta exceed the threshold.
+    - ``ci_low_pass`` applies the same threshold to the lower bound of the
+      paired bootstrap confidence interval on that delta.
+
+    The second is strictly the harder test. A point estimate above the
+    threshold whose interval still contains it means the eval set cannot
+    distinguish the model from the gate, which is a fact about the evidence
+    rather than a different metric. ``verdicts_agree`` says whether the choice
+    between them matters for this run. Substituting one for the other is a
+    decision for the owner of the pre-registration, not for this function, so
+    both are reported and neither is dropped.
+
+    The baseline must be the paired one recorded per fold by run_single_fold
+    with include_zero_shot=True: same items, same hub ids, same firewalled hub
+    texts. Pairing cancels item-level difficulty, and an unpaired delta on this
+    eval set produces an interval wide enough to swallow the threshold.
+    """
+    missing = [
+        r["held_out_framework"] for r in fold_results
+        if not r.get("zero_shot", {}).get("hit1_indicators")
+    ]
+    if missing:
+        raise ValueError(
+            f"Folds {sorted(missing)} carry no paired zero-shot indicators, so "
+            "the delta cannot be computed against the baseline they were "
+            "measured beside. Re-run them with include_zero_shot=True; do not "
+            "substitute a baseline figure from another run."
+        )
+
+    trained = [np.asarray(r["hit1_indicators"], dtype=float) for r in fold_results]
+    baseline = [
+        np.asarray(r["zero_shot"]["hit1_indicators"], dtype=float)
+        for r in fold_results
+    ]
+    # paired_bootstrap_delta reports B - A, so the baseline is A.
+    paired = paired_bootstrap_delta(baseline, trained)
+
+    per_fold = {}
+    for record, tr, bl in zip(fold_results, trained, baseline):
+        per_fold[record["held_out_framework"]] = {
+            "delta": float(np.mean(tr) - np.mean(bl)),
+            "trained_hit1": float(np.mean(tr)),
+            "zero_shot_hit1": float(np.mean(bl)),
+            "n_eval_items": int(len(tr)),
+        }
+
+    deltas = [v["delta"] for v in per_fold.values()]
+    worst_framework = min(per_fold, key=lambda k: per_fold[k]["delta"])
+    negative_folds = sorted(k for k, v in per_fold.items() if v["delta"] < 0)
+
+    point_estimate_pass = bool(paired["delta_mean"] > threshold)
+    ci_low_pass = bool(paired["ci_low"] > threshold)
+
+    decision = {
+        "threshold": threshold,
+        "micro_delta": paired["delta_mean"],
+        "ci_low": paired["ci_low"],
+        "ci_high": paired["ci_high"],
+        "p_value": paired["p_value"],
+        "paired": True,
+        "point_estimate_pass": point_estimate_pass,
+        "ci_low_pass": ci_low_pass,
+        "verdicts_agree": point_estimate_pass == ci_low_pass,
+        "macro_delta": float(np.mean(deltas)),
+        "worst_fold": worst_framework,
+        "worst_fold_delta": per_fold[worst_framework]["delta"],
+        "negative_folds": negative_folds,
+        "per_fold": per_fold,
+        "n_total": int(sum(len(t) for t in trained)),
+    }
+
+    logger.info("=" * 62)
+    logger.info("GATE 1  (PRD 6.4: micro hit@1 delta > %.2f over zero-shot)", threshold)
+    logger.info("  micro delta      : %+.4f  [%+.4f, %+.4f]  (paired, n=%d)",
+                paired["delta_mean"], paired["ci_low"], paired["ci_high"],
+                decision["n_total"])
+    logger.info("  macro delta      : %+.4f", decision["macro_delta"])
+    logger.info("  worst fold       : %s %+.4f",
+                worst_framework, decision["worst_fold_delta"])
+    logger.info("  pre-registered   : %s  (delta %.4f %s %.2f)",
+                "PASS" if point_estimate_pass else "FAIL",
+                paired["delta_mean"], ">" if point_estimate_pass else "<=", threshold)
+    logger.info("  CI lower bound   : %s  (ci_low %.4f %s %.2f)",
+                "PASS" if ci_low_pass else "FAIL",
+                paired["ci_low"], ">" if ci_low_pass else "<=", threshold)
+    if not decision["verdicts_agree"]:
+        logger.warning(
+            "  VERDICTS DISAGREE: the point estimate clears the gate but its "
+            "confidence interval contains the threshold. The eval set cannot "
+            "separate this model from the gate. Owner decision."
+        )
+    if negative_folds:
+        logger.warning("  FOLDS BELOW ZERO-SHOT: %s -- flagged per PRD 6.4",
+                       negative_folds)
+    logger.info("=" * 62)
+    return decision
+
+
+def run_experiment(
+    config: TrainingConfig,
+    include_zero_shot: bool = True,
+) -> dict[str, Any]:
+    """Run a full LOFO experiment with the given config.
+
+    Args:
+        include_zero_shot: Measure the paired zero-shot baseline on each fold.
+            Required for the Gate 1 delta; on by default so a gate decision is
+            never assembled from a baseline measured somewhere else.
+    """
     logger.info("Starting experiment: %s", config.name)
     exp_start = time.time()
 
@@ -319,19 +442,20 @@ def run_experiment(config: TrainingConfig) -> dict[str, Any]:
             eval_items=fw_items,
             hub_ids=hub_ids,
             output_dir=output_dir,
+            include_zero_shot=include_zero_shot,
         )
         fold_results.append(result)
 
-    aggregate = aggregate_fold_results(fold_results)
-
     experiment_result = {
         "config": config.to_dict(),
-        "aggregate_hit1": aggregate,
+        "aggregate_hit1": aggregate_fold_results(fold_results),
         "per_fold": {r["held_out_framework"]: r["metrics"] for r in fold_results},
         "raw_hash": raw_hash,
         "git_sha": _get_git_sha(),
         "total_elapsed_s": time.time() - exp_start,
     }
+    if include_zero_shot:
+        experiment_result["gate"] = gate_decision(fold_results)
     atomic_write_json(experiment_result, output_dir / "aggregate_metrics.json")
 
     return experiment_result
