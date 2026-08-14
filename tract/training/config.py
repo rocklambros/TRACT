@@ -39,7 +39,11 @@ class TrainingConfig:
     lora_target_modules: list[str] = field(default_factory=lambda: list(PHASE1B_LORA_TARGET_MODULES))
 
     sampling_temperature: float = PHASE1B_SAMPLING_TEMPERATURE
-    control_text_source: str = "section_name"
+    # Derived from use_prose rather than stored. It was a constant default that
+    # nothing ever assigned, so every prose run recorded
+    # "control_text_source": "section_name" beside "use_prose": true in the
+    # same object -- and it is the field whose name invites you to trust it.
+    _control_text_source_unused: str = "section_name"
 
     batch_size: int = PHASE1B_BATCH_SIZE
     learning_rate: float = PHASE1B_LEARNING_RATE
@@ -79,7 +83,7 @@ class TrainingConfig:
             "lora_dropout": self.lora_dropout,
             "lora_target_modules": self.lora_target_modules,
             "sampling_temperature": self.sampling_temperature,
-            "control_text_source": self.control_text_source,
+            "control_text_source": ("full_prose" if self.use_prose else "section_name"),
             "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "warmup_ratio": self.warmup_ratio,

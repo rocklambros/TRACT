@@ -205,6 +205,16 @@ FRAMEWORK_NAME_ALIASES: Final[dict[str, str]] = {
 # set to the title verbatim, and those must not be mistaken for full text.
 PROSE_MIN_EXTRA_CHARS: Final[int] = 20
 
+# The encoder truncates at PHASE1B_MAX_SEQ_LENGTH tokens regardless, so text
+# beyond this is discarded silently. Anchors are cut here instead, where it can
+# be counted and reported. Roughly four characters per token for English.
+#
+# This matters unevenly: measured over the eval corpus, the two smallest folds
+# were 100% over budget (OWASP Top10 for LLM median ~2,246 tokens, OWASP Top10
+# for ML ~1,135) while MITRE ATLAS was 0% over. A truncation that varies by
+# fold and by arm is a confound, not a detail.
+MAX_ANCHOR_CHARS: Final[int] = 2000
+
 PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70

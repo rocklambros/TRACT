@@ -299,14 +299,29 @@ class TestArmIdentityInvariant:
         assert exfil.control_text == "Model Exfiltration"
         assert exfil.track == "all"
 
-    def test_stopword_arm_preserves_identity_too(self) -> None:
+    def test_stopword_arm_preserves_identity_and_actually_filters(self) -> None:
+        """Asserting section_id equality alone proves nothing here.
+
+        dataclasses.replace cannot change section_id, so that assertion holds
+        even if the stopword argument were dropped entirely. The test has to
+        show the filter reached the text.
+        """
         from tract.text_selection import ProseIndex, apply_prose_to_corpus
 
         index = ProseIndex(CONTROLS)
         plain = apply_prose_to_corpus(self._corpus(), index)
-        filtered = apply_prose_to_corpus(self._corpus(), index, frozenset({"the", "a"}))
+        filtered = apply_prose_to_corpus(
+            self._corpus(), index, frozenset({"adversary", "the"}),
+        )
         assert [i.section_id for i in plain] == [i.section_id for i in filtered]
         assert len(plain) == len(filtered)
+
+        poisoning_plain = next(i for i in plain if i.section_id == "AML.T0001")
+        poisoning_filtered = next(i for i in filtered if i.section_id == "AML.T0001")
+        assert "adversary" in poisoning_plain.control_text.lower()
+        assert "adversary" not in poisoning_filtered.control_text.lower(), (
+            "the stopword set never reached the anchor"
+        )
 
 
 class TestLookupPrecedence:
@@ -331,3 +346,86 @@ class TestLookupPrecedence:
         hit = index.lookup("NIST AI 100-2", "2.2.4", "Adversarial training")
         assert hit is not None
         assert "Goodfellow" in hit.text, "the specific name must beat the coarser id"
+
+
+class TestAlternateTitlePrecedence:
+    """An alternate must never take a slot belonging to a real title.
+
+    "First writer wins" holds within one control and says nothing across
+    controls. NIST AI 100-2 section 2.3's generated alternate "Poisoning
+    Attacks" claimed the key before section 3.2.2, whose actual title is
+    "Poisoning Attacks", so the Generative-AI eval item resolved to the
+    Predictive-AI chapter's text. A wrong anchor, not a fallback, and invisible
+    downstream.
+    """
+
+    CONTROLS = [{
+        "framework_name": "NIST AI 100-2",
+        "controls": [
+            {"control_id": "2.3", "title": "Poisoning Attacks and Mitigations",
+             "description": "Predictive AI chapter: poisoning of training data at scale.",
+             "metadata": {"alt_titles": ["Poisoning Attacks"]}},
+            {"control_id": "3.2.2", "title": "Poisoning Attacks",
+             "description": "Generative AI chapter: poisoning through the model supply chain."},
+        ],
+    }]
+
+    def test_real_title_beats_another_controls_alternate(self) -> None:
+        from tract.text_selection import ProseIndex
+
+        index = ProseIndex(self.CONTROLS)
+        hit = index.lookup("NIST AI 100-2", None, "Poisoning Attacks")
+        assert hit is not None
+        assert "Generative AI chapter" in hit.text, (
+            "an alternate displaced a real title from another control"
+        )
+
+    def test_alternate_still_resolves_when_no_real_title_claims_it(self) -> None:
+        from tract.text_selection import ProseIndex
+
+        index = ProseIndex(self.CONTROLS)
+        hit = index.lookup("NIST AI 100-2", None, "Poisoning Attacks and Mitigations")
+        assert hit is not None and "Predictive AI chapter" in hit.text
+
+
+class TestSectionIdNormalization:
+
+    def test_opencre_section_prefix_is_stripped(self) -> None:
+        """NIST links carry "Sec. 2.2"; the parser emits "2.2"."""
+        from tract.text_selection import normalize_section_id
+
+        for raw in ("Sec. 2.2", "Sec 2.4.2", "Section 2.2", "  2.2  "):
+            assert normalize_section_id(raw) == "2.2" or normalize_section_id(raw) == "2.4.2"
+
+    def test_id_fallback_fires_across_the_prefix(self) -> None:
+        from tract.text_selection import ProseIndex
+
+        index = ProseIndex([{
+            "framework_name": "NIST AI 100-2",
+            "controls": [{"control_id": "2.2", "title": "Evasion",
+                          "description": "A long enough body to count as prose here."}],
+        }])
+        assert index.lookup("NIST AI 100-2", "Sec. 2.2", None) is not None
+
+
+class TestAnchorBudget:
+
+    def test_anchors_are_cut_to_the_encoder_budget_and_flagged(self) -> None:
+        """13,007-character anchors were being handed to a 512-token encoder."""
+        from tract.config import MAX_ANCHOR_CHARS
+        from tract.text_selection import prepare_anchor
+
+        text, truncated = prepare_anchor("x" * (MAX_ANCHOR_CHARS + 500))
+        assert truncated is True
+        assert len(text) <= MAX_ANCHOR_CHARS
+
+        short, untruncated = prepare_anchor("a short control")
+        assert untruncated is False and short == "a short control"
+
+    def test_anchors_are_nfc_normalised_and_null_stripped(self) -> None:
+        """The corpus builder sanitises titles; substitution was bypassing it."""
+        from tract.text_selection import prepare_anchor
+
+        text, _ = prepare_anchor("café \x00control")
+        assert "\x00" not in text
+        assert "café" in text

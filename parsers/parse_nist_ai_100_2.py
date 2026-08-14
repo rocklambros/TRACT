@@ -63,8 +63,34 @@ _NOISE = re.compile(
 )
 
 
+# pdfplumber drops the fi/fl ligature glyphs in this document, yielding
+# "classifcation", "verifcation", "identifed". That silently breaks the join:
+# the parser emitted "Formal verifcation" while OpenCRE links "Formal
+# verification", so the item could never resolve and fell back to its title.
+_LIGATURE_REPAIRS: Final[tuple[tuple[re.Pattern[str], str], ...]] = tuple(
+    (re.compile(bad, re.IGNORECASE), good) for bad, good in (
+        (r"\bclassifc", "classific"), (r"\bverifc", "verific"),
+        (r"\bidentifed\b", "identified"), (r"\bspecifc", "specific"),
+        (r"\bdefn", "defin"), (r"\bsignifcant", "significant"),
+        (r"\bconfguration", "configuration"), (r"\bmodifcation", "modification"),
+        (r"\bcertifcation", "certification"), (r"\bnotifcation", "notification"),
+        (r"\bartifcial\b", "artificial"), (r"\bconfdence\b", "confidence"),
+        (r"\bsufcient", "sufficient"), (r"\befcient", "efficient"),
+        (r"\bdifcult", "difficult"), (r"\bfltering\b", "filtering"),
+    )
+)
+# Words split across a line break: "sys- tems" -> "systems".
+_HYPHEN_BREAK = re.compile(r"([a-z])-\s+([a-z])")
+
+
+def _repair(text: str) -> str:
+    for pattern, replacement in _LIGATURE_REPAIRS:
+        text = pattern.sub(replacement, text)
+    return _HYPHEN_BREAK.sub(r"\1\2", text)
+
+
 def _clean(text: str) -> str:
-    return _WHITESPACE.sub(" ", _NOISE.sub(" ", text)).strip()
+    return _repair(_WHITESPACE.sub(" ", _NOISE.sub(" ", text)).strip())
 
 
 def _alt_titles(title: str) -> list[str]:
@@ -74,12 +100,16 @@ def _alt_titles(title: str) -> list[str]:
     by exact name, and guessing there would risk binding the wrong text to a
     control.
     """
-    variants = {title}
-    for suffix in (" and Mitigations", " Attacks and Mitigations", " and Defenses"):
+    # Strip a trailing "and Mitigations" only. The previous version also
+    # appended " Attacks" to the stripped stem, generating "Evasion Attacks
+    # Attacks" and the bare "Evasion", neither of which names anything, and
+    # each of which is another chance to collide with a real title elsewhere
+    # in the document.
+    variants = set()
+    for suffix in (" and Mitigations", " and Defenses"):
         if title.endswith(suffix):
-            variants.add(title[: -len(suffix)])
-            variants.add(title[: -len(suffix)] + " Attacks")
-    return sorted(v for v in variants if v and v != title)
+            variants.add(title[: -len(suffix)].strip())
+    return sorted(v for v in variants if v and v != title and len(v) > 3)
 
 
 class NistAi1002Parser(BaseParser):
@@ -96,12 +126,20 @@ class NistAi1002Parser(BaseParser):
             text = "\n".join(page.extract_text() or "" for page in pdf.pages)
         logger.info("Extracted %d characters from %d pages", len(text), len(pdf.pages))
 
-        matches = list(HEADING_RE.finditer(text))
+        # "17 NIST AI 100-2e2023" is a running page header, not a section. It
+        # matched HEADING_RE, and although SKIP_TITLES stopped it being emitted
+        # it still terminated the PRECEDING section's body, cutting five
+        # sections mid-word ("...machine learning as a ser-"). Drop it from the
+        # boundary list, not just from the output.
+        matches = [
+            m for m in HEADING_RE.finditer(text)
+            if m.group(2).strip() not in SKIP_TITLES
+        ]
         controls: list[Control] = []
         seen: set[str] = set()
 
         for i, match in enumerate(matches):
-            number, title = match.group(1), match.group(2).strip()
+            number, title = match.group(1), _repair(match.group(2).strip())
             if title in SKIP_TITLES or number in seen:
                 continue
 

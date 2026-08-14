@@ -26,6 +26,7 @@ from scripts.phase0.common import (
     load_curated_links,
 )
 from tract.config import (
+    MAX_ANCHOR_CHARS,
     PHASE1B_GATE_HIT1_DELTA,
     PHASE1B_RESULTS_DIR,
     PROCESSED_DIR,
@@ -44,7 +45,12 @@ from tract.training.evaluate import (
     paired_bootstrap_delta,
 )
 from tract.stopwords import load_stopwords
-from tract.text_selection import ProseIndex, apply_prose_to_corpus
+from tract.text_selection import (
+    ProseIndex,
+    SelectionStats,
+    TextSelection,
+    apply_prose_to_corpus,
+)
 from tract.training.firewall import assert_firewall, build_all_hub_texts
 from tract.training.loop import save_checkpoint, train_model
 from tract.training.data_quality import TieredLink
@@ -155,7 +161,18 @@ def run_single_fold(
             include_standards=False,
             stopwords=stopwords,
         )
-    assert_firewall(hub_texts, eval_items, held_out_framework, base_hub_texts)
+    # Hub names come from the hierarchy, not from parsing the hub text, which
+    # may have been transformed. Filtered with the same stop words so the
+    # exemption compares like with like.
+    hub_names = {node.name for node in hierarchy.hubs.values()}
+    if stopwords:
+        from tract.stopwords import filter_stopwords
+
+        hub_names = {filter_stopwords(name, stopwords) for name in hub_names}
+    assert_firewall(
+        hub_texts, eval_items, held_out_framework, base_hub_texts,
+        hub_names=hub_names,
+    )
 
     pairs = build_training_pairs(
         tiered_links, hub_texts, excluded_framework=held_out_framework,
@@ -165,6 +182,22 @@ def run_single_fold(
 
     fold_output = output_dir / f"fold_{held_out_framework.replace(' ', '_')}"
     fold_output.mkdir(parents=True, exist_ok=True)
+
+    # Recompute what the eval anchors actually resolved to, so the fold record
+    # can state it. Cheap: dictionary lookups over at most a few hundred items.
+    eval_selection = SelectionStats()
+    for _item in eval_items:
+        _sel = prose_index.lookup(
+            _item.framework_name, _item.section_id, _item.control_text,
+        ) if prose_index else None
+        eval_selection.record(
+            _item.framework_name,
+            TextSelection(_item.control_text,
+                          _sel.source if _sel else "title",
+                          len(_item.control_text) >= MAX_ANCHOR_CHARS),
+        )
+    eval_selection.log_summary(f"Fold {held_out_framework} eval anchors")
+    n_truncated = eval_selection.n_truncated
 
     zero_shot: dict[str, Any] | None = None
     if include_zero_shot:
@@ -237,6 +270,20 @@ def run_single_fold(
     fold_record = {k: v for k, v in result.items() if k != "predictions"}
     fold_record["hit1_indicators"] = [int(x) for x in hit1_indicators]
     fold_record["git_sha"] = _get_git_sha()
+    # Which arm produced this. The record previously carried none, and the arms
+    # differ by a runtime flag on one commit, so the git_sha check below cannot
+    # tell them apart: four folds from one arm beside one from another passed
+    # every guard and aggregated into a number describing no single
+    # configuration.
+    fold_record["config"] = config.to_dict()
+    # And how much prose the arm actually got. A run that quietly fell back to
+    # titles is otherwise indistinguishable in the metrics from one that did
+    # not, which is exactly how the title-only evaluation went unnoticed.
+    fold_record["text_selection"] = {
+        "prose_fraction": eval_selection.prose_fraction,
+        "by_source": dict(eval_selection.by_source),
+        "n_truncated_at_encoder_budget": n_truncated,
+    }
     atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
 
     return result
@@ -311,6 +358,22 @@ def load_fold_results(
             f"{sorted(expected - found) or 'none'}; unexpected: "
             f"{sorted(found - expected) or 'none'}. Refusing to aggregate a "
             "partial cross-validation into a headline number."
+        )
+
+    arms = {
+        (
+            r.get("config", {}).get("use_prose"),
+            r.get("config", {}).get("use_stopword_filter"),
+        )
+        for r in records
+    }
+    if len(arms) > 1:
+        raise ValueError(
+            f"Folds under {results_dir} come from different arms: "
+            f"(use_prose, use_stopword_filter) = {sorted(arms)}. The arms "
+            "differ by a runtime flag on one commit, so the git_sha check "
+            "below cannot separate them. Aggregating them would produce a "
+            "number describing no single configuration."
         )
 
     shas = {r.get("git_sha", "unknown") for r in records}

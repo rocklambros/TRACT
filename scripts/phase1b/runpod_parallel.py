@@ -417,7 +417,9 @@ def _bootstrap_pod(pod: dict) -> None:
     logger.info("Bootstrap complete for fold '%s'", role)
 
 
-def _run_fold_on_pod(pod: dict, config_name: str) -> dict:
+def _run_fold_on_pod(
+    pod: dict, config_name: str, arm_flags: tuple[str, ...] = (),
+) -> dict:
     ip, port = pod["ip"], pod["port"]
     framework = pod["role"]
 
@@ -430,6 +432,7 @@ def _run_fold_on_pod(pod: dict, config_name: str) -> dict:
         f"--framework {shlex.quote(framework)} "
         f"--config-name {shlex.quote(config_name)} "
         f"--zero-shot"
+        + "".join(f" {flag}" for flag in arm_flags)
     )
 
     logger.info("[%s] Starting fold training...", framework)
@@ -446,7 +449,10 @@ def _run_fold_on_pod(pod: dict, config_name: str) -> dict:
         return {"fold": framework, "status": "failed", "error": str(e), "elapsed_s": elapsed}
 
 
-def run_folds(config_name: str = "phase1b_primary") -> None:
+def run_folds(
+    config_name: str = "phase1b_primary",
+    arm_flags: tuple[str, ...] = (),
+) -> None:
     pods = _load_pod_state()
     _check_deadline()
 
@@ -485,7 +491,7 @@ def run_folds(config_name: str = "phase1b_primary") -> None:
     fold_results: list[dict] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
         futures = {
-            ex.submit(_run_fold_on_pod, pod, config_name): pod["role"]
+            ex.submit(_run_fold_on_pod, pod, config_name, arm_flags): pod["role"]
             for pod in pods
         }
         for f in concurrent.futures.as_completed(futures):
@@ -659,7 +665,10 @@ def reap(confirm: bool = False) -> None:
     logger.info("Reaped %d pod(s) cleanly.", len(targets))
 
 
-def full_pipeline(config_name: str = "phase1b_primary") -> None:
+def full_pipeline(
+    config_name: str = "phase1b_primary",
+    arm_flags: tuple[str, ...] = (),
+) -> None:
     logger.info("=" * 60)
     logger.info("PHASE 1B PARALLEL FOLD EXECUTION")
     logger.info("=" * 60)
@@ -674,7 +683,7 @@ def full_pipeline(config_name: str = "phase1b_primary") -> None:
         # provision() was outside this try, so the stage with the highest
         # orphan rate was the one the finally never covered.
         provision()
-        run_folds(config_name)
+        run_folds(config_name, arm_flags)
         uncollected = collect(config_name)
         if uncollected:
             # Every fold that did not come back is a paid-for GPU hour whose
@@ -721,14 +730,34 @@ def main() -> int:
                         help="Experiment config name")
     parser.add_argument("--confirm", action="store_true",
                         help="Required by 'reap' to actually terminate pods")
+    # The arm has to reach the pod. Without these the orchestrator ran the
+    # prose arm whatever --config-name said, so a three-arm ablation would have
+    # been three identical runs in three differently named directories.
+    parser.add_argument("--no-prose", action="store_true",
+                        help="Baseline arm: anchor on section titles")
+    parser.add_argument("--stopwords", action="store_true",
+                        help="Ablation arm: filter corpus-derived boilerplate")
     args = parser.parse_args()
 
+    arm_flags = tuple(
+        flag for flag, on in (("--no-prose", args.no_prose),
+                              ("--stopwords", args.stopwords)) if on
+    )
+    if arm_flags and args.config_name == "phase1b_primary":
+        # Arms must not share a results directory: fold records carry no arm,
+        # so a mixed directory aggregates into a number describing no single
+        # configuration.
+        raise SystemExit(
+            f"Refusing to run arm {arm_flags} into the default results "
+            f"directory. Pass a distinct --config-name."
+        )
+
     if args.action == "full":
-        full_pipeline(args.config_name)
+        full_pipeline(args.config_name, arm_flags)
     elif args.action == "provision":
         provision()
     elif args.action == "run":
-        run_folds(args.config_name)
+        run_folds(args.config_name, arm_flags)
     elif args.action == "collect":
         uncollected = collect(args.config_name)
         if uncollected:

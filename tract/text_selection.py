@@ -18,10 +18,11 @@ import re
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Literal
+from typing import Any, Literal
 
 from tract.config import (
     FRAMEWORK_NAME_ALIASES,
+    MAX_ANCHOR_CHARS,
     PROCESSED_DIR,
     PROSE_MIN_EXTRA_CHARS,
 )
@@ -32,6 +33,20 @@ logger = logging.getLogger(__name__)
 _WHITESPACE = re.compile(r"\s+")
 
 TextSource = Literal["full_text", "description", "title"]
+
+
+_SECTION_ID_PREFIX = re.compile(r"^(?:sec\.?|section|clause)\s+", re.IGNORECASE)
+
+
+def normalize_section_id(section_id: str | None) -> str:
+    """Strip the prose prefix OpenCRE puts on some section ids.
+
+    NIST AI 100-2 links carry "Sec. 2.2" and "Sec 2.4.2" while the parser emits
+    the bare section number, so the id fallback could never fire for that
+    framework and every miss fell through to a title match.
+    """
+    text = _WHITESPACE.sub(" ", str(section_id or "").strip())
+    return _SECTION_ID_PREFIX.sub("", text).strip()
 
 
 def canonical_framework(name: str) -> str:
@@ -51,10 +66,31 @@ class TextSelection:
 
     text: str
     source: TextSource
+    truncated: bool = False
 
     @property
     def is_prose(self) -> bool:
         return self.source != "title"
+
+
+def prepare_anchor(text: str) -> tuple[str, bool]:
+    """Normalise an anchor and cut it to the budget the encoder can read.
+
+    Returns (text, was_truncated).
+
+    Two things the eval path was skipping. The corpus builder sanitises every
+    title it produces, so substituting raw index text left the arms running
+    different input contracts, and CLAUDE.md requires NFC normalisation and a
+    length bound on stored text. And the encoder silently discards anything
+    past its sequence limit, so an anchor of 13,007 characters was ~96%
+    invisible to the model while looking complete in the artifact.
+    """
+    import unicodedata
+
+    cleaned = unicodedata.normalize("NFC", (text or "").replace("\x00", "")).strip()
+    if len(cleaned) <= MAX_ANCHOR_CHARS:
+        return cleaned, False
+    return cleaned[:MAX_ANCHOR_CHARS].rstrip(), True
 
 
 @dataclass
@@ -70,12 +106,19 @@ class SelectionStats:
     by_source: Counter[str] = field(default_factory=Counter)
     fallback_by_framework: Counter[str] = field(default_factory=Counter)
     total_by_framework: Counter[str] = field(default_factory=Counter)
+    truncated_by_framework: Counter[str] = field(default_factory=Counter)
 
     def record(self, framework: str, selection: TextSelection) -> None:
         self.by_source[selection.source] += 1
         self.total_by_framework[framework] += 1
         if not selection.is_prose:
             self.fallback_by_framework[framework] += 1
+        if selection.truncated:
+            self.truncated_by_framework[framework] += 1
+
+    @property
+    def n_truncated(self) -> int:
+        return sum(self.truncated_by_framework.values())
 
     @property
     def total(self) -> int:
@@ -91,6 +134,11 @@ class SelectionStats:
             label, self.total, 100 * self.prose_fraction,
             dict(self.by_source),
         )
+        for framework, n_cut in self.truncated_by_framework.most_common():
+            logger.info(
+                "  truncated at the encoder budget: %-30s %d/%d",
+                framework, n_cut, self.total_by_framework[framework],
+            )
         for framework, n_fallback in self.fallback_by_framework.most_common():
             total = self.total_by_framework[framework]
             logger.info(
@@ -110,6 +158,7 @@ class ProseIndex:
     def __init__(self, controls: list[dict[str, Any]]) -> None:
         self._by_id: dict[tuple[str, str], TextSelection] = {}
         self._by_title: dict[tuple[str, str], TextSelection] = {}
+        pending_alternates: list[tuple[tuple[str, str], TextSelection]] = []
 
         for record in controls:
             framework = canonical_framework(record.get("framework_name", ""))
@@ -125,25 +174,37 @@ class ProseIndex:
                 else:
                     continue  # title restated; nothing to gain over the link
 
-                control_id = str(control.get("control_id") or "").strip()
+                control_id = normalize_section_id(control.get("control_id"))
                 if control_id:
                     self._by_id[(framework, control_id)] = selection
 
-                # A section heading and the name OpenCRE links it under are
-                # often the same concept spelled differently: "Evasion Attacks
-                # and Mitigations" against "Evasion Attacks". Parsers declare
-                # those variants rather than the index guessing at them, since
-                # a fuzzy match here would silently attach the wrong prose.
+                # Real titles are indexed in this pass. Alternates are held
+                # back and applied afterwards, because "first writer wins"
+                # within one control does NOT stop one control's generated
+                # alternate from taking the slot belonging to another
+                # control's real title. That already happened: NIST AI 100-2
+                # section 2.3's alternate "Poisoning Attacks" claimed the key
+                # before section 3.2.2, whose actual title is "Poisoning
+                # Attacks", so the Generative-AI eval item resolved to the
+                # Predictive-AI chapter's text. That is a wrong anchor, not a
+                # fallback, and nothing downstream could see it.
                 metadata = control.get("metadata") or {}
                 alternates = metadata.get("alt_titles") or []
                 if isinstance(alternates, str):
                     alternates = [alternates]
-                for name in [title, *alternates]:
-                    key = str(name).strip().lower()
-                    # First writer wins: the real title is offered first, so an
-                    # alternate can add a name but never displace one.
-                    if key and (framework, key) not in self._by_title:
-                        self._by_title[(framework, key)] = selection
+
+                key = title.strip().lower()
+                if key and (framework, key) not in self._by_title:
+                    self._by_title[(framework, key)] = selection
+                for name in alternates:
+                    alt_key = str(name).strip().lower()
+                    if alt_key:
+                        pending_alternates.append(((framework, alt_key), selection))
+
+        # Second pass: an alternate may add a name, never displace a real one.
+        for key_pair, selection in pending_alternates:
+            if key_pair not in self._by_title:
+                self._by_title[key_pair] = selection
 
     @classmethod
     def load(cls, path: Path | None = None) -> ProseIndex:
@@ -183,8 +244,9 @@ class ProseIndex:
             hit = self._by_title.get((canonical, str(section_name).strip().lower()))
             if hit:
                 return hit
-        if section_id:
-            hit = self._by_id.get((canonical, str(section_id).strip()))
+        normalized = normalize_section_id(section_id)
+        if normalized:
+            hit = self._by_id.get((canonical, normalized))
             if hit:
                 return hit
         return None
@@ -229,70 +291,12 @@ def select_control_text(
             filter_stopwords(selection.text, stopwords), selection.source,
         )
 
+    prepared, truncated = prepare_anchor(selection.text)
+    selection = TextSelection(prepared, selection.source, truncated)
+
     if stats is not None:
         stats.record(canonical_framework(framework), selection)
     return selection
-
-
-def build_parsed_controls(
-    links: Iterable[Any],
-    index: ProseIndex | None = None,
-    stopwords: frozenset[str] | None = None,
-) -> dict[tuple[str, str], str]:
-    """Map (framework, section_id) to prose, in the shape the eval corpus wants.
-
-    scripts/phase0/common.build_evaluation_corpus already accepts exactly this
-    dict and prefers it over the section title. Every Phase 1B caller was
-    passing an empty one, which is why the evaluation measured three-word
-    titles while production is handed paragraphs. Supplying it is the whole
-    change; the corpus builder needed no edit.
-
-    Only entries with real prose are returned. A title would round-trip to the
-    same fallback the corpus builder already applies, and including it would
-    make the "full-text" track it reports meaningless.
-    """
-    resolved: dict[tuple[str, str], str] = {}
-    if index is None:
-        return resolved
-
-    # A section_id is not always unique per linked item. NIST AI 100-2 links
-    # "Adversarial training", "Formal verification" and "Randomized smoothing"
-    # under the id of the Mitigations subsection that contains all three, so
-    # keying on section_id alone would give all three whichever text won.
-    #
-    # Prefer apply_prose_to_corpus for evaluation. This function feeds
-    # build_evaluation_corpus, which de-duplicates on control text and so can
-    # change the item count when the anchor changes.
-    candidates: dict[tuple[str, str], set[str]] = {}
-    for link in links:
-        framework = getattr(link, "standard_name", None) or ""
-        section_id = getattr(link, "section_id", None)
-        section_name = getattr(link, "section_name", None)
-        if not framework or section_id is None:
-            continue
-
-        selection = index.lookup(framework, section_id, section_name)
-        if selection is None:
-            continue
-        text = selection.text
-        if stopwords:
-            from tract.stopwords import filter_stopwords
-
-            text = filter_stopwords(text, stopwords)
-        candidates.setdefault((framework, str(section_id)), set()).add(text)
-
-    ambiguous = 0
-    for key, texts in candidates.items():
-        if len(texts) == 1:
-            resolved[key] = next(iter(texts))
-        else:
-            ambiguous += 1
-
-    logger.info(
-        "Prose available for %d link sections (%d dropped: one section id, "
-        "several distinct controls)", len(resolved), ambiguous,
-    )
-    return resolved
 
 
 def apply_prose_to_corpus(
@@ -309,7 +313,7 @@ def apply_prose_to_corpus(
 
     That property is the whole point. build_evaluation_corpus de-duplicates on
     control text, so building the corpus separately per arm lets the anchor
-    decide how many items exist: substituting prose collapsed 147 items to 144
+    decide how many items exist: substituting prose collapsed 147 items to 146
     because several NIST sections share wording once expanded. Comparing arms
     over different item sets is not a paired comparison, and paired_bootstrap_delta
     requires equal per-fold lengths to run at all.
@@ -341,9 +345,10 @@ def apply_prose_to_corpus(
             from tract.stopwords import filter_stopwords
 
             text = filter_stopwords(text, stopwords)
+        text, truncated = prepare_anchor(text)
         if stats is not None:
             stats.record(canonical_framework(item.framework_name),
-                         TextSelection(text, selection.source))
+                         TextSelection(text, selection.source, truncated))
         # track is part of the record the evaluation reports, so keep it honest.
         updated.append(replace(item, control_text=text, track="full-text"))
 

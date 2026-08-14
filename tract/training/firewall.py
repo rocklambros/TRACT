@@ -96,6 +96,7 @@ def assert_firewall(
     eval_items: list[Any],
     held_out_framework: str,
     base_hub_texts: dict[str, str] | None = None,
+    hub_names: set[str] | None = None,
 ) -> None:
     """Assert no information leakage from held-out framework into hub representations.
 
@@ -113,12 +114,33 @@ def assert_firewall(
     """
     scan_appended_only = base_hub_texts is not None
 
-    # Collect all hub names from base texts — these are CRE-native concepts.
-    # Descriptions legitimately reference hub names for disambiguation.
-    hub_names_lower: set[str] = set()
-    for base in (base_hub_texts or hub_texts).values():
-        if " | " in base:
-            hub_names_lower.add(base.split(" | ", 1)[1].lower())
+    # CRE-native concept names, used to exempt controls that ARE the vocabulary.
+    #
+    # Recovering these by splitting hub text on " | " only works while the text
+    # still contains that separator. Stop word filtering rebuilds text from
+    # alphabetic tokens and drops all punctuation, so the separator vanished
+    # from 522 of 522 hub texts, this set came out empty, the exemption never
+    # fired, and the firewall raised a breach on a control that merely shares
+    # its name with a CRE hub. A control named "AI model performance
+    # validation" is not a leak; the check was reporting the absence of a
+    # separator as evidence of contamination.
+    #
+    # Callers pass the names from the hierarchy instead, filtered with the same
+    # stop words as everything else so both sides of the comparison match.
+    if hub_names is not None:
+        hub_names_lower = {name.strip().lower() for name in hub_names if name.strip()}
+    else:
+        hub_names_lower = set()
+        for base in (base_hub_texts or hub_texts).values():
+            if " | " in base:
+                hub_names_lower.add(base.split(" | ", 1)[1].lower())
+        if not hub_names_lower and hub_texts:
+            raise ValueError(
+                "Could not recover any hub names from the hub texts, so the "
+                "CRE-vocabulary exemption would be empty and every control "
+                "sharing a hub's name would raise a false breach. Pass "
+                "hub_names explicitly when the text has been transformed."
+            )
 
     for item in eval_items:
         control_text = item.control_text
