@@ -8,37 +8,37 @@
 # (NIST SP 800-218).
 #
 # Kept separate from requirements.txt so the lint job stays fast: it does not
-# need numpy, wandb, or hdbscan, and hdbscan compiles from source.
+# need torch, wandb or hdbscan, and hdbscan compiles from source.
 #
-# The runtime packages below are the subset mypy needs to resolve imports.
-# Their versions are canonical in requirements.txt, and the -c constraint
-# makes a mismatch a hard pip error instead of a silent double-pin. Bump a
-# runtime version in requirements.txt and CI will tell you to bump it here.
+# Everything below that also appears in requirements.txt is listed WITHOUT a
+# version on purpose. The -c line pins it to whatever requirements.txt says,
+# which makes that file the single source of truth and means a dependabot
+# bump there needs no follow-up edit here. Duplicating the versions instead
+# made every bump a hard pip conflict until someone hand-synced both files;
+# PR #7 (jsonschema 4.23.0 -> 4.26.0) is what demonstrated that.
 -c requirements.txt
 
-# Linters. Bump these two together with requirements.txt so a developer
-# running `ruff check` locally sees exactly what CI sees.
-ruff==0.15.21
-mypy==2.2.0
+# Linters. Versions come from requirements.txt via the constraint above, so a
+# developer running `ruff check` locally sees exactly what CI sees.
+ruff
+mypy
 
 # Runtime deps mypy imports during --strict analysis. numpy and
 # huggingface_hub ship py.typed, so installing them buys real type checking
-# on ~36 call sites instead of an ignore_missing_imports blanket. The heavy
-# ML stack (torch, sentence-transformers, peft, datasets, transformers,
-# wandb, hdbscan) stays out and is silenced by the mypy overrides in
-# pyproject.toml, because pulling torch into a lint job is not worth minutes
-# of CI time per run.
-pydantic==2.12.5
-anthropic==0.92.0
-jsonschema==4.23.0
-pyyaml==6.0.3
-beautifulsoup4==4.12.3
-lxml==6.1.0
-requests==2.33.1
-numpy==2.0.2
-huggingface_hub==0.36.2
+# instead of an ignore_missing_imports blanket. The heavy ML stack stays out
+# and is silenced by the mypy overrides in pyproject.toml.
+pydantic
+anthropic
+jsonschema
+pyyaml
+beautifulsoup4
+lxml
+requests
+numpy
+huggingface_hub
 
-# Type stubs. Not runtime dependencies, so they are pinned here only.
+# Type stubs. Not runtime dependencies and absent from requirements.txt, so
+# these are the only entries that carry their own pin.
 types-beautifulsoup4==4.12.0.20250516
 types-jsonschema==4.26.0.20260518
 types-PyYAML==6.0.12.20260724
