@@ -177,6 +177,7 @@ def run_single_fold(
     pairs = build_training_pairs(
         tiered_links, hub_texts, excluded_framework=held_out_framework,
         prose_index=prose_index, stopwords=stopwords,
+        description_only=config.use_description_only,
     )
     dataset = pairs_to_dataset(pairs, hierarchy, hub_texts, n_hard_negatives=config.hard_negatives)
 
@@ -559,6 +560,7 @@ def run_experiment(
         corpus,
         ProseIndex.load() if config.use_prose else None,
         load_stopwords() if config.use_stopword_filter else None,
+        description_only=config.use_description_only,
     )
 
     eval_by_fw: dict[str, list[EvalItem]] = {}

@@ -215,6 +215,29 @@ PROSE_MIN_EXTRA_CHARS: Final[int] = 20
 # fold and by arm is a confound, not a detail.
 MAX_ANCHOR_CHARS: Final[int] = 2000
 
+# Section headings that begin remediation guidance rather than description.
+# BGE-large is BertModel with absolute position embeddings and exactly 512 of
+# them, so the budget cannot be raised; the only question is which 512 tokens
+# it spends. Measured over the corpus, 175 controls carry one of these and the
+# median control puts 47% of its body after it. That tail says how to fix the
+# problem, not which hub the control is about, and a mean-pooled bi-encoder
+# dilutes toward generic security language when it is included.
+#
+# Deliberately conservative. "Controls" and "Risk Factors" are omitted because
+# both occur in ordinary prose, and cutting on them would truncate description.
+REMEDIATION_HEADINGS: Final[tuple[str, ...]] = (
+    "How to Prevent",
+    "Example Attack Scenarios",
+    "Example Attack Scenario",
+    "Prevention and Mitigation Strategies",
+    "Countermeasures",
+    "Remediation",
+    "Mitigations",
+    "Mitigation",
+    "Prevention",
+    "References",
+)
+
 PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70

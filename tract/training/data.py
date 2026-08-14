@@ -86,6 +86,7 @@ def build_training_pairs(
     excluded_framework: str | None = None,
     prose_index: ProseIndex | None = None,
     stopwords: frozenset[str] | None = None,
+    description_only: bool = False,
 ) -> list[TrainingPair]:
     """Build TrainingPair objects from filtered links, deduplicated per text+hub.
 
@@ -125,6 +126,7 @@ def build_training_pairs(
                 link.get("section_name"),
                 stats=selection_stats,
                 stopwords=stopwords,
+                description_only=description_only,
             ).text
         except ValueError:
             skipped += 1

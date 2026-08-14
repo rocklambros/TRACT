@@ -70,6 +70,12 @@ class TrainingConfig:
     # function words moves input off the distribution a contextual encoder was
     # pretrained on, so the trade has to be measured rather than assumed.
     use_stopword_filter: bool = False
+    # use_description_only: cut each control at its first remediation heading.
+    # The encoder's 512-token budget is an architectural ceiling on BGE-large
+    # (BertModel, absolute position embeddings), so the only lever is which
+    # tokens it spends. 175 controls carry such a heading and the median puts
+    # 47% of its body after it.
+    use_description_only: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize for WandB/JSON logging."""
@@ -96,5 +102,6 @@ class TrainingConfig:
             "hub_rep_format": self.hub_rep_format,
             "use_prose": self.use_prose,
             "use_stopword_filter": self.use_stopword_filter,
+            "use_description_only": self.use_description_only,
             "data_hash": self.data_hash,
         }

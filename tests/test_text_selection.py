@@ -429,3 +429,120 @@ class TestAnchorBudget:
         text, _ = prepare_anchor("café \x00control")
         assert "\x00" not in text
         assert "café" in text
+
+
+class TestMarkupStripping:
+    """Markdown and site furniture reach the encoder as tokens otherwise.
+
+    OWASP source carries "#### **Example Attack Scenarios**" and AI Exchange
+    carries ">Category:" and ">Permalink: https://owaspai.org/...". Removing it
+    cut the median prose anchor from 585 characters to 182, so most of what
+    looked like prose was syntax.
+    """
+
+    def test_removes_markdown_headings_and_emphasis(self) -> None:
+        from tract.text_selection import strip_markup
+
+        out = strip_markup("#### **Example Attack Scenarios** **Scenario #1** text")
+        assert "####" not in out and "*" not in out
+        assert "Example Attack Scenarios" in out
+        # "Scenario #1" is content, not markup, so the lone # stays.
+        assert "Scenario #1" in out
+
+    def test_removes_site_furniture_and_urls(self) -> None:
+        """A framework-branded URL is a shortcut a bi-encoder can learn."""
+        from tract.text_selection import strip_markup
+
+        out = strip_markup(
+            ">Category: runtime control\n>Permalink: https://owaspai.org/go/ratelimit/\n"
+            "Limit the rate of requests."
+        )
+        assert "owaspai.org" not in out
+        assert "Permalink" not in out
+        assert "Limit the rate of requests." in out
+
+    def test_keeps_link_text_and_drops_the_target(self) -> None:
+        from tract.text_selection import strip_markup
+
+        assert "OWASP guidance" in strip_markup("[OWASP guidance](https://example.com/x)")
+        assert "example.com" not in strip_markup("[OWASP guidance](https://example.com/x)")
+
+    def test_plain_prose_is_unchanged(self) -> None:
+        from tract.text_selection import strip_markup
+
+        text = "An adversary contaminates the training corpus."
+        assert strip_markup(text) == text
+
+
+class TestRemediationStripping:
+
+    def test_cuts_at_the_first_remediation_heading(self) -> None:
+        from tract.text_selection import strip_remediation
+
+        body = (
+            "Prompt injection occurs when user input alters the model's behaviour "
+            "in ways the developer did not intend, which is the defining risk here. "
+            "How to Prevent Constrain model behaviour with explicit instructions."
+        )
+        head, was_cut = strip_remediation(body)
+        assert was_cut
+        assert "Prompt injection occurs" in head
+        assert "Constrain model behaviour" not in head
+
+    def test_survives_markdown_around_the_heading(self) -> None:
+        """The real corpus writes '#### **Example Attack Scenarios**'."""
+        from tract.text_selection import strip_remediation
+
+        body = (
+            "Retrieval augmented generation can surface stale documents to the user, "
+            "which is the substance of this weakness and what it maps to. "
+            "#### **Example Attack Scenarios** **Scenario #1** An attacker uploads."
+        )
+        head, was_cut = strip_remediation(body)
+        assert was_cut and "Scenario" not in head
+
+    def test_does_not_cut_on_the_word_used_in_ordinary_prose(self) -> None:
+        """'a mitigation for this is' must not be read as a section boundary."""
+        from tract.text_selection import strip_remediation
+
+        body = ("Model inversion lets an adversary recover training records, and "
+                "a mitigation for this is differential privacy applied at training time.")
+        head, was_cut = strip_remediation(body)
+        assert not was_cut and head == body
+
+    def test_refuses_to_leave_a_stub(self) -> None:
+        """A short description plus its remediation beats a fragment."""
+        from tract.text_selection import strip_remediation
+
+        body = "Short. How to Prevent Do the thing that prevents it properly."
+        head, was_cut = strip_remediation(body)
+        assert not was_cut and head == body
+
+
+class TestArmProcessingOrder:
+
+    def test_stopword_arm_does_not_inherit_url_fragments(self) -> None:
+        """Ordering bug: filtering before markup removal shredded URLs.
+
+        filter_stopwords rebuilds text from alphabetic tokens, so a URL became
+        "https owaspai org go ratelimit" and survived as tokens. The stopword
+        arm then differed from the prose arm by markdown handling as well as by
+        stop words, which is a confound rather than an ablation.
+        """
+        from tract.text_selection import ProseIndex, apply_prose_to_corpus
+        from tests.test_text_selection import TestArmIdentityInvariant as T
+
+        index = ProseIndex([{
+            "framework_name": "MITRE ATLAS",
+            "controls": [{
+                "control_id": "AML.T0001", "title": "Data Poisoning",
+                "description": ">Permalink: https://owaspai.org/go/ratelimit/ "
+                               "An adversary contaminates the training corpus badly.",
+            }],
+        }])
+        corpus = [T.Item("Data Poisoning", "h1", frozenset({"h1"}), "P",
+                         "MITRE ATLAS", "AML.T0001", "all")]
+        filtered = apply_prose_to_corpus(corpus, index, frozenset({"the"}))
+        text = filtered[0].control_text.lower()
+        assert "owaspai" not in text and "https" not in text
+        assert "adversary contaminates" in text

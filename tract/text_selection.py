@@ -18,13 +18,14 @@ import re
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Final, Literal
 
 from tract.config import (
     FRAMEWORK_NAME_ALIASES,
     MAX_ANCHOR_CHARS,
     PROCESSED_DIR,
     PROSE_MIN_EXTRA_CHARS,
+    REMEDIATION_HEADINGS,
 )
 from tract.io import load_json
 
@@ -73,6 +74,67 @@ class TextSelection:
         return self.source != "title"
 
 
+# Markdown and site furniture that survives parsing and reaches the encoder as
+# tokens. OWASP source carries "#### **Example Attack Scenarios**" and AI
+# Exchange carries ">Category: ..." and ">Permalink: https://owaspai.org/...".
+# None of it describes a control, all of it is framework-branded, and a
+# framework-identifying token in the anchor is a shortcut a bi-encoder can
+# learn instead of the mapping.
+_MARKDOWN_NOISE: Final[tuple[tuple[re.Pattern[str], str], ...]] = (
+    # Only the label. Consuming to end-of-line was wrong: the text is already
+    # flattened to a single line, so ">Permalink: ..." swallowed the entire
+    # control body. The URL rule below removes the value; a Category value is
+    # ordinary words and worth keeping.
+    (re.compile(r">\s*(?:Category|Permalink|Purpose|Discussion)\s*:\s*"), " "),
+    (re.compile(r"https?://\S+"), " "),
+    (re.compile(r"!?\[([^\]]*)\]\([^)]*\)"), r"\1"),      # links and images
+    (re.compile(r"^#{1,6}\s*", re.M), " "),                   # ATX headings
+    (re.compile(r"#{2,6}\s*(?=\*|[A-Z])"), " "),              # inline, post-flattening
+    (re.compile(r"\*{1,3}|_{2,3}|`{1,3}"), " "),               # emphasis and code ticks
+    (re.compile(r"^\s*[-*+]\s+", re.M), " "),                 # bullets
+)
+
+
+def strip_markup(text: str) -> str:
+    """Remove markdown and site furniture, keeping the prose."""
+    for pattern, replacement in _MARKDOWN_NOISE:
+        text = pattern.sub(replacement, text)
+    return _WHITESPACE.sub(" ", text).strip()
+
+
+# A heading only counts as a section boundary when it starts one: at the string
+# start, or after sentence-ending punctuation, and followed by a capital. Run
+# after strip_markup, so "#### **Example Attack Scenarios** **Scenario #1"
+# has already become "Example Attack Scenarios Scenario 1".
+_REMEDIATION_RE = re.compile(
+    r"(?:(?<=[.!?:])\s+|^|(?<=\s))(?:"
+    + "|".join(re.escape(h) for h in REMEDIATION_HEADINGS)
+    + r")\b\s*:?\s+(?=[A-Z0-9])",
+)
+# Below this, cutting produced a stub rather than a description, so the whole
+# body is kept instead.
+MIN_DESCRIPTION_CHARS: Final[int] = 120
+
+
+def strip_remediation(text: str) -> tuple[str, bool]:
+    """Cut a control's body at the first remediation heading.
+
+    Returns (text, was_cut). The encoder's 512-token budget is fixed by the
+    architecture, so this spends it on the part that says what the control is
+    rather than the part that says how to satisfy it.
+    """
+    text = strip_markup(text or "")
+    match = _REMEDIATION_RE.search(text)
+    if not match:
+        return text, False
+    head = text[: match.start()].strip()
+    if len(head) < MIN_DESCRIPTION_CHARS:
+        # Cutting here would leave a stub. A short description plus its
+        # remediation beats a fragment.
+        return text, False
+    return head, True
+
+
 def prepare_anchor(text: str) -> tuple[str, bool]:
     """Normalise an anchor and cut it to the budget the encoder can read.
 
@@ -87,7 +149,9 @@ def prepare_anchor(text: str) -> tuple[str, bool]:
     """
     import unicodedata
 
-    cleaned = unicodedata.normalize("NFC", (text or "").replace("\x00", "")).strip()
+    cleaned = strip_markup(
+        unicodedata.normalize("NFC", (text or "").replace("\x00", ""))
+    )
     if len(cleaned) <= MAX_ANCHOR_CHARS:
         return cleaned, False
     return cleaned[:MAX_ANCHOR_CHARS].rstrip(), True
@@ -259,6 +323,7 @@ def select_control_text(
     section_name: str | None,
     stats: SelectionStats | None = None,
     stopwords: frozenset[str] | None = None,
+    description_only: bool = False,
 ) -> TextSelection:
     """Choose the richest available text for one control.
 
@@ -284,12 +349,20 @@ def select_control_text(
             )
         selection = TextSelection(fallback, "title")
 
+    # Fixed order, and it matters. Stop word filtering rebuilds text from
+    # alphabetic tokens, so running it before markup removal shredded URLs into
+    # word fragments ("https owaspai org go ratelimit") that survived as
+    # tokens. The stopword arm then differed from the prose arm by markdown
+    # handling as well as by stop words, which is a confound rather than an
+    # ablation.
+    text = strip_markup(selection.text)
+    if description_only:
+        text, _ = strip_remediation(text)
     if stopwords:
         from tract.stopwords import filter_stopwords
 
-        selection = TextSelection(
-            filter_stopwords(selection.text, stopwords), selection.source,
-        )
+        text = filter_stopwords(text, stopwords)
+    selection = TextSelection(text, selection.source)
 
     prepared, truncated = prepare_anchor(selection.text)
     selection = TextSelection(prepared, selection.source, truncated)
@@ -304,6 +377,7 @@ def apply_prose_to_corpus(
     index: ProseIndex | None,
     stopwords: frozenset[str] | None = None,
     stats: SelectionStats | None = None,
+    description_only: bool = False,
 ) -> list[Any]:
     """Swap each eval item's anchor for its control's prose, in place of nothing else.
 
@@ -340,7 +414,11 @@ def apply_prose_to_corpus(
             updated.append(item)
             continue
 
-        text = selection.text
+        # Same fixed order as select_control_text: markup, section cut, stop
+        # words, budget. See the note there on why markup must come first.
+        text = strip_markup(selection.text)
+        if description_only:
+            text, _ = strip_remediation(text)
         if stopwords:
             from tract.stopwords import filter_stopwords
 

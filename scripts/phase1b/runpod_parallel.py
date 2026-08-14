@@ -737,11 +737,15 @@ def main() -> int:
                         help="Baseline arm: anchor on section titles")
     parser.add_argument("--stopwords", action="store_true",
                         help="Ablation arm: filter corpus-derived boilerplate")
+    parser.add_argument("--description-only", action="store_true",
+                        help="Ablation arm: cut each control at its first "
+                             "remediation heading")
     args = parser.parse_args()
 
     arm_flags = tuple(
         flag for flag, on in (("--no-prose", args.no_prose),
-                              ("--stopwords", args.stopwords)) if on
+                              ("--stopwords", args.stopwords),
+                              ("--description-only", args.description_only)) if on
     )
     if arm_flags and args.config_name == "phase1b_primary":
         # Arms must not share a results directory: fold records carry no arm,

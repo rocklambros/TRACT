@@ -53,6 +53,10 @@ def main() -> int:
     parser.add_argument("--stopwords", action="store_true",
                         help="Filter corpus-derived boilerplate from control and "
                              "hub text. Ablation arm.")
+    parser.add_argument("--description-only", action="store_true",
+                        help="Cut each control at its first remediation heading. "
+                             "The 512-token budget is fixed by the architecture; "
+                             "this changes which tokens it spends.")
     parser.add_argument("--zero-shot", action="store_true",
                         help="Also evaluate the untrained base model on this "
                              "fold, paired item-for-item with the trained one")
@@ -70,6 +74,7 @@ def main() -> int:
         name=args.config_name,
         use_prose=not args.no_prose,
         use_stopword_filter=args.stopwords,
+        use_description_only=args.description_only,
     )
     output_dir = (
         Path(args.output_dir) if args.output_dir
@@ -100,6 +105,7 @@ def main() -> int:
         ProseIndex.load() if config.use_prose else None,
         load_stopwords() if config.use_stopword_filter else None,
         stats=selection_stats,
+        description_only=config.use_description_only,
     )
     selection_stats.log_summary("Eval items")
     eval_items = [i for i in corpus if i.framework_name == args.framework]
