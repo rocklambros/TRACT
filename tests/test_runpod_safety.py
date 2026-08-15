@@ -6,6 +6,7 @@ runaway bill or a shell injection. None of them provisions anything.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -164,18 +165,79 @@ class TestPodState:
 
 
 class TestNoCredentialsOnPods:
+    """Pods get exactly one credential, and it is read-only.
 
-    def test_pod_env_ships_no_secrets(self) -> None:
-        """The fold needs none: the base model is public and WandB is disabled."""
+    This asserted that pods carried NO credential at all, on the reasoning
+    that the base model is public and fetches anonymously. The canary
+    disproved the premise: HuggingFace rate-limits anonymous fetches per IP
+    (HTTP 429) and a fleet exhausts the quota, so a token is required. The
+    rule is therefore narrowed rather than dropped -- read-only only, and
+    never the two credentials that would actually hurt.
+    """
+
+    def _env(self, monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
         from scripts.phase1b import runpod_parallel as rp
 
-        env = rp._get_pod_env()
-        assert "HF_TOKEN" not in env
-        assert "WANDB_API_KEY" not in env
-        for key, value in env.items():
-            assert "token" not in value.lower(), f"{key} looks like a credential"
-        # HF cache belongs on the volume, not the container disk.
-        assert env["HF_HOME"].startswith("/workspace/")
+        monkeypatch.setattr(rp, "_get_hf_read_token", lambda: "hf_readonly_stub")
+        return rp._get_pod_env()
+
+    def test_the_wandb_key_never_reaches_a_pod(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Logging runs on the operator's machine precisely so it need not."""
+        assert "WANDB_API_KEY" not in self._env(monkeypatch)
+
+    def test_the_write_scoped_hf_token_is_never_read(self) -> None:
+        """`pass huggingface/token` carries repo.write to the published model.
+
+        Shipping it to a rented host to download a public model would trade a
+        credential that can overwrite the release for a convenience.
+        """
+        source = Path("scripts/phase1b/runpod_parallel.py").read_text(
+            encoding="utf-8"
+        )
+        assert '"huggingface/token"' not in source
+        assert 'HF_READ_TOKEN_ENTRY: Final[str] = "huggingface/read-token"' in source
+
+    def test_the_hf_token_comes_from_the_read_only_entry(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        calls: list[list[str]] = []
+
+        class _Result:
+            stdout = "hf_readonly_stub"
+
+        def _fake_run(cmd: list[str], **kwargs: object) -> _Result:
+            calls.append(cmd)
+            return _Result()
+
+        monkeypatch.setattr(rp.subprocess, "run", _fake_run)
+        assert rp._get_hf_read_token() == "hf_readonly_stub"
+        assert calls == [["pass", "huggingface/read-token"]]
+
+    def test_a_missing_read_token_names_the_fix(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """And says not to substitute the write token."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        def _absent(*args: object, **kwargs: object) -> None:
+            raise FileNotFoundError("pass entry missing")
+
+        monkeypatch.setattr(rp.subprocess, "run", _absent)
+        with pytest.raises(RuntimeError) as excinfo:
+            rp._get_hf_read_token()
+        message = str(excinfo.value)
+        assert "read-token" in message
+        assert "repo.write" in message
+
+    def test_the_cache_stays_on_the_volume(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A multi-gigabyte cache does not belong on the container disk."""
+        assert self._env(monkeypatch)["HF_HOME"].startswith("/workspace/")
 
 
 class TestImagePinning:
