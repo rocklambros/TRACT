@@ -377,6 +377,30 @@ Every framework re-ingested from its official source. NOT from the old project's
 - **Gate 1 criteria:** Micro-averaged (sample-weighted) hit@1 delta > 0.10 over zero-shot baseline. Gate metrics are pre-registered — post-hoc metric substitution is not permitted for gate decisions. Report per-fold delta, macro average, and worst-fold delta alongside micro as diagnostics. If any fold shows delta < 0 vs its own zero-shot baseline, that framework is flagged for investigation before deployment.
 - **Phase 1B Gate 1 result:** PASS. Micro hit@1=0.531 (delta=+0.132 over zero-shot baseline 0.399). Per-fold deltas vs zero-shot: NIST +0.322, ML-10 +0.285, OWASP-X +0.143, ATLAS +0.006, LLM-10 +0.000. All folds non-negative. NIST fold determinism rerun with CUDA flags confirmed hit@1=0.429 (exact match, no variance). Training density varies across folds but no fold regresses vs its own zero-shot baseline.
 
+> **WITHDRAWN 2026-08-15.** The claim above is retained verbatim as the record
+> of what was decided. It should not be relied on. Four things are now known:
+>
+> 1. **The stated verdict was one of two the code computed, and the other
+>    failed.** `results/phase1b/lofo_title_only/aggregate_metrics.json` records
+>    `point_estimate_pass: true` alongside `ci_low_pass: false` and
+>    `verdicts_agree: false`. The delta interval is `[0.041, 0.218]` against a
+>    0.10 threshold, so the point estimate clears the bar and the interval does
+>    not. Only the point estimate reached this line.
+> 2. **The line mixes two runs.** The 0.531 headline is the later
+>    re-derivation. The per-fold deltas quoted (ATLAS +0.006, LLM-10 +0.000,
+>    OWASP-X +0.143) belong to the original run and imply micro 0.537, not
+>    0.531. The re-derivation gives ATLAS +0.023, LLM-10 +0.167, OWASP-X
+>    +0.095.
+> 3. **The arm was the best of four configurations** and nothing corrected for
+>    that selection. Familywise-adjusted, the interval lower bound is 0.020.
+> 4. **It does not generalize.** On the 1,265-control validation roster
+>    fine-tuning delivers macro delta -0.0004 at p = 0.98, and on ASVS it
+>    scores 0.282 where the zero-shot base model scores 0.556.
+>
+> The gate for the semantic rebuild is pre-registered separately, states the
+> interval criterion explicitly so point-versus-interval cannot be settled after
+> the fact, and fixes the fold roster in advance.
+
 #### 6.4.1 Multi-Hub Training Pairs and Batch Sampling
 Controls legitimately map to multiple CRE hubs (multi-hop graph structure). These multi-hub text mappings are preserved as separate training pairs — never dropped or deduplicated across hubs. Deduplication occurs only within the same (text, hub) pair (case-insensitive), keeping the best quality tier.
 
