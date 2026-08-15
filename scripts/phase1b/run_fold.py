@@ -98,6 +98,8 @@ def _campaign_label(config: TrainingConfig) -> str:
         label += "-" + config.base_model.split("/")[-1]
     if config.max_seq_length != PHASE1B_MAX_SEQ_LENGTH:
         label += f"-seq{config.max_seq_length}"
+    if config.hub_rep_format != "path+name":
+        label += "-" + config.hub_rep_format.replace("path+name+", "")
     return label
 
 
@@ -140,6 +142,16 @@ def main() -> int:
                              "16-arm winner selection-optimistic, and at n=147 "
                              "the minimum detectable effect is 11.4 hit@1 "
                              "points against effects of 1-3.")
+    parser.add_argument("--hub-rep", default=None,
+                        choices=("path+name", "path+name+desc",
+                                 "path+name+standards"),
+                        help="What the model matches AGAINST. The default is a "
+                             "bare label -- for many hubs the name is the last "
+                             "path segment repeated -- so there is nothing on "
+                             "the target side to comprehend. PRD:372 requires "
+                             "path+name+desc be measured; it never has been, "
+                             "because this flag did not exist on the RunPod "
+                             "path and CLAUDE.md forbids the local one.")
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Temperature flattening the CRE-branch "
                              "distribution during batch ordering. 0 disables "
@@ -180,6 +192,7 @@ def main() -> int:
         **({"max_seq_length": args.max_seq_length} if args.max_seq_length else {}),
         **({"branch_balance_temperature": args.branch_balance}
            if args.branch_balance is not None else {}),
+        **({"hub_rep_format": args.hub_rep} if args.hub_rep else {}),
     )
     output_dir = (
         Path(args.output_dir) if args.output_dir

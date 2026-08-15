@@ -96,6 +96,10 @@ ARM_DEFINING_KEYS: tuple[str, ...] = (
     "branch_balance_temperature",
     "base_model",
     "max_seq_length",
+    # What the model matches AGAINST. Omitted for three months, so a run with
+    # semantic hub descriptions would have averaged with one matching a bare
+    # label -- the two most different experiments this project can run.
+    "hub_rep_format",
 )
 
 

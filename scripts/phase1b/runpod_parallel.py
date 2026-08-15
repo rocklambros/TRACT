@@ -1171,6 +1171,9 @@ def _arm_from_config(config: dict[str, Any]) -> str:  # noqa: D401
     bal = config.get("branch_balance_temperature") or 0
     if bal:
         label += f"-bal{bal:g}"
+    hub_rep = config.get("hub_rep_format") or "path+name"
+    if hub_rep != "path+name":
+        label += "-" + hub_rep.replace("path+name+", "")
     base = config.get("base_model") or ""
     if base and base != "BAAI/bge-large-en-v1.5":
         label += "-" + base.split("/")[-1]
@@ -1405,6 +1408,10 @@ def main() -> int:
     parser.add_argument("--max-seq-length", type=int, default=None,
                         help="Encoder token budget; the anchor character cut "
                              "is derived from it")
+    parser.add_argument("--hub-rep", type=str, default=None,
+                        help="Hub representation arm. PRD:372 requires "
+                             "path+name+desc be measured and 32/32 folds have "
+                             "used the default bare label.")
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Rebalance arm: temperature flattening the "
                              "CRE-branch distribution")
@@ -1423,6 +1430,7 @@ def main() -> int:
     # Valued flags, passed through with their argument.
     for flag, value in (("--base-model", args.base_model),
                         ("--max-seq-length", args.max_seq_length),
+                        ("--hub-rep", args.hub_rep),
                         ("--branch-balance", args.branch_balance)):
         if value is not None:
             arm_flags += (flag, str(value))
