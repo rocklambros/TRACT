@@ -25,6 +25,11 @@ from typing import Any, Protocol
 
 logger = logging.getLogger(__name__)
 
+# Not a format assertion: just long enough to exclude a pasted date, a
+# username, or a stray word. The real check is verify_credential.
+MIN_KEY_LENGTH = 20
+WANDB_GRAPHQL_URL = "https://api.wandb.ai/graphql"
+
 
 class WandbRun(Protocol):
     """The subset of the wandb run object this module uses."""
@@ -64,40 +69,77 @@ def resolve_api_key() -> str:
             ) from exc
         key = result.stdout.strip()
 
-    # Checking the shape here turns a credential mistake into an error before
-    # a pod exists, rather than an authentication failure on every pod after
-    # the fleet is already billing. The entry in `pass` held a 5-character
-    # username when this was written, and then a 10-character date, neither of
-    # which would have authenticated anywhere.
-    if not _is_wandb_key(key):
+    # Shape checking here is deliberately weak. This used to require 40 hex
+    # digits, which was the legacy WandB key format; the current one is far
+    # longer, mixed-case and prefixed, so the check rejected a perfectly good
+    # credential three times running and taught nothing except to distrust the
+    # preflight. Guessing a vendor's credential format is a losing game. What
+    # is worth catching offline is the cheap, common mistake -- the wrong text
+    # pasted at a hidden prompt -- and for that, "looks like a single opaque
+    # token" is enough. Whether the key actually works is settled by
+    # verify_credential, which asks WandB.
+    if len(key) < MIN_KEY_LENGTH or any(c.isspace() for c in key):
         raise RuntimeError(
-            f"The value from {source} is {len(key)} characters and is not a "
-            f"WandB API key ({WANDB_KEY_LENGTH} hex digits, or "
-            f"'{SELF_HOSTED_PREFIX}' followed by {WANDB_KEY_LENGTH} hex "
-            f"digits for a self-hosted server). Get one from "
+            f"The value from {source} is {len(key)} characters"
+            f"{' and contains whitespace' if any(c.isspace() for c in key) else ''}"
+            f", which is not a WandB API key. Keys are a single opaque token of "
+            f"at least {MIN_KEY_LENGTH} characters. Get one from "
             "https://wandb.ai/authorize and store it with "
-            "`pass insert -f wandb/api-key`."
+            "`pass insert -f -e wandb/api-key` (-e echoes, so a bad paste is "
+            "visible)."
         )
     return key
 
 
-def _is_wandb_key(value: str) -> bool:
-    """Whether *value* has the shape of a WandB API key.
+def verify_credential(key: str | None = None, timeout: int = 30) -> dict[str, str]:
+    """Authenticate against WandB and return the viewer it belongs to.
 
-    Self-hosted deployments issue "local-" prefixed keys. Requiring bare hex
-    rejected those, which would have blocked a legitimate credential on any
-    non-cloud WandB server.
+    This is the check that matters. A format test can only ever encode a guess
+    about the vendor's current key layout, and that guess goes stale; asking
+    the server is both correct and self-maintaining. It also surfaces WHICH
+    account and entity the runs will land under, which a format test cannot,
+    and getting that wrong sends a campaign into the wrong workspace.
+
+    Raises RuntimeError if the key is rejected or WandB is unreachable.
     """
-    body = value[len(SELF_HOSTED_PREFIX):] if value.startswith(
-        SELF_HOSTED_PREFIX
-    ) else value
-    return len(body) == WANDB_KEY_LENGTH and all(
-        c in "0123456789abcdefABCDEF" for c in body
-    )
+    import requests
 
+    resolved = key or resolve_api_key()
+    try:
+        response = requests.post(
+            WANDB_GRAPHQL_URL,
+            auth=("api", resolved),
+            json={"query": "{viewer{username entity}}"},
+            timeout=timeout,
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            f"Could not reach WandB at {WANDB_GRAPHQL_URL} to verify the "
+            f"credential: {exc}"
+        ) from exc
 
-WANDB_KEY_LENGTH = 40
-SELF_HOSTED_PREFIX = "local-"
+    if response.status_code == 401:
+        raise RuntimeError(
+            "WandB rejected the API key (HTTP 401). Get a current one from "
+            "https://wandb.ai/authorize."
+        )
+    if response.status_code != 200:
+        raise RuntimeError(
+            f"WandB returned HTTP {response.status_code} verifying the "
+            f"credential: {response.text[:200]}"
+        )
+
+    payload = response.json()
+    viewer = (payload.get("data") or {}).get("viewer")
+    if not viewer:
+        raise RuntimeError(
+            f"WandB accepted the request but returned no viewer, so the key "
+            f"identifies no account: {str(payload)[:200]}"
+        )
+    return {
+        "username": str(viewer.get("username") or ""),
+        "entity": str(viewer.get("entity") or ""),
+    }
 
 
 def stable_run_id(*parts: str) -> str:

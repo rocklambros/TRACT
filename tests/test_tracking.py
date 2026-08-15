@@ -1,9 +1,9 @@
 """Tests for tract/training/tracking.py.
 
-The point of this module is that it fails closed. Phase 0's init_wandb returns
-None and warns when the key is missing, which is right for a local probe and
-wrong for a fleet: pods that each degrade to untracked spend the whole budget
-before anyone notices the runs are not appearing.
+The module fails closed on credentials and open on the network. Phase 0's
+init_wandb returns None and warns when the key is missing, which is right for
+a local probe and wrong for a fleet: pods that each degrade to untracked spend
+the whole budget before anyone notices the runs are not appearing.
 """
 from __future__ import annotations
 
@@ -12,48 +12,75 @@ from typing import Any
 import pytest
 
 from tract.training.tracking import (
-    WANDB_KEY_LENGTH,
     finish_run,
     log_fold,
     resolve_api_key,
+    stable_run_id,
 )
 
-VALID_KEY = "a" * WANDB_KEY_LENGTH
+LEGACY_KEY = "a" * 40
+# Shaped like the key actually in use: long, mixed-case, prefixed.
+MODERN_KEY = "wandb" + "Ab3" * 27
 
 
 class TestResolveApiKey:
+    """Shape checking here is deliberately weak.
 
-    def test_a_well_formed_key_from_the_environment_is_used(
+    It used to require 40 hex digits, which was the legacy WandB format. The
+    current key is longer, mixed-case and prefixed, so that check rejected a
+    working credential three times running and taught nothing except to
+    distrust the preflight. Guessing a vendor's credential layout is a losing
+    game. The offline check catches only the cheap, common mistake -- wrong
+    text pasted at a hidden prompt -- and verify_credential settles the rest
+    by asking WandB.
+    """
+
+    def test_a_legacy_hex_key_is_accepted(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("WANDB_API_KEY", VALID_KEY)
-        assert resolve_api_key() == VALID_KEY
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        assert resolve_api_key() == LEGACY_KEY
+
+    def test_a_modern_prefixed_key_is_accepted(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """86 mixed-case characters -- the shape that was wrongly rejected."""
+        monkeypatch.setenv("WANDB_API_KEY", MODERN_KEY)
+        assert resolve_api_key() == MODERN_KEY
+
+    def test_a_self_hosted_key_is_accepted(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("WANDB_API_KEY", f"local-{LEGACY_KEY}")
+        assert resolve_api_key() == f"local-{LEGACY_KEY}"
 
     def test_surrounding_whitespace_is_stripped(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """A key pasted from a terminal usually arrives with a newline."""
-        monkeypatch.setenv("WANDB_API_KEY", f"  {VALID_KEY}\n")
-        assert resolve_api_key() == VALID_KEY
+        monkeypatch.setenv("WANDB_API_KEY", f"  {LEGACY_KEY}\n")
+        assert resolve_api_key() == LEGACY_KEY
 
     def test_a_username_where_a_key_belongs_is_refused(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """The real failure this was written for.
-
-        `pass wandb/api-key` held a 5-character username. Without a shape
-        check that value reaches wandb.init, which falls back to an
-        interactive login prompt and hangs a headless pod until its deadline.
-        """
+        """What `pass wandb/api-key` actually held on the first attempt."""
         monkeypatch.setenv("WANDB_API_KEY", "rockc")
         with pytest.raises(RuntimeError, match="not a WandB API key"):
             resolve_api_key()
 
-    def test_a_right_length_non_hex_value_is_refused(
+    def test_a_date_is_refused(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """And on the second attempt."""
+        monkeypatch.setenv("WANDB_API_KEY", "09/12/2026")
+        with pytest.raises(RuntimeError, match="not a WandB API key"):
+            resolve_api_key()
+
+    def test_pasted_prose_is_refused(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("WANDB_API_KEY", "z" * WANDB_KEY_LENGTH)
-        with pytest.raises(RuntimeError, match="not a WandB API key"):
+        """Long enough to pass a length check, but plainly not a token."""
+        monkeypatch.setenv("WANDB_API_KEY", "the quick brown fox jumped over it")
+        with pytest.raises(RuntimeError, match="whitespace"):
             resolve_api_key()
 
     def test_the_error_says_where_the_bad_value_came_from(
@@ -63,15 +90,13 @@ class TestResolveApiKey:
         with pytest.raises(RuntimeError, match="WANDB_API_KEY"):
             resolve_api_key()
 
-    def test_uppercase_hex_is_accepted(
+    def test_the_error_suggests_echo_mode(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        # Built rather than written literally: a 40-char hex string in a source
-        # file is what secret scanners are for, and an allowlist entry to
-        # silence a test fixture would weaken the scanner for real code.
-        key = (VALID_KEY[:-6] + "abcdef").upper()
-        monkeypatch.setenv("WANDB_API_KEY", key)
-        assert resolve_api_key() == key
+        """A hidden prompt is how the wrong text got pasted three times."""
+        monkeypatch.setenv("WANDB_API_KEY", "short")
+        with pytest.raises(RuntimeError, match=r"-e"):
+            resolve_api_key()
 
 
 class _FakeRun:
@@ -154,71 +179,100 @@ class TestStableRunId:
     """
 
     def test_the_same_fold_yields_the_same_id(self) -> None:
-        from tract.training.tracking import stable_run_id
-
-        first = stable_run_id("campaign", "prose", "MITRE ATLAS")
-        second = stable_run_id("campaign", "prose", "MITRE ATLAS")
-        assert first == second
+        assert stable_run_id("campaign", "prose", "MITRE ATLAS") == stable_run_id(
+            "campaign", "prose", "MITRE ATLAS"
+        )
 
     def test_different_arms_do_not_collide(self) -> None:
-        from tract.training.tracking import stable_run_id
-
         assert stable_run_id("c", "prose", "ATLAS") != stable_run_id(
             "c", "prose-stopwords", "ATLAS"
         )
 
     def test_different_folds_do_not_collide(self) -> None:
-        from tract.training.tracking import stable_run_id
-
         assert stable_run_id("c", "prose", "ATLAS") != stable_run_id(
             "c", "prose", "NIST AI 100-2"
         )
 
     def test_different_campaigns_do_not_collide(self) -> None:
-        from tract.training.tracking import stable_run_id
-
         assert stable_run_id("a", "prose", "ATLAS") != stable_run_id(
             "b", "prose", "ATLAS"
         )
 
     def test_parts_cannot_be_confused_by_concatenation(self) -> None:
         """("ab","c") and ("a","bc") must not hash alike."""
-        from tract.training.tracking import stable_run_id
-
         assert stable_run_id("ab", "c") != stable_run_id("a", "bc")
 
     def test_the_id_is_wandb_safe(self) -> None:
-        from tract.training.tracking import stable_run_id
-
         run_id = stable_run_id("c", "prose", "OWASP Top10 for LLM")
         assert run_id.isalnum()
         assert len(run_id) == 16
 
-    def test_a_self_hosted_key_is_accepted(
+
+class TestVerifyCredential:
+    """The check that actually settles whether tracking will work."""
+
+    def _response(self, status: int, payload: dict[str, Any]) -> Any:
+        class _Resp:
+            status_code = status
+            text = str(payload)
+
+            def json(self) -> dict[str, Any]:
+                return payload
+
+        return _Resp()
+
+    def test_a_good_key_returns_the_viewer(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Self-hosted WandB issues "local-" prefixed keys.
+        import requests
 
-        Requiring bare hex rejected a legitimate credential on any non-cloud
-        server, which is a preflight that blocks the run for no reason.
-        """
-        from tract.training.tracking import SELF_HOSTED_PREFIX
+        from tract.training import tracking
 
-        key = f"{SELF_HOSTED_PREFIX}{VALID_KEY}"
-        monkeypatch.setenv("WANDB_API_KEY", key)
-        assert resolve_api_key() == key
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        monkeypatch.setattr(requests, "post", lambda *a, **k: self._response(
+            200, {"data": {"viewer": {"username": "rockl", "entity": "rockcyber"}}},
+        ))
+        assert tracking.verify_credential() == {
+            "username": "rockl", "entity": "rockcyber",
+        }
 
-    def test_a_date_is_refused(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """What actually landed in `pass` on the second attempt."""
-        monkeypatch.setenv("WANDB_API_KEY", "09/12/2026")
-        with pytest.raises(RuntimeError, match="not a WandB API key"):
-            resolve_api_key()
+    def test_a_rejected_key_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        import requests
 
-    def test_a_prefixed_key_of_the_wrong_length_is_refused(
+        from tract.training import tracking
+
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        monkeypatch.setattr(requests, "post",
+                            lambda *a, **k: self._response(401, {}))
+        with pytest.raises(RuntimeError, match="rejected"):
+            tracking.verify_credential()
+
+    def test_an_authenticated_request_with_no_viewer_raises(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        from tract.training.tracking import SELF_HOSTED_PREFIX
+        """A key that identifies no account cannot own a run."""
+        import requests
 
-        monkeypatch.setenv("WANDB_API_KEY", f"{SELF_HOSTED_PREFIX}abc123")
-        with pytest.raises(RuntimeError, match="not a WandB API key"):
-            resolve_api_key()
+        from tract.training import tracking
+
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        monkeypatch.setattr(requests, "post", lambda *a, **k: self._response(
+            200, {"data": {"viewer": None}},
+        ))
+        with pytest.raises(RuntimeError, match="no viewer"):
+            tracking.verify_credential()
+
+    def test_an_unreachable_server_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import requests
+
+        from tract.training import tracking
+
+        def _boom(*args: Any, **kwargs: Any) -> Any:
+            raise OSError("network down")
+
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        monkeypatch.setattr(requests, "post", _boom)
+        with pytest.raises(RuntimeError, match="Could not reach WandB"):
+            tracking.verify_credential()

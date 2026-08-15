@@ -420,17 +420,23 @@ def _preflight_tracking() -> None:
             "TRACT_SKIP_WANDB=1: this campaign will not be tracked in WandB."
         )
         return
-    from tract.training.tracking import resolve_api_key
+    from tract.config import LOFO_WANDB_PROJECT
+    from tract.training.tracking import verify_credential
 
     try:
-        resolve_api_key()
+        viewer = verify_credential()
     except RuntimeError as exc:
         raise RuntimeError(
             f"WandB credential preflight failed, so this campaign could not be "
             f"tracked: {exc}\nFix the key, or set TRACT_SKIP_WANDB=1 to run "
             f"untracked on purpose."
         ) from exc
-    logger.info("WandB credential preflight passed.")
+    # Which workspace the runs land in is worth stating before the spend
+    # rather than discovering afterwards in someone else's project.
+    logger.info(
+        "WandB preflight passed: user=%s entity=%s -> project %s",
+        viewer["username"], viewer["entity"], LOFO_WANDB_PROJECT,
+    )
 
 
 def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
