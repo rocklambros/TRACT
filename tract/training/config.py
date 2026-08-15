@@ -93,6 +93,18 @@ class TrainingConfig:
     # tokens it spends. 175 controls carry such a heading and the median puts
     # 47% of its body after it.
     use_description_only: bool = False
+    # Temperature for flattening the CRE-branch distribution during batch
+    # ordering. 0 disables it, leaving the binary is_ai behaviour untouched;
+    # 1.0 is the natural distribution; larger flattens toward uniform.
+    #
+    # 72.1% of training links point at "Technical application security
+    # controls" and 3.3% at the "Cross-cutting concerns" threat branch, and
+    # none of CAPEC's 702 adversary-as-subject anchors point at a threat hub.
+    # The model learns "attack narrative -> the control that stops it", which
+    # is correct for CAPEC and wrong for MITRE ATLAS techniques: measured at
+    # -29.4 hit@1 points on that stratum, which is the entire negative ATLAS
+    # fold.
+    branch_balance_temperature: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize for WandB/JSON logging."""
@@ -116,6 +128,7 @@ class TrainingConfig:
             "max_seq_length": self.max_seq_length,
             "hard_negatives": self.hard_negatives,
             "seed": self.seed,
+            "branch_balance_temperature": self.branch_balance_temperature,
             "gradient_checkpointing": self.gradient_checkpointing,
             "hub_rep_format": self.hub_rep_format,
             "use_prose": self.use_prose,

@@ -177,8 +177,14 @@ def train_model(
             hub_ids=list(train_dataset["hub_id"]),
             is_ai=list(train_dataset["is_ai"]),
             anchor_keys=anchor_keys,
+            strata=(
+                list(train_dataset["branch"])
+                if "branch" in train_dataset.column_names else None
+            ),
+            temperature=config.sampling_temperature,
+            strata_temperature=config.branch_balance_temperature,
         )
-        meta_cols = [c for c in ["hub_id", "is_ai", "anchor_key"]
+        meta_cols = [c for c in ["hub_id", "is_ai", "anchor_key", "branch"]
                      if c in train_dataset.column_names]
         train_dataset = train_dataset.remove_columns(meta_cols)
 

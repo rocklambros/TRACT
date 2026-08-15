@@ -205,6 +205,14 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
     _hub_ids_override: ClassVar[list[str] | None] = None
     _is_ai_override: ClassVar[list[bool] | None] = None
     _anchor_keys_override: ClassVar[list[str] | None] = None
+    _strata_override: ClassVar[list[str] | None] = None
+    # sentence-transformers takes the sampler CLASS and constructs it itself,
+    # so anything from TrainingConfig has to arrive through a class attribute.
+    # config.sampling_temperature was recorded in every run record and never
+    # reached the sampler, which always used the 2.0 default -- the same
+    # dead-field shape as control_text_source.
+    _temperature_override: ClassVar[float | None] = None
+    _strata_temperature_override: ClassVar[float | None] = None
 
     @classmethod
     def set_metadata(
@@ -212,15 +220,24 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
         hub_ids: list[str],
         is_ai: list[bool],
         anchor_keys: list[str] | None = None,
+        strata: list[str] | None = None,
+        temperature: float | None = None,
+        strata_temperature: float | None = None,
     ) -> None:
+        cls._temperature_override = temperature
+        cls._strata_temperature_override = strata_temperature
         cls._hub_ids_override = hub_ids
         cls._is_ai_override = is_ai
         cls._anchor_keys_override = anchor_keys
+        cls._strata_override = strata
 
     @classmethod
     def clear_metadata(cls) -> None:
         cls._hub_ids_override = None
         cls._is_ai_override = None
+        cls._strata_override = None
+        cls._temperature_override = None
+        cls._strata_temperature_override = None
         cls._anchor_keys_override = None
 
     def __init__(
@@ -232,18 +249,30 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
         generator: torch.Generator | None = None,
         seed: int = 0,
         temperature: float = 2.0,
+        strata_temperature: float = 0.0,
     ) -> None:
         super().__init__(
             dataset, batch_size=batch_size, drop_last=drop_last,
             valid_label_columns=valid_label_columns,
             generator=generator, seed=seed,
         )
-        self.temperature = temperature
+        self.temperature = (
+            self._temperature_override
+            if self._temperature_override is not None else temperature
+        )
+        # 0 disables stratum balancing and leaves the binary is_ai behaviour
+        # untouched, so an existing run reproduces exactly.
+        self.strata_temperature = (
+            self._strata_temperature_override
+            if self._strata_temperature_override is not None
+            else strata_temperature
+        )
 
         if self._hub_ids_override is not None:
             self.hub_ids = self._hub_ids_override
             self.is_ai = self._is_ai_override or [False] * len(dataset)
             self.anchor_keys = self._anchor_keys_override
+            self.strata = self._strata_override
         elif "hub_id" in dataset.column_names:
             self.hub_ids = dataset["hub_id"]
             self.is_ai = (
@@ -254,24 +283,20 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
                 dataset["anchor_key"] if "anchor_key" in dataset.column_names
                 else None
             )
+            self.strata = (
+                dataset["branch"] if "branch" in dataset.column_names else None
+            )
         else:
             raise ValueError("Dataset must have a 'hub_id' column or use set_metadata()")
         self.n = len(dataset)
 
-    def __iter__(self) -> Iterator[list[int]]:
-        if self.generator is not None:
-            seed = int(torch.randint(0, 2**31, (1,), generator=self.generator).item())
-        else:
-            seed = self.seed + self.epoch
-        rng = np.random.default_rng(seed)
-
+    def _order_by_ai(self, rng: Any) -> list[int]:
+        """The original binary AI-vs-traditional temperature interleave."""
         ai_indices = [i for i in range(self.n) if self.is_ai[i]]
         trad_indices = [i for i in range(self.n) if not self.is_ai[i]]
         rng.shuffle(ai_indices)
         rng.shuffle(trad_indices)
-
-        n_ai = len(ai_indices)
-        n_trad = len(trad_indices)
+        n_ai, n_trad = len(ai_indices), len(trad_indices)
 
         if n_ai > 0 and n_trad > 0 and self.temperature > 0:
             w_ai = (n_ai / self.n) ** (1.0 / self.temperature)
@@ -295,8 +320,74 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
             else:
                 ordered.append(trad_indices[trad_ptr])
                 trad_ptr += 1
+        return ordered
+
+    def _order_by_strata(self, rng: Any) -> list[int]:
+        """Temperature-flatten an arbitrary stratum distribution.
+
+        Generalises the binary is_ai interleave to N classes so the CRE
+        branch can be balanced. 72.1% of training links point at "Technical
+        application security controls" and 3.3% at "Cross-cutting concerns",
+        and CAPEC alone is 42.5% of links with none of its 702
+        adversary-as-subject anchors pointing at the threat branch. The model
+        therefore learns "attack narrative -> the control that stops it",
+        which is right for CAPEC and wrong for the MITRE ATLAS techniques
+        that want the threat itself -- measured at -29.4 hit@1 points on that
+        stratum, enough to make the whole ATLAS fold negative.
+
+        p^(1/T): T=1 leaves the natural distribution, larger T flattens
+        toward uniform. Sampling is without replacement -- each example still
+        appears exactly once per epoch, only the ORDER changes, so no example
+        is duplicated or dropped and epoch size is unchanged.
+        """
+        assert self.strata is not None
+        buckets: dict[str, list[int]] = {}
+        for i in range(self.n):
+            buckets.setdefault(str(self.strata[i]), []).append(i)
+        for idx_list in buckets.values():
+            rng.shuffle(idx_list)
+
+        keys = sorted(buckets)
+        weights = [
+            (len(buckets[k]) / self.n) ** (1.0 / self.strata_temperature)
+            for k in keys
+        ]
+        total = sum(weights)
+        probs = [w / total for w in weights] if total > 0 else None
+
+        pointers = dict.fromkeys(keys, 0)
+        ordered: list[int] = []
+        for _ in range(self.n):
+            live = [k for k in keys if pointers[k] < len(buckets[k])]
+            if not live:
+                break
+            if probs is None:
+                chosen = live[0]
+            else:
+                live_p = [probs[keys.index(k)] for k in live]
+                s = sum(live_p)
+                chosen = live[0] if s <= 0 else str(
+                    rng.choice(live, p=[p / s for p in live_p])
+                )
+            ordered.append(buckets[chosen][pointers[chosen]])
+            pointers[chosen] += 1
+        return ordered
+
+    def __iter__(self) -> Iterator[list[int]]:
+        if self.generator is not None:
+            seed = int(torch.randint(0, 2**31, (1,), generator=self.generator).item())
+        else:
+            seed = self.seed + self.epoch
+        rng = np.random.default_rng(seed)
+
+        if self.strata is not None and self.strata_temperature > 0:
+            ordered = self._order_by_strata(rng)
+        else:
+            ordered = self._order_by_ai(rng)
 
         batch: list[int] = []
+
+
         hubs_in_batch: set[str] = set()
         texts_in_batch: set[str] = set()
         deferred: list[int] = []
@@ -352,6 +443,21 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
         return n_batches
 
 
+def top_level_branch(hub_id: str, hierarchy: CREHierarchy) -> str:
+    """The root of the CRE tree this hub hangs from.
+
+    Coarse on purpose. The failure it addresses is branch-level -- attack
+    narrative routed to the control that mitigates it rather than to the
+    threat itself -- and finer strata would leave most buckets too small to
+    sample from.
+    """
+    node = hierarchy.hubs.get(hub_id)
+    if node is None:
+        return "unknown"
+    path = node.hierarchy_path or node.name
+    return path.split(">")[0].strip() or node.name
+
+
 def pairs_to_dataset(
     pairs: list[TrainingPair],
     hierarchy: CREHierarchy,
@@ -370,6 +476,10 @@ def pairs_to_dataset(
             "hub_id": pair.hub_id,
             "is_ai": pair.framework in AI_FRAMEWORK_NAMES,
             "anchor_key": pair.control_text.lower().strip(),
+            # Top-level CRE branch of the target, so the sampler can flatten a
+            # distribution that is 72.1% "Technical application security
+            # controls" and 3.3% "Cross-cutting concerns".
+            "branch": top_level_branch(pair.hub_id, hierarchy),
         }
         negatives = mine_hard_negatives(pair.hub_id, hierarchy, n=n_hard_negatives)
         for i, neg_id in enumerate(negatives):
