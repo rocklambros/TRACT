@@ -428,3 +428,57 @@ class TestTransientSshRetry:
 
         with pytest.raises(RuntimeError, match="SSH command failed"):
             rp._ssh("1.2.3.4", 22, "true")
+
+
+class TestRsyncToRetries:
+    """Sending the tree is idempotent, so a transient failure should retry.
+
+    A single rsync failure during bootstrap took down two pods of a five-pod
+    fleet mid-campaign. _rsync_from already retried; this direction did not.
+    """
+
+    def test_a_transient_failure_is_retried(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import subprocess as sp
+
+        from scripts.phase1b import runpod_parallel as rp
+
+        calls = {"n": 0}
+
+        def _run(cmd, **kwargs):
+            calls["n"] += 1
+            if calls["n"] < 2:
+                raise sp.CalledProcessError(255, cmd)
+            return None
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+
+        rp._rsync_to("1.2.3.4", 22, "/local/", "/remote/")
+        assert calls["n"] == 2
+
+    def test_a_persistent_failure_still_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import subprocess as sp
+
+        from scripts.phase1b import runpod_parallel as rp
+
+        def _run(cmd, **kwargs):
+            raise sp.CalledProcessError(255, cmd)
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+
+        with pytest.raises(sp.CalledProcessError):
+            rp._rsync_to("1.2.3.4", 22, "/local/", "/remote/")
+
+    def test_success_sends_once(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        calls = {"n": 0}
+        monkeypatch.setattr(rp.subprocess, "run",
+                            lambda cmd, **k: calls.__setitem__("n", calls["n"] + 1))
+        rp._rsync_to("1.2.3.4", 22, "/local/", "/remote/")
+        assert calls["n"] == 1

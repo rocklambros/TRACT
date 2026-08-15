@@ -356,8 +356,24 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
         f"rsync -rltz {excludes} "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
-    logger.info("[rsync to] %s:%d %s", ip, port, remote_path)
-    subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+    # Retried for the same reason _rsync_from is. This direction had no
+    # retry, and a single transient rsync failure during bootstrap took down
+    # two pods of a five-pod fleet mid-campaign -- the same connection-level
+    # flakiness the SSH retry already handles, arriving through a different
+    # subprocess. Sending the tree again is idempotent, so a retry is free.
+    for attempt in range(1, RSYNC_ATTEMPTS + 1):
+        logger.info("[rsync to] %s:%d %s (attempt %d/%d)",
+                    ip, port, remote_path, attempt, RSYNC_ATTEMPTS)
+        try:
+            subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+            return
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+            if attempt == RSYNC_ATTEMPTS:
+                raise
+            backoff = SSH_RETRY_BACKOFF_S * attempt
+            logger.warning("rsync to %s:%d failed (%s); retrying in %ds.",
+                           ip, port, exc, backoff)
+            time.sleep(backoff)
 
 
 def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
