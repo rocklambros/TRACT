@@ -94,6 +94,11 @@ MAX_USD_PER_HOUR_PER_POD: Final[float] = float(
 )
 # Folds are expected in well under this; it is the wall the watchdog enforces.
 MAX_RUN_HOURS: Final[float] = float(os.environ.get("TRACT_RUNPOD_MAX_HOURS", "6"))
+# A campaign runs several arms on one fleet, each getting its own window. The
+# cap bounds the total: without it, "extend per arm" is no bound at all.
+MAX_DEADLINE_EXTENSIONS: Final[int] = int(
+    os.environ.get("TRACT_RUNPOD_MAX_ARMS", "12")
+)
 
 # A fold's results run to gigabytes; the previous 300s was optimistic. Retries
 # because a failed collection destroys work that has already been paid for.
@@ -124,6 +129,18 @@ SSH_BOOTSTRAP_TIMEOUT_S: Final[int] = 900
 SSH_CONNECT_ATTEMPTS: Final[int] = 4
 SSH_RETRY_BACKOFF_S: Final[int] = 15
 
+# The validation split holds out traditional-security frameworks instead of
+# AI ones, so arm selection happens on 1,265 items rather than the test set's
+# 147 -- where the minimum detectable effect is 11.4 hit@1 points against
+# effects of 1-3. The five largest, so one fleet covers the split.
+VALIDATION_FOLD_FRAMEWORKS: Final[list[str]] = [
+    "CAPEC",
+    "NIST 800-53 v5",
+    "ASVS",
+    "CWE",
+    "ISO 27001",
+]
+
 FOLD_FRAMEWORKS: Final[list[str]] = [
     "MITRE ATLAS",
     "NIST AI 100-2",
@@ -138,7 +155,17 @@ POD_CONFIGS: Final[list[dict[str, str]]] = [
 ]
 
 
-def select_pod_configs(folds: list[str] | None = None) -> list[dict[str, str]]:
+def fold_roster(split: str = "test") -> list[str]:
+    """Which frameworks are held out for this split."""
+    return (
+        list(FOLD_FRAMEWORKS) if split == "test"
+        else list(VALIDATION_FOLD_FRAMEWORKS)
+    )
+
+
+def select_pod_configs(
+    folds: list[str] | None = None, split: str = "test",
+) -> list[dict[str, str]]:
     """Pod configs for a subset of folds, preserving the canonical names.
 
     Exists so a canary is a supported operation rather than a hand-edit of
@@ -150,15 +177,23 @@ def select_pod_configs(folds: list[str] | None = None) -> list[dict[str, str]]:
     its position in the filtered list, so a canary pod and the same fold in a
     later full run carry the same name and `reap` recognises both.
     """
+    roster = fold_roster(split)
+    # Pod names stay tied to position in the roster so reap's orphan sweep
+    # recognises them, and the two splits never share a name.
+    prefix = "tract-p1b" if split == "test" else "tract-p1b-val"
+    configs = [
+        {"name": f"{prefix}-fold{i}", "role": fw} for i, fw in enumerate(roster)
+    ]
     if not folds:
-        return list(POD_CONFIGS)
-    unknown = [f for f in folds if f not in FOLD_FRAMEWORKS]
+        return configs
+    unknown = [f for f in folds if f not in roster]
     if unknown:
         raise ValueError(
-            f"Unknown fold(s) {unknown}. Expected any of {FOLD_FRAMEWORKS}."
+            f"Unknown fold(s) {unknown} for split {split!r}. "
+            f"Expected any of {roster}."
         )
     wanted = set(folds)
-    return [c for c in POD_CONFIGS if c["role"] in wanted]
+    return [c for c in configs if c["role"] in wanted]
 
 
 HF_READ_TOKEN_ENTRY: Final[str] = "huggingface/read-token"
@@ -484,6 +519,23 @@ def _check_deadline() -> None:
         )
 
 
+def _extend_deadline() -> None:
+    """Give the current arm its own MAX_RUN_HOURS window."""
+    state = _read_pod_state()
+    meta = dict(state.get("meta") or {})
+    meta["deadline"] = time.time() + MAX_RUN_HOURS * 3600
+    meta["deadline_extensions"] = int(meta.get("deadline_extensions", 0)) + 1
+    if meta["deadline_extensions"] > MAX_DEADLINE_EXTENSIONS:
+        raise RuntimeError(
+            f"Refusing to extend the run window past "
+            f"{MAX_DEADLINE_EXTENSIONS} arms ({MAX_DEADLINE_EXTENSIONS * MAX_RUN_HOURS}h "
+            f"of fleet time). Collect what finished and tear down."
+        )
+    _save_pod_state(state.get("pods") or [], meta=meta)
+    logger.info("Run window extended to %.1fh from now (extension %d/%d).",
+                MAX_RUN_HOURS, meta["deadline_extensions"], MAX_DEADLINE_EXTENSIONS)
+
+
 def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     """Refuse to provision a fleet whose worst case exceeds the budget.
 
@@ -577,9 +629,11 @@ def _preflight_tracking() -> None:
     )
 
 
-def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
+def provision(
+    folds: list[str] | None = None, split: str = "test",
+) -> list[dict[str, Any]]:
     _preflight_tracking()
-    configs = select_pod_configs(folds)
+    configs = select_pod_configs(folds, split)
     logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
     # A list, not a single choice. list_available_gpus reports the types that
@@ -717,6 +771,7 @@ def _bootstrap_pod(
 
 def _run_fold_on_pod(
     pod: dict[str, Any], config_name: str, arm_flags: tuple[str, ...] = (),
+    split: str = "test",
 ) -> dict[str, Any]:
     ip, port = pod["ip"], pod["port"]
     framework = pod["role"]
@@ -729,6 +784,7 @@ def _run_fold_on_pod(
         f"cd /workspace/tract && python -m scripts.phase1b.run_fold "
         f"--framework {shlex.quote(framework)} "
         f"--config-name {shlex.quote(config_name)} "
+        f"--split {shlex.quote(split)} "
         f"--zero-shot"
         + "".join(f" {flag}" for flag in arm_flags)
     )
@@ -819,6 +875,7 @@ def _run_fold_on_pod(
 def run_folds(
     config_name: str = "phase1b_primary",
     arm_flags: tuple[str, ...] = (),
+    split: str = "test",
 ) -> list[str]:
     """Run every fold on its pod. Returns the roles that FAILED.
 
@@ -829,7 +886,12 @@ def run_folds(
     with nothing left to retry on.
     """
     pods = _load_pod_state()
+    # Refresh the window for this arm. The deadline was stamped once at
+    # provision and never renewed, so a campaign of several arms tripped it
+    # partway through -- and tripping it stopped the work while leaving five
+    # GPUs billing, which is exactly backwards for a budget control.
     _check_deadline()
+    _extend_deadline()
 
     logger.info("Bootstrapping %d pods in parallel...", len(pods))
     # Isolate failures. list(ex.map(...)) re-raises the first exception and
@@ -876,7 +938,7 @@ def run_folds(
     fold_results: list[dict[str, Any]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
         fold_futures = {
-            ex.submit(_run_fold_on_pod, pod, config_name, arm_flags): pod["role"]
+            ex.submit(_run_fold_on_pod, pod, config_name, arm_flags, split): pod["role"]
             for pod in pods
         }
         for f in concurrent.futures.as_completed(fold_futures):
@@ -939,6 +1001,8 @@ def collect(config_name: str = "phase1b_primary") -> list[str]:
 def aggregate(
     config_name: str = "phase1b_primary",
     folds: list[str] | None = None,
+    split: str = "test",
+    n_configurations: int = 1,
 ) -> dict[str, Any]:
     """Micro-average the collected folds and write the experiment record.
 
@@ -960,7 +1024,8 @@ def aggregate(
     # match the full LOFO set, so a partial cross-validation cannot be
     # aggregated into a headline number by omission.
     fold_results = load_fold_results(
-        local_results, expected_frameworks=set(folds) if folds else None,
+        local_results,
+        expected_frameworks=set(folds) if folds else set(fold_roster(split)),
     )
     if folds:
         logger.warning(
@@ -975,7 +1040,7 @@ def aggregate(
         # full cross-validation once it is read back out of the file.
         "scoped_to_folds": sorted(folds) if folds else None,
         "aggregate_hit1": aggregate_fold_results(fold_results),
-        "gate": gate_decision(fold_results),
+        "gate": gate_decision(fold_results, n_configurations),
         "per_fold": {
             r["held_out_framework"]: r["metrics"] for r in fold_results
         },
@@ -1178,6 +1243,8 @@ def full_pipeline(
     config_name: str = "phase1b_primary",
     arm_flags: tuple[str, ...] = (),
     folds: list[str] | None = None,
+    split: str = "test",
+    n_configurations: int = 1,
 ) -> None:
     logger.info("=" * 60)
     logger.info("PHASE 1B PARALLEL FOLD EXECUTION")
@@ -1192,8 +1259,8 @@ def full_pipeline(
     try:
         # provision() was outside this try, so the stage with the highest
         # orphan rate was the one the finally never covered.
-        provision(folds)
-        failed_folds = run_folds(config_name, arm_flags)
+        provision(folds, split)
+        failed_folds = run_folds(config_name, arm_flags, split)
         # Collect BEFORE reacting to failures: the folds that did succeed are
         # already paid for and their indicators live only on the pods.
         uncollected = collect(config_name)
@@ -1236,7 +1303,7 @@ def full_pipeline(
     elapsed = time.time() - start
     logger.info("Total pipeline time: %.1fm", elapsed / 60)
 
-    aggregate(config_name, folds)
+    aggregate(config_name, folds, split, n_configurations)
     # Tracking is last and non-fatal. The fold records are on disk and
     # aggregated by this point, so a WandB outage must not fail a run whose
     # results are already safe. `track` re-runs cleanly on its own.
@@ -1287,6 +1354,13 @@ def main() -> int:
     # __main__ handler -- or ran as plain BGE-large under a name claiming
     # otherwise. The aggregator cannot catch that second case: every fold
     # agrees, so the arm check passes and the null result looks measured.
+    parser.add_argument("--split", choices=("test", "validation"),
+                        default="test",
+                        help="validation selects arms on 1,265 non-AI items; "
+                             "test reports on the pre-registered 147")
+    parser.add_argument("--n-configurations", type=int, default=1,
+                        help="How many arms competed. Sidak-corrects the gate "
+                             "so a winner is not mistaken for a result.")
     parser.add_argument("--base-model", type=str, default=None,
                         help="Encoder arm: fine-tune this model instead of "
                              "the pinned BGE-large")
@@ -1325,7 +1399,8 @@ def main() -> int:
         )
 
     if args.action == "full":
-        full_pipeline(args.config_name, arm_flags, folds)
+        full_pipeline(args.config_name, arm_flags, folds, args.split,
+                      args.n_configurations)
     elif args.action == "provision":
         provision(folds)
     elif args.action == "run":
@@ -1333,7 +1408,7 @@ def main() -> int:
         # `run` still exited 0, so an unattended wrapper checking $? would
         # have moved on to collect and teardown on a fleet that produced
         # nothing. Same class as the failure full_pipeline already guards.
-        failed = run_folds(args.config_name, arm_flags)
+        failed = run_folds(args.config_name, arm_flags, args.split)
         if failed:
             logger.error(
                 "%d fold(s) failed: %s. Pods are still up; fix and re-run "
@@ -1350,7 +1425,7 @@ def main() -> int:
             )
             return 1
     elif args.action == "aggregate":
-        aggregate(args.config_name, folds)
+        aggregate(args.config_name, folds, args.split, args.n_configurations)
     elif args.action == "track":
         return track(args.config_name)
     elif args.action == "teardown":
@@ -1362,7 +1437,7 @@ def main() -> int:
         gpu_type = find_fastest_available(
             min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
         )
-        _check_budget(gpu_type, len(select_pod_configs(folds)))
+        _check_budget(gpu_type, len(select_pod_configs(folds, args.split)))
     return 0
 
 
