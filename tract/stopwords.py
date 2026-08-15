@@ -72,6 +72,76 @@ def tokenize(text: str) -> list[str]:
     return [m.group(0).lower() for m in _TOKEN.finditer(text or "")]
 
 
+# Suffixes stripped when deriving a protection key, longest first. This is a
+# deliberately crude stemmer, not linguistics: both sides of the comparison
+# get the same treatment, so over-stemming can only ever protect a word that
+# did not need protecting. That is the safe direction -- keeping a word costs
+# a little filtering, deleting a discriminative one costs accuracy.
+_PROTECTION_SUFFIXES: Final[tuple[str, ...]] = (
+    "ations", "ation", "ities", "ity", "ings", "ing", "ness", "ments",
+    "ment", "ives", "ive", "ally", "als", "al", "ies", "ers", "er",
+    "ed", "es", "ly", "s",
+)
+# Below this a stem is more likely to collide than to help ("data" -> "dat").
+_MIN_STEM_LENGTH: Final[int] = 4
+
+# The CRE hubs are written in British English ("AI model behaviour integrity
+# threats") while the control corpora are largely American, so "behavior" and
+# "behaviour" never met and "behavior" was filtered out of text being matched
+# against those hubs. Normalising one way is enough because both sides are
+# keyed through the same function.
+_SPELLING_NORMALISATIONS: Final[tuple[tuple[str, str], ...]] = (
+    ("iour", "ior"), ("our", "or"), ("yse", "yze"), ("ise", "ize"),
+    ("isation", "ization"), ("ogue", "og"), ("aeon", "eon"), ("ae", "e"),
+)
+
+
+def protection_keys(word: str) -> set[str]:
+    """Forms under which *word* counts as CRE vocabulary.
+
+    Exact token matching was too literal and let real hub vocabulary into the
+    stop word list. The hub "Privacy-preserving personal data logic" yields
+    the single token "privacy-preserving", which protected that compound but
+    not "privacy"; "Organizational AI security controls" protected
+    "organizational" but not "organization". Both words were then filtered out
+    of control text that had to be matched against those very hubs.
+
+    So a word is keyed by itself, by each side of any hyphen, and by a light
+    stem of each -- and a candidate is protected if ANY of its keys matches
+    ANY key of the hub vocabulary.
+    """
+    keys: set[str] = set()
+    lowered = word.lower().strip()
+    if not lowered:
+        return keys
+
+    parts = {lowered}
+    parts.update(p for p in lowered.replace("'", "-").split("-") if p)
+
+    variants: set[str] = set()
+    for part in parts:
+        variants.add(part)
+        for british, american in _SPELLING_NORMALISATIONS:
+            if british in part:
+                variants.add(part.replace(british, american))
+
+    for part in variants:
+        keys.add(part)
+        # Derivation regularly turns a trailing y into i ("adversary" ->
+        # "adversarial"), so key both. Without this the two never met and
+        # "adversary" was filtered out of an AI-security corpus.
+        if part.endswith("y") and len(part) > _MIN_STEM_LENGTH:
+            keys.add(part[:-1] + "i")
+        # EVERY applicable suffix, not just the first that matches. Stopping
+        # at the first meant "examples" keyed only to "exampl" (strip "es")
+        # and never to "example" (strip "s"), so the singular stayed
+        # unprotected while the plural was hub vocabulary.
+        for suffix in _PROTECTION_SUFFIXES:
+            if part.endswith(suffix) and len(part) - len(suffix) >= _MIN_STEM_LENGTH:
+                keys.add(part[: -len(suffix)])
+    return keys
+
+
 def generate_stopwords(
     documents: Iterable[str],
     min_doc_freq: float = DEFAULT_MIN_DOC_FREQ,
@@ -105,12 +175,15 @@ def generate_stopwords(
     if doc_count == 0:
         raise ValueError("Cannot generate stop words from an empty corpus.")
 
-    protected = PROTECTED_WORDS | {w.lower() for w in (protect or ())}
+    protected: set[str] = set(PROTECTED_WORDS)
+    for word in (protect or ()):
+        protected |= protection_keys(word)
+
     candidates = [
         (word, count / doc_count)
         for word, count in seen_in_docs.items()
         if count / doc_count >= min_doc_freq
-        and word not in protected
+        and not (protection_keys(word) & protected)
         and len(word) >= MIN_WORD_LENGTH
     ]
     # Most frequent first for the cap, then alphabetical for a stable artifact.

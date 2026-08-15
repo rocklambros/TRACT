@@ -50,9 +50,15 @@ def collect_documents() -> tuple[list[str], set[str]]:
     )
     for node in hierarchy.hubs.values():
         documents.append(f"{node.hierarchy_path} {node.name}")
+        # The hierarchy PATH is protected too, not just the name. A hub's text
+        # representation is "{hierarchy_path} | {name}", so every word in the
+        # path is something an assignment has to match on -- and protecting
+        # only the name left the entire path vocabulary eligible for removal
+        # from the control text being matched against it.
         hub_vocabulary.update(tokenize(node.name))
+        hub_vocabulary.update(tokenize(node.hierarchy_path))
 
-    logger.info("Collected %d documents, %d protected hub-name words",
+    logger.info("Collected %d documents, %d protected hub words",
                 len(documents), len(hub_vocabulary))
     return documents, hub_vocabulary
 
