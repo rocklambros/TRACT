@@ -338,3 +338,93 @@ class TestPartialProvisioningDoesNotLeak:
 
         assert terminated == []
         assert [p["role"] for p in pods] == ["fold0", "fold1", "fold2"]
+
+
+class TestTransientSshRetry:
+    """All five pods of a live fleet lost SSH at once on 2026-08-14 with
+    "kex_exchange_identification: Connection reset by peer" -- the transport
+    was refused before authentication. Without a retry that ended a campaign
+    whose pods were already paid for.
+    """
+
+    def test_connection_reset_is_retried(self) -> None:
+        from scripts.phase1b.runpod_parallel import _is_transient_ssh_failure
+
+        assert _is_transient_ssh_failure(
+            "kex_exchange_identification: read: Connection reset by peer"
+        )
+
+    def test_other_transport_failures_are_retried(self) -> None:
+        from scripts.phase1b.runpod_parallel import _is_transient_ssh_failure
+
+        for stderr in (
+            "ssh: connect to host 1.2.3.4 port 22: Connection refused",
+            "ssh: connect to host 1.2.3.4 port 22: Operation timed out",
+            "Connection closed by remote host",
+            "client_loop: send disconnect: Broken pipe",
+        ):
+            assert _is_transient_ssh_failure(stderr), stderr
+
+    def test_authentication_failure_is_not_retried(self) -> None:
+        """A wrong key fails identically every time; retrying only delays it."""
+        from scripts.phase1b.runpod_parallel import _is_transient_ssh_failure
+
+        assert not _is_transient_ssh_failure("Permission denied (publickey).")
+
+    def test_host_key_failure_is_not_retried(self) -> None:
+        from scripts.phase1b.runpod_parallel import _is_transient_ssh_failure
+
+        assert not _is_transient_ssh_failure(
+            "Host key verification failed. Connection reset by peer"
+        )
+
+    def test_ordinary_command_failure_is_not_retried(self, ) -> None:
+        """Exit 1 from a command that ran is a result, not a transport fault.
+
+        Re-running it could repeat a side effect, so it must surface as-is.
+        """
+        from scripts.phase1b.runpod_parallel import _is_transient_ssh_failure
+
+        assert not _is_transient_ssh_failure("ModuleNotFoundError: No module named x")
+
+    def test_retry_happens_and_then_succeeds(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        calls = {"n": 0}
+
+        class _R:
+            def __init__(self, rc: int, err: str) -> None:
+                self.returncode, self.stdout, self.stderr = rc, "", err
+
+        def _run(*args: object, **kwargs: object) -> _R:
+            calls["n"] += 1
+            if calls["n"] < 3:
+                return _R(255, "kex_exchange_identification: Connection reset by peer")
+            return _R(0, "")
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+        monkeypatch.setattr(rp, "_require_ssh_key", lambda: None)
+
+        result = rp._ssh("1.2.3.4", 22, "true")
+
+        assert calls["n"] == 3
+        assert result.returncode == 0
+
+    def test_a_persistent_transport_failure_still_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        class _R:
+            returncode, stdout = 255, ""
+            stderr = "kex_exchange_identification: Connection reset by peer"
+
+        monkeypatch.setattr(rp.subprocess, "run", lambda *a, **k: _R())
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+        monkeypatch.setattr(rp, "_require_ssh_key", lambda: None)
+
+        with pytest.raises(RuntimeError, match="SSH command failed"):
+            rp._ssh("1.2.3.4", 22, "true")

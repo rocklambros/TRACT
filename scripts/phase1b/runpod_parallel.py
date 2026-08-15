@@ -112,6 +112,8 @@ MAX_CONSECUTIVE_POLL_ERRORS: Final[int] = 10
 
 # Default per-command SSH ceiling; bootstrap issues several.
 SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
+SSH_CONNECT_ATTEMPTS: Final[int] = 4
+SSH_RETRY_BACKOFF_S: Final[int] = 15
 
 FOLD_FRAMEWORKS: Final[list[str]] = [
     "MITRE ATLAS",
@@ -254,6 +256,34 @@ def _require_ssh_key() -> None:
         )
 
 
+# ssh exits 255 for every transport-level failure, so the message decides
+# whether retrying is sensible. Anything here is the far end refusing or
+# dropping the connection rather than rejecting the caller.
+TRANSIENT_SSH_MARKERS: Final[tuple[str, ...]] = (
+    "kex_exchange_identification",
+    "connection reset by peer",
+    "connection closed by remote host",
+    "connection refused",
+    "connection timed out",
+    "operation timed out",
+    "broken pipe",
+    "no route to host",
+)
+
+
+def _is_transient_ssh_failure(stderr: str) -> bool:
+    """Whether an SSH failure is worth retrying.
+
+    Excludes authentication and host-key failures on purpose: those are
+    configuration errors that will fail identically every time, and retrying
+    them only delays a clear message.
+    """
+    text = stderr.lower()
+    if "permission denied" in text or "host key verification failed" in text:
+        return False
+    return any(marker in text for marker in TRANSIENT_SSH_MARKERS)
+
+
 def _ssh(
     ip: str, port: int, cmd: str,
     check: bool = True,
@@ -268,10 +298,31 @@ def _ssh(
     script = env_lines + cmd
     ssh_cmd = f"ssh {SSH_OPTS} -p {port} root@{ip} bash -s"
     logger.info("[ssh %s:%d] %s", ip, port, cmd[:120])
-    result = subprocess.run(
-        ssh_cmd, shell=True, input=script, text=True,
-        capture_output=True, timeout=timeout,
-    )
+
+    # Retry connection-level failures. All five pods of a running fleet lost
+    # SSH simultaneously with "kex_exchange_identification: Connection reset
+    # by peer" -- the transport was refused before authentication, which is a
+    # transient condition at the far end (proxy hiccup, sshd MaxStartups under
+    # concurrent polling), not a failed command. Without a retry that ended a
+    # campaign that had already paid for its pods. Only transport failures are
+    # retried: a command that ran and exited non-zero is reported as-is,
+    # because re-running it could repeat a side effect.
+    for attempt in range(1, SSH_CONNECT_ATTEMPTS + 1):
+        result = subprocess.run(
+            ssh_cmd, shell=True, input=script, text=True,
+            capture_output=True, timeout=timeout,
+        )
+        if result.returncode != 255 or attempt == SSH_CONNECT_ATTEMPTS:
+            break
+        if not _is_transient_ssh_failure(result.stderr or ""):
+            break
+        backoff = SSH_RETRY_BACKOFF_S * attempt
+        logger.warning(
+            "[ssh %s:%d] transport failed (attempt %d/%d): %s. Retrying in %ds.",
+            ip, port, attempt, SSH_CONNECT_ATTEMPTS,
+            (result.stderr or "").strip()[-120:], backoff,
+        )
+        time.sleep(backoff)
     if result.stdout:
         for line in result.stdout.strip().split("\n")[-10:]:
             logger.info("  stdout: %s", line)
