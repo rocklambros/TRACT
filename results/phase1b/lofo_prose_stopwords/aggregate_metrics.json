@@ -1,0 +1,102 @@
+{
+  "aggregate_hit1": {
+    "ci_high": 0.5238095238095238,
+    "ci_low": 0.3741496598639456,
+    "fold_sizes": {
+      "MITRE ATLAS": 43,
+      "NIST AI 100-2": 28,
+      "OWASP AI Exchange": 63,
+      "OWASP Top10 for LLM": 6,
+      "OWASP Top10 for ML": 7
+    },
+    "macro_mean": 0.41884459210040603,
+    "mean": 0.4489795918367347,
+    "n_folds": 5,
+    "n_resamples": 10000,
+    "n_total": 147
+  },
+  "config_name": "lofo_prose_stopwords",
+  "gate": {
+    "ci_high": 0.16326530612244897,
+    "ci_low": -0.006802721088435374,
+    "ci_low_pass": false,
+    "macro_delta": 0.08911037283130306,
+    "micro_delta": 0.07482993197278912,
+    "n_total": 147,
+    "negative_folds": [
+      "MITRE ATLAS"
+    ],
+    "p_value": 0.0493,
+    "paired": true,
+    "per_fold": {
+      "MITRE ATLAS": {
+        "delta": -0.046511627906976744,
+        "n_eval_items": 43,
+        "trained_hit1": 0.20930232558139536,
+        "zero_shot_hit1": 0.2558139534883721
+      },
+      "NIST AI 100-2": {
+        "delta": 0.2857142857142857,
+        "n_eval_items": 28,
+        "trained_hit1": 0.5357142857142857,
+        "zero_shot_hit1": 0.25
+      },
+      "OWASP AI Exchange": {
+        "delta": 0.06349206349206349,
+        "n_eval_items": 63,
+        "trained_hit1": 0.5873015873015873,
+        "zero_shot_hit1": 0.5238095238095238
+      },
+      "OWASP Top10 for LLM": {
+        "delta": 0.0,
+        "n_eval_items": 6,
+        "trained_hit1": 0.3333333333333333,
+        "zero_shot_hit1": 0.3333333333333333
+      },
+      "OWASP Top10 for ML": {
+        "delta": 0.14285714285714285,
+        "n_eval_items": 7,
+        "trained_hit1": 0.42857142857142855,
+        "zero_shot_hit1": 0.2857142857142857
+      }
+    },
+    "point_estimate_pass": false,
+    "threshold": 0.1,
+    "verdicts_agree": true,
+    "worst_fold": "MITRE ATLAS",
+    "worst_fold_delta": -0.046511627906976744
+  },
+  "per_fold": {
+    "MITRE ATLAS": {
+      "hit_at_1": 0.20930232558139536,
+      "hit_at_5": 0.5581395348837209,
+      "mrr": 0.3652829870880607,
+      "ndcg_at_10": 0.4294676000457018
+    },
+    "NIST AI 100-2": {
+      "hit_at_1": 0.5357142857142857,
+      "hit_at_5": 0.7142857142857143,
+      "mrr": 0.6089462570924435,
+      "ndcg_at_10": 0.654479917358667
+    },
+    "OWASP AI Exchange": {
+      "hit_at_1": 0.5873015873015873,
+      "hit_at_5": 0.8412698412698413,
+      "mrr": 0.6983409089449308,
+      "ndcg_at_10": 0.7459349966247921
+    },
+    "OWASP Top10 for LLM": {
+      "hit_at_1": 0.3333333333333333,
+      "hit_at_5": 0.8333333333333334,
+      "mrr": 0.5205555555555555,
+      "ndcg_at_10": 0.5936010519408085
+    },
+    "OWASP Top10 for ML": {
+      "hit_at_1": 0.42857142857142855,
+      "hit_at_5": 0.7142857142857143,
+      "mrr": 0.5557889822595705,
+      "ndcg_at_10": 0.623233758186976
+    }
+  },
+  "scoped_to_folds": null
+}

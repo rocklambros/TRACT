@@ -1,0 +1,82 @@
+{
+  "config": {
+    "base_model": "BAAI/bge-large-en-v1.5",
+    "batch_size": 32,
+    "checkpoint_path": null,
+    "control_text_source": "full_prose",
+    "data_hash": "",
+    "gradient_checkpointing": true,
+    "hard_negatives": 3,
+    "hub_rep_format": "path+name",
+    "learning_rate": 0.0005,
+    "lora_alpha": 32,
+    "lora_dropout": 0.1,
+    "lora_rank": 16,
+    "lora_target_modules": [
+      "query",
+      "key",
+      "value"
+    ],
+    "max_epochs": 20,
+    "max_grad_norm": 1.0,
+    "max_seq_length": 512,
+    "name": "lofo_prose_desconly",
+    "sampling_temperature": 2.0,
+    "seed": 42,
+    "training_data": "joint-tempscaled",
+    "use_description_only": true,
+    "use_prose": true,
+    "use_stopword_filter": false,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01
+  },
+  "elapsed_s": 1870.1553781032562,
+  "git_sha": "30c4b48",
+  "held_out_framework": "OWASP Top10 for ML",
+  "hit1_indicators": [
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1
+  ],
+  "inputs": {
+    "all_controls_sha256": "776be12eb54289e9b94c7eecc061922fbf28ff39dcf4d61108e65d8d144aeb41",
+    "curated_links_sha256": "3d42cbd396f26cc7842f0ad3d9a24d48a154fade6fcc6731f0068b756a4a9bdd",
+    "stopwords_sha256": null
+  },
+  "metrics": {
+    "hit_at_1": 0.7142857142857143,
+    "hit_at_5": 0.8571428571428571,
+    "mrr": 0.7542016806722689,
+    "ndcg_at_10": 0.7758109368676276
+  },
+  "n_eval_items": 7,
+  "n_training_pairs": 3928,
+  "text_selection": {
+    "by_source": {
+      "full_text": 7
+    },
+    "n_truncated_at_encoder_budget": 2,
+    "prose_fraction": 1.0
+  },
+  "zero_shot": {
+    "hit1_indicators": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "metrics": {
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_5": 0.8571428571428571,
+      "mrr": 0.4987012987012987,
+      "ndcg_at_10": 0.5765093030874284
+    }
+  }
+}
