@@ -7,6 +7,8 @@ the whole budget before anyone notices the runs are not appearing.
 """
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -276,3 +278,58 @@ class TestVerifyCredential:
         monkeypatch.setattr(requests, "post", _boom)
         with pytest.raises(RuntimeError, match="Could not reach WandB"):
             tracking.verify_credential()
+
+
+class TestRunArtifactsStayOutOfTheRepoRoot:
+    """wandb.init defaults to ./wandb, which shadows the wandb package.
+
+    A directory named `wandb` at the repository root is an implicit namespace
+    package, so `import wandb` resolves to it with __file__ = None and mypy
+    reports "Module has no attribute init" for every call in the codebase.
+    It appears only after the first tracked run and it is gitignored, so it
+    shows up in neither a diff nor a fresh clone -- it just looks like an
+    unrelated regression.
+    """
+
+    def test_init_run_redirects_wandb_dir(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        import sys
+        import types
+
+        from tract.training import tracking
+
+        captured: dict[str, Any] = {}
+
+        fake = types.ModuleType("wandb")
+        fake.init = lambda **kwargs: captured.update(kwargs) or _FakeRun()  # type: ignore[attr-defined]
+        monkeypatch.setitem(sys.modules, "wandb", fake)
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        monkeypatch.delenv("WANDB_DIR", raising=False)
+        monkeypatch.setattr(tracking, "PROJECT_ROOT", tmp_path)
+
+        tracking.init_run(project="p", name="n", config={})
+
+        target = Path(os.environ["WANDB_DIR"])
+        assert target.is_dir()
+        assert tmp_path in target.parents
+        assert target.name == "wandb"
+        assert target.parent.name == "results"
+
+    def test_an_explicit_wandb_dir_is_respected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        import sys
+        import types
+
+        from tract.training import tracking
+
+        fake = types.ModuleType("wandb")
+        fake.init = lambda **kwargs: _FakeRun()  # type: ignore[attr-defined]
+        monkeypatch.setitem(sys.modules, "wandb", fake)
+        monkeypatch.setenv("WANDB_API_KEY", LEGACY_KEY)
+        monkeypatch.setenv("WANDB_DIR", str(tmp_path / "elsewhere"))
+
+        tracking.init_run(project="p", name="n", config={})
+
+        assert os.environ["WANDB_DIR"] == str(tmp_path / "elsewhere")

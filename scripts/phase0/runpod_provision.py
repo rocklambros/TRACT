@@ -152,6 +152,65 @@ def find_fastest_available(
     )
 
 
+# RunPod's error text when a type is listed but has no free instances.
+CAPACITY_ERROR_MARKERS: Final[tuple[str, ...]] = (
+    "no instances currently available",
+    "no longer any instances available",
+)
+
+
+def is_capacity_error(exc: BaseException) -> bool:
+    """Whether a pod-creation failure means "try a different GPU type".
+
+    list_available_gpus reports the types that EXIST, not the types with free
+    capacity, so a perfectly reasonable selection can fail at create time.
+    That is a transient supply condition rather than a bug, and it should cost
+    a different GPU rather than the whole campaign.
+    """
+    text = str(exc).lower()
+    return any(marker in text for marker in CAPACITY_ERROR_MARKERS)
+
+
+def rank_available_gpus(
+    min_vram_gb: int = 48,
+    max_usd_per_hour: float | None = None,
+    gpu_count: int = 1,
+) -> list[tuple[str, float]]:
+    """Every acceptable GPU type as (id, usd_per_hour), best first.
+
+    Same ordering and same price ceiling as find_fastest_available, which
+    returns only the head of this list. Callers that create pods want the
+    tail as well, so a capacity failure on the first choice can fall through
+    to the second instead of ending the run.
+    """
+    gpus = list_available_gpus(min_vram_gb)
+    if not gpus:
+        raise RuntimeError(f"No GPU with >= {min_vram_gb}GB VRAM available")
+
+    available_ids = {g["id"] for g in gpus}
+    ordered = [p for p in GPU_PREFERENCE if p in available_ids]
+    ordered += [
+        g["id"] for g in sorted(gpus, key=lambda g: -(g.get("memoryInGb") or 0))
+        if g["id"] not in GPU_PREFERENCE
+    ]
+
+    ranked: list[tuple[str, float]] = []
+    for gpu_id in ordered:
+        try:
+            price = get_gpu_price(gpu_id, gpu_count)
+        except RuntimeError:
+            continue
+        if max_usd_per_hour is not None and price > max_usd_per_hour:
+            continue
+        ranked.append((gpu_id, price))
+    if not ranked:
+        raise RuntimeError(
+            f"No GPU with >= {min_vram_gb}GB VRAM is available within "
+            f"${max_usd_per_hour}/hr."
+        )
+    return ranked
+
+
 def _validate_pod_id(pod_id: str) -> None:
     if not re.match(r'^[a-zA-Z0-9_-]+$', pod_id):
         raise ValueError(f"Invalid pod_id: {pod_id}")

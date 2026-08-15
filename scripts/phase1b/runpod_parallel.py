@@ -37,6 +37,8 @@ from pathlib import Path
 from typing import Any, Final
 
 from scripts.phase0.runpod_provision import (
+    is_capacity_error,
+    rank_available_gpus,
     create_pods_parallel,
     find_fastest_available,
     get_gpu_price,
@@ -489,12 +491,23 @@ def _preflight_tracking() -> None:
 def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
     _preflight_tracking()
     configs = select_pod_configs(folds)
-    logger.info("Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
+    logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
-    gpu_type = find_fastest_available(
+    # A list, not a single choice. list_available_gpus reports the types that
+    # EXIST, not the types with free instances, so the best candidate can fail
+    # at create time with "no instances currently available". That happened
+    # two pods into a five-pod fleet and ended the campaign; it is a transient
+    # supply condition and should cost a different GPU, not the run.
+    candidates = rank_available_gpus(
         min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR_PER_POD,
     )
-    budget = _check_budget(gpu_type, len(configs))
+    logger.info("Candidates: %s",
+                ", ".join(f"{g} (${p:.2f}/hr)" for g, p in candidates[:5]))
+    gpu_type = candidates[0][0]
+    # Priced on the most expensive candidate that could actually be used, so
+    # the budget check cannot be passed by a cheap first choice and then
+    # silently exceeded by the fallback.
+    budget = _check_budget(max(candidates, key=lambda c: c[1])[0], len(configs))
 
     # Record the intent BEFORE creating anything. create_pods_parallel returns
     # only once every pod is up, so a partial failure previously left running
@@ -506,21 +519,43 @@ def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
         "requested": [c["name"] for c in configs],
     })
 
-    try:
-        pods = create_pods_parallel(
-            configs, gpu_type, image=DOCKER_IMAGE,
-            volume_gb=50,
-            # ~12GB of site-packages plus a pip cache and HF downloads. 20GB
-            # left no headroom and the failure mode is a fold dying late.
-            container_disk_gb=60,
+    pods = None
+    exhausted: list[str] = []
+    for gpu_type, price in candidates:
+        try:
+            logger.info("Creating %d pods on %s ($%.2f/hr)...",
+                        len(configs), gpu_type, price)
+            pods = create_pods_parallel(
+                configs, gpu_type, image=DOCKER_IMAGE,
+                volume_gb=50,
+                # ~12GB of site-packages plus a pip cache and HF downloads.
+                # 20GB left no headroom and the failure mode is a fold dying
+                # late.
+                container_disk_gb=60,
+            )
+            break
+        except Exception as exc:
+            if is_capacity_error(exc):
+                # create_pods_parallel has already terminated whatever came
+                # up, so there is nothing billing and the next type is free
+                # to try.
+                logger.warning("%s has no free capacity; trying the next type.",
+                               gpu_type)
+                exhausted.append(gpu_type)
+                continue
+            logger.error(
+                "Provisioning failed for a reason other than capacity. Any "
+                "pods that were created are ORPHANED and still billing. Reap "
+                "them: python -m scripts.phase1b.runpod_parallel reap --confirm"
+            )
+            raise
+
+    if pods is None:
+        raise RuntimeError(
+            f"Every acceptable GPU type is out of capacity: {exhausted}. "
+            f"Nothing was left running. Retry later, or raise "
+            f"TRACT_RUNPOD_MAX_HOURLY to widen the candidate set."
         )
-    except Exception:
-        logger.error(
-            "Provisioning failed. Any pods that were created are ORPHANED and "
-            "still billing. Reap them: python -m scripts.phase1b.runpod_parallel "
-            "reap --confirm"
-        )
-        raise
 
     _save_pod_state(pods, meta={
         "budget": budget,

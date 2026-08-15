@@ -21,9 +21,12 @@ import hashlib
 import logging
 import os
 import subprocess
-from typing import Any, Protocol
+from pathlib import Path
+from typing import Any, Final, Protocol
 
 logger = logging.getLogger(__name__)
+
+PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 
 # Not a format assertion: just long enough to exclude a pasted date, a
 # username, or a stray word. The real check is verify_credential.
@@ -186,6 +189,18 @@ def init_run(
         ) from exc
 
     os.environ["WANDB_API_KEY"] = resolve_api_key()
+    # Keep run artifacts out of the repository root. wandb.init defaults to
+    # ./wandb, and a directory of that name at the root is an implicit
+    # namespace package that shadows the real `wandb` module: mypy then
+    # reports "Module has no attribute init" for every call in the codebase,
+    # and the shadow appears only after the first tracked run, so it looks
+    # like an unrelated regression. It is gitignored, so it never showed up
+    # in a diff either.
+    if not os.environ.get("WANDB_DIR"):
+        wandb_dir = PROJECT_ROOT / "results" / "wandb"
+        wandb_dir.mkdir(parents=True, exist_ok=True)
+        os.environ["WANDB_DIR"] = str(wandb_dir)
+
     run = wandb.init(
         project=project,
         entity=entity,
