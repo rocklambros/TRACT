@@ -1560,14 +1560,18 @@ def _load_fold_results(
             for fw, m in zs_data.get("per_framework", {}).items()
         }
     else:
-        zs_baselines = {
-            "MITRE ATLAS": 0.273,
-            "NIST AI 100-2": 0.107,
-            "OWASP AI Exchange": 0.619,
-            "OWASP Top10 for LLM": 0.333,
-            "OWASP Top10 for ML": 0.429,
-        }
-        logger.warning("Zero-shot baselines loaded from hardcoded fallback")
+        # These were five hardcoded constants behind a logger.warning, and the
+        # measured branch above was unreachable because _cmd_publish_hf calls
+        # this with two arguments. So the model card's entire Zero-shot and
+        # Delta columns were literals nobody measured in the run being
+        # published. Same contract as _measured() in model_card.py: a figure
+        # the artifacts do not contain is not published.
+        raise ValueError(
+            "No zero-shot baseline available: pass zero_shot_path pointing at "
+            "the paired per-fold baseline for THIS campaign. The card's "
+            "Zero-shot and Delta columns are computed from it, and a "
+            "hardcoded fallback publishes a comparison that was never run."
+        )
 
     fold_names = {
         "MITRE_ATLAS": "MITRE ATLAS",

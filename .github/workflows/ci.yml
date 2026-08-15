@@ -23,7 +23,7 @@ jobs:
       - name: Ruff check
         run: >
           ruff check tract/ parsers/ scripts/phase1a/ scripts/phase1b/
-          scripts/phase0/runpod_provision.py
+          scripts/phase0/runpod_provision.py scripts/phase1c/runpod_retrain.py
 
       # Everything the LOFO run executes. parsers/ was linted by ruff but never
       # type-checked, and scripts/phase1b/ was covered by neither -- which is
@@ -33,7 +33,8 @@ jobs:
       - name: Mypy strict (run path)
         run: >
           mypy tract/ parsers/ scripts/phase1a/ scripts/phase1b/
-          scripts/phase0/runpod_provision.py --strict
+          scripts/phase0/runpod_provision.py
+          scripts/phase1c/runpod_retrain.py --strict
 
   test:
     needs: lint
