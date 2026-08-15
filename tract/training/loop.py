@@ -268,6 +268,42 @@ def verify_checkpoint_roundtrip(
     return min_cosine
 
 
+def _flatten_saved_model_dir(model_dir: Path) -> None:
+    """Move the SentenceTransformer tree up if save() nested it.
+
+    With a PEFT adapter attached, SentenceTransformer.save(path) writes the
+    whole tree to path/model/ rather than to path: modules.json, the adapter
+    and the tokenizer all land one level deeper, and path itself holds only
+    that subdirectory. Reloading path then fails with "Unrecognized model ...
+    should have a model_type key", because there is no config there to read.
+
+    Everything downstream -- the round-trip check, merge, publish, and
+    `tract assign` -- expects the standard layout, so normalise here rather
+    than teaching each consumer about a second one. A no-op when save()
+    behaved.
+    """
+    nested = model_dir / "model"
+    if not (nested / "modules.json").is_file():
+        return
+    if (model_dir / "modules.json").is_file():
+        # Both present: the real root is already where it should be.
+        return
+
+    logger.warning(
+        "SentenceTransformer.save nested the model in %s; flattening it so the "
+        "checkpoint has the standard layout.", nested,
+    )
+    for item in nested.iterdir():
+        target = model_dir / item.name
+        if target.exists():
+            raise RuntimeError(
+                f"Cannot flatten {nested}: {target} already exists. The "
+                f"checkpoint layout is ambiguous; refusing to guess."
+            )
+        item.rename(target)
+    nested.rmdir()
+
+
 def save_checkpoint(
     model: SentenceTransformer,
     config: TrainingConfig,
@@ -287,6 +323,7 @@ def save_checkpoint(
 
     model_dir = output_dir / "model"
     model.save(str(model_dir))
+    _flatten_saved_model_dir(model_dir)
 
     if verify_roundtrip:
         verify_checkpoint_roundtrip(model, model_dir)
