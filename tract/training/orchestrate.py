@@ -353,6 +353,71 @@ def run_single_fold(
     return result
 
 
+def lexical_overlap_diagnostic(
+    results_dir: Path, hierarchy: CREHierarchy,
+) -> dict[str, Any]:
+    """Split hit@1 by whether the anchor already contains the answer.
+
+    The task is semantic mapping, not string retrieval, and an eval item whose
+    anchor lexically covers its own ground-truth hub name is not testing the
+    former. On the AI test set 26 of 147 titles are character-identical to
+    their hub name, and the title arm scores 0.923 on exactly those against
+    0.654 for prose -- 79% of that arm's apparent lead. Reporting one pooled
+    number lets a lexical shortcut masquerade as comprehension, so both are
+    reported and the non-echo figure is the one that answers the question the
+    project is actually asking.
+
+    Reads predictions.json, which carries the anchor text the model saw. The
+    split is therefore computed PER ARM, against that arm's own anchors: it
+    answers "how much of this arm's score is lexical" and not "how do two arms
+    compare on a fixed subset". The subsets differ (32 of 147 under titles, 38
+    under prose, because prose can also contain the hub's words), so a
+    cross-arm comparison needs one arm's partition applied to all of them --
+    which is a different question and belongs to analysis, not to the
+    per-run record.
+    """
+    function_words = {
+        "the", "a", "an", "of", "for", "to", "in", "and", "or", "with", "by",
+        "on", "at", "is", "are", "be", "as", "that", "this", "from", "its",
+        "it", "their", "which", "when", "where", "all", "any", "not", "no",
+        "if", "then", "than", "into", "via", "using", "use", "used",
+    }
+
+    def content(text: str) -> set[str]:
+        from tract.stopwords import tokenize
+
+        return {t.lower() for t in tokenize(text)} - function_words
+
+    names = {hid: node.name for hid, node in hierarchy.hubs.items()}
+    echo_hits = echo_n = clean_hits = clean_n = 0
+
+    for path in sorted(results_dir.glob("fold_*/predictions.json")):
+        preds = load_json(path)
+        record = load_json(path.parent / FOLD_RESULT_FILENAME)
+        indicators = record["hit1_indicators"]
+        for item, hit in zip(preds, indicators):
+            hub_words = content(names.get(item["ground_truth_hub_id"], ""))
+            anchor_words = content(item["control_text"])
+            is_echo = bool(hub_words) and hub_words <= anchor_words
+            if is_echo:
+                echo_hits += hit
+                echo_n += 1
+            else:
+                clean_hits += hit
+                clean_n += 1
+
+    total = echo_n + clean_n
+    return {
+        "n_total": total,
+        "n_lexical_echo": echo_n,
+        "echo_fraction": (echo_n / total) if total else 0.0,
+        "hit_at_1_echo": (echo_hits / echo_n) if echo_n else None,
+        # The number that describes semantic mapping rather than string match.
+        "hit_at_1_non_echo": (clean_hits / clean_n) if clean_n else None,
+        "n_non_echo": clean_n,
+    }
+
+
 def load_fold_results(
     results_dir: Path,
     expected_frameworks: set[str] | None = None,

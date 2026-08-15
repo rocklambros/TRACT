@@ -36,7 +36,8 @@ import time
 from pathlib import Path
 from typing import Any, Final
 
-from tract.config import PHASE1B_BASE_MODEL
+from tract.config import PHASE1B_BASE_MODEL, PROCESSED_DIR
+from tract.io import load_json
 from scripts.phase0.runpod_provision import (
     is_capacity_error,
     rank_available_gpus,
@@ -1052,8 +1053,27 @@ def aggregate(
         )
     logger.info("Aggregating %d folds from %s", len(fold_results), local_results)
 
+    from tract.hierarchy import CREHierarchy
+    from tract.training.orchestrate import lexical_overlap_diagnostic
+
+    hierarchy = CREHierarchy.model_validate(
+        load_json(PROCESSED_DIR / "cre_hierarchy.json")
+    )
+    lexical = lexical_overlap_diagnostic(local_results, hierarchy)
+    logger.info(
+        "  lexical echo    : %d/%d items (%.1f%%) already contain their answer",
+        lexical["n_lexical_echo"], lexical["n_total"],
+        100 * lexical["echo_fraction"],
+    )
+    if lexical["hit_at_1_non_echo"] is not None:
+        logger.info(
+            "  hit@1 non-echo  : %.4f  <- semantic mapping, not string match",
+            lexical["hit_at_1_non_echo"],
+        )
+
     record = {
         "config_name": config_name,
+        "lexical_overlap": lexical,
         # Marks the record itself, so a scoped run cannot be mistaken for a
         # full cross-validation once it is read back out of the file.
         "scoped_to_folds": sorted(folds) if folds else None,
