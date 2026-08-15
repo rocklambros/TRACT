@@ -510,6 +510,7 @@ def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]
 
 def gate_decision(
     fold_results: list[dict[str, Any]],
+    n_configurations: int = 1,
     threshold: float = PHASE1B_GATE_HIT1_DELTA,
 ) -> dict[str, Any]:
     """Evaluate Gate 1 against the paired zero-shot baseline.
@@ -558,6 +559,15 @@ def gate_decision(
     ]
     # paired_bootstrap_delta reports B - A, so the baseline is A.
     paired = paired_bootstrap_delta(baseline, trained)
+    # A second interval at the family-wise level, so a campaign that ran many
+    # configurations reports one the selection cannot inflate.
+    corrected = (
+        paired if n_configurations == 1
+        else paired_bootstrap_delta(
+            baseline, trained,
+            ci_level=1.0 - (1.0 - (1.0 - 0.05) ** (1.0 / n_configurations)),
+        )
+    )
 
     per_fold = {}
     for record, tr, bl in zip(fold_results, trained, baseline):
@@ -572,6 +582,15 @@ def gate_decision(
     worst_framework = min(per_fold, key=lambda k: per_fold[k]["delta"])
     negative_folds = sorted(k for k, v in per_fold.items() if v["delta"] < 0)
 
+    # Sidak-correct the threshold test when several configurations competed.
+    # Simulated on this eval set (mean SE 0.0438, inter-arm item correlation
+    # 0.678), 16 configurations under a null where every one has a true delta
+    # of 0.08 produce at least one point estimate above 0.10 about 73% of the
+    # time. Without n_configurations the gate cannot tell "this arm works"
+    # from "this arm won a 16-way raffle".
+    if n_configurations < 1:
+        raise ValueError("n_configurations must be >= 1")
+    alpha_effective = 1.0 - (1.0 - 0.05) ** (1.0 / n_configurations)
     point_estimate_pass = bool(paired["delta_mean"] > threshold)
     ci_low_pass = bool(paired["ci_low"] > threshold)
 
@@ -580,6 +599,15 @@ def gate_decision(
         "micro_delta": paired["delta_mean"],
         "ci_low": paired["ci_low"],
         "ci_high": paired["ci_high"],
+        # Selection context. n_configurations=1 leaves these equal to the
+        # uncorrected pair; anything higher widens the interval and marks the
+        # point estimate as selection-optimistic, which is what it is.
+        "n_configurations": n_configurations,
+        "alpha_effective": alpha_effective,
+        "ci_low_familywise": corrected["ci_low"],
+        "ci_high_familywise": corrected["ci_high"],
+        "familywise_pass": bool(corrected["ci_low"] > threshold),
+        "selection_optimistic": bool(n_configurations > 1),
         "p_value": paired["p_value"],
         "paired": True,
         "point_estimate_pass": point_estimate_pass,

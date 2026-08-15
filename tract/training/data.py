@@ -345,8 +345,16 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
         buckets: dict[str, list[int]] = {}
         for i in range(self.n):
             buckets.setdefault(str(self.strata[i]), []).append(i)
-        for idx_list in buckets.values():
-            rng.shuffle(idx_list)
+
+        # Order WITHIN a stratum by the AI interleave, so enabling branch
+        # balancing does not silently switch off AI upsampling. Without this
+        # the balanced arm differed from the baseline in two ways at once and
+        # a null result could not be attributed to branch balance -- while
+        # to_dict still recorded sampling_temperature as though it applied.
+        for key, idx_list in buckets.items():
+            member = set(idx_list)
+            ai_order = self._order_by_ai(rng)
+            buckets[key] = [i for i in ai_order if i in member]
 
         keys = sorted(buckets)
         weights = [
@@ -432,7 +440,39 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
                 else:
                     next_remaining.append(idx)
             if len(next_remaining) == len(remaining):
-                batch.extend(next_remaining)
+                # Every survivor collides with the current batch, so no
+                # further deferral can help. Emit them in batch_size chunks
+                # rather than as one oversized batch: extending here yielded
+                # 111 examples where 32 was configured under the AI ordering
+                # and 175 under branch stratification, measured on the real
+                # MITRE ATLAS fold. Peak memory scales with the largest batch,
+                # and config.py already records that a worst-case batch OOMed
+                # an 80GB H100 -- at a longer token budget this one is fatal
+                # rather than merely wasteful.
+                #
+                # Chunking accepts hub collisions WITHIN these leftovers, which
+                # costs some MNRL false negatives on a small tail. That is the
+                # better trade: the alternative silently breaks the batch-size
+                # contract the memory guard depends on.
+                if next_remaining:
+                    logger.debug(
+                        "Batch sampler: %d examples could not be placed "
+                        "without collision; emitting in chunks of %d.",
+                        len(next_remaining), self.batch_size,
+                    )
+                for start in range(0, len(next_remaining), self.batch_size):
+                    chunk = next_remaining[start:start + self.batch_size]
+                    room = self.batch_size - len(batch)
+                    if room and len(chunk) <= room:
+                        batch.extend(chunk)
+                    else:
+                        if batch:
+                            yield batch
+                            batch = []
+                        batch = list(chunk)
+                    if len(batch) >= self.batch_size:
+                        yield batch
+                        batch = []
                 break
             remaining = next_remaining
 

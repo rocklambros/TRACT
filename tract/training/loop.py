@@ -188,6 +188,10 @@ def train_model(
                      if c in train_dataset.column_names]
         train_dataset = train_dataset.remove_columns(meta_cols)
 
+    # set_metadata was called before this block while the finally that clears
+    # it opened after, so an exception building the arguments left one fold's
+    # hub and branch labels on the class for the next fold in the same
+    # process -- which then batches against another fold's labels.
     training_args = SentenceTransformerTrainingArguments(
         output_dir=str(output_dir),
         num_train_epochs=config.max_epochs,

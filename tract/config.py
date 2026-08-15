@@ -244,6 +244,19 @@ MAX_ANCHOR_CHARS: Final[int] = max_anchor_chars()
 # declares model_type "new" and needs trust_remote_code=True, which executes
 # code from the repository on every training pod. That is not a trade worth
 # making for a measured ceiling of ~2 hit@1 points.
+# Attention projection names differ by architecture, and PEFT raises
+# "Target modules not found" rather than attaching nothing -- but it raises
+# AFTER SentenceTransformer has downloaded the encoder and run the full
+# zero-shot GPU evaluation, so the crash costs a fold's setup on every pod.
+# Resolved from AutoConfig.model_type in a pre-flight instead.
+LORA_TARGET_MODULES_BY_ARCH: Final[dict[str, list[str]]] = {
+    "bert": ["query", "key", "value"],
+    "xlm-roberta": ["query", "key", "value"],
+    "roberta": ["query", "key", "value"],
+    "modernbert": ["Wqkv", "Wo"],
+    "qwen3": ["q_proj", "k_proj", "v_proj", "o_proj"],
+}
+
 LONG_CONTEXT_MODELS: Final[dict[str, int]] = {
     "Alibaba-NLP/gte-modernbert-base": 8192,
     "Qwen/Qwen3-Embedding-0.6B": 32768,

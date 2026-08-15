@@ -24,6 +24,7 @@ from scripts.phase0.common import (
 )
 from tract.config import (
     PHASE1B_BASE_MODEL,
+    PHASE1B_MAX_SEQ_LENGTH,
     max_anchor_chars,
     LOFO_WANDB_ENTITY,
     LOFO_WANDB_PROJECT,
@@ -67,6 +68,22 @@ def _arm_label(config: TrainingConfig) -> str:
     return "-".join(parts)
 
 
+def validation_frameworks() -> set[str]:
+    """Every framework that is NOT part of the pre-registered AI test set.
+
+    Selection has to happen somewhere other than the set that reports the
+    number. These 15 frameworks carry 3,932 of the 4,127 curated links and
+    yield 1,579 eval items against the test set's 147, which moves the
+    minimum detectable effect from 11.4 hit@1 points to 3.5 -- the difference
+    between an instrument that can rank the arms and one that cannot.
+    """
+    links = load_curated_links()
+    everything = {
+        link.standard_name for link in links if link.standard_name
+    }
+    return everything - set(AI_FRAMEWORK_NAMES)
+
+
 def _campaign_label(config: TrainingConfig) -> str:
     """Arm label plus the dimensions that also define a configuration.
 
@@ -79,6 +96,8 @@ def _campaign_label(config: TrainingConfig) -> str:
         label += f"-bal{config.branch_balance_temperature:g}"
     if config.base_model != PHASE1B_BASE_MODEL:
         label += "-" + config.base_model.split("/")[-1]
+    if config.max_seq_length != PHASE1B_MAX_SEQ_LENGTH:
+        label += f"-seq{config.max_seq_length}"
     return label
 
 
@@ -111,6 +130,16 @@ def main() -> int:
     parser.add_argument("--max-seq-length", type=int, default=None,
                         help="Encoder token budget. The anchor character cut "
                              "is derived from it.")
+    parser.add_argument("--split", choices=("test", "validation"),
+                        default="test",
+                        help="test: LOFO over the 5 AI frameworks, the "
+                             "pre-registered 147-item set PRD 6.4 reports. "
+                             "validation: LOFO over the 15 non-AI frameworks, "
+                             "1,579 items. Arm selection belongs on validation "
+                             "-- selecting on the test set is what makes a "
+                             "16-arm winner selection-optimistic, and at n=147 "
+                             "the minimum detectable effect is 11.4 hit@1 "
+                             "points against effects of 1-3.")
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Temperature flattening the CRE-branch "
                              "distribution during batch ordering. 0 disables "
@@ -129,12 +158,17 @@ def main() -> int:
                         help="WandB project for this campaign")
     args = parser.parse_args()
 
-    if args.framework not in AI_FRAMEWORK_NAMES:
-        # A typo here would otherwise hold out nothing, train on everything and
-        # report an inflated score against an empty eval set.
+    # The eval population follows the split. A typo would otherwise hold out
+    # nothing, train on everything and report an inflated score against an
+    # empty eval set, so the name is checked against the split's own roster.
+    eval_frameworks = (
+        set(AI_FRAMEWORK_NAMES) if args.split == "test"
+        else validation_frameworks()
+    )
+    if args.framework not in eval_frameworks:
         raise ValueError(
-            f"Unknown framework {args.framework!r}. "
-            f"Expected one of: {sorted(AI_FRAMEWORK_NAMES)}"
+            f"Unknown framework {args.framework!r} for split "
+            f"{args.split!r}. Expected one of: {sorted(eval_frameworks)}"
         )
 
     config = TrainingConfig(
@@ -169,7 +203,7 @@ def main() -> int:
     # de-duplicates on control text, and arms with different item sets cannot be
     # compared with a paired test.
     links = load_curated_links()
-    corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {})
+    corpus = build_evaluation_corpus(links, eval_frameworks, {})
     selection_stats = SelectionStats()
     corpus = apply_prose_to_corpus(
         corpus,

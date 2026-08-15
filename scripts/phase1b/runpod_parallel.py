@@ -1100,11 +1100,20 @@ def reap(confirm: bool = False) -> None:
     fleet billing until someone notices. This is the recovery path, and it
     works from the state file alone.
     """
+    # The sweep runs whether or not a state file survives. teardown() unlinks
+    # it on success and provision() overwrites it, so the exact situation that
+    # strands pods -- a failed campaign followed by a second provision, or a
+    # killed orchestrator -- is the one where this file is gone or stale.
+    # Returning early here made the single recovery command report all-clear
+    # on a fleet that was still billing.
     try:
         state = _read_pod_state()
     except FileNotFoundError:
-        logger.info("No state file; nothing to reap from this run.")
-        return
+        logger.warning(
+            "No state file. Sweeping the account for pods matching this "
+            "run's names instead."
+        )
+        state = {"pods": [], "meta": {}}
 
     pods = state["pods"]
     meta = state.get("meta", {})
@@ -1259,6 +1268,21 @@ def main() -> int:
     parser.add_argument("--description-only", action="store_true",
                         help="Ablation arm: cut each control at its first "
                              "remediation heading")
+    # These reached run_fold and the aggregator but never this layer, so an
+    # encoder or rebalance arm either died on argparse -- stranding the fleet,
+    # because SystemExit does not inherit from Exception and never reaches the
+    # __main__ handler -- or ran as plain BGE-large under a name claiming
+    # otherwise. The aggregator cannot catch that second case: every fold
+    # agrees, so the arm check passes and the null result looks measured.
+    parser.add_argument("--base-model", type=str, default=None,
+                        help="Encoder arm: fine-tune this model instead of "
+                             "the pinned BGE-large")
+    parser.add_argument("--max-seq-length", type=int, default=None,
+                        help="Encoder token budget; the anchor character cut "
+                             "is derived from it")
+    parser.add_argument("--branch-balance", type=float, default=None,
+                        help="Rebalance arm: temperature flattening the "
+                             "CRE-branch distribution")
     args = parser.parse_args()
 
     folds = (
@@ -1271,6 +1295,13 @@ def main() -> int:
                               ("--stopwords", args.stopwords),
                               ("--description-only", args.description_only)) if on
     )
+    # Valued flags, passed through with their argument.
+    for flag, value in (("--base-model", args.base_model),
+                        ("--max-seq-length", args.max_seq_length),
+                        ("--branch-balance", args.branch_balance)):
+        if value is not None:
+            arm_flags += (flag, str(value))
+
     if arm_flags and args.config_name == "phase1b_primary":
         # Arms must not share a results directory: fold records carry no arm,
         # so a mixed directory aggregates into a number describing no single
