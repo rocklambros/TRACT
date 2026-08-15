@@ -148,20 +148,62 @@ def select_pod_configs(folds: list[str] | None = None) -> list[dict[str, str]]:
     return [c for c in POD_CONFIGS if c["role"] in wanted]
 
 
+HF_READ_TOKEN_ENTRY: Final[str] = "huggingface/read-token"
+
+
+def _get_hf_read_token() -> str:
+    """A READ-ONLY HuggingFace token for the pods, or raise.
+
+    The base model was fetched anonymously until HuggingFace rate-limited the
+    datacenter IP mid-canary (HTTP 429, "create a HF account ... and make sure
+    you pass a HF_TOKEN"). Anonymous fetching is therefore not a property of
+    the repo being public; it is a quota that a fleet of pods exhausts.
+
+    This deliberately does NOT use `pass huggingface/token`. That entry is a
+    fine-grained token carrying repo.write, inference.*.write and job.write,
+    which means write access to the published model and dataset repos. Putting
+    it on five rented hosts to download a public model would trade a
+    catastrophic credential for a convenience. A separate read-only entry
+    keeps the worst case at "someone reads public models".
+    """
+    try:
+        result = subprocess.run(
+            ["pass", HF_READ_TOKEN_ENTRY],
+            capture_output=True, text=True, timeout=10, check=True,
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            f"No `pass {HF_READ_TOKEN_ENTRY}`. The pods need a HuggingFace "
+            f"token to fetch the base model without hitting the anonymous "
+            f"rate limit.\n"
+            f"Create a READ-ONLY one at "
+            f"https://huggingface.co/settings/tokens (type: Fine-grained, "
+            f"tick only 'Read access to contents of all public gated repos'), "
+            f"then:\n"
+            f"  pass insert -f -e {HF_READ_TOKEN_ENTRY}\n"
+            f"Do NOT reuse `pass huggingface/token`: it carries repo.write to "
+            f"the published model and dataset."
+        ) from exc
+    token = result.stdout.strip()
+    if not token:
+        raise RuntimeError(f"`pass {HF_READ_TOKEN_ENTRY}` is empty.")
+    return token
+
+
 def _get_pod_env() -> dict[str, str]:
     """Environment exported on the pod before the fold command runs.
 
-    Deliberately carries no credentials. The fold needs neither:
-    BAAI/bge-large-en-v1.5 is a public repo that fetches anonymously, and
-    tract/training/loop.py sets report_to="none", so WandB is never
-    initialised on this path. Shipping a HuggingFace write token and a WandB
-    key to five rented hosts bought nothing and put both on a machine the
-    operator does not control.
+    Carries exactly one credential: a read-only HuggingFace token, because
+    anonymous model fetching is rate-limited per IP and a fleet exhausts it.
+    No WandB key goes here -- logging happens on the operator's machine after
+    collection -- and no HuggingFace WRITE token, which would put push access
+    to the published model on a host the operator does not control.
 
     HF_HOME is redirected onto the 50GB volume; the container disk is not
     where a multi-gigabyte model cache belongs.
     """
     return {
+        "HF_TOKEN": _get_hf_read_token(),
         "HF_HOME": "/workspace/.cache/huggingface",
         "HF_HUB_DISABLE_TELEMETRY": "1",
         "TOKENIZERS_PARALLELISM": "false",
@@ -493,12 +535,33 @@ def _bootstrap_pod(pod: dict[str, Any]) -> None:
 
     _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
 
+    # --break-system-packages is required, not sloppy. The pod image ships a
+    # Debian-packaged Python 3.12, which is PEP 668 "externally managed", so a
+    # plain `pip install` refuses outright and the bootstrap fails before any
+    # training starts. On a rented single-purpose container the system
+    # interpreter IS the environment and the host is destroyed at teardown, so
+    # there is no system to protect; building a venv would only add a layer
+    # and a PATH to get wrong. Passed via PIP_BREAK_SYSTEM_PACKAGES so it
+    # applies to the transitive pip calls too, and pinned installs still come
+    # from requirements-train.txt.
     _ssh(ip, port, (
+        "export PIP_BREAK_SYSTEM_PACKAGES=1 && "
         "mkdir -p /workspace/.cache/huggingface && "
         "cd /workspace/tract && "
         "pip install --quiet -e '.[phase0]' && "
         "pip install --quiet -r requirements-train.txt"
     ))
+
+    # Fetch the base model once, here, rather than inside the fold. A 429 at
+    # this point costs a bootstrap; the same 429 twenty minutes into training
+    # costs the fold. It also proves the read-only token works before any
+    # GPU time is spent on it.
+    _ssh(ip, port, (
+        "cd /workspace/tract && python -c "
+        "'from huggingface_hub import snapshot_download; "
+        "p = snapshot_download(\"BAAI/bge-large-en-v1.5\"); "
+        "print(f\"base model cached at {p}\")'"
+    ), env=_get_pod_env())
 
     # Fatal, not advisory. This probe used to run with check=False while
     # tract/training/loop.py sets fp16=torch.cuda.is_available(): a driver
@@ -1084,7 +1147,18 @@ def main() -> int:
     elif args.action == "provision":
         provision(folds)
     elif args.action == "run":
-        run_folds(args.config_name, arm_flags)
+        # The canary exposed this: the fold failed on a HuggingFace 429 and
+        # `run` still exited 0, so an unattended wrapper checking $? would
+        # have moved on to collect and teardown on a fleet that produced
+        # nothing. Same class as the failure full_pipeline already guards.
+        failed = run_folds(args.config_name, arm_flags)
+        if failed:
+            logger.error(
+                "%d fold(s) failed: %s. Pods are still up; fix and re-run "
+                "'run', or 'teardown' to stop billing.",
+                len(failed), sorted(failed),
+            )
+            return 1
     elif args.action == "collect":
         uncollected = collect(args.config_name)
         if uncollected:
