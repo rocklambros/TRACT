@@ -213,7 +213,42 @@ PROSE_MIN_EXTRA_CHARS: Final[int] = 20
 # were 100% over budget (OWASP Top10 for LLM median ~2,246 tokens, OWASP Top10
 # for ML ~1,135) while MITRE ATLAS was 0% over. A truncation that varies by
 # fold and by arm is a confound, not a detail.
-MAX_ANCHOR_CHARS: Final[int] = 2000
+#
+# It is DERIVED from the token budget, not chosen independently. At 2000 it
+# was the binding constraint rather than the encoder: only 7 of 147 eval
+# anchors exceeded 512 tokens after this cut, while 51 exceeded it before.
+# Raising the encoder's context without raising this does nothing at all,
+# which is the trap a model swap walks into.
+CHARS_PER_TOKEN: Final[int] = 4
+
+
+def max_anchor_chars(max_seq_length: int = PHASE1B_MAX_SEQ_LENGTH) -> int:
+    """Character budget matching a given token budget, with headroom.
+
+    The margin keeps the character cut slightly LOOSER than the token limit so
+    the tokenizer, not this heuristic, decides what is dropped -- and so the
+    truncation counter reports the encoder's behaviour rather than its own.
+    """
+    return int(max_seq_length * CHARS_PER_TOKEN * 1.05)
+
+
+MAX_ANCHOR_CHARS: Final[int] = max_anchor_chars()
+
+# Long-context encoders, for the arm that tests whether the 512-token ceiling
+# costs anything. BGE-large is BertModel with 512 absolute position
+# embeddings, a hard architectural limit. These are alternatives whose context
+# is 8k or more.
+#
+# Only models natively supported by the pinned transformers are listed.
+# Alibaba-NLP/gte-large-en-v1.5 is the closest drop-in by hidden size but
+# declares model_type "new" and needs trust_remote_code=True, which executes
+# code from the repository on every training pod. That is not a trade worth
+# making for a measured ceiling of ~2 hit@1 points.
+LONG_CONTEXT_MODELS: Final[dict[str, int]] = {
+    "Alibaba-NLP/gte-modernbert-base": 8192,
+    "Qwen/Qwen3-Embedding-0.6B": 32768,
+    "BAAI/bge-m3": 8192,
+}
 
 # Section headings that begin remediation guidance rather than description.
 # BGE-large is BertModel with absolute position embeddings and exactly 512 of

@@ -23,6 +23,8 @@ from scripts.phase0.common import (
     load_curated_links,
 )
 from tract.config import (
+    PHASE1B_BASE_MODEL,
+    max_anchor_chars,
     LOFO_WANDB_ENTITY,
     LOFO_WANDB_PROJECT,
     PROCESSED_DIR,
@@ -65,6 +67,21 @@ def _arm_label(config: TrainingConfig) -> str:
     return "-".join(parts)
 
 
+def _campaign_label(config: TrainingConfig) -> str:
+    """Arm label plus the dimensions that also define a configuration.
+
+    The anchor arm alone stopped being unique once the encoder and the branch
+    balance became variables: without these, a rebalanced run and an
+    unbalanced one land under one name and aggregate together.
+    """
+    label = _arm_label(config)
+    if config.branch_balance_temperature:
+        label += f"-bal{config.branch_balance_temperature:g}"
+    if config.base_model != PHASE1B_BASE_MODEL:
+        label += "-" + config.base_model.split("/")[-1]
+    return label
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run a single LOFO fold")
     parser.add_argument("--framework", required=True,
@@ -86,6 +103,19 @@ def main() -> int:
     parser.add_argument("--zero-shot", action="store_true",
                         help="Also evaluate the untrained base model on this "
                              "fold, paired item-for-item with the trained one")
+    parser.add_argument("--base-model", default=None,
+                        help="Encoder to fine-tune. Defaults to the pinned "
+                             "BGE-large (512 tokens). A long-context model "
+                             "also needs --max-seq-length or the character "
+                             "budget derived from 512 binds first.")
+    parser.add_argument("--max-seq-length", type=int, default=None,
+                        help="Encoder token budget. The anchor character cut "
+                             "is derived from it.")
+    parser.add_argument("--branch-balance", type=float, default=None,
+                        help="Temperature flattening the CRE-branch "
+                             "distribution during batch ordering. 0 disables "
+                             "it; ~3 pulls the 3.3%% threat branch up toward "
+                             "the 72.1%% controls branch.")
     parser.add_argument("--wandb", action="store_true",
                         help="Track this fold from inside the run. Off by "
                              "default: pods carry no credentials, and the "
@@ -112,6 +142,10 @@ def main() -> int:
         use_prose=not args.no_prose,
         use_stopword_filter=args.stopwords,
         use_description_only=args.description_only,
+        **({"base_model": args.base_model} if args.base_model else {}),
+        **({"max_seq_length": args.max_seq_length} if args.max_seq_length else {}),
+        **({"branch_balance_temperature": args.branch_balance}
+           if args.branch_balance is not None else {}),
     )
     output_dir = (
         Path(args.output_dir) if args.output_dir
@@ -143,6 +177,7 @@ def main() -> int:
         load_stopwords() if config.use_stopword_filter else None,
         stats=selection_stats,
         description_only=config.use_description_only,
+        max_chars=max_anchor_chars(config.max_seq_length),
     )
     selection_stats.log_summary("Eval items")
     eval_items = [i for i in corpus if i.framework_name == args.framework]
@@ -158,7 +193,7 @@ def main() -> int:
     # The arm is a runtime flag on one commit, so it has to be in the run name
     # and the tags. Two arms landing as indistinguishable runs is the same
     # failure the fold-record arm check exists to prevent, one layer up.
-    arm = _arm_label(config)
+    arm = _campaign_label(config)
     run = None
     if args.wandb:
         run = init_run(

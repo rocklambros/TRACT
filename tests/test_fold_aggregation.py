@@ -382,7 +382,54 @@ class TestArmSeparation:
             k for k in serialized
             if k.startswith("use_") and isinstance(serialized[k], bool)
         }
-        assert arm_flags == set(ARM_DEFINING_KEYS), (
-            f"TrainingConfig has boolean use_* flags {sorted(arm_flags)} but "
-            f"the guard checks {sorted(ARM_DEFINING_KEYS)}"
+        assert arm_flags <= set(ARM_DEFINING_KEYS), (
+            f"TrainingConfig has boolean use_* flags {sorted(arm_flags)} not "
+            f"covered by the guard {sorted(ARM_DEFINING_KEYS)}"
         )
+        # Everything that changes what a run IS, beyond the anchor arms.
+        for key in ("branch_balance_temperature", "base_model", "max_seq_length"):
+            assert key in ARM_DEFINING_KEYS, (
+                f"{key} changes the experiment but does not separate folds"
+            )
+
+
+class TestConfigurationSeparation:
+    """Every dimension the campaign varies must keep folds apart."""
+
+    _FRAMEWORKS = {"A", "B"}
+
+    def _config(self, **flags: object) -> dict[str, object]:
+        base: dict[str, object] = {
+            "use_prose": True, "use_stopword_filter": False,
+            "use_description_only": False, "branch_balance_temperature": 0.0,
+            "base_model": "BAAI/bge-large-en-v1.5", "max_seq_length": 512,
+        }
+        base.update(flags)
+        return base
+
+    def _refuses(self, tmp_path: Path, **differing: object) -> None:
+        _write_fold(tmp_path, "A", [1, 0], config=self._config())
+        _write_fold(tmp_path, "B", [1, 1], config=self._config(**differing))
+        with pytest.raises(ValueError, match="different arms"):
+            load_fold_results(tmp_path, expected_frameworks=self._FRAMEWORKS)
+
+    def test_branch_balance_separates(self, tmp_path: Path) -> None:
+        """A rebalanced fold cannot average with an unbalanced one."""
+        self._refuses(tmp_path, branch_balance_temperature=3.0)
+
+    def test_encoder_separates(self, tmp_path: Path) -> None:
+        self._refuses(tmp_path, base_model="Alibaba-NLP/gte-modernbert-base")
+
+    def test_sequence_length_separates(self, tmp_path: Path) -> None:
+        """Same encoder, different token budget, is a different experiment."""
+        self._refuses(tmp_path, max_seq_length=8192)
+
+    def test_an_identical_configuration_still_aggregates(
+        self, tmp_path: Path
+    ) -> None:
+        _write_fold(tmp_path, "A", [1, 0], config=self._config(
+            branch_balance_temperature=3.0, max_seq_length=8192))
+        _write_fold(tmp_path, "B", [1, 1], config=self._config(
+            branch_balance_temperature=3.0, max_seq_length=8192))
+        assert len(load_fold_results(
+            tmp_path, expected_frameworks=self._FRAMEWORKS)) == 2

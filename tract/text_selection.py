@@ -135,7 +135,9 @@ def strip_remediation(text: str) -> tuple[str, bool]:
     return head, True
 
 
-def prepare_anchor(text: str) -> tuple[str, bool]:
+def prepare_anchor(
+    text: str, max_chars: int | None = None
+) -> tuple[str, bool]:
     """Normalise an anchor and cut it to the budget the encoder can read.
 
     Returns (text, was_truncated).
@@ -146,15 +148,21 @@ def prepare_anchor(text: str) -> tuple[str, bool]:
     length bound on stored text. And the encoder silently discards anything
     past its sequence limit, so an anchor of 13,007 characters was ~96%
     invisible to the model while looking complete in the artifact.
+
+    max_chars defaults to the 512-token budget. A long-context encoder must
+    pass its own, or this cut binds first and the extra context buys nothing:
+    at the old fixed 2000 only 7 of 147 eval anchors exceeded 512 tokens,
+    while 51 exceeded it before the cut.
     """
+    budget = MAX_ANCHOR_CHARS if max_chars is None else max_chars
     import unicodedata
 
     cleaned = strip_markup(
         unicodedata.normalize("NFC", (text or "").replace("\x00", ""))
     )
-    if len(cleaned) <= MAX_ANCHOR_CHARS:
+    if len(cleaned) <= budget:
         return cleaned, False
-    return cleaned[:MAX_ANCHOR_CHARS].rstrip(), True
+    return cleaned[:budget].rstrip(), True
 
 
 @dataclass
@@ -324,6 +332,7 @@ def select_control_text(
     stats: SelectionStats | None = None,
     stopwords: frozenset[str] | None = None,
     description_only: bool = False,
+    max_chars: int | None = None,
 ) -> TextSelection:
     """Choose the richest available text for one control.
 
@@ -364,7 +373,7 @@ def select_control_text(
         text = filter_stopwords(text, stopwords)
     selection = TextSelection(text, selection.source)
 
-    prepared, truncated = prepare_anchor(selection.text)
+    prepared, truncated = prepare_anchor(selection.text, max_chars)
     selection = TextSelection(prepared, selection.source, truncated)
 
     if stats is not None:
@@ -378,6 +387,7 @@ def apply_prose_to_corpus(
     stopwords: frozenset[str] | None = None,
     stats: SelectionStats | None = None,
     description_only: bool = False,
+    max_chars: int | None = None,
 ) -> list[Any]:
     """Swap each eval item's anchor for its control's prose, in place of nothing else.
 
@@ -423,7 +433,7 @@ def apply_prose_to_corpus(
             from tract.stopwords import filter_stopwords
 
             text = filter_stopwords(text, stopwords)
-        text, truncated = prepare_anchor(text)
+        text, truncated = prepare_anchor(text, max_chars)
         if stats is not None:
             stats.record(canonical_framework(item.framework_name),
                          TextSelection(text, selection.source, truncated))

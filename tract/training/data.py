@@ -87,6 +87,7 @@ def build_training_pairs(
     prose_index: ProseIndex | None = None,
     stopwords: frozenset[str] | None = None,
     description_only: bool = False,
+    max_chars: int | None = None,
 ) -> list[TrainingPair]:
     """Build TrainingPair objects from filtered links, deduplicated per text+hub.
 

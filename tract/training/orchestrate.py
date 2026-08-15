@@ -28,6 +28,7 @@ from scripts.phase0.common import (
     load_curated_links,
 )
 from tract.config import (
+    max_anchor_chars,
     MAX_ANCHOR_CHARS,
     PHASE1B_GATE_HIT1_DELTA,
     PHASE1B_RESULTS_DIR,
@@ -87,6 +88,14 @@ ARM_DEFINING_KEYS: tuple[str, ...] = (
     "use_prose",
     "use_stopword_filter",
     "use_description_only",
+    # Not anchor arms, but they define a configuration just as completely. A
+    # rebalanced run and an unbalanced one, or two different encoders, must
+    # never aggregate into one number. This list started with two of the four
+    # anchor flags and let prose and prose-desconly merge; the failure mode is
+    # silent and the result describes no configuration that was actually run.
+    "branch_balance_temperature",
+    "base_model",
+    "max_seq_length",
 )
 
 
@@ -212,6 +221,7 @@ def run_single_fold(
         tiered_links, hub_texts, excluded_framework=held_out_framework,
         prose_index=prose_index, stopwords=stopwords,
         description_only=config.use_description_only,
+        max_chars=max_anchor_chars(config.max_seq_length),
     )
     dataset = pairs_to_dataset(pairs, hierarchy, hub_texts, n_hard_negatives=config.hard_negatives)
 

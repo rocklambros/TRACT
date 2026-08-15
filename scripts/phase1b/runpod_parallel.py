@@ -1036,7 +1036,7 @@ def track(config_name: str = "phase1b_primary") -> int:
     return 0
 
 
-def _arm_from_config(config: dict[str, Any]) -> str:
+def _arm_from_config(config: dict[str, Any]) -> str:  # noqa: D401
     """Recover the arm label from a fold record's config block.
 
     Kept in step with run_fold._arm_label by a test rather than by discipline:
@@ -1049,7 +1049,16 @@ def _arm_from_config(config: dict[str, Any]) -> str:
         parts.append("desconly")
     if config.get("use_stopword_filter"):
         parts.append("stopwords")
-    return "-".join(parts)
+    label = "-".join(parts)
+    # Mirrors run_fold._campaign_label: the encoder and the branch balance
+    # are part of a configuration's identity, not just its anchor arm.
+    bal = config.get("branch_balance_temperature") or 0
+    if bal:
+        label += f"-bal{bal:g}"
+    base = config.get("base_model") or ""
+    if base and base != "BAAI/bge-large-en-v1.5":
+        label += "-" + base.split("/")[-1]
+    return label
 
 
 def teardown() -> None:
