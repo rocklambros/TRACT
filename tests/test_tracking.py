@@ -193,3 +193,32 @@ class TestStableRunId:
         run_id = stable_run_id("c", "prose", "OWASP Top10 for LLM")
         assert run_id.isalnum()
         assert len(run_id) == 16
+
+    def test_a_self_hosted_key_is_accepted(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Self-hosted WandB issues "local-" prefixed keys.
+
+        Requiring bare hex rejected a legitimate credential on any non-cloud
+        server, which is a preflight that blocks the run for no reason.
+        """
+        from tract.training.tracking import SELF_HOSTED_PREFIX
+
+        key = f"{SELF_HOSTED_PREFIX}{VALID_KEY}"
+        monkeypatch.setenv("WANDB_API_KEY", key)
+        assert resolve_api_key() == key
+
+    def test_a_date_is_refused(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """What actually landed in `pass` on the second attempt."""
+        monkeypatch.setenv("WANDB_API_KEY", "09/12/2026")
+        with pytest.raises(RuntimeError, match="not a WandB API key"):
+            resolve_api_key()
+
+    def test_a_prefixed_key_of_the_wrong_length_is_refused(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from tract.training.tracking import SELF_HOSTED_PREFIX
+
+        monkeypatch.setenv("WANDB_API_KEY", f"{SELF_HOSTED_PREFIX}abc123")
+        with pytest.raises(RuntimeError, match="not a WandB API key"):
+            resolve_api_key()

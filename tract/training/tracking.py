@@ -64,24 +64,40 @@ def resolve_api_key() -> str:
             ) from exc
         key = result.stdout.strip()
 
-    # A WandB key is 40 hex characters. Checking the shape here turns a
-    # credential mistake into an error before a pod exists, rather than an
-    # authentication failure on every pod after the fleet is already billing.
-    # The entry in `pass` held a 5-character username when this was written,
-    # which would have authenticated nowhere.
-    if len(key) != WANDB_KEY_LENGTH or not all(
-        c in "0123456789abcdefABCDEF" for c in key
-    ):
+    # Checking the shape here turns a credential mistake into an error before
+    # a pod exists, rather than an authentication failure on every pod after
+    # the fleet is already billing. The entry in `pass` held a 5-character
+    # username when this was written, and then a 10-character date, neither of
+    # which would have authenticated anywhere.
+    if not _is_wandb_key(key):
         raise RuntimeError(
-            f"The value from {source} is {len(key)} characters and is not "
-            f"{WANDB_KEY_LENGTH} hex digits, so it is not a WandB API key. "
-            "Get one from https://wandb.ai/authorize and store it with "
+            f"The value from {source} is {len(key)} characters and is not a "
+            f"WandB API key ({WANDB_KEY_LENGTH} hex digits, or "
+            f"'{SELF_HOSTED_PREFIX}' followed by {WANDB_KEY_LENGTH} hex "
+            f"digits for a self-hosted server). Get one from "
+            "https://wandb.ai/authorize and store it with "
             "`pass insert -f wandb/api-key`."
         )
     return key
 
 
+def _is_wandb_key(value: str) -> bool:
+    """Whether *value* has the shape of a WandB API key.
+
+    Self-hosted deployments issue "local-" prefixed keys. Requiring bare hex
+    rejected those, which would have blocked a legitimate credential on any
+    non-cloud WandB server.
+    """
+    body = value[len(SELF_HOSTED_PREFIX):] if value.startswith(
+        SELF_HOSTED_PREFIX
+    ) else value
+    return len(body) == WANDB_KEY_LENGTH and all(
+        c in "0123456789abcdefABCDEF" for c in body
+    )
+
+
 WANDB_KEY_LENGTH = 40
+SELF_HOSTED_PREFIX = "local-"
 
 
 def stable_run_id(*parts: str) -> str:
