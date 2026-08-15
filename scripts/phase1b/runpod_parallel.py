@@ -897,6 +897,18 @@ def run_folds(
     # partway through -- and tripping it stopped the work while leaving five
     # GPUs billing, which is exactly backwards for a budget control.
     _check_deadline()
+    # The pod roster is fixed at provision. Running a split whose folds are
+    # not the roles the pods carry fails per-fold, deep inside training, on
+    # every pod at once -- which is how a validation campaign launched on a
+    # test fleet burned a bootstrap before saying so.
+    roster = set(fold_roster(split))
+    have = {p["role"] for p in pods}
+    if have != roster:
+        raise RuntimeError(
+            f"Fleet was provisioned for a different split: pods hold "
+            f"{sorted(have)} but split {split!r} needs {sorted(roster)}. "
+            f"Tear down and re-provision with --split {split}."
+        )
     _extend_deadline()
 
     logger.info("Bootstrapping %d pods in parallel...", len(pods))
