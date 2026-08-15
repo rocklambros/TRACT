@@ -1420,7 +1420,7 @@ def main() -> int:
         full_pipeline(args.config_name, arm_flags, folds, args.split,
                       args.n_configurations)
     elif args.action == "provision":
-        provision(folds)
+        provision(folds, args.split)
     elif args.action == "run":
         # The canary exposed this: the fold failed on a HuggingFace 429 and
         # `run` still exited 0, so an unattended wrapper checking $? would
