@@ -333,9 +333,45 @@ def create_pods_parallel(
             ex.submit(_create_one, cfg): i
             for i, cfg in enumerate(configs)
         }
+        # future.result() used to be called directly here, so the first
+        # exception propagated out of the `with` block while the other futures
+        # were still creating pods. Those pods were created, billed, and
+        # recorded nowhere: the caller never received a list and the state file
+        # still said "provisioning" with zero pods. A real run hit this when
+        # RunPod ran out of H100 capacity mid-fleet and left three pods
+        # orphaned. Collect every outcome first, then decide.
+        errors: dict[int, BaseException] = {}
         for future in concurrent.futures.as_completed(future_to_idx):
             idx = future_to_idx[future]
-            pods[idx] = future.result()
+            try:
+                pods[idx] = future.result()
+            except BaseException as exc:  # noqa: BLE001 - collect all, decide after
+                errors[idx] = exc
+                logger.error("Pod %s failed to create: %s", configs[idx]["name"], exc)
+
+    if errors:
+        # A partial fleet cannot produce a LOFO result, and every pod that DID
+        # come up is billing for nothing. Give the ones that succeeded back
+        # before raising, rather than leaving them for an orphan sweep that
+        # only runs if someone is watching.
+        created = [p for p in pods if p.get("pod_id")]
+        if created:
+            logger.warning(
+                "Terminating %d pod(s) that came up before the failure.",
+                len(created),
+            )
+            survivors = terminate_pods([p["pod_id"] for p in created])
+            if survivors:
+                logger.error(
+                    "Could not terminate %s. They are STILL BILLING; run "
+                    "`runpod_parallel reap --confirm`.", survivors,
+                )
+        first = sorted(errors)[0]
+        raise RuntimeError(
+            f"{len(errors)} of {len(configs)} pods failed to create; the "
+            f"{len(created)} that succeeded have been terminated. First "
+            f"failure ({configs[first]['name']}): {errors[first]}"
+        ) from errors[first]
 
     logger.info("All %d pods created and SSH-ready.", len(pods))
     return pods

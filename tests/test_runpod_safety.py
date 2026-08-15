@@ -248,3 +248,93 @@ class TestImagePinning:
         assert "@sha256:" in rp.DOCKER_IMAGE, (
             "a mutable tag lets the image change under the run"
         )
+
+
+class TestPartialProvisioningDoesNotLeak:
+    """A fleet that half-comes-up must not leave the half billing.
+
+    create_pods_parallel called future.result() directly, so the first
+    exception propagated while the other futures were still creating pods.
+    Those pods were created, billed, and recorded nowhere -- the caller never
+    received a list, so the state file still said "provisioning" with zero
+    pods. This is not hypothetical: RunPod ran out of H100 capacity mid-fleet
+    on 2026-08-14 and left three pods orphaned.
+    """
+
+    def _configs(self, n: int) -> list[dict[str, str]]:
+        return [{"name": f"pod{i}", "role": f"fold{i}"} for i in range(n)]
+
+    def test_successful_pods_are_terminated_when_one_fails(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_provision as rp
+
+        terminated: list[list[str]] = []
+
+        def _create(gpu_type_id, name, **kwargs):
+            if name == "pod2":
+                raise RuntimeError("no instances currently available")
+            return {"pod_id": f"id-{name}", "ip": "1.2.3.4", "port": 22}
+
+        monkeypatch.setattr(rp, "create_pod", _create)
+        monkeypatch.setattr(rp, "terminate_pods",
+                            lambda ids: terminated.append(sorted(ids)) or [])
+
+        with pytest.raises(RuntimeError, match="failed to create"):
+            rp.create_pods_parallel(self._configs(4), "H100", max_workers=4)
+
+        assert terminated == [["id-pod0", "id-pod1", "id-pod3"]]
+
+    def test_the_error_names_the_first_failure(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_provision as rp
+
+        def _create(gpu_type_id, name, **kwargs):
+            raise RuntimeError("no instances currently available")
+
+        monkeypatch.setattr(rp, "create_pod", _create)
+        monkeypatch.setattr(rp, "terminate_pods", lambda ids: [])
+
+        with pytest.raises(RuntimeError) as excinfo:
+            rp.create_pods_parallel(self._configs(2), "H100", max_workers=2)
+
+        message = str(excinfo.value)
+        assert "2 of 2" in message
+        assert "no instances currently available" in message
+
+    def test_a_termination_failure_is_reported_not_swallowed(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """A pod that will not die is the one the operator must hear about."""
+        from scripts.phase0 import runpod_provision as rp
+
+        def _create(gpu_type_id, name, **kwargs):
+            if name == "pod1":
+                raise RuntimeError("boom")
+            return {"pod_id": f"id-{name}", "ip": "1.2.3.4", "port": 22}
+
+        monkeypatch.setattr(rp, "create_pod", _create)
+        monkeypatch.setattr(rp, "terminate_pods", lambda ids: ["id-pod0"])
+
+        with caplog.at_level("ERROR"), pytest.raises(RuntimeError):
+            rp.create_pods_parallel(self._configs(2), "H100", max_workers=2)
+
+        assert "STILL BILLING" in caplog.text
+
+    def test_a_fully_successful_fleet_terminates_nothing(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_provision as rp
+
+        terminated: list[list[str]] = []
+        monkeypatch.setattr(rp, "create_pod", lambda g, name, **k: {
+            "pod_id": f"id-{name}", "ip": "1.2.3.4", "port": 22,
+        })
+        monkeypatch.setattr(rp, "terminate_pods",
+                            lambda ids: terminated.append(ids) or [])
+
+        pods = rp.create_pods_parallel(self._configs(3), "H100", max_workers=3)
+
+        assert terminated == []
+        assert [p["role"] for p in pods] == ["fold0", "fold1", "fold2"]
