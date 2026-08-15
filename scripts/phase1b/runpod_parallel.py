@@ -744,12 +744,18 @@ def _bootstrap_pod(
     # GPU time is spent on it.
     _ssh(ip, port, (
         "cd /workspace/tract && python -c "
-        "'from huggingface_hub import snapshot_download; "
+        "'import os; from huggingface_hub import snapshot_download; "
         "from tract.encoders import resolve; "
-        f"name = {base_model!r}; s = resolve(name); "
+        # The model name arrives through the environment, not interpolated
+        # into the program text. _ssh wraps the whole thing in single quotes,
+        # so a repr() here closes that quoting and the shell splits the name
+        # into separate words -- which is how "name = Qwen/Qwen3-Embedding-0.6B"
+        # reached the remote interpreter unquoted and raised SyntaxError.
+        "name = os.environ[\"TRACT_BASE_MODEL\"]; s = resolve(name); "
         "p = snapshot_download(name, revision=s.revision); "
         "print(f\"cached {name} at {s.revision[:12]} -> {p}\")'"
-    ), env=_get_pod_env(), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+    ), env={**_get_pod_env(), "TRACT_BASE_MODEL": base_model},
+       timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     # Fatal, not advisory. This probe used to run with check=False while
     # tract/training/loop.py sets fp16=torch.cuda.is_available(): a driver
