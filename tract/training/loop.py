@@ -10,7 +10,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import numpy as np
 import torch
@@ -91,6 +91,41 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
         logger.info("Full fine-tuning (no LoRA)")
 
     return model
+
+
+# Measured on an H100 80GB: batch 32 x 512 tokens with gradient checkpointing
+# peaked at 13.6GB, so roughly 0.83MB per token-slot including optimizer state
+# and the MNRL similarity matrix. The ceiling below leaves ~40% headroom for
+# the longest batch rather than the average one.
+TOKEN_SLOTS_PER_GB: Final[float] = 16384 / 13.6
+SAFE_TOKEN_SLOTS: Final[int] = int(48 * TOKEN_SLOTS_PER_GB)
+
+
+def _assert_memory_budget(config: TrainingConfig) -> None:
+    """Refuse a configuration that will OOM, before it costs GPU hours.
+
+    batch_size x max_seq_length is the quantity that drives peak activation
+    memory, and both became experiment variables. batch 32 at 8192 tokens is
+    16x the measured-safe workload; on an XLM-R-large encoder in eager
+    attention a single layer's score tensor alone is ~69GB. The failure
+    arrives partway through an epoch on an unattended fleet, which is the
+    worst place to discover it.
+
+    Raises with the batch size that would fit, so the fix is mechanical.
+    """
+    slots = config.batch_size * config.max_seq_length
+    if slots <= SAFE_TOKEN_SLOTS:
+        return
+    fits = max(1, SAFE_TOKEN_SLOTS // config.max_seq_length)
+    raise ValueError(
+        f"batch_size={config.batch_size} x max_seq_length="
+        f"{config.max_seq_length} = {slots:,} token-slots exceeds the "
+        f"{SAFE_TOKEN_SLOTS:,} measured safe on an 80GB card with gradient "
+        f"checkpointing. Use --batch-size {fits} or lower the token budget. "
+        f"Note that changing batch_size changes the in-batch negatives "
+        f"MultipleNegativesRankingLoss draws on, so an arm at a different "
+        f"batch size is not comparable to one at 32."
+    )
 
 
 def _assert_adapter_learned(model: Any, config: TrainingConfig) -> None:
@@ -219,6 +254,8 @@ def train_model(
         report_to="none",
         batch_sampler=HubAwareTemperatureSampler if use_custom_sampler else BatchSamplers.BATCH_SAMPLER,
     )
+
+    _assert_memory_budget(config)
 
     try:
         trainer = SentenceTransformerTrainer(
