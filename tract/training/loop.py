@@ -231,6 +231,49 @@ def train_model(
     return model
 
 
+def _reload_saved_model(
+    saved_dir: Path, reference_model: SentenceTransformer
+) -> SentenceTransformer:
+    """Load a saved checkpoint the way a consumer would.
+
+    A LoRA checkpoint is adapter-only. SentenceTransformer.save writes
+    adapter_config.json and adapter_model.safetensors but no base config and
+    no base weights, because the base is named inside adapter_config rather
+    than copied. SentenceTransformer(saved_dir) therefore fails with
+    "Unrecognized model ... should have a model_type key": it is asking a
+    directory of adapter weights to describe an architecture.
+
+    So reload the way the adapter itself says to -- base model first, then the
+    adapter on top. A full fine-tune has no adapter_config and loads directly.
+    """
+    adapter_config = saved_dir / "adapter_config.json"
+    if not adapter_config.is_file():
+        return SentenceTransformer(str(saved_dir))
+
+    with open(adapter_config, encoding="utf-8") as handle:
+        base_name = json.load(handle).get("base_model_name_or_path")
+    if not base_name:
+        raise RuntimeError(
+            f"{adapter_config} names no base_model_name_or_path, so the "
+            f"adapter cannot be reattached to anything and the checkpoint "
+            f"cannot be loaded."
+        )
+
+    reloaded = SentenceTransformer(base_name)
+    backbone = reloaded[0]
+    module = getattr(backbone, "auto_model", None) or backbone.model
+    from peft import PeftModel
+
+    # Shared with the publish path: sentence-transformers 5.7 made auto_model
+    # a read-only property, and a plain assignment is silently discarded.
+    from tract.publish.merge import _set_backbone
+
+    merged = PeftModel.from_pretrained(module, str(saved_dir)).merge_and_unload()
+    _set_backbone(backbone, merged)
+    reloaded.max_seq_length = reference_model.max_seq_length
+    return reloaded
+
+
 def verify_checkpoint_roundtrip(
     model: SentenceTransformer,
     saved_dir: Path,
@@ -248,7 +291,7 @@ def verify_checkpoint_roundtrip(
     reference = model.encode(
         CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
     )
-    reloaded = SentenceTransformer(str(saved_dir))
+    reloaded = _reload_saved_model(saved_dir, model)
     reloaded.max_seq_length = model.max_seq_length
     actual = reloaded.encode(
         CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
@@ -266,42 +309,6 @@ def verify_checkpoint_roundtrip(
         )
     logger.info("Checkpoint round-trip verified: min cosine = %.6f", min_cosine)
     return min_cosine
-
-
-def _flatten_saved_model_dir(model_dir: Path) -> None:
-    """Move the SentenceTransformer tree up if save() nested it.
-
-    With a PEFT adapter attached, SentenceTransformer.save(path) writes the
-    whole tree to path/model/ rather than to path: modules.json, the adapter
-    and the tokenizer all land one level deeper, and path itself holds only
-    that subdirectory. Reloading path then fails with "Unrecognized model ...
-    should have a model_type key", because there is no config there to read.
-
-    Everything downstream -- the round-trip check, merge, publish, and
-    `tract assign` -- expects the standard layout, so normalise here rather
-    than teaching each consumer about a second one. A no-op when save()
-    behaved.
-    """
-    nested = model_dir / "model"
-    if not (nested / "modules.json").is_file():
-        return
-    if (model_dir / "modules.json").is_file():
-        # Both present: the real root is already where it should be.
-        return
-
-    logger.warning(
-        "SentenceTransformer.save nested the model in %s; flattening it so the "
-        "checkpoint has the standard layout.", nested,
-    )
-    for item in nested.iterdir():
-        target = model_dir / item.name
-        if target.exists():
-            raise RuntimeError(
-                f"Cannot flatten {nested}: {target} already exists. The "
-                f"checkpoint layout is ambiguous; refusing to guess."
-            )
-        item.rename(target)
-    nested.rmdir()
 
 
 def save_checkpoint(
@@ -323,7 +330,6 @@ def save_checkpoint(
 
     model_dir = output_dir / "model"
     model.save(str(model_dir))
-    _flatten_saved_model_dir(model_dir)
 
     if verify_roundtrip:
         verify_checkpoint_roundtrip(model, model_dir)
