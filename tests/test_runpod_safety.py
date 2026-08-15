@@ -482,3 +482,66 @@ class TestRsyncToRetries:
                             lambda cmd, **k: calls.__setitem__("n", calls["n"] + 1))
         rp._rsync_to("1.2.3.4", 22, "/local/", "/remote/")
         assert calls["n"] == 1
+
+
+class TestHungSshIsRetried:
+    """A hung session produces no returncode, so the stderr-marker check
+    never sees it. One pod's bootstrap hung silently -- the pod stayed
+    reachable for new connections while the original session was a zombie --
+    and blocked the whole fleet's bootstrap barrier until the one-hour
+    default timeout.
+    """
+
+    def test_a_timeout_is_retried_then_succeeds(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import subprocess as sp
+
+        from scripts.phase1b import runpod_parallel as rp
+
+        calls = {"n": 0}
+
+        class _R:
+            returncode, stdout, stderr = 0, "", ""
+
+        def _run(*args: object, **kwargs: object) -> _R:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise sp.TimeoutExpired(cmd="ssh", timeout=900)
+            return _R()
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+        monkeypatch.setattr(rp, "_require_ssh_key", lambda: None)
+
+        assert rp._ssh("1.2.3.4", 22, "true").returncode == 0
+        assert calls["n"] == 2
+
+    def test_a_persistent_hang_still_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import subprocess as sp
+
+        from scripts.phase1b import runpod_parallel as rp
+
+        def _run(*args: object, **kwargs: object) -> None:
+            raise sp.TimeoutExpired(cmd="ssh", timeout=900)
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+        monkeypatch.setattr(rp, "_require_ssh_key", lambda: None)
+
+        with pytest.raises(sp.TimeoutExpired):
+            rp._ssh("1.2.3.4", 22, "true")
+
+    def test_bootstrap_uses_the_shorter_ceiling(self) -> None:
+        """An hour is the wrong bound for a 2-4 minute install."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        assert rp.SSH_BOOTSTRAP_TIMEOUT_S < rp.SSH_DEFAULT_TIMEOUT_S
+        source = Path("scripts/phase1b/runpod_parallel.py").read_text(
+            encoding="utf-8"
+        )
+        bootstrap = source.split("def _bootstrap_pod")[1].split("\ndef ")[0]
+        # Every SSH call in bootstrap carries the bounded timeout.
+        assert bootstrap.count("SSH_BOOTSTRAP_TIMEOUT_S") == bootstrap.count("_ssh(")

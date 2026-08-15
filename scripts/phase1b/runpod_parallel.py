@@ -112,6 +112,14 @@ MAX_CONSECUTIVE_POLL_ERRORS: Final[int] = 10
 
 # Default per-command SSH ceiling; bootstrap issues several.
 SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
+# Bootstrap's longest step is the pip install plus a 1.3GB model fetch, which
+# takes 2-4 minutes on a healthy pod. The default hour was the wrong ceiling
+# for it: a pod whose SSH session hung silently -- reachable for new
+# connections, but with the original one a zombie -- blocked the whole fleet's
+# bootstrap barrier for an hour before anything noticed, because the retry
+# only fires on a returncode and a hang never produces one. Fifteen minutes is
+# generous for the work and short enough that a hang becomes a retry.
+SSH_BOOTSTRAP_TIMEOUT_S: Final[int] = 900
 SSH_CONNECT_ATTEMPTS: Final[int] = 4
 SSH_RETRY_BACKOFF_S: Final[int] = 15
 
@@ -308,10 +316,23 @@ def _ssh(
     # retried: a command that ran and exited non-zero is reported as-is,
     # because re-running it could repeat a side effect.
     for attempt in range(1, SSH_CONNECT_ATTEMPTS + 1):
-        result = subprocess.run(
-            ssh_cmd, shell=True, input=script, text=True,
-            capture_output=True, timeout=timeout,
-        )
+        try:
+            result = subprocess.run(
+                ssh_cmd, shell=True, input=script, text=True,
+                capture_output=True, timeout=timeout,
+            )
+        except subprocess.TimeoutExpired:
+            # A hung session produces no returncode at all, so the marker
+            # check below never sees it. This is the shape that blocked a
+            # fleet's bootstrap barrier for an hour.
+            if attempt == SSH_CONNECT_ATTEMPTS:
+                raise
+            logger.warning(
+                "[ssh %s:%d] hung for %ds (attempt %d/%d); retrying.",
+                ip, port, timeout, attempt, SSH_CONNECT_ATTEMPTS,
+            )
+            time.sleep(SSH_RETRY_BACKOFF_S * attempt)
+            continue
         if result.returncode != 255 or attempt == SSH_CONNECT_ATTEMPTS:
             break
         if not _is_transient_ssh_failure(result.stderr or ""):
@@ -638,7 +659,8 @@ def _bootstrap_pod(pod: dict[str, Any]) -> None:
     ip, port, role = pod["ip"], pod["port"], pod["role"]
     logger.info("Bootstrapping pod for fold '%s' (%s:%d)...", role, ip, port)
 
-    _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1", check=False)
+    _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1",
+         check=False, timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
 
@@ -657,7 +679,7 @@ def _bootstrap_pod(pod: dict[str, Any]) -> None:
         "cd /workspace/tract && "
         "pip install --quiet -e '.[phase0]' && "
         "pip install --quiet -r requirements-train.txt"
-    ))
+    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     # Fetch the base model once, here, rather than inside the fold. A 429 at
     # this point costs a bootstrap; the same 429 twenty minutes into training
@@ -668,7 +690,7 @@ def _bootstrap_pod(pod: dict[str, Any]) -> None:
         "'from huggingface_hub import snapshot_download; "
         "p = snapshot_download(\"BAAI/bge-large-en-v1.5\"); "
         "print(f\"base model cached at {p}\")'"
-    ), env=_get_pod_env())
+    ), env=_get_pod_env(), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     # Fatal, not advisory. This probe used to run with check=False while
     # tract/training/loop.py sets fp16=torch.cuda.is_available(): a driver
@@ -683,7 +705,7 @@ def _bootstrap_pod(pod: dict[str, Any]) -> None:
         "print(f\"torch={torch.__version__} cuda={torch.version.cuda} "
         "gpu={torch.cuda.get_device_name(0)} tf={transformers.__version__} "
         "st={sentence_transformers.__version__} peft={peft.__version__}\")'"
-    ))
+    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     logger.info("Bootstrap complete for fold '%s'", role)
 
