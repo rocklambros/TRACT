@@ -36,6 +36,7 @@ import time
 from pathlib import Path
 from typing import Any, Final
 
+from tract.config import PHASE1B_BASE_MODEL
 from scripts.phase0.runpod_provision import (
     is_capacity_error,
     rank_available_gpus,
@@ -655,7 +656,9 @@ def provision(folds: list[str] | None = None) -> list[dict[str, Any]]:
     return pods
 
 
-def _bootstrap_pod(pod: dict[str, Any]) -> None:
+def _bootstrap_pod(
+    pod: dict[str, Any], base_model: str = PHASE1B_BASE_MODEL,
+) -> None:
     ip, port, role = pod["ip"], pod["port"], pod["role"]
     logger.info("Bootstrapping pod for fold '%s' (%s:%d)...", role, ip, port)
 
@@ -688,8 +691,10 @@ def _bootstrap_pod(pod: dict[str, Any]) -> None:
     _ssh(ip, port, (
         "cd /workspace/tract && python -c "
         "'from huggingface_hub import snapshot_download; "
-        "p = snapshot_download(\"BAAI/bge-large-en-v1.5\"); "
-        "print(f\"base model cached at {p}\")'"
+        "from tract.encoders import resolve; "
+        f"name = {base_model!r}; s = resolve(name); "
+        "p = snapshot_download(name, revision=s.revision); "
+        "print(f\"cached {name} at {s.revision[:12]} -> {p}\")'"
     ), env=_get_pod_env(), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     # Fatal, not advisory. This probe used to run with check=False while
@@ -832,8 +837,16 @@ def run_folds(
     # four kept billing.
     bootstrap_errors: dict[str, str] = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
+        # The arm's encoder, so the pod prefetches the model it will train
+        # rather than always BGE-large. A mismatch here means the 429-safe
+        # prefetch warms the wrong weights and the fold downloads inside
+        # training, where a rate limit costs the fold instead of a bootstrap.
+        arm_model = PHASE1B_BASE_MODEL
+        for i, flag in enumerate(arm_flags):
+            if flag == "--base-model" and i + 1 < len(arm_flags):
+                arm_model = arm_flags[i + 1]
         bootstrap_futures = {
-            ex.submit(_bootstrap_pod, pod): pod["role"] for pod in pods
+            ex.submit(_bootstrap_pod, pod, arm_model): pod["role"] for pod in pods
         }
         for future in concurrent.futures.as_completed(bootstrap_futures):
             role = bootstrap_futures[future]

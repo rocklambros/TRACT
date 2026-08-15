@@ -24,6 +24,7 @@ from sentence_transformers import (
 from sentence_transformers.losses import MultipleNegativesRankingLoss
 from sentence_transformers.training_args import BatchSamplers
 
+from tract.encoders import resolve
 from tract.training.config import TrainingConfig
 from tract.training.data import HubAwareTemperatureSampler
 
@@ -46,7 +47,9 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
 
     If config.lora_rank == 0, returns the base model for full fine-tuning.
     """
-    model = SentenceTransformer(config.base_model)
+    model = SentenceTransformer(
+        config.base_model, revision=config.base_model_revision,
+    )
     model.max_seq_length = config.max_seq_length
 
     if config.lora_rank > 0:
@@ -54,7 +57,7 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
             r=config.lora_rank,
             lora_alpha=config.lora_alpha,
             lora_dropout=config.lora_dropout,
-            target_modules=config.lora_target_modules,
+            target_modules=config.resolved_lora_targets(),
             task_type=TaskType.FEATURE_EXTRACTION,
         )
         # Do NOT assign to model[0].auto_model. sentence-transformers 5.7 made
@@ -76,7 +79,7 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
         if trainable == 0:
             raise RuntimeError(
                 "LoRA adapter did not attach: no trainable parameters after "
-                f"add_adapter with target_modules={config.lora_target_modules}. "
+                f"add_adapter with target_modules={config.resolved_lora_targets()}. "
                 "Check that the target module names match this architecture."
             )
         if trainable >= total:
@@ -113,15 +116,24 @@ def _assert_memory_budget(config: TrainingConfig) -> None:
 
     Raises with the batch size that would fit, so the fix is mechanical.
     """
+    # Scale the BGE-calibrated ceiling by this encoder's width x depth.
+    # Qwen3-Embedding-4B is 2560 wide and 36 deep, 3.75x BGE's activation
+    # cost per token-slot, so a guard tuned on BGE alone would wave through a
+    # configuration that OOMs immediately.
+    spec = resolve(config.base_model)
+    budget = int(SAFE_TOKEN_SLOTS / spec.activation_cost_ratio)
     slots = config.batch_size * config.max_seq_length
-    if slots <= SAFE_TOKEN_SLOTS:
+    if slots <= budget:
         return
-    fits = max(1, SAFE_TOKEN_SLOTS // config.max_seq_length)
+    fits = max(1, budget // config.max_seq_length)
     raise ValueError(
         f"batch_size={config.batch_size} x max_seq_length="
         f"{config.max_seq_length} = {slots:,} token-slots exceeds the "
-        f"{SAFE_TOKEN_SLOTS:,} measured safe on an 80GB card with gradient "
-        f"checkpointing. Use --batch-size {fits} or lower the token budget. "
+        f"{budget:,} safe for {config.base_model} on an 80GB card with "
+        f"gradient checkpointing ({SAFE_TOKEN_SLOTS:,} measured on BGE-large, "
+        f"scaled by this encoder's {spec.activation_cost_ratio:.2f}x "
+        f"activation cost). Use --batch-size {fits} or lower the token "
+        f"budget. "
         f"Note that changing batch_size changes the in-batch negatives "
         f"MultipleNegativesRankingLoss draws on, so an arm at a different "
         f"batch size is not comparable to one at 32."

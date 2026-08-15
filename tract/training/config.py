@@ -13,7 +13,6 @@ from tract.config import (
     PHASE1B_LORA_ALPHA,
     PHASE1B_LORA_DROPOUT,
     PHASE1B_LORA_RANK,
-    PHASE1B_LORA_TARGET_MODULES,
     PHASE1B_MAX_EPOCHS,
     PHASE1B_MAX_GRAD_NORM,
     PHASE1B_MAX_SEQ_LENGTH,
@@ -36,7 +35,10 @@ class TrainingConfig:
     lora_rank: int = PHASE1B_LORA_RANK
     lora_alpha: int = PHASE1B_LORA_ALPHA
     lora_dropout: float = PHASE1B_LORA_DROPOUT
-    lora_target_modules: list[str] = field(default_factory=lambda: list(PHASE1B_LORA_TARGET_MODULES))
+    # Empty means "ask the encoder registry". Hardcoding BERT's names matched
+    # neither ModernBERT (Wqkv/Wo) nor Qwen3 (q_proj/...), and PEFT only
+    # raises after the encoder has downloaded and the zero-shot pass has run.
+    lora_target_modules: list[str] = field(default_factory=list)
 
     sampling_temperature: float = PHASE1B_SAMPLING_TEMPERATURE
     # control_text_source is NOT a field. It was a constant default that
@@ -106,6 +108,21 @@ class TrainingConfig:
     # fold.
     branch_balance_temperature: float = 0.0
 
+    def resolved_lora_targets(self) -> list[str]:
+        """Target modules for this encoder, explicit setting winning."""
+        if self.lora_target_modules:
+            return list(self.lora_target_modules)
+        from tract.encoders import resolve
+
+        return list(resolve(self.base_model).lora_target_modules)
+
+    @property
+    def base_model_revision(self) -> str:
+        """The pinned commit for base_model, so a run ties to weights."""
+        from tract.encoders import resolve
+
+        return resolve(self.base_model).revision
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize for WandB/JSON logging."""
         return {
@@ -116,7 +133,8 @@ class TrainingConfig:
             "lora_rank": self.lora_rank,
             "lora_alpha": self.lora_alpha,
             "lora_dropout": self.lora_dropout,
-            "lora_target_modules": self.lora_target_modules,
+            "lora_target_modules": self.resolved_lora_targets(),
+            "base_model_revision": self.base_model_revision,
             "sampling_temperature": self.sampling_temperature,
             "control_text_source": ("full_prose" if self.use_prose else "section_name"),
             "batch_size": self.batch_size,

@@ -255,7 +255,9 @@ def run_single_fold(
         from sentence_transformers import SentenceTransformer
 
         logger.info("Fold %s: measuring zero-shot baseline", held_out_framework)
-        base_model = SentenceTransformer(config.base_model)
+        base_model = SentenceTransformer(
+            config.base_model, revision=config.base_model_revision,
+        )
         base_model.max_seq_length = config.max_seq_length
         zs_metrics, _zs_predictions, zs_hit1 = evaluate_on_fold(
             base_model, eval_items, hub_ids, hub_texts,
