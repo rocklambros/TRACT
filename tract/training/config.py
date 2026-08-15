@@ -56,6 +56,22 @@ class TrainingConfig:
     hard_negatives: int = PHASE1B_HARD_NEGATIVES
     seed: int = PHASE1B_SEED
 
+    # Recompute activations in the backward pass instead of storing them.
+    # This does not change the loss, the batch composition, or the result --
+    # it trades roughly 30% throughput for a large drop in activation memory.
+    # Needed because the anchors changed: the batch size was tuned when a
+    # control was a 22-character title (~8 tokens) and the same batch of 32
+    # now carries paragraphs that fill the 512-token window, so peak
+    # activation memory grew with the sequence length and the worst-case
+    # batch OOMed an 80GB H100 partway through epoch 4.
+    #
+    # Reducing batch_size would have been the other lever and is the wrong
+    # one: MultipleNegativesRankingLoss draws its negatives from within the
+    # batch, so a smaller batch is a weaker training signal, and PRD 6.4
+    # pre-registers the configuration. Checkpointing changes the arithmetic
+    # not at all.
+    gradient_checkpointing: bool = True
+
     hub_rep_format: str = "path+name"
     data_hash: str = ""
 
@@ -100,6 +116,7 @@ class TrainingConfig:
             "max_seq_length": self.max_seq_length,
             "hard_negatives": self.hard_negatives,
             "seed": self.seed,
+            "gradient_checkpointing": self.gradient_checkpointing,
             "hub_rep_format": self.hub_rep_format,
             "use_prose": self.use_prose,
             "use_stopword_filter": self.use_stopword_filter,

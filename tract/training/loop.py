@@ -93,6 +93,55 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
     return model
 
 
+def _assert_adapter_learned(model: Any, config: TrainingConfig) -> None:
+    """Fail if training ran but the adapter never moved.
+
+    PEFT initialises every lora_B to zeros, so the adapter is the identity
+    until a gradient reaches it. If lora_B is still all zeros after training,
+    the run produced the base model wearing an adapter that does nothing,
+    and every downstream metric would describe the base model while the
+    record claimed a fine-tune. Loss going down does not rule this out --
+    with a frozen backbone and no gradient path there would be no loss curve
+    at all, but a partially connected graph can still produce one.
+
+    This matters most with gradient checkpointing: a frozen backbone plus the
+    default reentrant implementation means the checkpointed segment sees no
+    input requiring grad, and torch drops the gradient silently rather than
+    raising. use_reentrant=False avoids that; this asserts it worked.
+    """
+    import torch
+
+    lora_b = [
+        (name, param) for name, param in model.named_parameters()
+        if "lora_B" in name
+    ]
+    if not lora_b:
+        if config.lora_rank == 0:
+            return          # full fine-tune arm has no adapter to check
+        raise RuntimeError(
+            "No lora_B parameters found after training, so the adapter is not "
+            "attached to the model that was trained."
+        )
+
+    moved = [name for name, param in lora_b if torch.any(param != 0).item()]
+    if not moved:
+        raise RuntimeError(
+            f"All {len(lora_b)} lora_B tensors are still zero after training. "
+            f"PEFT initialises them to zero, so the adapter is the identity "
+            f"and this run produced the base model. No gradient reached the "
+            f"adapter"
+            + (
+                "; gradient_checkpointing is on, which drops gradients "
+                "silently when the checkpointed segment has no input "
+                "requiring grad."
+                if config.gradient_checkpointing else "."
+            )
+        )
+    logger.info(
+        "Adapter learned: %d/%d lora_B tensors are non-zero", len(moved), len(lora_b),
+    )
+
+
 def train_model(
     config: TrainingConfig,
     train_dataset: Dataset,
@@ -142,6 +191,13 @@ def train_model(
         weight_decay=config.weight_decay,
         max_grad_norm=config.max_grad_norm,
         fp16=torch.cuda.is_available(),
+        gradient_checkpointing=config.gradient_checkpointing,
+        # LoRA freezes the backbone, so with the default reentrant
+        # implementation the checkpointed segments see no input requiring
+        # grad and torch silently produces no gradients for the adapter.
+        gradient_checkpointing_kwargs=(
+            {"use_reentrant": False} if config.gradient_checkpointing else None
+        ),
         seed=config.seed,
         logging_steps=10,
         save_strategy="epoch",
@@ -167,6 +223,7 @@ def train_model(
                     len(train_dataset), config.max_epochs, config.batch_size, config.learning_rate)
         trainer.train()
         logger.info("Training complete")
+        _assert_adapter_learned(model, config)
     finally:
         if use_custom_sampler:
             HubAwareTemperatureSampler.clear_metadata()

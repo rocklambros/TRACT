@@ -209,6 +209,11 @@ def _get_pod_env() -> dict[str, str]:
         "TOKENIZERS_PARALLELISM": "false",
         # Determinism, per PRD 6.4.2.
         "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+        # Anchor lengths vary from a few tokens to the full 512-token window,
+        # so the allocator sees a wide spread of block sizes and fragments.
+        # The OOM that killed the canary reported 621 MiB reserved but
+        # unallocated and recommended exactly this.
+        "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
         # _rsync_to excludes .git, so `git rev-parse` on the pod has no
         # repository to read and every fold recorded git_sha="unknown". A
         # fleet that unanimously says "unknown" passes load_fold_results'
