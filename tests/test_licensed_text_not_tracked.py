@@ -34,13 +34,86 @@ __all__ = ["RESTRICTED_FRAMEWORK_IDS"]
 _TITLE_LENGTH_CEILING: int = 60
 
 
-def _tracked_files() -> set[str]:
+def _tracked_files(scope: str = "data/processed") -> set[str]:
     result = subprocess.run(
-        ["git", "ls-files", "data/processed"],
+        ["git", "ls-files", scope],
         capture_output=True, text=True, check=True,
         cwd=Path(__file__).resolve().parent.parent,
     )
     return {line for line in result.stdout.splitlines() if line}
+
+
+def _normalised_source() -> str:
+    """The ISO Annex A *control statements*, normalised for comparison.
+
+    Deliberately excludes the title column. Section titles like "Privacy and
+    protection of personal identifiable information (PII)" reach this project
+    through OpenCRE's public link dump and are already tracked in
+    data/training/hub_links*. They are not the normative text at issue. What
+    this repository must not dedicate to the public domain is the requirement
+    statement, which the source table marks with a leading "Control".
+    """
+    import re
+
+    path = (
+        Path(__file__).resolve().parent.parent
+        / "data" / "raw" / "frameworks" / "iso_27001"
+        / "ISO_IEC_27001_2022_en.md"
+    )
+    if not path.exists():
+        return ""
+    statements: list[str] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 3 or not re.match(r"^\d+\.\d+$", cells[0]):
+            continue
+        statements.append(cells[2])
+    text = re.sub(r"\s+", " ", "   ".join(statements))
+    return re.sub(r"([a-z])\s+-\s+([a-z])", r"\1\2", text).lower()
+
+
+def test_no_verbatim_licensed_statement_anywhere_in_the_tree() -> None:
+    """No tracked file may quote a licensed standard's control statement.
+
+    The first version of this gate scanned only data/processed, so it could not
+    see licensed text that reached git through a different door. It did not:
+    a later change pinned ISO Annex A statements into tracked test fixtures and
+    assertions, and this gate reported clean. A control that guards one channel
+    while another stays open is the failure it was written to prevent.
+    """
+    import re
+
+    source = _normalised_source()
+    if not source:
+        pytest.skip("raw ISO source absent in this checkout")
+
+    root = Path(__file__).resolve().parent.parent
+    offenders: list[tuple[str, str]] = []
+    for rel in sorted(_tracked_files(".")):
+        path = root / rel
+        if path.suffix not in {".py", ".md", ".json", ".jsonl", ".txt", ".csv"}:
+            continue
+        try:
+            body = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        # Any run of 60+ characters that appears verbatim in the standard is a
+        # quotation, not a coincidence.
+        for candidate in re.findall(r"[A-Za-z][^\"'`|\n]{59,}", body):
+            probe = re.sub(r"\s+", " ", candidate.replace("[...]", "")).strip().lower()
+            if len(probe) >= 60 and probe[:60] in source:
+                offenders.append((rel, probe[:70]))
+                break
+
+    assert not offenders, (
+        f"{len(offenders)} tracked file(s) quote ISO 27001 control statements "
+        f"verbatim: {offenders[:5]}. This repository is CC0, which asserts the "
+        f"publisher holds the rights and waives them. Move the text to a "
+        f"gitignored path and skip when absent, or replace it with synthetic "
+        f"rows that reproduce the same structure."
+    )
 
 
 def test_restricted_framework_files_are_not_tracked() -> None:
