@@ -24,6 +24,7 @@ from tract.config import (
     FRAMEWORK_NAME_ALIASES,
     MAX_ANCHOR_CHARS,
     PROCESSED_DIR,
+    PROCESSED_LICENSED_DIR,
     PROSE_MIN_EXTRA_CHARS,
     REMEDIATION_HEADINGS,
 )
@@ -54,6 +55,26 @@ def canonical_framework(name: str) -> str:
     """Normalise a framework name to its control-side spelling."""
     key = _WHITESPACE.sub(" ", (name or "").strip()).lower()
     return FRAMEWORK_NAME_ALIASES.get(key, name)
+
+
+def merged_corpus_path() -> Path:
+    """The merged corpus to train and evaluate against.
+
+    Prefer the gitignored licensed overlay, fall back to the tracked file.
+    parsers/merge_all_controls.py has documented this read order since the
+    overlay was introduced and nothing implemented it, so every reader took
+    the tracked corpus, which excludes every framework in
+    RESTRICTED_FRAMEWORK_IDS by design. ISO 27001's parser produced 93
+    controls that no run path could reach, and adding its name alias alone
+    would not have changed that.
+
+    The overlay exists only where the restricted source does, and
+    merge_all_controls deletes a stale one, so its presence always means this
+    checkout holds licensed prose. A run that used it and a run that did not
+    are distinguishable: the fold metadata records the corpus sha256.
+    """
+    overlay = PROCESSED_LICENSED_DIR / "all_controls.json"
+    return overlay if overlay.exists() else PROCESSED_DIR / "all_controls.json"
 
 
 def _is_prose(description: str, title: str) -> bool:
@@ -280,14 +301,15 @@ class ProseIndex:
 
     @classmethod
     def load(cls, path: Path | None = None) -> ProseIndex:
-        data = load_json(path or PROCESSED_DIR / "all_controls.json")
+        source = path or merged_corpus_path()
+        data = load_json(source)
         records = data if isinstance(data, list) else next(
             (v for v in data.values() if isinstance(v, list)), []
         )
         index = cls(records)
         logger.info(
-            "Prose index: %d controls by id, %d by title",
-            len(index._by_id), len(index._by_title),
+            "Prose index from %s: %d controls by id, %d by title",
+            source.name, len(index._by_id), len(index._by_title),
         )
         return index
 

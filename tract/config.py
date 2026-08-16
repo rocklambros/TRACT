@@ -312,6 +312,13 @@ PHASE1B_BH_FDR_Q: Final[float] = 0.10
 # control-side one. Keyed and compared case-insensitively after whitespace
 # collapse; this table only needs the cases that differ by more than that.
 FRAMEWORK_NAME_ALIASES: Final[dict[str, str]] = {
+    # OpenCRE says "ISO 27001", the parser says "ISO/IEC 27001:2022 Annex A",
+    # and without this line those two strings never meet: all 94 ISO links
+    # resolved to nothing and fell back to their three-word section title,
+    # while the parser's 93 controls at 0.967 prose sat unread. Measured, not
+    # assumed. The prose fraction was checked and the reachability was not,
+    # which is why tests/test_prose_reachability.py now checks the second one.
+    "iso 27001": "ISO/IEC 27001:2022 Annex A",
     "nist 800-53 v5": "NIST 800-53",
     "devsecops maturity model (dsomm)": "DSOMM",
     "owasp web security testing guide (wstg)": "WSTG",

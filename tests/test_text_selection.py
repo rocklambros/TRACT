@@ -123,7 +123,15 @@ class TestSelectControlText:
         assert chosen.text == "Policies for information security"
 
     def test_fallbacks_are_counted_per_framework(self, index: ProseIndex) -> None:
-        """A run that silently fell back to titles must not look like a clean one."""
+        """A run that silently fell back to titles must not look like a clean one.
+
+        Counted under the canonical name, not the link-side spelling. That is
+        deliberate: select_control_text records
+        `canonical_framework(framework)`, so a framework OpenCRE spells more
+        than one way reports one total instead of several partial ones. "ISO
+        27001" gained an alias to "ISO/IEC 27001:2022 Annex A" when its 94
+        links turned out to resolve to nothing, and this key moved with it.
+        """
         stats = SelectionStats()
         select_control_text(index, "MITRE ATLAS", "AML.T0001", "Data Poisoning", stats)
         select_control_text(index, "ISO 27001", "A.5.1", "Policies", stats)
@@ -131,7 +139,8 @@ class TestSelectControlText:
 
         assert stats.total == 3
         assert stats.by_source["title"] == 2
-        assert stats.fallback_by_framework["ISO 27001"] == 2
+        assert stats.fallback_by_framework["ISO/IEC 27001:2022 Annex A"] == 2
+        assert "ISO 27001" not in stats.fallback_by_framework
         assert "MITRE ATLAS" not in stats.fallback_by_framework
         assert stats.prose_fraction == pytest.approx(1 / 3)
 
