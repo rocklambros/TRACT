@@ -31,6 +31,11 @@ DESCRIPTION_MAX_LENGTH: Final[int] = 2000
 # Tolerance for expected-count validation (10% deviation triggers WARNING)
 COUNT_TOLERANCE: Final[float] = 0.10
 
+# Below this a description is a section title rather than a control statement.
+# Measured: the 12 synthesised frameworks have a 0% honest-prose rate at this
+# threshold and every parser-backed framework has at least 76%.
+HONEST_PROSE_MIN_CHARS: Final[int] = 60
+
 # ── OpenCRE API Settings ──────────────────────────────────────────────────
 
 OPENCRE_API_BASE_URL: Final[str] = "https://opencre.org/rest/v1/all_cres"

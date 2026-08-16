@@ -290,3 +290,42 @@ class TestDeterministicOutput:
             "BaseParser must not read the clock; fetched_date is declared "
             "per parser so re-parsing the same bytes gives the same bytes"
         )
+
+
+class TestProseFloor:
+    def _titles_only(self) -> list[Control]:
+        return [
+            Control(control_id=f"T-{i}", title=f"Title {i}", description=f"Title {i}")
+            for i in range(4)
+        ]
+
+    def test_refuses_to_write_below_the_declared_floor(self, tmp_path: Path) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class ProseParser(StubParser):
+            expected_count: ClassVar[int] = 4
+            min_prose_fraction: ClassVar[float] = 1.0
+
+        parser = ProseParser(
+            raw_dir=tmp_path, output_dir=out, controls=self._titles_only(),
+        )
+        with pytest.raises(ValueError, match="prose fraction"):
+            parser.run()
+
+    def test_a_description_equal_to_its_title_is_not_prose(self) -> None:
+        controls = [
+            Control(control_id="A", title="Use of cryptography",
+                    description="Use of cryptography"),
+            Control(control_id="B", title="Access control",
+                    description="Rules for access shall be defined, documented "
+                                "and reviewed at planned intervals by the owner."),
+        ]
+        assert BaseParser.honest_prose_fraction(controls) == 0.5
+
+    def test_a_long_restatement_of_the_title_is_not_prose(self) -> None:
+        long_title = "Policies for information security and topic specific policies"
+        controls = [
+            Control(control_id="A", title=long_title, description=long_title),
+        ]
+        assert BaseParser.honest_prose_fraction(controls) == 0.0

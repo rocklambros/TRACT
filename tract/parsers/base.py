@@ -17,6 +17,7 @@ from tract.config import (
     COUNT_TOLERANCE,
     DESCRIPTION_MAX_LENGTH,
     EXPECTED_COUNTS,
+    HONEST_PROSE_MIN_CHARS,
     PROCESSED_FRAMEWORKS_DIR,
     RAW_FRAMEWORKS_DIR,
 )
@@ -58,6 +59,10 @@ class BaseParser(ABC):
     # expected count. Unset means a deviation is a bug and run() refuses to
     # write. A warning that nobody reads is not a gate.
     count_deviation_reason: ClassVar[str | None] = None
+    # The floor this parser's output must clear. Measured on stored text, not
+    # on the join-path prose_fraction telemetry, which records whether a
+    # lookup hit rather than whether the text is prose.
+    min_prose_fraction: ClassVar[float] = 0.0
 
     @classmethod
     def resolve_raw_dir(cls) -> Path:
@@ -89,6 +94,24 @@ class BaseParser(ABC):
             f"checkout starts empty; repopulate it from the source recorded in "
             f"data/raw/PROVENANCE.txt."
         )
+
+    @staticmethod
+    def honest_prose_fraction(controls: list[Control]) -> float:
+        """Fraction of controls whose description is more than their title.
+
+        Both conditions must hold. A byte-copy of the title is not prose no
+        matter how long the title is: nist_ssdf has a 156-character median
+        description and a 0% real-prose rate because its descriptions are long
+        titles.
+        """
+        if not controls:
+            return 0.0
+        honest = sum(
+            1 for c in controls
+            if len(c.description.strip()) >= HONEST_PROSE_MIN_CHARS
+            and c.description.strip() != c.title.strip()
+        )
+        return honest / len(controls)
 
     def __init__(
         self,
@@ -180,6 +203,20 @@ class BaseParser(ABC):
         ]
 
         self._check_expected_count(len(sanitized_controls))
+
+        fraction = self.honest_prose_fraction(sanitized_controls)
+        if fraction < self.min_prose_fraction:
+            raise ValueError(
+                f"{self.framework_id}: honest prose fraction {fraction:.3f} is "
+                f"below the declared floor {self.min_prose_fraction:.3f}. The "
+                f"parser is emitting titles where control statements were "
+                f"expected. This is the check that would have caught the 568 "
+                f"title-only controls already in the corpus."
+            )
+        logger.info(
+            "%s: honest prose fraction %.3f (floor %.3f)",
+            self.framework_id, fraction, self.min_prose_fraction,
+        )
 
         output = FrameworkOutput(
             framework_id=self.framework_id,
