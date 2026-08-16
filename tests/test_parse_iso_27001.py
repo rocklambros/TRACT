@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
@@ -16,6 +17,21 @@ from parsers.parse_iso_27001 import Iso27001Parser
 from tract.schema import Control
 
 FIXTURE = Path(__file__).parent / "fixtures" / "iso_27001_sample.md"
+
+
+class SampleIso27001Parser(Iso27001Parser):
+    """The parser with the fixture's repair counts rather than the source's.
+
+    Repair expectations are exact and two-sided, so a fixture holding 13 of
+    the 93 rows carries its own measured counts. Declaring what this input
+    contains keeps the real gate exact instead of loosening it to a range
+    wide enough to cover both.
+    """
+
+    expected_repairs: ClassVar[dict[str, int]] = {
+        "cell bleed": 4, "hyphen break": 2, "run-together": 1,
+    }
+    expected_residual_damage: ClassVar[int] = 1
 
 
 @pytest.fixture
@@ -29,9 +45,79 @@ def parser(tmp_path: Path) -> Iso27001Parser:
     out.mkdir()
     # audit_dir is redirected into tmp_path so the test never writes into the
     # repository's data tree.
-    return Iso27001Parser(
+    return SampleIso27001Parser(
         raw_dir=raw, output_dir=out, audit_dir=tmp_path / "audit",
     )
+
+
+class TestRepairExpectationsAreTwoSided:
+    """A ceiling only catches a repair that runs away.
+
+    The failure that ships bad text quietly is the opposite one: a source
+    refresh moves the damage, the repair stops reaching it, and the output is
+    truncated with every gate green. The run-together ceiling sat at 30
+    against an actual 8 and could never have fired at all.
+    """
+
+    def test_a_repair_that_stops_firing_is_a_failure(
+        self, tmp_path: Path,
+    ) -> None:
+        class Expecting(SampleIso27001Parser):
+            expected_repairs: ClassVar[dict[str, int]] = {
+                "cell bleed": 4, "hyphen break": 3, "run-together": 1,
+            }
+
+        with pytest.raises(ValueError, match="hyphen break"):
+            self._parse_with(Expecting, tmp_path)
+
+    def test_a_repair_that_fires_more_often_than_measured_is_a_failure(
+        self, tmp_path: Path,
+    ) -> None:
+        class Expecting(SampleIso27001Parser):
+            expected_repairs: ClassVar[dict[str, int]] = {
+                "cell bleed": 4, "hyphen break": 1, "run-together": 1,
+            }
+
+        with pytest.raises(ValueError, match="hyphen break"):
+            self._parse_with(Expecting, tmp_path)
+
+    def test_residual_damage_is_declared_and_checked_too(
+        self, tmp_path: Path,
+    ) -> None:
+        """Damage the repair never reached is a number, not a log line."""
+        class Expecting(SampleIso27001Parser):
+            expected_residual_damage: ClassVar[int] = 0
+
+        with pytest.raises(ValueError, match="residual"):
+            self._parse_with(Expecting, tmp_path)
+
+    def test_the_documented_opt_out_permits_the_deviation(
+        self, tmp_path: Path,
+    ) -> None:
+        class Drifting(SampleIso27001Parser):
+            expected_repairs: ClassVar[dict[str, int]] = {
+                "cell bleed": 4, "hyphen break": 3, "run-together": 1,
+            }
+            repair_deviation_reason: ClassVar[str] = (
+                "the 2027 conversion fixed one hyphen break at source"
+            )
+
+        assert len(self._parse_with(Drifting, tmp_path)) == 12
+
+    @staticmethod
+    def _parse_with(
+        parser_class: type[Iso27001Parser], tmp_path: Path,
+    ) -> list[Control]:
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "ISO_IEC_27001_2022_en.md").write_text(
+            FIXTURE.read_text(encoding="utf-8"), encoding="utf-8",
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        return parser_class(
+            raw_dir=raw, output_dir=out, audit_dir=tmp_path / "audit",
+        ).parse()
 
 
 class TestIso27001Parser:
@@ -116,9 +202,18 @@ def poisoning_parser(tmp_path: Path) -> Iso27001Parser:
     )
     out = tmp_path / "out"
     out.mkdir()
-    return Iso27001Parser(
+    return PoisoningIso27001Parser(
         raw_dir=raw, output_dir=out, audit_dir=tmp_path / "audit",
     )
+
+
+class PoisoningIso27001Parser(Iso27001Parser):
+    """The parser with the synthetic fixture's measured repair counts."""
+
+    expected_repairs: ClassVar[dict[str, int]] = {
+        "cell bleed": 0, "hyphen break": 1, "run-together": 2,
+    }
+    expected_residual_damage: ClassVar[int] = 0
 
 
 class TestVocabularyIsNotPoisoned:
@@ -247,12 +342,11 @@ class TestRepairAuditFile:
 
 
 class TestFindResidualRunTogether:
-    """Coverage for the residual-damage visibility gap flagged in review.
+    """The scan that counts damage no repair reached.
 
-    MAX_RUN_TOGETHER_REPAIRS only bounds successful splits; these tests cover
-    the separate scan that flags rows still carrying an unsplit token, using
-    synthetic text so the assertion is not tied to which real ISO rows happen
-    to be repairable this run.
+    split_run_together fails closed, so a row it cannot fully segment is left
+    alone. The repair counts say how many rows it fixed and nothing about how
+    many still need fixing, which is what this scan supplies.
     """
 
     def test_flags_a_control_with_an_unbroken_long_token(self) -> None:
@@ -281,22 +375,17 @@ class TestFindResidualRunTogether:
         ]
         assert Iso27001Parser._find_residual_run_together(controls) == []
 
-    def test_logs_a_warning_with_the_control_ids_when_residual_damage_remains(
+    def test_the_remaining_control_ids_are_named_in_the_log(
         self, parser: Iso27001Parser, caplog: pytest.LogCaptureFixture,
     ) -> None:
-        # The real fixture rows are fully repairable at 93-row vocabulary
-        # scale but not necessarily at the small fixture's scale; parse()
-        # must not crash either way, and if residual damage is present it
-        # must be visible in the log, not merely counted internally.
-        with caplog.at_level(logging.WARNING, logger="parsers.parse_iso_27001"):
+        """A count alone does not say which rows to go and read."""
+        with caplog.at_level(logging.INFO, logger="parsers.parse_iso_27001"):
             controls = parser.parse()
+
         residual = Iso27001Parser._find_residual_run_together(controls)
-        warnings = [r for r in caplog.records if r.levelname == "WARNING"]
-        if residual:
-            assert any(
-                "unsplit run-together token" in r.getMessage() for r in warnings
-            )
-        else:
-            assert not any(
-                "unsplit run-together token" in r.getMessage() for r in warnings
-            )
+        assert residual == ["5.10"]
+        assert any(
+            "unsplit run-together token" in record.getMessage()
+            and "5.10" in record.getMessage()
+            for record in caplog.records
+        )

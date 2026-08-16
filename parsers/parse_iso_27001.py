@@ -8,14 +8,12 @@ of 20 characters or more, and 4 pairs where a cell bled into the next row.
 Unrepaired, this text tokenizes to fragments and would score worse than the
 28-character titles it replaces.
 
-MAX_RUN_TOGETHER_REPAIRS is a ceiling on split_run_together's successful
-splits, not a guarantee that every one of the 22 damaged rows comes out
-clean: the repair only fires when the corpus vocabulary supplies a complete
-word-by-word decomposition, and for a meaningful share of the 22 it does not
-(see RUN_TOGETHER_MIN_LENGTH below and _find_residual_run_together). run()
-logs the control ids that still carry an unsplit token so that gap stays
-visible in the run log instead of being implied away by a ceiling that only
-counts successes.
+Repair counts are declared exactly and checked in both directions, and the
+damage no repair reached is declared alongside them. A ceiling only catches a
+transform that runs away. The failure that ships bad text quietly is the
+opposite one: a source refresh moves the damage, the repair stops reaching it,
+and the output is truncated with every gate green. See EXPECTED_REPAIRS,
+EXPECTED_RESIDUAL_DAMAGE, and _find_residual_run_together below.
 
 The output file is gitignored. This repository is CC0 and committing normative
 ISO control statements under it would assert rights the project does not hold.
@@ -72,12 +70,31 @@ STATEMENT_MARKER: Final[str] = "Control"
 # to be a run-together candidate themselves.
 RUN_TOGETHER_MIN_LENGTH: Final[int] = 20
 
-# Measured ceilings. run() refuses to write when a repair exceeds its
-# declared count, so a transform that starts eating good text is caught here
-# rather than by someone reading the corpus later.
-MAX_HYPHEN_REPAIRS: Final[int] = 40
-MAX_RUN_TOGETHER_REPAIRS: Final[int] = 30
-MAX_BLEED_REPAIRS: Final[int] = 6
+# Measured against the pinned source, exactly, not as ceilings. data/raw is
+# immutable and every transform here is deterministic, so these counts do not
+# move unless the source or the repair changed, and either deserves a stop.
+#
+# The previous ceilings were one-sided and one was unreachable: run-together
+# sat at 30 against an actual 8, so it could not have fired under any input
+# this parser accepts. A one-sided ceiling also cannot see the failure that
+# matters most, which is a repair that stops firing after a source refresh and
+# ships truncated text with every gate green.
+#
+# Moving a number here requires a written repair_deviation_reason on the
+# parser and a look at the audit file, not an edit to the literal.
+EXPECTED_REPAIRS: Final[dict[str, int]] = {
+    "cell bleed": 4,
+    "hyphen break": 32,
+    "run-together": 8,
+}
+
+# Rows whose description still carries an unsplit run-together token after
+# every repair has run. split_run_together only fires when the vocabulary
+# supplies a complete word-by-word decomposition and fails closed otherwise,
+# so this is real remaining damage rather than an upper bound on it. Declared
+# and checked for the same reason as the repair counts: a number that drifts
+# silently is not a control.
+EXPECTED_RESIDUAL_DAMAGE: Final[int] = 13
 
 # Controls whose source text lost content that no transform can recover, keyed
 # to the reason. The cell-bleed repair joins a truncated head to the fragment
@@ -152,6 +169,13 @@ class Iso27001Parser(BaseParser):
     # failure mode this check exists for, still trips it.
     min_prose_fraction: ClassVar[float] = 0.96
     prose_floor_deviation_reason: ClassVar[str] = PROSE_FLOOR_DEVIATION_REASON
+    # Class-level so a test over a sample of the table declares its own
+    # measured counts rather than widening the real gate to cover both.
+    expected_repairs: ClassVar[dict[str, int]] = EXPECTED_REPAIRS
+    expected_residual_damage: ClassVar[int] = EXPECTED_RESIDUAL_DAMAGE
+    # Set to a written reason when a repair count legitimately moves, in
+    # the same spirit as BaseParser.count_deviation_reason.
+    repair_deviation_reason: ClassVar[str | None] = None
 
     def parse(self) -> list[Control]:
         text = self.read_source(SOURCE_FILE)
@@ -160,9 +184,7 @@ class Iso27001Parser(BaseParser):
         rows = self._disclose_damaged_joins(rows, joins)
         self.write_repair_audit([self._audit_record(j) for j in joins])
         self._log_joins(joins)
-        self._check_repair(
-            "cell bleed", sum(1 for j in joins if j.applied), MAX_BLEED_REPAIRS,
-        )
+        self._check_repair("cell bleed", sum(1 for j in joins if j.applied))
 
         # Hyphen repair runs over every row FIRST, before the vocabulary is
         # built. Built the other way round, "secu - rity" contributes "secu"
@@ -178,7 +200,7 @@ class Iso27001Parser(BaseParser):
             repaired_rows.append(
                 (control_id, fixed_title.text, fixed_body.text)
             )
-        self._check_repair("hyphen break", hyphen_total, MAX_HYPHEN_REPAIRS)
+        self._check_repair("hyphen break", hyphen_total)
 
         vocabulary = self._build_vocabulary(repaired_rows)
 
@@ -199,16 +221,11 @@ class Iso27001Parser(BaseParser):
                 metadata=self._damage_metadata(control_id, joins),
             ))
 
-        self._check_repair("run-together", split_total, MAX_RUN_TOGETHER_REPAIRS)
+        self._check_repair("run-together", split_total)
 
-        residual = self._find_residual_run_together(controls)
-        if residual:
-            logger.warning(
-                "%s: %d control(s) still carry an unsplit run-together token "
-                "after repair (MAX_RUN_TOGETHER_REPAIRS bounds successful "
-                "splits, not remaining damage): %s",
-                self.framework_id, len(residual), ", ".join(residual),
-            )
+        self._check_residual_damage(
+            self._find_residual_run_together(controls)
+        )
         return controls
 
     @staticmethod
@@ -359,15 +376,71 @@ class Iso27001Parser(BaseParser):
             )
         return rows
 
-    def _check_repair(self, name: str, applied: int, ceiling: int) -> None:
-        if applied > ceiling:
+    def _check_repair(self, name: str, applied: int) -> None:
+        """Compare one repair's count against its measured value, both ways.
+
+        Raises:
+            ValueError: If the repair is undeclared, or its count moved and no
+                repair_deviation_reason is set.
+        """
+        expected = self.expected_repairs.get(name)
+        if expected is None:
             raise ValueError(
-                f"{self.framework_id}: the {name} repair fired {applied} times "
-                f"against a declared ceiling of {ceiling}. Either the source "
-                f"changed or the repair is eating good text. Inspect before "
-                f"raising the ceiling."
+                f"{self.framework_id}: the {name} repair has no measured "
+                f"count in expected_repairs, so it runs ungated. Measure it "
+                f"against the pinned source and declare the number."
             )
-        logger.info("%s repair applied %d times (ceiling %d)", name, applied, ceiling)
+        if applied == expected:
+            logger.info("%s repair applied %d times (measured %d)",
+                        name, applied, expected)
+            return
+        if self.repair_deviation_reason:
+            logger.warning(
+                "%s: the %s repair fired %d times against a measured %d. "
+                "Permitted: %s",
+                self.framework_id, name, applied, expected,
+                self.repair_deviation_reason,
+            )
+            return
+        raise ValueError(
+            f"{self.framework_id}: the {name} repair fired {applied} times "
+            f"against a measured {expected}. Firing more means it is reaching "
+            f"text it should not; firing fewer means it stopped reaching "
+            f"damage that is still there and the output ships truncated. Read "
+            f"the audit file before moving the number, and record why in "
+            f"repair_deviation_reason."
+        )
+
+    def _check_residual_damage(self, residual: list[str]) -> None:
+        """Compare the rows still carrying damage against the measured count.
+
+        Raises:
+            ValueError: If the count moved and no repair_deviation_reason is
+                set. A fall is as much a surprise as a rise: it means the
+                repair reached rows it did not reach when this was measured,
+                and that is worth reading before it is accepted.
+        """
+        if len(residual) == self.expected_residual_damage:
+            logger.info(
+                "%s: %d control(s) still carry an unsplit run-together token, "
+                "as measured: %s",
+                self.framework_id, len(residual), ", ".join(residual) or "none",
+            )
+            return
+        if self.repair_deviation_reason:
+            logger.warning(
+                "%s: %d control(s) carry residual run-together damage against "
+                "a measured %d. Permitted: %s",
+                self.framework_id, len(residual), self.expected_residual_damage,
+                self.repair_deviation_reason,
+            )
+            return
+        raise ValueError(
+            f"{self.framework_id}: {len(residual)} control(s) carry residual "
+            f"run-together damage against a measured "
+            f"{self.expected_residual_damage}: {', '.join(residual) or 'none'}. "
+            f"Record why in repair_deviation_reason before moving the number."
+        )
 
 
 def main() -> None:
