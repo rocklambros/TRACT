@@ -34,55 +34,26 @@ from tract.schema import Control, FrameworkOutput, SourceFile
 logger = logging.getLogger(__name__)
 
 
-class BaseParser(ABC):
-    """Abstract base for TRACT framework parsers.
+class SourceReader:
+    """Reads one framework's raw inputs and records what it read.
 
-    Subclasses must set the class-level attributes and implement parse().
-
-    Class Attributes:
-        framework_id: Canonical ID (e.g., "csa_aicm").
-        framework_name: Human-readable name (e.g., "CSA AI Controls Matrix").
-        version: Framework version string.
-        source_url: Official URL for the framework.
-        mapping_unit_level: Granularity level (e.g., "control", "technique").
-        expected_count: Expected number of mapping units after parsing.
+    Split out of BaseParser so an extractor that produces something other than
+    a list of Controls still reads through the recording readers. Appendix A
+    of the OWASP LLM Top 10 2026 is an expert crosswalk rather than control
+    text, so it goes to its own artifact, and it must still be able to state
+    which bytes produced it. Duplicating twenty lines to get that would have
+    put the two copies on separate drift paths.
     """
 
     framework_id: ClassVar[str]
-    framework_name: ClassVar[str]
-    version: ClassVar[str]
-    source_url: ClassVar[str]
-    mapping_unit_level: ClassVar[str]
-    expected_count: ClassVar[int]
-    # True when expected_count is a lower bound rather than a target. A
-    # catalog parser emits every stable entry the source defines, which is
-    # more than the subset OpenCRE links to and grows with each upstream
-    # release. Under the two-sided band a parser working exactly as designed
-    # refused to write, so CAPEC at 558 against a declared floor of 500 was a
-    # gate failure rather than the intended behaviour. Opt-in: silence keeps
-    # the two-sided band, because most parsers do have an exact target.
-    expected_count_is_floor: ClassVar[bool] = False
-    # The date the raw bytes were fetched, not the date they were parsed.
-    # Declared rather than stamped: re-parsing the same input must produce the
-    # same output bytes, and a clock read makes that impossible.
-    fetched_date: ClassVar[str]
     # Set only when the raw directory is not the framework_id in either
     # underscore or hyphen form. Kept explicit rather than guessed.
     raw_dir_name: ClassVar[str | None] = None
-    # Set to a written reason when a parser legitimately deviates from its
-    # expected count. Unset means a deviation is a bug and run() refuses to
-    # write. A warning that nobody reads is not a gate.
-    count_deviation_reason: ClassVar[str | None] = None
-    # The floor this parser's output must clear. Measured on stored text, not
-    # on the join-path prose_fraction telemetry, which records whether a
-    # lookup hit rather than whether the text is prose.
-    min_prose_fraction: ClassVar[float] = 0.0
-    # Set to a written reason when a parser legitimately reads no raw file.
-    # Unset means an empty source manifest is a bug and run() refuses to
-    # write. The manifest replaced a hand-maintained file that had drifted to
-    # covering 7 of 19 frameworks, and then covered 1 of 20 because the
-    # mandate lived in a docstring instead of a gate.
-    manifest_exempt_reason: ClassVar[str | None] = None
+
+    def __init__(self, raw_dir: Path | None = None) -> None:
+        self._raw_dir: Path | None = raw_dir
+        # Populated by read_source*, drained into the artifact by the caller.
+        self._source_files: dict[str, SourceFile] = {}
 
     @classmethod
     def resolve_raw_dir(cls) -> Path:
@@ -114,6 +85,97 @@ class BaseParser(ABC):
             f"checkout starts empty. Repopulate it from the source recorded in "
             f"data/raw/PROVENANCE.txt."
         )
+
+    @property
+    def raw_dir(self) -> Path:
+        """The framework's raw directory, resolved on first use.
+
+        Lazy on purpose. Constructing a parser must not require the raw tree to
+        be present, since data/raw/ is gitignored and plenty of callers only
+        want the class metadata.
+        """
+        if self._raw_dir is None:
+            self._raw_dir = self.resolve_raw_dir()
+        return self._raw_dir
+
+    def read_source_bytes(self, name: str) -> bytes:
+        """Read one raw input file and record its digest.
+
+        Parsers must read through this rather than opening files directly.
+        A file read outside it is invisible to the manifest, which defeats
+        the point of recording one.
+        """
+        path = self.raw_dir / name
+        payload = path.read_bytes()
+        self._source_files[name] = SourceFile(
+            path=name,
+            sha256=hashlib.sha256(payload).hexdigest(),
+            bytes=len(payload),
+        )
+        return payload
+
+    def read_source(self, name: str, encoding: str = "utf-8") -> str:
+        """Read one raw input file as text and record its digest."""
+        return self.read_source_bytes(name).decode(encoding)
+
+    def recorded_sources(self) -> list[SourceFile]:
+        """Everything read so far, in a stable order."""
+        return [self._source_files[k] for k in sorted(self._source_files)]
+
+    def recorded_sha256(self, name: str) -> str:
+        """The digest of one already-read input.
+
+        Raises:
+            KeyError: If the file was never read through this reader.
+        """
+        return self._source_files[name].sha256
+
+
+class BaseParser(SourceReader, ABC):
+    """Abstract base for TRACT framework parsers.
+
+    Subclasses must set the class-level attributes and implement parse().
+
+    Class Attributes:
+        framework_id: Canonical ID (e.g., "csa_aicm").
+        framework_name: Human-readable name (e.g., "CSA AI Controls Matrix").
+        version: Framework version string.
+        source_url: Official URL for the framework.
+        mapping_unit_level: Granularity level (e.g., "control", "technique").
+        expected_count: Expected number of mapping units after parsing.
+    """
+
+    framework_name: ClassVar[str]
+    version: ClassVar[str]
+    source_url: ClassVar[str]
+    mapping_unit_level: ClassVar[str]
+    expected_count: ClassVar[int]
+    # True when expected_count is a lower bound rather than a target. A
+    # catalog parser emits every stable entry the source defines, which is
+    # more than the subset OpenCRE links to and grows with each upstream
+    # release. Under the two-sided band a parser working exactly as designed
+    # refused to write, so CAPEC at 558 against a declared floor of 500 was a
+    # gate failure rather than the intended behaviour. Opt-in: silence keeps
+    # the two-sided band, because most parsers do have an exact target.
+    expected_count_is_floor: ClassVar[bool] = False
+    # The date the raw bytes were fetched, not the date they were parsed.
+    # Declared rather than stamped: re-parsing the same input must produce the
+    # same output bytes, and a clock read makes that impossible.
+    fetched_date: ClassVar[str]
+    # Set to a written reason when a parser legitimately deviates from its
+    # expected count. Unset means a deviation is a bug and run() refuses to
+    # write. A warning that nobody reads is not a gate.
+    count_deviation_reason: ClassVar[str | None] = None
+    # The floor this parser's output must clear. Measured on stored text, not
+    # on the join-path prose_fraction telemetry, which records whether a
+    # lookup hit rather than whether the text is prose.
+    min_prose_fraction: ClassVar[float] = 0.0
+    # Set to a written reason when a parser legitimately reads no raw file.
+    # Unset means an empty source manifest is a bug and run() refuses to
+    # write. The manifest replaced a hand-maintained file that had drifted to
+    # covering 7 of 19 frameworks, and then covered 1 of 20 because the
+    # mandate lived in a docstring instead of a gate.
+    manifest_exempt_reason: ClassVar[str | None] = None
 
     @staticmethod
     def is_damaged(control: Control) -> bool:
@@ -166,24 +228,9 @@ class BaseParser(ABC):
                 Defaults to DATA_DIR/processed/repair_audit, which is
                 gitignored because audit records quote source text verbatim.
         """
-        self._raw_dir: Path | None = raw_dir
+        super().__init__(raw_dir)
         self.output_dir = output_dir or PROCESSED_FRAMEWORKS_DIR
         self.audit_dir = audit_dir or PROCESSED_REPAIR_AUDIT_DIR
-
-        # Populated by read_source*, drained into FrameworkOutput by run().
-        self._source_files: dict[str, SourceFile] = {}
-
-    @property
-    def raw_dir(self) -> Path:
-        """The framework's raw directory, resolved on first use.
-
-        Lazy on purpose. Constructing a parser must not require the raw tree to
-        be present, since data/raw/ is gitignored and plenty of callers only
-        want the class metadata.
-        """
-        if self._raw_dir is None:
-            self._raw_dir = self.resolve_raw_dir()
-        return self._raw_dir
 
     @abstractmethod
     def parse(self) -> list[Control]:
@@ -196,26 +243,6 @@ class BaseParser(ABC):
             List of Control objects with raw (unsanitized) text fields.
         """
         ...
-
-    def read_source_bytes(self, name: str) -> bytes:
-        """Read one raw input file and record its digest.
-
-        Parsers must read through this rather than opening files directly.
-        A file read outside it is invisible to the manifest, which defeats
-        the point of recording one.
-        """
-        path = self.raw_dir / name
-        payload = path.read_bytes()
-        self._source_files[name] = SourceFile(
-            path=name,
-            sha256=hashlib.sha256(payload).hexdigest(),
-            bytes=len(payload),
-        )
-        return payload
-
-    def read_source(self, name: str, encoding: str = "utf-8") -> str:
-        """Read one raw input file as text and record its digest."""
-        return self.read_source_bytes(name).decode(encoding)
 
     def write_repair_audit(
         self, records: Sequence[Mapping[str, object]],
@@ -313,9 +340,7 @@ class BaseParser(ABC):
             fetched_date=self.fetched_date,
             mapping_unit_level=self.mapping_unit_level,
             controls=sanitized_controls,
-            source_files=[
-                self._source_files[k] for k in sorted(self._source_files)
-            ],
+            source_files=self.recorded_sources(),
         )
 
         output_path = self.output_dir / f"{self.framework_id}.json"
