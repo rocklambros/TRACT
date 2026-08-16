@@ -33,7 +33,7 @@ class EuGpaiCopParser(BaseParser):
     fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
-        text = (self.raw_dir / "gpai_code_of_practice_combined.md").read_text(encoding="utf-8")
+        text = self.read_source("gpai_code_of_practice_combined.md")
         controls: list[Control] = []
 
         chapters = list(CHAPTER_RE.finditer(text))

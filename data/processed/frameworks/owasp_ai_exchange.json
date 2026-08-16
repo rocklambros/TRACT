@@ -1244,6 +1244,48 @@
   "framework_id": "owasp_ai_exchange",
   "framework_name": "OWASP AI Exchange",
   "mapping_unit_level": "control",
+  "source_files": [
+    {
+      "bytes": 371312,
+      "path": "owasp_ai_exchange.md",
+      "sha256": "571ac75d97db418f0fb050da1edceccafc718971c123b6ee82c84c3f3c219538"
+    },
+    {
+      "bytes": 76952,
+      "path": "src_1_general_controls.md",
+      "sha256": "b7e9309300512fa52fd54fb6f7cc64f9e3432a21eca8070b105bcd255a8d3bb1"
+    },
+    {
+      "bytes": 147937,
+      "path": "src_2_threats_through_use.md",
+      "sha256": "e0df905d357a67ab229f6c3801f20e2cecb69b06dceb4784ca9e02b3b25928ba"
+    },
+    {
+      "bytes": 74444,
+      "path": "src_3_development_time_threats.md",
+      "sha256": "f73d76706adea1c4b22c0c21d71ded717e1a29118edbd077d0353e595a93d79a"
+    },
+    {
+      "bytes": 16926,
+      "path": "src_4_runtime_application_security_threats.md",
+      "sha256": "8977384ab3deab0386ccb41cc9ab74d11ffa758fb8d8d05eb7e74b8b60e8a802"
+    },
+    {
+      "bytes": 53677,
+      "path": "src_5_testing.md",
+      "sha256": "b1dae31face388cc15a275d7f04dd34dd9c115b56e11ac1fb59a91bd8a47287e"
+    },
+    {
+      "bytes": 24305,
+      "path": "src_6_privacy.md",
+      "sha256": "0f9a1b46ad045e7051d98ef4d0e40c12a7d6b71f2495faed13d0bd458f140df0"
+    },
+    {
+      "bytes": 115429,
+      "path": "src_ai_security_overview.md",
+      "sha256": "67841fc0fc073f20a18aa4b51e2551b42fb1d9ab6a3f74b3752c23685b78ed40"
+    }
+  ],
   "source_url": "https://owaspai.org",
   "version": "2024"
 }

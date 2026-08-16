@@ -81,8 +81,11 @@ class OwaspAiExchangeParser(BaseParser):
         controls: list[Control] = []
         seen: set[str] = set()
 
+        # Globbed to find the names, read through the recording reader so
+        # every file that contributed text lands in the manifest.
         for path in sorted(self.raw_dir.glob(SOURCE_GLOB)):
-            text = path.read_text(encoding="utf-8", errors="replace")
+            name = path.relative_to(self.raw_dir).as_posix()
+            text = self.read_source_bytes(name).decode("utf-8", errors="replace")
             headings = list(HEADING_RE.finditer(text))
 
             for index, heading in enumerate(headings):

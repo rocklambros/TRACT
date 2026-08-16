@@ -5932,6 +5932,13 @@
   "framework_id": "asvs",
   "framework_name": "ASVS",
   "mapping_unit_level": "requirement",
+  "source_files": [
+    {
+      "bytes": 114056004,
+      "path": "asvs.zip",
+      "sha256": "ec4af168324e1d859040276a3cafff5fb70d31e0b004f200119956023181202e"
+    }
+  ],
   "source_url": "https://github.com/OWASP/ASVS",
   "version": "4.0.3"
 }

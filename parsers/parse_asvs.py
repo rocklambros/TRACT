@@ -25,6 +25,7 @@ import logging
 import re
 import zipfile
 from collections.abc import Mapping
+from io import BytesIO
 from typing import Final
 
 from tract.config import PROSE_MIN_EXTRA_CHARS
@@ -189,7 +190,9 @@ class AsvsParser(BaseParser):
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / ARCHIVE_NAME
-        with zipfile.ZipFile(source) as archive:
+        # Read through the recording reader so the artifact records which
+        # archive bytes produced it, then hand the same bytes to zipfile.
+        with zipfile.ZipFile(BytesIO(self.read_source_bytes(ARCHIVE_NAME))) as archive:
             names = sorted(archive.namelist())
             member = next(
                 (name for name in names if REQUIREMENTS_MEMBER.search(name)), None,

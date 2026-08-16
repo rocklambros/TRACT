@@ -1403,6 +1403,13 @@
   "framework_id": "owasp_cheat_sheets",
   "framework_name": "OWASP Cheat Sheets",
   "mapping_unit_level": "cheat_sheet",
+  "source_files": [
+    {
+      "bytes": 16338045,
+      "path": "cheatsheets.zip",
+      "sha256": "5bcaa82245dc14fc1900c0afe9708396dbc362b533adaf2156f36219d3a98770"
+    }
+  ],
   "source_url": "https://cheatsheetseries.owasp.org",
   "version": "07111ee754e832e335377ac64fd0f8f848d9029c"
 }

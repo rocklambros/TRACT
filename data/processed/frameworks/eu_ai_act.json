@@ -1211,6 +1211,13 @@
   "framework_id": "eu_ai_act",
   "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
   "mapping_unit_level": "article",
+  "source_files": [
+    {
+      "bytes": 1264455,
+      "path": "eu_ai_act_2024_1689.html",
+      "sha256": "620f2be23f47ae20bbaf7ab31ae54dbfed12d41b6b0f5e014e96969f0d4a8f23"
+    }
+  ],
   "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
   "version": "2024/1689"
 }

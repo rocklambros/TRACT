@@ -4276,6 +4276,13 @@
   "framework_id": "nist_800_53",
   "framework_name": "NIST 800-53",
   "mapping_unit_level": "control",
+  "source_files": [
+    {
+      "bytes": 10442037,
+      "path": "nist_800_53_catalog.json",
+      "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062"
+    }
+  ],
   "source_url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final",
   "version": "5.2.0"
 }

@@ -457,6 +457,13 @@
   "framework_id": "eu_gpai_cop",
   "framework_name": "EU GPAI Code of Practice",
   "mapping_unit_level": "measure",
+  "source_files": [
+    {
+      "bytes": 131282,
+      "path": "gpai_code_of_practice_combined.md",
+      "sha256": "196facf2058ca161000a178c9eaf5dd8162737ceab9ca0d488434a573e9e33c8"
+    }
+  ],
   "source_url": "https://digital-strategy.ec.europa.eu/en/policies/ai-pact",
   "version": "2025"
 }

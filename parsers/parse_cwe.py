@@ -13,6 +13,7 @@ from __future__ import annotations
 import logging
 import re
 import zipfile
+from io import BytesIO
 from typing import Final
 from xml.etree.ElementTree import Element
 
@@ -160,7 +161,9 @@ class CweParser(BaseParser):
         member is read from the archive rather than unpacked beside it.
         """
         source = self.raw_dir / "cwec_latest.xml.zip"
-        with zipfile.ZipFile(source) as archive:
+        # Read through the recording reader so the artifact records which
+        # archive bytes produced it, then hand the same bytes to zipfile.
+        with zipfile.ZipFile(BytesIO(self.read_source_bytes(source.name))) as archive:
             members = [
                 info for info in archive.infolist()
                 if info.filename.lower().endswith(".xml")

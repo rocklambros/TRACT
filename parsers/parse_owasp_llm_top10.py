@@ -36,7 +36,7 @@ class OwaspLlmTop10Parser(BaseParser):
     fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
-        text = (self.raw_dir / "owasp_llm_top_10_2025.md").read_text(encoding="utf-8")
+        text = self.read_source("owasp_llm_top_10_2025.md")
         desc_matches = list(DESCRIPTION_RE.finditer(text))
 
         if len(desc_matches) != 10:

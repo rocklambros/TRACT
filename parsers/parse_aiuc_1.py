@@ -4,9 +4,9 @@ Mapping unit is activity (leaf nodes under controls).
 """
 from __future__ import annotations
 
+import json
 import logging
 
-from tract.io import load_json
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -24,7 +24,7 @@ class Aiuc1Parser(BaseParser):
     fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
-        data = load_json(self.raw_dir / "aiuc-1-standard.json")
+        data = json.loads(self.read_source("aiuc-1-standard.json"))
         controls: list[Control] = []
 
         for domain in data["domains"]:

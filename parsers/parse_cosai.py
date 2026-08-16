@@ -37,10 +37,11 @@ class CosaiParser(BaseParser):
         # upstream repo layout recorded in SOURCE_MANIFEST.md. Reading from the
         # framework root found nothing, so this parser could not run against a
         # faithful copy of its own source.
-        risk_map = self.raw_dir / "risk-map"
+        risk_map = "risk-map"
 
-        with open(risk_map / "controls.yaml", encoding="utf-8") as f:
-            ctrl_data = yaml.safe_load(f)
+        ctrl_data = yaml.safe_load(
+            self.read_source(f"{risk_map}/controls.yaml")
+        )
         for ctrl in ctrl_data.get("controls", []):
             description = _flatten_yaml_text(ctrl.get("description", ""))
             controls.append(Control(
@@ -55,8 +56,7 @@ class CosaiParser(BaseParser):
                 },
             ))
 
-        with open(risk_map / "risks.yaml", encoding="utf-8") as f:
-            risk_data = yaml.safe_load(f)
+        risk_data = yaml.safe_load(self.read_source(f"{risk_map}/risks.yaml"))
         for risk in risk_data.get("risks", []):
             description = _flatten_yaml_text(risk.get("shortDescription", ""))
             long_desc = _flatten_yaml_text(risk.get("longDescription", ""))

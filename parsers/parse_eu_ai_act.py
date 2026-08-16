@@ -234,7 +234,7 @@ class EuAiActParser(BaseParser):
             )
 
         logger.info("Loading HTML from %s", html_path)
-        html_text = html_path.read_text(encoding="utf-8")
+        html_text = self.read_source("eu_ai_act_2024_1689.html")
 
         soup = BeautifulSoup(html_text, "html.parser")
         controls: list[Control] = []

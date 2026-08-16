@@ -24,6 +24,9 @@ class StubParser(BaseParser):
     mapping_unit_level: ClassVar[str] = "control"
     expected_count: ClassVar[int] = 2
     fetched_date: ClassVar[str] = "2026-01-01"
+    manifest_exempt_reason: ClassVar[str] = (
+        "returns canned controls for tests and reads no file"
+    )
 
     def __init__(
         self,
@@ -295,6 +298,7 @@ class TestCountIsMandatory:
             source_url: ClassVar[str] = "https://example.com/countless"
             mapping_unit_level: ClassVar[str] = "control"
             fetched_date: ClassVar[str] = "2026-01-01"
+            manifest_exempt_reason: ClassVar[str] = "reads no file"
 
             def parse(self) -> list[Control]:
                 return [Control(
@@ -358,6 +362,64 @@ class TestSourceManifest:
 
         paths = [s.path for s in result.source_files]
         assert paths == sorted(paths)
+
+
+class TestSourceManifestIsMandatory:
+    """The manifest replaced a hand-maintained file that covered 7 of 19.
+
+    It then covered 1 of 20, because the mandate lived in a docstring and
+    nineteen parsers kept opening files directly. A file read outside
+    read_source is invisible to the manifest, so run() wrote an empty
+    source_files list and nothing said so.
+    """
+
+    class _SilentParser(BaseParser):
+        framework_id: ClassVar[str] = "silent_fw"
+        framework_name: ClassVar[str] = "Silent Framework"
+        version: ClassVar[str] = "1.0"
+        source_url: ClassVar[str] = "https://example.com/silent"
+        mapping_unit_level: ClassVar[str] = "control"
+        expected_count: ClassVar[int] = 1
+        fetched_date: ClassVar[str] = "2026-01-01"
+
+        def parse(self) -> list[Control]:
+            # Deliberately bypasses read_source, the way the 19 parsers did.
+            (self.raw_dir / "a.txt").read_text(encoding="utf-8")
+            return [Control(
+                control_id="S-1", title="Silent",
+                description="A control whose source nothing recorded.",
+            )]
+
+    def _raw(self, tmp_path: Path) -> Path:
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "a.txt").write_text("alpha", encoding="utf-8")
+        return raw
+
+    def test_a_parser_that_records_no_source_refuses_to_write(
+        self, tmp_path: Path,
+    ) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+        parser = self._SilentParser(raw_dir=self._raw(tmp_path), output_dir=out)
+
+        with pytest.raises(ValueError, match="recorded no source files"):
+            parser.run()
+
+    def test_the_documented_exemption_permits_it(self, tmp_path: Path) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class ExemptParser(TestSourceManifestIsMandatory._SilentParser):
+            framework_id: ClassVar[str] = "exempt_fw"
+            manifest_exempt_reason: ClassVar[str] = (
+                "synthesises controls from a constant table, reads no file"
+            )
+
+        result = ExemptParser(
+            raw_dir=self._raw(tmp_path), output_dir=out,
+        ).run()
+        assert result.source_files == []
 
 
 class TestDeterministicOutput:

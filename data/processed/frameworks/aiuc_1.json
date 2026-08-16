@@ -1998,6 +1998,13 @@
   "framework_id": "aiuc_1",
   "framework_name": "AIUC-1 Standard",
   "mapping_unit_level": "activity",
+  "source_files": [
+    {
+      "bytes": 109601,
+      "path": "aiuc-1-standard.json",
+      "sha256": "2412ab1a2ee13fceb0f8ce69a4959dac10159d8e1ef88adf153ca5901c059b38"
+    }
+  ],
   "source_url": "https://www.aiuc-1.com",
   "version": "1.0"
 }

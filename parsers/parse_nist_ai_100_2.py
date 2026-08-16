@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import logging
 import re
+from io import BytesIO
 from typing import Final
 
 import pdfplumber
@@ -127,8 +128,9 @@ class NistAi1002Parser(BaseParser):
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
-        source = self.raw_dir / PDF_NAME
-        with pdfplumber.open(source) as pdf:
+        # Read through the recording reader so the artifact records which
+        # PDF bytes produced it, then hand the same bytes to pdfplumber.
+        with pdfplumber.open(BytesIO(self.read_source_bytes(PDF_NAME))) as pdf:
             text = "\n".join(page.extract_text() or "" for page in pdf.pages)
         logger.info("Extracted %d characters from %d pages", len(text), len(pdf.pages))
 

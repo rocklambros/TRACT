@@ -20,6 +20,7 @@ from __future__ import annotations
 import logging
 import re
 import zipfile
+from io import BytesIO
 from pathlib import Path
 from typing import Final
 
@@ -220,7 +221,9 @@ class OwaspCheatSheetsParser(BaseParser):
                 f"{self.source_url} before running this parser."
             )
 
-        sources, revision = self._read_archive(archive)
+        sources, revision = self._read_archive(
+            archive, self.read_source_bytes(ARCHIVE_NAME),
+        )
         if not sources:
             raise ValueError(f"No cheat sheets found under {SHEET_DIR}/ in {archive}")
 
@@ -278,14 +281,19 @@ class OwaspCheatSheetsParser(BaseParser):
         )
         return controls
 
-    def _read_archive(self, archive: Path) -> tuple[dict[str, str], str]:
+    def _read_archive(
+        self, archive: Path, payload: bytes,
+    ) -> tuple[dict[str, str], str]:
         """Load every published sheet from the archive without unpacking it.
 
         data/raw/ is immutable, so members are read in memory. Nothing is
         written to disk, which also means no path-traversal surface.
+
+        *archive* names the file for error messages; *payload* carries the
+        bytes the recording reader already hashed into the manifest.
         """
         sources: dict[str, str] = {}
-        with zipfile.ZipFile(archive) as bundle:
+        with zipfile.ZipFile(BytesIO(payload)) as bundle:
             revision = bundle.comment.decode("ascii", errors="replace").strip()
             if not revision:
                 # Failing open here would skip the check and then stamp the

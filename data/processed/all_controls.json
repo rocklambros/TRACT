@@ -2001,6 +2001,13 @@
       "framework_id": "aiuc_1",
       "framework_name": "AIUC-1 Standard",
       "mapping_unit_level": "activity",
+      "source_files": [
+        {
+          "bytes": 109601,
+          "path": "aiuc-1-standard.json",
+          "sha256": "2412ab1a2ee13fceb0f8ce69a4959dac10159d8e1ef88adf153ca5901c059b38"
+        }
+      ],
       "source_url": "https://www.aiuc-1.com",
       "version": "1.0"
     },
@@ -7938,6 +7945,13 @@
       "framework_id": "asvs",
       "framework_name": "ASVS",
       "mapping_unit_level": "requirement",
+      "source_files": [
+        {
+          "bytes": 114056004,
+          "path": "asvs.zip",
+          "sha256": "ec4af168324e1d859040276a3cafff5fb70d31e0b004f200119956023181202e"
+        }
+      ],
       "source_url": "https://github.com/OWASP/ASVS",
       "version": "4.0.3"
     },
@@ -15344,6 +15358,18 @@
       "framework_id": "cosai",
       "framework_name": "CoSAI Landscape of AI Security Risk Map",
       "mapping_unit_level": "control",
+      "source_files": [
+        {
+          "bytes": 21577,
+          "path": "risk-map/controls.yaml",
+          "sha256": "c34737fc16674765d5efd9173456fe537dd91606f9a5c6ca102df80693ef293f"
+        },
+        {
+          "bytes": 94724,
+          "path": "risk-map/risks.yaml",
+          "sha256": "893fa15367f807d51d20537ed7e9a15fd55b3cda74679c52d37c5b6ec4503424"
+        }
+      ],
       "source_url": "https://cosai.dev",
       "version": "1.0"
     },
@@ -18513,6 +18539,13 @@
       "framework_id": "csa_aicm",
       "framework_name": "CSA AI Controls Matrix",
       "mapping_unit_level": "control",
+      "source_files": [
+        {
+          "bytes": 5198925,
+          "path": "csa_aicm.json",
+          "sha256": "1a56d5798701b4dc0dd2e22e3d9ce0200d40fd672d5be7063d4003385811429a"
+        }
+      ],
       "source_url": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix",
       "version": "1.0.3"
     },
@@ -39643,6 +39676,13 @@
       "framework_id": "eu_ai_act",
       "framework_name": "EU AI Act — Regulation (EU) 2024/1689",
       "mapping_unit_level": "article",
+      "source_files": [
+        {
+          "bytes": 1264455,
+          "path": "eu_ai_act_2024_1689.html",
+          "sha256": "620f2be23f47ae20bbaf7ab31ae54dbfed12d41b6b0f5e014e96969f0d4a8f23"
+        }
+      ],
       "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
       "version": "2024/1689"
     },
@@ -40105,6 +40145,13 @@
       "framework_id": "eu_gpai_cop",
       "framework_name": "EU GPAI Code of Practice",
       "mapping_unit_level": "measure",
+      "source_files": [
+        {
+          "bytes": 131282,
+          "path": "gpai_code_of_practice_combined.md",
+          "sha256": "196facf2058ca161000a178c9eaf5dd8162737ceab9ca0d488434a573e9e33c8"
+        }
+      ],
       "source_url": "https://digital-strategy.ec.europa.eu/en/policies/ai-pact",
       "version": "2025"
     },
@@ -41843,6 +41890,13 @@
       "framework_id": "mitre_atlas",
       "framework_name": "MITRE ATLAS",
       "mapping_unit_level": "technique",
+      "source_files": [
+        {
+          "bytes": 494103,
+          "path": "ATLAS_compiled.json",
+          "sha256": "e723156f820d69d9d7ac2058401e9b8b6a227ca663a11d25fba9002c3d1dba85"
+        }
+      ],
       "source_url": "https://atlas.mitre.org",
       "version": "4.6.1"
     },
@@ -46124,6 +46178,13 @@
       "framework_id": "nist_800_53",
       "framework_name": "NIST 800-53",
       "mapping_unit_level": "control",
+      "source_files": [
+        {
+          "bytes": 10442037,
+          "path": "nist_800_53_catalog.json",
+          "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062"
+        }
+      ],
       "source_url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final",
       "version": "5.2.0"
     },
@@ -46491,7 +46552,7 @@
       "controls": [
         {
           "control_id": "2.1",
-          "description": "Figure 1 introduces a taxonomy of attacks in adversarial machine learning for PredAI systems. The attacker’s objectives are shown as disjointed circles with the attacker’s goal at the center of each circle: Availability breakdown, Integrity violations, and Privacy compromise. The capabilities that an adversary must leverage to achieve their objectives are shown in the outer layer of the objective circles. Attack classes are shown as callouts connected to the capabilities required to mount each attack. Multiple attack classes that requiring same capabilities for reaching the same objective are shown in a single callout. Related attack classes that require different capabilities for reaching the same objective are connected with dotted lines. 6 January 2024 Model Poisoning Model Control Clean-Label Poisoning ess L a c b Energy-Latency A y c reuQ Availability ti mi e L l ata l D o r g t n n i o n C iarT Clean-Label Data Poisoning Poisoning Clean-Label Model Backdoor Poisoning L a Li b m e i l t C o M nt o ro d l el Evasion D ts a e t T a nt o r C ol Integrity A s c s c e Q y u r e B Ev la a c s k io -B n ox edoC lo e rt c n r o u C oSat lo a r D tn g o n C iniarT Backdoor Poisoning Targeted Poisoning Model Extraction Query Access Model Privacy Data sseccA yreuQ Reconstruction; Membership Inference; Property Inference Figure 1. Taxonomy of attacks on Predictive AI systems. These attacks are classifed according to the following dimensions: 1) learning method and stage of the learning process when the attack is mounted, 2) attacker goals and objectives, 3) attacker capabilities, and 4) attacker knowledge of the learning process. Several adversarial attack classification frameworks have been introduced in prior works [30, 283], and the goal here is to create a standard terminology for adversarial attacks on ML that unifes existing work. 7 January 2024",
+          "description": "Figure 1 introduces a taxonomy of attacks in adversarial machine learning for PredAI systems. The attacker’s objectives are shown as disjointed circles with the attacker’s goal at the center of each circle: Availability breakdown, Integrity violations, and Privacy compromise. The capabilities that an adversary must leverage to achieve their objectives are shown in the outer layer of the objective circles. Attack classes are shown as callouts connected to the capabilities required to mount each attack. Multiple attack classes that requiring same capabilities for reaching the same objective are shown in a single callout. Related attack classes that require different capabilities for reaching the same objective are connected with dotted lines. 6 January 2024 Model Poisoning Model Control Clean-Label Poisoning Energy-Latency A yc rec uess Availability L ta ib e mil L Q atal Do r gt nn io nC iarT Clean-Label Data Poisoning Poisoning Clean-Label Model Backdoor Poisoning L a Lib me il t C o M nto rod lel Evasion tsD eata n ot Crol Integrity A c sc seQ u ye r B Evla ac sk io-B nox T e doClo ert cn ro uC oSatl ao Drt n go nC iniarT Backdoor Poisoning Targeted Poisoning Model Extraction Q uery Access Model Privacy Data sseccA yreuQ Reconstruction; Membership Inference; Property Inference Figure 1. Taxonomy of attacks on Predictive AI systems. These attacks are classifed according to the following dimensions: 1) learning method and stage of the learning process when the attack is mounted, 2) attacker goals and objectives, 3) attacker capabilities, and 4) attacker knowledge of the learning process. Several adversarial attack classification frameworks have been introduced in prior works [30, 283], and the goal here is to create a standard terminology for adversarial attacks on ML that unifes existing work. 7 January 2024",
           "hierarchy_level": "level_2",
           "metadata": {
             "alt_titles": [],
@@ -46741,8 +46802,8 @@
         },
         {
           "control_id": "3.1",
-          "description": "While many attack types in the PredAI taxonomy apply to GenAI (e.g., model poisoning, data poisoning, evasion, model extraction, etc.), a substantial body of recent work on the security of GenAI merits particular focus on novel security violations. Figure 2 introduces a taxonomy of attacks in adversarial machine learning for GenAI systems. Similar to the PredAI taxonomy in Figure 1, this taxonomy is frst categorized by the attacker’s objectives, which include availability breakdowns, integrity violations, and privacy compromise. For GenAI systems, violations of abuse are also especially relevant. The capabilities that an adversary must leverage to achieve their objectives are shown in the outer layer of the objective circles. Attack classes are shown as callouts connected to the capabilities required to mount each attack. Multiple attack classes that require the same capabilities to reach the same objective are shown in a single callout. 35 January 2024 Indirect Denial of Service Prompt Injection Resource Control a Q Data Poisoning n g D at ntr ol Availability u e ry A I C n o c m re p a u s t e a d tion in iarT o C ssecc Prompt Injection ata lo D r t e n c o r C uoS Indirect Indirect Misaligned Prompt Injection Prompt Injection Inputs Resource Resource Targeting Control Control Poisoning Prompt Injection a Q a Q Data Poisoning n g D at ntr ol Integrity u e ry A n g D at ntr ol Abuse u e ry A in iarT o C ssecc Prompt Injection in iarT o C ssecc ata lo D r t e n c o r C uoS ata lo D r t e n c o r C uoS Backdoor Poisoning Prompt Injection Prompt Extraction B Po ac is k o d n o in o g r R es o C u o n r t c r e ol Model Query A c c e s s Indirect Privacy Prompt U In n j a e u c t t h io o n rized ecru lo o rt s n e o R C Data sseccA yre u Q I G n a f t o h r e m r a in t g ion Disclosure Membership Inference Training Data Attacks Data Extraction Figure 2. Taxonomy of attacks on Generative AI systems An attack can be further categorized by the learning stage to which it",
-          "full_text": "While many attack types in the PredAI taxonomy apply to GenAI (e.g., model poisoning, data poisoning, evasion, model extraction, etc.), a substantial body of recent work on the security of GenAI merits particular focus on novel security violations. Figure 2 introduces a taxonomy of attacks in adversarial machine learning for GenAI systems. Similar to the PredAI taxonomy in Figure 1, this taxonomy is frst categorized by the attacker’s objectives, which include availability breakdowns, integrity violations, and privacy compromise. For GenAI systems, violations of abuse are also especially relevant. The capabilities that an adversary must leverage to achieve their objectives are shown in the outer layer of the objective circles. Attack classes are shown as callouts connected to the capabilities required to mount each attack. Multiple attack classes that require the same capabilities to reach the same objective are shown in a single callout. 35 January 2024 Indirect Denial of Service Prompt Injection Resource Control a Q Data Poisoning n g D at ntr ol Availability u e ry A I C n o c m re p a u s t e a d tion in iarT o C ssecc Prompt Injection ata lo D r t e n c o r C uoS Indirect Indirect Misaligned Prompt Injection Prompt Injection Inputs Resource Resource Targeting Control Control Poisoning Prompt Injection a Q a Q Data Poisoning n g D at ntr ol Integrity u e ry A n g D at ntr ol Abuse u e ry A in iarT o C ssecc Prompt Injection in iarT o C ssecc ata lo D r t e n c o r C uoS ata lo D r t e n c o r C uoS Backdoor Poisoning Prompt Injection Prompt Extraction B Po ac is k o d n o in o g r R es o C u o n r t c r e ol Model Query A c c e s s Indirect Privacy Prompt U In n j a e u c t t h io o n rized ecru lo o rt s n e o R C Data sseccA yre u Q I G n a f t o h r e m r a in t g ion Disclosure Membership Inference Training Data Attacks Data Extraction Figure 2. Taxonomy of attacks on Generative AI systems An attack can be further categorized by the learning stage to which it applies and, subsequently, by the attacker’s knowledge and access. These are reviewed in the following sections. Where possible, the discussion broadly applies to GenAI with some specific areas that apply to LLMs (e.g., RETRIEVAL AUGMENTED GENERATION [RAG], which dominates many of the deployment stage attacks described below).",
+          "description": "While many attack types in the PredAI taxonomy apply to GenAI (e.g., model poisoning, data poisoning, evasion, model extraction, etc.), a substantial body of recent work on the security of GenAI merits particular focus on novel security violations. Figure 2 introduces a taxonomy of attacks in adversarial machine learning for GenAI systems. Similar to the PredAI taxonomy in Figure 1, this taxonomy is frst categorized by the attacker’s objectives, which include availability breakdowns, integrity violations, and privacy compromise. For GenAI systems, violations of abuse are also especially relevant. The capabilities that an adversary must leverage to achieve their objectives are shown in the outer layer of the objective circles. Attack classes are shown as callouts connected to the capabilities required to mount each attack. Multiple attack classes that require the same capabilities to reach the same objective are shown in a single callout. 35 January 2024 Indirect Denial of Service Prompt Injection R Ce os no tu rr oc le Data Poisoning ng i nD iaa rt Ta nt or Col Availability Q su se er cy c A I Cn oc mr Pe p ra ous mte ad pti to In njection atalo Dr t en co ruC oS Indirect Indirect Misaligned Prompt Injection Prompt Injection Inputs Targeting R Ce os no tu rr oc le R Ce os no tu rr oc le Poisoning Prompt Injection Data Poisoning ng i nD iaa rt Ta nt or Col Integrity Q su se er cy c A Prompt Injection ng i nD iaa rt Ta nt or Col Abuse Q su se er cy c A atalo Dr t en co ruC oS atalo Dr t en co ruC oS Backdoor Poisoning Prompt Injection Prompt Extraction B Poac isk od no ino gr Reso Cou nr tc re ol ModelQuery A cce ss Indirect Privacy Prompt Injection uQ Unauthorized e crulo ort sn eo RC Data sseccA yre I Gn af to hr em ra int gion Disclosure Membership Inference Training Data Attacks Data Extraction Figure 2. Taxonomy of attacks on Generative AI systems An attack can be further categorized by the learning stage to which it applies and, subsequently, by the attacker’s k",
+          "full_text": "While many attack types in the PredAI taxonomy apply to GenAI (e.g., model poisoning, data poisoning, evasion, model extraction, etc.), a substantial body of recent work on the security of GenAI merits particular focus on novel security violations. Figure 2 introduces a taxonomy of attacks in adversarial machine learning for GenAI systems. Similar to the PredAI taxonomy in Figure 1, this taxonomy is frst categorized by the attacker’s objectives, which include availability breakdowns, integrity violations, and privacy compromise. For GenAI systems, violations of abuse are also especially relevant. The capabilities that an adversary must leverage to achieve their objectives are shown in the outer layer of the objective circles. Attack classes are shown as callouts connected to the capabilities required to mount each attack. Multiple attack classes that require the same capabilities to reach the same objective are shown in a single callout. 35 January 2024 Indirect Denial of Service Prompt Injection R Ce os no tu rr oc le Data Poisoning ng i nD iaa rt Ta nt or Col Availability Q su se er cy c A I Cn oc mr Pe p ra ous mte ad pti to In njection atalo Dr t en co ruC oS Indirect Indirect Misaligned Prompt Injection Prompt Injection Inputs Targeting R Ce os no tu rr oc le R Ce os no tu rr oc le Poisoning Prompt Injection Data Poisoning ng i nD iaa rt Ta nt or Col Integrity Q su se er cy c A Prompt Injection ng i nD iaa rt Ta nt or Col Abuse Q su se er cy c A atalo Dr t en co ruC oS atalo Dr t en co ruC oS Backdoor Poisoning Prompt Injection Prompt Extraction B Poac isk od no ino gr Reso Cou nr tc re ol ModelQuery A cce ss Indirect Privacy Prompt Injection uQ Unauthorized e crulo ort sn eo RC Data sseccA yre I Gn af to hr em ra int gion Disclosure Membership Inference Training Data Attacks Data Extraction Figure 2. Taxonomy of attacks on Generative AI systems An attack can be further categorized by the learning stage to which it applies and, subsequently, by the attacker’s knowledge and access. These are reviewed in the following sections. Where possible, the discussion broadly applies to GenAI with some specific areas that apply to LLMs (e.g., RETRIEVAL AUGMENTED GENERATION [RAG], which dominates many of the deployment stage attacks described below).",
           "hierarchy_level": "level_2",
           "metadata": {
             "alt_titles": [],
@@ -47170,6 +47231,13 @@
       "framework_id": "nist_ai_100_2",
       "framework_name": "NIST AI 100-2",
       "mapping_unit_level": "taxonomy_section",
+      "source_files": [
+        {
+          "bytes": 995939,
+          "path": "nist_ai_100_2_e2023.pdf",
+          "sha256": "d1086f53a1634d6787c59510c117b22bb7e1a242f920d2830a0d334058b0cb78"
+        }
+      ],
       "source_url": "https://doi.org/10.6028/NIST.AI.100-2e2023",
       "version": "e2023"
     },
@@ -47268,6 +47336,13 @@
       "framework_id": "nist_ai_600_1",
       "framework_name": "NIST AI 600-1 Generative AI Profile",
       "mapping_unit_level": "risk_category",
+      "source_files": [
+        {
+          "bytes": 189522,
+          "path": "nist_ai_600_1.md",
+          "sha256": "76b4c9eed585d4a629f2862aea4aecc736bc062a6f1e2ca01adc0a56ede28413"
+        }
+      ],
       "source_url": "https://doi.org/10.6028/NIST.AI.600-1",
       "version": "1.0"
     },
@@ -48073,6 +48148,13 @@
       "framework_id": "nist_ai_rmf",
       "framework_name": "NIST AI Risk Management Framework",
       "mapping_unit_level": "subcategory",
+      "source_files": [
+        {
+          "bytes": 105228,
+          "path": "nist_ai_rmf_1.0.md",
+          "sha256": "fc4d100052969e4c6cca103568d2252661232e5e258a41572ef484791f4bba7a"
+        }
+      ],
       "source_url": "https://doi.org/10.6028/NIST.AI.100-1",
       "version": "1.0"
     },
@@ -48779,6 +48861,13 @@
       "framework_id": "owasp_agentic_top10",
       "framework_name": "OWASP Top 10 for Agentic Applications 2026",
       "mapping_unit_level": "risk",
+      "source_files": [
+        {
+          "bytes": 102305,
+          "path": "owasp_agentic_top10_2026.md",
+          "sha256": "d041c2f2ed2a9b19dfa4054a11c1908b5faed4c6f24ff292e5e3c4308e5a8b3a"
+        }
+      ],
       "source_url": "https://genai.owasp.org",
       "version": "2026"
     },
@@ -50028,6 +50117,48 @@
       "framework_id": "owasp_ai_exchange",
       "framework_name": "OWASP AI Exchange",
       "mapping_unit_level": "control",
+      "source_files": [
+        {
+          "bytes": 371312,
+          "path": "owasp_ai_exchange.md",
+          "sha256": "571ac75d97db418f0fb050da1edceccafc718971c123b6ee82c84c3f3c219538"
+        },
+        {
+          "bytes": 76952,
+          "path": "src_1_general_controls.md",
+          "sha256": "b7e9309300512fa52fd54fb6f7cc64f9e3432a21eca8070b105bcd255a8d3bb1"
+        },
+        {
+          "bytes": 147937,
+          "path": "src_2_threats_through_use.md",
+          "sha256": "e0df905d357a67ab229f6c3801f20e2cecb69b06dceb4784ca9e02b3b25928ba"
+        },
+        {
+          "bytes": 74444,
+          "path": "src_3_development_time_threats.md",
+          "sha256": "f73d76706adea1c4b22c0c21d71ded717e1a29118edbd077d0353e595a93d79a"
+        },
+        {
+          "bytes": 16926,
+          "path": "src_4_runtime_application_security_threats.md",
+          "sha256": "8977384ab3deab0386ccb41cc9ab74d11ffa758fb8d8d05eb7e74b8b60e8a802"
+        },
+        {
+          "bytes": 53677,
+          "path": "src_5_testing.md",
+          "sha256": "b1dae31face388cc15a275d7f04dd34dd9c115b56e11ac1fb59a91bd8a47287e"
+        },
+        {
+          "bytes": 24305,
+          "path": "src_6_privacy.md",
+          "sha256": "0f9a1b46ad045e7051d98ef4d0e40c12a7d6b71f2495faed13d0bd458f140df0"
+        },
+        {
+          "bytes": 115429,
+          "path": "src_ai_security_overview.md",
+          "sha256": "67841fc0fc073f20a18aa4b51e2551b42fb1d9ab6a3f74b3752c23685b78ed40"
+        }
+      ],
       "source_url": "https://owaspai.org",
       "version": "2024"
     },
@@ -51436,6 +51567,13 @@
       "framework_id": "owasp_cheat_sheets",
       "framework_name": "OWASP Cheat Sheets",
       "mapping_unit_level": "cheat_sheet",
+      "source_files": [
+        {
+          "bytes": 16338045,
+          "path": "cheatsheets.zip",
+          "sha256": "5bcaa82245dc14fc1900c0afe9708396dbc362b533adaf2156f36219d3a98770"
+        }
+      ],
       "source_url": "https://cheatsheetseries.owasp.org",
       "version": "07111ee754e832e335377ac64fd0f8f848d9029c"
     },
@@ -51593,6 +51731,18 @@
       "framework_id": "owasp_dsgai",
       "framework_name": "OWASP GenAI Data Security Risks and Mitigations",
       "mapping_unit_level": "risk",
+      "source_files": [
+        {
+          "bytes": 608,
+          "path": "MANIFEST.json",
+          "sha256": "519ea7ec7c7c507c009f4a1bb8d4af7282b9533b84269f8d6513bfbd92a7f1fa"
+        },
+        {
+          "bytes": 249525,
+          "path": "OWASP-GenAI-Data-Security-Risks-and-Mitigations-2026-v1.0.txt",
+          "sha256": "32664b8202cb8dece6d65bb78f7be5f997eb51235e0164e327dbf6eb2013fdcf"
+        }
+      ],
       "source_url": "https://genai.owasp.org/",
       "version": "1.0"
     },
@@ -51673,6 +51823,13 @@
       "framework_id": "owasp_llm_top10",
       "framework_name": "OWASP Top 10 for LLM Applications 2025",
       "mapping_unit_level": "risk",
+      "source_files": [
+        {
+          "bytes": 93109,
+          "path": "owasp_llm_top_10_2025.md",
+          "sha256": "d914a6c2f5886b6e5f3b01616c8c31374af847b4d3dc6648667a6bf134a0be15"
+        }
+      ],
       "source_url": "https://genai.owasp.org",
       "version": "2025"
     },
@@ -51793,6 +51950,13 @@
       "framework_id": "owasp_ml_top10",
       "framework_name": "OWASP Top10 for ML",
       "mapping_unit_level": "risk",
+      "source_files": [
+        {
+          "bytes": 53027622,
+          "path": "owasp_ml_top10.zip",
+          "sha256": "045d7146954612463f4163b83cb419902fd8a0513ef98a8ff1a81d117e6b8444"
+        }
+      ],
       "source_url": "https://owasp.org/www-project-machine-learning-security-top-10/",
       "version": "2023"
     },

@@ -115,6 +115,13 @@
   "framework_id": "owasp_ml_top10",
   "framework_name": "OWASP Top10 for ML",
   "mapping_unit_level": "risk",
+  "source_files": [
+    {
+      "bytes": 53027622,
+      "path": "owasp_ml_top10.zip",
+      "sha256": "045d7146954612463f4163b83cb419902fd8a0513ef98a8ff1a81d117e6b8444"
+    }
+  ],
   "source_url": "https://owasp.org/www-project-machine-learning-security-top-10/",
   "version": "2023"
 }

@@ -4,9 +4,9 @@ Extracts techniques (with sub-techniques) and mitigations from matrices[0].
 """
 from __future__ import annotations
 
+import json
 import logging
 
-from tract.io import load_json
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -24,7 +24,7 @@ class MitreAtlasParser(BaseParser):
     fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
-        data = load_json(self.raw_dir / "ATLAS_compiled.json")
+        data = json.loads(self.read_source("ATLAS_compiled.json"))
         matrix = data["matrices"][0]
         controls: list[Control] = []
 

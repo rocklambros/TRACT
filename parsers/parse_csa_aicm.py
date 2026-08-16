@@ -1,9 +1,9 @@
 """Parser for CSA AI Controls Matrix (AICM) — Tier 1 structured JSON."""
 from __future__ import annotations
 
+import json
 import logging
 
-from tract.io import load_json
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -29,7 +29,7 @@ class CsaAicmParser(BaseParser):
         return "\n".join(f"{k}: {v}" for k, v in field.items() if v)
 
     def parse(self) -> list[Control]:
-        data = load_json(self.raw_dir / "csa_aicm.json")
+        data = json.loads(self.read_source("csa_aicm.json"))
         controls: list[Control] = []
 
         for raw_ctrl in data["controls"]:

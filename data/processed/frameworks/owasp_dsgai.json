@@ -152,6 +152,18 @@
   "framework_id": "owasp_dsgai",
   "framework_name": "OWASP GenAI Data Security Risks and Mitigations",
   "mapping_unit_level": "risk",
+  "source_files": [
+    {
+      "bytes": 608,
+      "path": "MANIFEST.json",
+      "sha256": "519ea7ec7c7c507c009f4a1bb8d4af7282b9533b84269f8d6513bfbd92a7f1fa"
+    },
+    {
+      "bytes": 249525,
+      "path": "OWASP-GenAI-Data-Security-Risks-and-Mitigations-2026-v1.0.txt",
+      "sha256": "32664b8202cb8dece6d65bb78f7be5f997eb51235e0164e327dbf6eb2013fdcf"
+    }
+  ],
   "source_url": "https://genai.owasp.org/",
   "version": "1.0"
 }

@@ -800,6 +800,13 @@
   "framework_id": "nist_ai_rmf",
   "framework_name": "NIST AI Risk Management Framework",
   "mapping_unit_level": "subcategory",
+  "source_files": [
+    {
+      "bytes": 105228,
+      "path": "nist_ai_rmf_1.0.md",
+      "sha256": "fc4d100052969e4c6cca103568d2252661232e5e258a41572ef484791f4bba7a"
+    }
+  ],
   "source_url": "https://doi.org/10.6028/NIST.AI.100-1",
   "version": "1.0"
 }

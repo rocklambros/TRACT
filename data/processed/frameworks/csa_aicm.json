@@ -3164,6 +3164,13 @@
   "framework_id": "csa_aicm",
   "framework_name": "CSA AI Controls Matrix",
   "mapping_unit_level": "control",
+  "source_files": [
+    {
+      "bytes": 5198925,
+      "path": "csa_aicm.json",
+      "sha256": "1a56d5798701b4dc0dd2e22e3d9ce0200d40fd672d5be7063d4003385811429a"
+    }
+  ],
   "source_url": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix",
   "version": "1.0.3"
 }

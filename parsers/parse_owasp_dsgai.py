@@ -68,8 +68,7 @@ class OwaspDsgaiParser(BaseParser):
         if not manifest_path.exists():
             raise FileNotFoundError(f"MANIFEST.json not found at {manifest_path}")
 
-        with manifest_path.open(encoding="utf-8") as fh:
-            manifest: dict[str, Any] = json.load(fh)
+        manifest: dict[str, Any] = json.loads(self.read_source("MANIFEST.json"))
 
         source_file: str = manifest.get("source_file", "")
         if not source_file:
@@ -79,7 +78,7 @@ class OwaspDsgaiParser(BaseParser):
         if not txt_path.exists():
             raise FileNotFoundError(f"Source text file not found: {txt_path}")
 
-        text = txt_path.read_text(encoding="utf-8")
+        text = self.read_source(source_file)
         logger.debug("Read %d characters from %s", len(text), txt_path)
 
         return self._extract_controls(text)

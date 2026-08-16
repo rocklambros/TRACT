@@ -40,3 +40,26 @@ def test_parses_sample_fixture(tmp_path: Path) -> None:
     assert result.controls[0].metadata is not None
     assert result.controls[0].metadata["category"] == "Core"
     assert result.controls[0].metadata["domain"] == "Data & Privacy"
+
+
+def test_the_artifact_records_the_bytes_it_was_built_from(tmp_path: Path) -> None:
+    """The static coverage test proves the call exists; this proves it fires.
+
+    A parser can import read_source and still take a different path at
+    runtime, and the artifact would carry an empty source_files list with
+    nothing to say so.
+    """
+    import hashlib
+
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    shutil.copy("tests/fixtures/aiuc_1_sample.json", raw_dir / "aiuc-1-standard.json")
+    out_dir = tmp_path / "processed"
+    out_dir.mkdir()
+
+    result = SampleAiuc1Parser(raw_dir=raw_dir, output_dir=out_dir).run()
+
+    assert [s.path for s in result.source_files] == ["aiuc-1-standard.json"]
+    payload = (raw_dir / "aiuc-1-standard.json").read_bytes()
+    assert result.source_files[0].sha256 == hashlib.sha256(payload).hexdigest()
+    assert result.source_files[0].bytes == len(payload)

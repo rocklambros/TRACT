@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import re
+from io import BytesIO
 from typing import Final
 from xml.etree.ElementTree import Element
 
@@ -60,7 +61,9 @@ class CapecParser(BaseParser):
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / "capec_latest.xml"
-        root = parse_xml(source).getroot()
+        # Read through the recording reader so the artifact records which
+        # catalog bytes produced it, then parse the same bytes.
+        root = parse_xml(BytesIO(self.read_source_bytes("capec_latest.xml"))).getroot()
         if root is None:
             raise ValueError(f"{source} parsed to an empty XML tree.")
         namespace = {"c": root.tag.split("}")[0].strip("{")}

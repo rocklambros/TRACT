@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 import re
 import zipfile
+from io import BytesIO
 from typing import Final
 
 from tract.parsers.base import BaseParser
@@ -51,10 +52,11 @@ class OwaspMlTop10Parser(BaseParser):
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
-        archive = self.raw_dir / ARCHIVE_NAME
         controls: list[Control] = []
 
-        with zipfile.ZipFile(archive) as bundle:
+        # Read through the recording reader so the artifact records which
+        # archive bytes produced it, then hand the same bytes to zipfile.
+        with zipfile.ZipFile(BytesIO(self.read_source_bytes(ARCHIVE_NAME))) as bundle:
             # Sort by archive path, not by the match object: re.Match has no
             # ordering and sorting tuples would compare them first.
             entries = sorted(

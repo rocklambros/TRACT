@@ -36,7 +36,7 @@ class OwaspAgenticTop10Parser(BaseParser):
     fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
-        text = (self.raw_dir / "owasp_agentic_top10_2026.md").read_text(encoding="utf-8")
+        text = self.read_source("owasp_agentic_top10_2026.md")
         desc_matches = list(RISK_SECTION_RE.finditer(text))
         controls: list[Control] = []
 

@@ -219,9 +219,7 @@ class Nist80053Parser(BaseParser):
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
-        source = self.raw_dir / CATALOG_NAME
-        with source.open(encoding="utf-8") as handle:
-            catalog: JsonDict = json.load(handle)["catalog"]
+        catalog: JsonDict = json.loads(self.read_source(CATALOG_NAME))["catalog"]
 
         catalog_version = str(catalog.get("metadata", {}).get("version") or "")
         if catalog_version != self.version:

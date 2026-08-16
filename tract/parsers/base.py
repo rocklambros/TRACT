@@ -77,6 +77,12 @@ class BaseParser(ABC):
     # on the join-path prose_fraction telemetry, which records whether a
     # lookup hit rather than whether the text is prose.
     min_prose_fraction: ClassVar[float] = 0.0
+    # Set to a written reason when a parser legitimately reads no raw file.
+    # Unset means an empty source manifest is a bug and run() refuses to
+    # write. The manifest replaced a hand-maintained file that had drifted to
+    # covering 7 of 19 frameworks, and then covered 1 of 20 because the
+    # mandate lived in a docstring instead of a gate.
+    manifest_exempt_reason: ClassVar[str | None] = None
 
     @classmethod
     def resolve_raw_dir(cls) -> Path:
@@ -277,6 +283,8 @@ class BaseParser(ABC):
                 f"Parser {self.framework_id} produced zero controls"
             )
 
+        self._check_source_manifest()
+
         sanitized_controls = [
             self._sanitize_control(c) for c in raw_controls
         ]
@@ -364,6 +372,31 @@ class BaseParser(ABC):
             parent_id=control.parent_id,
             parent_name=control.parent_name,
             metadata=control.metadata,
+        )
+
+    def _check_source_manifest(self) -> None:
+        """Raise when parse() read its inputs outside the recording readers.
+
+        Raises:
+            ValueError: If nothing was recorded and no exemption is declared.
+        """
+        if self._source_files:
+            return
+
+        if self.manifest_exempt_reason:
+            logger.info(
+                "%s: no source manifest. Permitted: %s",
+                self.framework_id, self.manifest_exempt_reason,
+            )
+            return
+
+        raise ValueError(
+            f"{self.framework_id}: parse() recorded no source files. Read raw "
+            f"inputs through read_source or read_source_bytes so the artifact "
+            f"states which bytes produced it. A file opened directly is "
+            f"invisible to the manifest, which is how 19 of 20 parsers came "
+            f"to write an empty source_files list. If this parser genuinely "
+            f"reads no file, set manifest_exempt_reason with the reason."
         )
 
     def _check_expected_count(self, actual: int) -> None:
