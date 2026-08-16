@@ -66,6 +66,7 @@ the two disagree or if a framework appears in either without the other.
 | owasp_cheat_sheets | CC-BY-SA-4.0 | https://github.com/OWASP/CheatSheetSeries |
 | owasp_dsgai | CC-BY-SA-4.0 | https://genai.owasp.org |
 | owasp_llm_top10 | CC-BY-SA-4.0 | https://genai.owasp.org |
+| owasp_llm_top10_2026 | CC-BY-SA-4.0 | https://genai.owasp.org |
 | owasp_ml_top10 | CC-BY-SA-4.0 | https://github.com/OWASP/www-project-machine-learning-security-top-10 |
 | owasp_proactive_controls | CC-BY-SA-4.0 | https://github.com/OWASP/www-project-proactive-controls |
 | owasp_top10_2021 | CC-BY-SA-4.0 | https://github.com/OWASP/Top10 |
@@ -82,6 +83,12 @@ AI 100-2 and AI 600-1 PDFs, the NIST AI RMF, the AIUC-1 standard, and the OWASP
 AI Exchange markdown all fall into this group. Each publisher states terms
 somewhere outside the artifact this project downloaded. Resolving them means
 recording the terms from the publisher's own page, not inferring them.
+
+The OWASP Top 10 for LLM Applications 2026 is pre-release. Its own revision
+history still reads "[2026 release date]", so the artifact built from it pins
+its version to the source sha256 rather than to a release date the publisher
+has not set. Its licence block states CC BY-SA 4.0 and is recorded above as
+such.
 
 CSA's Cloud Controls Matrix and AI Controls Matrix both carry a notice
 reserving redistribution. The project owner ruled on 2026-08-16 that CCM is

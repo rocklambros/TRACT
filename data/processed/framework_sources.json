@@ -169,6 +169,18 @@
         "url": "https://github.com/OWASP/CheatSheetSeries/archive/07111ee754e832e335377ac64fd0f8f848d9029c.zip"
       }
     },
+    "owasp_llm_top10_2026": {
+      "2026_OWASP-GenAI-LLM-Top-10.repaired.md": {
+        "bytes": "242894",
+        "expected_sha256": "3d3c9f21809c5f882a668b87424ac6b2e2a270caab4b29aa5265df3475433a96",
+        "fetched_date": "2026-08-16",
+        "filename": "2026_OWASP-GenAI-LLM-Top-10.repaired.md",
+        "license": "CC-BY-SA-4.0",
+        "note": "OWASP Top 10 for LLM Applications 2026, owner-supplied markdown conversion of the pre-release document. Not published at a fetchable URL yet, so it is staged on disk like csa_ccm. A separate framework from owasp_llm_top10 (2025), never a newer version of it: the 2025 ids carry all 13 of OpenCRE's links for this standard. Held out of every training and fold roster as the pretraining-contamination control, so it contributes no training links.",
+        "sha256": "3d3c9f21809c5f882a668b87424ac6b2e2a270caab4b29aa5265df3475433a96",
+        "url": ""
+      }
+    },
     "owasp_ml_top10": {
       "owasp_ml_top10.zip": {
         "bytes": "53048090",

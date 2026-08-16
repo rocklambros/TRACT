@@ -305,6 +305,20 @@ SOURCES: Final[tuple[Source, ...]] = (
         expected_sha256="1a41ba1a9218e6aecdcab46d2cc6cf8a3b99f6cc1c98a3683bf3a6e4964e955f",
     ),
     Source(
+        "owasp_llm_top10_2026", "2026_OWASP-GenAI-LLM-Top-10.repaired.md",
+        None,
+        "OWASP Top 10 for LLM Applications 2026, owner-supplied markdown "
+        "conversion of the pre-release document. Not published at a fetchable "
+        "URL yet, so it is staged on disk like csa_ccm. A separate framework "
+        "from owasp_llm_top10 (2025), never a newer version of it: the 2025 "
+        "ids carry all 13 of OpenCRE's links for this standard. Held out of "
+        "every training and fold roster as the pretraining-contamination "
+        "control, so it contributes no training links.", 0,
+        # The document's own "License and Usage" block.
+        license=FRAMEWORK_LICENSES["owasp_llm_top10_2026"],
+        expected_sha256="3d3c9f21809c5f882a668b87424ac6b2e2a270caab4b29aa5265df3475433a96",
+    ),
+    Source(
         "csa_ccm", "CCMv4.1.0-generated_at_2026_01_13.xlsx",
         None,
         "CSA Cloud Controls Matrix v4.1.0. CSA gates this behind "

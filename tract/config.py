@@ -83,6 +83,30 @@ CONTROL_ELISION_MARKER: Final[str] = "[...]"
 # is recorded in NOTICE and in the run ledger; do not reverse it here.
 RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"etsi", "iso_27001"})
 
+# ── Pretraining-contamination holdout ─────────────────────────────────────
+# Frameworks parsed into data/processed/frameworks/ that must never reach a
+# training roster, a LOFO fold roster, the curated link file, or the merged
+# corpus a trainer reads.
+#
+#   owasp_llm_top10_2026  Published after BAAI/bge-large-en-v1.5 was trained,
+#                         so it is the only corpus here that can separate an
+#                         encoder mapping meaning from an encoder recalling
+#                         text it saw in pretraining. Every other framework
+#                         predates the checkpoint and cannot answer that
+#                         question. Spec Part 1.6.
+#
+# Restricted and holdout are different properties. A restricted framework is
+# one this repository may not redistribute; a holdout is one the model may not
+# see. owasp_llm_top10_2026 is CC BY-SA 4.0 and freely redistributable, and it
+# is still excluded from training, so the two lists stay separate.
+#
+# Wired, not decorative: parsers/merge_all_controls.py drops these before it
+# builds either corpus, and tests/test_holdout_framework.py sweeps the roster
+# constants, the link files, and the merge for any mention of them.
+HOLDOUT_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "owasp_llm_top10_2026",
+})
+
 # ── Third-party framework licences ────────────────────────────────────────
 # Every framework whose content reaches data/processed/frameworks/, with the
 # licence read off that framework's own staged artifact. SPDX identifiers where
@@ -152,6 +176,11 @@ FRAMEWORK_LICENSES: Final[dict[str, str]] = {
     "owasp_cheat_sheets": "CC-BY-SA-4.0",
     "owasp_dsgai": "CC-BY-SA-4.0",
     "owasp_llm_top10": "CC-BY-SA-4.0",
+    # A separate framework from owasp_llm_top10 above, not a newer version of
+    # it. The 2025 ids carry all 13 of OpenCRE's links for this standard, so
+    # the two must never share a file. Licence read from the document's own
+    # "License and Usage" block.
+    "owasp_llm_top10_2026": "CC-BY-SA-4.0",
     "owasp_ml_top10": "CC-BY-SA-4.0",
     "owasp_proactive_controls": "CC-BY-SA-4.0",
     "owasp_top10_2021": "CC-BY-SA-4.0",
@@ -322,6 +351,11 @@ FRAMEWORK_NAME_ALIASES: Final[dict[str, str]] = {
     "nist 800-53 v5": "NIST 800-53",
     "devsecops maturity model (dsomm)": "DSOMM",
     "owasp web security testing guide (wstg)": "WSTG",
+    # This maps to the 2025 edition and must keep doing so. There is
+    # deliberately NO alias for the 2026 edition: an alias exists to let an
+    # OpenCRE standard_name reach a parser's framework_name, and the 2026
+    # edition is the pretraining-contamination holdout, which has no OpenCRE
+    # links and must never acquire a path to one. See HOLDOUT_FRAMEWORK_IDS.
     "owasp top10 for llm": "OWASP Top 10 for LLM Applications 2025",
     "owasp top10 for ml": "OWASP Top10 for ML",
     "owasp top10 for agentic ai": "OWASP Top 10 for Agentic Applications 2026",
