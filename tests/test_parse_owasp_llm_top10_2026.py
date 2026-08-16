@@ -117,9 +117,9 @@ class TestTheTenEntries:
 class TestTheAppendixBoundary:
     """Without it LLM10 runs to EOF and swallows the whole back matter.
 
-    Measured on the real source: 937 lines and 132 KB of appendix, references,
-    and acknowledgements land inside the last entry, because the appendix sits
-    below it rather than above.
+    Measured on the real source: the 871 lines and 124 KB below the appendix
+    heading land inside the last entry, because the appendix sits below it
+    rather than above.
     """
 
     def test_the_last_entry_stops_at_appendix_a(

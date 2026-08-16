@@ -17,8 +17,9 @@ Three decisions worth stating.
 
 **The parser stops at `## Appendix A`.** The appendix and all the back matter
 sit below the last entry rather than above it, so without that boundary LLM10
-runs to end of file and swallows 937 lines and 132 KB of appendix tables,
-references, and acknowledgements as control text. A source that has lost the
+runs to end of file and takes the 871 lines and 124 KB that sit below the
+appendix heading with it, appendix tables, references, and acknowledgements
+all shipping as control text. Measured on the pinned source. A source that has lost the
 boundary heading is refused rather than parsed.
 
 **`description` is the definitional block, `full_text` is the whole entry.**
@@ -184,8 +185,8 @@ class OwaspLlmTop102026Parser(BaseParser):
         raise ValueError(
             f"{self.framework_id}: no '## Appendix A' heading in "
             f"{SOURCE_FILE}. That heading is what ends the last entry. Without "
-            f"it LLM10 runs to end of file and takes 937 lines of appendix "
-            f"tables, references, and acknowledgements with it, which would "
+            f"it LLM10 runs to end of file and takes the 871 lines of appendix "
+            f"tables, references, and acknowledgements below it, which would "
             f"ship as control text. Fix the source rather than the boundary."
         )
 
