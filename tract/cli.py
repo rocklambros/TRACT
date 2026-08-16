@@ -1661,7 +1661,7 @@ def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
 
     summary = import_ground_truth(
         PHASE1C_CROSSWALK_DB_PATH,
-        TRAINING_DIR / "hub_links_by_framework.json",
+        TRAINING_DIR / "hub_links_by_framework_curated.json",
         dry_run=args.dry_run,
     )
     logger.info("Ground truth import: %s", summary)
