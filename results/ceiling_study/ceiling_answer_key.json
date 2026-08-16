@@ -1,0 +1,2148 @@
+{
+  "WARNING": "Opening this file before the ceiling study is finished, or before you have made a final decision to stop partway, invalidates the study. This is the hidden key: item_index maps to the OpenCRE gold hub(s) for that control. Review ceiling_answers_TEMPLATE.json first, in item order, without looking here.",
+  "answers": [
+    {
+      "item_index": 1,
+      "primary_gold_hub_id": "172-101",
+      "valid_gold_hub_ids": [
+        "172-101"
+      ]
+    },
+    {
+      "item_index": 2,
+      "primary_gold_hub_id": "755-340",
+      "valid_gold_hub_ids": [
+        "755-340"
+      ]
+    },
+    {
+      "item_index": 3,
+      "primary_gold_hub_id": "701-654",
+      "valid_gold_hub_ids": [
+        "481-710",
+        "701-654"
+      ]
+    },
+    {
+      "item_index": 4,
+      "primary_gold_hub_id": "630-573",
+      "valid_gold_hub_ids": [
+        "176-154",
+        "268-088",
+        "463-820",
+        "630-573",
+        "746-705"
+      ]
+    },
+    {
+      "item_index": 5,
+      "primary_gold_hub_id": "768-532",
+      "valid_gold_hub_ids": [
+        "440-372",
+        "768-532"
+      ]
+    },
+    {
+      "item_index": 6,
+      "primary_gold_hub_id": "538-446",
+      "valid_gold_hub_ids": [
+        "538-446"
+      ]
+    },
+    {
+      "item_index": 7,
+      "primary_gold_hub_id": "342-781",
+      "valid_gold_hub_ids": [
+        "342-781"
+      ]
+    },
+    {
+      "item_index": 8,
+      "primary_gold_hub_id": "273-600",
+      "valid_gold_hub_ids": [
+        "138-448",
+        "168-186",
+        "273-600",
+        "354-753",
+        "404-126",
+        "605-735",
+        "646-227",
+        "813-610",
+        "816-631"
+      ]
+    },
+    {
+      "item_index": 9,
+      "primary_gold_hub_id": "686-110",
+      "valid_gold_hub_ids": [
+        "686-110"
+      ]
+    },
+    {
+      "item_index": 10,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 11,
+      "primary_gold_hub_id": "843-475",
+      "valid_gold_hub_ids": [
+        "106-447",
+        "843-475",
+        "860-723"
+      ]
+    },
+    {
+      "item_index": 12,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "036-725",
+        "146-706",
+        "611-051",
+        "653-242",
+        "675-168",
+        "737-086",
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 13,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "273-600",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 14,
+      "primary_gold_hub_id": "146-871",
+      "valid_gold_hub_ids": [
+        "146-871"
+      ]
+    },
+    {
+      "item_index": 15,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "036-725",
+        "146-706",
+        "533-516",
+        "611-051",
+        "653-242",
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 16,
+      "primary_gold_hub_id": "012-625",
+      "valid_gold_hub_ids": [
+        "012-625"
+      ]
+    },
+    {
+      "item_index": 17,
+      "primary_gold_hub_id": "384-015",
+      "valid_gold_hub_ids": [
+        "384-015"
+      ]
+    },
+    {
+      "item_index": 18,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 19,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "611-051",
+        "653-242",
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 20,
+      "primary_gold_hub_id": "576-262",
+      "valid_gold_hub_ids": [
+        "576-262"
+      ]
+    },
+    {
+      "item_index": 21,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 22,
+      "primary_gold_hub_id": "474-203",
+      "valid_gold_hub_ids": [
+        "474-203"
+      ]
+    },
+    {
+      "item_index": 23,
+      "primary_gold_hub_id": "761-417",
+      "valid_gold_hub_ids": [
+        "641-760",
+        "761-417"
+      ]
+    },
+    {
+      "item_index": 24,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "314-131",
+        "611-051",
+        "653-242",
+        "782-234",
+        "824-732",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 25,
+      "primary_gold_hub_id": "818-434",
+      "valid_gold_hub_ids": [
+        "818-434"
+      ]
+    },
+    {
+      "item_index": 26,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 27,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 28,
+      "primary_gold_hub_id": "220-442",
+      "valid_gold_hub_ids": [
+        "220-442"
+      ]
+    },
+    {
+      "item_index": 29,
+      "primary_gold_hub_id": "762-451",
+      "valid_gold_hub_ids": [
+        "157-430",
+        "224-321",
+        "267-468",
+        "482-866",
+        "762-451",
+        "846-302"
+      ]
+    },
+    {
+      "item_index": 30,
+      "primary_gold_hub_id": "547-824",
+      "valid_gold_hub_ids": [
+        "547-824"
+      ]
+    },
+    {
+      "item_index": 31,
+      "primary_gold_hub_id": "234-282",
+      "valid_gold_hub_ids": [
+        "234-282"
+      ]
+    },
+    {
+      "item_index": 32,
+      "primary_gold_hub_id": "686-110",
+      "valid_gold_hub_ids": [
+        "012-625",
+        "686-110"
+      ]
+    },
+    {
+      "item_index": 33,
+      "primary_gold_hub_id": "002-801",
+      "valid_gold_hub_ids": [
+        "002-801",
+        "504-340",
+        "742-431"
+      ]
+    },
+    {
+      "item_index": 34,
+      "primary_gold_hub_id": "220-870",
+      "valid_gold_hub_ids": [
+        "220-870",
+        "475-586"
+      ]
+    },
+    {
+      "item_index": 35,
+      "primary_gold_hub_id": "273-600",
+      "valid_gold_hub_ids": [
+        "273-600"
+      ]
+    },
+    {
+      "item_index": 36,
+      "primary_gold_hub_id": "230-318",
+      "valid_gold_hub_ids": [
+        "230-318"
+      ]
+    },
+    {
+      "item_index": 37,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "314-131",
+        "611-051",
+        "653-242",
+        "782-234",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 38,
+      "primary_gold_hub_id": "010-108",
+      "valid_gold_hub_ids": [
+        "010-108"
+      ]
+    },
+    {
+      "item_index": 39,
+      "primary_gold_hub_id": "273-600",
+      "valid_gold_hub_ids": [
+        "152-725",
+        "186-540",
+        "201-246",
+        "224-321",
+        "267-468",
+        "273-600",
+        "482-866",
+        "527-034",
+        "558-807",
+        "636-854",
+        "640-364",
+        "650-560",
+        "745-045",
+        "848-711"
+      ]
+    },
+    {
+      "item_index": 40,
+      "primary_gold_hub_id": "615-663",
+      "valid_gold_hub_ids": [
+        "615-663"
+      ]
+    },
+    {
+      "item_index": 41,
+      "primary_gold_hub_id": "077-235",
+      "valid_gold_hub_ids": [
+        "077-235"
+      ]
+    },
+    {
+      "item_index": 42,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 43,
+      "primary_gold_hub_id": "220-442",
+      "valid_gold_hub_ids": [
+        "220-442"
+      ]
+    },
+    {
+      "item_index": 44,
+      "primary_gold_hub_id": "240-464",
+      "valid_gold_hub_ids": [
+        "240-464"
+      ]
+    },
+    {
+      "item_index": 45,
+      "primary_gold_hub_id": "860-723",
+      "valid_gold_hub_ids": [
+        "860-723"
+      ]
+    },
+    {
+      "item_index": 46,
+      "primary_gold_hub_id": "571-640",
+      "valid_gold_hub_ids": [
+        "571-640"
+      ]
+    },
+    {
+      "item_index": 47,
+      "primary_gold_hub_id": "034-540",
+      "valid_gold_hub_ids": [
+        "034-540"
+      ]
+    },
+    {
+      "item_index": 48,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 49,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 50,
+      "primary_gold_hub_id": "187-083",
+      "valid_gold_hub_ids": [
+        "187-083"
+      ]
+    },
+    {
+      "item_index": 51,
+      "primary_gold_hub_id": "810-884",
+      "valid_gold_hub_ids": [
+        "810-884"
+      ]
+    },
+    {
+      "item_index": 52,
+      "primary_gold_hub_id": "273-600",
+      "valid_gold_hub_ids": [
+        "273-600"
+      ]
+    },
+    {
+      "item_index": 53,
+      "primary_gold_hub_id": "114-853",
+      "valid_gold_hub_ids": [
+        "114-853"
+      ]
+    },
+    {
+      "item_index": 54,
+      "primary_gold_hub_id": "010-108",
+      "valid_gold_hub_ids": [
+        "010-108"
+      ]
+    },
+    {
+      "item_index": 55,
+      "primary_gold_hub_id": "314-701",
+      "valid_gold_hub_ids": [
+        "307-111",
+        "314-701"
+      ]
+    },
+    {
+      "item_index": 56,
+      "primary_gold_hub_id": "230-318",
+      "valid_gold_hub_ids": [
+        "230-318"
+      ]
+    },
+    {
+      "item_index": 57,
+      "primary_gold_hub_id": "366-835",
+      "valid_gold_hub_ids": [
+        "366-835"
+      ]
+    },
+    {
+      "item_index": 58,
+      "primary_gold_hub_id": "805-126",
+      "valid_gold_hub_ids": [
+        "805-126"
+      ]
+    },
+    {
+      "item_index": 59,
+      "primary_gold_hub_id": "637-021",
+      "valid_gold_hub_ids": [
+        "637-021"
+      ]
+    },
+    {
+      "item_index": 60,
+      "primary_gold_hub_id": "273-600",
+      "valid_gold_hub_ids": [
+        "273-600"
+      ]
+    },
+    {
+      "item_index": 61,
+      "primary_gold_hub_id": "881-234",
+      "valid_gold_hub_ids": [
+        "881-234"
+      ]
+    },
+    {
+      "item_index": 62,
+      "primary_gold_hub_id": "048-612",
+      "valid_gold_hub_ids": [
+        "048-612"
+      ]
+    },
+    {
+      "item_index": 63,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 64,
+      "primary_gold_hub_id": "141-385",
+      "valid_gold_hub_ids": [
+        "141-385"
+      ]
+    },
+    {
+      "item_index": 65,
+      "primary_gold_hub_id": "551-400",
+      "valid_gold_hub_ids": [
+        "551-400"
+      ]
+    },
+    {
+      "item_index": 66,
+      "primary_gold_hub_id": "020-540",
+      "valid_gold_hub_ids": [
+        "020-540"
+      ]
+    },
+    {
+      "item_index": 67,
+      "primary_gold_hub_id": "002-801",
+      "valid_gold_hub_ids": [
+        "002-801",
+        "504-340",
+        "742-431"
+      ]
+    },
+    {
+      "item_index": 68,
+      "primary_gold_hub_id": "173-554",
+      "valid_gold_hub_ids": [
+        "173-554"
+      ]
+    },
+    {
+      "item_index": 69,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "314-131",
+        "611-051",
+        "653-242",
+        "782-234",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 70,
+      "primary_gold_hub_id": "041-188",
+      "valid_gold_hub_ids": [
+        "041-188"
+      ]
+    },
+    {
+      "item_index": 71,
+      "primary_gold_hub_id": "547-824",
+      "valid_gold_hub_ids": [
+        "364-516",
+        "547-824"
+      ]
+    },
+    {
+      "item_index": 72,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 73,
+      "primary_gold_hub_id": "780-757",
+      "valid_gold_hub_ids": [
+        "780-757"
+      ]
+    },
+    {
+      "item_index": 74,
+      "primary_gold_hub_id": "577-260",
+      "valid_gold_hub_ids": [
+        "547-283",
+        "577-260",
+        "715-223",
+        "777-470"
+      ]
+    },
+    {
+      "item_index": 75,
+      "primary_gold_hub_id": "456-535",
+      "valid_gold_hub_ids": [
+        "456-535"
+      ]
+    },
+    {
+      "item_index": 76,
+      "primary_gold_hub_id": "467-215",
+      "valid_gold_hub_ids": [
+        "467-215"
+      ]
+    },
+    {
+      "item_index": 77,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045"
+      ]
+    },
+    {
+      "item_index": 78,
+      "primary_gold_hub_id": "044-202",
+      "valid_gold_hub_ids": [
+        "044-202",
+        "077-772",
+        "220-870"
+      ]
+    },
+    {
+      "item_index": 79,
+      "primary_gold_hub_id": "440-372",
+      "valid_gold_hub_ids": [
+        "440-372"
+      ]
+    },
+    {
+      "item_index": 80,
+      "primary_gold_hub_id": "217-112",
+      "valid_gold_hub_ids": [
+        "217-112"
+      ]
+    },
+    {
+      "item_index": 81,
+      "primary_gold_hub_id": "761-417",
+      "valid_gold_hub_ids": [
+        "761-417"
+      ]
+    },
+    {
+      "item_index": 82,
+      "primary_gold_hub_id": "630-573",
+      "valid_gold_hub_ids": [
+        "176-154",
+        "268-088",
+        "463-820",
+        "630-573",
+        "746-705"
+      ]
+    },
+    {
+      "item_index": 83,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "314-131",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 84,
+      "primary_gold_hub_id": "615-663",
+      "valid_gold_hub_ids": [
+        "615-663"
+      ]
+    },
+    {
+      "item_index": 85,
+      "primary_gold_hub_id": "686-110",
+      "valid_gold_hub_ids": [
+        "686-110"
+      ]
+    },
+    {
+      "item_index": 86,
+      "primary_gold_hub_id": "611-051",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "611-051",
+        "653-242"
+      ]
+    },
+    {
+      "item_index": 87,
+      "primary_gold_hub_id": "034-540",
+      "valid_gold_hub_ids": [
+        "034-540"
+      ]
+    },
+    {
+      "item_index": 88,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "314-131",
+        "482-771",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 89,
+      "primary_gold_hub_id": "430-722",
+      "valid_gold_hub_ids": [
+        "430-722"
+      ]
+    },
+    {
+      "item_index": 90,
+      "primary_gold_hub_id": "456-636",
+      "valid_gold_hub_ids": [
+        "316-272",
+        "405-411",
+        "426-842",
+        "456-636",
+        "483-883"
+      ]
+    },
+    {
+      "item_index": 91,
+      "primary_gold_hub_id": "232-217",
+      "valid_gold_hub_ids": [
+        "232-217"
+      ]
+    },
+    {
+      "item_index": 92,
+      "primary_gold_hub_id": "703-813",
+      "valid_gold_hub_ids": [
+        "703-813"
+      ]
+    },
+    {
+      "item_index": 93,
+      "primary_gold_hub_id": "273-600",
+      "valid_gold_hub_ids": [
+        "273-600"
+      ]
+    },
+    {
+      "item_index": 94,
+      "primary_gold_hub_id": "034-540",
+      "valid_gold_hub_ids": [
+        "034-540"
+      ]
+    },
+    {
+      "item_index": 95,
+      "primary_gold_hub_id": "630-573",
+      "valid_gold_hub_ids": [
+        "176-154",
+        "268-088",
+        "463-820",
+        "630-573",
+        "746-705"
+      ]
+    },
+    {
+      "item_index": 96,
+      "primary_gold_hub_id": "370-877",
+      "valid_gold_hub_ids": [
+        "370-877"
+      ]
+    },
+    {
+      "item_index": 97,
+      "primary_gold_hub_id": "268-272",
+      "valid_gold_hub_ids": [
+        "082-327",
+        "166-151",
+        "268-272",
+        "368-633",
+        "443-447",
+        "612-252",
+        "664-080"
+      ]
+    },
+    {
+      "item_index": 98,
+      "primary_gold_hub_id": "615-663",
+      "valid_gold_hub_ids": [
+        "615-663"
+      ]
+    },
+    {
+      "item_index": 99,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "082-327",
+        "117-371",
+        "166-151",
+        "268-272",
+        "368-633",
+        "443-447",
+        "612-252",
+        "664-080",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 100,
+      "primary_gold_hub_id": "686-110",
+      "valid_gold_hub_ids": [
+        "686-110"
+      ]
+    },
+    {
+      "item_index": 101,
+      "primary_gold_hub_id": "818-434",
+      "valid_gold_hub_ids": [
+        "818-434"
+      ]
+    },
+    {
+      "item_index": 102,
+      "primary_gold_hub_id": "456-535",
+      "valid_gold_hub_ids": [
+        "456-535"
+      ]
+    },
+    {
+      "item_index": 103,
+      "primary_gold_hub_id": "380-540",
+      "valid_gold_hub_ids": [
+        "134-412",
+        "380-540"
+      ]
+    },
+    {
+      "item_index": 104,
+      "primary_gold_hub_id": "267-786",
+      "valid_gold_hub_ids": [
+        "267-786"
+      ]
+    },
+    {
+      "item_index": 105,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 106,
+      "primary_gold_hub_id": "701-654",
+      "valid_gold_hub_ids": [
+        "701-654"
+      ]
+    },
+    {
+      "item_index": 107,
+      "primary_gold_hub_id": "012-625",
+      "valid_gold_hub_ids": [
+        "012-625"
+      ]
+    },
+    {
+      "item_index": 108,
+      "primary_gold_hub_id": "268-272",
+      "valid_gold_hub_ids": [
+        "082-327",
+        "166-151",
+        "268-272",
+        "284-521",
+        "368-633",
+        "443-447",
+        "612-252",
+        "664-080",
+        "817-808"
+      ]
+    },
+    {
+      "item_index": 109,
+      "primary_gold_hub_id": "333-858",
+      "valid_gold_hub_ids": [
+        "027-555",
+        "076-470",
+        "077-781",
+        "078-427",
+        "082-530",
+        "101-217",
+        "103-707",
+        "158-874",
+        "333-858",
+        "338-370",
+        "358-860",
+        "487-305",
+        "524-446",
+        "525-361",
+        "553-413",
+        "576-651",
+        "604-025",
+        "622-203",
+        "630-577",
+        "715-681",
+        "767-435",
+        "807-565",
+        "881-321"
+      ]
+    },
+    {
+      "item_index": 110,
+      "primary_gold_hub_id": "858-745",
+      "valid_gold_hub_ids": [
+        "858-745"
+      ]
+    },
+    {
+      "item_index": 111,
+      "primary_gold_hub_id": "364-516",
+      "valid_gold_hub_ids": [
+        "364-516"
+      ]
+    },
+    {
+      "item_index": 112,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 113,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 114,
+      "primary_gold_hub_id": "408-838",
+      "valid_gold_hub_ids": [
+        "408-838"
+      ]
+    },
+    {
+      "item_index": 115,
+      "primary_gold_hub_id": "326-704",
+      "valid_gold_hub_ids": [
+        "326-704"
+      ]
+    },
+    {
+      "item_index": 116,
+      "primary_gold_hub_id": "488-626",
+      "valid_gold_hub_ids": [
+        "488-626"
+      ]
+    },
+    {
+      "item_index": 117,
+      "primary_gold_hub_id": "146-871",
+      "valid_gold_hub_ids": [
+        "146-871"
+      ]
+    },
+    {
+      "item_index": 118,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 119,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 120,
+      "primary_gold_hub_id": "615-663",
+      "valid_gold_hub_ids": [
+        "615-663"
+      ]
+    },
+    {
+      "item_index": 121,
+      "primary_gold_hub_id": "818-434",
+      "valid_gold_hub_ids": [
+        "818-434"
+      ]
+    },
+    {
+      "item_index": 122,
+      "primary_gold_hub_id": "611-051",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "611-051",
+        "653-242"
+      ]
+    },
+    {
+      "item_index": 123,
+      "primary_gold_hub_id": "141-385",
+      "valid_gold_hub_ids": [
+        "141-385"
+      ]
+    },
+    {
+      "item_index": 124,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 125,
+      "primary_gold_hub_id": "171-222",
+      "valid_gold_hub_ids": [
+        "028-254",
+        "171-222"
+      ]
+    },
+    {
+      "item_index": 126,
+      "primary_gold_hub_id": "061-753",
+      "valid_gold_hub_ids": [
+        "061-753"
+      ]
+    },
+    {
+      "item_index": 127,
+      "primary_gold_hub_id": "611-051",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "611-051",
+        "653-242"
+      ]
+    },
+    {
+      "item_index": 128,
+      "primary_gold_hub_id": "044-202",
+      "valid_gold_hub_ids": [
+        "044-202"
+      ]
+    },
+    {
+      "item_index": 129,
+      "primary_gold_hub_id": "630-573",
+      "valid_gold_hub_ids": [
+        "176-154",
+        "268-088",
+        "463-820",
+        "630-573",
+        "746-705"
+      ]
+    },
+    {
+      "item_index": 130,
+      "primary_gold_hub_id": "077-772",
+      "valid_gold_hub_ids": [
+        "077-772"
+      ]
+    },
+    {
+      "item_index": 131,
+      "primary_gold_hub_id": "342-641",
+      "valid_gold_hub_ids": [
+        "342-641",
+        "843-475"
+      ]
+    },
+    {
+      "item_index": 132,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 133,
+      "primary_gold_hub_id": "852-770",
+      "valid_gold_hub_ids": [
+        "423-055",
+        "852-770",
+        "883-173"
+      ]
+    },
+    {
+      "item_index": 134,
+      "primary_gold_hub_id": "042-550",
+      "valid_gold_hub_ids": [
+        "042-550"
+      ]
+    },
+    {
+      "item_index": 135,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 136,
+      "primary_gold_hub_id": "187-083",
+      "valid_gold_hub_ids": [
+        "187-083"
+      ]
+    },
+    {
+      "item_index": 137,
+      "primary_gold_hub_id": "048-612",
+      "valid_gold_hub_ids": [
+        "048-612"
+      ]
+    },
+    {
+      "item_index": 138,
+      "primary_gold_hub_id": "230-318",
+      "valid_gold_hub_ids": [
+        "230-318"
+      ]
+    },
+    {
+      "item_index": 139,
+      "primary_gold_hub_id": "843-475",
+      "valid_gold_hub_ids": [
+        "843-475"
+      ]
+    },
+    {
+      "item_index": 140,
+      "primary_gold_hub_id": "314-701",
+      "valid_gold_hub_ids": [
+        "307-111",
+        "314-701"
+      ]
+    },
+    {
+      "item_index": 141,
+      "primary_gold_hub_id": "670-660",
+      "valid_gold_hub_ids": [
+        "670-660"
+      ]
+    },
+    {
+      "item_index": 142,
+      "primary_gold_hub_id": "768-532",
+      "valid_gold_hub_ids": [
+        "768-532"
+      ]
+    },
+    {
+      "item_index": 143,
+      "primary_gold_hub_id": "141-385",
+      "valid_gold_hub_ids": [
+        "141-385"
+      ]
+    },
+    {
+      "item_index": 144,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "036-725",
+        "146-706",
+        "611-051",
+        "653-242",
+        "737-086",
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 145,
+      "primary_gold_hub_id": "533-635",
+      "valid_gold_hub_ids": [
+        "533-635"
+      ]
+    },
+    {
+      "item_index": 146,
+      "primary_gold_hub_id": "630-573",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "176-154",
+        "268-088",
+        "463-820",
+        "611-051",
+        "630-573",
+        "653-242",
+        "746-705"
+      ]
+    },
+    {
+      "item_index": 147,
+      "primary_gold_hub_id": "615-663",
+      "valid_gold_hub_ids": [
+        "481-710",
+        "615-663"
+      ]
+    },
+    {
+      "item_index": 148,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "138-448",
+        "146-706",
+        "168-186",
+        "227-045",
+        "354-753",
+        "404-126",
+        "551-400",
+        "605-735",
+        "611-051",
+        "646-227",
+        "653-242",
+        "713-683",
+        "743-110",
+        "813-610",
+        "816-631"
+      ]
+    },
+    {
+      "item_index": 149,
+      "primary_gold_hub_id": "661-440",
+      "valid_gold_hub_ids": [
+        "661-440"
+      ]
+    },
+    {
+      "item_index": 150,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 151,
+      "primary_gold_hub_id": "384-015",
+      "valid_gold_hub_ids": [
+        "384-015"
+      ]
+    },
+    {
+      "item_index": 152,
+      "primary_gold_hub_id": "257-668",
+      "valid_gold_hub_ids": [
+        "257-668",
+        "480-071"
+      ]
+    },
+    {
+      "item_index": 153,
+      "primary_gold_hub_id": "533-635",
+      "valid_gold_hub_ids": [
+        "533-635"
+      ]
+    },
+    {
+      "item_index": 154,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 155,
+      "primary_gold_hub_id": "220-442",
+      "valid_gold_hub_ids": [
+        "220-442"
+      ]
+    },
+    {
+      "item_index": 156,
+      "primary_gold_hub_id": "002-801",
+      "valid_gold_hub_ids": [
+        "002-801",
+        "504-340",
+        "742-431"
+      ]
+    },
+    {
+      "item_index": 157,
+      "primary_gold_hub_id": "641-760",
+      "valid_gold_hub_ids": [
+        "641-760"
+      ]
+    },
+    {
+      "item_index": 158,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 159,
+      "primary_gold_hub_id": "370-877",
+      "valid_gold_hub_ids": [
+        "370-877"
+      ]
+    },
+    {
+      "item_index": 160,
+      "primary_gold_hub_id": "268-272",
+      "valid_gold_hub_ids": [
+        "082-327",
+        "166-151",
+        "268-272",
+        "368-633",
+        "443-447",
+        "612-252",
+        "664-080"
+      ]
+    },
+    {
+      "item_index": 161,
+      "primary_gold_hub_id": "788-323",
+      "valid_gold_hub_ids": [
+        "788-323"
+      ]
+    },
+    {
+      "item_index": 162,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "284-521",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 163,
+      "primary_gold_hub_id": "761-417",
+      "valid_gold_hub_ids": [
+        "761-417"
+      ]
+    },
+    {
+      "item_index": 164,
+      "primary_gold_hub_id": "171-222",
+      "valid_gold_hub_ids": [
+        "028-254",
+        "171-222"
+      ]
+    },
+    {
+      "item_index": 165,
+      "primary_gold_hub_id": "881-234",
+      "valid_gold_hub_ids": [
+        "881-234"
+      ]
+    },
+    {
+      "item_index": 166,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 167,
+      "primary_gold_hub_id": "567-025",
+      "valid_gold_hub_ids": [
+        "567-025"
+      ]
+    },
+    {
+      "item_index": 168,
+      "primary_gold_hub_id": "767-435",
+      "valid_gold_hub_ids": [
+        "077-781",
+        "078-427",
+        "082-530",
+        "622-203",
+        "767-435"
+      ]
+    },
+    {
+      "item_index": 169,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "082-327",
+        "146-706",
+        "166-151",
+        "268-272",
+        "314-131",
+        "368-633",
+        "443-447",
+        "611-051",
+        "612-252",
+        "653-242",
+        "664-080",
+        "782-234",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 170,
+      "primary_gold_hub_id": "701-654",
+      "valid_gold_hub_ids": [
+        "701-654"
+      ]
+    },
+    {
+      "item_index": 171,
+      "primary_gold_hub_id": "577-260",
+      "valid_gold_hub_ids": [
+        "547-283",
+        "577-260",
+        "715-223",
+        "777-470"
+      ]
+    },
+    {
+      "item_index": 172,
+      "primary_gold_hub_id": "755-340",
+      "valid_gold_hub_ids": [
+        "755-340"
+      ]
+    },
+    {
+      "item_index": 173,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 174,
+      "primary_gold_hub_id": "780-757",
+      "valid_gold_hub_ids": [
+        "780-757"
+      ]
+    },
+    {
+      "item_index": 175,
+      "primary_gold_hub_id": "012-625",
+      "valid_gold_hub_ids": [
+        "012-625"
+      ]
+    },
+    {
+      "item_index": 176,
+      "primary_gold_hub_id": "366-835",
+      "valid_gold_hub_ids": [
+        "366-835"
+      ]
+    },
+    {
+      "item_index": 177,
+      "primary_gold_hub_id": "202-604",
+      "valid_gold_hub_ids": [
+        "202-604"
+      ]
+    },
+    {
+      "item_index": 178,
+      "primary_gold_hub_id": "630-573",
+      "valid_gold_hub_ids": [
+        "176-154",
+        "268-088",
+        "463-820",
+        "630-573",
+        "746-705"
+      ]
+    },
+    {
+      "item_index": 179,
+      "primary_gold_hub_id": "423-055",
+      "valid_gold_hub_ids": [
+        "423-055"
+      ]
+    },
+    {
+      "item_index": 180,
+      "primary_gold_hub_id": "333-858",
+      "valid_gold_hub_ids": [
+        "027-555",
+        "076-470",
+        "101-217",
+        "103-707",
+        "158-874",
+        "333-858",
+        "338-370",
+        "358-860",
+        "487-305",
+        "524-446",
+        "525-361",
+        "553-413",
+        "576-651",
+        "604-025",
+        "630-577",
+        "715-681",
+        "802-056",
+        "807-565"
+      ]
+    },
+    {
+      "item_index": 181,
+      "primary_gold_hub_id": "860-723",
+      "valid_gold_hub_ids": [
+        "860-723"
+      ]
+    },
+    {
+      "item_index": 182,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 183,
+      "primary_gold_hub_id": "124-564",
+      "valid_gold_hub_ids": [
+        "124-564"
+      ]
+    },
+    {
+      "item_index": 184,
+      "primary_gold_hub_id": "034-540",
+      "valid_gold_hub_ids": [
+        "034-540"
+      ]
+    },
+    {
+      "item_index": 185,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 186,
+      "primary_gold_hub_id": "034-540",
+      "valid_gold_hub_ids": [
+        "034-540"
+      ]
+    },
+    {
+      "item_index": 187,
+      "primary_gold_hub_id": "268-100",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "061-186",
+        "065-388",
+        "146-706",
+        "268-100",
+        "366-835",
+        "422-005",
+        "426-842",
+        "456-636",
+        "483-883",
+        "542-445",
+        "611-051",
+        "620-101",
+        "646-462",
+        "653-242",
+        "736-237",
+        "806-367"
+      ]
+    },
+    {
+      "item_index": 188,
+      "primary_gold_hub_id": "886-662",
+      "valid_gold_hub_ids": [
+        "886-662"
+      ]
+    },
+    {
+      "item_index": 189,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 190,
+      "primary_gold_hub_id": "646-285",
+      "valid_gold_hub_ids": [
+        "646-285"
+      ]
+    },
+    {
+      "item_index": 191,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 192,
+      "primary_gold_hub_id": "867-642",
+      "valid_gold_hub_ids": [
+        "867-642"
+      ]
+    },
+    {
+      "item_index": 193,
+      "primary_gold_hub_id": "230-318",
+      "valid_gold_hub_ids": [
+        "230-318"
+      ]
+    },
+    {
+      "item_index": 194,
+      "primary_gold_hub_id": "036-275",
+      "valid_gold_hub_ids": [
+        "036-275",
+        "344-611"
+      ]
+    },
+    {
+      "item_index": 195,
+      "primary_gold_hub_id": "314-131",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "314-131",
+        "611-051",
+        "653-242",
+        "782-234",
+        "831-570"
+      ]
+    },
+    {
+      "item_index": 196,
+      "primary_gold_hub_id": "881-234",
+      "valid_gold_hub_ids": [
+        "881-234"
+      ]
+    },
+    {
+      "item_index": 197,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 198,
+      "primary_gold_hub_id": "686-110",
+      "valid_gold_hub_ids": [
+        "686-110"
+      ]
+    },
+    {
+      "item_index": 199,
+      "primary_gold_hub_id": "408-838",
+      "valid_gold_hub_ids": [
+        "408-838"
+      ]
+    },
+    {
+      "item_index": 200,
+      "primary_gold_hub_id": "611-051",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "146-706",
+        "611-051",
+        "653-242"
+      ]
+    },
+    {
+      "item_index": 201,
+      "primary_gold_hub_id": "217-163",
+      "valid_gold_hub_ids": [
+        "217-163"
+      ]
+    },
+    {
+      "item_index": 202,
+      "primary_gold_hub_id": "113-133",
+      "valid_gold_hub_ids": [
+        "060-472",
+        "113-133",
+        "278-413",
+        "284-521",
+        "342-055",
+        "464-084",
+        "576-042",
+        "582-541",
+        "820-421"
+      ]
+    },
+    {
+      "item_index": 203,
+      "primary_gold_hub_id": "455-358",
+      "valid_gold_hub_ids": [
+        "307-111",
+        "314-701",
+        "455-358"
+      ]
+    },
+    {
+      "item_index": 204,
+      "primary_gold_hub_id": "488-626",
+      "valid_gold_hub_ids": [
+        "187-083",
+        "430-722",
+        "440-372",
+        "488-626",
+        "768-532"
+      ]
+    },
+    {
+      "item_index": 205,
+      "primary_gold_hub_id": "470-731",
+      "valid_gold_hub_ids": [
+        "470-731"
+      ]
+    },
+    {
+      "item_index": 206,
+      "primary_gold_hub_id": "715-644",
+      "valid_gold_hub_ids": [
+        "715-644"
+      ]
+    },
+    {
+      "item_index": 207,
+      "primary_gold_hub_id": "220-442",
+      "valid_gold_hub_ids": [
+        "220-442"
+      ]
+    },
+    {
+      "item_index": 208,
+      "primary_gold_hub_id": "354-753",
+      "valid_gold_hub_ids": [
+        "138-448",
+        "168-186",
+        "354-753",
+        "404-126",
+        "605-735",
+        "646-227",
+        "813-610",
+        "816-631"
+      ]
+    },
+    {
+      "item_index": 209,
+      "primary_gold_hub_id": "227-045",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110"
+      ]
+    },
+    {
+      "item_index": 210,
+      "primary_gold_hub_id": "041-188",
+      "valid_gold_hub_ids": [
+        "041-188"
+      ]
+    },
+    {
+      "item_index": 211,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "036-725",
+        "146-706",
+        "611-051",
+        "653-242",
+        "737-086",
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 212,
+      "primary_gold_hub_id": "077-772",
+      "valid_gold_hub_ids": [
+        "077-772"
+      ]
+    },
+    {
+      "item_index": 213,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310",
+        "881-321"
+      ]
+    },
+    {
+      "item_index": 214,
+      "primary_gold_hub_id": "220-870",
+      "valid_gold_hub_ids": [
+        "220-870"
+      ]
+    },
+    {
+      "item_index": 215,
+      "primary_gold_hub_id": "044-202",
+      "valid_gold_hub_ids": [
+        "044-202"
+      ]
+    },
+    {
+      "item_index": 216,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 217,
+      "primary_gold_hub_id": "481-710",
+      "valid_gold_hub_ids": [
+        "481-710"
+      ]
+    },
+    {
+      "item_index": 218,
+      "primary_gold_hub_id": "613-285",
+      "valid_gold_hub_ids": [
+        "613-285"
+      ]
+    },
+    {
+      "item_index": 219,
+      "primary_gold_hub_id": "173-554",
+      "valid_gold_hub_ids": [
+        "173-554"
+      ]
+    },
+    {
+      "item_index": 220,
+      "primary_gold_hub_id": "366-835",
+      "valid_gold_hub_ids": [
+        "366-835"
+      ]
+    },
+    {
+      "item_index": 221,
+      "primary_gold_hub_id": "220-442",
+      "valid_gold_hub_ids": [
+        "220-442"
+      ]
+    },
+    {
+      "item_index": 222,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 223,
+      "primary_gold_hub_id": "615-663",
+      "valid_gold_hub_ids": [
+        "615-663"
+      ]
+    },
+    {
+      "item_index": 224,
+      "primary_gold_hub_id": "670-660",
+      "valid_gold_hub_ids": [
+        "670-660"
+      ]
+    },
+    {
+      "item_index": 225,
+      "primary_gold_hub_id": "834-645",
+      "valid_gold_hub_ids": [
+        "060-472",
+        "227-045",
+        "464-084",
+        "713-683",
+        "743-110",
+        "834-645"
+      ]
+    },
+    {
+      "item_index": 226,
+      "primary_gold_hub_id": "205-522",
+      "valid_gold_hub_ids": [
+        "205-522"
+      ]
+    },
+    {
+      "item_index": 227,
+      "primary_gold_hub_id": "774-888",
+      "valid_gold_hub_ids": [
+        "340-375",
+        "551-054",
+        "774-888"
+      ]
+    },
+    {
+      "item_index": 228,
+      "primary_gold_hub_id": "276-748",
+      "valid_gold_hub_ids": [
+        "276-748"
+      ]
+    },
+    {
+      "item_index": 229,
+      "primary_gold_hub_id": "834-645",
+      "valid_gold_hub_ids": [
+        "227-045",
+        "713-683",
+        "743-110",
+        "834-645"
+      ]
+    },
+    {
+      "item_index": 230,
+      "primary_gold_hub_id": "108-316",
+      "valid_gold_hub_ids": [
+        "108-316"
+      ]
+    },
+    {
+      "item_index": 231,
+      "primary_gold_hub_id": "881-234",
+      "valid_gold_hub_ids": [
+        "881-234"
+      ]
+    },
+    {
+      "item_index": 232,
+      "primary_gold_hub_id": "613-285",
+      "valid_gold_hub_ids": [
+        "613-285"
+      ]
+    },
+    {
+      "item_index": 233,
+      "primary_gold_hub_id": "205-522",
+      "valid_gold_hub_ids": [
+        "205-522",
+        "843-475",
+        "860-723"
+      ]
+    },
+    {
+      "item_index": 234,
+      "primary_gold_hub_id": "234-282",
+      "valid_gold_hub_ids": [
+        "234-282"
+      ]
+    },
+    {
+      "item_index": 235,
+      "primary_gold_hub_id": "342-641",
+      "valid_gold_hub_ids": [
+        "342-641"
+      ]
+    },
+    {
+      "item_index": 236,
+      "primary_gold_hub_id": "646-462",
+      "valid_gold_hub_ids": [
+        "422-005",
+        "646-462"
+      ]
+    },
+    {
+      "item_index": 237,
+      "primary_gold_hub_id": "473-758",
+      "valid_gold_hub_ids": [
+        "157-430",
+        "473-758",
+        "846-302"
+      ]
+    },
+    {
+      "item_index": 238,
+      "primary_gold_hub_id": "088-316",
+      "valid_gold_hub_ids": [
+        "088-316"
+      ]
+    },
+    {
+      "item_index": 239,
+      "primary_gold_hub_id": "881-234",
+      "valid_gold_hub_ids": [
+        "881-234"
+      ]
+    },
+    {
+      "item_index": 240,
+      "primary_gold_hub_id": "743-237",
+      "valid_gold_hub_ids": [
+        "217-112",
+        "743-237"
+      ]
+    },
+    {
+      "item_index": 241,
+      "primary_gold_hub_id": "058-443",
+      "valid_gold_hub_ids": [
+        "058-443"
+      ]
+    },
+    {
+      "item_index": 242,
+      "primary_gold_hub_id": "757-271",
+      "valid_gold_hub_ids": [
+        "117-371",
+        "757-271",
+        "801-310"
+      ]
+    },
+    {
+      "item_index": 243,
+      "primary_gold_hub_id": "641-760",
+      "valid_gold_hub_ids": [
+        "641-760"
+      ]
+    },
+    {
+      "item_index": 244,
+      "primary_gold_hub_id": "633-428",
+      "valid_gold_hub_ids": [
+        "633-428"
+      ]
+    },
+    {
+      "item_index": 245,
+      "primary_gold_hub_id": "257-668",
+      "valid_gold_hub_ids": [
+        "257-668",
+        "480-071"
+      ]
+    },
+    {
+      "item_index": 246,
+      "primary_gold_hub_id": "703-813",
+      "valid_gold_hub_ids": [
+        "703-813"
+      ]
+    },
+    {
+      "item_index": 247,
+      "primary_gold_hub_id": "782-234",
+      "valid_gold_hub_ids": [
+        "031-447",
+        "036-725",
+        "146-706",
+        "611-051",
+        "653-242",
+        "737-086",
+        "782-234"
+      ]
+    },
+    {
+      "item_index": 248,
+      "primary_gold_hub_id": "106-447",
+      "valid_gold_hub_ids": [
+        "106-447"
+      ]
+    },
+    {
+      "item_index": 249,
+      "primary_gold_hub_id": "613-285",
+      "valid_gold_hub_ids": [
+        "613-285"
+      ]
+    },
+    {
+      "item_index": 250,
+      "primary_gold_hub_id": "020-540",
+      "valid_gold_hub_ids": [
+        "020-540",
+        "867-642"
+      ]
+    }
+  ],
+  "seed": 42
+}
