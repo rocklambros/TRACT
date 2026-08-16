@@ -1,4 +1,4 @@
-"""TRACT BaseParser — abstract base class for all framework parsers.
+"""TRACT BaseParser, the abstract base class for all framework parsers.
 
 Every parser (parsers/parse_*.py) subclasses BaseParser and implements
 parse() -> list[Control]. The concrete run() method handles sanitization,
@@ -88,7 +88,7 @@ class BaseParser(ABC):
     def resolve_raw_dir(cls) -> Path:
         """Locate this framework's raw directory.
 
-        framework_id uses underscores; the raw tree, which is copied from the
+        framework_id uses underscores. The raw tree, which is copied from the
         upstream project, uses hyphens. Eleven of the twelve parsers could not
         find their own input after a restore because of that alone. Try the
         declared name, then both separator conventions, and fail with the list
@@ -111,7 +111,7 @@ class BaseParser(ABC):
         raise FileNotFoundError(
             f"No raw directory for {cls.framework_id}. Tried: "
             f"{[str(p) for p in seen]}. data/raw/ is gitignored, so a fresh "
-            f"checkout starts empty; repopulate it from the source recorded in "
+            f"checkout starts empty. Repopulate it from the source recorded in "
             f"data/raw/PROVENANCE.txt."
         )
 
@@ -190,7 +190,7 @@ class BaseParser(ABC):
         """Parse raw framework data into a list of Control objects.
 
         Subclasses implement the framework-specific extraction logic here.
-        Do NOT sanitize text in parse() — run() handles that.
+        Do NOT sanitize text in parse(). run() handles that.
 
         Returns:
             List of Control objects with raw (unsanitized) text fields.

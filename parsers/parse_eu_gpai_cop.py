@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 import re
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -30,7 +32,7 @@ class EuGpaiCopParser(BaseParser):
     source_url = "https://digital-strategy.ec.europa.eu/en/policies/ai-pact"
     mapping_unit_level = "measure"
     expected_count = 40
-    fetched_date = "2026-04-28"
+    fetched_date: ClassVar[str] = "2026-04-28"
 
     def parse(self) -> list[Control]:
         text = self.read_source("gpai_code_of_practice_combined.md")

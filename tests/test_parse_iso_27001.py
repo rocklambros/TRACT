@@ -126,8 +126,10 @@ class TestIso27001Parser:
         ids = [c.control_id for c in controls]
         # "5" is a section header, not a control, and must not appear.
         assert "5" not in ids
-        assert ids == sorted(ids, key=lambda s: [int(p) for p in s.split(".")])
         assert all("." in cid for cid in ids)
+        # No ordering assertion. The parser emits rows in source order and
+        # does not sort, so asserting sorted output would test the fixture's
+        # layout rather than anything the parser does.
 
     def test_strips_the_control_keyword_from_the_statement(
         self, parser: Iso27001Parser,
@@ -248,7 +250,7 @@ class PoisoningIso27001Parser(Iso27001Parser):
     """The parser with the synthetic fixture's measured repair counts."""
 
     expected_repairs: ClassVar[dict[str, int]] = {
-        "cell bleed": 0, "hyphen break": 1, "run-together": 2,
+        "cell bleed": 0, "hyphen break": 1, "run-together": 3,
     }
     expected_residual_damage: ClassVar[int] = 0
 
@@ -269,6 +271,19 @@ class TestVocabularyIsNotPoisoned:
 
         assert "information security policy" in controls["9.2"].description
         assert "secu rity" not in controls["9.2"].description
+
+    def test_a_joined_title_is_split_too(
+        self, poisoning_parser: Iso27001Parser,
+    ) -> None:
+        """The splitter used to run on bodies only.
+
+        The title is what OpenCRE joins a link on, so a title shipping as
+        "Addressinginformationsecurity" is a link that cannot resolve no
+        matter how clean the body is.
+        """
+        controls = {c.control_id: c for c in poisoning_parser.parse()}
+
+        assert controls["9.2"].title == "The information security policy"
 
     def test_a_joined_token_does_not_become_a_preferred_word(
         self, poisoning_parser: Iso27001Parser,

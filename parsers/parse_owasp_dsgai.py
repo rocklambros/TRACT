@@ -13,7 +13,7 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -51,7 +51,7 @@ class OwaspDsgaiParser(BaseParser):
     source_url = "https://genai.owasp.org/"
     mapping_unit_level = "risk"
     expected_count = 21
-    fetched_date = "2026-08-14"
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         """Parse DSGAI sections from the pdftotext output.

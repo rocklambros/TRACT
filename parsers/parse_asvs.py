@@ -26,7 +26,7 @@ import re
 import zipfile
 from collections.abc import Mapping
 from io import BytesIO
-from typing import Final
+from typing import ClassVar, Final
 
 from tract.config import PROSE_MIN_EXTRA_CHARS
 from tract.parsers.base import BaseParser
@@ -186,7 +186,7 @@ class AsvsParser(BaseParser):
     mapping_unit_level = "requirement"
     # 286 requirements in 4.0.3 less the eight withdrawn tombstones.
     expected_count = 278
-    fetched_date = "2026-08-14"
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / ARCHIVE_NAME

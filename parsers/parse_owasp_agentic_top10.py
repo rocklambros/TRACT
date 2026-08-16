@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 import re
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -33,7 +35,7 @@ class OwaspAgenticTop10Parser(BaseParser):
     source_url = "https://genai.owasp.org"
     mapping_unit_level = "risk"
     expected_count = 10
-    fetched_date = "2026-04-28"
+    fetched_date: ClassVar[str] = "2026-04-28"
 
     def parse(self) -> list[Control]:
         text = self.read_source("owasp_agentic_top10_2026.md")

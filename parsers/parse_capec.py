@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 import re
 from io import BytesIO
-from typing import Final
+from typing import ClassVar, Final
 from xml.etree.ElementTree import Element
 
 # The stdlib XML parser is vulnerable to XXE and entity-expansion. CLAUDE.md
@@ -56,8 +56,8 @@ class CapecParser(BaseParser):
     # stable ones means every link finds its text regardless of which subset
     # OpenCRE covers, so this is a floor rather than an exact expectation.
     expected_count = 500
-    expected_count_is_floor = True
-    fetched_date = "2026-08-14"
+    expected_count_is_floor: ClassVar[bool] = True
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / "capec_latest.xml"

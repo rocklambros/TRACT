@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Final
+from typing import ClassVar, Final
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -74,8 +74,8 @@ class OwaspAiExchangeParser(BaseParser):
     # The source defines more controls than OpenCRE links to (107 against 64
     # linked), so this tracks the source rather than the link set.
     expected_count = 107
-    expected_count_is_floor = True
-    fetched_date = "2026-08-14"
+    expected_count_is_floor: ClassVar[bool] = True
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []

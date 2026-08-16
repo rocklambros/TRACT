@@ -1,4 +1,4 @@
-"""Tests for tract.parsers.repair — named, counted text repairs.
+"""Tests for tract.parsers.repair, the named and counted text repairs.
 
 Every repair returns how many times it fired so a parser can declare a
 ceiling. A count is not a diff, so the ISO parser test also asserts exact
@@ -35,6 +35,18 @@ class TestHyphenBreaks:
         result = fix_hyphen_breaks("top - ic-specific policies")
         assert result.text == "topic-specific policies"
         assert result.applied == 1
+
+    def test_rejoins_two_breaks_around_a_single_letter(self) -> None:
+        """A one-letter fragment between two breaks needs both joins.
+
+        Consuming a letter on each side of the match means the letter that
+        closes one break cannot open the next, so a single-letter fragment
+        left the second break in place and the count one short. Narrow, but a
+        repair whose counter can disagree with what it did is not a counter.
+        """
+        result = fix_hyphen_breaks("clas - s - ification")
+        assert result.text == "classification"
+        assert result.applied == 2
 
     def test_leaves_an_em_dash_style_aside_alone(self) -> None:
         # A hyphen flanked by spaces AND followed by a capital or a
@@ -102,7 +114,7 @@ class TestRunTogether:
         vocab = build_vocabulary(["The Owner shall act"], min_length=3)
         assert "owner" in vocab
         assert "the" in vocab
-        # "act" is 3 and kept; a 4-char floor would drop it.
+        # "act" is 3 and kept. A 4-char floor would drop it.
         assert "act" in build_vocabulary(["The Owner shall act"], min_length=3)
         assert "act" not in build_vocabulary(["The Owner shall act"], min_length=4)
 

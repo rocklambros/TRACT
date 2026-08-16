@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 import logging
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -18,7 +20,7 @@ class CsaAicmParser(BaseParser):
     source_url = "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
     mapping_unit_level = "control"
     expected_count = 243
-    fetched_date = "2026-04-28"
+    fetched_date: ClassVar[str] = "2026-04-28"
 
     @staticmethod
     def _flatten_guidelines(field: str | dict[str, str] | None) -> str:

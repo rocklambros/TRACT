@@ -7,6 +7,8 @@ from __future__ import annotations
 import json
 import logging
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -21,7 +23,7 @@ class Aiuc1Parser(BaseParser):
     source_url = "https://www.aiuc-1.com"
     mapping_unit_level = "activity"
     expected_count = 132
-    fetched_date = "2026-04-28"
+    fetched_date: ClassVar[str] = "2026-04-28"
 
     def parse(self) -> list[Control]:
         data = json.loads(self.read_source("aiuc-1-standard.json"))

@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 import re
 from io import BytesIO
-from typing import Final
+from typing import ClassVar, Final
 
 import pdfplumber
 
@@ -125,7 +125,7 @@ class NistAi1002Parser(BaseParser):
     # a stale 20 and the count gate refused to write. This is an exact target,
     # not a floor: both halves of the count are enumerated by the source.
     expected_count = 66
-    fetched_date = "2026-08-14"
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         # Read through the recording reader so the artifact records which

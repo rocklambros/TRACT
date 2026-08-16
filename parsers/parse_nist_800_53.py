@@ -21,7 +21,7 @@ import json
 import logging
 import re
 from collections.abc import Iterator
-from typing import Any, Final
+from typing import Any, ClassVar, Final
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -216,7 +216,7 @@ class Nist80053Parser(BaseParser):
     # frequency over that corpus, so tripling one framework's share to buy two
     # links would move every other framework's anchors as well.
     expected_count = 300
-    fetched_date = "2026-08-14"
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         catalog: JsonDict = json.loads(self.read_source(CATALOG_NAME))["catalog"]

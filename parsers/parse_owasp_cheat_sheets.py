@@ -22,7 +22,7 @@ import re
 import zipfile
 from io import BytesIO
 from pathlib import Path
-from typing import Final
+from typing import ClassVar, Final
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -210,8 +210,8 @@ class OwaspCheatSheetsParser(BaseParser):
     # The series publishes more sheets than OpenCRE links to (120 against 50),
     # so this tracks the source rather than the link set.
     expected_count = 120
-    expected_count_is_floor = True
-    fetched_date = "2026-08-14"
+    expected_count_is_floor: ClassVar[bool] = True
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         archive = self.raw_dir / ARCHIVE_NAME

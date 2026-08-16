@@ -7,6 +7,8 @@ from __future__ import annotations
 import json
 import logging
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -21,7 +23,7 @@ class MitreAtlasParser(BaseParser):
     source_url = "https://atlas.mitre.org"
     mapping_unit_level = "technique"
     expected_count = 202
-    fetched_date = "2026-04-28"
+    fetched_date: ClassVar[str] = "2026-04-28"
 
     def parse(self) -> list[Control]:
         data = json.loads(self.read_source("ATLAS_compiled.json"))

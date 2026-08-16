@@ -1,4 +1,4 @@
-"""Tests for tract.parsers.base — BaseParser ABC."""
+"""Tests for tract.parsers.base, the BaseParser ABC."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from tract.schema import Control, FrameworkOutput
 
 
 class StubParser(BaseParser):
-    """Concrete parser for testing — returns canned controls."""
+    """Concrete parser for testing. Returns canned controls."""
 
     framework_id: ClassVar[str] = "stub_fw"
     framework_name: ClassVar[str] = "Stub Framework"
@@ -312,7 +312,12 @@ class TestCountIsMandatory:
 
 
 class ReadingParser(BaseParser):
-    """Parser that reads two real files through read_source()."""
+    """Parser that reads two real files through read_source().
+
+    Reads b.txt before a.txt. Reading them in name order would let the sorted
+    manifest test pass on a manifest that was never sorted, which is not a
+    test.
+    """
 
     framework_id: ClassVar[str] = "reading_fw"
     framework_name: ClassVar[str] = "Reading Framework"
@@ -323,8 +328,8 @@ class ReadingParser(BaseParser):
     fetched_date: ClassVar[str] = "2026-01-01"
 
     def parse(self) -> list[Control]:
-        first = self.read_source("a.txt")
         second = self.read_source("b.txt")
+        first = self.read_source("a.txt")
         return [Control(
             control_id="R-001",
             title="Read control",
@@ -445,7 +450,7 @@ class TestDeterministicOutput:
 
         source = inspect.getsource(base)
         assert "datetime.now" not in source, (
-            "BaseParser must not read the clock; fetched_date is declared "
+            "BaseParser must not read the clock. fetched_date is declared "
             "per parser so re-parsing the same bytes gives the same bytes"
         )
 
@@ -493,7 +498,7 @@ class TestProseFloor:
 
         A control the parser has marked damaged is one whose source lost
         content. Counting it as prose lets a known-wrong statement clear the
-        floor; counting it against the parser punishes an honest disclosure.
+        floor. Counting it against the parser punishes an honest disclosure.
         """
         good = Control(
             control_id="A", title="Access control",

@@ -52,7 +52,10 @@ SOURCE_FILE: Final[str] = "ISO_IEC_27001_2022_en.md"
 # extracted as content.
 PAGE_FURNITURE: Final[tuple[str, ...]] = (
     r"^##\s*ISO/IEC\s+27001",
-    r"^Table A\.1 \(continued\)",
+    # The source writes this as a markdown heading, "## Table A.1
+    # (continued)", so an anchored pattern without the hashes matched none of
+    # its seven occurrences.
+    r"^#*\s*Table A\.1 \(continued\)",
 )
 
 # A control row's first cell is "5.1", a section header's is "5".
@@ -75,7 +78,7 @@ RUN_TOGETHER_MIN_LENGTH: Final[int] = 20
 # move unless the source or the repair changed, and either deserves a stop.
 #
 # The previous ceilings were one-sided and one was unreachable: run-together
-# sat at 30 against an actual 8, so it could not have fired under any input
+# sat at 30 against an actual 10, so it could not have fired under any input
 # this parser accepts. A one-sided ceiling also cannot see the failure that
 # matters most, which is a repair that stops firing after a source refresh and
 # ships truncated text with every gate green.
@@ -85,16 +88,20 @@ RUN_TOGETHER_MIN_LENGTH: Final[int] = 20
 EXPECTED_REPAIRS: Final[dict[str, int]] = {
     "cell bleed": 4,
     "hyphen break": 32,
-    "run-together": 8,
+    "run-together": 10,
 }
 
-# Rows whose description still carries an unsplit run-together token after
-# every repair has run. split_run_together only fires when the vocabulary
-# supplies a complete word-by-word decomposition and fails closed otherwise,
-# so this is real remaining damage rather than an upper bound on it. Declared
-# and checked for the same reason as the repair counts: a number that drifts
-# silently is not a control.
-EXPECTED_RESIDUAL_DAMAGE: Final[int] = 13
+# Rows whose title or description still carries an unsplit run-together token
+# after every repair has run. split_run_together only fires when the
+# vocabulary supplies a complete word-by-word decomposition and fails closed
+# otherwise, so this is real remaining damage rather than an upper bound on
+# it. Declared and checked for the same reason as the repair counts: a number
+# that drifts silently is not a control.
+#
+# Of the 14, three are title-only damage the vocabulary cannot segment
+# ("Addressinginformationsecurity" at 5.20, "managementplanningandpreparation"
+# at 5.24, "Redundancyofinformation" at 8.14).
+EXPECTED_RESIDUAL_DAMAGE: Final[int] = 14
 
 # Controls whose source text lost content that no transform can recover, keyed
 # to the reason. The cell-bleed repair joins a truncated head to the fragment
@@ -125,32 +132,6 @@ RESIDUAL_RUN_TOGETHER_PATTERN: Final[re.Pattern[str]] = re.compile(
     rf"[A-Za-z]{{{RUN_TOGETHER_MIN_LENGTH},}}"
 )
 
-# Measured on the real 93-row source: BaseParser.honest_prose_fraction is
-# 90/93 = 0.9677. Three rows are genuinely below HONEST_PROSE_MIN_CHARS (60
-# chars) and not a parser defect, each hand-verified against the raw source:
-#   5.16  "The full life cycle of identities shall be managed." (51 chars)
-#   7.8   "Equipment shall be sited securely and protected." (48 chars)
-#   7.9   "Off-site assets shall be protected." (35 chars) -- recovered from
-#         a double cell-bleed onto 7.8's raw row; the recovered text is
-#         accurate, just short.
-# This is a disclosed deviation from the brief's declared floor of 1.0, in
-# the same spirit as BaseParser.count_deviation_reason: named, with the
-# specific rows and measured fraction on record, rather than a bare literal.
-# BaseParser has no enforced opt-out for this floor the way it does for
-# count_deviation_reason (see tract/parsers/base.py); until one exists, this
-# constant is the audit trail. Independently re-derived during review at
-# 90/93 = 0.9677 exactly, confirming the three rows above are the complete
-# and only explanation for the gap below 1.0.
-MEASURED_PROSE_FRACTION: Final[float] = 90 / 93
-PROSE_FLOOR_DEVIATION_REASON: Final[str] = (
-    "brief declared min_prose_fraction=1.0; measured honest prose fraction "
-    "on the real 93-row source is 90/93=0.9677 because controls 5.16, 7.8, "
-    "and 7.9 are genuine one-sentence statements under HONEST_PROSE_MIN_CHARS "
-    "(60 chars), hand-verified against the raw source and independently "
-    "re-verified during code review -- not a parser defect"
-)
-
-
 class Iso27001Parser(BaseParser):
     framework_id: ClassVar[str] = "iso_27001"
     framework_name: ClassVar[str] = "ISO/IEC 27001:2022 Annex A"
@@ -159,16 +140,20 @@ class Iso27001Parser(BaseParser):
     mapping_unit_level: ClassVar[str] = "control"
     expected_count: ClassVar[int] = 93
     fetched_date: ClassVar[str] = "2026-08-15"
-    # Deviates from the brief's declared 1.0. See PROSE_FLOOR_DEVIATION_REASON
-    # above for the full rationale; this attribute is the parser-level marker
-    # that the deviation exists, in the same spirit as BaseParser's
-    # count_deviation_reason, so a reader of this class alone (not just the
-    # module comments) sees both the changed number and why. The floor sits
-    # just below MEASURED_PROSE_FRACTION (0.9677) rather than at it, close
-    # enough to 1.0 that a regression toward title-only extraction, the
-    # failure mode this check exists for, still trips it.
+    # Below the brief's 1.0 because three Annex A statements are genuinely one
+    # short sentence, each hand-verified against the raw source:
+    #   5.16  "The full life cycle of identities shall be managed." (51 chars)
+    #   7.8   "Equipment shall be sited securely and protected." (48 chars)
+    #   7.9   "Off-site assets shall be protected." (35 chars), recovered from
+    #         a double cell bleed onto 7.8's raw row. Accurate, just short.
+    # Measured 89/92 = 0.9674 with 7.5 excluded as damaged. The floor sits
+    # just under that rather than at it, close enough to 1.0 that a regression
+    # toward title-only extraction still trips it.
+    #
+    # This number is the whole audit trail. The rationale used to live in two
+    # module constants that nothing read, which is a control in appearance
+    # only. run() reads this one.
     min_prose_fraction: ClassVar[float] = 0.96
-    prose_floor_deviation_reason: ClassVar[str] = PROSE_FLOOR_DEVIATION_REASON
     # Class-level so a test over a sample of the table declares its own
     # measured counts rather than widening the real gate to cover both.
     expected_repairs: ClassVar[dict[str, int]] = EXPECTED_REPAIRS
@@ -207,8 +192,13 @@ class Iso27001Parser(BaseParser):
         controls: list[Control] = []
         split_total = 0
         for control_id, title, statement in repaired_rows:
+            # Titles carry the same damage as bodies. Five ship joined
+            # ("Addressinginformationsecurity", "Responsibilitiesaftertermination")
+            # and the title is what OpenCRE joins a link on, so a joined one
+            # cannot match its own link.
+            split_title = split_run_together(title, vocabulary)
             split = split_run_together(statement, vocabulary)
-            split_total += split.applied
+            split_total += split_title.applied + split.applied
 
             body = split.text.strip()
             if body.startswith(STATEMENT_MARKER):
@@ -216,7 +206,7 @@ class Iso27001Parser(BaseParser):
 
             controls.append(Control(
                 control_id=control_id,
-                title=title.strip(),
+                title=split_title.text.strip(),
                 description=body,
                 metadata=self._damage_metadata(control_id, joins),
             ))
@@ -340,18 +330,21 @@ class Iso27001Parser(BaseParser):
 
     @staticmethod
     def _find_residual_run_together(controls: list[Control]) -> list[str]:
-        """Control ids whose description still carries an unsplit token.
+        """Control ids whose title or description still carries a joined token.
 
         split_run_together only fires when the corpus vocabulary supplies a
-        complete word-by-word decomposition; a row it cannot fully segment is
-        left untouched rather than partially repaired. MAX_RUN_TOGETHER_REPAIRS
-        bounds how many rows the repair succeeded on, not how many still need
-        it, so this scan is what makes the residual damage count visible
-        instead of implied-away by a ceiling that only tracks successes.
+        complete word-by-word decomposition, and a row it cannot fully segment
+        is left untouched rather than partially repaired. The repair counts
+        say how many rows it fixed, not how many still need fixing, so this
+        scan is the number that says what is left.
+
+        Titles are scanned as well as descriptions. The title is what OpenCRE
+        joins a link on, so a joined title is a link that cannot resolve.
         """
         return [
             c.control_id for c in controls
             if RESIDUAL_RUN_TOGETHER_PATTERN.search(c.description)
+            or RESIDUAL_RUN_TOGETHER_PATTERN.search(c.title)
         ]
 
     def _extract_rows(self, text: str) -> list[tuple[str, str, str]]:
@@ -372,7 +365,7 @@ class Iso27001Parser(BaseParser):
         if not rows:
             raise ValueError(
                 f"{self.framework_id}: no Table A.1 control rows matched. The "
-                f"source layout changed; re-check {SOURCE_FILE}."
+                f"source layout changed. Re-check {SOURCE_FILE}."
             )
         return rows
 
@@ -405,7 +398,7 @@ class Iso27001Parser(BaseParser):
         raise ValueError(
             f"{self.framework_id}: the {name} repair fired {applied} times "
             f"against a measured {expected}. Firing more means it is reaching "
-            f"text it should not; firing fewer means it stopped reaching "
+            f"text it should not. Firing fewer means it stopped reaching "
             f"damage that is still there and the output ships truncated. Read "
             f"the audit file before moving the number, and record why in "
             f"repair_deviation_reason."

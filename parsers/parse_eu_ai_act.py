@@ -27,6 +27,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -215,7 +217,7 @@ class EuAiActParser(BaseParser):
     )
     mapping_unit_level = "article"
     expected_count = 126  # 113 articles + 13 annexes
-    fetched_date = "2026-08-14"
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         """Parse Articles 1-113 and Annexes I-XIII from the EUR-Lex HTML.

@@ -5,6 +5,8 @@ import logging
 
 import yaml
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -28,7 +30,7 @@ class CosaiParser(BaseParser):
     source_url = "https://cosai.dev"
     mapping_unit_level = "control"
     expected_count = 55
-    fetched_date = "2026-04-28"
+    fetched_date: ClassVar[str] = "2026-04-28"
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []

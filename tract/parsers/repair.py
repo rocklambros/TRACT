@@ -30,7 +30,12 @@ class RepairResult:
 # spaces: "secu - rity". Requires a lowercase letter on both sides, which
 # distinguishes it from an aside ("the organization - The owner shall") and
 # from a real compound, whose hyphen carries no spaces ("topic-specific").
-_HYPHEN_BREAK: Final[re.Pattern[str]] = re.compile(r"([a-z])\s+-\s+([a-z])")
+#
+# Lookaround rather than capture, so the flanking letters are not consumed.
+# Consuming them means the letter that closes one break cannot open the next,
+# and a word broken twice around a single letter ("clas - s - ification")
+# kept its second break and reported one repair instead of two.
+_HYPHEN_BREAK: Final[re.Pattern[str]] = re.compile(r"(?<=[a-z])\s+-\s+(?=[a-z])")
 
 
 def fix_hyphen_breaks(text: str) -> RepairResult:
@@ -39,7 +44,7 @@ def fix_hyphen_breaks(text: str) -> RepairResult:
     Unrepaired these tokenize to fragments the encoder cannot match against
     anything, which is worse than the title the row would otherwise carry.
     """
-    repaired, count = _HYPHEN_BREAK.subn(r"\1\2", text)
+    repaired, count = _HYPHEN_BREAK.subn("", text)
     return RepairResult(text=repaired, applied=count)
 
 

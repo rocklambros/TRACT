@@ -13,7 +13,7 @@ import logging
 import re
 import zipfile
 from io import BytesIO
-from typing import Final
+from typing import ClassVar, Final
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -49,7 +49,7 @@ class OwaspMlTop10Parser(BaseParser):
     source_url = "https://owasp.org/www-project-machine-learning-security-top-10/"
     mapping_unit_level = "risk"
     expected_count = 10
-    fetched_date = "2026-08-14"
+    fetched_date: ClassVar[str] = "2026-08-14"
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []
