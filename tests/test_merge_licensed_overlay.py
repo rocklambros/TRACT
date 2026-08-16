@@ -154,6 +154,51 @@ class TestRestrictedFrameworksStayOutOfTheTrackedMerge:
         assert not (licensed_dir / "all_controls.json").exists()
 
 
+def test_every_restricted_framework_is_excluded_not_just_the_first(
+    tmp_path: Path,
+) -> None:
+    """The split must be driven by the set, not by one hardcoded framework.
+
+    RESTRICTED_FRAMEWORK_IDS grew from one member to two when ETSI's notice
+    was read. The fixtures above stage a single restricted file, so they would
+    keep passing against a merge that only ever excluded ISO. This one stages
+    every member and checks each of them individually.
+    """
+    frameworks_dir = tmp_path / "frameworks"
+    frameworks_dir.mkdir()
+    (frameworks_dir / "public_fw.json").write_text(
+        json.dumps(_framework("public_fw", "2026-01-01", "A public control statement.")),
+        encoding="utf-8",
+    )
+    for framework_id in sorted(RESTRICTED_FRAMEWORK_IDS):
+        (frameworks_dir / f"{framework_id}.json").write_text(
+            json.dumps(_framework(framework_id, "2026-08-15", RESTRICTED_PROSE)),
+            encoding="utf-8",
+        )
+
+    processed_dir, licensed_dir = tmp_path / "processed", tmp_path / "licensed"
+    merge_main(
+        frameworks_dir=frameworks_dir,
+        output_dir=processed_dir,
+        licensed_dir=licensed_dir,
+    )
+
+    tracked = json.loads(
+        (processed_dir / "all_controls.json").read_text(encoding="utf-8")
+    )
+    overlay = json.loads(
+        (licensed_dir / "all_controls.json").read_text(encoding="utf-8")
+    )
+    tracked_ids = {f["framework_id"] for f in tracked["frameworks"]}
+    overlay_ids = {f["framework_id"] for f in overlay["frameworks"]}
+
+    assert tracked_ids == {"public_fw"}
+    assert overlay_ids == {"public_fw"} | set(RESTRICTED_FRAMEWORK_IDS)
+    assert tracked["framework_count"] == 1
+    assert overlay["framework_count"] == 1 + len(RESTRICTED_FRAMEWORK_IDS)
+    assert RESTRICTED_PROSE not in json.dumps(tracked)
+
+
 def test_restricted_ids_have_one_source_of_truth() -> None:
     """The test suite must not carry its own copy of the restricted list.
 

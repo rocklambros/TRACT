@@ -38,7 +38,7 @@ from typing import Final
 
 import requests
 
-from tract.config import PROCESSED_DIR, RAW_FRAMEWORKS_DIR
+from tract.config import FRAMEWORK_LICENSES, PROCESSED_DIR, RAW_FRAMEWORKS_DIR
 from tract.io import atomic_write_json, load_json
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -82,6 +82,14 @@ class Source:
     note: str
     # Links in hub_links_curated.jsonl that gain prose from this source.
     training_links: int
+    # The licence this document is published under, read off the staged
+    # artifact itself: an SPDX identifier where one applies, a short quotation
+    # of the source's own notice where none does, and "UNDETERMINED" where the
+    # artifact states no terms at all. Required, with no default, so a new
+    # source cannot be added without answering the question. This repository is
+    # CC0, an affirmative grant, so "we never looked" is not a safe default.
+    # See NOTICE and tract.config.FRAMEWORK_LICENSES.
+    license: str
     # Hardcoded and reviewed, not derived from a prior run's manifest. See the
     # module docstring for why this has to live in code rather than in the
     # generated manifest. None means this source has never been through an
@@ -103,12 +111,14 @@ SOURCES: Final[tuple[Source, ...]] = (
         "capec", "capec_latest.xml",
         "https://capec.mitre.org/data/xml/capec_latest.xml",
         "MITRE CAPEC attack patterns, full descriptions", 1799,
+        license=FRAMEWORK_LICENSES["capec"],
         expected_sha256="70279a2dff0cb0ad79e546adb07828335a704ad5210e047e09e986172fc9e34d",
     ),
     Source(
         "cwe", "cwec_latest.xml.zip",
         "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip",
         "MITRE CWE weaknesses, full descriptions", 613,
+        license=FRAMEWORK_LICENSES["cwe"],
         expected_sha256="3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50",
     ),
     Source(
@@ -119,6 +129,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "archive/refs/heads/master.zip, a moving ref; now pinned to the "
         "commit that was master's HEAD on 2026-08-15. Its content hash "
         "changes as a result of the re-pin -- expected.", 391,
+        license=FRAMEWORK_LICENSES["owasp_cheat_sheets"],
         expected_sha256="f2ede0212f2550c578d9ce65a71185c2c4937528b8496ca1d8e9611ff9e068f3",
         resolved_commit_sha="07111ee754e832e335377ac64fd0f8f848d9029c",
     ),
@@ -127,6 +138,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/"
         "SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
         "NIST SP 800-53 rev5 OSCAL catalog, full control text", 300,
+        license=FRAMEWORK_LICENSES["nist_800_53"],
         expected_sha256="01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
     ),
     Source(
@@ -137,6 +149,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "archive/refs/heads/master.zip, a moving ref; now pinned to the "
         "commit that was master's HEAD on 2026-08-15. Its content hash "
         "changes as a result of the re-pin -- expected.", 277,
+        license=FRAMEWORK_LICENSES["asvs"],
         expected_sha256="b6c05edea5b9da9762b997e248da2246d06eee50c86c9864daed2599215585c3",
         resolved_commit_sha="cdc8a0f68ac2a9f9e3739266acdac0e4a98badee",
     ),
@@ -144,6 +157,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "nist_ai_100_2", "nist_ai_100_2_e2023.pdf",
         "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2023.pdf",
         "NIST AI 100-2e2023 adversarial ML taxonomy. LOFO eval fold.", 45,
+        license=FRAMEWORK_LICENSES["nist_ai_100_2"],
         expected_sha256="d1086f53a1634d6787c59510c117b22bb7e1a242f920d2830a0d334058b0cb78",
     ),
     Source(
@@ -154,6 +168,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "archive/refs/heads/master.zip, a moving ref; now pinned to the "
         "commit that was master's HEAD on 2026-08-15. Its content hash "
         "changes as a result of the re-pin -- expected.", 10,
+        license=FRAMEWORK_LICENSES["owasp_ml_top10"],
         expected_sha256="42d169c33943e5c3168a6ee0d9a1f76739cca2f4606dcfba0bd66f1377e04052",
         resolved_commit_sha="f0b0ed240c4d367ce483ab2ed2edf3563a5d29b9",
     ),
@@ -163,6 +178,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "archive/ca6e5174aed85a7bdbb845cb7431fec21c224d06.zip",
         "DevSecOps Maturity Model data repo (branch main), pinned to a "
         "commit. Highest-value single addition in this batch.", 214,
+        license=FRAMEWORK_LICENSES["dsomm"],
         expected_sha256="a6d773129591d59e7c0757651142c39a341400333f40c1555fb2481ae89f2c66",
         resolved_commit_sha="ca6e5174aed85a7bdbb845cb7431fec21c224d06",
     ),
@@ -171,6 +187,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "https://github.com/OWASP/wstg/archive/"
         "95ce6cfe5d463bbde88aa52b3171b123a1ea9ada.zip",
         "OWASP Web Security Testing Guide (branch master), pinned to a commit.", 118,
+        license=FRAMEWORK_LICENSES["wstg"],
         expected_sha256="e093f1648fbf4195f2a8fccac4f80315fb6b6281af85aa557edb34d0f9c58b33",
         resolved_commit_sha="95ce6cfe5d463bbde88aa52b3171b123a1ea9ada",
     ),
@@ -182,6 +199,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "the repo's default branch is develop, which is what this is "
         "pinned to. Deviates from a master-branch instruction that did "
         "not match the live repository.", 30,
+        license=FRAMEWORK_LICENSES["samm"],
         expected_sha256="16eb608b70bad3039b14ca4e3f300893d29bbc4205c737ac07fcbdfb4f7493a6",
         resolved_commit_sha="bc2b5474ab248effbc357c389bec372b0f5e200f",
     ),
@@ -190,6 +208,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "https://github.com/OWASP/Top10/archive/"
         "66ebc4798d2ca72973967a20264bdeb70dcf0a13.zip",
         "OWASP Top 10 2021 (branch master), pinned to a commit.", 17,
+        license=FRAMEWORK_LICENSES["owasp_top10_2021"],
         expected_sha256="7f4747a7d7958d58ae3a4c7f7329740b9363c4788655bc3f28da8fdbedf48b5d",
         resolved_commit_sha="66ebc4798d2ca72973967a20264bdeb70dcf0a13",
     ),
@@ -199,6 +218,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "4f5cb1081b4253bbccb314ef7855a1430fec8571.zip",
         "OWASP Proactive Controls (branch master), pinned to a commit. "
         "Restores links dropped for lack of a primary source.", 76,
+        license=FRAMEWORK_LICENSES["owasp_proactive_controls"],
         expected_sha256="6db1aafd6ecd758f05cf6b4133ec7085eb95016ec41afc5f462b4683c603b19d",
         resolved_commit_sha="4f5cb1081b4253bbccb314ef7855a1430fec8571",
     ),
@@ -207,12 +227,14 @@ SOURCES: Final[tuple[Source, ...]] = (
         "https://www.enisa.europa.eu/sites/default/files/publications/"
         "ENISA%20Report%20-%20Securing%20Machine%20Learning%20Algorithms.pdf",
         "ENISA Securing Machine Learning Algorithms report.", 68,
+        license=FRAMEWORK_LICENSES["enisa"],
         expected_sha256="4de967bbdf92a01339ae449b7d305b8ff266d7f16ed0a7d92a711ca20e20f087",
     ),
     Source(
         "nist_ssdf", "nist_sp_800_218.pdf",
         "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218.pdf",
         "NIST SP 800-218 Secure Software Development Framework.", 46,
+        license=FRAMEWORK_LICENSES["nist_ssdf"],
         expected_sha256="617746e553a9e2da49bfbd4eef0dfc3094758a39b869314e4173ac36605cde22",
     ),
     Source(
@@ -235,6 +257,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "one-line diff confined to that injected script tag. Pinning a "
         "hash here would make --accept-new-hash routine rather than an "
         "alert, which is worse than no pin.", 79,
+        license=FRAMEWORK_LICENSES["nist_800_63"],
     ),
     Source(
         "etsi", "etsi_gr_sai005_v010101p.pdf",
@@ -243,6 +266,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "ETSI GR SAI 005 Securing AI Problem Statement. The edge in front "
         "of etsi.org 403s a bare requests/curl user-agent and 200s a "
         "browser one, hence the header.", 36,
+        license=FRAMEWORK_LICENSES["etsi"],
         expected_sha256="46c2b6b880928ffe2e763fbd6e0d0660a0aa7de0ff0071f5e0694582d91d5622",
         headers={
             "User-Agent": (
@@ -263,6 +287,10 @@ SOURCES: Final[tuple[Source, ...]] = (
         "BIML-78(2020): An Architectural Risk Analysis of Machine Learning "
         "Systems (Jan 2020, 42pp). Covers the BIML-78(2020)-prefixed "
         "anchors plus most unprefixed legacy anchors.", 15,
+        # ara.pdf page 1: "licensed under the Creative Commons
+        # Attribution-Share Alike 3.0 License". The 2024 LLM report below
+        # moved to 4.0, so BIML cannot carry one framework-level licence.
+        license="CC-BY-SA-3.0",
         expected_sha256="247d7f06d8c768cc734dc84ab7004c6e4d645e91911af61002fd1743807ef312",
     ),
     Source(
@@ -271,6 +299,9 @@ SOURCES: Final[tuple[Source, ...]] = (
         "BIML-24(LLM): An Architectural Risk Analysis of Large Language "
         "Models (Jan 2024, 28pp). Covers the BIML-24(LLM)-prefixed anchors "
         "plus two unprefixed anchors unique to this document.", 6,
+        # BIML-LLM24.pdf: "licensed under the Creative Commons
+        # Attribution-ShareAlike 4.0 International License".
+        license="CC-BY-SA-4.0",
         expected_sha256="1a41ba1a9218e6aecdcab46d2cc6cf8a3b99f6cc1c98a3683bf3a6e4964e955f",
     ),
     Source(
@@ -280,6 +311,7 @@ SOURCES: Final[tuple[Source, ...]] = (
         "registration; it cannot be fetched by this script and must be "
         "staged on disk manually. Not to be confused with csa_aicm (AI "
         "Controls Matrix), a different framework with zero CRE links.", 29,
+        license=FRAMEWORK_LICENSES["csa_ccm"],
         expected_sha256="5e721628c8ab297bdbd355afa4c01699971fcbb9cb16802ccb9d42c7176ab32b",
     ),
 )
@@ -288,6 +320,15 @@ SOURCES: Final[tuple[Source, ...]] = (
 # a resolved_commit_sha that doesn't actually appear in its own url is a
 # copy-paste error in this file, not a runtime condition.
 for _source in SOURCES:
+    # An empty licence is the state this field exists to make impossible.
+    # "UNDETERMINED" is a legitimate answer and says so out loud; a blank
+    # string says nothing and reads as "not applicable" to the next person.
+    if not _source.license.strip():
+        raise ValueError(
+            f"{_source.framework_id}/{_source.filename}: license is empty. "
+            f"Record the licence from the source's own notice, or "
+            f"'UNDETERMINED' if the staged artifact states no terms."
+        )
     if _source.resolved_commit_sha is not None:
         _expected_fragment = f"archive/{_source.resolved_commit_sha}.zip"
         if _source.url is None or _expected_fragment not in _source.url:
@@ -441,6 +482,9 @@ def _record(source: Source, target: Path, accept_new_hash: bool = False) -> None
         "bytes": str(target.stat().st_size),
         "fetched_date": date.today().isoformat(),
         "note": source.note,
+        # Travels with the manifest so a reader of data/processed/ can see the
+        # terms without opening this file or the archive it came from.
+        "license": source.license,
     }
     if source.resolved_commit_sha is not None:
         record["resolved_commit_sha"] = source.resolved_commit_sha

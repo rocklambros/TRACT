@@ -261,4 +261,10 @@ See [`docs/cli-reference.md`](docs/cli-reference.md) for full options.
 
 ## License
 
-[CC0 1.0 Universal](LICENSE) — dedicated to the public domain.
+[CC0 1.0 Universal](LICENSE) — dedicated to the public domain. That covers
+TRACT's own code, schemas, parsers and derived mappings.
+
+Third-party framework content keeps its publisher's terms. [`NOTICE`](NOTICE)
+lists every framework with its licence and upstream source, names the two
+sources whose text is not redistributed here at all, and records the ones whose
+terms are still undetermined.

@@ -25,13 +25,16 @@ notebooks/.ipynb_checkpoints/
 docs/superpowers/
 docs/phase0-results.md
 venv/
-# Licensed framework text. ISO/IEC 27001:2022 Annex A control statements are
-# copyrighted and this repository is CC0, which is an affirmative grant that
-# the publisher holds the rights and waives them. Committing the prose here
-# would assert rights we do not hold, and `git push` is the publication event
-# regardless of what any publish-path filter does. The parser writes here; the
-# file never enters git. See docs/superpowers/specs for the licensed-overlay
-# design and tests/test_licensed_text_not_tracked.py for the enforcement.
+# Licensed framework text. One line per member of
+# tract.config.RESTRICTED_FRAMEWORK_IDS, and
+# tests/test_licensed_text_not_tracked.py fails if a member is missing a line.
+# These publishers reserve reproduction and this repository is CC0, which is an
+# affirmative grant that the publisher holds the rights and waives them.
+# Committing the prose here would assert rights we do not hold, and `git push`
+# is the publication event regardless of what any publish-path filter does. The
+# parsers write here; the files never enter git. See NOTICE for the per-source
+# terms and tests/test_licensed_text_not_tracked.py for the enforcement.
+data/processed/frameworks/etsi.json
 data/processed/frameworks/iso_27001.json
 data/processed/licensed/
 # Repair audit records quote source text verbatim on both sides of a move, so

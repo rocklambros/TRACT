@@ -65,7 +65,99 @@ CONTROL_ELISION_MARKER: Final[str] = "[...]"
 # tracked all_controls.json, and by tests/test_licensed_text_not_tracked.py,
 # which asserts nothing licensed reached git. A second copy in the test would
 # drift, and a gate that disagrees with the writer is not a gate.
-RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"iso_27001"})
+# Membership is decided by the source's own notice, quoted below, not by a
+# judgement call about how much text ends up in an artifact.
+#
+#   iso_27001  ISO/IEC 27001:2022, cover page: "COPYRIGHT PROTECTED DOCUMENT
+#              (c) ISO/IEC 2022 All rights reserved ... no part of this
+#              publication may be reproduced ... without prior written
+#              permission." The staged copy is a single-user store licence.
+#   etsi       ETSI GR SAI 005 v1.1.1, page 2, Copyright Notification: no
+#              reproduction in any medium except by written permission of
+#              ETSI. (c) ETSI 2021, all rights reserved. Paraphrased on
+#              purpose: the fingerprint gate covers that page too, so quoting
+#              the notice at length here would trip it.
+#
+# csa_ccm is NOT here. Its notice reserves redistribution too, and the owner
+# ruled on 2026-08-16 that CCM is redistributable for this project. That ruling
+# is recorded in NOTICE and in the run ledger; do not reverse it here.
+RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"etsi", "iso_27001"})
+
+# ── Third-party framework licences ────────────────────────────────────────
+# Every framework whose content reaches data/processed/frameworks/, with the
+# licence read off that framework's own staged artifact. SPDX identifiers where
+# one applies, a short quotation of the source's own notice where none does,
+# and "UNDETERMINED" where the staged artifact states no terms at all.
+#
+# UNDETERMINED is a real value, not a placeholder. Guessing a permissive
+# licence for a source that never granted one is the mistake this table exists
+# to make visible, and the entries below marked that way are listed in NOTICE
+# as open questions rather than resolved ones.
+#
+# Wired, not decorative: tests/test_framework_licenses.py fails when a file
+# appears in data/processed/frameworks/ without an entry here, and when an
+# entry here is missing from NOTICE. A new ingest cannot skip the question.
+UNDETERMINED_LICENSE: Final[str] = "UNDETERMINED"
+
+FRAMEWORK_LICENSES: Final[dict[str, str]] = {
+    "aiuc_1": UNDETERMINED_LICENSE,
+    "asvs": "CC-BY-SA-4.0",
+    "biml": "CC-BY-SA-3.0 AND CC-BY-SA-4.0",
+    "capec": UNDETERMINED_LICENSE,
+    "cosai": "CC-BY-4.0",
+    "csa_aicm": (
+        "Proprietary. (c) Cloud Security Alliance, all rights reserved. Personal "
+        "non-commercial use, no redistribution, fair-use quotation with "
+        "attribution."
+    ),
+    "csa_ccm": (
+        "Proprietary. (c) Cloud Security Alliance, all rights reserved. Personal "
+        "non-commercial use, no redistribution, fair-use quotation with "
+        "attribution."
+    ),
+    "cwe": UNDETERMINED_LICENSE,
+    "dsomm": "GPL-3.0-only",
+    "enisa": (
+        "(c) ENISA 2021. Reproduction authorised provided the source is "
+        "acknowledged."
+    ),
+    "etsi": (
+        "(c) ETSI 2021, all rights reserved. Reproduction only by written "
+        "permission of ETSI."
+    ),
+    "eu_ai_act": (
+        "(c) European Union. Reuse permitted with attribution per Commission "
+        "Decision 2011/833/EU."
+    ),
+    "eu_gpai_cop": "(c) European Commission. Published for public use.",
+    "iso_27001": (
+        "Proprietary. (c) ISO/IEC 2022, all rights reserved. Single-user store "
+        "licence, no reproduction without prior written permission."
+    ),
+    "mitre_atlas": "Apache-2.0",
+    "nist_800_53": UNDETERMINED_LICENSE,
+    "nist_800_63": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
+    "nist_ai_100_2": UNDETERMINED_LICENSE,
+    "nist_ai_600_1": UNDETERMINED_LICENSE,
+    "nist_ai_rmf": UNDETERMINED_LICENSE,
+    "nist_ssdf": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
+    "owasp_agentic_top10": "CC-BY-SA-4.0",
+    "owasp_ai_exchange": UNDETERMINED_LICENSE,
+    "owasp_cheat_sheets": "CC-BY-SA-4.0",
+    "owasp_dsgai": "CC-BY-SA-4.0",
+    "owasp_llm_top10": "CC-BY-SA-4.0",
+    "owasp_ml_top10": "CC-BY-SA-4.0",
+    "owasp_proactive_controls": "CC-BY-SA-4.0",
+    "owasp_top10_2021": "CC-BY-SA-4.0",
+    "samm": "CC-BY-SA-4.0",
+    "wstg": "CC-BY-SA-4.0",
+}
 
 # ── OpenCRE API Settings ──────────────────────────────────────────────────
 

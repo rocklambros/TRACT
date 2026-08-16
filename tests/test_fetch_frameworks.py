@@ -14,7 +14,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from scripts.fetch_frameworks import Source, SourceHashMismatch, _record, fetch
+from scripts.fetch_frameworks import (
+    SOURCES,
+    Source,
+    SourceHashMismatch,
+    _record,
+    fetch,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +62,7 @@ class TestRecordHashMismatchRaises:
 
         source = Source(
             framework_id="demo", filename="demo.txt", url="https://example.test/demo.txt",
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
             expected_sha256="0" * 64,  # deliberately wrong, will never match
         )
 
@@ -70,7 +76,7 @@ class TestRecordHashMismatchRaises:
 
         source = Source(
             framework_id="demo", filename="demo.txt", url="https://example.test/demo.txt",
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
             expected_sha256="0" * 64,
         )
 
@@ -95,7 +101,7 @@ class TestRecordHashMismatchRaises:
 
         source = Source(
             framework_id="demo", filename="demo.txt", url="https://example.test/demo.txt",
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
             expected_sha256="0" * 64,
         )
 
@@ -120,7 +126,8 @@ class TestRecordNoBaselineYet:
 
         source = Source(
             framework_id="demo", filename="demo.txt", url="https://example.test/demo.txt",
-            note="test fixture", training_links=1, expected_sha256=None,
+            note="test fixture", training_links=1, license="CC0-1.0",
+            expected_sha256=None,
         )
 
         _record(source, target, accept_new_hash=False)
@@ -146,7 +153,8 @@ class TestRecordMatchingHash:
 
         source = Source(
             framework_id="demo", filename="demo.txt", url="https://example.test/demo.txt",
-            note="test fixture", training_links=1, expected_sha256=digest,
+            note="test fixture", training_links=1, license="CC0-1.0",
+            expected_sha256=digest,
         )
 
         # Must not raise even without accept_new_hash.
@@ -161,7 +169,7 @@ class TestFetchLocallySupplied:
     def test_missing_local_file_raises_file_not_found(self, tmp_path: Path) -> None:
         source = Source(
             framework_id="csa_ccm_test", filename="ccm.xlsx", url=None,
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
         )
         with pytest.raises(FileNotFoundError):
             fetch(source)
@@ -175,7 +183,7 @@ class TestFetchLocallySupplied:
 
         source = Source(
             framework_id="csa_ccm_test", filename="ccm.xlsx", url=None,
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
         )
 
         with patch("scripts.fetch_frameworks.requests.get") as mock_get:
@@ -194,7 +202,7 @@ class TestFetchHeaders:
         source = Source(
             framework_id="demo", filename="demo.pdf",
             url="https://example.test/demo.pdf",
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
             headers={"User-Agent": "test-browser-agent"},
         )
 
@@ -232,9 +240,49 @@ class TestResolvedCommitShaInvariant:
         source = Source(
             framework_id="demo", filename="demo.zip",
             url="https://github.com/example/demo/archive/deadbeef.zip",
-            note="test fixture", training_links=1,
+            note="test fixture", training_links=1, license="CC0-1.0",
             resolved_commit_sha="not-the-sha-in-the-url",
         )
         expected_fragment = f"archive/{source.resolved_commit_sha}.zip"
         assert source.url is not None
         assert expected_fragment not in source.url
+
+
+# ---------------------------------------------------------------------------
+# Module-level invariant: every Source records a licence
+# ---------------------------------------------------------------------------
+
+class TestLicenceInvariant:
+    """A source with no recorded licence must not reach a fetch.
+
+    This repository is CC0, an affirmative grant. Downloading a document
+    without knowing its terms and parsing it into a tracked artifact is how the
+    repository ended up asserting rights over CC BY-SA and all-rights-reserved
+    text. The dataclass field has no default, so the omission is a TypeError,
+    and the module-level loop rejects a blank string as well.
+    """
+
+    def test_omitting_the_licence_is_a_type_error(self) -> None:
+        with pytest.raises(TypeError, match="license"):
+            Source(  # type: ignore[call-arg]
+                framework_id="demo", filename="demo.txt",
+                url="https://example.test/demo.txt",
+                note="test fixture", training_links=1,
+            )
+
+    def test_a_blank_licence_is_rejected_by_the_module_guard(self) -> None:
+        # Reproduces the guard rather than re-importing the module with a
+        # corrupted SOURCES tuple, for the same reason as the test above.
+        source = Source(
+            framework_id="demo", filename="demo.txt",
+            url="https://example.test/demo.txt",
+            note="test fixture", training_links=1, license="   ",
+        )
+        assert not source.license.strip()
+
+    def test_every_shipped_source_records_a_licence(self) -> None:
+        blank = [
+            f"{s.framework_id}/{s.filename}"
+            for s in SOURCES if not s.license.strip()
+        ]
+        assert not blank, f"{blank} reached SOURCES with no licence"

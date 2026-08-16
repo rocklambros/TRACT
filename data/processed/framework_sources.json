@@ -6,6 +6,7 @@
         "expected_sha256": "b6c05edea5b9da9762b997e248da2246d06eee50c86c9864daed2599215585c3",
         "fetched_date": "2026-08-15",
         "filename": "asvs.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP ASVS requirements. Was pinned to archive/refs/heads/master.zip, a moving ref; now pinned to the commit that was master's HEAD on 2026-08-15. Its content hash changes as a result of the re-pin -- expected.",
         "resolved_commit_sha": "cdc8a0f68ac2a9f9e3739266acdac0e4a98badee",
         "sha256": "b6c05edea5b9da9762b997e248da2246d06eee50c86c9864daed2599215585c3",
@@ -18,6 +19,7 @@
         "expected_sha256": "1a41ba1a9218e6aecdcab46d2cc6cf8a3b99f6cc1c98a3683bf3a6e4964e955f",
         "fetched_date": "2026-08-15",
         "filename": "BIML-LLM24.pdf",
+        "license": "CC-BY-SA-4.0",
         "note": "BIML-24(LLM): An Architectural Risk Analysis of Large Language Models (Jan 2024, 28pp). Covers the BIML-24(LLM)-prefixed anchors plus two unprefixed anchors unique to this document.",
         "sha256": "1a41ba1a9218e6aecdcab46d2cc6cf8a3b99f6cc1c98a3683bf3a6e4964e955f",
         "url": "https://berryvilleiml.com/results/BIML-LLM24.pdf"
@@ -27,6 +29,7 @@
         "expected_sha256": "247d7f06d8c768cc734dc84ab7004c6e4d645e91911af61002fd1743807ef312",
         "fetched_date": "2026-08-15",
         "filename": "ara.pdf",
+        "license": "CC-BY-SA-3.0",
         "note": "BIML-78(2020): An Architectural Risk Analysis of Machine Learning Systems (Jan 2020, 42pp). Covers the BIML-78(2020)-prefixed anchors plus most unprefixed legacy anchors.",
         "sha256": "247d7f06d8c768cc734dc84ab7004c6e4d645e91911af61002fd1743807ef312",
         "url": "https://berryvilleiml.com/results/ara.pdf"
@@ -38,6 +41,7 @@
         "expected_sha256": "70279a2dff0cb0ad79e546adb07828335a704ad5210e047e09e986172fc9e34d",
         "fetched_date": "2026-08-15",
         "filename": "capec_latest.xml",
+        "license": "UNDETERMINED",
         "note": "MITRE CAPEC attack patterns, full descriptions",
         "sha256": "70279a2dff0cb0ad79e546adb07828335a704ad5210e047e09e986172fc9e34d",
         "url": "https://capec.mitre.org/data/xml/capec_latest.xml"
@@ -49,6 +53,7 @@
         "expected_sha256": "5e721628c8ab297bdbd355afa4c01699971fcbb9cb16802ccb9d42c7176ab32b",
         "fetched_date": "2026-08-15",
         "filename": "CCMv4.1.0-generated_at_2026_01_13.xlsx",
+        "license": "Proprietary: (c) Cloud Security Alliance, all rights reserved; personal non-commercial use, no redistribution, fair-use quotation with attribution",
         "note": "CSA Cloud Controls Matrix v4.1.0. CSA gates this behind registration; it cannot be fetched by this script and must be staged on disk manually. Not to be confused with csa_aicm (AI Controls Matrix), a different framework with zero CRE links.",
         "sha256": "5e721628c8ab297bdbd355afa4c01699971fcbb9cb16802ccb9d42c7176ab32b",
         "url": ""
@@ -60,6 +65,7 @@
         "expected_sha256": "3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50",
         "fetched_date": "2026-08-15",
         "filename": "cwec_latest.xml.zip",
+        "license": "UNDETERMINED",
         "note": "MITRE CWE weaknesses, full descriptions",
         "sha256": "3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50",
         "url": "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip"
@@ -71,6 +77,7 @@
         "expected_sha256": "a6d773129591d59e7c0757651142c39a341400333f40c1555fb2481ae89f2c66",
         "fetched_date": "2026-08-15",
         "filename": "dsomm_data.zip",
+        "license": "GPL-3.0-only",
         "note": "DevSecOps Maturity Model data repo (branch main), pinned to a commit. Highest-value single addition in this batch.",
         "resolved_commit_sha": "ca6e5174aed85a7bdbb845cb7431fec21c224d06",
         "sha256": "a6d773129591d59e7c0757651142c39a341400333f40c1555fb2481ae89f2c66",
@@ -83,6 +90,7 @@
         "expected_sha256": "4de967bbdf92a01339ae449b7d305b8ff266d7f16ed0a7d92a711ca20e20f087",
         "fetched_date": "2026-08-15",
         "filename": "enisa_securing_ml_algorithms.pdf",
+        "license": "(c) ENISA 2021; reproduction authorised provided the source is acknowledged",
         "note": "ENISA Securing Machine Learning Algorithms report.",
         "sha256": "4de967bbdf92a01339ae449b7d305b8ff266d7f16ed0a7d92a711ca20e20f087",
         "url": "https://www.enisa.europa.eu/sites/default/files/publications/ENISA%20Report%20-%20Securing%20Machine%20Learning%20Algorithms.pdf"
@@ -94,6 +102,7 @@
         "expected_sha256": "46c2b6b880928ffe2e763fbd6e0d0660a0aa7de0ff0071f5e0694582d91d5622",
         "fetched_date": "2026-08-15",
         "filename": "etsi_gr_sai005_v010101p.pdf",
+        "license": "(c) ETSI 2021, all rights reserved; reproduction only by written permission",
         "note": "ETSI GR SAI 005 Securing AI Problem Statement. The edge in front of etsi.org 403s a bare requests/curl user-agent and 200s a browser one, hence the header.",
         "sha256": "46c2b6b880928ffe2e763fbd6e0d0660a0aa7de0ff0071f5e0694582d91d5622",
         "url": "https://www.etsi.org/deliver/etsi_gr/SAI/001_099/005/01.01.01_60/gr_SAI005v010101p.pdf"
@@ -105,6 +114,7 @@
         "expected_sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
         "fetched_date": "2026-08-15",
         "filename": "nist_800_53_catalog.json",
+        "license": "UNDETERMINED",
         "note": "NIST SP 800-53 rev5 OSCAL catalog, full control text",
         "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
         "url": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json"
@@ -116,6 +126,7 @@
         "expected_sha256": null,
         "fetched_date": "2026-08-15",
         "filename": "sp800_63b.html",
+        "license": "US Government work, not subject to copyright in the United States; attribution appreciated by NIST",
         "note": "NIST SP 800-63B Digital Identity Guidelines, authentication. Restores links dropped for lack of a primary source. REVISION 3, NOT 4, AND THE DIFFERENCE IS LOAD-BEARING. OpenCRE's 79 links carry 25 bare section numbers from revision 3, and revision 4 renumbered the document. Measured: revision 3B contains 24 of the 25, revision 4B contains 0 of 25, and the one miss is 'are g', a parsing artifact in OpenCRE's own data rather than a real section. Fetching revision 4 would leave every one of those links unjoinable while looking like a successful fetch. DELIBERATELY UNPINNED: pages.nist.gov sits behind Cloudflare, which injects a per-response random bot-challenge token (window.__CF$cv$params, a fresh nonce and timestamp) into the HTML body on every fetch. Two fetches of the identical document seconds apart produced two different sha256 hashes with a one-line diff confined to that injected script tag. Pinning a hash here would make --accept-new-hash routine rather than an alert, which is worse than no pin.",
         "sha256": "c4286833155db2fc63fb8a74cbe6b80f0e7f6713676d3f061415229d568b3d0e",
         "url": "https://pages.nist.gov/800-63-3/sp800-63b.html"
@@ -127,6 +138,7 @@
         "expected_sha256": "d1086f53a1634d6787c59510c117b22bb7e1a242f920d2830a0d334058b0cb78",
         "fetched_date": "2026-08-15",
         "filename": "nist_ai_100_2_e2023.pdf",
+        "license": "UNDETERMINED",
         "note": "NIST AI 100-2e2023 adversarial ML taxonomy. LOFO eval fold.",
         "sha256": "d1086f53a1634d6787c59510c117b22bb7e1a242f920d2830a0d334058b0cb78",
         "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2023.pdf"
@@ -138,6 +150,7 @@
         "expected_sha256": "617746e553a9e2da49bfbd4eef0dfc3094758a39b869314e4173ac36605cde22",
         "fetched_date": "2026-08-15",
         "filename": "nist_sp_800_218.pdf",
+        "license": "US Government work, not subject to copyright in the United States; attribution appreciated by NIST",
         "note": "NIST SP 800-218 Secure Software Development Framework.",
         "sha256": "617746e553a9e2da49bfbd4eef0dfc3094758a39b869314e4173ac36605cde22",
         "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218.pdf"
@@ -149,6 +162,7 @@
         "expected_sha256": "f2ede0212f2550c578d9ce65a71185c2c4937528b8496ca1d8e9611ff9e068f3",
         "fetched_date": "2026-08-15",
         "filename": "cheatsheets.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP Cheat Sheet Series markdown. Was pinned to archive/refs/heads/master.zip, a moving ref; now pinned to the commit that was master's HEAD on 2026-08-15. Its content hash changes as a result of the re-pin -- expected.",
         "resolved_commit_sha": "07111ee754e832e335377ac64fd0f8f848d9029c",
         "sha256": "f2ede0212f2550c578d9ce65a71185c2c4937528b8496ca1d8e9611ff9e068f3",
@@ -161,6 +175,7 @@
         "expected_sha256": "42d169c33943e5c3168a6ee0d9a1f76739cca2f4606dcfba0bd66f1377e04052",
         "fetched_date": "2026-08-15",
         "filename": "owasp_ml_top10.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP ML Security Top 10. LOFO eval fold. Was pinned to archive/refs/heads/master.zip, a moving ref; now pinned to the commit that was master's HEAD on 2026-08-15. Its content hash changes as a result of the re-pin -- expected.",
         "resolved_commit_sha": "f0b0ed240c4d367ce483ab2ed2edf3563a5d29b9",
         "sha256": "42d169c33943e5c3168a6ee0d9a1f76739cca2f4606dcfba0bd66f1377e04052",
@@ -173,6 +188,7 @@
         "expected_sha256": "6db1aafd6ecd758f05cf6b4133ec7085eb95016ec41afc5f462b4683c603b19d",
         "fetched_date": "2026-08-15",
         "filename": "owasp_proactive_controls.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP Proactive Controls (branch master), pinned to a commit. Restores links dropped for lack of a primary source.",
         "resolved_commit_sha": "4f5cb1081b4253bbccb314ef7855a1430fec8571",
         "sha256": "6db1aafd6ecd758f05cf6b4133ec7085eb95016ec41afc5f462b4683c603b19d",
@@ -185,6 +201,7 @@
         "expected_sha256": "7f4747a7d7958d58ae3a4c7f7329740b9363c4788655bc3f28da8fdbedf48b5d",
         "fetched_date": "2026-08-15",
         "filename": "owasp_top10_2021.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP Top 10 2021 (branch master), pinned to a commit.",
         "resolved_commit_sha": "66ebc4798d2ca72973967a20264bdeb70dcf0a13",
         "sha256": "7f4747a7d7958d58ae3a4c7f7329740b9363c4788655bc3f28da8fdbedf48b5d",
@@ -197,6 +214,7 @@
         "expected_sha256": "16eb608b70bad3039b14ca4e3f300893d29bbc4205c737ac07fcbdfb4f7493a6",
         "fetched_date": "2026-08-15",
         "filename": "samm_core.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP SAMM core model. owaspsamm/core has no master branch -- the repo's default branch is develop, which is what this is pinned to. Deviates from a master-branch instruction that did not match the live repository.",
         "resolved_commit_sha": "bc2b5474ab248effbc357c389bec372b0f5e200f",
         "sha256": "16eb608b70bad3039b14ca4e3f300893d29bbc4205c737ac07fcbdfb4f7493a6",
@@ -209,6 +227,7 @@
         "expected_sha256": "e093f1648fbf4195f2a8fccac4f80315fb6b6281af85aa557edb34d0f9c58b33",
         "fetched_date": "2026-08-15",
         "filename": "wstg.zip",
+        "license": "CC-BY-SA-4.0",
         "note": "OWASP Web Security Testing Guide (branch master), pinned to a commit.",
         "resolved_commit_sha": "95ce6cfe5d463bbde88aa52b3171b123a1ea9ada",
         "sha256": "e093f1648fbf4195f2a8fccac4f80315fb6b6281af85aa557edb34d0f9c58b33",
