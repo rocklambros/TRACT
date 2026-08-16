@@ -29,6 +29,7 @@ import logging
 from pathlib import Path
 
 from tract.config import (
+    HOLDOUT_FRAMEWORK_IDS,
     PROCESSED_DIR,
     PROCESSED_FRAMEWORKS_DIR,
     PROCESSED_LICENSED_DIR,
@@ -56,6 +57,46 @@ def _control_count(framework: dict[str, object]) -> int:
             f"'controls' key of type {type(controls).__name__}, expected list"
         )
     return len(controls)
+
+
+def _drop_holdouts(
+    frameworks: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Remove frameworks the model must never see, from both corpora.
+
+    This is the other way a holdout's prose reaches a trainer. Every roster
+    could name the right frameworks and the corpus builder would still glob a
+    holdout in, because the prose index reads all_controls.json rather than any
+    roster. The exclusion belongs here, at the one chokepoint both corpora pass
+    through, not in each reader.
+
+    A holdout is excluded for a different reason than a restricted framework:
+    restricted is about what this repository may redistribute, holdout is about
+    what the model may see. See tract.config.HOLDOUT_FRAMEWORK_IDS.
+
+    Raises:
+        ValueError: If nothing survives. An empty corpus is a different and
+            much louder failure than one missing framework, and it would
+            otherwise surface as a confusing schema error downstream.
+    """
+    kept = [
+        f for f in frameworks
+        if f.get("framework_id") not in HOLDOUT_FRAMEWORK_IDS
+    ]
+    dropped = [str(f.get("framework_id")) for f in frameworks
+               if f.get("framework_id") in HOLDOUT_FRAMEWORK_IDS]
+    for framework_id in sorted(dropped):
+        logger.info(
+            "Excluded %s from both merged corpora: it is a pretraining-"
+            "contamination holdout", framework_id,
+        )
+    if not kept:
+        raise ValueError(
+            f"Every framework on disk is a holdout ({sorted(dropped)}), so "
+            f"the merged corpus would be empty. Parse at least one framework "
+            f"that is not in HOLDOUT_FRAMEWORK_IDS."
+        )
+    return kept
 
 
 def _build(frameworks: list[dict[str, object]]) -> dict[str, object]:
@@ -91,6 +132,8 @@ def main(
         data = load_json(path)
         frameworks.append(data)
         logger.info("Loaded %s: %d controls", path.stem, _control_count(data))
+
+    frameworks = _drop_holdouts(frameworks)
 
     restricted = [
         f for f in frameworks if f.get("framework_id") in RESTRICTED_FRAMEWORK_IDS
