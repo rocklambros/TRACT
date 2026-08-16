@@ -538,3 +538,33 @@ PHASE3_PROVENANCE_PRIORITY: Final[list[str]] = [
     "active_learning_round_2",
     "model_prediction",
 ]
+
+# ── Part 0.1: Ceiling study (blind expert-agreement) ──────────────────
+# Design doc: docs/superpowers/specs/2026-08-15-semantic-rebuild-design.md.
+# The 13/20 hidden-calibration datum (PHASE3_CALIBRATION_N_ITEMS above) has a
+# Wilson half-width of 0.193, too wide to gate anything. This study replaces
+# it with n=250, powered to a half-width of 0.059 at alpha ~= 0.65.
+CEILING_STUDY_DIR: Final[Path] = PROJECT_ROOT / "results" / "ceiling_study"
+CEILING_STUDY_SEED: Final[int] = 42
+CEILING_STUDY_N_ITEMS: Final[int] = 250
+CEILING_STUDY_STRATUM_SIZE: Final[int] = 125
+CEILING_STUDY_MAX_ACCEPTABLE_HUBS: Final[int] = 5
+
+# Only frameworks whose text is stable under the pending corpus rebuild are
+# eligible. The other 15 curated frameworks either have a parser landing
+# (biml, csa_ccm, dsomm, enisa, etsi, iso_27001, nist_800_63, nist_ssdf,
+# owasp_proactive_controls, owasp_top10_2021, samm, wstg) or a source being
+# re-pinned (asvs, owasp_cheat_sheets, owasp_ml_top10), and sampling their
+# text now would draw items whose control_text will not match what the model
+# is eventually trained and evaluated against.
+CEILING_STUDY_VALIDATION_FRAMEWORKS: Final[tuple[str, ...]] = (
+    "capec", "cwe", "nist_800_53",
+)
+CEILING_STUDY_TEST_FRAMEWORKS: Final[tuple[str, ...]] = (
+    "mitre_atlas", "owasp_ai_exchange", "nist_ai_100_2", "owasp_llm_top10",
+)
+
+# The half-width the study was powered to (n=250 at alpha ~= 0.65, see the
+# design doc table). The scorer reports this alongside the achieved
+# half-width so a wider-than-planned result is visible rather than silent.
+CEILING_STUDY_TARGET_HALF_WIDTH: Final[float] = 0.059

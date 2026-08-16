@@ -53,6 +53,40 @@ def atomic_write_json(data: Any, path: Path | str) -> None:
         raise
 
 
+def atomic_write_text(text: str, path: Path | str) -> None:
+    """Atomically write *text* to *path*.
+
+    Same temp-file-then-os.replace() pattern as atomic_write_json, for
+    non-JSON output (markdown, generated documentation) that still needs to
+    never leave a partial file on crash.
+
+    Args:
+        text: The full file contents to write, encoded as UTF-8.
+        path: Destination file path.
+
+    Raises:
+        OSError: If the write or rename fails.
+    """
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+
+    fd, tmp_path = tempfile.mkstemp(
+        dir=target.parent,
+        prefix=f".{target.name}.",
+        suffix=".tmp",
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        os.replace(tmp_path, target)
+    except Exception:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
+
 def load_json(path: Path | str) -> Any:
     """Load and return parsed JSON from *path*.
 
