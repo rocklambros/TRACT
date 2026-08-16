@@ -148,6 +148,43 @@ class TestIso27001Parser:
         assert controls["5.6"].description.rstrip().endswith("associations.")
         assert not controls["5.7"].description.startswith("associations")
 
+    @pytest.mark.parametrize(("control_id", "expected"), [
+        ("5.6", "The organization shall establish and maintain contact with "
+                "special interest groups or other specialist security forums "
+                "and professional associations."),
+        ("5.7", "Information relating to information security threats shall be "
+                "collected and analysed to produce threat intelligence."),
+        ("5.17", "Allocation and management of authentication information "
+                 "shall be controlled by a management process, including "
+                 "advising personnel on appropriate handling of authentication "
+                 "information."),
+        ("5.18", "Access rights to information and other associated assets "
+                 "shall be provisioned, reviewed, modified and removed in "
+                 "accordance with the organization's topic-specific policy on "
+                 "and rules for access control."),
+        # The damaged pair. 7.5's expected output carries the elision marker
+        # where the conversion lost a clause, NOT the fluent join that reads
+        # "such as natural infrastructure shall be designed and implemented."
+        ("7.5", "Protection against physical andenvironmental threats, such as "
+                "natural [...] infrastructure shall be designed and "
+                "implemented."),
+        ("7.6", "Security measures for working in secure areas shall be "
+                "designed and implemented."),
+        ("7.8", "Equipment shall be sited securely and protected."),
+        ("7.9", "Off-site assets shall be protected."),
+    ])
+    def test_every_bleed_pair_matches_hand_checked_output(
+        self, parser: Iso27001Parser, control_id: str, expected: str,
+    ) -> None:
+        """All four pairs, both sides, pinned to exact text.
+
+        This repair reattributes a compliance statement from one control id to
+        another, so a count proves nothing. Only one pair was pinned before,
+        and the pair that was wrong was not the pinned one.
+        """
+        controls = {c.control_id: c for c in parser.parse()}
+        assert controls[control_id].description == expected
+
     def test_splits_the_run_together_token_in_5_10(
         self, parser: Iso27001Parser,
     ) -> None:
