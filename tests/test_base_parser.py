@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from pathlib import Path
@@ -190,3 +191,55 @@ class TestBaseParserRun:
         assert len(parts[0]) == 4
         assert len(parts[1]) == 2
         assert len(parts[2]) == 2
+
+
+class ReadingParser(BaseParser):
+    """Parser that reads two real files through read_source()."""
+
+    framework_id: ClassVar[str] = "reading_fw"
+    framework_name: ClassVar[str] = "Reading Framework"
+    version: ClassVar[str] = "1.0"
+    source_url: ClassVar[str] = "https://example.com/reading"
+    mapping_unit_level: ClassVar[str] = "control"
+    expected_count: ClassVar[int] = 1
+
+    def parse(self) -> list[Control]:
+        first = self.read_source("a.txt")
+        second = self.read_source("b.txt")
+        return [Control(
+            control_id="R-001",
+            title="Read control",
+            description=f"{first.strip()} and {second.strip()} together.",
+        )]
+
+
+class TestSourceManifest:
+    def test_records_every_file_read(self, tmp_path: Path) -> None:
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "a.txt").write_text("alpha", encoding="utf-8")
+        (raw / "b.txt").write_text("beta", encoding="utf-8")
+        out = tmp_path / "out"
+        out.mkdir()
+
+        result = ReadingParser(raw_dir=raw, output_dir=out).run()
+
+        recorded = {s.path: s for s in result.source_files}
+        assert set(recorded) == {"a.txt", "b.txt"}
+        assert recorded["a.txt"].sha256 == hashlib.sha256(b"alpha").hexdigest()
+        assert recorded["b.txt"].sha256 == hashlib.sha256(b"beta").hexdigest()
+        assert recorded["a.txt"].bytes == 5
+        assert recorded["b.txt"].bytes == 4
+
+    def test_manifest_is_sorted_for_determinism(self, tmp_path: Path) -> None:
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "b.txt").write_text("beta", encoding="utf-8")
+        (raw / "a.txt").write_text("alpha", encoding="utf-8")
+        out = tmp_path / "out"
+        out.mkdir()
+
+        result = ReadingParser(raw_dir=raw, output_dir=out).run()
+
+        paths = [s.path for s in result.source_files]
+        assert paths == sorted(paths)

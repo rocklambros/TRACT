@@ -7,6 +7,7 @@ validation, count-checking, and atomic output writing.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
@@ -22,7 +23,7 @@ from tract.config import (
 )
 from tract.io import atomic_write_json
 from tract.sanitize import sanitize_text
-from tract.schema import Control, FrameworkOutput
+from tract.schema import Control, FrameworkOutput, SourceFile
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +99,9 @@ class BaseParser(ABC):
         self._raw_dir: Path | None = raw_dir
         self.output_dir = output_dir or PROCESSED_FRAMEWORKS_DIR
 
+        # Populated by read_source*/; drained into FrameworkOutput by run().
+        self._source_files: dict[str, SourceFile] = {}
+
     @property
     def raw_dir(self) -> Path:
         """The framework's raw directory, resolved on first use.
@@ -121,6 +125,26 @@ class BaseParser(ABC):
             List of Control objects with raw (unsanitized) text fields.
         """
         ...
+
+    def read_source_bytes(self, name: str) -> bytes:
+        """Read one raw input file and record its digest.
+
+        Parsers must read through this rather than opening files directly.
+        A file read outside it is invisible to the manifest, which defeats
+        the point of recording one.
+        """
+        path = self.raw_dir / name
+        payload = path.read_bytes()
+        self._source_files[name] = SourceFile(
+            path=name,
+            sha256=hashlib.sha256(payload).hexdigest(),
+            bytes=len(payload),
+        )
+        return payload
+
+    def read_source(self, name: str, encoding: str = "utf-8") -> str:
+        """Read one raw input file as text and record its digest."""
+        return self.read_source_bytes(name).decode(encoding)
 
     def run(self) -> FrameworkOutput:
         """Execute the full parser pipeline: parse -> sanitize -> validate -> write.
@@ -158,6 +182,9 @@ class BaseParser(ABC):
             fetched_date=self._today(),
             mapping_unit_level=self.mapping_unit_level,
             controls=sanitized_controls,
+            source_files=[
+                self._source_files[k] for k in sorted(self._source_files)
+            ],
         )
 
         output_path = self.output_dir / f"{self.framework_id}.json"
