@@ -137,3 +137,34 @@ def split_run_together(
         out.append(token.replace(stripped, " ".join(parts)))
         applied += 1
     return RepairResult(text=" ".join(out), applied=applied)
+
+
+def repair_cell_bleed(
+    rows: list[tuple[str, str, str]], marker: str = "Control",
+) -> tuple[list[tuple[str, str, str]], int]:
+    """Move a spilled sentence fragment back to the row it belongs to.
+
+    PDF table extraction can carry the tail of one cell into the next row, so
+    the predecessor ends mid-sentence and the successor opens with a fragment.
+    Every real row's text begins with the marker word, which is what makes the
+    boundary recoverable.
+
+    Returns (rows, applied). Only fires when the successor has a predecessor
+    and the marker appears after position 0, so a genuinely leading fragment
+    with nowhere to go is left visible rather than silently discarded.
+    """
+    repaired: list[tuple[str, str, str]] = []
+    applied = 0
+    for control_id, title, text in rows:
+        stripped = text.strip()
+        index = stripped.find(marker)
+        if not repaired or index <= 0:
+            repaired.append((control_id, title, stripped))
+            continue
+        fragment = stripped[:index].strip()
+        remainder = stripped[index:].strip()
+        prev_id, prev_title, prev_text = repaired[-1]
+        repaired[-1] = (prev_id, prev_title, f"{prev_text} {fragment}".strip())
+        repaired.append((control_id, title, remainder))
+        applied += 1
+    return repaired, applied

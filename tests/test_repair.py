@@ -105,3 +105,44 @@ class TestRunTogether:
         # "act" is 3 and kept; a 4-char floor would drop it.
         assert "act" in build_vocabulary(["The Owner shall act"], min_length=3)
         assert "act" not in build_vocabulary(["The Owner shall act"], min_length=4)
+
+
+class TestCellBleed:
+    def test_moves_a_spilled_fragment_back_to_its_own_row(self) -> None:
+        from tract.parsers.repair import repair_cell_bleed
+
+        rows = [
+            ("5.6", "Contact with special interest groups",
+             "Control The organization shall maintain contact with special "
+             "interest groups or other specialist security forums and professional"),
+            ("5.7", "Threat intelligence",
+             "associations. Control Information relating to threats shall be "
+             "collected and analysed."),
+        ]
+        repaired, applied = repair_cell_bleed(rows)
+
+        assert applied == 1
+        assert repaired[0][2].endswith("and professional associations.")
+        assert repaired[1][2] == (
+            "Control Information relating to threats shall be collected "
+            "and analysed."
+        )
+
+    def test_leaves_well_formed_rows_untouched(self) -> None:
+        from tract.parsers.repair import repair_cell_bleed
+
+        rows = [
+            ("5.1", "Policies", "Control Policies shall be defined."),
+            ("5.2", "Roles", "Control Roles shall be allocated."),
+        ]
+        repaired, applied = repair_cell_bleed(rows)
+        assert applied == 0
+        assert repaired == rows
+
+    def test_a_leading_fragment_with_no_previous_row_is_left_alone(self) -> None:
+        from tract.parsers.repair import repair_cell_bleed
+
+        rows = [("5.1", "Policies", "orphan fragment. Control Policies apply.")]
+        repaired, applied = repair_cell_bleed(rows)
+        assert applied == 0
+        assert repaired == rows
