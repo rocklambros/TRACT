@@ -57,8 +57,14 @@ flowchart LR
 | **AI↔traditional bridges** | 46 accepted (of 63 candidates) |
 | **Evaluation** | LOFO cross-validation with hub firewall |
 
-The counts above are inventory, not model accuracy, and every assignment in the
-published crosswalk was reviewed by a human expert. Full experiment narrative in
+The counts above are inventory, not model accuracy. **They are not a quality
+claim either:** the large majority of published assignments are OpenCRE's own
+ground-truth links, imported rather than reviewed here, and the reviewed portion
+is the 878 model predictions judged by a single reviewer whose agreement against
+20 hidden calibration items was 13/20. Inter-rater reliability is not measured.
+An earlier version of this paragraph, written the same day as the withdrawal
+above, claimed every assignment was expert-reviewed. That was wrong and is
+withdrawn. Full experiment narrative in
 [`tract_experimental_narrative.ipynb`](tract_experimental_narrative.ipynb).
 
 ## Quick Start
