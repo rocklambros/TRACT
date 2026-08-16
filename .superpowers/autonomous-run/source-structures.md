@@ -613,20 +613,21 @@ ids.
   or (b) attempt paragraph/bullet-level segmentation by technique name,
   which is fragile prose-heuristic work, not structural parsing.
 
-**Verbatim sample** (section 6.2.3, excerpt):
+**Shape of a subsection** (section 6.2.3, described rather than quoted; ETSI
+reserves reproduction, see NOTICE, so the wording stays out of git):
 ```
-6.2.3 Model-agnostic mitigations against evasion attacks
-Model-agnostic mitigations aim at detecting adversarial examples, restoring
-input samples or restoring model output. With the focus on inference data
-samples, adversarial example detection and input restoration are two
-approaches.
-Adversarial example detections investigate input samples and tell if they
-are manipulated. Here are some existing methods:
-• Input transformation: for image classifiers, image transformations, such
-  as rotation and shifting, are proposed to detect adversarial examples...
-• Statistics: to detect adversarial examples, some research seek for proper
-  statistics...
+<clause number> <heading, e.g. mitigations of one kind against one attack>
+<topic paragraph naming the approaches the clause covers>
+<paragraph introducing the first approach, ending in a colon>
+• <technique name>: <one to three sentences, sometimes a [i.NN] citation>
+• <technique name>: <one to three sentences>
+<paragraph introducing the second approach, ending in a colon>
+• <technique name>: <one to three sentences>
 ```
+So: one numbered clause, a lead paragraph, then bullet groups whose lead
+phrase before the first colon is the technique name. No structural markup
+separates the technique name from its body, which is what makes option (b)
+above fragile.
 
 **Count**: not independently recountable as a flat list — the source has no
 enumerated "N controls" statement the way ENISA does. OpenCRE's link rows:

@@ -15,5 +15,5 @@ Table A.1 - ACME control catalogue
 | 7.6 | Working in restricted zones | restoration infrastructure shall be designed and implemented. Control Physical safeguards for restricted zones shall be designed and implemented. |
 | 7.8 | Device siting and protection | Control |
 | 7.9 | Security of offsite devices | Devices shall be sited securely and protected. Control Offsite devices shall be protected. |
-| 7.10 | Removable media handling | Control Removable media shall be managed through its full life cycle of acquisition, use, transport anddisposal in accordance with the organization's classification scheme and handling requirements. |
+| 7.10 | Removable media handling | Control Removable media shall be managed through its full life cycle of acquisition, use, transport anddisposal under the facility's own asset grading scheme and its handling rules. |
 ## ACME Secure Systems Handbook (2026)
