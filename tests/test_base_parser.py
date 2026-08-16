@@ -134,10 +134,10 @@ class TestBaseParserRun:
         assert ctrl.full_text is not None
         assert len(ctrl.full_text) == 3000
 
-    def test_count_mismatch_warns(
-        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    def test_count_mismatch_raises(
+        self, tmp_path: Path
     ) -> None:
-        """Deviation from expected_count logs a WARNING."""
+        """Deviation from expected_count raises ValueError."""
         single_control = [
             Control(
                 control_id="ONLY-001",
@@ -152,10 +152,8 @@ class TestBaseParserRun:
         )
         # expected_count is 2, but we provide 1 -> 50% deviation
 
-        with caplog.at_level(logging.WARNING):
+        with pytest.raises(ValueError, match="deviation"):
             parser.run()
-
-        assert any("deviation" in r.message.lower() for r in caplog.records)
 
     def test_count_match_no_warning(
         self, tmp_path: Path, caplog: pytest.LogCaptureFixture
@@ -181,6 +179,36 @@ class TestBaseParserRun:
 
         with pytest.raises(ValueError, match="zero controls"):
             parser.run()
+
+
+class TestCountCheckRaises:
+    def test_raises_when_count_is_outside_tolerance(self, tmp_path: Path) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+        only_one = [Control(
+            control_id="STUB-001", title="First", description="Only one here.",
+        )]
+        parser = StubParser(raw_dir=tmp_path, output_dir=out, controls=only_one)
+
+        with pytest.raises(ValueError, match="expected 2"):
+            parser.run()
+
+    def test_documented_opt_out_permits_the_deviation(self, tmp_path: Path) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class DriftingParser(StubParser):
+            count_deviation_reason: ClassVar[str] = (
+                "Upstream merged two controls in the 2026 revision."
+            )
+
+        only_one = [Control(
+            control_id="STUB-001", title="First", description="Only one here.",
+        )]
+        result = DriftingParser(
+            raw_dir=tmp_path, output_dir=out, controls=only_one,
+        ).run()
+        assert len(result.controls) == 1
 
 
 class ReadingParser(BaseParser):

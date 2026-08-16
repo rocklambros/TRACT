@@ -54,6 +54,10 @@ class BaseParser(ABC):
     # Set only when the raw directory is not the framework_id in either
     # underscore or hyphen form. Kept explicit rather than guessed.
     raw_dir_name: ClassVar[str | None] = None
+    # Set to a written reason when a parser legitimately deviates from its
+    # expected count. Unset means a deviation is a bug and run() refuses to
+    # write. A warning that nobody reads is not a gate.
+    count_deviation_reason: ClassVar[str | None] = None
 
     @classmethod
     def resolve_raw_dir(cls) -> Path:
@@ -247,13 +251,17 @@ class BaseParser(ABC):
         )
 
     def _check_expected_count(self, actual: int) -> None:
-        """Log a warning if the parsed count deviates from expected.
+        """Raise if the parsed count deviates from expected without documented reason.
 
         Uses COUNT_TOLERANCE (default 10%) to determine deviation threshold.
         Falls back to the class attribute expected_count, then EXPECTED_COUNTS.
 
         Args:
             actual: Number of controls actually parsed.
+
+        Raises:
+            ValueError: If actual count deviates beyond tolerance and no
+                count_deviation_reason is set.
         """
         expected = getattr(self, "expected_count", None)
         if expected is None:
@@ -267,18 +275,26 @@ class BaseParser(ABC):
             return
 
         deviation = abs(actual - expected) / expected
-        if deviation > COUNT_TOLERANCE:
-            logger.warning(
-                "%s: parsed %d controls, expected %d (%.1f%% deviation)",
-                self.framework_id,
-                actual,
-                expected,
-                deviation * 100,
-            )
-        else:
+        if deviation <= COUNT_TOLERANCE:
             logger.info(
                 "%s: parsed %d controls (expected %d, within tolerance)",
-                self.framework_id,
-                actual,
-                expected,
+                self.framework_id, actual, expected,
             )
+            return
+
+        if self.count_deviation_reason:
+            logger.warning(
+                "%s: parsed %d controls, expected %d (%.1f%% deviation). "
+                "Permitted: %s",
+                self.framework_id, actual, expected, deviation * 100,
+                self.count_deviation_reason,
+            )
+            return
+
+        raise ValueError(
+            f"{self.framework_id}: parsed {actual} controls, expected "
+            f"{expected} ({deviation * 100:.1f}% deviation, tolerance "
+            f"{COUNT_TOLERANCE * 100:.0f}%). Either the source changed or the "
+            f"parser is wrong. If the deviation is correct, set "
+            f"count_deviation_reason on the parser with the reason."
+        )
