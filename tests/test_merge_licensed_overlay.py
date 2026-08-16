@@ -40,9 +40,12 @@ def _framework(framework_id: str, fetched_date: str, description: str) -> dict[s
     }
 
 
-ISO_PROSE = (
-    "Information security policy and topic-specific policies shall be "
-    "defined, approved by management and reviewed at planned intervals."
+# Stands in for a restricted framework's control statement. Invented prose,
+# not a quotation of any licensed source, since this test only needs
+# something long enough to be treated as a statement rather than a title.
+RESTRICTED_PROSE = (
+    "Access credentials for regional facilities shall be issued, reviewed, "
+    "and revoked under a documented process approved by the security lead."
 )
 
 
@@ -57,7 +60,7 @@ def corpus(tmp_path: Path) -> tuple[Path, Path, Path]:
         encoding="utf-8",
     )
     (frameworks_dir / f"{restricted_id}.json").write_text(
-        json.dumps(_framework(restricted_id, "2026-08-15", ISO_PROSE)),
+        json.dumps(_framework(restricted_id, "2026-08-15", RESTRICTED_PROSE)),
         encoding="utf-8",
     )
     return frameworks_dir, tmp_path / "processed", tmp_path / "licensed"
@@ -79,7 +82,7 @@ class TestRestrictedFrameworksStayOutOfTheTrackedMerge:
         )
         ids = {f["framework_id"] for f in tracked["frameworks"]}
         assert ids == {"public_fw"}
-        assert ISO_PROSE not in json.dumps(tracked)
+        assert RESTRICTED_PROSE not in json.dumps(tracked)
         assert tracked["framework_count"] == 1
         assert tracked["total_controls"] == 1
 
@@ -98,7 +101,7 @@ class TestRestrictedFrameworksStayOutOfTheTrackedMerge:
         )
         ids = {f["framework_id"] for f in overlay["frameworks"]}
         assert ids == {"public_fw", sorted(RESTRICTED_FRAMEWORK_IDS)[0]}
-        assert ISO_PROSE in json.dumps(overlay)
+        assert RESTRICTED_PROSE in json.dumps(overlay)
 
     def test_generated_date_comes_only_from_included_frameworks(
         self, corpus: tuple[Path, Path, Path]
