@@ -27,8 +27,15 @@ import logging
 import re
 from typing import ClassVar, Final
 
+from tract.config import (
+    CONTROL_DAMAGE_REASON_METADATA_KEY,
+    CONTROL_DAMAGED_METADATA_KEY,
+    CONTROL_DAMAGED_METADATA_VALUE,
+    CONTROL_ELISION_MARKER,
+)
 from tract.parsers.base import BaseParser
 from tract.parsers.repair import (
+    BleedJoin,
     build_vocabulary,
     fix_hyphen_breaks,
     repair_cell_bleed,
@@ -70,6 +77,26 @@ RUN_TOGETHER_MIN_LENGTH: Final[int] = 20
 MAX_HYPHEN_REPAIRS: Final[int] = 40
 MAX_RUN_TOGETHER_REPAIRS: Final[int] = 30
 MAX_BLEED_REPAIRS: Final[int] = 6
+
+# Controls whose source text lost content that no transform can recover, keyed
+# to the reason. The cell-bleed repair joins a truncated head to the fragment
+# that opens the next row, and the shape gate cannot see that the source also
+# dropped the clause between them: head and tail still read as one sentence.
+#
+# These are hand-verified against the raw markdown. NEVER add an entry by
+# writing the missing text from memory. Inventing a normative control
+# statement is worse than shipping a disclosed gap, because a reader cannot
+# tell an invented requirement from a real one.
+KNOWN_DAMAGED_CONTROLS: Final[dict[str, str]] = {
+    "7.5": (
+        "unrecoverable from this source: the markdown conversion dropped the "
+        "clause between 'such as natural' and 'infrastructure shall be "
+        "designed and implemented.' Neither 'disasters' nor 'unintentional' "
+        "appears anywhere in the raw file, so the words are gone rather than "
+        "misplaced. The owner must supply the clause from the licensed PDF "
+        "before this control carries a complete requirement."
+    ),
+}
 
 # A control's description is flagged as still damaged if, after every repair
 # has run, it still contains an unbroken letters-only run this long. This is
@@ -128,8 +155,13 @@ class Iso27001Parser(BaseParser):
     def parse(self) -> list[Control]:
         text = self.read_source(SOURCE_FILE)
         rows = self._extract_rows(text)
-        rows, bleed = repair_cell_bleed(rows, marker=STATEMENT_MARKER)
-        self._check_repair("cell bleed", bleed, MAX_BLEED_REPAIRS)
+        rows, joins = repair_cell_bleed(rows, marker=STATEMENT_MARKER)
+        rows = self._disclose_damaged_joins(rows, joins)
+        self.write_repair_audit([self._audit_record(j) for j in joins])
+        self._log_joins(joins)
+        self._check_repair(
+            "cell bleed", sum(1 for j in joins if j.applied), MAX_BLEED_REPAIRS,
+        )
 
         # Built from the statements themselves. A run-together token's parts
         # are ordinary words that appear elsewhere in the same table. The raw
@@ -162,6 +194,7 @@ class Iso27001Parser(BaseParser):
                 control_id=control_id,
                 title=fixed_title.text.strip(),
                 description=body,
+                metadata=self._damage_metadata(control_id, joins),
             ))
 
         self._check_repair("hyphen break", hyphen_total, MAX_HYPHEN_REPAIRS)
@@ -176,6 +209,96 @@ class Iso27001Parser(BaseParser):
                 self.framework_id, len(residual), ", ".join(residual),
             )
         return controls
+
+    @staticmethod
+    def _disclose_damaged_joins(
+        rows: list[tuple[str, str, str]], joins: list[BleedJoin],
+    ) -> list[tuple[str, str, str]]:
+        """Rewrite a known-damaged row so its statement shows the gap.
+
+        The fragment does belong to the predecessor, so leaving it on the
+        successor would create a second wrong statement. It is moved, and an
+        elision marker goes where the source lost text, which is the opposite
+        of inventing content: the emitted statement declares its own hole
+        rather than reading as though nothing is missing.
+        """
+        damaged_text = {
+            j.predecessor_id: (
+                f"{j.predecessor_before} {CONTROL_ELISION_MARKER} {j.fragment}"
+            )
+            for j in joins
+            if j.applied and j.predecessor_id in KNOWN_DAMAGED_CONTROLS
+        }
+        if not damaged_text:
+            return rows
+        return [
+            (cid, title, damaged_text.get(cid, body)) for cid, title, body in rows
+        ]
+
+    @staticmethod
+    def _damage_metadata(
+        control_id: str, joins: list[BleedJoin],
+    ) -> dict[str, str | list[str]] | None:
+        """Damage marker for one control, or None when its text is intact.
+
+        Two sources of damage. A control in KNOWN_DAMAGED_CONTROLS lost text
+        the source cannot supply. A control whose incoming join was refused
+        still carries a fragment belonging to its predecessor, which the
+        repair declined to move because the shapes were inconsistent.
+        """
+        reason = KNOWN_DAMAGED_CONTROLS.get(control_id)
+        if reason is None:
+            refused = [
+                j for j in joins
+                if j.successor_id == control_id and not j.applied
+            ]
+            if not refused:
+                return None
+            reason = (
+                f"leading fragment from {refused[0].predecessor_id} was not "
+                f"moved: {refused[0].refusal_reason}"
+            )
+        return {
+            CONTROL_DAMAGED_METADATA_KEY: CONTROL_DAMAGED_METADATA_VALUE,
+            CONTROL_DAMAGE_REASON_METADATA_KEY: reason,
+        }
+
+    @staticmethod
+    def _audit_record(join: BleedJoin) -> dict[str, object]:
+        """One inspectable before/after pair for the gitignored audit file."""
+        return {
+            "predecessor_id": join.predecessor_id,
+            "successor_id": join.successor_id,
+            "fragment": join.fragment,
+            "predecessor_before": join.predecessor_before,
+            "predecessor_after": join.predecessor_after,
+            "applied": join.applied,
+            "refusal_reason": join.refusal_reason,
+            "known_damaged": join.predecessor_id in KNOWN_DAMAGED_CONTROLS,
+        }
+
+    def _log_joins(self, joins: list[BleedJoin]) -> None:
+        """Log every bleed decision at WARNING with both ids and the text.
+
+        This repair reattributes a compliance statement from one control id to
+        another. That is not a detail worth an INFO line nobody reads.
+        """
+        for join in joins:
+            if join.applied:
+                logger.warning(
+                    "%s: moved %r from %s to %s%s",
+                    self.framework_id, join.fragment, join.successor_id,
+                    join.predecessor_id,
+                    " (marked damaged, source lost a clause)"
+                    if join.predecessor_id in KNOWN_DAMAGED_CONTROLS else "",
+                )
+                continue
+            logger.warning(
+                "%s: refused to move %r from %s to %s: %s. %s keeps text that "
+                "is not its own and is marked damaged",
+                self.framework_id, join.fragment, join.successor_id,
+                join.predecessor_id, join.refusal_reason, join.successor_id,
+            )
 
     @staticmethod
     def _find_residual_run_together(controls: list[Control]) -> list[str]:

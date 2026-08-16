@@ -5,10 +5,10 @@ BaseParser refuses to write when a repair exceeds its declared ceiling, so a
 transform that starts eating good text is caught by its own counter rather
 than by someone reading the corpus months later.
 
-A count is not a diff. Repairs that move text across control boundaries also
-emit before/after pairs into an audit file, because a fragment attributed to
-the wrong control id is a wrong compliance assertion with a plausible-looking
-provenance record.
+A count is not a diff. Repairs that move text across control boundaries return
+their before/after pairs, and BaseParser.write_repair_audit persists them to a
+gitignored audit file, because a fragment attributed to the wrong control id is
+a wrong compliance assertion with a plausible-looking provenance record.
 """
 
 from __future__ import annotations
@@ -139,9 +139,34 @@ def split_run_together(
     return RepairResult(text=" ".join(out), applied=applied)
 
 
+@dataclass(frozen=True)
+class BleedJoin:
+    """One cell-bleed decision, recorded whether or not the join fired.
+
+    This repair moves text across control ids, so a fragment attributed to the
+    wrong control is a compliance assertion nobody wrote carrying a
+    plausible-looking provenance record. A caller needs the before and after
+    text, not a count, to check one.
+    """
+
+    predecessor_id: str
+    successor_id: str
+    fragment: str
+    predecessor_before: str
+    predecessor_after: str
+    applied: bool
+    refusal_reason: str | None = None
+
+
+# A predecessor that already closed its sentence has nothing for the next
+# row's leading fragment to complete, so a join there welds two unrelated
+# statements together.
+_TERMINAL_PUNCTUATION: Final[tuple[str, ...]] = (".", "!", "?")
+
+
 def repair_cell_bleed(
     rows: list[tuple[str, str, str]], marker: str = "Control",
-) -> tuple[list[tuple[str, str, str]], int]:
+) -> tuple[list[tuple[str, str, str]], list[BleedJoin]]:
     """Move a spilled sentence fragment back to the row it belongs to.
 
     PDF table extraction can carry the tail of one cell into the next row, so
@@ -149,22 +174,70 @@ def repair_cell_bleed(
     Every real row's text begins with the marker word, which is what makes the
     boundary recoverable.
 
-    Returns (rows, applied). Only fires when the successor has a predecessor
-    and the marker appears after position 0, so a genuinely leading fragment
-    with nowhere to go is left visible rather than silently discarded.
+    Returns (rows, joins). A candidate is only joined when the successor has a
+    predecessor, the marker appears after position 0, the fragment is
+    non-empty, and the predecessor ends without terminal punctuation. That
+    last condition is the gate: without it the repair fires on nothing more
+    than "a marker appears later in the string", which is true of any row that
+    happens to mention the marker word mid-sentence.
+
+    A refused candidate leaves both rows untouched and is still returned, with
+    a reason. Silence about a refusal is as misleading as a wrong join, since
+    the successor keeps text that is not its own.
+
+    Passing the gate does not prove the join is right. It proves the shapes
+    are consistent. Where the source itself lost a clause between head and
+    tail, no transform can tell, and the caller has to mark the control
+    damaged from its own knowledge of the source.
     """
     repaired: list[tuple[str, str, str]] = []
-    applied = 0
+    joins: list[BleedJoin] = []
     for control_id, title, text in rows:
         stripped = text.strip()
         index = stripped.find(marker)
         if not repaired or index <= 0:
             repaired.append((control_id, title, stripped))
             continue
+
         fragment = stripped[:index].strip()
         remainder = stripped[index:].strip()
         prev_id, prev_title, prev_text = repaired[-1]
-        repaired[-1] = (prev_id, prev_title, f"{prev_text} {fragment}".strip())
+
+        refusal = _refuse_join(prev_text, fragment)
+        if refusal is not None:
+            joins.append(BleedJoin(
+                predecessor_id=prev_id,
+                successor_id=control_id,
+                fragment=fragment,
+                predecessor_before=prev_text,
+                predecessor_after=prev_text,
+                applied=False,
+                refusal_reason=refusal,
+            ))
+            repaired.append((control_id, title, stripped))
+            continue
+
+        joined = f"{prev_text} {fragment}".strip()
+        repaired[-1] = (prev_id, prev_title, joined)
         repaired.append((control_id, title, remainder))
-        applied += 1
-    return repaired, applied
+        joins.append(BleedJoin(
+            predecessor_id=prev_id,
+            successor_id=control_id,
+            fragment=fragment,
+            predecessor_before=prev_text,
+            predecessor_after=joined,
+            applied=True,
+        ))
+    return repaired, joins
+
+
+def _refuse_join(predecessor: str, fragment: str) -> str | None:
+    """Reason to refuse a bleed join, or None when the shapes are consistent."""
+    if not fragment:
+        return "the fragment is empty, so there is nothing to move"
+    if predecessor.rstrip().endswith(_TERMINAL_PUNCTUATION):
+        return (
+            "the predecessor already ends its sentence, so the fragment does "
+            "not continue it"
+        )
+    return None

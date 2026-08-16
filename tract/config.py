@@ -18,6 +18,10 @@ PROCESSED_FRAMEWORKS_DIR: Final[Path] = PROCESSED_DIR / "frameworks"
 # Gitignored overlay for the merged corpus including licensed frameworks.
 # See RESTRICTED_FRAMEWORK_IDS below and parsers/merge_all_controls.py.
 PROCESSED_LICENSED_DIR: Final[Path] = PROCESSED_DIR / "licensed"
+# Gitignored before/after pairs for repairs that move text across control ids.
+# Gitignored because the pairs quote source text verbatim, and a restricted
+# framework's audit file would carry licensed prose into git.
+PROCESSED_REPAIR_AUDIT_DIR: Final[Path] = PROCESSED_DIR / "repair_audit"
 TRAINING_DIR: Final[Path] = DATA_DIR / "training"
 MODELS_DIR: Final[Path] = PROJECT_ROOT / "models"
 HUB_PROPOSALS_DIR: Final[Path] = PROJECT_ROOT / "hub_proposals"
@@ -38,6 +42,17 @@ COUNT_TOLERANCE: Final[float] = 0.10
 # Measured: the 12 synthesised frameworks have a 0% honest-prose rate at this
 # threshold and every parser-backed framework has at least 76%.
 HONEST_PROSE_MIN_CHARS: Final[int] = 60
+
+# Marks a control whose source text is known to be incomplete. Set by a parser
+# that can prove the damage but cannot repair it, so downstream readers can
+# exclude the control instead of trusting a statement with a hole in it.
+CONTROL_DAMAGED_METADATA_KEY: Final[str] = "damaged"
+CONTROL_DAMAGE_REASON_METADATA_KEY: Final[str] = "damage_reason"
+CONTROL_DAMAGED_METADATA_VALUE: Final[str] = "true"
+
+# Stands in for text the source lost. Editorial on purpose: a reader must not
+# be able to mistake a repaired statement for the standard's own wording.
+CONTROL_ELISION_MARKER: Final[str] = "[...]"
 
 # ── Licensed source text ──────────────────────────────────────────────────
 # Frameworks whose source text is licensed such that redistribution under this

@@ -119,9 +119,9 @@ class TestCellBleed:
              "associations. Control Information relating to threats shall be "
              "collected and analysed."),
         ]
-        repaired, applied = repair_cell_bleed(rows)
+        repaired, joins = repair_cell_bleed(rows)
 
-        assert applied == 1
+        assert [j.applied for j in joins] == [True]
         assert repaired[0][2].endswith("and professional associations.")
         assert repaired[1][2] == (
             "Control Information relating to threats shall be collected "
@@ -135,14 +135,59 @@ class TestCellBleed:
             ("5.1", "Policies", "Control Policies shall be defined."),
             ("5.2", "Roles", "Control Roles shall be allocated."),
         ]
-        repaired, applied = repair_cell_bleed(rows)
-        assert applied == 0
+        repaired, joins = repair_cell_bleed(rows)
+        assert joins == []
         assert repaired == rows
 
     def test_a_leading_fragment_with_no_previous_row_is_left_alone(self) -> None:
         from tract.parsers.repair import repair_cell_bleed
 
         rows = [("5.1", "Policies", "orphan fragment. Control Policies apply.")]
-        repaired, applied = repair_cell_bleed(rows)
-        assert applied == 0
+        repaired, joins = repair_cell_bleed(rows)
+        assert joins == []
         assert repaired == rows
+
+    def test_refuses_the_join_when_the_predecessor_ends_a_sentence(self) -> None:
+        """A complete predecessor sentence has nothing for a fragment to finish.
+
+        The unguarded repair joined on nothing more than "the marker appears
+        after position 0", which welds a head to an unrelated tail and emits a
+        grammatically plausible compliance statement nobody wrote.
+        """
+        from tract.parsers.repair import repair_cell_bleed
+
+        rows = [
+            ("5.1", "Policies", "Control Policies shall be defined and approved."),
+            ("5.2", "Roles",
+             "leftover words. Control Roles shall be allocated by management."),
+        ]
+        repaired, joins = repair_cell_bleed(rows)
+
+        assert [j.applied for j in joins] == [False]
+        assert joins[0].refusal_reason is not None
+        assert repaired == rows
+
+    def test_records_both_ids_and_the_moved_text_for_audit(self) -> None:
+        """A count is not a diff. The pair has to be inspectable afterwards."""
+        from tract.parsers.repair import repair_cell_bleed
+
+        rows = [
+            ("7.5", "Protecting against threats",
+             "Control Protection against threats, such as natural"),
+            ("7.6", "Working in secure areas",
+             "infrastructure shall be designed. Control Security measures "
+             "shall be designed and implemented."),
+        ]
+        _, joins = repair_cell_bleed(rows)
+
+        assert len(joins) == 1
+        join = joins[0]
+        assert join.predecessor_id == "7.5"
+        assert join.successor_id == "7.6"
+        assert join.fragment == "infrastructure shall be designed."
+        assert join.predecessor_before == (
+            "Control Protection against threats, such as natural"
+        )
+        assert join.predecessor_after.endswith(
+            "such as natural infrastructure shall be designed."
+        )

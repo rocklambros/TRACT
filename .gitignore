@@ -34,3 +34,7 @@ venv/
 # design and tests/test_licensed_text_not_tracked.py for the enforcement.
 data/processed/frameworks/iso_27001.json
 data/processed/licensed/
+# Repair audit records quote source text verbatim on both sides of a move, so
+# a restricted framework's audit file carries the same licensed prose the two
+# rules above keep out of git.
+data/processed/repair_audit/

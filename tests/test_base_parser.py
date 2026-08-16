@@ -30,8 +30,11 @@ class StubParser(BaseParser):
         raw_dir: Path | None = None,
         output_dir: Path | None = None,
         controls: list[Control] | None = None,
+        audit_dir: Path | None = None,
     ) -> None:
-        super().__init__(raw_dir=raw_dir, output_dir=output_dir)
+        super().__init__(
+            raw_dir=raw_dir, output_dir=output_dir, audit_dir=audit_dir,
+        )
         if controls is not None:
             self._controls = controls
         else:
@@ -329,3 +332,70 @@ class TestProseFloor:
             Control(control_id="A", title=long_title, description=long_title),
         ]
         assert BaseParser.honest_prose_fraction(controls) == 0.0
+
+    def test_a_damaged_control_is_excluded_from_the_measurement(self) -> None:
+        """Damaged text must neither earn credit nor cost it.
+
+        A control the parser has marked damaged is one whose source lost
+        content. Counting it as prose lets a known-wrong statement clear the
+        floor; counting it against the parser punishes an honest disclosure.
+        """
+        good = Control(
+            control_id="A", title="Access control",
+            description="Rules for access shall be defined, documented and "
+                        "reviewed at planned intervals by the owner.",
+        )
+        damaged = Control(
+            control_id="B", title="Protecting against threats",
+            description="Protection against threats, such as natural [...] "
+                        "infrastructure shall be designed and implemented.",
+            metadata={"damaged": "true", "damage_reason": "clause lost in conversion"},
+        )
+        assert BaseParser.honest_prose_fraction([good, damaged]) == 1.0
+        assert BaseParser.is_damaged(damaged)
+        assert not BaseParser.is_damaged(good)
+
+    def test_every_control_damaged_measures_zero_rather_than_dividing_by_zero(
+        self,
+    ) -> None:
+        damaged = Control(
+            control_id="B", title="T", description="D",
+            metadata={"damaged": "true", "damage_reason": "r"},
+        )
+        assert BaseParser.honest_prose_fraction([damaged]) == 0.0
+
+
+class TestRepairAudit:
+    def test_writes_one_sorted_json_object_per_record(self, tmp_path: Path) -> None:
+        """The audit file the repair-layer docstring promises must exist.
+
+        The claim that repairs emit before/after pairs was in three documents
+        and no function. A docstring asserting a control that does not exist
+        is worse than no docstring.
+        """
+        audit = tmp_path / "audit"
+        parser = StubParser(raw_dir=tmp_path, output_dir=tmp_path, audit_dir=audit)
+
+        path = parser.write_repair_audit([
+            {"successor_id": "5.7", "predecessor_id": "5.6", "applied": True},
+            {"successor_id": "7.6", "predecessor_id": "7.5", "applied": False},
+        ])
+
+        lines = path.read_text(encoding="utf-8").splitlines()
+        assert path == audit / "stub_fw.jsonl"
+        assert len(lines) == 2
+        first = json.loads(lines[0])
+        assert first["predecessor_id"] == "5.6"
+        # Sorted keys, so re-running against the same source gives the same
+        # bytes and a diff of the audit file shows real changes only.
+        assert list(first) == sorted(first)
+
+    def test_an_empty_record_list_still_writes_the_file(self, tmp_path: Path) -> None:
+        """Absence of the file must mean the parser never ran, not zero repairs."""
+        audit = tmp_path / "audit"
+        parser = StubParser(raw_dir=tmp_path, output_dir=tmp_path, audit_dir=audit)
+
+        path = parser.write_repair_audit([])
+
+        assert path.exists()
+        assert path.read_text(encoding="utf-8") == ""

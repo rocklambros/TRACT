@@ -27,7 +27,11 @@ def parser(tmp_path: Path) -> Iso27001Parser:
     )
     out = tmp_path / "out"
     out.mkdir()
-    return Iso27001Parser(raw_dir=raw, output_dir=out)
+    # audit_dir is redirected into tmp_path so the test never writes into the
+    # repository's data tree.
+    return Iso27001Parser(
+        raw_dir=raw, output_dir=out, audit_dir=tmp_path / "audit",
+    )
 
 
 class TestIso27001Parser:
@@ -68,9 +72,120 @@ class TestIso27001Parser:
     def test_every_control_carries_a_statement_not_a_title(
         self, parser: Iso27001Parser,
     ) -> None:
+        """The floor exists to catch a regression to title-only extraction.
+
+        Length alone is not the invariant. Three Annex A statements are
+        genuinely one short sentence, and the fixture carries two of them, so
+        a bare fraction assertion here would encode the fixture's shape rather
+        than the parser's contract. What must hold for every row is that the
+        statement is not a copy of the title, and that the only rows under the
+        prose bar are the two known-short ones.
+        """
+        from tract.config import HONEST_PROSE_MIN_CHARS
+
+        controls = parser.parse()
+        for control in controls:
+            assert control.description.strip()
+            assert control.description.strip() != control.title.strip()
+
+        short = {
+            c.control_id for c in controls
+            if len(c.description.strip()) < HONEST_PROSE_MIN_CHARS
+        }
+        assert short == {"7.8", "7.9"}
+
+
+class TestDamagedControls:
+    """7.5 lost a clause in PDF conversion and no transform can recover it.
+
+    The source reads "such as natural" and stops; the next row opens with
+    "infrastructure shall be designed and implemented." The clause between
+    them is absent from the raw file, so the unguarded join produced a
+    fluent, wrong requirement that cleared every gate. Writing the real
+    clause from memory would invent normative text, which is worse.
+    """
+
+    def test_the_damaged_control_is_marked_rather_than_silently_joined(
+        self, parser: Iso27001Parser,
+    ) -> None:
+        controls = {c.control_id: c for c in parser.parse()}
+        damaged = controls["7.5"]
+
+        assert damaged.metadata is not None
+        assert damaged.metadata["damaged"] == "true"
+        assert "unrecoverable" in damaged.metadata["damage_reason"]
+
+    def test_the_damaged_statement_shows_the_gap_instead_of_reading_fluently(
+        self, parser: Iso27001Parser,
+    ) -> None:
+        controls = {c.control_id: c for c in parser.parse()}
+        description = controls["7.5"].description
+
+        assert "[...]" in description
+        # The fabricated join. Emitting it asserts a requirement no standard
+        # contains, with nothing in the record to say so.
+        assert "such as natural infrastructure" not in description
+
+    def test_the_successor_keeps_only_its_own_statement(
+        self, parser: Iso27001Parser,
+    ) -> None:
+        """Marking 7.5 damaged must not leave 7.6 carrying foreign text."""
+        controls = {c.control_id: c for c in parser.parse()}
+
+        assert controls["7.6"].description == (
+            "Security measures for working in secure areas shall be designed "
+            "and implemented."
+        )
+
+    def test_a_damaged_control_does_not_count_toward_the_prose_fraction(
+        self, parser: Iso27001Parser,
+    ) -> None:
         from tract.parsers.base import BaseParser
 
-        assert BaseParser.honest_prose_fraction(parser.parse()) == 1.0
+        controls = parser.parse()
+        damaged = [c for c in controls if BaseParser.is_damaged(c)]
+
+        assert [c.control_id for c in damaged] == ["7.5"]
+        assert BaseParser.honest_prose_fraction(controls) == \
+            BaseParser.honest_prose_fraction(
+                [c for c in controls if not BaseParser.is_damaged(c)]
+            )
+
+
+class TestRepairAuditFile:
+    """The audit file three documents promised and no function wrote."""
+
+    def test_parse_writes_one_record_per_bleed_decision(
+        self, parser: Iso27001Parser, tmp_path: Path,
+    ) -> None:
+        import json
+
+        parser.parse()
+        path = tmp_path / "audit" / "iso_27001.jsonl"
+        records = [json.loads(line) for line in path.read_text(
+            encoding="utf-8").splitlines()]
+
+        pairs = [(r["predecessor_id"], r["successor_id"]) for r in records]
+        assert pairs == [("5.6", "5.7"), ("5.17", "5.18"), ("7.5", "7.6"),
+                         ("7.8", "7.9")]
+        assert all("fragment" in r for r in records)
+        assert all("predecessor_before" in r for r in records)
+        assert all("predecessor_after" in r for r in records)
+
+    def test_the_damaged_join_is_flagged_in_the_audit_record(
+        self, parser: Iso27001Parser, tmp_path: Path,
+    ) -> None:
+        import json
+
+        parser.parse()
+        path = tmp_path / "audit" / "iso_27001.jsonl"
+        records = {
+            json.loads(line)["predecessor_id"]: json.loads(line)
+            for line in path.read_text(encoding="utf-8").splitlines()
+        }
+
+        assert records["7.5"]["known_damaged"] is True
+        assert records["5.6"]["known_damaged"] is False
 
 
 class TestFindResidualRunTogether:

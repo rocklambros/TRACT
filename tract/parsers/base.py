@@ -8,17 +8,24 @@ validation, count-checking, and atomic output writing.
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
+import os
+import tempfile
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import ClassVar
 
 from tract.config import (
+    CONTROL_DAMAGED_METADATA_KEY,
+    CONTROL_DAMAGED_METADATA_VALUE,
     COUNT_TOLERANCE,
     DESCRIPTION_MAX_LENGTH,
     EXPECTED_COUNTS,
     HONEST_PROSE_MIN_CHARS,
     PROCESSED_FRAMEWORKS_DIR,
+    PROCESSED_REPAIR_AUDIT_DIR,
     RAW_FRAMEWORKS_DIR,
 )
 from tract.io import atomic_write_json
@@ -96,6 +103,16 @@ class BaseParser(ABC):
         )
 
     @staticmethod
+    def is_damaged(control: Control) -> bool:
+        """Whether a parser marked this control's source text incomplete."""
+        if not control.metadata:
+            return False
+        return (
+            control.metadata.get(CONTROL_DAMAGED_METADATA_KEY)
+            == CONTROL_DAMAGED_METADATA_VALUE
+        )
+
+    @staticmethod
     def honest_prose_fraction(controls: list[Control]) -> float:
         """Fraction of controls whose description is more than their title.
 
@@ -103,20 +120,27 @@ class BaseParser(ABC):
         matter how long the title is: nist_ssdf has a 156-character median
         description and a 0% real-prose rate because its descriptions are long
         titles.
+
+        Controls marked damaged are excluded from both sides of the ratio.
+        Counting one as prose lets a statement with a known hole in it clear
+        the floor, and counting it against the parser penalises the disclosure
+        rather than the damage.
         """
-        if not controls:
+        measurable = [c for c in controls if not BaseParser.is_damaged(c)]
+        if not measurable:
             return 0.0
         honest = sum(
-            1 for c in controls
+            1 for c in measurable
             if len(c.description.strip()) >= HONEST_PROSE_MIN_CHARS
             and c.description.strip() != c.title.strip()
         )
-        return honest / len(controls)
+        return honest / len(measurable)
 
     def __init__(
         self,
         raw_dir: Path | None = None,
         output_dir: Path | None = None,
+        audit_dir: Path | None = None,
     ) -> None:
         """Initialize the parser with input/output directories.
 
@@ -125,11 +149,15 @@ class BaseParser(ABC):
                 Defaults to the resolved DATA_DIR/raw/frameworks/<framework>.
             output_dir: Directory for processed output.
                 Defaults to DATA_DIR/processed/frameworks.
+            audit_dir: Directory for repair audit files.
+                Defaults to DATA_DIR/processed/repair_audit, which is
+                gitignored because audit records quote source text verbatim.
         """
         self._raw_dir: Path | None = raw_dir
         self.output_dir = output_dir or PROCESSED_FRAMEWORKS_DIR
+        self.audit_dir = audit_dir or PROCESSED_REPAIR_AUDIT_DIR
 
-        # Populated by read_source*/; drained into FrameworkOutput by run().
+        # Populated by read_source*, drained into FrameworkOutput by run().
         self._source_files: dict[str, SourceFile] = {}
 
     @property
@@ -175,6 +203,50 @@ class BaseParser(ABC):
     def read_source(self, name: str, encoding: str = "utf-8") -> str:
         """Read one raw input file as text and record its digest."""
         return self.read_source_bytes(name).decode(encoding)
+
+    def write_repair_audit(
+        self, records: Sequence[Mapping[str, object]],
+    ) -> Path:
+        """Persist before/after pairs for repairs that move text across ids.
+
+        A count says a repair fired. It does not say what moved, or where to,
+        and a fragment attributed to the wrong control is a wrong compliance
+        assertion carrying a plausible-looking provenance record. This is the
+        file a reviewer reads to check one.
+
+        Written unconditionally, empty list included, so a missing file means
+        the parser never ran rather than the repair never fired. Keys are
+        sorted and no clock is read, so re-parsing the same bytes produces the
+        same audit bytes and a diff shows real changes only.
+
+        Returns the path written.
+        """
+        path = self.audit_dir / f"{self.framework_id}.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = "".join(
+            json.dumps(dict(record), sort_keys=True, ensure_ascii=False) + "\n"
+            for record in records
+        )
+
+        # Same atomic pattern as tract.io.atomic_write_json. JSONL is not JSON,
+        # so it cannot go through that helper, and a half-written audit file is
+        # worse than none: it reads as a complete record of what moved.
+        fd, tmp_path = tempfile.mkstemp(
+            dir=path.parent, prefix=f".{path.name}.", suffix=".tmp",
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(payload)
+            os.replace(tmp_path, path)
+        except OSError:
+            Path(tmp_path).unlink(missing_ok=True)
+            raise
+
+        logger.info(
+            "%s: wrote %d repair audit record(s) to %s",
+            self.framework_id, len(records), path,
+        )
+        return path
 
     def run(self) -> FrameworkOutput:
         """Execute the full parser pipeline: parse -> sanitize -> validate -> write.
