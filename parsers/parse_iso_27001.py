@@ -38,6 +38,7 @@ from tract.parsers.repair import (
     BleedJoin,
     build_vocabulary,
     fix_hyphen_breaks,
+    prune_decomposable,
     repair_cell_bleed,
     split_run_together,
     strip_page_furniture,
@@ -163,27 +164,28 @@ class Iso27001Parser(BaseParser):
             "cell bleed", sum(1 for j in joins if j.applied), MAX_BLEED_REPAIRS,
         )
 
-        # Built from the statements themselves. A run-together token's parts
-        # are ordinary words that appear elsewhere in the same table. The raw
-        # build also picks up each row's own still-joined token as a "word"
-        # (see RUN_TOGETHER_MIN_LENGTH); drop anything that long before it is
-        # used for segmentation.
-        raw_vocabulary = build_vocabulary(
-            [t for _, _, t in rows] + [t for _, t, _ in rows]
-        )
-        vocabulary = frozenset(
-            word for word in raw_vocabulary if len(word) < RUN_TOGETHER_MIN_LENGTH
-        )
-
-        controls: list[Control] = []
+        # Hyphen repair runs over every row FIRST, before the vocabulary is
+        # built. Built the other way round, "secu - rity" contributes "secu"
+        # and "rity" as words and the splitter then prefers that pair over the
+        # whole word it never saw, so the rows that most needed the repair
+        # were the ones that defeated it.
         hyphen_total = 0
-        split_total = 0
+        repaired_rows: list[tuple[str, str, str]] = []
         for control_id, title, statement in rows:
             fixed_title = fix_hyphen_breaks(title)
             fixed_body = fix_hyphen_breaks(statement)
             hyphen_total += fixed_title.applied + fixed_body.applied
+            repaired_rows.append(
+                (control_id, fixed_title.text, fixed_body.text)
+            )
+        self._check_repair("hyphen break", hyphen_total, MAX_HYPHEN_REPAIRS)
 
-            split = split_run_together(fixed_body.text, vocabulary)
+        vocabulary = self._build_vocabulary(repaired_rows)
+
+        controls: list[Control] = []
+        split_total = 0
+        for control_id, title, statement in repaired_rows:
+            split = split_run_together(statement, vocabulary)
             split_total += split.applied
 
             body = split.text.strip()
@@ -192,12 +194,11 @@ class Iso27001Parser(BaseParser):
 
             controls.append(Control(
                 control_id=control_id,
-                title=fixed_title.text.strip(),
+                title=title.strip(),
                 description=body,
                 metadata=self._damage_metadata(control_id, joins),
             ))
 
-        self._check_repair("hyphen break", hyphen_total, MAX_HYPHEN_REPAIRS)
         self._check_repair("run-together", split_total, MAX_RUN_TOGETHER_REPAIRS)
 
         residual = self._find_residual_run_together(controls)
@@ -209,6 +210,26 @@ class Iso27001Parser(BaseParser):
                 self.framework_id, len(residual), ", ".join(residual),
             )
         return controls
+
+    @staticmethod
+    def _build_vocabulary(rows: list[tuple[str, str, str]]) -> frozenset[str]:
+        """Segmentation vocabulary from already hyphen-repaired rows.
+
+        Two filters, because a run-together token is an ordinary word as far
+        as build_vocabulary can tell and either shape defeats the splitter.
+
+        The length cut removes a token long enough to be a run-together
+        candidate in its own right. The decomposability cut removes the short
+        ones the length cut misses, which is most of them: "andenvironmental"
+        is 16 characters and "theorganization" is 15.
+        """
+        raw = build_vocabulary(
+            [body for _, _, body in rows] + [title for _, title, _ in rows]
+        )
+        by_length = frozenset(
+            word for word in raw if len(word) < RUN_TOGETHER_MIN_LENGTH
+        )
+        return prune_decomposable(by_length)
 
     @staticmethod
     def _disclose_damaged_joins(

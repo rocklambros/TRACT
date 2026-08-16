@@ -107,6 +107,56 @@ class TestRunTogether:
         assert "act" not in build_vocabulary(["The Owner shall act"], min_length=4)
 
 
+class TestPruneDecomposable:
+    """A run-together token is a word to build_vocabulary, and a poison.
+
+    Nothing inside "andenvironmental" marks the join, so it enters the
+    vocabulary as one word. The fewest-segments search then prefers it over
+    the two real words, and the row that most needed the repair defeats it.
+    """
+
+    def test_drops_a_candidate_other_vocabulary_words_spell(self) -> None:
+        from tract.parsers.repair import prune_decomposable
+
+        vocabulary = frozenset({
+            "and", "environmental", "andenvironmental", "threats",
+        })
+        pruned = prune_decomposable(vocabulary)
+
+        assert "andenvironmental" not in pruned
+        assert {"and", "environmental", "threats"} <= pruned
+
+    def test_keeps_a_word_no_combination_of_others_spells(self) -> None:
+        from tract.parsers.repair import prune_decomposable
+
+        vocabulary = frozenset({"organization", "shall", "establish"})
+        assert prune_decomposable(vocabulary) == vocabulary
+
+    def test_parts_below_the_minimum_length_do_not_justify_a_drop(self) -> None:
+        """The bar exists so two-letter noise cannot shred a real word."""
+        from tract.parsers.repair import prune_decomposable
+
+        vocabulary = frozenset({"shall", "be", "shallbe"})
+
+        assert "shallbe" in prune_decomposable(vocabulary, min_part_length=3)
+        assert "shallbe" not in prune_decomposable(vocabulary, min_part_length=2)
+
+    def test_a_poisoned_entry_spelled_by_another_poisoned_entry_also_goes(
+        self,
+    ) -> None:
+        """Both are judged against the original set, so neither shields the other."""
+        from tract.parsers.repair import prune_decomposable
+
+        vocabulary = frozenset({
+            "and", "procedures", "rules", "for", "the",
+            "andprocedures", "rulesfortheandprocedures",
+        })
+        pruned = prune_decomposable(vocabulary)
+
+        assert "andprocedures" not in pruned
+        assert "rulesfortheandprocedures" not in pruned
+
+
 class TestCellBleed:
     def test_moves_a_spilled_fragment_back_to_its_own_row(self) -> None:
         from tract.parsers.repair import repair_cell_bleed

@@ -95,6 +95,64 @@ class TestIso27001Parser:
         assert short == {"7.8", "7.9"}
 
 
+POISONING_FIXTURE = (
+    Path(__file__).parent / "fixtures" / "vocabulary_poisoning_sample.md"
+)
+
+
+@pytest.fixture
+def poisoning_parser(tmp_path: Path) -> Iso27001Parser:
+    """Parser over a synthetic table carrying both vocabulary poisons.
+
+    Synthetic rather than more ISO rows on purpose. The mechanic under test is
+    how the parser builds its vocabulary, not anything specific to Annex A,
+    and this repository is CC0 so every tracked line of the real standard is a
+    rights claim the project would rather not make twice.
+    """
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    (raw / "ISO_IEC_27001_2022_en.md").write_text(
+        POISONING_FIXTURE.read_text(encoding="utf-8"), encoding="utf-8",
+    )
+    out = tmp_path / "out"
+    out.mkdir()
+    return Iso27001Parser(
+        raw_dir=raw, output_dir=out, audit_dir=tmp_path / "audit",
+    )
+
+
+class TestVocabularyIsNotPoisoned:
+    """Two ways a broken word becomes the splitter's preferred answer."""
+
+    def test_hyphen_fragments_do_not_enter_the_vocabulary(
+        self, poisoning_parser: Iso27001Parser,
+    ) -> None:
+        """The vocabulary must be built after the hyphen repair, not before.
+
+        "secu - rity" contributes "secu" and "rity" when the vocabulary is
+        built first, and the splitter then prefers that pair over the whole
+        word it never saw. The row that needed the repair most defeats it.
+        """
+        controls = {c.control_id: c for c in poisoning_parser.parse()}
+
+        assert "information security policy" in controls["9.2"].description
+        assert "secu rity" not in controls["9.2"].description
+
+    def test_a_joined_token_does_not_become_a_preferred_word(
+        self, poisoning_parser: Iso27001Parser,
+    ) -> None:
+        """"andprocedures" is 13 characters, under the 20-char vocabulary cut.
+
+        Left in, the fewest-segments search prefers it over "and" plus
+        "procedures" because it is one segment rather than two, and the repair
+        reports success while emitting corrupt text.
+        """
+        controls = {c.control_id: c for c in poisoning_parser.parse()}
+
+        assert "acceptable use and procedures" in controls["9.4"].description
+        assert "andprocedures" not in controls["9.4"].description
+
+
 class TestDamagedControls:
     """7.5 lost a clause in PDF conversion and no transform can recover it.
 

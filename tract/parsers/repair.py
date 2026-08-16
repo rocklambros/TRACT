@@ -81,6 +81,35 @@ def build_vocabulary(
     )
 
 
+def prune_decomposable(
+    vocabulary: frozenset[str], min_part_length: int = 3,
+) -> frozenset[str]:
+    """Drop candidates that other vocabulary words already spell.
+
+    A run-together token is an unbroken run of letters with nothing to mark
+    the joins, so build_vocabulary reads it as one word. Left in, the
+    fewest-segments search in _segment prefers that single "word" over the
+    real multi-word decomposition, and the row that most needed the repair
+    silently defeats it.
+
+    Every candidate is judged against the original set minus itself, not
+    against a set being pruned as it goes, so one poisoned entry cannot shield
+    another and the result does not depend on iteration order.
+
+    *min_part_length* keeps two-letter noise from justifying a drop. The
+    alternative to this rule is a hand-maintained denylist, which covers the
+    entries someone noticed and nothing else.
+    """
+    parts_pool = frozenset(w for w in vocabulary if len(w) >= min_part_length)
+    kept: set[str] = set()
+    for word in vocabulary:
+        parts = _segment(word, parts_pool - {word})
+        if parts is not None and len(parts) >= 2:
+            continue
+        kept.add(word)
+    return frozenset(kept)
+
+
 def _segment(token: str, vocabulary: frozenset[str]) -> list[str] | None:
     """Return the fewest-segment split of *token*, or None if none exists.
 
