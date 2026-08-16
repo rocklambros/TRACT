@@ -41,3 +41,7 @@ data/processed/licensed/
 # a restricted framework's audit file carries the same licensed prose the two
 # rules above keep out of git.
 data/processed/repair_audit/
+
+# Claude-specific working documentation. Analyses, runbooks and summaries that
+# support the work without being part of it. Untracked on purpose.
+claudedocs/
