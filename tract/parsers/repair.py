@@ -59,3 +59,81 @@ def strip_page_furniture(
             continue
         kept.append(line)
     return kept, dropped
+
+
+_WORD: Final[re.Pattern[str]] = re.compile(r"[A-Za-z]+")
+
+
+def build_vocabulary(
+    texts: Iterable[str], min_length: int = 3,
+) -> frozenset[str]:
+    """Collect a lowercase word set from corpus text.
+
+    Built from this corpus rather than an imported wordlist so it reflects
+    security boilerplate, and so the repair is reproducible from artifacts in
+    the repository rather than from whatever /usr/share/dict holds.
+    """
+    return frozenset(
+        word.lower()
+        for text in texts
+        for word in _WORD.findall(text)
+        if len(word) >= min_length
+    )
+
+
+def _segment(token: str, vocabulary: frozenset[str]) -> list[str] | None:
+    """Return the fewest-segment split of *token*, or None if none exists.
+
+    Fails closed on purpose. A partial or greedy split produces plausible
+    nonsense, and the encoder cannot tell that from real text.
+    """
+    lowered = token.lower()
+    n = len(lowered)
+    # best[i] = fewest segments covering lowered[:i], with the split point.
+    best: list[tuple[int, int] | None] = [None] * (n + 1)
+    best[0] = (0, 0)
+    for end in range(1, n + 1):
+        for start in range(end):
+            prefix = best[start]
+            if prefix is None:
+                continue
+            if lowered[start:end] in vocabulary:
+                candidate = (prefix[0] + 1, start)
+                current = best[end]
+                if current is None or candidate[0] < current[0]:
+                    best[end] = candidate
+    if best[n] is None:
+        return None
+    parts: list[str] = []
+    cursor = n
+    while cursor > 0:
+        entry = best[cursor]
+        assert entry is not None  # invariant: reachable positions are set
+        parts.append(token[entry[1]:cursor])
+        cursor = entry[1]
+    return list(reversed(parts))
+
+
+def split_run_together(
+    text: str, vocabulary: frozenset[str], min_token_length: int = 20,
+) -> RepairResult:
+    """Split concatenated words that lost their spaces in PDF conversion.
+
+    Only tokens at or above *min_token_length* are considered, so ordinary
+    long words are never touched: "responsibilities" is 16 characters and a
+    naive length test would shred it.
+    """
+    applied = 0
+    out: list[str] = []
+    for token in text.split(" "):
+        stripped = token.strip(".,;:()")
+        if len(stripped) < min_token_length or not stripped.isalpha():
+            out.append(token)
+            continue
+        parts = _segment(stripped, vocabulary)
+        if parts is None or len(parts) < 2:
+            out.append(token)
+            continue
+        out.append(token.replace(stripped, " ".join(parts)))
+        applied += 1
+    return RepairResult(text=" ".join(out), applied=applied)

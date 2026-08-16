@@ -9,7 +9,9 @@ from __future__ import annotations
 
 from tract.parsers.repair import (
     RepairResult,
+    build_vocabulary,
     fix_hyphen_breaks,
+    split_run_together,
     strip_page_furniture,
 )
 
@@ -57,3 +59,49 @@ class TestPageFurniture:
             "| 5.1 | Policies | Control ... |",
             "| 5.2 | Roles | Control ... |",
         ]
+
+
+class TestRunTogether:
+    VOCAB = build_vocabulary([
+        "Rules for the acceptable use and procedures for handling information "
+        "and other associated assets shall be identified documented and "
+        "implemented by the organization",
+    ])
+
+    def test_splits_a_known_run_together_token(self) -> None:
+        result = split_run_together(
+            "Control Rulesfortheacceptableuse of assets", self.VOCAB,
+            min_token_length=12,
+        )
+        assert result.text == "Control Rules for the acceptable use of assets"
+        assert result.applied == 1
+
+    def test_leaves_the_token_alone_when_it_cannot_be_fully_segmented(self) -> None:
+        # "zzzqqq" is not in the vocabulary, so no complete segmentation
+        # exists and the repair must fail closed rather than guess.
+        result = split_run_together(
+            "Control Rulesforzzzqqqtheacceptableuse here", self.VOCAB,
+            min_token_length=12,
+        )
+        assert "Rulesforzzzqqqtheacceptableuse" in result.text
+        assert result.applied == 0
+
+    def test_ignores_ordinary_long_words(self) -> None:
+        # "responsibilities" is 16 characters and a real word. The threshold
+        # exists so the splitter never looks at it.
+        result = split_run_together(
+            "roles and responsibilities shall be defined", self.VOCAB,
+            min_token_length=20,
+        )
+        assert result.applied == 0
+
+    def test_vocabulary_is_lowercased_and_length_filtered(self) -> None:
+        # min_length is inclusive. The default of 3 must keep "the", "for"
+        # and "use", because the run-together tokens this splitter exists for
+        # are built out of exactly those words.
+        vocab = build_vocabulary(["The Owner shall act"], min_length=3)
+        assert "owner" in vocab
+        assert "the" in vocab
+        # "act" is 3 and kept; a 4-char floor would drop it.
+        assert "act" in build_vocabulary(["The Owner shall act"], min_length=3)
+        assert "act" not in build_vocabulary(["The Owner shall act"], min_length=4)
