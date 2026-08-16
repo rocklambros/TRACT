@@ -196,20 +196,19 @@ class TestCellBleed:
         from tract.parsers.repair import repair_cell_bleed
 
         rows = [
-            ("5.6", "Contact with special interest groups",
-             "Control The organization shall maintain contact with special "
-             "interest groups or other specialist security forums and professional"),
-            ("5.7", "Threat intelligence",
-             "associations. Control Information relating to threats shall be "
-             "collected and analysed."),
+            ("5.6", "Contact with regional response teams",
+             "Control The organization shall maintain contact with regional "
+             "response teams or other specialist facility coordinators and"),
+            ("5.7", "Hazard awareness bulletins",
+             "partners. Control Hazard bulletins shall be reviewed "
+             "and archived."),
         ]
         repaired, joins = repair_cell_bleed(rows)
 
         assert [j.applied for j in joins] == [True]
-        assert repaired[0][2].endswith("and professional associations.")
+        assert repaired[0][2].endswith("coordinators and partners.")
         assert repaired[1][2] == (
-            "Control Information relating to threats shall be collected "
-            "and analysed."
+            "Control Hazard bulletins shall be reviewed and archived."
         )
 
     def test_leaves_well_formed_rows_untouched(self) -> None:
