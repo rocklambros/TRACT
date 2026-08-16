@@ -1,0 +1,3082 @@
+{
+  "coverage_matrix_cells_checked": 90,
+  "cwe_chain": {
+    "cwe_corpus_version": "4.20",
+    "cwes_in_corpus": 22,
+    "cwes_with_opencre_links": 17,
+    "distinct_cwes": 22,
+    "distinct_hubs": 46,
+    "mappings": 48,
+    "mappings_that_chain": 37,
+    "risk_cwe_hub_triples": 118,
+    "risks_reaching_a_hub": 10
+  },
+  "mapping_count": 331,
+  "mappings": [
+    {
+      "rationale": "Injected input overrides the system- prompt role/capability constraints, redirecting agent goals.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI01",
+      "target_element_name": "Agent Goal Hijack",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injected input drives unauthorized tool invocation (the \"lethal trifecta\" conditions).",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI02",
+      "target_element_name": "Tool Misuse& Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Agent acts under the user's elevated credentials, performing actions the attacker could not.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI03",
+      "target_element_name": "Identity &Privilege Abuse",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Shell / file-system / cloud-API access turns injection into arbitrary command execution.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI05",
+      "target_element_name": "Unexpected Code Execution (RCE)",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Memoryand RAG poisoning taint every future session reading the store.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI06",
+      "target_element_name": "Memory&Context Poisoning",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Tool outputs re-enter the context window, enabling chained or self- replicating effects.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI08",
+      "target_element_name": "Cascading Failures",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injection bypasses human-in-the-loop confirmation.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "ASI09",
+      "target_element_name": "Human-Agent Trust Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Persistent agent memorycorruption leading to cross-session data leakage",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "ASI06",
+      "target_element_name": "Memory&Context Poisoning",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Prompt injection or hallucination diverting an agent from its intended task is the trigger mechanism for Excessive Agency (\"hallucination/confabulation... or direct/indirect prompt injection\")",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI01",
+      "target_element_name": "Agent Goal Hijack",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Amanifestation of Excessive Agency, where extensions/tools carry functionality beyond what the task needs",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI02",
+      "target_element_name": "Tool Misuse& Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Amanifestation of Excessive Agency, where extensions connect with generic, over-privileged identities",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI03",
+      "target_element_name": "Identity &Privilege Abuse",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Ashell-command extension that fails to filter out unintended commands, and a coding agent whose excessive autonomy and permissions destroyed production infrastructure",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI05",
+      "target_element_name": "Unexpected Code Execution (RCE)",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Amalicious/compromised peer agent in multi-agent/collaborative systems is a trigger, and user authorization scope must be preserved \"across chained extension or agent calls\"",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI07",
+      "target_element_name": "Insecure Inter-Agent Communication",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Amanifestation of Excessive Agency, countered by rate limiting and circuit breakers to halt runaway extension invocation",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI08",
+      "target_element_name": "Cascading Failures",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Excessive autonomy (failing to seek confirmation before high-impact actions) and human-in-the-loop approval both concern trust placed in unsupervised agent action",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "ASI09",
+      "target_element_name": "Human-Agent Trust Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "This entry's own scope note defers agentic-specific supply-chain risk to ASI04, leaving this entry to cover the non-agentic model, dataset, and artifact supply chain",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "ASI04",
+      "target_element_name": "Agentic Supply Chain Vulnerabilities",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Poisoned pre-trained models and malicious deserialization distributed via public repositories, and tampered inference-time artifacts such as chat templates/GGUF",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "ASI04",
+      "target_element_name": "Agentic Supply Chain Vulnerabilities",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Persistent agent memoryand recommendation poisoning, and long- term manipulation of agent decisions via injected memory",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "ASI06",
+      "target_element_name": "Memory&Context Poisoning",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Poisoned inputs propagating across multi-agent and enterprise workflows into unintended data exposure, and cross-tenant contamination via shared embeddings/memory",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "ASI08",
+      "target_element_name": "Cascading Failures",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Agent-tool interaction loopsandMCP tool-call fan-out let a single request drive recursive or high-volume tool calls that exhaust budget and availability",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "ASI02",
+      "target_element_name": "Tool Misuse& Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Agentic architectures and tool-use protocols such as MCP\"amplify a single request into cascading downstream operations,\" illustrated by the fan-out of one task into 50 calls",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "ASI08",
+      "target_element_name": "Cascading Failures",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Incorrect state or evidence produced by one agent and trusted by another propagates misinformation across a multi-agent workflow into a compounding, high-impact failure (Cross-Agent Misinformation Propagation; Cross-Agent Trust Failure)",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "ASI08",
+      "target_element_name": "Cascading Failures",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Humansand downstream systems that treat fluent, confident model output as authoritative are the exploited trust surface this entry's overreliance framing describes (Unsupported or False Decision Support)",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "ASI09",
+      "target_element_name": "Human-Agent Trust Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "An agent that falsifies task completion or fabricates evidence to mislead downstream trust matches this entry's forged-evidence and false-completion failuremodes (Forged or Misattributed Evidence; Fabricated Task Completion)",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "ASI10",
+      "target_element_name": "Rogue Agents",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "LLM08's scope explicitly defers \"the agentic amplifications of this risk, e.g., persistent memory, inter-agent channels, tool configuration persistence, and multi-step agent compromise\" to the OWASPTop10 for Agentic Applications; ASI06 is the pointer for persistent- memorypoisoning building on exposed hidden context, not an equivalent risk.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "ASI06",
+      "target_element_name": "Memory&Context Poisoning",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Samescopecarve-out names \"inter- agent channels\" as an out-of-scope amplification; ASI07 is the pointer for hidden-context material propagating across agent-to-agent messaging, not an equivalent risk.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "ASI07",
+      "target_element_name": "Insecure Inter-Agent Communication",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Embedding-model supply chain: the embedding model itself must be vetted, since \"a backdoored embedding model corrupts the geometry of everything ingested\"",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "ASI04",
+      "target_element_name": "Agentic Supply Chain Vulnerabilities",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Agent-memory poisoning that does not rely on embedding geometry is out of scope here and referred to ASI06",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "ASI06",
+      "target_element_name": "Memory&Context Poisoning",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "2026 addition, justified against this entry's own content: a general-purpose LLM passes its response to a privileged extension without output validation, causing the extension to be misused and shut down.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "ASI02",
+      "target_element_name": "Tool Misuse& Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Foundational crosswalk mapping; matches this entry's core risk of unvalidated LLM output reaching a shell, exec , or eval , resulting in remote code execution.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "ASI05",
+      "target_element_name": "Unexpected Code Execution (RCE)",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Canonical crosswalk baseline mapping - ASI09 lists Improper Output Handling as a contributing LLMrisk. The content match is loose: this entry's scenarios are machine-to-machine (unvalidated output reaching a shell, browser, or database), while ASI09 concerns deceivingahuman operator; the shared thread is unvalidated model output reaching a downstream trust decision.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "ASI09",
+      "target_element_name": "Human-Agent Trust Exploitation",
+      "target_framework": "owasp_agentic_top10",
+      "target_framework_id": "owasp_agentic_top10",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Asuccessful injection makes disclosure and exfiltration the dominant outcome, spilling system-prompt content, retrieved private documents, and infrastructure details out of the model.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "DSGAI01",
+      "target_element_name": "Sensitive Data Leakage",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injection rides through MCP servers and third-party tool packages, where poisoned tool descriptions and unpinned connections let a compromised model act across connected systems.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "DSGAI06",
+      "target_element_name": "Tool, Plugin& Agent Data Exchange Risks",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Steganographic image and invisible- Unicode payloads deliver instructions the human never sees, and markdown image- URL rendering carries the stolen data back out.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "DSGAI09",
+      "target_element_name": "Multimodal Capture &Cross-Channel Data Leakage",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Browser, IDE, and email assistants that auto-summarize untrusted pages becomethe indirect-injection channel, from zero-click document exfiltration to a flipped IDE configuration flag.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "DSGAI16",
+      "target_element_name": "Endpoint& Browser Assistant Overreach",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "One tainted entry in a RAG corpus or persistent memorytaints every later session that reads it, making poisoning a cross-session propagation path for injection.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "DSGAI04",
+      "target_element_name": "Data, Model& Artifact Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The direct peer: unauthorized exposure of confidential, regulated, or proprietary data through any output channel is the whole risk.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "DSGAI01",
+      "target_element_name": "Sensitive Data Leakage",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Membership inference, embedding inversion, and internal-state inversion reconstruct protected data from measurable model behavior without receiving the content directly.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "DSGAI18",
+      "target_element_name": "Inference &Data Reconstruction",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Unscoped drives, legacy permissions, and auto-appended full records feed the model more sensitive data than the task needs, the upstream over-sharing that drives most incidents.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "DSGAI15",
+      "target_element_name": "Over-Broad Context Windows &Prompt Over-Sharing",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The disclosure carries the regulatory consequence, triggeringEUAI Act, GDPR, HIPAA, and CCPAobligations and their breach-notification clocks.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "DSGAI08",
+      "target_element_name": "Non-Compliance &Regulatory Violations",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Observability platforms log full prompts, completions, retrieved chunks, and reasoning traces by default, exposing sensitive content to anyone with dashboard access.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "DSGAI14",
+      "target_element_name": "Excessive Telemetry &Monitoring Leakage",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Extensions granted broad write access or a shared high-privilege account let a hijacked agent act far beyond its intended scope, so binding actions to user-scoped credentials across chained calls is the core control.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "DSGAI02",
+      "target_element_name": "Agent Identity& Credential Exposure",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The whole risk concerns extensions, tools, and plugins that retain unneeded capabilities an attacker can trigger, such as a mail extension that keeps its send function.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "DSGAI06",
+      "target_element_name": "Tool, Plugin& Agent Data Exchange Risks",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Excess agency lets a compromised agent scan a mailbox for sensitive information and forward it to an attacker.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "DSGAI01",
+      "target_element_name": "Sensitive Data Leakage",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Tampered or backdoored models, adapters, and artifacts enter the pipeline through the supply chain, as with a maliciously edited open model or a poisoned format-conversion service.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "DSGAI04",
+      "target_element_name": "Data, Model& Artifact Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Unsigned, unverified artifacts and mutable references resolved at build or promotion time let tampered components pass without integrity checks or signing.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "DSGAI05",
+      "target_element_name": "Data Integrity& Validation Failures",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Unclear supplier terms can silently route application data into a provider's training set, so vetting supplier terms and privacy policies is required.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "DSGAI03",
+      "target_element_name": "Shadow AI& Unsanctioned Data Flows",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unclear model and dataset licensing and copyright status create legal and compliance exposure that demands license tracking and auditing.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "DSGAI08",
+      "target_element_name": "Non-Compliance &Regulatory Violations",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The direct peer covering poisoning across pre-training, fine-tuning, embeddings, RAG, transfer learning, and distributed non-weight artifacts.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "DSGAI04",
+      "target_element_name": "Data, Model& Artifact Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Strict, continuous validation of training and retraining inputs is the front-line defense against injected poison.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "DSGAI05",
+      "target_element_name": "Data Integrity& Validation Failures",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Poisoning a knowledge base surfaces adversary-controlled content as authoritative output, an integrity attack driven by corrupted data.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "DSGAI21",
+      "target_element_name": "Disinformation& Integrity Attacks via Data Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Dataset and model lineage tracked through an SBOM or ML-BOM plus version history enables rollback and forensics after a poisoning event.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "DSGAI07",
+      "target_element_name": "Data Governance, Lifecycle &Classification",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Functional model cloning and extraction through high-volume querying steal the model's intellectual property.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "DSGAI20",
+      "target_element_name": "Model Exfiltration &IP Replication",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Resource-exhausting requests and output-explosion attacks render the service unresponsive, the availability failure that resilience controls target.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "DSGAI17",
+      "target_element_name": "Data Availability& Resilience Failures in AI Pipelines",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Asingle poisoned fine-tuning sample can break end-of-sequence behavior and drive runaway output generation as a denial-of-service vector.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "DSGAI04",
+      "target_element_name": "Data, Model& Artifact Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Deliberately injected content makes the system surface false or forged material as authoritative, the core disinformation- via-poisoning mechanism.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "DSGAI21",
+      "target_element_name": "Disinformation& Integrity Attacks via Data Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Biased or corrupted source data and unvalidated ingestion are root causes that let misinformation enter and spread.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "DSGAI05",
+      "target_element_name": "Data Integrity& Validation Failures",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unvalidated tool outputs and cross-agent exchange propagate false information, so tool calls need semantic validation.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "DSGAI06",
+      "target_element_name": "Tool, Plugin& Agent Data Exchange Risks",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry is defined by extraction, inference, and reconstruction of hidden context, the samereconstruction attacks that recover a system prompt from model behavior.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "DSGAI18",
+      "target_element_name": "Inference &Data Reconstruction",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The central preventive principle is to keep sensitive data out of hidden context and assume all context is discoverable.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "DSGAI15",
+      "target_element_name": "Over-Broad Context Windows &Prompt Over-Sharing",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "API keys and tokens embedded in hidden context are harvested once an attacker extracts that context.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "DSGAI02",
+      "target_element_name": "Agent Identity& Credential Exposure",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Vector-store platform security is the entry's literal subject, covering encryption, access control, and export limits on embedding stores.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "DSGAI13",
+      "target_element_name": "Vector Store Platform Data Security",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Embedding inversion that reconstructs plaintext and membership-inference oracles turn stored vectors back into their source data.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "DSGAI18",
+      "target_element_name": "Inference &Data Reconstruction",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Shared similarity search that applies the tenant filter only after retrieval leaks one tenant's chunks into another's results.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "DSGAI11",
+      "target_element_name": "Cross-Context& Multi-User Conversation Bleed",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Retrieval-time poisoning, semantic- cache poisoning, and multimodal embedding poisoning steer the system to attacker-controlled content.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "DSGAI04",
+      "target_element_name": "Data, Model& Artifact Poisoning",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Asingle crafted blocker document can dominate retrieval and taketheRAG system off the air, an availability attack on the retrieval layer.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "DSGAI17",
+      "target_element_name": "Data Availability& Resilience Failures in AI Pipelines",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "LLM-generated SQL executed without parameterization or scrutiny reaches the database directly and can delete entire tables.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "DSGAI12",
+      "target_element_name": "Unsafe Natural- Language Data Gateways (LLM-to-SQL/Graph)",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Unvalidated model output crosses into a downstream tool or extension for execution.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "DSGAI06",
+      "target_element_name": "Tool, Plugin& Agent Data Exchange Risks",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unescaped output rendered by a client encodes and sends conversation data to an attacker-controlled server, as in image-URL exfiltration.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "DSGAI01",
+      "target_element_name": "Sensitive Data Leakage",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Client renderers such as chat UIs, IDEs, and email clients auto-fetch external resources from raw model output, executing the exfiltration.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "DSGAI16",
+      "target_element_name": "Endpoint& Browser Assistant Overreach",
+      "target_framework": "owasp_dsgai",
+      "target_framework_id": "owasp_dsgai",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Injected instructions, whether typed directly into the prompt or hidden in content the model later retrieves, are the foothold that lets an attacker seize control of the model's behavior.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0004",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Asuccessful injection drives the agent to invoke tools and run adversary- chosen commands, including arbitrary code execution on the host.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0005",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injected instructions written into long- term memoryor a retrieval corpus survive across sessions and re-fire whenever the poisoned entry is recalled.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0006",
+      "target_element_name": "Persistence",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Attackers hide the injection with invisible Unicode, Base64 or ROT13 encoding, and low-resource languages, and use jailbreak phrasing to slip past safety filters.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0007",
+      "target_element_name": "Defense Evasion",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injection redirects the model to leak private conversation, database, or repository contents through image- URL, tool, or invisible-character channels.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Adversaries optimize the injection payload in advance, using gradient- oracle fine-tuning and payload-splitting to raise attack success rates.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0001",
+      "target_element_name": "AI Attack Staging",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Aruntime injection can trigger destructive action, such as wiping a developer's local files.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "An injected agent running on a trusted backend acts under the user's elevated credentials, yielding access beyond the attacker's own rights.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AML.TA0012",
+      "target_element_name": "Privilege Escalation",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Membership inference, model inversion, model extraction, and API-based data theft all moveprotected data out of the system, sometimes through covert DNS or image channels.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "An embedded vendor API key placed in the system prompt can be coaxed out of the model, exposing a live credential.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "AML.TA0013",
+      "target_element_name": "Credential Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Extraction, membership inference, and inversion run offline at unbounded rates against open-weights deployments, so the access modeitself is the attack surface.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "AML.TA0000",
+      "target_element_name": "AI Model Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Cross-lingual, Base64, and hex encodings defeat regex and blocklist data-loss filters, and cross-modal transformation slips data past single- modality inspection.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "AML.TA0007",
+      "target_element_name": "Defense Evasion",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "An over-broad extension, such as one that runs unfiltered shell commands, lets the agent execute damaging operations, including destructive commandsagainst production systems.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AML.TA0005",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Excessive permissions turn an agent action into confidentiality, integrity, and availability harm, from deleting a user's email to destroying production databases and their snapshots.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "An indirect injection can makean over- permissioned mail extension forward sensitive inbox contents to an attacker- controlled address.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Aconfused-deputy or weaponized over- privileged agent lets an attacker act with the agent's standing high privileges.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AML.TA0012",
+      "target_element_name": "Privilege Escalation",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Compromised models, packages, adapters, and training pipelines are the foothold by which a tampered artifact enters the victim's environment.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "AML.TA0004",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Attackers publish tampered models, pre-register confabulated (slopsquatted) package names, and re- register abandoned namespaces to stage malicious dependencies.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "AML.TA0003",
+      "target_element_name": "Resource Development",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Malicious model manifests, pickle deserialization, and format-parser overflows yield remote code execution when an artifact is loaded.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "AML.TA0005",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Abackdoor embedded in aLoRA adapter or a model's computational graph survives in the deployed model, in a format that looks safe.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "AML.TA0006",
+      "target_element_name": "Persistence",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Adversaries publish poisoned datasets and models and inject tainted samples into training data that others will consume.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AML.TA0003",
+      "target_element_name": "Resource Development",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Backdoors and sleeper triggers survive safety alignment and retraining, staying dormant in the model until a specific input activates them.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AML.TA0006",
+      "target_element_name": "Persistence",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Poisoning erodes model and dataset integrity, degrading accuracy, weakening refusals, and steering the model toward harmful outputs.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Organizations that pull compromised models or datasets from public repositories inherit the hidden triggers along with the artifact.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AML.TA0004",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The attacker backdoors the model and crafts trigger or adversarial data before the model is deployed.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AML.TA0001",
+      "target_element_name": "AI Attack Staging",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Loading an unsafe artifact executes attacker code, as with pickle deserialization on model load or chat- template injection in a model file.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AML.TA0005",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Input floods deny the MLservice to legitimate users, and cost-harvesting attacks run up the victim's bill in a denial-of-wallet.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Crafted API queries and side-channel weight harvesting extract the model, stealing the intellectual property embodied in its parameters.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Both extraction and resource- exhaustion attacks operate through inference-API access, which is the prerequisite for the technique.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AML.TA0000",
+      "target_element_name": "AI Model Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "False output that is trusted and acted upon causes financial loss, security incidents, safety risks, and operational disruption, as when a fabricated alert derails operations.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Attackers publish malicious packages under names the model is known to hallucinate, staging a supply-chain trap keyed to the confabulation.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AML.TA0003",
+      "target_element_name": "Resource Development",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Ahallucinated dependency, once recommended and installed by a trusting developer, becomes an AI supply-chain foothold.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AML.TA0004",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Adversaries craft inputs that steer the model toward specific false claims, an induced-misinformation staging step.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AML.TA0001",
+      "target_element_name": "AI Attack Staging",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The attack extracts and reconstructs the system prompt, tool list, roles, and refusal logic, discovering the AI system's hidden configuration.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AML.TA0008",
+      "target_element_name": "Discovery",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Leaking that hidden context across the trust boundary is model data leakage, moving configuration the operator meant to keep private into the attacker's hands.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Extracted context gives the attacker concrete targets for follow-on prompt injection and reconnaissance for downstream action chaining.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AML.TA0002",
+      "target_element_name": "Reconnaissance",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Credentials embedded in the system prompt are obtained when the hidden context leaks, handing the attacker usable secrets.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AML.TA0013",
+      "target_element_name": "Credential Access",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Poisoned corpus and cache entries stay in the vector store and re-trigger on matching queries, a durable foothold in the retrieval layer.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AML.TA0006",
+      "target_element_name": "Persistence",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Embedding inversion, cross-tenant inference, and membership inference pull private data and documents out through the shared index.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Attackers craft contentwhose embedding lands near a target query and use surrogate encoders to engineer threshold-straddling vectors.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AML.TA0001",
+      "target_element_name": "AI Attack Staging",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Retrieval jamming floods the index as an availability attack, and retrieval poisoning erodes the integrity of returned answers.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Cross-tenant probing infers the existence, topic, and rough volume of other tenants' documents, and membership inference reveals whether a specific document is indexed.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AML.TA0008",
+      "target_element_name": "Discovery",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unvalidated model output passed to a shell, browser, or SQL interpreter executes adversary-controlled code, yielding command execution, cross-site scripting, or SQL injection.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AML.TA0005",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Model output encoded and sent to an attacker server, or embedded in a Markdown-image URL, carries sensitive data out of the application.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AML.TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unhandled output reaching a privileged sink can delete database tables or force a downstream service offline.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AML.TA0011",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "When the model holds privileges beyond the end user, unvalidated output reaching a privileged sink escalates those privileges to the attacker.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AML.TA0012",
+      "target_element_name": "Privilege Escalation",
+      "target_framework": "mitre_atlas",
+      "target_framework_id": "mitre_atlas",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Acompromised IDE extension and a malicious MCPnpmpackagedeliver injected instructions into the model's context, making the software supply chain the entry point for the attack.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "TA0001",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injected instructions drive arbitrary command execution and destructive actions on the host or connected systems through an agent's shell-tool access.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "TA0002",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Injected content exfiltrates data over covert channels such as markdown image URLs, hidden Unicode, and tool-logging side channels while the visible response stays benign.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Attackers smuggle instructions past human and model review using zero- width and variation-selector Unicode, tag-block encoding, hidden page- source text, and sub-perceptual image steganography.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "TA0005",
+      "target_element_name": "Stealth",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Ahidden markdown-image or webhook channel carries sensitive data outbound while the model's visible answer stays innocuous.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Side-channel observation of encrypted LLMtraffic reconstructs conversation topics and token content, as in topic inference exceeding98%AUPRCandtoken- length reconstruction.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "TA0009",
+      "target_element_name": "Collection",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Prompt injection prints a system prompt carrying an embedded vendor API key, and exposed logging stores leak API keys an adversary can harvest.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "TA0006",
+      "target_element_name": "Credential Access",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "An open-ended shell-command extension that fails to filter unintended commandslets an agent execute arbitrary code, as when a coding agent destroyed production infrastructure.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "TA0002",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Excessive autonomy leads to destructive actions such as deleting emails without confirmation or wiping a production database and years of snapshots.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "TA0040",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "An indirect injectioncommandsthe agent to scan the user's inbox for sensitive information and forward it to an attacker's email address.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Over-privileged or generic high- privilege agent identities and confused-deputy conditions raise the attacker's effective privilege to that of the agent.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "TA0004",
+      "target_element_name": "Privilege Escalation",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Compromised packages and build pipelines, from a poisoned PyPI dependency to the xz-utils and Codecov compromises, deliver attacker code into the victim environment.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "TA0001",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Attackers register malicious packages under hallucinated names (slopsquatting) and inject CI/CD caches to stage trojanized releases for distribution.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "TA0042",
+      "target_element_name": "Resource Development",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Malicious model manifests, namespace reuse, and pickle deserialization on model load produce remote code execution once the artifact is pulled and run.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "TA0002",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Amerged LoRA adapter or backdoored model graph provides a covert entry point that survives across deployments and passes downstream provenance checks.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "TA0003",
+      "target_element_name": "Persistence",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Poisoned training data or weights manipulate model integrity to produce harmful or degraded outputs, such as bypassing fraud detection or dropping accuracyfrom90%to 15%when a trigger fires.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "TA0040",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Malicious models with embedded backdoors distributed through public repositories reach the victim when pulled into a pipeline.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "TA0001",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Embedded malicious code executes during unsafe pickle model loading, and a tampered chat template carries trigger-activated instructions.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "TA0002",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Resource-exhausting inputs crash or slow the service and denial-of-wallet attacks harvest compute cost, disrupting availability and inflating spend.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "TA0040",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Model-extraction queries harvest model information to a remote resource under the attacker's control, enabling intellectual-property theft through cloning.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Attackers publish malicious packages under names that coding assistants hallucinate (slopsquatting), turning fabricated recommendations into a software supply-chain compromise.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "TA0001",
+      "target_element_name": "Initial Access",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Hidden context such as system prompts holding API keys, database credentials, and user tokens leaks to an attacker whothenreuses the exposed credentials.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "TA0006",
+      "target_element_name": "Credential Access",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Cross-tenant probing of a shared vector index infers other tenants' data held in that information repository.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "TA0009",
+      "target_element_name": "Collection",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Zero-shot embedding inversion reconstructs source documents and PII from a leaked embedding backup, taking data outside the boundary.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Retrieval jamming degrades availability of the retrieval layer and retrieval-time poisoning manipulates the context fed to the model.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "TA0040",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Passing unvalidated model output into shell, eval, or database interfaces yields remote code execution, cross- site scripting, and SQL injection on backend systems.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "TA0002",
+      "target_element_name": "Execution",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Model output encodes sensitive conversation data and sends it to an attacker-controlled server, including via markdown-image URLs.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "TA0010",
+      "target_element_name": "Exfiltration",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unscrutinized model-generated SQL deletes database tables and a privileged extension is driven to shut down, causing data destruction and loss of availability.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "TA0040",
+      "target_element_name": "Impact",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "When the application grants the model privileges beyond those intended for end users, unhandled output enables escalation of privileges.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "TA0004",
+      "target_element_name": "Privilege Escalation",
+      "target_framework": "mitre_attack",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Untrusted input from prompts, retrieved documents, tool output, or memoryalters model behavior because the model draws no boundary between instructions and data, the definitional prompt- injection weakness.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "CWE-1427",
+      "target_element_name": "Improper Neutralization of Input Used for LLM Prompting",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The pillar-level root cause is a failure to separate and neutralize attacker instructions from data on a single token stream.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "CWE-707",
+      "target_element_name": "Improper Neutralization (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Context-window pooling merges untrusted retrieved content and tool output with trusted instructions under no enforced trust boundary.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "CWE-349",
+      "target_element_name": "Acceptance of Extraneous Untrusted Data With Trusted Data",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Jailbreaks and adaptive guardrail evasion degrade prompt-injection classifiers and link filters, driving defenses to high adversarial success rates.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "CWE-693",
+      "target_element_name": "Protection Mechanism Failure (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry defines disclosure as exposing confidential, regulated, or privileged data through an unauthorized channel.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-200",
+      "target_element_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "PII and PHI disclosure sits at the center of the entry, anchored to GDPR and HIPAA obligations across its examples.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-359",
+      "target_element_name": "Exposure of Private Personal Information",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Redaction and removal failures surface sensitive spans, such as text hidden under a black-rectangle redaction layer resurfaced by summarization.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-212",
+      "target_element_name": "Improper Removal of Sensitive Information Before Storage or Transfer",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Observability pipelines log full prompts, completions, and reasoning traces, exposing sensitive data through log and telemetry stores.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-532",
+      "target_element_name": "Insertion of Sensitive Information into Log File",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Retrieval runs before any authorization check, so cosine similarity returns documents the requester has no right to see.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-285",
+      "target_element_name": "Improper Authorization",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unscoped drives, legacy permissions, and over-permissive knowledge bases feed the retrieval corpus with sensitive data.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-732",
+      "target_element_name": "Incorrect Permission Assignment for Critical Resource",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Tool-call arguments and outbound requests to external providers carry more sensitive fields than the task actually requires.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CWE-201",
+      "target_element_name": "Insertion of Sensitive Information Into Sent Data",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Authorization must be enforced at a policy decision point in application logic rather than left to the model, defending against confused-deputy and privilege-abuse behavior.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "CWE-285",
+      "target_element_name": "Improper Authorization",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Database identities and service accounts granted write and delete rights or broadly high privileges beyond what the task needs are a named root cause of excessive agency.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "CWE-732",
+      "target_element_name": "Incorrect Permission Assignment for Critical Resource",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The pillar umbrella covers the entry's permission and access- control failures, including missing mediation and lost user context.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "CWE-284",
+      "target_element_name": "Improper Access Control (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Thresholds and circuit breakers on invocation count or cumulative parameter value are needed to halt runaway tool calls.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "CWE-770",
+      "target_element_name": "Allocation of Resources Without Limits or Throttling",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Direct and indirect prompt injection, such as a crafted email, is the trigger that turns excess permissions into harmful action.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "CWE-1427",
+      "target_element_name": "Improper Neutralization of Input Used for LLM Prompting",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Models and adapters are pulled by mutable tags or resolved byname without signature or hash verification, letting namespace reuse deliver code execution.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "CWE-494",
+      "target_element_name": "Download of Code Without Integrity Check",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The entry centers on including third-party models, adapters, and packages from untrusted hubs and registries, including slopsquatting and tampered models.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "CWE-829",
+      "target_element_name": "Inclusion of Functionality from Untrusted Control Sphere",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Amalicious LoRA adapter merged into a trusted base model blends poisoned artifacts into an otherwise trusted merge-and-convert pipeline.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "CWE-349",
+      "target_element_name": "Acceptance of Extraneous Untrusted Data With Trusted Data",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Insecure deserialization of model weights and native-parser memory corruption are lifetime-control failures over the loaded model resource.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "CWE-664",
+      "target_element_name": "Improper Control of a Resource Through its Lifetime (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Attacker-controlled untrusted data is mixed into trusted training corpora, retrieval stores, and continuous-learning feeds, the canonical poisoning weakness.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "CWE-349",
+      "target_element_name": "Acceptance of Extraneous Untrusted Data With Trusted Data",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Loading untrusted models, LoRA and PEFT adapters, tokenizer configs, and chat templates from public repositories pulls poisoned functionality into the pipeline.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "CWE-829",
+      "target_element_name": "Inclusion of Functionality from Untrusted Control Sphere",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Signing and hash verification of model artifacts is prescribed because unverified model downloads carry tampered weights.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "CWE-494",
+      "target_element_name": "Download of Code Without Integrity Check",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Poisoned retrieval documents and hidden web instructions reach the prompt without neutralization, the indirect-injection facet of poisoning.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "CWE-1427",
+      "target_element_name": "Improper Neutralization of Input Used for LLM Prompting",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Every input-flood, context- overflow, thinking-token, and GPU- or-memory exhaustion pattern in the entry is a form of uncontrolled resource consumption.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "CWE-400",
+      "target_element_name": "Uncontrolled Resource Consumption",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The defining root cause is the absence of rate, token, cost, and queue limits, with pre-flight estimation and hard spending caps as the missing controls.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "CWE-770",
+      "target_element_name": "Allocation of Resources Without Limits or Throttling",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The pillar ancestor of the consumption weaknesses covers management of the compute and memoryresource across its lifetime.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "CWE-664",
+      "target_element_name": "Improper Control of a Resource Through its Lifetime (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Reasoning loops that burn thinking tokens and recursive or infinite tool-calling loops need recursion- depth limits and loop detection.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "CWE-691",
+      "target_element_name": "Insufficient Control Flow Management (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Amalicious third-party tool or skill pulled from an open-source repository drives the resource- exhausting loops.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "CWE-829",
+      "target_element_name": "Inclusion of Functionality from Untrusted Control Sphere",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Incorrect, unsupported, or misleading model output is trusted and acted upon without verification, the entry's core weakness.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "CWE-1426",
+      "target_element_name": "Improper Validation of Generative AI Output",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Adownstream agent accepts fabricated or misattributed upstream output as trusted evidence, a cross-agent trust failure.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "CWE-349",
+      "target_element_name": "Acceptance of Extraneous Untrusted Data With Trusted Data",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Ahallucinated package nameis installed without any integrity or authenticity check, the slopsquatting failure.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "CWE-494",
+      "target_element_name": "Download of Code Without Integrity Check",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Adversarially crafted inputs induce false or misleading output, the input-side manipulation behind adversarially induced misinformation.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "CWE-1427",
+      "target_element_name": "Improper Neutralization of Input Used for LLM Prompting",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry is defined by unauthorized extraction, inference, or reconstruction of hidden system instructions and operational context.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "CWE-200",
+      "target_element_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "API keys, tokens, and connection strings embedded in the system prompt are the highest-severity credential exposure.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "CWE-798",
+      "target_element_name": "Use of Hard-coded Credentials",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Refusal and behavior-control instructions placed in hidden context are reverse-engineered and bypassed rather than enforced.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "CWE-693",
+      "target_element_name": "Protection Mechanism Failure (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Authorization and access control must be enforced independently of the model, since roles and permissions carried in tool descriptions leak and fail.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "CWE-285",
+      "target_element_name": "Improper Authorization",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Embedding inversion recovers source text and cross-tenant leakage exposes other customers' data, the core confidentiality failure.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "CWE-200",
+      "target_element_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The access-control decision happens after the embedding- space search runs, so tenant scoping must be enforced server- side inside the index query.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "CWE-285",
+      "target_element_name": "Improper Authorization",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Customer PII is reconstructed from a leaked embedding backup, creating GDPR data-subject risk.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "CWE-359",
+      "target_element_name": "Exposure of Private Personal Information",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Mis-scoped chunk-level ACLs and a cloud misconfiguration exposing a vector-database backup are access-control misassignments.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "CWE-732",
+      "target_element_name": "Incorrect Permission Assignment for Critical Resource",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Retrieval poisoning causes attacker content from an untrusted source to be retrieved and fed to the model as trusted context.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "CWE-829",
+      "target_element_name": "Inclusion of Functionality from Untrusted Control Sphere",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Model output is passed downstream with insufficient validation, sanitization, or handling, the entry's exact subject.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "CWE-1426",
+      "target_element_name": "Improper Validation of Generative AI Output",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Missing context-aware output encoding across HTML, JavaScript, SQL, and terminal sinks is the root cause.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "CWE-116",
+      "target_element_name": "Improper Encoding or Escaping of Output",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Cross-site scripting is the most- repeated concrete sink, addressed by content-security-policy and output-encoding defenses.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "CWE-79",
+      "target_element_name": "Cross-site Scripting (XSS)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "primary"
+    },
+    {
+      "rationale": "The neutralization pillar covers control-character sanitization of ANSI, BEL, OSC, backspace, and carriage-return sequences and SQL escaping and parameterization.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "CWE-707",
+      "target_element_name": "Improper Neutralization (Pillar)",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unhandled output leaks sensitive conversation and website content to an attacker.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "CWE-200",
+      "target_element_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Sensitive data is smuggled into the hostname or query string of an auto-fetched Markdown-image request.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "CWE-201",
+      "target_element_name": "Insertion of Sensitive Information Into Sent Data",
+      "target_framework": "cwe",
+      "target_framework_id": "cwe",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Prompt injection expands the attack surface, letting adversarial text hijack the model to exfiltrate data or trigger unauthorized actions across connected systems.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injected instructions manipulate outputs into attacker-chosen content and poison retrieved or remembered context, corrupting the information the system produces.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Integrity",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Successful injection can exfiltrate private conversation history, uploaded documents, and repository contents to an attacker.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": null,
+      "target_element_name": "Data Privacy",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Human-in-the-loop confirmation degrades under approval fatigue, and benign content can carry unintended injected instructions, both matters of human-oversight configuration.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": null,
+      "target_element_name": "Human-AI Configuration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry centers on privacy leakage and de-anonymization of PII, PHI, biometric, and genomic data, including membership inference that confirmsanamed individual and defeats erasure obligations.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": null,
+      "target_element_name": "Data Privacy",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "It concerns confidentiality of the system and its data through model and data exfiltration, credential exposure, and extraction attacks.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Trade secrets and model weights are protected assets at risk, and models can reproduce copyrighted or watermarked training material verbatim.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": null,
+      "target_element_name": "Intellectual Property",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Third-party observability platforms, SDKs, and integrated browser components disclose sensitive data through the surrounding ecosystem.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Excessive agency lets an agent exfiltrate data, perform unauthorized writes, and take destructive actions across the downstream systems it can reach.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Excessive autonomy acting without confirmation is a root cause, and human-in-the-loop approval is the primary control, both configuration of human oversight.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": null,
+      "target_element_name": "Human-AI Configuration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Hallucinated or confabulated reasoning can trigger the agent to take damaging real-world actions.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": null,
+      "target_element_name": "Confabulation",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "An over-privileged agent can forward a user's private email content to an attacker, a personal- data breach.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": null,
+      "target_element_name": "Data Privacy",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry is entirely about the integrity of third-party models, datasets, adapters, and integrated components across the AI value chain.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Supply-chain compromise produces backdoors, poisoning, remote code execution, and other security breaches.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Unclear licensing for use, distribution, and commercialization, plus copyright exposure from supplier material, put intellectual property at risk.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": null,
+      "target_element_name": "Intellectual Property",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Tampered or poisoned models emit biased outputs and misinformation, and a tampered on-device model can steer users to scam sites.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Integrity",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Coding assistants confabulate nonexistent package names that attackers pre-register, the slopsquatting vector.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": null,
+      "target_element_name": "Confabulation",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Poisoning steers answers, injects subtle misinformation, and manipulates recommendations and downstream business decisions.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Integrity",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Third-party datasets, shared model repositories, and bundled artifacts introduce compromise through the GenAI value chain.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Data and model poisoning, embedded backdoors, and unsafe- artifact code execution are core security risks.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Targeted poisoning erodes refusal behaviors, as when a public chatbotwas manipulated into producing offensive content.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": null,
+      "target_element_name": "Dangerous, Violent, or Hateful Content",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unbounded consumption threatens availability through denial of service and confidentiality through model extraction and side-channel theft of weights and architecture.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Model extraction and functional cloning steal the model as intellectual property and trade secret.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": null,
+      "target_element_name": "Intellectual Property",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Shared inference infrastructure and third-party serving frameworks add supply-chain attack surface.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry concerns GenAI producing false or misleading information that degrades human decisions, the definition of this misinformation risk.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Integrity",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Confabulation, NIST's term for confidently stated but false output, isnamed as a primary source of the misinformation.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": null,
+      "target_element_name": "Confabulation",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Automation bias and overreliance are called a key factor, addressed by calibratinghuman and system trust.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": null,
+      "target_element_name": "Human-AI Configuration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Adversarially induced misinformation and false alerts can cause security incidents and operational disruption.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Hallucinated dependencies and unvalidated third-party tool outputs are value-chain integration risks.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "System-prompt and context extraction, an expanded attack surface, and lowered barriers to targeted exploitation are the core security risks.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Exposed hidden context can reveal proprietary behavior and sensitive implementation details, such as a leaked system prompt.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": null,
+      "target_element_name": "Intellectual Property",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Embedding inversion, membership inference, and cross-tenant leakage recover PII and infer data- subject membership, triggering breach obligations.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": null,
+      "target_element_name": "Data Privacy",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Access-control failure, unauthorized cross-tenant retrieval, oracle and endpoint abuse, and availability jamming are core security concerns.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Retrieval poisoning corrupts the context the model relies on, degrading the integrity of retrieved and generated information.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Integrity",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Abackdoored third-party embedding model corrupts the geometry of everything ingested, a value-chain integrity risk.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unhandled model output flows into downstream systems as remote code execution, XSS, SQL injection, SSRF, CSRF, and privilege escalation.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": null,
+      "target_element_name": "Information Security",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Unsanitized output can leak sensitive conversation data to an attacker.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": null,
+      "target_element_name": "Data Privacy",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Generated code can reference hallucinated nonexistent software packages, a confabulation facet of unsafe output.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": null,
+      "target_element_name": "Confabulation",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Third-party extensions that fail to validate inputs and hallucinated- package installs implicate component integration and supply chain.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": null,
+      "target_element_name": "Value Chain and Component Integration",
+      "target_framework": "nist_ai_600_1",
+      "target_framework_id": "nist_ai_600_1",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry rejects static-only attack-success-rate claims and mandates adaptive-attack metrics, baselining injection defenses with AgentDojo and JailbreakBench because static scores run near zero while adaptive success exceeds 90 percent.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "MEASURE 1",
+      "target_element_name": "methods& metrics",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Defenses are red-teamed against attackerswho have read the full defense specification, evaluating the deployed system's injection resilience rather than trusting a metric selected in isolation.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Decomposing an injection along delivery surface, propagation behavior, and encoding is presented as a threat-modeling step that mapsrisk across components including RAG corpora, MCP servers, and third- party tool packages.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "MAP 4",
+      "target_element_name": "maprisks across all components",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Disclosure is framed as impact to data subjects, where membership inference yields a regulatory- breach determination about a named individual under GDPR or HIPAA.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "MAP 5",
+      "target_element_name": "characterize impacts on people",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Arelease gate requires disclosure red-teaming that quantitatively measures extraction, membership inference, embedding inversion, internal-state inversion, side channels, and LoRA extractability.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The disclosure incident-response playbook sets breach-notification timelines and treats leaks with unlearning, retraining, withdrawal, and vector and cache cleanup, plus vendor notice.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "MANAGE 4",
+      "target_element_name": "risk treatment, response &recovery",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Logging and monitoring of extension and downstream activity is paired with circuit breakers that halt, rate-limit, or escalate agent actions for human review.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "MANAGE 4",
+      "target_element_name": "risk treatment, response &recovery",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entire entry is LLM supply chain, covering supplier vetting, terms-and-conditions review, and component-patching policy for third-party software, data, and models.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "GOVERN 6",
+      "target_element_name": "third-party& supply-chain policy",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Asigned SBOM, AIBOM, and ML- SBOM component inventory together with component and supplier vetting mapsrisk across every third-party model, dataset, and dependency.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "MAP 4",
+      "target_element_name": "maprisks across all components",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Vetting and re-auditing suppliers and treating model conversion or merge services as high-risk promotion points is direct third- party-entity risk management.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "MANAGE 3",
+      "target_element_name": "managethird-party risks",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "primary"
+    },
+    {
+      "rationale": "AI red teaming and evaluation when selecting third-party models, plus in-production adversarial- robustness testing and anomaly detection, assess acquired components.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Continuous validation of upstream model integrity, in-production anomaly detection, and regular BOMandsupplier re-audits track supply-chain risk over time.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "MEASURE 3",
+      "target_element_name": "track risks over time",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Outputs, training loss, and behavioral patterns are monitored for drift against defined thresholds to detect subtle poisoning that emerges over time.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "MEASURE 3",
+      "target_element_name": "track risks over time",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Continuous red-teaming with adversarial and trigger-based prompts, with dedicated trigger- probing required after every alignment cycle, evaluates the model for hidden backdoors.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Vendor vetting, model and data lineage tracking, and controls against open-source dataset supply-chain poisoning and malicious models address third- party poisoning vectors.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "GOVERN 6",
+      "target_element_name": "third-party& supply-chain policy",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Rate limits, hard spending caps, agentic circuit breakers, and graceful degradation form an impact-prioritized response informed by cost-attribution monitoring and baselines.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "MANAGE 1",
+      "target_element_name": "prioritize &respond to risks",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Adversarial-perturbation scanning and resource-consumption red- teaming, supported by tool- behavior baselines, evaluate the system for the secure-and- resilient availability characteristic.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The entry's defense is evaluation- centric, using groundedness and consistency checks, misinformation monitoring and testing, and continuous adversarial evaluation to measure the validity, reliability, and accuracy that misinformation threatens.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Verification signals such as groundedness and consistency checks replace naive model confidence as the metric for whether a claim can be trusted before action.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "MEASURE 1",
+      "target_element_name": "methods& metrics",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Claims, evidence, and outcomes are logged and adversarial scenarios tested so misinformation is tracked over time.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "MEASURE 3",
+      "target_element_name": "track risks over time",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Runtime verification and approval workflows for high-impact actions, together with blast-radius limits, are impact-prioritized response controls.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "MANAGE 1",
+      "target_element_name": "prioritize &respond to risks",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Detecting hidden-context exposure is a security-evaluation activity, red-teaming for prompt and context extraction grounded in RL-based red-teaming for privacy leakage and system-prompt- extraction research.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "MEASURE 2",
+      "target_element_name": "evaluate trustworthiness",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "The embedding layer is established as part of the application's trust boundary, directingteams to vet the embedding model and treat third-party embedding services and backups as in-scope components.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "MAP 4",
+      "target_element_name": "maprisks across all components",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Impact to data subjects is characterized, since embedding inversion recovers PII and an embeddings-only leak is reclassified as a source-document breach triggering breach notification.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "MAP 5",
+      "target_element_name": "characterize impacts on people",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Immutable retrieval logs and updated incident-response playbooks treat embeddings-only leaks as source-data breaches with GDPR Article 33 notification.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "MANAGE 4",
+      "target_element_name": "risk treatment, response &recovery",
+      "target_framework": "nist_ai_rmf",
+      "target_framework_id": "nist_ai_rmf",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Constrains the injection surface at the interface through system- prompt role separation, output- schemavalidation, cross- modality input filtering, invisible- Unicode stripping, and provenance-labeled channels that mark untrusted content.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Contains a successful injection by granting each tool call least privilege, running actions in the user's scoped context, and requiringhuman approval before privileged or irreversible operations.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Requires adaptive red-teaming by adversarieswho have already read the defenses, rejecting static-only test suites that miss evolving injection techniques.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "TVM",
+      "target_element_name": "Threat &Vulnerability Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Treats connected tools, plugins, and MCP servers as a software supply-chain surface that must be pinned, signed, and verified before an agent will call them.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "STA",
+      "target_element_name": "Supply Chain Management, Transparency, and Accountability",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Governs classification, minimization, retention, encryption, and verifiable erasure of sensitive records across the four-phase data lifecycle the entry is organized around.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "DSP",
+      "target_element_name": "Data Security and Privacy Lifecycle Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Enforces authorize-before- retrieval with document- and chunk-level access control inside the index query and per-tenant isolation, since vector similarity alone does not respect access- control lists.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Applies encryption in transit and at rest, format-preserving encryption for structured identifiers, and vector-store encryption so sensitive data stays unreadable if exposed.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "CEK",
+      "target_element_name": "Cryptography, Encryption& Key Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Reduces training-data memorization through differential-privacy training calibrated to sensitivity, near- duplicate deduplication, verifiable erasure across checkpoints and adapters, and resistance to distillation.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "MDS",
+      "target_element_name": "Model Development Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Gates log-probabilities, confidence scores, and explanations on production endpoints, sanitizes outputs with classifiers, separates internal from external routing, and defends streaming side channels.",
+      "source_control_id": "LLM02:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Minimizes agent permissions, executes tool actions inside the user's OAuth-scoped context, and applies complete mediation so an over-privileged identity cannot exceed its authorization.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Hardens the extension and tool interface with strict input schemas, parameter validation, avoidance of open-ended functionality, and application- security testing.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Logs and monitors the activity of extensions and downstream systems so undesirable or unauthorized actions are detected quickly.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "LOG",
+      "target_element_name": "Logging and Monitoring",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Runs static, dynamic, and interactive application-security testing within the development pipeline to find vulnerabilities in agent extensions before release.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "TVM",
+      "target_element_name": "Threat &Vulnerability Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Directly matches the domain with SBOM/AIBOM/ML-SBOM inventory, supplier vetting, and provenance backed by cryptographic signing and transparency logs.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "STA",
+      "target_element_name": "Supply Chain Management, Transparency, and Accountability",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Counters model tampering and backdoors and preserves integrity across adapter merges, format conversion, and quantization through model signing and behavioral evaluation.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "MDS",
+      "target_element_name": "Model Development Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Scans for vulnerable or outdated components in serving frameworks and models and enforces a patching policy across the dependency chain.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "TVM",
+      "target_element_name": "Threat &Vulnerability Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Uses cryptographic model signing, Sigstore and transparency-log entries, file hashes, and edge-model encryption with integrity checks to verify artifact authenticity.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "CEK",
+      "target_element_name": "Cryptography, Encryption& Key Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Enforces promotion boundaries with immutable references, policy-based release gates aligned to SLSA, and build- pipeline integrity across CI/CD.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "CCC",
+      "target_element_name": "ChangeControl and Configuration Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Secures training and fine-tuning data and model artifacts against poisoning across the development lifecycle.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "MDS",
+      "target_element_name": "Model Development Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Validates incoming data, checks integrity, and versions datasets so tampered inputs are caught across the data lifecycle.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "DSP",
+      "target_element_name": "Data Security and Privacy Lifecycle Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Establishes model and dataset lineage through SBOM/ML-BOM records, artifact signing, and vendor vetting to counter distributed poisoned models.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "STA",
+      "target_element_name": "Supply Chain Management, Transparency, and Accountability",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Applies statistical and AI-based anomaly detection and behavioral-drift monitoring across training, embedding, and inference to surface poisoning effects.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "LOG",
+      "target_element_name": "Logging and Monitoring",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Runs continuous adversarial red- teaming and trigger-probing to expose hidden backdoors planted during poisoning.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "TVM",
+      "target_element_name": "Threat &Vulnerability Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Applies front-line interface controls including rate limiting, token- and cost-aware caps, input-size validation, pre-flight token estimation, and authenticated inference endpoints.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Preserves availability through graceful degradation and dynamic scaling with load balancingwhen demand or abuse spikes.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "BCR",
+      "target_element_name": "Business Continuity Management and Operational Resilience",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Manages resource allocation and hardens inference infrastructure, including disabling unsafe deserialization and reducing the shared-inference side-channel surface.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "IVS",
+      "target_element_name": "Infrastructure& Virtualization Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Provides continuous cost- attribution monitoring and detection of resource-intensive tool interactions against normal- behavior baselines.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "LOG",
+      "target_element_name": "Logging and Monitoring",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Scopes quotas and hard spending caps per API key, user, team, and account and authenticates inference endpoints to blunt stolen-credential abuse.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Separates claim from action, validates tool calls semantically, requires verification signals and structured outputs with mandatory fields, and verifies model assertions at runtime.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Runs adversarial evaluation and continuous testing against deliberately misleading scenarios to catch misinformation before it reaches users.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "TVM",
+      "target_element_name": "Threat &Vulnerability Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Logs claims, supporting evidence, and outcomes and monitors for misinformation patterns over time.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "LOG",
+      "target_element_name": "Logging and Monitoring",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Addresses hallucinated- dependency attacks and unsafe generated code by verifying that packages and dependencies the model names actually exist and are trusted.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "STA",
+      "target_element_name": "Supply Chain Management, Transparency, and Accountability",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Treats hidden context as an interface-exposure risk by curating what enters the context window, applying app-layer guardrails, and enforcing independent controls rather than trusting the prompt.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Enforces authorization and access control independently of the model and splits privileges across agents so exposed context cannot grant capability.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Keeps credentials, tokens, and connection strings out of the prompt by externalizing secrets to a managed store.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "CEK",
+      "target_element_name": "Cryptography, Encryption& Key Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Scopes tenant identity inside the index query, validates server-side, authenticates per-tenant endpoints, and enforces chunk- level access control.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Tracks provenance, segregates trust tiers, deletes embeddings with their source, and audits retention, encryption at rest, and backup sensitivity across the embedding lifecycle.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "DSP",
+      "target_element_name": "Data Security and Privacy Lifecycle Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Applies anomaly detection at ingest and retrieval and keeps immutable retrieval logs monitored for tenant-filter bypass and cross-tenant access.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "LOG",
+      "target_element_name": "Logging and Monitoring",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Encrypts embeddings at rest with keys managed separately from the application layer and treats embedding-API keys as secrets.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "CEK",
+      "target_element_name": "Cryptography, Encryption& Key Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Authenticates embedding and similarity-search endpoints as first-class APIs, applies per- tenant rate limits, and withholds raw similarity scores.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Vets the embedding model against backdoored-encoder risk and tracks provenance of the encoder and the indexed content.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "STA",
+      "target_element_name": "Supply Chain Management, Transparency, and Accountability",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Validates model responses as untrusted input and applies context-aware output encoding, parameterized queries, and content-security policy before outputs reach downstream interpreters.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AIS",
+      "target_element_name": "Application &Interface Security",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "primary"
+    },
+    {
+      "rationale": "Logs and monitors model outputs so exploitation patterns in downstream handling are detected.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "LOG",
+      "target_element_name": "Logging and Monitoring",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Treats the model as any other user under a zero-trust posture so its outputs never inherit privileges beyond the end user.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "IAM",
+      "target_element_name": "Identity &Access Management",
+      "target_framework": "csa_aicm",
+      "target_framework_id": "csa_aicm",
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Acrafted message overrides the system prompt's role and capability limits, redirecting the model to act outside its intended scope.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-10",
+      "target_element_name": "Agent Goal and Instruction Manipulation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Injected input drives unauthorized invocation of tools the agent is permitted to call, from file system and shell to email and cloud APIs.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-1",
+      "target_element_name": "Agentic AI Tool Misuse",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "The agent reads attacker-planted text while operating under the user's elevated credentials and performs privileged actions the attacker could not reach directly.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-2",
+      "target_element_name": "Agent Access Control Violation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "An injection written to long-term memoryor a RAG corpus taints every later session that reads the poisoned store, persisting the compromise across conversations.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-6",
+      "target_element_name": "Agent Memoryand Context Manipulation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Where the agent holds shell, file- system, or cloud-API access, an injection escalates into arbitrary command execution and destructive actions on the host.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-7",
+      "target_element_name": "Insecure Agent Critical Systems Interaction",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Tool outputs re-enter the shared context window, letting one injection chain into further tool calls or self-replicate across steps.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-3",
+      "target_element_name": "Agent Cascading Failures",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "An injection can self-replicate across agents, spreading from one compromised agent to its peers in a multi-agent workflow.",
+      "source_control_id": "LLM01:2026",
+      "target_element_id": "AIVSS-4",
+      "target_element_name": "Agent Orchestration and Multi-Agent Exploitation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Extensions carry functions beyond what the task needs, such as read-only access bundled with modify, delete, or send, so a malfunctioning model invokes capabilities it was never meant to use.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIVSS-1",
+      "target_element_name": "Agentic AI Tool Misuse",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Extensions connect to downstream systems with over- broad or generic high-privileged identities, letting the agent act far beyond the user's own authorization scope.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIVSS-2",
+      "target_element_name": "Agent Access Control Violation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "An open-ended shell-command extension that fails to filter unintended commands,or an over-autonomous coding agent, can execute damaging actions and destroy production infrastructure.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIVSS-7",
+      "target_element_name": "Insecure Agent Critical Systems Interaction",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Without rate limits or circuit breakers, runaway extension invocation compounds into cascading downstream failures.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIVSS-3",
+      "target_element_name": "Agent Cascading Failures",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Amalicious or compromised peer agent can trigger damaging actions, and failing to preserve user context across chained agent calls widens the blast radius.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIVSS-4",
+      "target_element_name": "Agent Orchestration and Multi-Agent Exploitation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Direct or indirect prompt injection, such as a crafted incoming email, is the trigger that redirects the agent into unwanted privileged actions.",
+      "source_control_id": "LLM03:2026",
+      "target_element_id": "AIVSS-10",
+      "target_element_name": "Agent Goal and Instruction Manipulation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Compromised third-party packages, pre-trained models, LoRA adapters, and conversion or merge pipelines are the dependency substrate an agent inherits, so a tampered model- supply-chain artifact becomes the agent's supply chain too.",
+      "source_control_id": "LLM04:2026",
+      "target_element_id": "AIVSS-8",
+      "target_element_name": "Agent Supply Chain and Dependency Risk",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Attackersembed hidden instructions in web content that poison an agent's persistent memoryor recommendations across sessions, so the agent begins prioritizing attacker- controlled logic.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AIVSS-6",
+      "target_element_name": "Agent Memoryand Context Manipulation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Backdoored models and unsafe- serialization artifacts distributed through public repositories carry hidden triggers that a downstream agent inherits when it loads them.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AIVSS-8",
+      "target_element_name": "Agent Supply Chain and Dependency Risk",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Poisoned inputs propagate across multi-agent and enterprise workflows, and shared embeddings or memorylayers spread contamination from one tenant to others.",
+      "source_control_id": "LLM05:2026",
+      "target_element_id": "AIVSS-3",
+      "target_element_name": "Agent Cascading Failures",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Amalicious tool forces an agent into recursive or infinite tool- calling loops, driving token consumption and cost far beyond the task's needs.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AIVSS-1",
+      "target_element_name": "Agentic AI Tool Misuse",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Agentic and MCPprotocols amplify a single request into cascading downstream operations, so onetask fans out into manytool calls that exhaust budget and availability.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AIVSS-3",
+      "target_element_name": "Agent Cascading Failures",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "An attacker publishes a malicious tool, such as a skill on an open- source repository, that developers incorporate as an agent dependency, driving token exhaustion once integrated.",
+      "source_control_id": "LLM06:2026",
+      "target_element_id": "AIVSS-8",
+      "target_element_name": "Agent Supply Chain and Dependency Risk",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Incorrect state or evidence produced by one agent and trusted by another propagates across a multi-agent workflow into a compounding, high-impact failure.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AIVSS-3",
+      "target_element_name": "Agent Cascading Failures",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "primary"
+    },
+    {
+      "rationale": "Because model outputs drive tool calls, an incorrect state inference triggers unintended actions unless invocations are validated against real-world state and intent.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AIVSS-1",
+      "target_element_name": "Agentic AI Tool Misuse",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Afalse conclusion, such as wrongly approving a refund or firing a false alert, drives an automated high-impact action that causes financial loss or operational disruption.",
+      "source_control_id": "LLM07:2026",
+      "target_element_id": "AIVSS-7",
+      "target_element_name": "Insecure Agent Critical Systems Interaction",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Disclosed permission rules and user-role directives from hidden context reveal the authorization model, inviting probing that bypasses controls the application should enforce independently of the LLM.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AIVSS-2",
+      "target_element_name": "Agent Access Control Violation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Extracting the hidden tool list and parameter schemas gives an attacker concrete targets to steer the application toward specific tool calls.",
+      "source_control_id": "LLM08:2026",
+      "target_element_id": "AIVSS-1",
+      "target_element_name": "Agentic AI Tool Misuse",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Retrieval-time poisoning manipulates the geometry of vector-backed agent memoryso attacker content is retrieved as trusted context, while non- geometric memorypoisoning is deferred to the agentic framework.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AIVSS-6",
+      "target_element_name": "Agent Memoryand Context Manipulation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Abackdoored embedding model corrupts the geometry of everything ingested, and vulnerable vector-database dependencies compound the risk since a leaked index is recoverable to source documents.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AIVSS-8",
+      "target_element_name": "Agent Supply Chain and Dependency Risk",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Similarity search runs across the full shared index before tenant access control is applied, so an attacker infers or reaches other tenants' content that authorization should have blocked.",
+      "source_control_id": "LLM09:2026",
+      "target_element_id": "AIVSS-2",
+      "target_element_name": "Agent Access Control Violation",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Unvalidated model output reaching a shell, exec/eval, SQL, or file-path sink yields remote code execution, SQL injection, or path traversal on backend systems.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AIVSS-7",
+      "target_element_name": "Insecure Agent Critical Systems Interaction",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    },
+    {
+      "rationale": "Ageneral-purpose LLM's unvalidated response passed to a privileged extension causes the extension to be misused, for example forced into an unintended shutdown.",
+      "source_control_id": "LLM10:2026",
+      "target_element_id": "AIVSS-1",
+      "target_element_name": "Agentic AI Tool Misuse",
+      "target_framework": "owasp_aivss",
+      "target_framework_id": null,
+      "weight": "supporting"
+    }
+  ],
+  "source_file": "2026_OWASP-GenAI-LLM-Top-10.repaired.md",
+  "source_framework_id": "owasp_llm_top10_2026",
+  "source_sha256": "3d3c9f21809c5f882a668b87424ac6b2e2a270caab4b29aa5265df3475433a96",
+  "target_frameworks": [
+    {
+      "distinct_elements": 10,
+      "element_level": "risk",
+      "framework_id": "owasp_agentic_top10",
+      "key": "owasp_agentic_top10",
+      "label": "OWASP Top 10 for Agentic Applications (ASI)",
+      "mapping_count": 31,
+      "version": "2026 (announced 2025-12-09)"
+    },
+    {
+      "distinct_elements": 19,
+      "element_level": "risk category",
+      "framework_id": "owasp_dsgai",
+      "key": "owasp_dsgai",
+      "label": "OWASP GenAI Data Security 2026 (DSGAI)",
+      "mapping_count": 39,
+      "version": "v1.0 (2026-0317)"
+    },
+    {
+      "distinct_elements": 13,
+      "element_level": "tactic",
+      "framework_id": "mitre_atlas",
+      "key": "mitre_atlas",
+      "label": "MITRE ATLAS",
+      "mapping_count": 46,
+      "version": "content v2026.06 (format-version 6.0.0)"
+    },
+    {
+      "distinct_elements": 10,
+      "element_level": "enterprise tactic",
+      "framework_id": null,
+      "key": "mitre_attack",
+      "label": "MITRE ATT&CK",
+      "mapping_count": 29,
+      "version": "v19.1"
+    },
+    {
+      "distinct_elements": 22,
+      "element_level": "weakness",
+      "framework_id": "cwe",
+      "key": "cwe",
+      "label": "MITRE CWE (Common Weakness Enumeration)",
+      "mapping_count": 48,
+      "version": "4.20"
+    },
+    {
+      "distinct_elements": 8,
+      "element_level": "risk category",
+      "framework_id": "nist_ai_600_1",
+      "key": "nist_ai_600_1",
+      "label": "NIST AI 600-1 (Generative AI Profile)",
+      "mapping_count": 39,
+      "version": "v1.0 (July 2024)"
+    },
+    {
+      "distinct_elements": 9,
+      "element_level": "category",
+      "framework_id": "nist_ai_rmf",
+      "key": "nist_ai_rmf",
+      "label": "NIST AI RMF (AI 100-1)",
+      "mapping_count": 25,
+      "version": "v1.0 (2023)"
+    },
+    {
+      "distinct_elements": 11,
+      "element_level": "control domain",
+      "framework_id": "csa_aicm",
+      "key": "csa_aicm",
+      "label": "CSA AI Controls Matrix (AICM)",
+      "mapping_count": 44,
+      "version": "v1.1 (2026-06-22)"
+    },
+    {
+      "distinct_elements": 8,
+      "element_level": "agentic core security risk",
+      "framework_id": null,
+      "key": "owasp_aivss",
+      "label": "OWASP AIVSS (AI Vulnerability Scoring System)",
+      "mapping_count": 30,
+      "version": "v0.8"
+    }
+  ]
+}
