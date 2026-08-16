@@ -21,6 +21,7 @@ class Aiuc1Parser(BaseParser):
     source_url = "https://www.aiuc-1.com"
     mapping_unit_level = "activity"
     expected_count = 132
+    fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
         data = load_json(self.raw_dir / "aiuc-1-standard.json")

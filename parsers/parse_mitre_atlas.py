@@ -21,6 +21,7 @@ class MitreAtlasParser(BaseParser):
     source_url = "https://atlas.mitre.org"
     mapping_unit_level = "technique"
     expected_count = 202
+    fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
         data = load_json(self.raw_dir / "ATLAS_compiled.json")

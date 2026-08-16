@@ -28,6 +28,7 @@ class CosaiParser(BaseParser):
     source_url = "https://cosai.dev"
     mapping_unit_level = "control"
     expected_count = 55
+    fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []

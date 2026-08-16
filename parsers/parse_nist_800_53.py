@@ -216,6 +216,7 @@ class Nist80053Parser(BaseParser):
     # frequency over that corpus, so tripling one framework's share to buy two
     # links would move every other framework's anchors as well.
     expected_count = 300
+    fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / CATALOG_NAME

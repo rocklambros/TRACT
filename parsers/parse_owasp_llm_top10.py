@@ -33,6 +33,7 @@ class OwaspLlmTop10Parser(BaseParser):
     source_url = "https://genai.owasp.org"
     mapping_unit_level = "risk"
     expected_count = 10
+    fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
         text = (self.raw_dir / "owasp_llm_top_10_2025.md").read_text(encoding="utf-8")

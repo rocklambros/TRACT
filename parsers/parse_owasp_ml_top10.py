@@ -48,6 +48,7 @@ class OwaspMlTop10Parser(BaseParser):
     source_url = "https://owasp.org/www-project-machine-learning-security-top-10/"
     mapping_unit_level = "risk"
     expected_count = 10
+    fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
         archive = self.raw_dir / ARCHIVE_NAME

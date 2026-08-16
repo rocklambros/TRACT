@@ -10,7 +10,6 @@ from __future__ import annotations
 import hashlib
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import ClassVar
 
@@ -48,6 +47,10 @@ class BaseParser(ABC):
     source_url: ClassVar[str]
     mapping_unit_level: ClassVar[str]
     expected_count: ClassVar[int]
+    # The date the raw bytes were fetched, not the date they were parsed.
+    # Declared rather than stamped: re-parsing the same input must produce the
+    # same output bytes, and a clock read makes that impossible.
+    fetched_date: ClassVar[str]
     # Set only when the raw directory is not the framework_id in either
     # underscore or hyphen form. Kept explicit rather than guessed.
     raw_dir_name: ClassVar[str | None] = None
@@ -179,7 +182,7 @@ class BaseParser(ABC):
             framework_name=self.framework_name,
             version=self.version,
             source_url=self.source_url,
-            fetched_date=self._today(),
+            fetched_date=self.fetched_date,
             mapping_unit_level=self.mapping_unit_level,
             controls=sanitized_controls,
             source_files=[
@@ -279,12 +282,3 @@ class BaseParser(ABC):
                 actual,
                 expected,
             )
-
-    @staticmethod
-    def _today() -> str:
-        """Return today's date as an ISO 8601 string (YYYY-MM-DD, UTC).
-
-        Returns:
-            Date string like "2026-04-27".
-        """
-        return datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")

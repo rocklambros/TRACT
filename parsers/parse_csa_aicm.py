@@ -18,6 +18,7 @@ class CsaAicmParser(BaseParser):
     source_url = "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
     mapping_unit_level = "control"
     expected_count = 243
+    fetched_date = "2026-04-28"
 
     @staticmethod
     def _flatten_guidelines(field: str | dict[str, str] | None) -> str:

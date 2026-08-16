@@ -30,6 +30,7 @@ class NistAiRmfParser(BaseParser):
     source_url = "https://doi.org/10.6028/NIST.AI.100-1"
     mapping_unit_level = "subcategory"
     expected_count = 72
+    fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
         text = (self.raw_dir / "nist_ai_rmf_1.0.md").read_text(encoding="utf-8")

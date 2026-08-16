@@ -185,6 +185,7 @@ class AsvsParser(BaseParser):
     mapping_unit_level = "requirement"
     # 286 requirements in 4.0.3 less the eight withdrawn tombstones.
     expected_count = 278
+    fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / ARCHIVE_NAME

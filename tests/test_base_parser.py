@@ -23,6 +23,7 @@ class StubParser(BaseParser):
     source_url: ClassVar[str] = "https://example.com/stub"
     mapping_unit_level: ClassVar[str] = "control"
     expected_count: ClassVar[int] = 2
+    fetched_date: ClassVar[str] = "2026-01-01"
 
     def __init__(
         self,
@@ -181,17 +182,6 @@ class TestBaseParserRun:
         with pytest.raises(ValueError, match="zero controls"):
             parser.run()
 
-    def test_today_returns_iso_date(self) -> None:
-        """_today() returns a YYYY-MM-DD string."""
-        parser = StubParser()
-        today = parser._today()
-        # Validate format
-        parts = today.split("-")
-        assert len(parts) == 3
-        assert len(parts[0]) == 4
-        assert len(parts[1]) == 2
-        assert len(parts[2]) == 2
-
 
 class ReadingParser(BaseParser):
     """Parser that reads two real files through read_source()."""
@@ -202,6 +192,7 @@ class ReadingParser(BaseParser):
     source_url: ClassVar[str] = "https://example.com/reading"
     mapping_unit_level: ClassVar[str] = "control"
     expected_count: ClassVar[int] = 1
+    fetched_date: ClassVar[str] = "2026-01-01"
 
     def parse(self) -> list[Control]:
         first = self.read_source("a.txt")
@@ -243,3 +234,31 @@ class TestSourceManifest:
 
         paths = [s.path for s in result.source_files]
         assert paths == sorted(paths)
+
+
+class TestDeterministicOutput:
+    def test_two_runs_produce_identical_bytes(self, tmp_path: Path) -> None:
+        raw = tmp_path / "raw"
+        raw.mkdir()
+        (raw / "a.txt").write_text("alpha", encoding="utf-8")
+        (raw / "b.txt").write_text("beta", encoding="utf-8")
+        out = tmp_path / "out"
+        out.mkdir()
+
+        ReadingParser(raw_dir=raw, output_dir=out).run()
+        first = (out / "reading_fw.json").read_bytes()
+        ReadingParser(raw_dir=raw, output_dir=out).run()
+        second = (out / "reading_fw.json").read_bytes()
+
+        assert first == second
+
+    def test_fetched_date_is_declared_not_read_from_the_clock(self) -> None:
+        import inspect
+
+        from tract.parsers import base
+
+        source = inspect.getsource(base)
+        assert "datetime.now" not in source, (
+            "BaseParser must not read the clock; fetched_date is declared "
+            "per parser so re-parsing the same bytes gives the same bytes"
+        )

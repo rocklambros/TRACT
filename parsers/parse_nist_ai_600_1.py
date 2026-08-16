@@ -38,6 +38,7 @@ class NistAi600Parser(BaseParser):
     source_url = "https://doi.org/10.6028/NIST.AI.600-1"
     mapping_unit_level = "risk_category"
     expected_count = 12
+    fetched_date = "2026-04-28"
 
     def parse(self) -> list[Control]:
         text = (self.raw_dir / "nist_ai_600_1.md").read_text(encoding="utf-8")

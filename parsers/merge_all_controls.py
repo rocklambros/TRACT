@@ -1,7 +1,6 @@
 """Merge all validated framework JSONs into a single all_controls.json."""
 from __future__ import annotations
 
-import datetime
 import logging
 
 from tract.config import PROCESSED_DIR, PROCESSED_FRAMEWORKS_DIR
@@ -26,8 +25,15 @@ def main() -> None:
         total_controls += count
         logger.info("Loaded %s: %d controls", path.stem, count)
 
+    # Derived from inputs, never from the clock. This artifact's sha256 is
+    # recorded per fold and compared across folds; a date stamp makes two
+    # folds run either side of midnight disagree about identical content.
+    generated_date = max(
+        (str(f.get("fetched_date", "")) for f in frameworks), default=""
+    )
+
     output = {
-        "generated_date": datetime.date.today().isoformat(),
+        "generated_date": generated_date,
         "framework_count": len(frameworks),
         "total_controls": total_controls,
         "frameworks": frameworks,

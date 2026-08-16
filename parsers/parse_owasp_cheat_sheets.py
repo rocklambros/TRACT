@@ -209,6 +209,7 @@ class OwaspCheatSheetsParser(BaseParser):
     # The series publishes more sheets than OpenCRE links to (120 against 50),
     # so this tracks the source rather than the link set.
     expected_count = 120
+    fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
         archive = self.raw_dir / ARCHIVE_NAME

@@ -51,6 +51,7 @@ class OwaspDsgaiParser(BaseParser):
     source_url = "https://genai.owasp.org/"
     mapping_unit_level = "risk"
     expected_count = 21
+    fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
         """Parse DSGAI sections from the pdftotext output.

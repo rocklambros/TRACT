@@ -119,6 +119,7 @@ class NistAi1002Parser(BaseParser):
     source_url = "https://doi.org/10.6028/NIST.AI.100-2e2023"
     mapping_unit_level = "taxonomy_section"
     expected_count = 20
+    fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / PDF_NAME
