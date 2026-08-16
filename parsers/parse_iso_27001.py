@@ -8,6 +8,15 @@ of 20 characters or more, and 4 pairs where a cell bled into the next row.
 Unrepaired, this text tokenizes to fragments and would score worse than the
 28-character titles it replaces.
 
+MAX_RUN_TOGETHER_REPAIRS is a ceiling on split_run_together's successful
+splits, not a guarantee that every one of the 22 damaged rows comes out
+clean: the repair only fires when the corpus vocabulary supplies a complete
+word-by-word decomposition, and for a meaningful share of the 22 it does not
+(see RUN_TOGETHER_MIN_LENGTH below and _find_residual_run_together). run()
+logs the control ids that still carry an unsplit token so that gap stays
+visible in the run log instead of being implied away by a ceiling that only
+counts successes.
+
 The output file is gitignored. This repository is CC0 and committing normative
 ISO control statements under it would assert rights the project does not hold.
 See tests/test_licensed_text_not_tracked.py.
@@ -62,6 +71,40 @@ MAX_HYPHEN_REPAIRS: Final[int] = 40
 MAX_RUN_TOGETHER_REPAIRS: Final[int] = 30
 MAX_BLEED_REPAIRS: Final[int] = 6
 
+# A control's description is flagged as still damaged if, after every repair
+# has run, it still contains an unbroken letters-only run this long. This is
+# the same length as RUN_TOGETHER_MIN_LENGTH on purpose: anything shorter is
+# an ordinary long word, and anything at or above it is exactly the shape a
+# genuine run-together token has.
+RESIDUAL_RUN_TOGETHER_PATTERN: Final[re.Pattern[str]] = re.compile(
+    rf"[A-Za-z]{{{RUN_TOGETHER_MIN_LENGTH},}}"
+)
+
+# Measured on the real 93-row source: BaseParser.honest_prose_fraction is
+# 90/93 = 0.9677. Three rows are genuinely below HONEST_PROSE_MIN_CHARS (60
+# chars) and not a parser defect, each hand-verified against the raw source:
+#   5.16  "The full life cycle of identities shall be managed." (51 chars)
+#   7.8   "Equipment shall be sited securely and protected." (48 chars)
+#   7.9   "Off-site assets shall be protected." (35 chars) -- recovered from
+#         a double cell-bleed onto 7.8's raw row; the recovered text is
+#         accurate, just short.
+# This is a disclosed deviation from the brief's declared floor of 1.0, in
+# the same spirit as BaseParser.count_deviation_reason: named, with the
+# specific rows and measured fraction on record, rather than a bare literal.
+# BaseParser has no enforced opt-out for this floor the way it does for
+# count_deviation_reason (see tract/parsers/base.py); until one exists, this
+# constant is the audit trail. Independently re-derived during review at
+# 90/93 = 0.9677 exactly, confirming the three rows above are the complete
+# and only explanation for the gap below 1.0.
+MEASURED_PROSE_FRACTION: Final[float] = 90 / 93
+PROSE_FLOOR_DEVIATION_REASON: Final[str] = (
+    "brief declared min_prose_fraction=1.0; measured honest prose fraction "
+    "on the real 93-row source is 90/93=0.9677 because controls 5.16, 7.8, "
+    "and 7.9 are genuine one-sentence statements under HONEST_PROSE_MIN_CHARS "
+    "(60 chars), hand-verified against the raw source and independently "
+    "re-verified during code review -- not a parser defect"
+)
+
 
 class Iso27001Parser(BaseParser):
     framework_id: ClassVar[str] = "iso_27001"
@@ -71,13 +114,16 @@ class Iso27001Parser(BaseParser):
     mapping_unit_level: ClassVar[str] = "control"
     expected_count: ClassVar[int] = 93
     fetched_date: ClassVar[str] = "2026-08-15"
-    # Measured at 90/93 = 0.9677 on the real source. 3 rows (5.16, 7.8, 7.9)
-    # carry a genuine single-sentence statement under the shared 60-character
-    # honest-prose threshold; hand-checked against the source and confirmed
-    # real, not a truncated fragment. The floor sits just below the measured
-    # value, close enough to 1.0 that a regression toward title-only
-    # extraction, the failure mode this check exists for, still trips it.
+    # Deviates from the brief's declared 1.0. See PROSE_FLOOR_DEVIATION_REASON
+    # above for the full rationale; this attribute is the parser-level marker
+    # that the deviation exists, in the same spirit as BaseParser's
+    # count_deviation_reason, so a reader of this class alone (not just the
+    # module comments) sees both the changed number and why. The floor sits
+    # just below MEASURED_PROSE_FRACTION (0.9677) rather than at it, close
+    # enough to 1.0 that a regression toward title-only extraction, the
+    # failure mode this check exists for, still trips it.
     min_prose_fraction: ClassVar[float] = 0.96
+    prose_floor_deviation_reason: ClassVar[str] = PROSE_FLOOR_DEVIATION_REASON
 
     def parse(self) -> list[Control]:
         text = self.read_source(SOURCE_FILE)
@@ -120,7 +166,32 @@ class Iso27001Parser(BaseParser):
 
         self._check_repair("hyphen break", hyphen_total, MAX_HYPHEN_REPAIRS)
         self._check_repair("run-together", split_total, MAX_RUN_TOGETHER_REPAIRS)
+
+        residual = self._find_residual_run_together(controls)
+        if residual:
+            logger.warning(
+                "%s: %d control(s) still carry an unsplit run-together token "
+                "after repair (MAX_RUN_TOGETHER_REPAIRS bounds successful "
+                "splits, not remaining damage): %s",
+                self.framework_id, len(residual), ", ".join(residual),
+            )
         return controls
+
+    @staticmethod
+    def _find_residual_run_together(controls: list[Control]) -> list[str]:
+        """Control ids whose description still carries an unsplit token.
+
+        split_run_together only fires when the corpus vocabulary supplies a
+        complete word-by-word decomposition; a row it cannot fully segment is
+        left untouched rather than partially repaired. MAX_RUN_TOGETHER_REPAIRS
+        bounds how many rows the repair succeeded on, not how many still need
+        it, so this scan is what makes the residual damage count visible
+        instead of implied-away by a ceiling that only tracks successes.
+        """
+        return [
+            c.control_id for c in controls
+            if RESIDUAL_RUN_TOGETHER_PATTERN.search(c.description)
+        ]
 
     def _extract_rows(self, text: str) -> list[tuple[str, str, str]]:
         """Pull (control_id, title, statement) from the Table A.1 rows."""

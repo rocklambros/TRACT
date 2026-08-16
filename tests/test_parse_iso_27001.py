@@ -7,11 +7,13 @@ only on counts, because this parser moves text across control ids.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 
 from parsers.parse_iso_27001 import Iso27001Parser
+from tract.schema import Control
 
 FIXTURE = Path(__file__).parent / "fixtures" / "iso_27001_sample.md"
 
@@ -69,3 +71,59 @@ class TestIso27001Parser:
         from tract.parsers.base import BaseParser
 
         assert BaseParser.honest_prose_fraction(parser.parse()) == 1.0
+
+
+class TestFindResidualRunTogether:
+    """Coverage for the residual-damage visibility gap flagged in review.
+
+    MAX_RUN_TOGETHER_REPAIRS only bounds successful splits; these tests cover
+    the separate scan that flags rows still carrying an unsplit token, using
+    synthetic text so the assertion is not tied to which real ISO rows happen
+    to be repairable this run.
+    """
+
+    def test_flags_a_control_with_an_unbroken_long_token(self) -> None:
+        controls = [
+            Control(
+                control_id="9.9",
+                title="Example",
+                description=(
+                    "Thisisarunontokenthatstaysjoined and the rest of the "
+                    "sentence is ordinary prose."
+                ),
+            ),
+        ]
+        assert Iso27001Parser._find_residual_run_together(controls) == ["9.9"]
+
+    def test_does_not_flag_clean_prose(self) -> None:
+        controls = [
+            Control(
+                control_id="9.10",
+                title="Example",
+                description=(
+                    "This control statement is fully repaired prose without "
+                    "any unbroken long token."
+                ),
+            ),
+        ]
+        assert Iso27001Parser._find_residual_run_together(controls) == []
+
+    def test_logs_a_warning_with_the_control_ids_when_residual_damage_remains(
+        self, parser: Iso27001Parser, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        # The real fixture rows are fully repairable at 93-row vocabulary
+        # scale but not necessarily at the small fixture's scale; parse()
+        # must not crash either way, and if residual damage is present it
+        # must be visible in the log, not merely counted internally.
+        with caplog.at_level(logging.WARNING, logger="parsers.parse_iso_27001"):
+            controls = parser.parse()
+        residual = Iso27001Parser._find_residual_run_together(controls)
+        warnings = [r for r in caplog.records if r.levelname == "WARNING"]
+        if residual:
+            assert any(
+                "unsplit run-together token" in r.getMessage() for r in warnings
+            )
+        else:
+            assert not any(
+                "unsplit run-together token" in r.getMessage() for r in warnings
+            )
