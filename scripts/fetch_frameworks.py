@@ -217,9 +217,16 @@ SOURCES: Final[tuple[Source, ...]] = (
     ),
     Source(
         "nist_800_63", "sp800_63b.html",
-        "https://pages.nist.gov/800-63-4/sp800-63b.html",
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
         "NIST SP 800-63B Digital Identity Guidelines, authentication. "
         "Restores links dropped for lack of a primary source. "
+        "REVISION 3, NOT 4, AND THE DIFFERENCE IS LOAD-BEARING. OpenCRE's 79 "
+        "links carry 25 bare section numbers from revision 3, and revision 4 "
+        "renumbered the document. Measured: revision 3B contains 24 of the 25, "
+        "revision 4B contains 0 of 25, and the one miss is 'are g', a parsing "
+        "artifact in OpenCRE's own data rather than a real section. Fetching "
+        "revision 4 would leave every one of those links unjoinable while "
+        "looking like a successful fetch. "
         "DELIBERATELY UNPINNED: pages.nist.gov sits behind Cloudflare, "
         "which injects a per-response random bot-challenge token "
         "(window.__CF$cv$params, a fresh nonce and timestamp) into the "

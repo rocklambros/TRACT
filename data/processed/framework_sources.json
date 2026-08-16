@@ -112,13 +112,13 @@
     },
     "nist_800_63": {
       "sp800_63b.html": {
-        "bytes": "353757",
-        "expected_sha256": "",
+        "bytes": "215987",
+        "expected_sha256": null,
         "fetched_date": "2026-08-15",
         "filename": "sp800_63b.html",
-        "note": "NIST SP 800-63B Digital Identity Guidelines, authentication. Restores links dropped for lack of a primary source. DELIBERATELY UNPINNED: pages.nist.gov sits behind Cloudflare, which injects a per-response random bot-challenge token (window.__CF$cv$params, a fresh nonce and timestamp) into the HTML body on every fetch. Two fetches of the identical document seconds apart produced two different sha256 hashes with a one-line diff confined to that injected script tag. Pinning a hash here would make --accept-new-hash routine rather than an alert, which is worse than no pin.",
-        "sha256": "cdc214c5a5b27da7c7784698c48aaabf552024690c4fbac5bc9b300fdc813c8b",
-        "url": "https://pages.nist.gov/800-63-4/sp800-63b.html"
+        "note": "NIST SP 800-63B Digital Identity Guidelines, authentication. Restores links dropped for lack of a primary source. REVISION 3, NOT 4, AND THE DIFFERENCE IS LOAD-BEARING. OpenCRE's 79 links carry 25 bare section numbers from revision 3, and revision 4 renumbered the document. Measured: revision 3B contains 24 of the 25, revision 4B contains 0 of 25, and the one miss is 'are g', a parsing artifact in OpenCRE's own data rather than a real section. Fetching revision 4 would leave every one of those links unjoinable while looking like a successful fetch. DELIBERATELY UNPINNED: pages.nist.gov sits behind Cloudflare, which injects a per-response random bot-challenge token (window.__CF$cv$params, a fresh nonce and timestamp) into the HTML body on every fetch. Two fetches of the identical document seconds apart produced two different sha256 hashes with a one-line diff confined to that injected script tag. Pinning a hash here would make --accept-new-hash routine rather than an alert, which is worse than no pin.",
+        "sha256": "c4286833155db2fc63fb8a74cbe6b80f0e7f6713676d3f061415229d568b3d0e",
+        "url": "https://pages.nist.gov/800-63-3/sp800-63b.html"
       }
     },
     "nist_ai_100_2": {
