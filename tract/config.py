@@ -15,6 +15,9 @@ DATA_DIR: Final[Path] = PROJECT_ROOT / "data"
 RAW_DIR: Final[Path] = DATA_DIR / "raw"
 PROCESSED_DIR: Final[Path] = DATA_DIR / "processed"
 PROCESSED_FRAMEWORKS_DIR: Final[Path] = PROCESSED_DIR / "frameworks"
+# Gitignored overlay for the merged corpus including licensed frameworks.
+# See RESTRICTED_FRAMEWORK_IDS below and parsers/merge_all_controls.py.
+PROCESSED_LICENSED_DIR: Final[Path] = PROCESSED_DIR / "licensed"
 TRAINING_DIR: Final[Path] = DATA_DIR / "training"
 MODELS_DIR: Final[Path] = PROJECT_ROOT / "models"
 HUB_PROPOSALS_DIR: Final[Path] = PROJECT_ROOT / "hub_proposals"
@@ -35,6 +38,19 @@ COUNT_TOLERANCE: Final[float] = 0.10
 # Measured: the 12 synthesised frameworks have a 0% honest-prose rate at this
 # threshold and every parser-backed framework has at least 76%.
 HONEST_PROSE_MIN_CHARS: Final[int] = 60
+
+# ── Licensed source text ──────────────────────────────────────────────────
+# Frameworks whose source text is licensed such that redistribution under this
+# repository's CC0 grant would assert rights the project does not hold. CC0 is
+# not a disclaimer, it is an affirmative grant, so a licensed control statement
+# inside any tracked artifact is a rights claim the project cannot make.
+#
+# Single source of truth on purpose. This list is read by
+# parsers/merge_all_controls.py, which excludes these frameworks from the
+# tracked all_controls.json, and by tests/test_licensed_text_not_tracked.py,
+# which asserts nothing licensed reached git. A second copy in the test would
+# drift, and a gate that disagrees with the writer is not a gate.
+RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"iso_27001"})
 
 # ── OpenCRE API Settings ──────────────────────────────────────────────────
 

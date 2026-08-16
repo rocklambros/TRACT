@@ -19,12 +19,14 @@ from pathlib import Path
 
 import pytest
 
-from tract.config import PROCESSED_DIR
+from tract.config import PROCESSED_DIR, RESTRICTED_FRAMEWORK_IDS
 
-# Frameworks whose source text is licensed such that redistribution under CC0
-# would assert rights the project does not hold. Add here when a licensed
-# source is ingested; the parser still writes the file, git just never sees it.
-RESTRICTED_FRAMEWORK_IDS: frozenset[str] = frozenset({"iso_27001"})
+# RESTRICTED_FRAMEWORK_IDS lives in tract/config.py, not here. The merge step
+# reads the same constant to decide what stays out of the tracked corpus, and
+# a second copy in this file would let the writer and the gate disagree about
+# which frameworks are licensed.
+
+__all__ = ["RESTRICTED_FRAMEWORK_IDS"]
 
 # Below this, a description is a section title rather than a control statement.
 # ISO's tracked stub carried 93 titles at a 28-character median; its real Annex
