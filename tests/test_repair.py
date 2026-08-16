@@ -96,15 +96,37 @@ class TestRunTogether:
         assert result.applied == 0
 
     def test_vocabulary_is_lowercased_and_length_filtered(self) -> None:
-        # min_length is inclusive. The default of 3 must keep "the", "for"
-        # and "use", because the run-together tokens this splitter exists for
-        # are built out of exactly those words.
+        # min_length is inclusive. It must keep "the", "for" and "use",
+        # because the run-together tokens this splitter exists for are built
+        # out of exactly those words.
         vocab = build_vocabulary(["The Owner shall act"], min_length=3)
         assert "owner" in vocab
         assert "the" in vocab
         # "act" is 3 and kept; a 4-char floor would drop it.
         assert "act" in build_vocabulary(["The Owner shall act"], min_length=3)
         assert "act" not in build_vocabulary(["The Owner shall act"], min_length=4)
+
+    def test_the_default_keeps_two_letter_words(self) -> None:
+        """A 3-char floor makes the splitter fail closed on ordinary prose.
+
+        "be", "in", "of" and "to" are exactly the words a run-together token
+        is built from, so excluding them leaves any token containing one with
+        no complete segmentation at all. The repair then declines to fire and
+        the row ships joined.
+        """
+        vocab = build_vocabulary([
+            "The use of resources shall be monitored by the organization",
+        ])
+
+        assert {"be", "of"} <= vocab
+        result = split_run_together(
+            "Control Theuseofresourcesshallbemonitored here", vocab,
+            min_token_length=20,
+        )
+        assert result.text == (
+            "Control The use of resources shall be monitored here"
+        )
+        assert result.applied == 1
 
 
 class TestPruneDecomposable:

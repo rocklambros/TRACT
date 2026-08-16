@@ -65,13 +65,20 @@ _WORD: Final[re.Pattern[str]] = re.compile(r"[A-Za-z]+")
 
 
 def build_vocabulary(
-    texts: Iterable[str], min_length: int = 3,
+    texts: Iterable[str], min_length: int = 2,
 ) -> frozenset[str]:
     """Collect a lowercase word set from corpus text.
 
     Built from this corpus rather than an imported wordlist so it reflects
     security boilerplate, and so the repair is reproducible from artifacts in
     the repository rather than from whatever /usr/share/dict holds.
+
+    The default floor is 2, not 3. "be", "in", "of" and "to" are exactly the
+    words a run-together token is built from, so a 3-char floor leaves any
+    token containing one with no complete segmentation and the splitter fails
+    closed on ordinary prose. Measured on ISO 27001 Annex A, moving the floor
+    from 3 to 2 took successful splits from 3 to 8 and rows still carrying
+    damage from 18 to 13.
     """
     return frozenset(
         word.lower()
