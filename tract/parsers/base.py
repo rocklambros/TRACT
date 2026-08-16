@@ -22,7 +22,6 @@ from tract.config import (
     CONTROL_DAMAGED_METADATA_VALUE,
     COUNT_TOLERANCE,
     DESCRIPTION_MAX_LENGTH,
-    EXPECTED_COUNTS,
     HONEST_PROSE_MIN_CHARS,
     PROCESSED_FRAMEWORKS_DIR,
     PROCESSED_REPAIR_AUDIT_DIR,
@@ -55,6 +54,14 @@ class BaseParser(ABC):
     source_url: ClassVar[str]
     mapping_unit_level: ClassVar[str]
     expected_count: ClassVar[int]
+    # True when expected_count is a lower bound rather than a target. A
+    # catalog parser emits every stable entry the source defines, which is
+    # more than the subset OpenCRE links to and grows with each upstream
+    # release. Under the two-sided band a parser working exactly as designed
+    # refused to write, so CAPEC at 558 against a declared floor of 500 was a
+    # gate failure rather than the intended behaviour. Opt-in: silence keeps
+    # the two-sided band, because most parsers do have an exact target.
+    expected_count_is_floor: ClassVar[bool] = False
     # The date the raw bytes were fetched, not the date they were parsed.
     # Declared rather than stamped: re-parsing the same input must produce the
     # same output bytes, and a clock read makes that impossible.
@@ -360,27 +367,33 @@ class BaseParser(ABC):
         )
 
     def _check_expected_count(self, actual: int) -> None:
-        """Raise if the parsed count deviates from expected without documented reason.
+        """Raise if the parsed count deviates from what the parser declared.
 
-        Uses COUNT_TOLERANCE (default 10%) to determine deviation threshold.
-        Falls back to the class attribute expected_count, then EXPECTED_COUNTS.
+        Two modes. The default is a two-sided band of COUNT_TOLERANCE around
+        expected_count. With expected_count_is_floor set, only an undershoot
+        is a failure, because a catalog parser is meant to emit everything the
+        source defines and that number grows with each upstream release.
 
         Args:
             actual: Number of controls actually parsed.
 
         Raises:
-            ValueError: If actual count deviates beyond tolerance and no
-                count_deviation_reason is set.
+            ValueError: If no count is declared, or the count is outside the
+                band and no count_deviation_reason is set.
         """
         expected = getattr(self, "expected_count", None)
-        if expected is None:
-            expected = EXPECTED_COUNTS.get(self.framework_id)
-
         if expected is None or expected == 0:
-            logger.debug(
-                "%s: no expected count configured, skipping count check",
-                self.framework_id,
+            raise ValueError(
+                f"{self.framework_id}: no expected_count declared. A parser "
+                f"that says nothing used to clear this gate by omission, "
+                f"which is the cheapest possible way past the check that "
+                f"exists to catch a parser losing half its controls. Declare "
+                f"the exact count, or the lower bound with "
+                f"expected_count_is_floor = True."
             )
+
+        if self.expected_count_is_floor:
+            self._check_count_floor(actual, expected)
             return
 
         deviation = abs(actual - expected) / expected
@@ -406,4 +419,34 @@ class BaseParser(ABC):
             f"{COUNT_TOLERANCE * 100:.0f}%). Either the source changed or the "
             f"parser is wrong. If the deviation is correct, set "
             f"count_deviation_reason on the parser with the reason."
+        )
+
+    def _check_count_floor(self, actual: int, expected: int) -> None:
+        """Raise only on an undershoot of a declared floor.
+
+        No tolerance on the downside. A floor states the minimum the source
+        is known to define, so anything under it means entries were dropped,
+        and a 10% cushion would let 130 CWE weaknesses disappear unnoticed.
+        """
+        if actual >= expected:
+            logger.info(
+                "%s: parsed %d controls (declared floor %d)",
+                self.framework_id, actual, expected,
+            )
+            return
+
+        if self.count_deviation_reason:
+            logger.warning(
+                "%s: parsed %d controls, below the declared floor of %d. "
+                "Permitted: %s",
+                self.framework_id, actual, expected, self.count_deviation_reason,
+            )
+            return
+
+        raise ValueError(
+            f"{self.framework_id}: parsed {actual} controls, below the "
+            f"declared floor of {expected}. Entries the source defines were "
+            f"dropped, or the source shrank. If the smaller catalog is "
+            f"correct, lower expected_count with the release that changed it, "
+            f"or set count_deviation_reason with the reason."
         )

@@ -74,6 +74,7 @@ class OwaspAiExchangeParser(BaseParser):
     # The source defines more controls than OpenCRE links to (107 against 64
     # linked), so this tracks the source rather than the link set.
     expected_count = 107
+    expected_count_is_floor = True
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:

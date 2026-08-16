@@ -55,6 +55,7 @@ class CapecParser(BaseParser):
     # stable ones means every link finds its text regardless of which subset
     # OpenCRE covers, so this is a floor rather than an exact expectation.
     expected_count = 500
+    expected_count_is_floor = True
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:

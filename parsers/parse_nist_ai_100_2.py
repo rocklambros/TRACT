@@ -118,7 +118,12 @@ class NistAi1002Parser(BaseParser):
     version = "e2023"
     source_url = "https://doi.org/10.6028/NIST.AI.100-2e2023"
     mapping_unit_level = "taxonomy_section"
-    expected_count = 20
+    # 20 numbered taxonomy sections plus the named techniques OpenCRE links by
+    # name rather than by section number. The declared value stayed at 20
+    # after the named techniques were added, so the parser emitted 66 against
+    # a stale 20 and the count gate refused to write. This is an exact target,
+    # not a floor: both halves of the count are enumerated by the source.
+    expected_count = 66
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:

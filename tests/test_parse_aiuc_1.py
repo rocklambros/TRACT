@@ -3,8 +3,21 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
+from typing import ClassVar
 
 from parsers.parse_aiuc_1 import Aiuc1Parser
+
+
+class SampleAiuc1Parser(Aiuc1Parser):
+    """The parser with the fixture's count rather than the full source's.
+
+    The fixture holds 2 of the 132 controls. run()'s count gate is real and
+    must stay real, so the test declares what this input contains instead of
+    asking the gate to look the other way. count_deviation_reason exists for a
+    source that genuinely changed, not for a test that feeds a sample.
+    """
+
+    expected_count: ClassVar[int] = 2
 
 
 def test_parses_sample_fixture(tmp_path: Path) -> None:
@@ -15,7 +28,7 @@ def test_parses_sample_fixture(tmp_path: Path) -> None:
     out_dir = tmp_path / "processed"
     out_dir.mkdir()
 
-    parser = Aiuc1Parser(raw_dir=raw_dir, output_dir=out_dir)
+    parser = SampleAiuc1Parser(raw_dir=raw_dir, output_dir=out_dir)
     result = parser.run()
 
     assert result.framework_id == "aiuc_1"

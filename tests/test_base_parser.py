@@ -214,6 +214,99 @@ class TestCountCheckRaises:
         assert len(result.controls) == 1
 
 
+class TestFloorCountSemantics:
+    """A catalog parser declares a floor, and a floor is one-sided.
+
+    CAPEC and CWE both state in comments that their counts are floors: the
+    catalog holds more entries than OpenCRE links to, and emitting all the
+    stable ones is correct. The two-sided band turned that into a refusal to
+    write, so a parser working exactly as designed could not produce output.
+    """
+
+    def _controls(self, count: int) -> list[Control]:
+        return [
+            Control(
+                control_id=f"F-{i}", title=f"Entry {i}",
+                description=f"Statement number {i} of the catalog.",
+            )
+            for i in range(count)
+        ]
+
+    def test_a_floor_parser_may_overshoot_by_any_margin(self, tmp_path: Path) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class FloorParser(StubParser):
+            expected_count: ClassVar[int] = 2
+            expected_count_is_floor: ClassVar[bool] = True
+
+        result = FloorParser(
+            raw_dir=tmp_path, output_dir=out, controls=self._controls(20),
+        ).run()
+        assert len(result.controls) == 20
+
+    def test_a_floor_parser_may_not_undershoot(self, tmp_path: Path) -> None:
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class FloorParser(StubParser):
+            expected_count: ClassVar[int] = 10
+            expected_count_is_floor: ClassVar[bool] = True
+
+        parser = FloorParser(
+            raw_dir=tmp_path, output_dir=out, controls=self._controls(9),
+        )
+        with pytest.raises(ValueError, match="floor of 10"):
+            parser.run()
+
+    def test_a_fixed_count_parser_still_refuses_an_overshoot(
+        self, tmp_path: Path,
+    ) -> None:
+        """Floor semantics are opt-in. Silence must keep the two-sided band."""
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class FixedParser(StubParser):
+            expected_count: ClassVar[int] = 2
+
+        parser = FixedParser(
+            raw_dir=tmp_path, output_dir=out, controls=self._controls(20),
+        )
+        with pytest.raises(ValueError, match="deviation"):
+            parser.run()
+
+
+class TestCountIsMandatory:
+    def test_a_parser_without_a_declared_count_refuses_to_write(
+        self, tmp_path: Path,
+    ) -> None:
+        """Omission must not be the cheapest way past the gate.
+
+        The old code skipped the check at DEBUG when no count was declared, so
+        a new parser cleared it by saying nothing.
+        """
+        out = tmp_path / "out"
+        out.mkdir()
+
+        class CountlessParser(BaseParser):
+            framework_id: ClassVar[str] = "countless_fw"
+            framework_name: ClassVar[str] = "Countless Framework"
+            version: ClassVar[str] = "1.0"
+            source_url: ClassVar[str] = "https://example.com/countless"
+            mapping_unit_level: ClassVar[str] = "control"
+            fetched_date: ClassVar[str] = "2026-01-01"
+
+            def parse(self) -> list[Control]:
+                return [Control(
+                    control_id="C-1", title="One",
+                    description="A single control statement.",
+                )]
+
+        parser = CountlessParser(raw_dir=tmp_path, output_dir=out)
+        with pytest.raises(ValueError, match="no expected_count"):
+            parser.run()
+
+
 class ReadingParser(BaseParser):
     """Parser that reads two real files through read_source()."""
 

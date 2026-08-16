@@ -76,6 +76,7 @@ class CweParser(BaseParser):
     # OpenCRE covers, so this is a floor rather than an exact expectation, and
     # it moves with each quarterly CWE release.
     expected_count = 1300
+    expected_count_is_floor = True
     fetched_date = "2026-08-14"
 
     def parse(self) -> list[Control]:

@@ -79,23 +79,15 @@ OPENCRE_REQUEST_TIMEOUT_S: Final[int] = 30
 OPENCRE_REQUEST_DELAY_S: Final[float] = 0.5
 
 # ── Expected Control Counts ───────────────────────────────────────────────
-# Source: PRD Section 4.2 — mapping-unit counts per framework.
-# Used by BaseParser._check_expected_count to warn on deviation.
-
-EXPECTED_COUNTS: Final[dict[str, int | None]] = {
-    "csa_aicm": 243,
-    "aiuc_1": 132,
-    "mitre_atlas": 202,
-    "cosai": 55,
-    "nist_ai_rmf": 72,
-    "nist_ai_600_1": 12,
-    "owasp_ai_exchange": 54,
-    "owasp_llm_top10": 10,
-    "owasp_agentic_top10": 10,
-    "eu_gpai_cop": 40,
-    "owasp_dsgai": 21,
-    "eu_ai_act": 126,
-}
+# There is no table here on purpose. Each parser declares its own
+# expected_count and expected_count_is_floor, and BaseParser.run() enforces
+# them at write time.
+#
+# The table that used to live here duplicated those declarations and drifted
+# from them: it held 54 for owasp_ai_exchange against the parser's 107, which
+# made parsers/validate_all.py fail every run on a framework that was parsing
+# correctly. A second copy of a number nobody updates is worse than no copy,
+# because it turns a passing check into noise people learn to ignore.
 
 # ── OpenCRE Framework ID Map ─────────────────────────────────────────────
 # Normalizes standard names as they appear in OpenCRE API responses

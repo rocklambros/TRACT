@@ -3,8 +3,19 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
+from typing import ClassVar
 
 from parsers.parse_mitre_atlas import MitreAtlasParser
+
+
+class SampleMitreAtlasParser(MitreAtlasParser):
+    """The parser with the fixture's count rather than the full source's.
+
+    The fixture holds 4 of the 202 mapping units. run()'s count gate is real
+    and must stay real, so the test declares what this input contains.
+    """
+
+    expected_count: ClassVar[int] = 4
 
 
 def test_parses_sample_fixture(tmp_path: Path) -> None:
@@ -15,7 +26,7 @@ def test_parses_sample_fixture(tmp_path: Path) -> None:
     out_dir = tmp_path / "processed"
     out_dir.mkdir()
 
-    parser = MitreAtlasParser(raw_dir=raw_dir, output_dir=out_dir)
+    parser = SampleMitreAtlasParser(raw_dir=raw_dir, output_dir=out_dir)
     result = parser.run()
 
     assert result.framework_id == "mitre_atlas"
