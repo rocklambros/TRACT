@@ -1,8 +1,10 @@
 """Tests for the ISO 27001 Annex A parser.
 
-The fixture carries real damage: a hyphenation break, a run-together token,
-and the 5.6 to 5.7 cell-bleed pair. Repairs are asserted on exact output, not
-only on counts, because this parser moves text across control ids.
+The fixture is a synthetic Annex-A-shaped table for a fictional ACME Secure
+Systems Handbook, not the real ISO source. It reproduces the same damage
+classes the real conversion carries: a hyphenation break, a run-together
+token, and a cell-bleed pair. Repairs are asserted on exact output, not only
+on counts, because this parser moves text across control ids.
 """
 
 from __future__ import annotations
@@ -22,10 +24,10 @@ FIXTURE = Path(__file__).parent / "fixtures" / "iso_27001_sample.md"
 class SampleIso27001Parser(Iso27001Parser):
     """The parser with the fixture's repair counts rather than the source's.
 
-    Repair expectations are exact and two-sided, so a fixture holding 13 of
-    the 93 rows carries its own measured counts. Declaring what this input
-    contains keeps the real gate exact instead of loosening it to a range
-    wide enough to cover both.
+    Repair expectations are exact and two-sided, so a synthetic 13-row table
+    carries its own measured counts rather than the real source's. Declaring
+    what this input contains keeps the real gate exact instead of loosening
+    it to a range wide enough to cover both.
     """
 
     expected_repairs: ClassVar[dict[str, int]] = {
@@ -141,39 +143,40 @@ class TestIso27001Parser:
         self, parser: Iso27001Parser,
     ) -> None:
         controls = {c.control_id: c for c in parser.parse()}
-        assert controls["5.1"].title == "Policies for information security"
+        assert controls["5.1"].title == "Badge issuance for facility security"
 
     def test_moves_the_bleed_fragment_back_to_5_6(
         self, parser: Iso27001Parser,
     ) -> None:
         controls = {c.control_id: c for c in parser.parse()}
-        assert controls["5.6"].description.rstrip().endswith("associations.")
-        assert not controls["5.7"].description.startswith("associations")
+        assert controls["5.6"].description.rstrip().endswith("coordinators.")
+        assert not controls["5.7"].description.startswith("coordinators")
 
     @pytest.mark.parametrize(("control_id", "expected"), [
-        ("5.6", "The organization shall establish and maintain contact with "
-                "special interest groups or other specialist security forums "
-                "and professional associations."),
-        ("5.7", "Information relating to information security threats shall be "
-                "collected and analysed to produce threat intelligence."),
-        ("5.17", "Allocation and management of authentication information "
-                 "shall be controlled by a management process, including "
-                 "advising personnel on appropriate handling of authentication "
-                 "information."),
-        ("5.18", "Access rights to information and other associated assets "
-                 "shall be provisioned, reviewed, modified and removed in "
-                 "accordance with the organization's topic-specific policy on "
+        ("5.6", "Facility security staff shall keep an up to date roster of "
+                "regional response teams and other specialist facility "
+                "security coordinators."),
+        ("5.7", "Hazard awareness information shall be gathered and reviewed "
+                "to produce a facility hazard bulletin."),
+        ("5.17", "Issuance and management of credential information shall be "
+                 "controlled through a governance process, including "
+                 "guidance to personnel on appropriate handling of "
+                 "credential information."),
+        ("5.18", "Facility access rights to premises and other associated "
+                 "assets shall be granted, reviewed, modified and revoked in "
+                 "accordance with the organization's role-based policy on "
                  "and rules for access control."),
         # The damaged pair. 7.5's expected output carries the elision marker
         # where the conversion lost a clause, NOT the fluent join that reads
-        # "such as natural infrastructure shall be designed and implemented."
-        ("7.5", "Protection against physical andenvironmental threats, such as "
-                "natural [...] infrastructure shall be designed and "
-                "implemented."),
-        ("7.6", "Security measures for working in secure areas shall be "
+        # "such as flood restoration infrastructure shall be designed and
+        # implemented."
+        ("7.5", "Protection against physical andenvironmental hazards, such "
+                "as flood [...] restoration infrastructure shall be "
                 "designed and implemented."),
-        ("7.8", "Equipment shall be sited securely and protected."),
-        ("7.9", "Off-site assets shall be protected."),
+        ("7.6", "Physical safeguards for restricted zones shall be designed "
+                "and implemented."),
+        ("7.8", "Devices shall be sited securely and protected."),
+        ("7.9", "Offsite devices shall be protected."),
     ])
     def test_every_bleed_pair_matches_hand_checked_output(
         self, parser: Iso27001Parser, control_id: str, expected: str,
@@ -303,11 +306,12 @@ class TestVocabularyIsNotPoisoned:
 class TestDamagedControls:
     """7.5 lost a clause in PDF conversion and no transform can recover it.
 
-    The source reads "such as natural" and stops; the next row opens with
-    "infrastructure shall be designed and implemented." The clause between
-    them is absent from the raw file, so the unguarded join produced a
-    fluent, wrong requirement that cleared every gate. Writing the real
-    clause from memory would invent normative text, which is worse.
+    The fixture reads "such as flood" and stops; the next row opens with
+    "restoration infrastructure shall be designed and implemented." The
+    clause between them is absent from the source, so the unguarded join
+    would produce a fluent, wrong requirement that cleared every gate.
+    Writing the missing clause from memory would invent normative text,
+    which is worse.
     """
 
     def test_the_damaged_control_is_marked_rather_than_silently_joined(
@@ -329,7 +333,7 @@ class TestDamagedControls:
         assert "[...]" in description
         # The fabricated join. Emitting it asserts a requirement no standard
         # contains, with nothing in the record to say so.
-        assert "such as natural infrastructure" not in description
+        assert "such as flood restoration" not in description
 
     def test_the_successor_keeps_only_its_own_statement(
         self, parser: Iso27001Parser,
@@ -338,7 +342,7 @@ class TestDamagedControls:
         controls = {c.control_id: c for c in parser.parse()}
 
         assert controls["7.6"].description == (
-            "Security measures for working in secure areas shall be designed "
+            "Physical safeguards for restricted zones shall be designed "
             "and implemented."
         )
 
