@@ -1126,4 +1126,18 @@ JOIN_FLOORS: Final[Mapping[str, float]] = {
 JOIN_WRONG_ANCHOR_BUDGET: Final[Mapping[str, int]] = {
     "csa_ccm": 1,
     "etsi": 1,
+    # biml predicts by_title > 0 by design and so always needed an entry here.
+    # Its omission was mine, not a change of criterion: this mapping was written
+    # before the biml parser landed, and Task 16 asserts by_title == 0 for any
+    # framework outside it, so the absence would have failed a healthy run.
+    #
+    # The value is 0 rather than the 2 first measured. Those two were OpenCRE
+    # prefixing the component onto biml's descriptor ("Data Poisoning" against
+    # "Poisoning", "Output Data Confidentiality" against "Data Confidentiality")
+    # on rows whose ids reach the right control. Declaring the OpenCRE spelling
+    # as an alt_title, as parse_samm.py already does for three misspelled stream
+    # names, resolves them through the title channel and takes the count to 0.
+    # Registering 2 would have recorded a spelling difference as an anchor
+    # defect and left the gate unable to see a real one.
+    "biml": 0,
 }

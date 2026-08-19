@@ -61,6 +61,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import re
+from collections.abc import Mapping
 from io import BytesIO
 from typing import ClassVar, Final
 
@@ -142,6 +143,27 @@ NAME_CONFLICTS: Final[dict[str, tuple[str, str, str, str]]] = {
         "[output:1:direct] exactly. Resolved by name, because the name is "
         "the only side of the row that matches anything in either document.",
     ),
+}
+
+# Two rows where OpenCRE prefixes the component onto BIML's own descriptor.
+# The id is right and the anchor it reaches is right; only the spelling differs,
+# so the id-side wrong-anchor detector fires on a fact about OpenCRE's naming
+# rather than about the anchor. Declared as alt_titles on the control the id
+# already reaches, which is the same remedy parse_samm.py applies to the three
+# stream names OpenCRE misspells.
+#
+#   BIML-78(2020): data:1   "Data Poisoning"             against "Poisoning"
+#   BIML-24(LLM): output:4  "Output Data Confidentiality" against "Data Confidentiality"
+#
+# Neither spelling collides with any other BIML title [measured 2026-08-19], so
+# adding them cannot pull a link onto a different control. Titles stay
+# document-scoped for exactly that reason and these two are the only exceptions.
+# tests/test_parse_biml.py::TestOpenCreTitleVariants derives this table from the
+# tracked link file and the parsed artifact, so an entry that stops being needed
+# and a divergence that newly appears both fail.
+OPENCRE_TITLE_VARIANTS: Final[Mapping[str, tuple[str, ...]]] = {
+    "BIML-78(2020): data:1": ("Data Poisoning",),
+    "BIML-24(LLM): output:4": ("Output Data Confidentiality",),
 }
 
 _WHITESPACE: Final[re.Pattern[str]] = re.compile(r"\s+")
@@ -348,6 +370,9 @@ class BimlParser(BaseParser):
             alt_ids.setdefault(f"{document}: {tag}", []).append(unprefixed)
 
         alt_titles: dict[str, list[str]] = {}
+        for control_id, variants in OPENCRE_TITLE_VARIANTS.items():
+            alt_titles.setdefault(control_id, []).extend(variants)
+
         audit: list[dict[str, object]] = []
         for section_id, (name, document, tag, reason) in NAME_CONFLICTS.items():
             alt_titles.setdefault(f"{document}: {tag}", []).append(name)
@@ -464,9 +489,21 @@ class BimlParser(BaseParser):
             )
         missing_titles = sorted(set(alt_titles) - control_ids)
         if missing_titles:
+            # Two tables feed alt_titles, so naming only one sends a reader to
+            # the wrong constant. Attribute each missing target to whichever
+            # declared it.
+            sources = {
+                control_id: (
+                    "OPENCRE_TITLE_VARIANTS"
+                    if control_id in OPENCRE_TITLE_VARIANTS
+                    else "NAME_CONFLICTS"
+                )
+                for control_id in missing_titles
+            }
             raise ValueError(
-                f"biml: NAME_CONFLICTS declares alt_titles on "
-                f"{missing_titles}, which this parse did not produce."
+                f"biml: {sources} declare alt_titles on targets this parse did "
+                f"not produce. A stale entry puts a title on nothing; a missing "
+                f"one puts a wrong-anchor flag on a correct anchor."
             )
 
 

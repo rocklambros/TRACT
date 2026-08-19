@@ -443,6 +443,9 @@
         "alt_ids": [
           "output:4"
         ],
+        "alt_titles": [
+          "Output Data Confidentiality"
+        ],
         "document": "BIML-24(LLM)",
         "label": "data confidentiality",
         "tag": "output:4"
@@ -1082,6 +1085,9 @@
       "description": "All of the first three components in our generic model (raw data in the world, dataset assembly, and datasets) are subject to poisoning attacks whereby an attacker intentionally manipulates data in any or all of the three first components, possibly in a coordinated fashion, to cause ML training to go awry. In some sense, this is a risk related both to data sensitivity and to the fact that the data themselves carry so much of the water in an ML system. Data poisoning attacks require special attention. In particular, ML engineers should consider what fraction of the training data an attacker can control and to what extent.12:alfeld",
       "hierarchy_level": "risk",
       "metadata": {
+        "alt_titles": [
+          "Data Poisoning"
+        ],
         "document": "BIML-78(2020)",
         "label": "poisoning",
         "tag": "data:1"

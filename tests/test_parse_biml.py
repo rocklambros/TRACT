@@ -28,6 +28,7 @@ import pytest
 
 from parsers.parse_biml import (
     ARA,
+    OPENCRE_TITLE_VARIANTS,
     LLM24,
     MAX_BODY_CHARS,
     SOURCE_FILES,
@@ -36,6 +37,10 @@ from parsers.parse_biml import (
 )
 from tract.config import DESCRIPTION_MAX_LENGTH
 from tests.synthetic_pdf import build_pdf
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PROCESSED = REPO_ROOT / "data" / "processed" / "frameworks"
+CURATED = REPO_ROOT / "data" / "training" / "hub_links_curated.jsonl"
 
 # A block-style document: the tag sits alone on its line and the statement
 # follows. Line 4 is the shape that broke the naive rule -- the sentence above
@@ -53,6 +58,12 @@ has no way to tell an altered answer from an intended one. See
 [inference:4:hosting]
 Where a model runs decides who can reach it, so a hosted model inherits every
 trust boundary of whatever hosts it.
+
+[data:1:poisoning]
+Training records supplied by an untrusted party can carry chosen examples that
+bend the fitted model toward an outcome the supplier picked. OPENCRE_TITLE_VARIANTS
+declares this control's OpenCRE spelling, so the fixture has to produce it or the
+declared-target check cannot be exercised against a real parse.
 """
 
 LLM24_TEXT = """[raw:3:data feudalism]
@@ -81,6 +92,10 @@ ARA_TAGS: tuple[tuple[str, str], ...] = (
     ("alg:11", "parameters"),
     ("output:1", "direct"),
     ("output:2", "provenance"),
+    # OPENCRE_TITLE_VARIANTS declares an alt_title on BIML-78(2020): data:1,
+    # and run() checks every declared target against what the parse produced.
+    # Without this tag the synthetic PDFs cannot exercise that check at all.
+    ("data:1", "poisoning"),
 )
 LLM24_TAGS: tuple[tuple[str, str], ...] = (
     ("inference:9", "hosting"),
@@ -130,7 +145,7 @@ class TestRisksFromText:
     def test_a_block_style_tag_defines_a_risk(self) -> None:
         risks = BimlParser.risks_from_text(ARA_TEXT, ARA)
         assert [tag for tag, _, _ in risks] == [
-            "raw:3", "output:1", "inference:4",
+            "raw:3", "output:1", "inference:4", "data:1",
         ]
 
     def test_a_wrapped_cross_reference_does_not_define_a_risk(self) -> None:
@@ -624,3 +639,75 @@ class TestRun:
         }
         assert declared <= ids
         assert f"{ARA}: output:1" in ids
+
+
+class TestOpenCreTitleVariants:
+    """OpenCRE prefixes the component onto BIML's descriptor on two rows.
+
+    The id is right and the anchor it reaches is right, so the id-side
+    wrong-anchor detector was firing on a fact about OpenCRE's spelling rather
+    than about the anchor. Declaring the OpenCRE spelling as an alt_title on the
+    control the id already reaches is the remedy parse_samm.py applies to the
+    three stream names OpenCRE misspells.
+
+    This test DERIVES the table from the tracked link file and the parsed
+    artifact, so an entry that stops being needed fails here, and a divergence
+    that newly appears fails here too. A hand-maintained list would do neither.
+    """
+
+    @staticmethod
+    def _divergences() -> dict[str, str]:
+        """Every curated biml link whose name is absent from the title it reaches."""
+        controls = json.loads(
+            (PROCESSED / "biml.json").read_text(encoding="utf-8")
+        )["controls"]
+        by_id: dict[str, dict] = {}
+        for control in controls:
+            by_id[control["control_id"]] = control
+            for alt in (control.get("metadata", {}).get("alt_ids") or []):
+                by_id[alt] = control
+        found: dict[str, str] = {}
+        for line in CURATED.read_text(encoding="utf-8").splitlines():
+            row = json.loads(line)
+            if row.get("framework_id") != "biml":
+                continue
+            control = by_id.get(row.get("section_id", ""))
+            if control is None:
+                continue
+            name = (row.get("section_name") or "").strip()
+            if name and name.lower() not in (control.get("title") or "").lower():
+                found[control["control_id"]] = name
+        return found
+
+    def test_the_declared_table_is_exactly_what_opencre_respells(self) -> None:
+        declared = {
+            control_id: set(variants)
+            for control_id, variants in OPENCRE_TITLE_VARIANTS.items()
+        }
+        derived = {
+            control_id: {name} for control_id, name in self._divergences().items()
+        }
+        assert declared == derived, (
+            f"OPENCRE_TITLE_VARIANTS is out of step with the link file.\n"
+            f"  declared: {declared}\n"
+            f"  derived : {derived}\n"
+            f"An entry no link needs is dead weight; a divergence with no entry "
+            f"puts a wrong-anchor flag on a correct anchor."
+        )
+
+    def test_no_declared_variant_collides_with_another_title(self) -> None:
+        """A variant that matches a different control would move the link."""
+        controls = json.loads(
+            (PROCESSED / "biml.json").read_text(encoding="utf-8")
+        )["controls"]
+        titles = {
+            (c.get("title") or "").strip().lower(): c["control_id"] for c in controls
+        }
+        for control_id, variants in OPENCRE_TITLE_VARIANTS.items():
+            for variant in variants:
+                clash = titles.get(variant.strip().lower())
+                assert clash is None or clash == control_id, (
+                    f"{variant!r} is declared on {control_id} and is also the "
+                    f"real title of {clash}, so the title channel would answer "
+                    f"with the wrong control."
+                )
