@@ -6,6 +6,7 @@ and a word that names a CRE hub is never treated as boilerplate.
 """
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
 
@@ -21,6 +22,7 @@ from tract.text_selection import (
     ProseIndex,
     SelectionStats,
     canonical_framework,
+    merged_corpus_path,
     select_control_text,
 )
 
@@ -943,3 +945,134 @@ class TestMalformedAlternateIds:
         """
         with pytest.raises(ValueError, match="must be a string or a list"):
             self._build(0)
+
+
+class TestMalformedAlternateTitles:
+    """The same validator on alt_titles, where the failure is worse.
+
+    A stray null in alt_ids becomes a key spelled "None" in the id channel. A
+    stray null in alt_titles becomes a key spelled "none" in the TITLE channel,
+    which lookup() tries first, so it outranks every id match for whatever link
+    carries that name. The field was left unvalidated when alt_ids was not.
+
+    The existing carriers were swept in report-only mode before this raised:
+    30 non-empty declarations, 25 in owasp_cheat_sheets and 5 in
+    nist_ai_100_2, plus 40 empty lists in nist_ai_100_2. All parser-generated,
+    all clean, none rejected.
+    """
+
+    LONG = "A control statement long enough to clear the prose bar easily. " * 3
+
+    def _build(self, alt_titles: object) -> ProseIndex:
+        return ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "PS.1.1", "title": "Protect code",
+                 "description": self.LONG + " Real PS.1.1.",
+                 "metadata": {"alt_titles": alt_titles}},
+            ],
+        }])
+
+    @pytest.mark.parametrize("alt_titles", [937, 12.5, True, {"a": "b"}])
+    def test_a_field_that_is_not_a_string_or_a_list_raises(
+        self, alt_titles: object,
+    ) -> None:
+        with pytest.raises(ValueError, match="must be a string or a list"):
+            self._build(alt_titles)
+
+    @pytest.mark.parametrize(
+        "alt_titles", [[None], [937], [["nested"]], ["ok", 1]],
+    )
+    def test_an_entry_that_is_not_a_string_raises(
+        self, alt_titles: object,
+    ) -> None:
+        with pytest.raises(ValueError, match="must be a string"):
+            self._build(alt_titles)
+
+    def test_the_message_names_the_field_not_just_the_other_one(self) -> None:
+        """A shared validator that reports 'alt_ids' for both sends the
+        reader to the wrong line of the wrong parser."""
+        with pytest.raises(ValueError) as error:
+            self._build([None])
+        message = str(error.value)
+        assert "alt_titles" in message
+        assert "alt_ids" not in message
+        assert "Demo" in message
+        assert "PS.1.1" in message
+        assert "None" in message
+
+    def test_the_message_names_the_offending_position_in_the_list(self) -> None:
+        with pytest.raises(ValueError) as error:
+            self._build(["fine", "also fine", 937])
+        assert "[2]" in str(error.value)
+
+    @pytest.mark.parametrize(
+        "alt_titles", ["Poisoning attacks", ["A", "B"], [], None],
+    )
+    def test_a_well_formed_field_does_not_raise(
+        self, alt_titles: object,
+    ) -> None:
+        """The passing direction, so the guard cannot simply always raise.
+
+        A bare string is one of the shapes the field accepted before this
+        landed, so it has to keep working.
+        """
+        assert len(self._build(alt_titles)) >= 1
+
+    def test_a_falsy_non_string_is_not_read_as_an_absent_field(self) -> None:
+        """`metadata.get("alt_titles") or []` swallowed 0 and False.
+
+        Neither is "the author wrote nothing". Both are malformed values the
+        validator should see, which is why the `or []` had to go.
+        """
+        with pytest.raises(ValueError, match="must be a string or a list"):
+            self._build(0)
+        with pytest.raises(ValueError, match="must be a string or a list"):
+            self._build(False)
+
+    def test_a_well_formed_alternate_is_still_indexed(self) -> None:
+        """Validation must not cost the feature it guards.
+
+        A validator that raises correctly and then indexes nothing passes
+        every test above while silently retiring alt_titles.
+        """
+        index = self._build(["Guard the source"])
+        hit = index.lookup("Demo", None, "guard the source")
+        assert hit is not None
+        assert "Real PS.1.1" in hit.text
+
+    def test_an_empty_entry_is_skipped_rather_than_indexed(self) -> None:
+        """An empty title key could never be looked up, and indexing it would
+        put an unreachable entry in the channel lookup tries first.
+
+        Probed through by_title rather than lookup on purpose. lookup skips
+        the title branch on a falsy name, so it returns None whether or not
+        the empty key was indexed, and the assertion would be blind.
+        """
+        index = self._build(["", "   ", "Real name"])
+        assert index.by_title("Demo", "") is None
+        assert index.by_title("Demo", "   ") is None
+        assert index.by_title("Demo", "real name") is not None
+
+    def test_every_alt_titles_carrier_in_the_corpus_survives_the_validator(
+        self,
+    ) -> None:
+        """The report-only sweep, kept as a regression gate.
+
+        30 non-empty carriers were clean when this landed. A parser that
+        starts emitting a null or an unquoted number into alt_titles fails
+        here rather than at the next full index build.
+        """
+        corpus = merged_corpus_path()
+        if not corpus.exists():
+            pytest.skip("no merged corpus in this checkout")
+        records = json.loads(corpus.read_text(encoding="utf-8"))["frameworks"]
+        carriers = [
+            control
+            for record in records
+            for control in record.get("controls") or []
+            if (control.get("metadata") or {}).get("alt_titles")
+        ]
+        assert len(carriers) == 30
+        # Raises if any carrier is malformed, which is the assertion.
+        assert len(ProseIndex(records)) > 0

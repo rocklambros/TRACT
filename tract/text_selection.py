@@ -51,22 +51,23 @@ def normalize_section_id(section_id: str | None) -> str:
     return _SECTION_ID_PREFIX.sub("", text).strip()
 
 
-def _alternate_ids(
-    declared: Any, framework: str, control_id: Any,
+def _declared_strings(
+    declared: Any, framework: str, control_id: Any, field: str,
 ) -> list[str]:
-    """The normalised alternate ids one control declares.
+    """The raw entries of a metadata field written as a string or a list.
 
     Accepts a single string or a list of strings and refuses everything else,
     rather than coercing with str(). The strictness is aimed at one specific
-    reader: alt_ids is hand-authored, so the two shapes a human gets wrong are
-    an unquoted number and a stray null. Under coercion the first is not
-    iterable at all and raises a bare TypeError from inside __init__, while the
-    second becomes a key spelled "None" that matches no link and still reports
-    as a live alternate. The second is the silent wrong answer this whole
-    instrument exists to remove, so both raise here instead, naming the record.
+    reader: these fields are hand-authored, so the two shapes a human gets
+    wrong are an unquoted number and a stray null. Under coercion the first is
+    not iterable at all and raises a bare TypeError from inside __init__, while
+    the second becomes a key no link spells that still reports as a live
+    alternate. The second is the silent wrong answer this whole instrument
+    exists to remove, so both raise here instead, naming the record.
 
-    An empty or whitespace-only string stays legal and is skipped, which keeps
-    a trailing entry in a hand-edited list from being a hard failure.
+    Shared by alt_ids and alt_titles because the validation is identical and
+    only the normaliser downstream differs. Two copies would drift, and the
+    weaker copy would be the one nobody notices.
 
     Raises:
         ValueError: If the field or any entry is not a string.
@@ -77,23 +78,63 @@ def _alternate_ids(
     if not isinstance(entries, (list, tuple)):
         raise ValueError(
             f"{framework} control {control_id!r} declares "
-            f"metadata['alt_ids'] as {type(declared).__name__} {declared!r}. "
+            f"metadata[{field!r}] as {type(declared).__name__} {declared!r}. "
             f"It must be a string or a list of strings."
         )
-    normalised: list[str] = []
     for position, raw in enumerate(entries):
         if not isinstance(raw, str):
             raise ValueError(
                 f"{framework} control {control_id!r} declares "
-                f"metadata['alt_ids'][{position}] as {type(raw).__name__} "
-                f"{raw!r}. Every alternate id must be a string. Coerced it "
-                f"would become the key {str(raw)!r}, which matches no link "
-                f"and still reports as a live alternate."
+                f"metadata[{field!r}][{position}] as {type(raw).__name__} "
+                f"{raw!r}. Every entry must be a string. Coerced it would "
+                f"become the key {str(raw)!r}, which matches no link and "
+                f"still reports as a live alternate."
             )
+    return list(entries)
+
+
+def _alternate_ids(
+    declared: Any, framework: str, control_id: Any,
+) -> list[str]:
+    """The normalised alternate ids one control declares.
+
+    An empty or whitespace-only string stays legal and is skipped, which keeps
+    a trailing entry in a hand-edited list from being a hard failure.
+
+    Raises:
+        ValueError: If the field or any entry is not a string.
+    """
+    normalised: list[str] = []
+    for raw in _declared_strings(declared, framework, control_id, "alt_ids"):
         alt_id = normalize_section_id(raw)
         if alt_id:
             normalised.append(alt_id)
     return normalised
+
+
+def _alternate_titles(
+    declared: Any, framework: str, control_id: Any,
+) -> list[str]:
+    """The normalised alternate title keys one control declares.
+
+    Same validation as alt_ids and a weaker case for skipping it. A stray null
+    here yields a key spelled "none" in the by-title channel, which is the
+    channel lookup() tries FIRST, so a coerced entry outranks every id match
+    for whatever link happens to carry that name.
+
+    An empty or whitespace-only entry stays legal and is skipped, matching
+    alt_ids: a trailing entry in a hand-edited list is not worth a hard
+    failure, and an empty title key could never be looked up anyway.
+
+    Raises:
+        ValueError: If the field or any entry is not a string.
+    """
+    keys: list[str] = []
+    for raw in _declared_strings(declared, framework, control_id, "alt_titles"):
+        key = raw.strip().lower()
+        if key:
+            keys.append(key)
+    return keys
 
 
 def canonical_framework(name: str) -> str:
@@ -350,7 +391,7 @@ class ProseIndex:
                 # task text, and BIML has eight whose id is document-scoped
                 # upstream but unprefixed in OpenCRE.
                 #
-                # Read without `or []`, unlike alt_titles below. That idiom
+                # Read without `or []`, as alt_titles is below. That idiom
                 # folds 0 and False into "the author wrote nothing", and both
                 # are malformed values a validator should see.
                 for alt_id in _alternate_ids(
@@ -371,17 +412,14 @@ class ProseIndex:
                 # Attacks", so the Generative-AI eval item resolved to the
                 # Predictive-AI chapter's text. That is a wrong anchor, not a
                 # fallback, and nothing downstream could see it.
-                alternates = metadata.get("alt_titles") or []
-                if isinstance(alternates, str):
-                    alternates = [alternates]
-
                 key = title.strip().lower()
                 if key and (framework, key) not in self._by_title:
                     self._by_title[(framework, key)] = selection
-                for name in alternates:
-                    alt_key = str(name).strip().lower()
-                    if alt_key:
-                        pending_alternates.append(((framework, alt_key), selection))
+                for alt_key in _alternate_titles(
+                    metadata.get("alt_titles"), framework,
+                    control.get("control_id"),
+                ):
+                    pending_alternates.append(((framework, alt_key), selection))
 
         # Second pass: an alternate may add a name, never displace a real one.
         for key_pair, selection in pending_alternates:
