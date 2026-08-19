@@ -141,6 +141,25 @@ model-index:
 
 # TRACT: Translating Requirements Across CRE Trees
 
+## Erratum 2026-08-15
+
+**The previously published accuracy figures are withdrawn pending re-measurement.**
+
+The hit@1 figure and its confidence interval did not survive audit. The interval
+was arithmetic on the point estimate rather than the bootstrap it claimed to be.
+The per-fold deltas do not reproduce. On a larger held-out roster of 1,265
+controls, fine-tuning showed no improvement over the zero-shot base model: macro
+delta -0.0004 at p = 0.98.
+
+No replacement figure is quoted until a run clears a pre-registered gate.
+
+The assignment counts elsewhere in this card are inventory, not accuracy, and
+they are not a quality claim either. The large majority of published assignments
+are OpenCRE's own ground-truth links, imported rather than reviewed here. The
+reviewed portion is 878 model predictions judged by a single reviewer whose
+agreement against 20 hidden calibration items was 13 of 20. Inter-rater
+reliability is not measured.
+
 ## What Is This?
 
 **In plain English:** Security frameworks like NIST 800-53, OWASP ASVS, and MITRE ATLAS each describe security controls in their own language. For example, NIST might say *"The system enforces password complexity requirements"* while OWASP says *"Verify that passwords have a minimum length of 12 characters."* These two controls are about the same thing, but they use different words and numbering systems.

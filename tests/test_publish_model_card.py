@@ -122,3 +122,51 @@ class TestGenerateModelCard:
         assert "/home/rock" not in content
         assert "sk-" not in content
         assert "hf_" not in content
+
+
+class TestErratumSurvivesRegeneration:
+    """README.md links to #erratum-2026-08-15 on the published model card.
+
+    The erratum lived only in the uploaded artifact, not in this generator, so
+    the next publish would have dropped the section and left the repository
+    pointing at an anchor that no longer resolved. These tests pin the erratum
+    to the generator and pin the heading text that produces the anchor.
+    """
+
+    def _card(self, tmp_path) -> str:
+        from tract.publish.model_card import generate_model_card
+        generate_model_card(
+            tmp_path,
+            fold_results=SAMPLE_FOLD_RESULTS,
+            calibration=SAMPLE_CALIBRATION,
+            ece_data=SAMPLE_ECE,
+            bridge_summary=SAMPLE_BRIDGE,
+            gpu_hours=2.5,
+        )
+        return (tmp_path / "README.md").read_text(encoding="utf-8")
+
+    def test_heading_produces_the_anchor_the_readme_links_to(self, tmp_path) -> None:
+        # GitHub and HuggingFace slugify "## Erratum 2026-08-15" to
+        # "#erratum-2026-08-15". Changing this heading breaks README.md:48.
+        assert "## Erratum 2026-08-15" in self._card(tmp_path)
+
+    def test_states_the_figures_are_withdrawn(self, tmp_path) -> None:
+        card = self._card(tmp_path).lower()
+        assert "withdrawn" in card
+        assert "pre-registered gate" in card
+
+    def test_names_the_specific_audit_failures(self, tmp_path) -> None:
+        card = self._card(tmp_path)
+        assert "arithmetic on the point estimate" in card
+        assert "-0.0004" in card
+        assert "1,265" in card
+
+    def test_scopes_the_review_claim(self, tmp_path) -> None:
+        # The card is hard-wrapped, so claims span newlines. Collapse whitespace
+        # before matching or the assertion depends on where the wrap happens to
+        # fall, which is not what is being tested.
+        card = " ".join(self._card(tmp_path).split())
+        assert "single reviewer" in card
+        assert "13 of 20" in card
+        assert "Inter-rater reliability is not measured" in card
+        assert "imported rather than reviewed here" in card
