@@ -21,11 +21,17 @@ import pytest
 
 from tract.config import PROJECT_ROOT, PROSE_MIN_EXTRA_CHARS
 from tract.corpus_report import (
+    CURATED_LINKS_PATH,
+    DETECTOR_B_INAPPLICABLE,
     JOIN_CEILINGS,
     JOIN_FLOORS,
+    _load_links,
     build_corpus_report,
     check_join_floors,
+    coarse_name_frameworks,
+    wrong_anchor_applicable,
 )
+from tract.text_selection import merged_corpus_path
 
 TRACKED_CORPUS = PROJECT_ROOT / "data" / "processed" / "all_controls.json"
 
@@ -493,6 +499,186 @@ class TestWrongAnchorRisk:
         assert wrong_anchor_applicable(build_corpus_report(links, corpus)) == {
             "demo": 0,
         }
+
+
+class TestDetectorBApplicability:
+    """Detector B is off where the link file names a coarser level than its ids.
+
+    DSOMM's link file carries 18 sub-dimension names against 183 activity
+    uuids, and `section_name` equals the resolved control's title for 0 of 214
+    links. Detector B compares a name against that title, so for this framework
+    it compares two levels of the source hierarchy and can only ever fire. The
+    198 it reported were a fact about the source, not 198 wrong anchors.
+
+    Membership is derived from a measurable property rather than declared and
+    trusted, and the first test below is the ratchet that holds the two equal.
+    """
+
+    def _framework_links(
+        self, tmp_path: Path, rows: list[dict[str, str]], name: str = "links",
+    ) -> Path:
+        path = tmp_path / f"{name}.jsonl"
+        path.write_text(
+            "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows),
+            encoding="utf-8",
+        )
+        return path
+
+    def _link(
+        self, framework_id: str, section_id: str, section_name: str,
+        cre_id: str = "1-1",
+    ) -> dict[str, str]:
+        return {
+            "framework_id": framework_id,
+            "standard_name": "Demo",
+            "section_id": section_id,
+            "section_name": section_name,
+            "cre_id": cre_id,
+            "link_type": "LinkedTo",
+        }
+
+    def test_the_declared_set_equals_the_derived_set(self) -> None:
+        """The ratchet, over the real curated link file.
+
+        Fails in both directions by construction. A framework declared without
+        the property is in the declared set and not the derived one. A
+        framework that acquires the property and is not declared is in the
+        derived set and not the declared one. Neither can land quietly.
+        """
+        assert DETECTOR_B_INAPPLICABLE == coarse_name_frameworks()
+
+    def test_the_real_link_file_puts_only_dsomm_over_the_ratio(self) -> None:
+        """The measurement the threshold rests on, asserted rather than cited.
+
+        22 frameworks carry curated links. dsomm sits at 10.2x and every other
+        framework sits at roughly 1:1, so the 2.0 threshold has room on both
+        sides and is not a number fitted to one framework's current shape.
+        """
+        grouped = _load_links(CURATED_LINKS_PATH)
+        assert len(grouped) == 22
+        ratios: dict[str, float] = {}
+        for framework_id, links in grouped.items():
+            ids = {str(r.get("section_id") or "").strip() for r in links}
+            names = {str(r.get("section_name") or "").strip() for r in links}
+            ids.discard("")
+            names.discard("")
+            ratios[framework_id] = len(ids) / len(names)
+        assert ratios["dsomm"] > 10.0
+        others = sorted(v for k, v in ratios.items() if k != "dsomm")
+        assert others[-1] < 1.5
+
+    def test_the_ratio_decides_membership_at_the_boundary(
+        self, tmp_path: Path,
+    ) -> None:
+        """Exactly at the ratio is a member, just under it is not."""
+        at_ratio = self._framework_links(tmp_path, [
+            self._link("coarse", "a-1", "Group"),
+            self._link("coarse", "a-2", "Group"),
+            self._link("coarse", "a-3", "Other"),
+            self._link("coarse", "a-4", "Other"),
+        ], name="at")
+        assert coarse_name_frameworks(at_ratio) == frozenset({"coarse"})
+
+        under_ratio = self._framework_links(tmp_path, [
+            self._link("fine", "a-1", "Group"),
+            self._link("fine", "a-2", "Group"),
+            self._link("fine", "a-3", "Other"),
+        ], name="under")
+        assert coarse_name_frameworks(under_ratio) == frozenset()
+
+    def test_a_link_file_with_no_names_does_not_divide_by_zero(
+        self, tmp_path: Path,
+    ) -> None:
+        """Detector B never reads a name it was not given, so nothing to declare."""
+        path = self._framework_links(tmp_path, [
+            self._link("nameless", "a-1", ""),
+            self._link("nameless", "a-2", ""),
+        ])
+        assert coarse_name_frameworks(path) == frozenset()
+
+    def test_detector_b_is_skipped_for_a_member_and_not_for_anyone_else(
+        self, tmp_path: Path,
+    ) -> None:
+        """Identical link content under two framework_ids, one of them declared.
+
+        The only variable between the two rows is membership, so a pass here
+        cannot come from the corpus or the link shape.
+        """
+        corpus = _corpus(tmp_path, [
+            {"control_id": "SD-1",
+             "title": "Inventory of production components",
+             "description": LONG + " Activity."},
+        ])
+        links = self._framework_links(tmp_path, [
+            self._link("dsomm", "SD-1", "Deployment"),
+            self._link("demo", "SD-1", "Deployment"),
+        ])
+        report = build_corpus_report(links, corpus)
+        applicable = wrong_anchor_applicable(report)
+
+        assert report.by_id("demo").by_id == 1
+        assert report.by_id("demo").wrong_anchor_risk == 1
+        assert applicable["demo"] == 1
+
+        assert report.by_id("dsomm").by_id == 1
+        assert report.by_id("dsomm").wrong_anchor_risk == 0
+        # The denominator shrinks with the detector. B was the only applicable
+        # check on this link, so counting it would report 0 of 1 as a pass.
+        assert applicable["dsomm"] == 0
+
+    def test_detector_c_still_fires_for_a_member(self, tmp_path: Path) -> None:
+        """Only B is switched off. C is the id-side check B cannot make.
+
+        An implementation that exempts the framework from the whole
+        wrong-anchor column instead of from one detector reads 0 here.
+        """
+        shared = LONG + " Shared subsection."
+        corpus = _corpus(tmp_path, [
+            {"control_id": "5.2", "title": "Build", "description": shared},
+            {"control_id": "5.2.1", "title": "Build pipeline",
+             "description": shared},
+        ])
+        links = self._framework_links(tmp_path, [
+            self._link("dsomm", "5.2", "5.2"),
+            self._link("dsomm", "5.2.1", "5.2.1"),
+        ])
+        report = build_corpus_report(links, corpus)
+        assert report.by_id("dsomm").distinct_anchors == 1
+        assert report.by_id("dsomm").wrong_anchor_risk == 2
+        assert wrong_anchor_applicable(report)["dsomm"] == 2
+
+    def test_detector_a_still_fires_for_a_member(self, tmp_path: Path) -> None:
+        """The title-channel check, which B's exemption must not reach."""
+        corpus = _corpus(tmp_path, [
+            {"control_id": "2.3", "title": "Poisoning attacks",
+             "description": LONG + " Predictive."},
+            {"control_id": "3.2.2", "title": "Generative poisoning",
+             "description": LONG + " Generative.",
+             "metadata": {"alt_titles": ["Poisoning attacks"]}},
+        ])
+        links = self._framework_links(tmp_path, [
+            self._link("dsomm", "3.2.2", "Poisoning attacks"),
+        ])
+        report = build_corpus_report(links, corpus)
+        assert report.by_id("dsomm").by_title == 1
+        assert report.by_id("dsomm").wrong_anchor_risk == 1
+        assert wrong_anchor_applicable(report)["dsomm"] == 1
+
+    def test_the_real_dsomm_row_reports_zero_over_a_live_denominator(
+        self,
+    ) -> None:
+        """0 of 3, not 198 of 213, and not 0 of 0.
+
+        The three survivors are the uuid-suffixed WAF ids that detector C
+        reaches. A zero over a zero denominator would mean nothing checked
+        this framework at all, which is the reading wrong_anchor_applicable
+        exists to prevent.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        report = build_corpus_report()
+        assert report.by_id("dsomm").wrong_anchor_risk == 0
+        assert wrong_anchor_applicable(report)["dsomm"] == 3
 
 
 class TestFloors:

@@ -27,7 +27,9 @@ Columns, and the failure each one answers:
     nested_anchors                  an anchor contained in another anchor
     contained_anchors               the stricter prefix-only form, for continuity
     dropped_by_prose_rule           controls ProseIndex never indexed, corpus-wide
-    wrong_anchor_risk               three detectors, two of them id-side
+    wrong_anchor_risk               three detectors, two of them id-side, with
+                                    B skipped where the link file names a
+                                    coarser level than its ids identify
     anchor_source_*                 what kind of text the anchor is
     distinct_hubs / links_per_hub   hub-side concentration, for a later
                                     agreement study
@@ -441,6 +443,71 @@ def _is_ancestor_id(parent: str, child: str) -> bool:
     return child[len(parent)] in _ID_SEPARATORS
 
 
+# distinct(section_id) / distinct(section_name) at or above this, and the link
+# file identifies one level of the source's hierarchy while naming a coarser
+# one. Detector B compares a link's name against the title of the control its
+# id reached, so where the two sides sit at different levels the detector is
+# comparing unlike things and can only ever fire.
+#
+# The owner measured all 22 frameworks carrying curated links on 2026-08-19.
+# dsomm is the only one above 2x, at 10.2x (183 activity uuids against 18
+# sub-dimension names). Every other framework sits at roughly 1:1, and the next
+# highest is biml at 1.18x. The threshold sits at 2.0 because that is clear of
+# every measured 1:1 framework by a wide margin and far below dsomm, so neither
+# a small name repair nor a handful of new links can move a framework across it
+# by accident.
+COARSE_NAME_RATIO: Final[float] = 2.0
+
+
+def _coarse_name_frameworks(
+    grouped: Mapping[str, Sequence[Mapping[str, Any]]],
+) -> frozenset[str]:
+    """Frameworks whose link file names a coarser level than it identifies."""
+    coarse: set[str] = set()
+    for framework_id, links in grouped.items():
+        ids = {str(link.get("section_id") or "").strip() for link in links}
+        names = {str(link.get("section_name") or "").strip() for link in links}
+        ids.discard("")
+        names.discard("")
+        # No name anywhere means detector B never reads one, so it is already
+        # inert and there is nothing to declare. This is also the guard against
+        # dividing by zero, and the two reasons agree, which is why the branch
+        # skips rather than raises.
+        if not names:
+            continue
+        if len(ids) / len(names) >= COARSE_NAME_RATIO:
+            coarse.add(framework_id)
+    return frozenset(coarse)
+
+
+def coarse_name_frameworks(links_path: Path | None = None) -> frozenset[str]:
+    """The derived set, read from the curated link file.
+
+    Derived rather than hand-listed on purpose. A set somebody can append a
+    name to is an allowlist, and an allowlist retires a detector for whatever
+    reason the appender had that day. A set validated against a measurable
+    property of the link file is a ratchet, and
+    tests/test_corpus_report.py::TestDetectorBApplicability is where the two
+    are held equal.
+    """
+    return _coarse_name_frameworks(_load_links(links_path or CURATED_LINKS_PATH))
+
+
+# The DECLARED set. Runtime reads this rather than re-deriving per run, so a
+# framework acquires the exemption through a reviewed edit here and not through
+# a link-file change nobody looked at. The test asserts this equals
+# coarse_name_frameworks() exactly, which fails in both directions: a name
+# added here without the property fails, and a framework that acquires the
+# property without being declared here fails too.
+#
+# dsomm: the link file names the SUB-DIMENSION ("Deployment") while the id
+# names the ACTIVITY ("Inventory of production components"). section_name
+# equals the resolved control's title for 0 of 214 links, never rarely, so
+# detector B's 198 hits were a fact about the source's shape rather than a
+# wrong anchor. Ruling R11. Detectors A and C still apply.
+DETECTOR_B_INAPPLICABLE: Final[frozenset[str]] = frozenset({"dsomm"})
+
+
 @dataclass
 class _Resolved:
     """One link that reached an anchor, with everything a detector needs."""
@@ -460,6 +527,8 @@ def _wrong_anchor(
     canonical: str,
     entry: _Resolved,
     by_id_anchor: Mapping[str, str],
+    *,
+    detector_b: bool,
 ) -> tuple[bool, bool]:
     """Whether this link's anchor is suspect, and whether anything checked it.
 
@@ -477,10 +546,19 @@ def _wrong_anchor(
        paragraph. This is the NIST AI 100-2 failure that put title first in the
        lookup order, and neither A nor B can see it.
 
+    `detector_b` is False where the link file names a coarser level of the
+    source's hierarchy than its ids identify, which makes B a comparison
+    between two different levels rather than a check. See
+    DETECTOR_B_INAPPLICABLE. Only B is switched off, so A and C still run and a
+    member framework can still be flagged by either.
+
     The second return value is the denominator. A framework whose links carry
     `section_name == section_id` and no ancestor relations has zero applicable
     checks, so a zero in this column proves nothing about it, and
     wrong_anchor_applicable() makes that legible instead of leaving it implied.
+    Switching B off therefore has to shrink the denominator too: a link where B
+    was the only applicable detector goes back to unchecked, which is the
+    honest reading, while a link C also reaches stays checked.
     """
     name = str(entry.link.get("section_name") or "")
     checked = False
@@ -494,7 +572,7 @@ def _wrong_anchor(
                 flagged = True
         return flagged, checked
 
-    if name and _fold(name) != _fold(entry.normalized_id):
+    if detector_b and name and _fold(name) != _fold(entry.normalized_id):
         checked = True
         title = _fold(entry.control_title)
         if title and _fold(name) not in title and title not in _fold(name):
@@ -593,8 +671,14 @@ def build_corpus_report(
             if entry.channel == "id" and entry.normalized_id:
                 by_id_anchor.setdefault(entry.normalized_id, entry.anchor)
 
+        # Read from the declared set rather than derived per run, so the
+        # exemption is a reviewed edit. The test holds the two equal.
+        detector_b = framework_id not in DETECTOR_B_INAPPLICABLE
+
         for entry in resolved:
-            flagged, checked = _wrong_anchor(index, canonical, entry, by_id_anchor)
+            flagged, checked = _wrong_anchor(
+                index, canonical, entry, by_id_anchor, detector_b=detector_b,
+            )
             row.wrong_anchor_risk += int(flagged)
             if entry.anchor_source == "full_text":
                 row.anchor_source_full_text += 1
