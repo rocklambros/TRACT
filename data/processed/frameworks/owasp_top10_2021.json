@@ -1,0 +1,150 @@
+{
+  "controls": [
+    {
+      "control_id": "owasp_top10_2021:A01",
+      "description": "Broken Access Controls",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A01",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Broken Access Controls"
+    },
+    {
+      "control_id": "owasp_top10_2021:A02",
+      "description": "Cryptographic Failures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A02",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Cryptographic Failures"
+    },
+    {
+      "control_id": "owasp_top10_2021:A03",
+      "description": "Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A03",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Injection"
+    },
+    {
+      "control_id": "owasp_top10_2021:A04",
+      "description": "Insecure Design",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A04",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insecure Design"
+    },
+    {
+      "control_id": "owasp_top10_2021:A05",
+      "description": "Security Misconfiguration",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A05",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Security Misconfiguration"
+    },
+    {
+      "control_id": "owasp_top10_2021:A06",
+      "description": "Vulnerable and Outdated Components",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A06",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Vulnerable and Outdated Components"
+    },
+    {
+      "control_id": "owasp_top10_2021:A07",
+      "description": "Identification and Authentication Failures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A07",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Identification and Authentication Failures"
+    },
+    {
+      "control_id": "owasp_top10_2021:A08",
+      "description": "Software and Data Integrity Failures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A08",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Software and Data Integrity Failures"
+    },
+    {
+      "control_id": "owasp_top10_2021:A09",
+      "description": "Logging and Monitoring Failures",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A09",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Logging and Monitoring Failures"
+    },
+    {
+      "control_id": "owasp_top10_2021:A10",
+      "description": "Server Side Request Forgery (SSRF)",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "A10",
+        "opencre_standard_name": "OWASP Top 10 2021"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Server Side Request Forgery (SSRF)"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "owasp_top10_2021",
+  "framework_name": "OWASP Top 10 2021",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

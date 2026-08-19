@@ -37,6 +37,17 @@ own prose notice, quoted in the table. Nothing is invented for either group.
 `tract.config.FRAMEWORK_LICENSES` and fails if a text is missing, if a text is
 shipped that no framework declares, or if a shipped text's bytes change.
 
+Thirteen of the frameworks below are copyleft: twelve under CC BY-SA and DSOMM
+under GPL-3.0-only. Twelve of the thirteen have their processed text tracked in
+this repository, and their share-alike obligations are discharged through this
+file and `LICENSES/` rather than by withholding the text: attribution and terms
+in the table above, the licence itself delivered under `LICENSES/`, and the
+modification statement below. `tests/test_framework_licenses.py` asserts all
+three for every copyleft source, so ingesting one without them fails on the
+commit that adds it. DSOMM is the exception and stays out of git, because
+GPL-3.0's share-alike attaches to the whole work rather than to the adapted
+part, which is a wider claim than CC BY-SA makes over the same corpus.
+
 
 Modifications to framework text
 -------------------------------

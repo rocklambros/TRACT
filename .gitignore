@@ -61,17 +61,19 @@ venv/
 # terms and tests/test_licensed_text_not_tracked.py for the enforcement.
 data/processed/frameworks/etsi.json
 data/processed/frameworks/iso_27001.json
-# One line per member of tract.config.CONDITIONAL_FRAMEWORK_IDS. These
-# publishers permit reproduction on terms a CC0 grant cannot carry: GPL-3.0 and
-# CC BY-SA both require the copy to keep the licence, and CC0 asserts the
-# opposite. Their assignments stay tracked and published, because a mapping is a
-# fact about two documents rather than a reproduction of either.
+# One line per member of tract.config.CONDITIONAL_FRAMEWORK_IDS, and there are
+# two of them. Five CC BY-SA frameworks left this list once LICENSES/ shipped
+# the real texts and NOTICE gained the modification statement: twelve of the
+# corpus's thirteen copyleft sources are tracked, and holding five of them out
+# while seven sat in git was a distinction no reading supports. The tier
+# comment in tract/config.py carries the full reasoning.
+#
+# These two stay for reasons the five do not share. GPL-3.0's share-alike
+# attaches to the whole work rather than to the adapted part, and csa_ccm's
+# publisher reserves redistribution outright. Their assignments stay tracked
+# and published either way, because a mapping is a fact about two documents
+# rather than a reproduction of either.
 data/processed/frameworks/dsomm.json
-data/processed/frameworks/biml.json
-data/processed/frameworks/samm.json
-data/processed/frameworks/wstg.json
-data/processed/frameworks/owasp_top10_2021.json
-data/processed/frameworks/owasp_proactive_controls.json
 data/processed/frameworks/csa_ccm.json
 data/processed/licensed/
 # Repair audit records quote source text verbatim on both sides of a move, so

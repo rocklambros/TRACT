@@ -90,13 +90,50 @@ RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"etsi", "iso_27001"
 # restricted ones do, and their ASSIGNMENTS stay tracked and published, because
 # a mapping is a fact about two documents rather than a reproduction of either.
 # Training reads the overlay, so this costs zero anchors. See rulings R4 to R6.
+#
+# Held two members on 2026-08-19, down from seven. What left, and why:
+#
+#   biml, samm, wstg, owasp_top10_2021, owasp_proactive_controls
+#     All five are CC BY-SA. Seven other CC BY-SA frameworks are tracked and
+#     published already: asvs, owasp_cheat_sheets, owasp_llm_top10,
+#     owasp_ml_top10, owasp_agentic_top10, owasp_dsgai, owasp_llm_top10_2026.
+#     Treating five of twelve differently is defensible on no reading of the
+#     licence, and the split was an artifact of which files happened to be in
+#     git when the tiers landed rather than of anything CC BY-SA says. With
+#     LICENSES/ shipping the real texts, NOTICE carrying attribution and the
+#     modification statement, and one licence declaration across the published
+#     artifacts, section 3(a)'s attribution and notice obligations are
+#     discharged as well as a mixed-source corpus allows. The obligation is to
+#     attribute and to notice, not to withhold.
+#
+# What stayed, and why each is a different question from the five:
+#
+#   dsomm      GPL-3.0-only. Section 5's aggregation carve-out says inclusion
+#              in an aggregate does not apply the License to THE OTHER PARTS of
+#              the aggregate. It does not say the covered work stops being GPL,
+#              so DSOMM's text is still conveyed under GPL-3.0 with section 4's
+#              obligations attached. The carve-out also wants "a volume of a
+#              storage or distribution medium", and data/processed/
+#              all_controls.json is one document interleaving DSOMM with 28
+#              other frameworks specifically so a trainer consumes them
+#              jointly. CC BY-SA's share-alike attaches to the Adapted
+#              Material; GPL's attaches to the whole work. That difference is
+#              why the parity argument above carries the five and does not
+#              reach here. Its prose has never been published, `git push` is
+#              one-way, and training reads the overlay, so the anchor cost is
+#              zero.
+#
+#   csa_ccm    NOT a reversal of the owner's 2026-08-16 ruling that CCM is
+#              redistributable, and this line is the whole reason it is not.
+#              The merge now WITHHOLDS PROSE rather than dropping frameworks,
+#              so overlay membership means "titles and identifiers tracked,
+#              prose withheld", which is strictly narrower than the ruling and
+#              reverses none of it. NOTICE already records that the ruling's
+#              basis is unrecorded. CSA's notice reserves redistribution
+#              outright; a scope note can label that accurately and cannot
+#              grant around it.
 CONDITIONAL_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
     "dsomm",                     # GPL-3.0-only
-    "biml",                      # CC-BY-SA-3.0 AND CC-BY-SA-4.0
-    "samm",                      # CC-BY-SA-4.0
-    "wstg",                      # CC-BY-SA-4.0
-    "owasp_top10_2021",          # CC-BY-SA-4.0
-    "owasp_proactive_controls",  # CC-BY-SA-4.0
     "csa_ccm",                   # all rights reserved, no redistribution
 })
 

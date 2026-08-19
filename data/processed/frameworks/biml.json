@@ -1,0 +1,290 @@
+{
+  "controls": [
+    {
+      "control_id": "biml:BIML-24(LLM): inference:9",
+      "description": "Hosting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-24(LLM): inference:9",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hosting"
+    },
+    {
+      "control_id": "biml:BIML-24(LLM): input:2",
+      "description": "Prompt Injection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-24(LLM): input:2",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Prompt Injection"
+    },
+    {
+      "control_id": "biml:BIML-24(LLM): model:6",
+      "description": "Training Set and Prompt Reveal",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-24(LLM): model:6",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Training Set and Prompt Reveal"
+    },
+    {
+      "control_id": "biml:BIML-24(LLM): raw:5",
+      "description": "Data Confidentiality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-24(LLM): raw:5",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Confidentiality"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): alg:9",
+      "description": "Hyperparameters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): alg:9",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hyperparameters"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): data:1",
+      "description": "Data Poisoning",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): data:1",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Poisoning"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): data:2",
+      "description": "Transfer",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): data:2",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Transfer"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): input:1",
+      "description": "Adversarial Examples",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): input:1",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Adversarial Examples"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): model:4",
+      "description": "Training Set Reveal",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): model:4",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Training Set Reveal"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): model:5",
+      "description": "Steal the Box",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): model:5",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Steal the Box"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): raw:1",
+      "description": "Data Confidentiality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): raw:1",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Confidentiality"
+    },
+    {
+      "control_id": "biml:BIML-78(2020): system:8",
+      "description": "Insider",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "BIML-78(2020): system:8",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Insider"
+    },
+    {
+      "control_id": "biml:alg:11",
+      "description": "Parameters",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "alg:11",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Parameters"
+    },
+    {
+      "control_id": "biml:inference:4",
+      "description": "Hosting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "inference:4",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hosting"
+    },
+    {
+      "control_id": "biml:inference:9",
+      "description": "Hosting",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "inference:9",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Hosting"
+    },
+    {
+      "control_id": "biml:input:2",
+      "description": "Controlled Input Stream",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "input:2",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Controlled Input Stream"
+    },
+    {
+      "control_id": "biml:model:2",
+      "description": "Trojan",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "model:2",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Trojan"
+    },
+    {
+      "control_id": "biml:output:2",
+      "description": "Direct Output",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "output:2",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Direct Output"
+    },
+    {
+      "control_id": "biml:output:4",
+      "description": "Output Data Confidentiality",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "output:4",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Output Data Confidentiality"
+    },
+    {
+      "control_id": "biml:raw:3",
+      "description": "Storage",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "raw:3",
+        "opencre_standard_name": "BIML"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Storage"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "biml",
+  "framework_name": "BIML",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}

@@ -20,7 +20,10 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+from collections.abc import Iterable
 from pathlib import Path
+
+import pytest
 
 from scripts.fetch_frameworks import MANIFEST_PATH, SOURCES
 from tract.config import (
@@ -31,9 +34,18 @@ from tract.config import (
     RESTRICTED_FRAMEWORK_IDS,
     UNDETERMINED_LICENSE,
 )
+from tract.licensing import (
+    LICENSE_TEXTS_DIR,
+    shipped_license_text_ids,
+    spdx_identifiers,
+)
 
 REPO_ROOT: Path = Path(__file__).resolve().parent.parent
 NOTICE_PATH: Path = REPO_ROOT / "NOTICE"
+
+# NOTICE's modified-work notice. GPL-3.0 section 5(a) and CC BY-SA 4.0 section
+# 3(a)(1)(B) both require one, and this heading is where it lives.
+MODIFICATION_STATEMENT_HEADING: str = "Modifications to framework text"
 
 # "| framework_id | licence | upstream source |", data rows only.
 _NOTICE_ROW: re.Pattern[str] = re.compile(
@@ -94,6 +106,56 @@ def _notice_rows() -> dict[str, str]:
     return rows
 
 
+def _modification_statement() -> str | None:
+    """NOTICE's modified-work notice, or None when the section is gone.
+
+    Scoped to the section rather than to the whole file on purpose. A read that
+    fell back to the whole file would find every phrase it looked for in some
+    other paragraph and report green on a NOTICE that had lost the notice.
+    """
+    body = NOTICE_PATH.read_text(encoding="utf-8")
+    if MODIFICATION_STATEMENT_HEADING not in body:
+        return None
+    # NOTICE separates sections with two blank lines.
+    return body.split(MODIFICATION_STATEMENT_HEADING, 1)[1].split("\n\n\n")[0]
+
+
+def _framework_ids_without_a_notice_row(framework_ids: Iterable[str]) -> list[str]:
+    """Which of *framework_ids* NOTICE's table does not name.
+
+    Takes its input rather than reading `_copyleft()` so the same logic can be
+    run against a constructed framework that does not exist in the registry.
+    """
+    rows = _notice_rows()
+    return sorted(set(framework_ids) - set(rows))
+
+
+def _framework_ids_without_a_shipped_licence_text(
+    framework_ids: Iterable[str],
+) -> list[str]:
+    """Which of *framework_ids* declare an SPDX licence this tree does not ship.
+
+    A framework whose recorded licence yields no SPDX identifier at all is
+    reported too. Naming a copyleft licence in prose and shipping nothing is
+    the same failure as naming an identifier and shipping nothing, and the
+    substring derivation in `_copyleft` can reach a prose string.
+    """
+    shipped = shipped_license_text_ids()
+    offenders: list[str] = []
+    for framework_id in sorted(set(framework_ids)):
+        identifiers = spdx_identifiers(FRAMEWORK_LICENSES.get(framework_id, ""))
+        if not identifiers:
+            offenders.append(
+                f"{framework_id}: recorded licence yields no SPDX identifier, "
+                f"so no text can be shipped for it"
+            )
+            continue
+        absent = [name for name in identifiers if name not in shipped]
+        if absent:
+            offenders.append(f"{framework_id}: {absent} have no shipped text")
+    return offenders
+
+
 class TestEveryFrameworkHasALicence:
     def test_every_processed_framework_is_in_the_registry(self) -> None:
         missing = sorted(_framework_ids_in_processed() - set(FRAMEWORK_LICENSES))
@@ -150,35 +212,13 @@ class TestLicenceTiering:
     RESTRICTED means "must never appear in git in any form" and drives the
     fingerprint gate. CONDITIONAL means "reproduction is permitted on terms a
     CC0 grant cannot carry", which is a different fact with the same routing
-    consequence. The old single set treated seven frameworks whose licences
-    permit reproduction on conditions as unconditionally publishable.
-    """
+    consequence. The old single set treated every framework whose licence
+    permits reproduction on conditions as unconditionally publishable.
 
-    # Copyleft frameworks whose processed files were already tracked when the
-    # tiers landed. Moving them to the overlay would pull 691 curated links
-    # out of the tracked corpus (asvs 277, owasp_cheat_sheets 391,
-    # owasp_llm_top10 13, owasp_ml_top10 10) and shift every published metric,
-    # so it is an owner decision with its own change record rather than a side
-    # effect of adding the tiers.
-    #
-    # This is a ratchet, not an allowlist, and the difference is the whole
-    # point. Three assertions hold it shut: the set is asserted by equality
-    # below, so widening it means editing a line whose only purpose is to say
-    # it must not widen. Every member must have a tracked artifact in git
-    # today, which is what "pre-existing" actually means and which a new
-    # framework cannot satisfy. No member may carry a non-copyleft
-    # licence. A newly added copyleft framework fails
-    # test_every_copyleft_framework_is_conditional and cannot be silenced by
-    # appending a name here.
-    PRE_EXISTING_EXPOSURE: frozenset[str] = frozenset({
-        "asvs",
-        "owasp_agentic_top10",
-        "owasp_cheat_sheets",
-        "owasp_dsgai",
-        "owasp_llm_top10",
-        "owasp_llm_top10_2026",
-        "owasp_ml_top10",
-    })
+    CONDITIONAL held seven members and holds two. What the five that left have
+    in common, and why dsomm and csa_ccm are different questions, is recorded
+    against the constant in tract/config.py rather than restated here.
+    """
 
     def test_the_two_tiers_do_not_overlap(self) -> None:
         """One framework cannot be both unconditionally barred and conditional.
@@ -205,78 +245,6 @@ class TestLicenceTiering:
             f"{unread} route to the overlay with a licence recorded as "
             f"{UNDETERMINED_LICENSE}. Read the terms off the staged source "
             f"and record them, or take the framework out of the tier."
-        )
-
-    def test_every_copyleft_framework_is_conditional(self) -> None:
-        """The tier is derived from the recorded licence, not from a hand list.
-
-        The binary set this replaces modelled licence STATUS and not licence
-        CLASS, so seven frameworks whose licences permit reproduction on
-        conditions were treated as unconditionally publishable. Deriving the
-        assertion from FRAMEWORK_LICENSES means a newly added copyleft source
-        fails this test rather than silently joining the tracked corpus.
-        """
-        missing = _copyleft() - OVERLAY_FRAMEWORK_IDS - self.PRE_EXISTING_EXPOSURE
-        assert not missing, (
-            f"{sorted(missing)} carry a copyleft or share-alike licence and are "
-            f"not routed to the overlay. A CC0 repository cannot carry their "
-            f"terms. Add them to CONDITIONAL_FRAMEWORK_IDS, or take the "
-            f"exposure to the owner for a recorded ruling. Do not append them "
-            f"to PRE_EXISTING_EXPOSURE: that set is closed by equality below "
-            f"and by the tracked-artifact check, and a framework added after "
-            f"the tiers landed is not pre-existing by definition."
-        )
-
-    def test_the_recorded_exposure_is_closed(self) -> None:
-        """The ratchet. Widening the set means editing this line.
-
-        Without an equality assertion the name PRE_EXISTING_EXPOSURE asserts a
-        temporal property that nothing enforces, and the remedy printed by the
-        test above becomes "append the id here", which retires the gate one
-        name at a time.
-        """
-        assert self.PRE_EXISTING_EXPOSURE == frozenset({
-            "asvs",
-            "owasp_agentic_top10",
-            "owasp_cheat_sheets",
-            "owasp_dsgai",
-            "owasp_llm_top10",
-            "owasp_llm_top10_2026",
-            "owasp_ml_top10",
-        }), (
-            "PRE_EXISTING_EXPOSURE changed. It records the copyleft frameworks "
-            "already tracked when the licence tiers landed, which is a closed "
-            "historical fact and not a list to extend. A framework that needs "
-            "an exception now goes to the owner for a recorded ruling."
-        )
-
-    def test_every_recorded_exposure_is_tracked_in_git_today(self) -> None:
-        """What "pre-existing" actually means, asserted rather than asserted by name.
-
-        A framework added after the tiers landed has no tracked artifact,
-        because CONDITIONAL_FRAMEWORK_IDS routes new copyleft sources to the
-        gitignored overlay. So it cannot join this set without a second,
-        visible change that untracks nothing and tracks licensed prose.
-        """
-        tracked = _tracked_framework_files()
-        untracked = sorted(
-            framework_id for framework_id in self.PRE_EXISTING_EXPOSURE
-            if f"data/processed/frameworks/{framework_id}.json" not in tracked
-        )
-        assert not untracked, (
-            f"{untracked} are recorded as pre-existing copyleft exposure and "
-            f"have no tracked artifact under data/processed/frameworks/. The "
-            f"set records what was already in git when the tiers landed. If "
-            f"the exposure was resolved, remove the id from the set."
-        )
-
-    def test_the_recorded_exposure_names_only_copyleft_frameworks(self) -> None:
-        """A stale name in the exposure list would hide a real routing gap."""
-        stale = sorted(self.PRE_EXISTING_EXPOSURE - _copyleft())
-        assert not stale, (
-            f"{stale} are recorded as pre-existing copyleft exposure and carry "
-            f"no copyleft licence. Remove them. An inflated exposure list can "
-            f"absorb a genuine routing gap."
         )
 
     def test_every_overlay_framework_has_a_gitignore_line(self) -> None:
@@ -312,6 +280,169 @@ class TestLicenceTiering:
             f"{offenders} route to the overlay and are still tracked. A "
             f".gitignore line is ignored for an already-tracked path. Run "
             f"`git rm --cached` on each before any parser writes prose into it."
+        )
+
+
+class TestCopyleftObligationsAreDischarged:
+    """What a CC0 tree owes a copyleft source it carries, checked per source.
+
+    This is the gate that used to read "every copyleft framework is
+    CONDITIONAL". That demand was right while LICENSES/ did not exist and while
+    the tier was the only thing standing between GPL-3.0 text and a CC0 grant.
+    It stopped being right on the commit that tracked biml, samm, wstg,
+    owasp_top10_2021 and owasp_proactive_controls: twelve of the thirteen
+    copyleft frameworks in FRAMEWORK_LICENSES are now tracked deliberately, so
+    the old form would need an exception list of twelve, and a gate that
+    exempts twelve of thirteen names is not a gate.
+
+    Deleting it was the other option and the worse one. It is the only
+    automated check that a copyleft source ingested tomorrow does not join the
+    tracked corpus in silence, and that silence is what this file's opening
+    docstring was written to end. So the demand changes and the gate stays.
+
+    CC BY-SA 4.0 section 3(a) and GPL-3.0 sections 4 and 5(a) ask a
+    redistributor for the same three things, and all three are checkable here:
+
+      1. the source attributed and its licence identified
+         -> a row in NOTICE
+      2. the licence delivered rather than merely named
+         -> LICENSES/<id>.txt for every SPDX identifier the registry records
+      3. prominent notice that the work was modified
+         -> NOTICE's modification statement
+
+    Condition 3 is corpus-wide where 1 and 2 are per framework, because the
+    transforms are corpus-wide: every control statement that reaches
+    data/processed/ goes through the same tract/sanitize.py path, so one notice
+    covers thirteen frameworks. Losing it loses the notice for all of them at
+    once, which is what its failure message says.
+    """
+
+    def test_the_gate_has_copyleft_frameworks_to_inspect(self) -> None:
+        """Non-vacuity. Every assertion below loops over this set.
+
+        A derivation that stopped matching anything would make the three
+        conditions pass over an empty corpus, which is the shape of failure a
+        conjunctive gate is most likely to take.
+        """
+        copyleft = _copyleft()
+        assert copyleft, (
+            "no framework in FRAMEWORK_LICENSES derives as copyleft, so every "
+            "obligation checked below was checked against nothing. Either the "
+            "corpus lost its GPL and CC BY-SA sources, which is a change with "
+            "its own record, or _copyleft stopped matching."
+        )
+
+    def test_every_copyleft_framework_is_named_in_notice(self) -> None:
+        """Condition 1. Attribution and the licence, where a reader looks."""
+        missing = _framework_ids_without_a_notice_row(_copyleft())
+        assert not missing, (
+            f"{missing} carry a copyleft or share-alike licence and have no "
+            f"row in NOTICE, so this repository redistributes their text with "
+            f"no attribution and no statement of terms. CC BY-SA 4.0 section "
+            f"3(a)(1) and GPL-3.0 section 4 both require the notice to travel "
+            f"with the copy. Add the row, or take the framework out of the "
+            f"corpus."
+        )
+
+    def test_every_copyleft_framework_has_its_licence_text_shipped(self) -> None:
+        """Condition 2. Naming an identifier is not delivering the licence.
+
+        GPL-3.0 section 4 wants the recipient to get "a copy of this License
+        along with the Program", and CC BY-SA 4.0 section 3(a)(1)(A) wants the
+        licence or a URI retained. A row in NOTICE names the terms; only
+        LICENSES/ hands them over.
+        """
+        missing = _framework_ids_without_a_shipped_licence_text(_copyleft())
+        assert not missing, (
+            f"{missing}. Fetch the publisher's own plain-text licence and "
+            f"commit it as {LICENSE_TEXTS_DIR.name}/<identifier>.txt. Do not "
+            f"paraphrase one, and do not record an SPDX identifier for a "
+            f"source whose notice grants nothing."
+        )
+
+    def test_the_modification_statement_covers_every_copyleft_framework(
+        self,
+    ) -> None:
+        """Condition 3. Prominent notice that the text was modified.
+
+        TRACT sanitises, normalises, truncates, strips stop words from and
+        sometimes elides every statement it stores, so nothing it redistributes
+        is the published wording. GPL-3.0 section 5(a) and CC BY-SA 4.0 section
+        3(a)(1)(B) both require that to be stated.
+
+        The two claims asserted here are the ones the section's scope rests on:
+        the storage path it covers, and the module that implements the
+        transforms. A section that named neither would be a notice a reader
+        cannot check against the tree.
+        """
+        copyleft = sorted(_copyleft())
+        statement = _modification_statement()
+        assert statement is not None, (
+            f"NOTICE has no {MODIFICATION_STATEMENT_HEADING!r} section, so all "
+            f"{len(copyleft)} copyleft frameworks in this corpus ({copyleft}) "
+            f"are redistributed as modified works carrying no notice that they "
+            f"were modified."
+        )
+        unstated = [
+            claim for claim in ("data/processed/", "tract/sanitize.py")
+            if claim not in statement
+        ]
+        assert not unstated, (
+            f"NOTICE's modification statement no longer states {unstated}, so "
+            f"its scope no longer reaches the stored text of {copyleft}. The "
+            f"statement has to say which text it covers and what alters it."
+        )
+
+    def test_a_copyleft_framework_with_no_notice_row_is_rejected(
+        self, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Condition 1's failing case, constructed rather than argued.
+
+        A share-alike source ingested tomorrow, recorded in the registry and
+        nowhere else. The three tests above read module state, so this one
+        injects the framework and re-runs the same helper against it.
+        """
+        new_id = "fictional_share_alike_source"
+        assert new_id not in FRAMEWORK_LICENSES
+        # The delta, not the absolute list. Asserting equality with [new_id]
+        # would also fail when some unrelated framework lost its row, which
+        # reports this constructed case as broken instead of reporting the real
+        # regression where it belongs.
+        before = set(_framework_ids_without_a_notice_row(_copyleft()))
+        monkeypatch.setitem(FRAMEWORK_LICENSES, new_id, "CC-BY-SA-4.0")
+
+        assert new_id in _copyleft(), (
+            "the derivation stopped classifying CC-BY-SA-4.0 as copyleft, so "
+            "no share-alike source would ever reach the conditions above"
+        )
+        after = set(_framework_ids_without_a_notice_row(_copyleft()))
+        assert after - before == {new_id}, (
+            f"injecting a copyleft framework with no NOTICE row did not make "
+            f"condition 1 reject it: {sorted(after - before)}"
+        )
+
+    def test_a_copyleft_framework_with_no_shipped_text_is_rejected(
+        self, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Condition 2's failing case, on a licence whose text is not in the tree.
+
+        CC BY-SA 2.5 is share-alike, so the derivation catches it, and no
+        LICENSES/CC-BY-SA-2.5.txt exists, so the delivery obligation is unmet.
+        Checked separately from condition 1 because the two reject different
+        omissions and a single constructed case would not tell them apart.
+        """
+        new_id = "fictional_unshipped_licence_source"
+        assert new_id not in FRAMEWORK_LICENSES
+        assert "CC-BY-SA-2.5" not in shipped_license_text_ids()
+        before = set(_framework_ids_without_a_shipped_licence_text(_copyleft()))
+        monkeypatch.setitem(FRAMEWORK_LICENSES, new_id, "CC-BY-SA-2.5")
+
+        assert new_id in _copyleft()
+        after = set(_framework_ids_without_a_shipped_licence_text(_copyleft()))
+        added = sorted(after - before)
+        assert len(added) == 1 and added[0].startswith(f"{new_id}:"), (
+            f"injecting a copyleft framework under an unshipped licence did "
+            f"not make condition 2 reject it: {added}"
         )
 
 

@@ -1,0 +1,430 @@
+{
+  "controls": [
+    {
+      "control_id": "samm:D-SA-A",
+      "description": "Architecture Design",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "D-SA-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Architecture Design"
+    },
+    {
+      "control_id": "samm:D-SA-B",
+      "description": "Technology Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "D-SA-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Technology Management"
+    },
+    {
+      "control_id": "samm:D-SR-A",
+      "description": "Software Requirements",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "D-SR-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Software Requirements"
+    },
+    {
+      "control_id": "samm:D-SR-B",
+      "description": "Supplier security",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "D-SR-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Supplier security"
+    },
+    {
+      "control_id": "samm:D-TA-A",
+      "description": "Application risk profile",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "D-TA-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Application risk profile"
+    },
+    {
+      "control_id": "samm:D-TA-B",
+      "description": "Threat modeling",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "D-TA-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Threat modeling"
+    },
+    {
+      "control_id": "samm:G-EG-A",
+      "description": "Training and Awareness",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "G-EG-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Training and Awareness"
+    },
+    {
+      "control_id": "samm:G-EG-B",
+      "description": "Organization and Culture",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "G-EG-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Organization and Culture"
+    },
+    {
+      "control_id": "samm:G-PC-A",
+      "description": "Policy & Standards",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "G-PC-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Policy & Standards"
+    },
+    {
+      "control_id": "samm:G-PC-B",
+      "description": "Compliance Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "G-PC-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Compliance Management"
+    },
+    {
+      "control_id": "samm:G-SM-A",
+      "description": "Create and Promote",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "G-SM-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Create and Promote"
+    },
+    {
+      "control_id": "samm:G-SM-B",
+      "description": "Measure and Improve",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "G-SM-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Measure and Improve"
+    },
+    {
+      "control_id": "samm:I-DM-A",
+      "description": "Defect Tracking",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "I-DM-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Defect Tracking"
+    },
+    {
+      "control_id": "samm:I-DM-B",
+      "description": "Metrics and Feedback",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "I-DM-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Metrics and Feedback"
+    },
+    {
+      "control_id": "samm:I-SB-A",
+      "description": "Build Process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "I-SB-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Build Process"
+    },
+    {
+      "control_id": "samm:I-SB-B",
+      "description": "Software Dependencies",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "I-SB-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Software Dependencies"
+    },
+    {
+      "control_id": "samm:I-SD-A",
+      "description": "Deployment Process",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "I-SD-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Deployment Process"
+    },
+    {
+      "control_id": "samm:I-SD-B",
+      "description": "Secret Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "I-SD-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Secret Management"
+    },
+    {
+      "control_id": "samm:O-EM-A",
+      "description": "Configuration Hardening",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "O-EM-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Configuration Hardening"
+    },
+    {
+      "control_id": "samm:O-EM-B",
+      "description": "Patching and Updating",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "O-EM-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Patching and Updating"
+    },
+    {
+      "control_id": "samm:O-IM-A",
+      "description": "Incident Detection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "O-IM-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incident Detection"
+    },
+    {
+      "control_id": "samm:O-IM-B",
+      "description": "Incident Response",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "O-IM-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Incident Response"
+    },
+    {
+      "control_id": "samm:O-OM-A",
+      "description": "Data Protection",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "O-OM-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Data Protection"
+    },
+    {
+      "control_id": "samm:O-OM-B",
+      "description": "System Decommissioning / Legacy Management",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "O-OM-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "System Decommissioning / Legacy Management"
+    },
+    {
+      "control_id": "samm:V-AA-A",
+      "description": "Achitecture validation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "V-AA-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Achitecture validation"
+    },
+    {
+      "control_id": "samm:V-AA-B",
+      "description": "Achitecture mitigation",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "V-AA-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Achitecture mitigation"
+    },
+    {
+      "control_id": "samm:V-RT-A",
+      "description": "Control verification",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "V-RT-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Control verification"
+    },
+    {
+      "control_id": "samm:V-RT-B",
+      "description": "Misuse/Abuse Testing",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "V-RT-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Misuse/Abuse Testing"
+    },
+    {
+      "control_id": "samm:V-ST-A",
+      "description": "Scalable Baseline",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "V-ST-A",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Scalable Baseline"
+    },
+    {
+      "control_id": "samm:V-ST-B",
+      "description": "Deep understanding",
+      "full_text": null,
+      "hierarchy_level": null,
+      "metadata": {
+        "link_type": "LinkedTo",
+        "opencre_section_id": "V-ST-B",
+        "opencre_standard_name": "SAMM"
+      },
+      "parent_id": null,
+      "parent_name": null,
+      "title": "Deep understanding"
+    }
+  ],
+  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "framework_id": "samm",
+  "framework_name": "SAMM",
+  "mapping_unit_level": "section",
+  "source_url": "https://opencre.org",
+  "version": "opencre-2026-04-28"
+}
