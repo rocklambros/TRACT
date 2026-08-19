@@ -1092,7 +1092,13 @@ class TestMalformedAlternateTitles:
         # clause number, so they reach a clause through no other channel. The
         # other 22 names are deliberately NOT declared: two of them name two
         # clauses each, and a title alternate answers before any id.
-        pending = {"csa_ccm": 3, "biml": 1, "etsi": 2}
+        # biml moved 1 -> 3 under ruling R20. OpenCRE prefixes the component
+        # onto biml's descriptor on two rows ("Data Poisoning" against
+        # "Poisoning", "Output Data Confidentiality" against "Data
+        # Confidentiality"), which fired the id-side wrong-anchor detector on
+        # anchors that were already correct. Declaring the OpenCRE spelling is
+        # the remedy parse_samm.py applies to three misspelled stream names.
+        pending = {"csa_ccm": 3, "biml": 3, "etsi": 2}
 
         corpus = merged_corpus_path()
         if not corpus.exists():
