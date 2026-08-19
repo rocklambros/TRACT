@@ -823,3 +823,45 @@ an overlay framework's description appears.
 
 Standing rule added: every commit carries a Conventional Commits prefix. Two L3 commits omitted one
 and were left alone, because rewriting history for a prefix costs more risk than it buys.
+
+### Task 3 (DSOMM): DONE_WITH_CONCERNS. `d8ad0c9`. 1,502 -> 1,520 passing (+18).
+Measured join, verified by me from the real read path:
+```
+links 214  by_title 0  by_id 213  unresolved 1  fallback 1  anchors 182
+links/anchor 1.17 (was 11.89)  hubs 24  rate 0.9953
+```
+DSOMM goes from 18 fallback sub-dimension anchors to 182 activity anchors. Largest gain in the plan.
+`data/processed/frameworks/dsomm.json` stayed untracked, tracked `all_controls.json` unmoved.
+
+**The mutation audit caught three real holes, two of them in the BRIEF.** 14 mutations, all killed.
+(a) the implementer's own order test read `STATEMENT_FIELDS` and so could not fail;
+(b) the brief's fixture used `yaml.safe_dump`, which SORTS KEYS, making every order assertion blind
+    to a parser that sorts;
+(c) every brief test stood the digest gate down, so the parser class could have shipped with no pin.
+This is the second task running where mutation testing found a defect a green suite could not.
+
+### Ruling R11 — `wrong_anchor_risk == 198` for DSOMM is a fact about the link file, not a finding
+The implementer reported it as unreachable-by-design and asked for a budget entry. I tested the
+claim instead of accepting it, and it is stronger than they put it:
+
+- DSOMM's 214 links carry only **18 distinct `section_name` values** (the sub-dimensions:
+  "Infrastructure Hardening", "Education and Guidance", "Deployment"...) against **183 distinct
+  `section_id`s** (activity uuids).
+- `section_name == resolved control title` for **0 of 214**. Not "rarely". Never. By construction.
+- Example: link name `'Deployment'`, control title `'Inventory of production components'`.
+
+So detector B, which compares a link's name against the title of the control its id resolved to,
+compares two different LEVELS of the source hierarchy for this framework and can only ever fire.
+
+**A budget of 198 would be a magic number nobody can validate.** The honest statement is that the
+detector is inapplicable, and the property that makes it inapplicable is measurable:
+distinct(section_id) / distinct(section_name) = **10.2x** for dsomm. I measured all 22 frameworks
+carrying curated links and **dsomm is the only one above 2x**; every other framework sits at ~1:1.
+
+So membership is DERIVED from the link file and asserted, not declared and trusted. Adding a
+framework without the property fails the test. Detectors A and C still apply to DSOMM (the
+implementer confirmed C passes: three uuid-suffixed WAF ids reach three distinct controls), so only
+B is switched off.
+
+Safe to land now: all 214 dsomm rows in `link_resolution_before.jsonl` are `unresolved` with
+`wrong_anchor_checked: False`, so the BEFORE baseline does not move. Verified.
