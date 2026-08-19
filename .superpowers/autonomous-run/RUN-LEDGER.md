@@ -672,3 +672,17 @@ ISO prose had escaped through three channels. **That is now stale**: the tree-wi
 is green (8 passed), the four named files were cleaned, and the only remaining licensed-text hit in
 the tree was an ISO quotation in a superseded plan, which is gitignored on purpose. Re-verify the
 gate immediately before any push, never on the strength of this note.
+
+### RunPod readiness: the stored blocker list is substantially stale, re-verify before spend
+Memory `runpod-orchestrator-unsafe-unsupervised` (2026-08-14) lists ~20 defects blocking any GPU
+spend. Spot-checked 2026-08-19 and at least five are already fixed:
+- `.pod_state.json` is gitignored in BOTH phase0 and phase1b and appears nowhere in git history.
+- `full_pipeline` carries a comment that the bare `provision(); ...; teardown()` sequence was
+  replaced.
+- `get_gpu_price()` exists in `runpod_provision.py:76` and refuses to let an unknown rate pass.
+- `terminate_pods(pod_ids)` exists; `runpod_parallel.py:1186` records that the account-wide
+  `terminate_all()` call was removed.
+- SSH uses `StrictHostKeyChecking=accept-new` with a real `KNOWN_HOSTS_FILE`, not
+  `/dev/null`.
+**Do not treat the memory as current.** A full premortem runs before any GPU spend, per owner
+directive 2. Nothing in Tasks 1-16 loads a model, so no spend is needed yet.
