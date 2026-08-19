@@ -565,3 +565,30 @@ appears 5 times, every one a prohibition.
 - 11 local test failures, all model-loading (`test_training_loop`, `test_proposals_cluster`,
   `test_publish_merge`), plus 3 collection errors on a missing `anthropic` dep. Pre-existing and
   environmental: CLAUDE.md routes all model loading to RunPod. 1,357 pass.
+
+## EXECUTION: Task 1 of 16 — implemented, review in flight
+Commits `c6a6473` (instrument + floors + 28 tests + CLI), `b633943` (licence tiering),
+`018167a` (BEFORE evidence, 4,405-row JSONL), `b26570e` (untrack the seven conditional files).
+Tests 1363 -> 1395 passing. mypy --strict clean. `fallback_anchors == 299` reproduced per framework.
+
+**Ruling R8: the licence tier is drawn on publication state, not licence class, and I say so.**
+The implementer found 13 frameworks are copyleft while CONDITIONAL_FRAMEWORK_IDS lists 7. Six of
+thirteen is defensible on no legal reading, so the honest rule is: text this plan is about to write
+and has never been published goes to the overlay (reversible, zero anchor cost, all seven are
+stubs measuring 0 prose controls); text already tracked and already published under NOTICE stays,
+ratcheted against growth, for the owner to decide. The 7 left out carry **691 curated links**
+(asvs 277, owasp_cheat_sheets 391, owasp_llm_top10 13, owasp_ml_top10 10).
+NOTICE is stronger than I assumed when I wrote R4: it already states the CC0 grant "does not, and
+cannot, cover third-party framework content" and names each framework with licence and URL. The
+owner's two levers are (a) move all 13 to the overlay, or (b) clarify LICENSE the way NOTICE
+already argues. (b) is cheaper and moves no metric.
+
+**A gitignore line does nothing to a tracked file.** All seven conditional files were still tracked
+when the tier landed, so the seven new .gitignore lines were inert and the whole tier was
+decorative. Fixed at `b26570e` rather than left to "the first parser task to rewrite one", which is
+lesson 4's shape exactly. New test asserts the property that matters and was verified to fail with
+a tracked file and pass without.
+
+**Open, queued for the fix round:** `results/corpus/before.json` records absolute machine paths
+(`/Users/klambros/...`), so the byte-identical re-run claim holds on this laptop only and a
+username would ship in a CC0 repository. Must be REPO_ROOT-relative.
