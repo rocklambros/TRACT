@@ -891,7 +891,7 @@ class TestTheAnchorGateReachesItsDerivedCount:
         """
         import json
 
-        from tract.text_selection import ProseIndex, merged_corpus_path
+        from tract.text_selection import merged_corpus_path
 
         report = self._report()
         data = json.loads(merged_corpus_path().read_text(encoding="utf-8"))
@@ -1243,6 +1243,24 @@ class TestTheDiffSeesEveryAnchorField:
 class TestCollidingKeysAreCountedPerRecord:
     """Nine keys hold 39 extra records, all with distinct text. [measured]"""
 
+    def test_the_baseline_counts_records_not_keys(self) -> None:
+        """The committed baseline declared 4,222 against 4,261 records.
+
+        Nine keys absorbed 48 records and stored 9 digests, every one the
+        FIRST writer's, so 39 records with distinct text were compared against
+        nothing. All nine sit in enisa and etsi, the two frameworks this
+        rebuild replaces. [measured]
+        """
+        corpus = {"frameworks": [{"framework_id": "enisa", "controls": [
+            {"control_id": "Table 3:", "description": "poisoning"},
+            {"control_id": "Table 3:", "description": "data disclosure"},
+            {"control_id": "4.1", "description": "something else"},
+        ]}]}
+        baseline = build_baseline(corpus)
+        assert baseline["n_keys"] == 2
+        assert baseline["n_records"] == 3
+        assert len(baseline["digests"]["enisa:Table 3:"]) == 2
+
     def test_two_records_under_one_key_are_two_units(self) -> None:
         first = {"control_id": "Table 3:", "description": "poisoning"}
         second = {"control_id": "Table 3:", "description": "data disclosure"}
@@ -1581,17 +1599,15 @@ def snapshot_processed(
     rollback that re-serialises what it restores is not a rollback.
     """
     sources = members if members is not None else _snapshot_members()
+    # Every member is read before anything is written, so a read failure
+    # leaves no half-written snapshot for --restore to trust.
     payload = {
-        str(path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT)
-            else path.name): (
-            path.read_text(encoding="utf-8")
-        )
-        for path in sources
+        _member_key(path): path.read_text(encoding="utf-8") for path in sources
     }
     manifest = {
         "files": {
-            name: hashlib.sha256(text.encode("utf-8")).hexdigest()
-            for name, text in sorted(payload.items())
+            key: hashlib.sha256(text.encode("utf-8")).hexdigest()
+            for key, text in sorted(payload.items())
         },
         "n_files": len(payload),
     }
@@ -1599,8 +1615,8 @@ def snapshot_processed(
         json.dumps(manifest["files"], sort_keys=True).encode("utf-8")
     ).hexdigest()[:16]
     destination = root / name
-    for relative, text in sorted(payload.items()):
-        atomic_write_text(text, destination / "files" / relative)
+    for key, text in sorted(payload.items()):
+        atomic_write_text(text, destination / "files" / key.lstrip("/"))
     atomic_write_json(manifest, destination / "manifest.json")
     logger.info("snapshot: %d file(s) -> %s", len(payload), destination)
     return destination
@@ -1615,8 +1631,8 @@ def restore_snapshot(snapshot: Path) -> int:
     """
     manifest = load_json(snapshot / "manifest.json")
     restored = 0
-    for relative, expected in sorted(manifest["files"].items()):
-        member = snapshot / "files" / relative
+    for key, expected in sorted(manifest["files"].items()):
+        member = snapshot / "files" / key.lstrip("/")
         text = member.read_text(encoding="utf-8")
         actual = hashlib.sha256(text.encode("utf-8")).hexdigest()
         if actual != expected:
@@ -1624,7 +1640,7 @@ def restore_snapshot(snapshot: Path) -> int:
                 f"{member} does not match its manifest digest "
                 f"({actual[:16]} against {expected[:16]}). Refusing to restore."
             )
-        atomic_write_text(text, PROJECT_ROOT / relative)
+        atomic_write_text(text, _member_target(key))
         restored += 1
     logger.info("restored %d file(s) from %s", restored, snapshot)
     return restored

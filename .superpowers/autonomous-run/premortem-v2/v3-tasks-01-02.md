@@ -228,8 +228,8 @@ git check-ignore -v results/phase1b/anything.json
 git status --porcelain results/ | head
 ```
 
-Expected: the first prints `not ignored, which is the goal`; the second still reports
-`.gitignore:N:results/**`; the third lists nothing new beyond the files already modified in this
+Expected: the first prints `not ignored, which is the goal`. The second still reports
+`.gitignore:N:results/**`. The third lists nothing new beyond the files already modified in this
 checkout. A tracked file is never affected by `.gitignore`, so the 73 already-tracked paths do not
 move.
 
@@ -1038,7 +1038,7 @@ def _control_facts(
     TextSelection carries no back-reference and duplicating ProseIndex's key
     logic here would be a second implementation to keep in step. Two controls
     with byte-identical text collapse to one entry, and the first in corpus
-    order wins; their anchors are indistinguishable to the encoder anyway.
+    order wins, and their anchors are indistinguishable to the encoder anyway.
 
     The census counts every framework in the corpus, including those with no
     curated links. Summing only the link-bearing subset read 522 where the
@@ -1354,14 +1354,14 @@ def build_corpus_report(
         # the BEFORE file holds the text-quality baseline the AFTER is read
         # against. Without these rows the JSONL would describe only the links
         # that already work.
-        for link, fallback in unresolved_rows:
+        for missed, fallback in unresolved_rows:
             resolution_rows.append(
                 LinkResolution(
                     framework_id=framework_id,
-                    section_id=str(link.get("section_id") or ""),
-                    section_name=str(link.get("section_name") or ""),
-                    cre_id=str(link.get("cre_id") or ""),
-                    link_type=str(link.get("link_type") or ""),
+                    section_id=str(missed.get("section_id") or ""),
+                    section_name=str(missed.get("section_name") or ""),
+                    cre_id=str(missed.get("cre_id") or ""),
+                    link_type=str(missed.get("link_type") or ""),
                     channel="unresolved",
                     anchor_source="title",
                     anchor_sha256=hashlib.sha256(
@@ -1650,7 +1650,7 @@ failure rather than a pass (Ruling R3).
 
 class TestChannelParity:
     def test_report_and_lookup_agree_on_every_curated_link(self) -> None:
-        """The report must describe the join the pipeline actually performs."""
+        """The report must describe the join the pipeline performs."""
         from tract.corpus_report import (
             CURATED_LINKS_PATH, _load_records, _lookup_with_channel,
         )
@@ -2002,8 +2002,8 @@ equivalent, and three frameworks need one:
 
 - **nist_ssdf**: two of 46 curated links carry a mid-sentence text fragment where a `PS.1.1`-style id
   belongs. Both are recoverable: the first fragment appears verbatim inside task `PS.1.1`'s
-  statement, the second inside `PW.8.1`'s. **[measured]** Without `alt_ids` the ceiling is 44/46;
-  with it, 46/46.
+  statement, the second inside `PW.8.1`'s. **[measured]** Without `alt_ids` the ceiling is 44/46.
+  With it, 46/46.
 - **biml**: 8 of 21 curated links carry an unprefixed `category:number` id while the same id means
   something different in the other BIML document. Seven resolve to one document by exact tag-label
   match. **[measured]**
