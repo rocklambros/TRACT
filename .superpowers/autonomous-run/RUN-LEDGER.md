@@ -943,3 +943,41 @@ framework at all. GPL-3.0 text reaches training through the overlay and never re
 Also correct, and a deviation from the brief in the right direction: SAMM's statement is marked
 `text_origin: synthetic` because it joins four source records in a parser-chosen order. The brief
 set no marker. That is the interface rule applied without being told twice.
+
+### R12 guard: LANDED and verified live. `6b7de3e`. +13 tests.
+I ran the destructive command myself rather than accepting the report:
+```
+$ scripts/corpus_report.py --tag before
+ValueError: refusing to overwrite results/corpus/before.json: it was built from a different corpus.
+  recorded in the existing artifact  2440d7c0...
+  this run                           880a0bd5...
+Both hold 31 frameworks, which is why require_full_corpus passes and cannot catch this.
+...If you mean to re-baseline, say so with --replace-baseline.
+BASELINE INTACT
+```
+
+**The drift moved TWICE during this session**, which is stronger than my ruling assumed:
+`2440d7c0` (baseline) -> `5b0a4289` (DSOMM `d8ad0c9`) -> `880a0bd5` (SAMM `217ee73`). Framework count
+31 throughout, so the census guard was blind at every step. Nine parsers remain.
+
+**Sixth mutation finding, and it is the sharpest yet: the test for the guard initially PASSED while
+asserting nothing about the guard.** `require_full_corpus` and `require_portable_paths` both open
+with the string "refusing to write tagged evidence", so a `pytest.raises(match=...)` accepted either.
+Under the mutation the census guard was skipped, portable-paths fired on the tmp_path corpus, the
+message still matched, and the test went green. Repaired to match text unique to the census guard
+plus an explicit assertion that portable-paths did NOT fire.
+
+**Open, and I am fixing it: the shared error-message prefix is a live hazard.** Three `require_*`
+guards open with the same words, so any future `pytest.raises(match=...)` against them can pass for
+the wrong reason. The agent correctly did not rewrite the messages unilaterally, since other tests
+match on them.
+
+### Two operational lessons worth keeping
+1. **The branch moves under a running task.** My "baseline 1,546" figure was wrong; the real
+   pre-R12 baseline was 1,577, because SAMM landed while the agent worked. Parallel dispatch is
+   sound here (disjoint files) but every quoted baseline must be re-measured, not carried forward.
+2. **A timeout-killed mutation harness leaves the tree dirty.** Python does not run `finally` on
+   SIGTERM, so a mutation survived a 2-minute tool timeout and the next run measured against a
+   mutant. Caught only because a failure list contained five tests it had no business touching.
+   Every mutation harness must restore from a pristine on-disk snapshot before AND after each
+   mutation, and run in the background rather than against the tool timeout.

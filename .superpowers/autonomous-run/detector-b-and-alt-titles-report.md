@@ -190,3 +190,118 @@ landed inside the same one-second mtime granularity window, so Python reused the
 bytecode against restored source. I re-ran every mutation with `PYTHONDONTWRITEBYTECODE=1`
 after clearing `__pycache__`. All 17 verdicts above are from that clean re-run. Anyone
 building a mutation harness on this repo should set that variable from the start.
+
+---
+
+# Ruling R12 — refuse to replace a tagged artifact built from another corpus
+
+Commit `6b7de3e`. Tests 1,577 -> 1,590 (+13), same 13 environmental failures.
+`mypy --strict` clean on `tract/corpus_report.py`, `tract/text_selection.py` and
+`scripts/corpus_report.py`.
+
+## What landed
+
+`tract/corpus_report.py` gains `require_unmoved_corpus(report, summary_path)`. It reads
+the `corpus_sha256` recorded in an existing tagged artifact and compares it against this
+run's. Four outcomes, all reachable:
+
+| existing artifact | verdict |
+|---|---|
+| absent | write (first capture is not a replacement) |
+| records the same digest | write (reproduction, not replacement) |
+| records a different digest | RAISE, naming both digests and the file |
+| unreadable or missing the digest | RAISE (unreadable provenance is not permission) |
+
+`scripts/corpus_report.py` gains `--replace-baseline` and a `build_parser()` split so the
+CLI surface can be read by a test without being run. `require_full_corpus` sits outside
+the override branch, so the census guard binds either way.
+
+## The drift is real and it moved twice during this session
+
+```
+committed results/corpus/before.json          2440d7c0...   31 frameworks
+after the DSOMM parser landed (d8ad0c9)       5b0a4289...   31 frameworks
+after the SAMM parser landed (217ee73)        880a0bd5...   31 frameworks
+```
+
+Two parsers moved the corpus digest inside one working session and the framework count
+never budged, so `require_full_corpus` passed every time. That is the whole case for the
+guard, observed rather than argued.
+
+Live behaviour on this checkout, with `before.json` byte-identical afterwards:
+
+```
+$ PYTHONPATH=. "$PY" scripts/corpus_report.py --tag before
+ValueError: refusing to overwrite results/corpus/before.json: it was built from a
+different corpus.
+  recorded in the existing artifact  2440d7c062055f66...
+  this run                           880a0bd5b6435188...
+Both hold 31 frameworks, which is why require_full_corpus passes and cannot catch this.
+[...] If you mean to re-baseline, say so with --replace-baseline.
+
+$ ... --tag before --replace-baseline --corpus data/processed/all_controls.json
+ValueError: refusing to write tagged evidence from a corpus of 29 frameworks against 31
+in the full set.
+```
+
+The second command is requirement 3: the override does not buy a way past the census
+guard.
+
+## Mutation audit — 13 mutations, 13 killed, and one found a defect in my own test
+
+| # | Plausible wrong implementation | Killed by |
+|---|---|---|
+| R1 | Guard checks nothing | 7 tests |
+| R2 | Guard blocks an identical re-run | `test_the_same_corpus_reproduces_the_tag_without_an_override` |
+| R3 | Guard refuses a tag that does not exist yet | first-capture test |
+| R4 | Compare framework COUNT instead of the digest | reproduction test + live-baseline test |
+| R5 | Refusal omits the recorded digest | `test_the_refusal_names_both_digests_and_the_file` |
+| R6 | Refusal omits this run's digest | same |
+| R7 | Missing `corpus_sha256` read as permission | `test_an_artifact_with_no_recorded_digest_is_refused` |
+| R8 | Unparseable artifact read as permission | `test_an_unparseable_artifact_is_refused` |
+| R9 | `--replace-baseline` also bypasses `require_full_corpus` | `test_the_override_does_not_bypass_the_census_guard` (after repair) |
+| R10 | Guard runs after the write | `test_the_override_reaches_the_write_and_the_guard_does_not_run` |
+| R11 | Override on by default | flag-default test + override test |
+| R12 | Help text drops what it destroys | `test_the_help_text_says_what_it_destroys` |
+| R13 | Guard applied to the scratch `--out` path | `test_an_out_write_stays_unguarded` |
+
+**R9 initially SURVIVED, and the reason is a trap worth recording.**
+`require_full_corpus` and `require_portable_paths` both open their message with
+`"refusing to write tagged evidence"`. My test matched on that shared prefix. Under the
+mutation the census guard was skipped, `require_portable_paths` fired instead on the
+tmp_path corpus, the message still matched, and the test passed while asserting nothing
+about the guard it was named for. Repaired to match `"from a corpus of 1 frameworks
+against"` — text unique to the census guard — plus an explicit assertion that the
+portable-paths message is NOT what fired. R9 then died. A shared error-message prefix
+across two guards is a live hazard for any future test that matches on it.
+
+## Two harness defects found, both worth carrying forward
+
+**Timeout-killed mutation runs leave the tree dirty.** My first R12 harness run was
+SIGTERM'd at the 2-minute tool timeout. Python does not run `finally` on SIGTERM, so the
+mutation was left applied in the working tree, and the next run measured every later
+verdict against a mutant. I caught it because R9's failure list contained five tests it
+had no business touching and ran faster than its neighbours. Rewritten to restore from a
+pristine on-disk snapshot before *and* after every mutation, and to run in the background
+so no timeout can kill it mid-write. Every verdict above is from the hardened harness on a
+verified-clean tree, and the tree was diffed against the snapshot afterwards.
+
+**Stale `__pycache__` (carried from the earlier section).** Same-length edits restored
+inside the one-second mtime window make Python reuse mutated bytecode. Set
+`PYTHONDONTWRITEBYTECODE=1` and clear `__pycache__` from the start.
+
+## Correction to the test count I previously reported
+
+I reported 1,546 passing after Part B. The correct pre-R12 figure on this branch is
+**1,577**, reproduced four times with and without bytecode caching. The gap is not a
+measurement artifact: the SAMM parser (`217ee73`, Task 4) landed on `semantic-rebuild`
+while I was working and brought `tests/test_parse_samm.py` with it. My commits sit on top
+of it and my Part A and Part B commits are intact in history. The R12 delta is exactly
++13, the number of tests added. The failure SET is unchanged across every measurement.
+
+## Baselines
+
+`results/corpus/before.json` and `results/corpus/link_resolution_before.jsonl` are
+untouched. `git status --porcelain results/corpus/` is empty, and `before.json` is
+byte-identical after both live refusal attempts above. Nothing was regenerated or
+committed.
