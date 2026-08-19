@@ -686,3 +686,32 @@ spend. Spot-checked 2026-08-19 and at least five are already fixed:
   `/dev/null`.
 **Do not treat the memory as current.** A full premortem runs before any GPU spend, per owner
 directive 2. Nothing in Tasks 1-16 loads a model, so no spend is needed yet.
+
+### Task 2 (`alt_ids` channel): spec PASS, quality APPROVED. `840367e`. Fix round 1 for 4 nits.
+1,409 -> 1,428 passing, failure SET diffed line-by-line and identical, mypy clean on both modules,
+`results/corpus/` byte-identical.
+
+**This is the strongest task artifact so far, and the reason is method rather than outcome.**
+The implementer ran a mutation audit unprompted: 15 wrong implementations, all 19 new tests killed
+by at least one. The reviewer, asked to sample three, wrote **14** independent wrong implementations
+and reproduced the entire claim. No test survived. Every assertion in the diff is reachable in both
+directions, which is the first time this run that a diff has cleared that bar with no exceptions.
+
+**The implementer found a hole in the brief's own test design.** The brief's real-corpus
+displacement test covered one corpus order. Mutation B (alternates inline in pass 1,
+last-writer-wins) kills the `[True]` order and leaves `[False]` GREEN, so the brief's version would
+have shipped blind to an entire class of wrong implementation. They parametrised both orders. The
+reviewer independently called this "the most valuable thing in the diff".
+
+**No false parity claim.** v2 asserted `alt_ids` follows `alt_titles`' two-pass rule "exactly",
+which is false in the first pass. The implementer preserved the asymmetry and documented what the
+guarantee actually rests on: "the whole 'an alternate never displaces a real key' guarantee rests on
+the second pass over `pending_alternate_ids`, not on the rule here." Mutation A confirms the second
+pass is in fact the only thing holding it.
+
+**Carried, not fixed:** real-id last-writer-wins is still latent (zero corpus collisions today, now
+visible via a warning and a counter). Owner decision before Task 15.
+**In fix round:** `alt_ids: 937` raises `TypeError` from inside `__init__` rather than a specific
+`ValueError`, and `alt_ids: [None]` silently creates a key spelled `"None"`. Inherited from
+`alt_titles` so not a regression, but Tasks 9 and 12 HAND-AUTHOR this field and a stray `None`
+producing a silently wrong key is the exact failure mode this plan exists to eliminate.
