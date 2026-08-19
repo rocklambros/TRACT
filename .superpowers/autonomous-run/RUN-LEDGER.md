@@ -1363,3 +1363,55 @@ assertion so a narrowing extractor cannot silently lose coverage.
 
 The tracked-file and gitignore tests widened from 2 frameworks to all 4 overlay members, so the
 structural checks no longer lag the tier.
+
+### Task 10 (NIST SP 800-63B): COMPLETE. `65d084b`. 1,814 -> 1,841 passing. 17 mutations, 0 survivors.
+```
+nist_800_63  79 links | by_title 0 | by_id 78 | unresolved 1 | anchors 24 | l/a 3.25
+             truncated 41 | wrong 0 of 14 | hubs 70 | rate 0.9873
+```
+Hits the 78/79 ceiling. Revision **3B** confirmed three independent ways. Detector B is inert here
+STRUCTURALLY, without an exemption: all 79 links carry `section_name == section_id`, so B's own
+guard skips it and the denominator of 14 comes entirely from detector C's ancestor pairs.
+**R14 would have fired on 22 of 118.** Nine false brief claims. And the implementer verified all 17
+mutations still die with the `data/raw` tests DESELECTED, i.e. in CI mode, where one initially
+survived and they closed it. That is the "parser only ever tested on one laptop" defect being
+caught before it ships rather than after.
+
+### THE TOOLCHAIN THIS RUN HAS BEEN MEASURING ON IS NOT THE ONE CI USES
+Following the pdfplumber pin, I audited every declared pin against what was installed.
+**13 mismatches**, several of them major versions:
+```
+pytest   9.0.3 pinned / 8.3.3 installed      numpy    2.0.2 / 1.26.4
+mypy     2.2.0 / 2.1.0                       ruff     0.15.21 / 0.6.9
+pydantic 2.12.5 / 2.9.2                      lxml     6.1.0 / 5.3.0
+huggingface_hub 0.36.2 / 0.25.1              safetensors 0.7.0 / 0.4.5   (+5 more)
+```
+CI runs `pip install -r requirements.txt` on Python **3.11 and 3.12**, so every green result this
+run has been measured on a toolchain that will not gate the merge. Installed the pins.
+
+**Result was better than feared on tests and worse on types.**
+- Suite on the CI toolchain: 13 environmental failures -> **9**, all model-loading. The upgrade
+  fixed four.
+- `mypy --strict`: the 26 missing-stub errors every agent reported as "pre-existing" are GONE, and
+  **6 REAL type errors surfaced** that 2.1 had masked.
+
+### CI could not run the test suite at all, and that blocks the merge requirement
+`test_bridge_describe.py` and `test_proposals_naming.py` import `anthropic` at module scope;
+`test_adapter_learned.py` guards `torch` but reaches `datasets` through `tract.training.loop`.
+CI's test job installs `requirements.txt`, which carries none of the three, and runs `pytest -x`.
+So collection raised before a single test ran and `-x` turned it into a dead job. Two of the three
+are on **main**, so the suite has not been runnable in CI for some time; ci.yml's own comment about
+lint keeping the job from starting is why nobody saw it.
+Fixed with import guards. Verified by blocking `anthropic` and `datasets` at the import hook to
+simulate CI: **1,800 passed, 31 skipped, 0 failed.** CI ruff, run with CI's actual path scope rather
+than my `.`, passes clean.
+
+### The 6 mypy errors are not cosmetic, and one may explain a headline result
+All six sit in `tract/training/`, all three files changed on this branch.
+`loop.py:267` passes the CLASS `HubAwareTemperatureSampler` where
+`SentenceTransformerTrainingArguments` expects a `BatchSamplers` enum member or str. And
+`data.py:386-389` reads `self.generator` and `self.seed`, attributes that class never declares.
+If sentence-transformers ignores an unrecognised `batch_sampler` value, **the hub-aware temperature
+sampling never runs**, which would sit directly under the recorded finding that fine-tuning is net
+zero on validation. Investigating before fixing the type error, because the annotation is the
+symptom.
