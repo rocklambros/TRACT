@@ -837,6 +837,73 @@ def require_portable_paths(report: CorpusReport) -> None:
         )
 
 
+def require_unmoved_corpus(report: CorpusReport, summary_path: Path) -> None:
+    """Refuse to replace a tagged artifact that was built from another corpus.
+
+    require_full_corpus checks the framework COUNT, and a parser rewrites what
+    those frameworks contain without changing how many there are. So it cannot
+    see this failure at all. The DSOMM parser landed at d8ad0c9 and the corpus
+    sha256 moved from 2440d7c0 to 5b0a4289 with the count sitting at 31 the
+    whole time, which left the documented `--tag before` command able to
+    replace the plan's reference baseline with a report built against
+    different bytes, silently. Ten more parsers are queued behind it, so the
+    gap widens on every task until something compares the digest. [measured
+    2026-08-19, ruling R12]
+
+    A recorded digest that MATCHES this run passes, and that direction matters
+    as much as the other one. Regenerating a tag from the corpus that produced
+    it is the byte-identical reproduction property Task 1 established and
+    every task since has checked, so a guard that blocked it would retire the
+    check it is meant to protect.
+
+    Raises:
+        ValueError: If summary_path exists and records a different corpus, or
+            exists and cannot be read for the digest to compare.
+    """
+    if not summary_path.exists():
+        return
+
+    try:
+        existing = json.loads(summary_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"refusing to overwrite {_repo_relative(summary_path)}: it exists "
+            f"but is not valid JSON ({error}), so this run cannot tell whether "
+            f"it was built from the same corpus. Committed evidence that "
+            f"cannot be read is not evidence this run may replace on its own. "
+            f"Inspect the file, restore it from git, or pass "
+            f"--replace-baseline if it is known to be junk."
+        ) from error
+
+    recorded = existing.get("corpus_sha256") if isinstance(existing, dict) else None
+    if not isinstance(recorded, str) or not recorded:
+        raise ValueError(
+            f"refusing to overwrite {_repo_relative(summary_path)}: it records "
+            f"no 'corpus_sha256', so this run cannot tell whether it was built "
+            f"from the same corpus. Every artifact this module writes carries "
+            f"one, so a file without it predates the guard or was written by "
+            f"something else. Inspect it, or pass --replace-baseline."
+        )
+
+    if recorded == report.corpus_sha256:
+        return
+
+    raise ValueError(
+        f"refusing to overwrite {_repo_relative(summary_path)}: it was built "
+        f"from a different corpus.\n"
+        f"  recorded in the existing artifact  {recorded}\n"
+        f"  this run                           {report.corpus_sha256}\n"
+        f"Both hold {report.corpus_framework_count} frameworks, which is why "
+        f"require_full_corpus passes and cannot catch this. Overwriting would "
+        f"replace the reference baseline every later comparison is read "
+        f"against, and no copy is kept, so a run that looked like a "
+        f"regeneration would quietly redefine the thing being measured. If "
+        f"the corpus moved because a parser landed, that is an AFTER state and "
+        f"belongs under its own tag. If you mean to re-baseline, say so with "
+        f"--replace-baseline."
+    )
+
+
 def write_link_resolution(report: CorpusReport, path: Path) -> None:
     """One row per curated link, digests only, safe to track for any framework.
 

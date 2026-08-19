@@ -13,6 +13,12 @@ nothing.
 for the summary and results/corpus/link_resolution_<tag>.jsonl for the per-link
 record. Both paths are anchored to PROJECT_ROOT, so the working directory does
 not decide where evidence lands.
+
+A tag whose artifact already exists is only rewritten when this run measured
+the same corpus the artifact recorded. Re-running a tag against the corpus that
+produced it is a reproduction and passes. Re-running it after a parser has
+moved the corpus is a replacement, and it is refused until someone says
+--replace-baseline. See require_unmoved_corpus.
 """
 
 from __future__ import annotations
@@ -27,6 +33,7 @@ from tract.corpus_report import (
     format_table,
     require_full_corpus,
     require_portable_paths,
+    require_unmoved_corpus,
     write_link_resolution,
     wrong_anchor_applicable,
 )
@@ -39,7 +46,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def main() -> None:
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI surface, separated so a test can read it without running it.
+
+    The --replace-baseline help text is part of the guard rather than
+    decoration around it: the flag is the sanctioned way to destroy a
+    baseline, so what it destroys has to be legible at the point of use.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--links", type=Path, default=None)
     parser.add_argument("--corpus", type=Path, default=None)
@@ -48,7 +61,24 @@ def main() -> None:
         "--tag", type=str, default=None,
         help="write results/corpus/<tag>.json and link_resolution_<tag>.jsonl",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--replace-baseline", action="store_true",
+        help=(
+            "DESTRUCTIVE. Overwrite an existing --tag artifact that was built "
+            "from a different corpus. This discards the reference baseline "
+            "every later comparison is read against, in place and with no "
+            "copy kept, so the numbers a previous run was accepted on stop "
+            "existing. Re-baselining is legitimate and this is how to do it "
+            "on purpose. The corpus census guard still applies: a recapture "
+            "from a checkout missing the licensed overlay is refused with or "
+            "without this flag."
+        ),
+    )
+    return parser
+
+
+def main() -> None:
+    args = build_parser().parse_args()
 
     report = build_corpus_report(args.links, args.corpus)
     print(format_table(report))
@@ -69,13 +99,26 @@ def main() -> None:
 
     if args.tag is not None:
         # A tagged artifact is committed evidence that a later run is compared
-        # against, so both guards run before anything is written. --out stays
+        # against, so every guard runs before anything is written. --out stays
         # unguarded on purpose: it is the scratch path, and nothing is gated
         # on what it produces.
+        #
+        # require_full_corpus is deliberately outside the --replace-baseline
+        # branch. A recapture from a checkout that cannot see the restricted
+        # frameworks is not a recapture, it is the same silent-replacement
+        # defect wearing a flag, so the census guard binds either way.
         require_full_corpus(report)
         require_portable_paths(report)
         summary = CORPUS_EVIDENCE_DIR / f"{args.tag}.json"
         detail = CORPUS_EVIDENCE_DIR / f"link_resolution_{args.tag}.jsonl"
+        if args.replace_baseline:
+            logger.warning(
+                "--replace-baseline: overwriting %s in place. The corpus this "
+                "run measured may differ from the one the existing artifact "
+                "recorded, and no copy of the old numbers is kept.", summary,
+            )
+        else:
+            require_unmoved_corpus(report, summary)
         atomic_write_json(report.to_json(), summary)
         write_link_resolution(report, detail)
         print(f"wrote {summary}")

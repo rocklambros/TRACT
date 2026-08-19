@@ -21,14 +21,18 @@ import pytest
 
 from tract.config import PROJECT_ROOT, PROSE_MIN_EXTRA_CHARS
 from tract.corpus_report import (
+    CORPUS_EVIDENCE_DIR,
     CURATED_LINKS_PATH,
     DETECTOR_B_INAPPLICABLE,
     JOIN_CEILINGS,
     JOIN_FLOORS,
+    CorpusReport,
     _load_links,
     build_corpus_report,
     check_join_floors,
     coarse_name_frameworks,
+    require_full_corpus,
+    require_unmoved_corpus,
     wrong_anchor_applicable,
 )
 from tract.text_selection import merged_corpus_path
@@ -890,6 +894,263 @@ class TestEvidenceGuards:
                     f"{path.name} carries {marker!r}, which is an absolute "
                     f"machine path in a committed artifact"
                 )
+
+
+class TestUnmovedCorpusGuard:
+    """Ruling R12. A tag may be reproduced, never silently replaced.
+
+    require_full_corpus checks the framework COUNT, and a parser rewrites what
+    the frameworks contain without changing how many there are. The DSOMM
+    parser moved the corpus sha256 from 2440d7c0 to 5b0a4289 with the count at
+    31 throughout, so the documented `--tag before` command could replace the
+    plan's reference baseline with a report built from different bytes and no
+    existing guard could see it.
+    """
+
+    def _report(self, tmp_path: Path) -> CorpusReport:
+        corpus = _corpus(tmp_path, [
+            {"control_id": "C-1", "title": "One", "description": LONG},
+        ])
+        return build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), corpus)
+
+    def _artifact(self, path: Path, corpus_sha256: object) -> None:
+        """An existing tagged artifact recording some corpus digest."""
+        payload: dict[str, object] = {"per_framework": [], "totals": {}}
+        if corpus_sha256 is not None:
+            payload["corpus_sha256"] = corpus_sha256
+        path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
+
+    def test_a_tag_that_does_not_exist_yet_is_written_without_an_override(
+        self, tmp_path: Path,
+    ) -> None:
+        """First capture of a tag is not a replacement of anything."""
+        report = self._report(tmp_path)
+        require_unmoved_corpus(report, tmp_path / "absent.json")
+
+    def test_the_same_corpus_reproduces_the_tag_without_an_override(
+        self, tmp_path: Path,
+    ) -> None:
+        """The direction that matters most.
+
+        Regenerating a tag from the corpus that produced it is the
+        byte-identical reproduction property Task 1 established and every task
+        since has checked. A guard that blocked it would retire that check.
+        """
+        report = self._report(tmp_path)
+        summary = tmp_path / "before.json"
+        self._artifact(summary, report.corpus_sha256)
+        require_unmoved_corpus(report, summary)
+
+    def test_a_moved_corpus_is_refused(self, tmp_path: Path) -> None:
+        report = self._report(tmp_path)
+        summary = tmp_path / "before.json"
+        self._artifact(summary, "2440d7c062055f66" + "0" * 48)
+        with pytest.raises(ValueError, match="built from a different corpus"):
+            require_unmoved_corpus(report, summary)
+
+    def test_the_refusal_names_both_digests_and_the_file(
+        self, tmp_path: Path,
+    ) -> None:
+        """A refusal a reader cannot act on is an obstacle, not a guard."""
+        report = self._report(tmp_path)
+        summary = tmp_path / "before.json"
+        recorded = "2440d7c062055f66" + "0" * 48
+        self._artifact(summary, recorded)
+        with pytest.raises(ValueError) as error:
+            require_unmoved_corpus(report, summary)
+        message = str(error.value)
+        assert recorded in message
+        assert report.corpus_sha256 in message
+        assert "before.json" in message
+        assert "--replace-baseline" in message
+
+    def test_the_refusal_leaves_the_existing_artifact_byte_identical(
+        self, tmp_path: Path,
+    ) -> None:
+        """The guard must run before the write, not alongside it."""
+        report = self._report(tmp_path)
+        summary = tmp_path / "before.json"
+        self._artifact(summary, "2440d7c062055f66" + "0" * 48)
+        before = summary.read_bytes()
+        with pytest.raises(ValueError):
+            require_unmoved_corpus(report, summary)
+        assert summary.read_bytes() == before
+
+    def test_an_artifact_with_no_recorded_digest_is_refused(
+        self, tmp_path: Path,
+    ) -> None:
+        """Unreadable provenance is not permission to overwrite."""
+        report = self._report(tmp_path)
+        summary = tmp_path / "before.json"
+        self._artifact(summary, None)
+        with pytest.raises(ValueError, match="no 'corpus_sha256'"):
+            require_unmoved_corpus(report, summary)
+
+    def test_an_unparseable_artifact_is_refused(self, tmp_path: Path) -> None:
+        report = self._report(tmp_path)
+        summary = tmp_path / "before.json"
+        summary.write_text("{not json", encoding="utf-8")
+        with pytest.raises(ValueError, match="not valid JSON"):
+            require_unmoved_corpus(report, summary)
+
+    def test_the_committed_baseline_is_what_the_guard_now_refuses(self) -> None:
+        """The live case, asserted rather than described.
+
+        results/corpus/before.json records the pre-DSOMM corpus. Today's corpus
+        is a different one, so `--tag before` without an override must refuse.
+        Both hold the same framework count, which is why require_full_corpus
+        passes on the very run this guard has to stop.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        summary = CORPUS_EVIDENCE_DIR / "before.json"
+        if not summary.exists():
+            pytest.skip("no committed baseline in this checkout")
+        report = build_corpus_report()
+        recorded = json.loads(summary.read_text(encoding="utf-8"))
+        if recorded["corpus_sha256"] == report.corpus_sha256:
+            pytest.skip("baseline and corpus agree; nothing for the guard to stop")
+        assert recorded["corpus_framework_count"] == report.corpus_framework_count
+        require_full_corpus(report)          # passes, and cannot see the move
+        with pytest.raises(ValueError, match="built from a different corpus"):
+            require_unmoved_corpus(report, summary)
+
+
+class TestReplaceBaselineOverride:
+    """The override is a decision. It is not a way around the census guard."""
+
+    def _argv(self, *extra: str) -> list[str]:
+        return ["corpus_report.py", *extra]
+
+    def test_the_flag_exists_and_defaults_to_off(self) -> None:
+        import scripts.corpus_report as script
+
+        parser = script.build_parser()
+        assert parser.parse_args([]).replace_baseline is False
+        assert parser.parse_args(["--replace-baseline"]).replace_baseline is True
+
+    def test_the_help_text_says_what_it_destroys(self) -> None:
+        """A flag whose help does not name the loss is a trap, not an option."""
+        import scripts.corpus_report as script
+
+        help_text = script.build_parser().format_help()
+        assert "DESTRUCTIVE" in help_text
+        assert "baseline" in help_text
+        assert "no copy kept" in help_text
+
+    def test_the_override_reaches_the_write_and_the_guard_does_not_run(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """With the flag, a moved corpus writes. Without it, it raises.
+
+        Both directions over one fixture and one tag, so a pass cannot come
+        from the corpus or from the tag name. require_full_corpus is stood
+        down here only because this checkout's tracked corpus is short of the
+        full set; that guard has its own test below and it is NOT stood down
+        there.
+        """
+        import scripts.corpus_report as script
+
+        evidence = tmp_path / "evidence"
+        evidence.mkdir()
+        monkeypatch.setattr(script, "CORPUS_EVIDENCE_DIR", evidence)
+        monkeypatch.setattr(script, "require_full_corpus", lambda r: None)
+
+        corpus = PROJECT_ROOT / "data" / "processed" / "all_controls.json"
+        report = build_corpus_report(CURATED_LINKS_PATH, corpus)
+
+        summary = evidence / "probe.json"
+        summary.write_text(
+            json.dumps({"corpus_sha256": "0" * 64}), encoding="utf-8",
+        )
+        stale = summary.read_bytes()
+
+        monkeypatch.setattr(
+            "sys.argv", self._argv("--tag", "probe", "--corpus", str(corpus)),
+        )
+        with pytest.raises(ValueError, match="built from a different corpus"):
+            script.main()
+        assert summary.read_bytes() == stale
+
+        monkeypatch.setattr(
+            "sys.argv",
+            self._argv("--tag", "probe", "--corpus", str(corpus),
+                       "--replace-baseline"),
+        )
+        script.main()
+        assert summary.read_bytes() != stale
+        assert json.loads(summary.read_text(encoding="utf-8"))["corpus_sha256"] == (
+            report.corpus_sha256
+        )
+
+    def test_the_override_does_not_bypass_the_census_guard(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """A recapture from a partial checkout is the same defect with a flag.
+
+        Matched on text unique to require_full_corpus, not on the shared
+        "refusing to write tagged evidence" opening. require_portable_paths
+        opens with the same words, and a tmp_path corpus trips it too, so the
+        looser pattern passed whichever guard fired and could not tell a
+        working census guard from a bypassed one. Mutation R9 survived it.
+        """
+        import scripts.corpus_report as script
+
+        evidence = tmp_path / "evidence"
+        evidence.mkdir()
+        monkeypatch.setattr(script, "CORPUS_EVIDENCE_DIR", evidence)
+
+        corpus = _corpus(tmp_path, [
+            {"control_id": "C-1", "title": "One", "description": LONG},
+        ])
+        links = _links(tmp_path, [_row("C-1", "One")])
+        monkeypatch.setattr(
+            "sys.argv",
+            self._argv("--tag", "probe", "--corpus", str(corpus),
+                       "--links", str(links), "--replace-baseline"),
+        )
+        with pytest.raises(ValueError) as error:
+            script.main()
+        message = str(error.value)
+        assert "from a corpus of 1 frameworks against" in message, message
+        assert "absolute path" not in message, (
+            "require_portable_paths fired, so this says nothing about whether "
+            "the census guard still binds under the override"
+        )
+        assert not (evidence / "probe.json").exists()
+
+    def test_an_out_write_stays_unguarded(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """--out is scratch. Nothing is gated on it, so nothing guards it.
+
+        Written twice from different corpora over the same path, which is the
+        exact move --tag now refuses.
+        """
+        import scripts.corpus_report as script
+
+        scratch = tmp_path / "scratch.json"
+        tracked = PROJECT_ROOT / "data" / "processed" / "all_controls.json"
+        small = _corpus(tmp_path, [
+            {"control_id": "C-1", "title": "One", "description": LONG},
+        ])
+        links = _links(tmp_path, [_row("C-1", "One")])
+
+        monkeypatch.setattr(
+            "sys.argv",
+            self._argv("--out", str(scratch), "--corpus", str(tracked)),
+        )
+        script.main()
+        first = json.loads(scratch.read_text(encoding="utf-8"))["corpus_sha256"]
+
+        monkeypatch.setattr(
+            "sys.argv",
+            self._argv("--out", str(scratch), "--corpus", str(small),
+                       "--links", str(links)),
+        )
+        script.main()
+        second = json.loads(scratch.read_text(encoding="utf-8"))["corpus_sha256"]
+        assert first != second
 
 
 class TestAlternateIdsAgainstTheRealCorpus:
