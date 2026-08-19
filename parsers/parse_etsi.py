@@ -103,10 +103,13 @@ B, which flags an id-channel link whose section_name appears nowhere in the
 title of the clause its id reached. That is a fact about OpenCRE's ETSI rows
 rather than a wrong anchor this parser can fix: the names sit one level FINER
 than the ids, naming a technique inside the clause the id identifies. It is the
-DSOMM shape of ruling R11 inverted, and COARSE_NAME_RATIO cannot route it to
-DETECTOR_B_INAPPLICABLE because that test looks for ids outnumbering names
-while ETSI has 16 ids against 24 names. The budget entry is not edited here.
-The disagreement is reported and left to its owner.
+DSOMM shape of ruling R11 inverted. R11's criterion looked only for ids
+outnumbering names, so it could not reach ETSI's 16 ids against 24 names.
+Ruling R21 made the predicate symmetric, `name_level_mismatch_frameworks()`
+now derives ETSI through `FINE_NAME_RATIO`, and detector B is skipped here
+while A and C keep running. The budget entry was never edited: with B correctly
+scoped, wrong_anchor_risk reads 1 over a denominator of 9 and MEETS the
+pre-registered 1.
 """
 from __future__ import annotations
 

@@ -74,8 +74,10 @@ reached. Here the name is the task STATEMENT and the title is the task ID, so
 the detector holds a 160-character sentence against "PO.1.1" and can only fire.
 `section_name` equals the resolved control's title for 0 of 46 links, which is
 the same reading that retired detector B for dsomm under ruling R11.
-`coarse_name_frameworks()` cannot derive it, because that criterion is
-distinct(section_id) over distinct(section_name) and both are 44 here. The
+The count-based criterion cannot derive it: `name_level_mismatch_frameworks()`
+compares distinct(section_id) against distinct(section_name) and both are 44
+here, so SSDF sits at 1.0 and neither threshold reaches it. The mismatch is one
+of KIND rather than of level, which that predicate does not measure. The
 exemption set is therefore left alone and the count is asserted in
 tests/test_parse_nist_ssdf.py rather than silenced. Detectors A and C read 0.
 """

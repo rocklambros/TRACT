@@ -470,16 +470,19 @@ COARSE_NAME_RATIO: Final[float] = 2.0
 # empirically wrong: etsi at 0.6667 and nist_ai_100_2 at 0.7143 both carry the
 # property and both sit above it, so 0.5 would leave the defect uncovered.
 #
-# Measured over the same 22 frameworks on 2026-08-19. Nothing at all sits
-# between 0.7143 and 0.9773:
+# Measured over the same 22 frameworks on 2026-08-19, on FOLDED counts, which
+# is what the ratio computation below uses and what the join itself uses.
+# Nothing at all sits between 0.7143 and 1.0000:
 #   nearest value below   nist_ai_100_2  20/28 = 0.7143   headroom 0.1357
-#   nearest value above   mitre_atlas    43/44 = 0.9773   headroom 0.1273
-# Ruling R21 records the 1:1 cluster as bottoming out at 0.99. The measured
-# floor is mitre_atlas at 0.9773, which is the tighter of the two sides and is
-# what the headroom above is quoted against. Crossing 0.85 takes four more
-# distinct ids or five fewer distinct names for nist_ai_100_2, and seven more
-# distinct names or six fewer distinct ids for mitre_atlas, so no name repair
-# and no handful of new links moves a framework across it by accident.
+#   nearest value above   iso_27001      92/93 = 0.9892   headroom 0.1392
+# An earlier draft quoted mitre_atlas at 43/44 = 0.9773 as the nearest value
+# above. That was the RAW count, which splits "Validate AI Model" from
+# "Validate AI model"; folded it is 43/43 = 1.0000 and iso_27001 becomes the
+# real floor. No framework's membership differs between the two readings, so
+# the correction moves the quoted headroom and nothing else.
+# Crossing 0.85 takes four more distinct ids or five fewer distinct names for
+# nist_ai_100_2, so no name repair and no handful of new links moves a
+# framework across it by accident.
 FINE_NAME_RATIO: Final[float] = 0.85
 
 
@@ -489,8 +492,16 @@ def _name_level_mismatch(
     """Frameworks whose link file names a different level from the one it identifies."""
     mismatched: set[str] = set()
     for framework_id, links in grouped.items():
-        ids = {str(link.get("section_id") or "").strip() for link in links}
-        names = {str(link.get("section_name") or "").strip() for link in links}
+        # Folded, because the ratio has to measure what the JOIN measures.
+        # ProseIndex keys titles case-insensitively, so two names differing only
+        # in case are one name to the lookup. Counting them as two describes a
+        # granularity the join does not have: mitre_atlas reads 43/44 = 0.9773
+        # raw and 43/43 = 1.0000 folded, on the single pair "Validate AI Model"
+        # and "Validate AI model". [measured 2026-08-19] No framework's
+        # membership changes either way, so this buys accuracy in the reported
+        # headroom rather than a different exemption set.
+        ids = {_fold(str(link.get("section_id") or "")) for link in links}
+        names = {_fold(str(link.get("section_name") or "")) for link in links}
         ids.discard("")
         names.discard("")
         # No name anywhere means detector B never reads one, so it is already
