@@ -497,3 +497,71 @@ strict thresholds. Six of Task 16's nine assertions pass by construction — `fl
 tautological, `wrong_anchor_risk == 0` is unfailable on 9 of 11, and `honest_prose_fraction > 0.0`
 passes on 1 prose control in 224. Compute the attainable range in BOTH directions and assert it
 contains the trigger and excludes the trivial pass.
+
+---
+
+## PLAN v3 WRITTEN AND COMMITTED — 2026-08-19, `8b81bd8`
+
+`docs/superpowers/plans/2026-08-19-remaining-parsers-v3.md`, 12,884 lines, 16 tasks.
+Now TRACKED, along with every spec and the two prior rejected plans.
+
+Written by four parallel authors on disjoint task ranges against a contract I pinned first
+(`premortem-v2/V3-CONTRACT.md`) so they could not diverge on interfaces. All four were told to
+report anything in the contract they found wrong. All four did, with measurements, and three
+corrected me. Resolutions in `premortem-v2/V3-RESOLUTIONS.md`.
+
+### Validation of the assembled plan
+16 tasks · 16 `Invalidates:` lines · 56 python blocks (55 compile, 1 is a deliberate dict-entry
+excerpt) · 86 bash blocks · 0 unclosed fences · 0 TBD/TODO/PLACEHOLDER · 2 em dashes, both
+preserved as data (a regex character class and a unicode-normalisation map) · `git add -f`
+appears 5 times, every one a prohibition.
+
+### Errors I made and corrected during this phase
+1. **Contract Rule 2's gitignore form was broken.** I wrote `results/` plus `!results/corpus/**`.
+   Two authors independently reported it stages nothing and gave different working forms. Settled
+   by measurement: git never descends into an excluded *directory*, so no negation beneath it can
+   rescue a file. `results/*` plus directory negations works. Both authors were right; I was wrong.
+2. **Rule 5 was internally inconsistent by one anchor** — the same defect class the premortem
+   found in v2, committed by me inside the fix for it. biml is 19, so the delta is +152, not +153.
+3. **I reimplemented the licensed-text fingerprint gate instead of calling it**, and got a FALSE
+   NEGATIVE. My hand-rolled scan reported all six superpowers docs clean. The real gate, run when
+   the directory was staged, caught two ISO 27001 Annex A n-grams in the oldest plan. Two errors:
+   the salt is prefixed `f"{salt}:"` and `normalise_for_fingerprint` does work I did not replicate.
+   **Call the gate; never re-derive it.** This is the same lesson as lesson 4 from the other side:
+   a control you reimplement is a control you have disabled.
+
+### Rulings this phase
+- **R4/R5/R6** licence tiering (see premortem-v2 notes). CONDITIONAL text to the overlay,
+  assignments still tracked and published. Zero anchor cost. csa_ccm is the first item for the
+  owner to review on return.
+- **R7** the tracked ceiling study stays tracked. Zero items come from a RESTRICTED framework.
+  The real defect is that 201 of its 250 items come from frameworks recorded `UNDETERMINED`,
+  which is absent work, not a finding of permissiveness.
+- **N5** the four `LLM_PROXY` ceiling-study files stay untracked and are now explicitly ignored.
+  The runbook says a proxy labelled as a ceiling is the same error class as the withdrawn
+  accuracy figure, and four files with LLM_PROXY in the name beside the real human study invite
+  exactly that.
+- **Specs and plans are now tracked.** A criterion in an untracked file can be edited mid-run with
+  no diff, which the premortem named as a stricter form of the recorded
+  `gate-preregistration-is-retrospective` defect.
+
+### Fixed in live code this phase (independent of the plan)
+- `5fa2c75` the publish generators no longer regenerate the withdrawn "human-reviewed" claim. The
+  correction had lived only in the uploaded artifact; `card.py` and `bundle.py` still produced the
+  original wording, so the next publish would have silently restored it. Four tests, each verified
+  to FAIL against the old wording before being accepted.
+- `a82680b` the erratum now lives in the model-card generator. `README.md:48` links to
+  `#erratum-2026-08-15` and the generator produced no such section, so republishing would have
+  404'd the anchor the repository points at.
+
+### Known open, carried forward
+- **N1 the fold metadata records the wrong corpus.** `orchestrate.py:348` hashes the tracked
+  29-framework corpus while `ProseIndex.load()` reads the 31-framework overlay, so
+  `merged_corpus_path`'s own docstring claim is false and two different runs record the same
+  digest. Task 14 Step 6 fixes it. **No training run may launch before that lands.**
+- **N2 the prose gate is off for 19 of 21 parsers.** Only iso_27001 and owasp_llm_top10_2026
+  declare `min_prose_fraction`. Task 16 ratchets the unfloored count at 19 so it cannot grow;
+  retrofitting the other 19 is its own plan.
+- 11 local test failures, all model-loading (`test_training_loop`, `test_proposals_cluster`,
+  `test_publish_merge`), plus 3 collection errors on a missing `anthropic` dep. Pre-existing and
+  environmental: CLAUDE.md routes all model loading to RunPod. 1,357 pass.
