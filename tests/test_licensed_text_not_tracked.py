@@ -32,7 +32,11 @@ from pathlib import Path
 
 import pytest
 
-from tract.config import PROCESSED_DIR, RESTRICTED_FRAMEWORK_IDS
+from tract.config import (
+    OVERLAY_FRAMEWORK_IDS,
+    PROCESSED_DIR,
+    RESTRICTED_FRAMEWORK_IDS,
+)
 from tract.licensing import (
     FINGERPRINT_DOCUMENT_KEYS,
     FINGERPRINT_PATH,
@@ -271,12 +275,24 @@ def test_every_restricted_framework_has_a_gitignore_line() -> None:
         )
 
 
-def test_merged_corpus_carries_no_restricted_prose() -> None:
-    """A tracked all_controls.json must not carry a restricted source's prose.
+def test_merged_corpus_carries_no_unpublishable_prose() -> None:
+    """A tracked all_controls.json must carry no overlay source's prose.
 
     The merged corpus is a build artifact that concatenates every per-framework
     file. Gitignoring the ISO file alone does not help if the merge output is
     tracked and contains the same text.
+
+    Widened from RESTRICTED_FRAMEWORK_IDS to OVERLAY_FRAMEWORK_IDS. The narrow
+    form was the same defect one tier down: the seven conditional frameworks
+    carry GPL-3.0 and CC BY-SA text, their per-framework files are gitignored,
+    and the merge inlined them into this tracked artifact with nothing
+    watching. It passed only because none of them carries prose today.
+
+    Reachable in both directions rather than vacuous. On current data 341
+    tracked controls across the seven pass at zero offenders; planting one
+    prose description in the tracked file turns it red, and
+    tests/test_merge_licensed_overlay.py exercises that construction against
+    the merge itself.
     """
     merged = PROCESSED_DIR / "all_controls.json"
     if merged.name not in {Path(p).name for p in _tracked_files()}:
@@ -285,24 +301,40 @@ def test_merged_corpus_carries_no_restricted_prose() -> None:
         pytest.skip("all_controls.json not present in this checkout")
 
     data = json.loads(merged.read_text(encoding="utf-8"))
-    offenders: list[tuple[str, str, int]] = []
+    offenders: list[tuple[str, str, str]] = []
+    checked = 0
     for framework in data.get("frameworks", []):
-        if framework.get("framework_id") not in RESTRICTED_FRAMEWORK_IDS:
+        if framework.get("framework_id") not in OVERLAY_FRAMEWORK_IDS:
             continue
         for control in framework.get("controls", []):
+            checked += 1
             description = (control.get("description") or "").strip()
             title = (control.get("title") or "").strip()
+            control_id = str(control.get("control_id", "?"))
             # Prose, not a restated title. Both tests must hold: the stub form
             # copies the title verbatim and is short.
             if description != title and len(description) > _TITLE_LENGTH_CEILING:
                 offenders.append(
-                    (framework["framework_id"], control.get("control_id", "?"),
-                     len(description))
+                    (str(framework["framework_id"]), control_id,
+                     f"description {len(description)} chars")
+                )
+            # The second channel. sanitize_control moves anything over
+            # DESCRIPTION_MAX_LENGTH into full_text, so a check on description
+            # alone would miss the longest statements in the corpus.
+            if control.get("full_text"):
+                offenders.append(
+                    (str(framework["framework_id"]), control_id, "full_text set")
                 )
 
+    assert checked > 0, (
+        "no overlay framework's controls were inspected, so this gate proved "
+        "nothing. Either the tracked corpus lost every conditional framework, "
+        "which is a change that needs its own record, or the read is broken."
+    )
     assert not offenders, (
-        f"{len(offenders)} restricted-license control statements are inside a "
-        f"tracked all_controls.json, e.g. {offenders[:3]}. Build the merged "
-        f"corpus into the gitignored licensed overlay instead, or exclude "
-        f"restricted frameworks from the tracked artifact."
+        f"{len(offenders)} control statements from frameworks whose licence a "
+        f"CC0 grant cannot carry are inside a tracked all_controls.json, e.g. "
+        f"{offenders[:3]}. Re-run parsers/merge_all_controls.py, which reduces "
+        f"these frameworks to identifiers and titles in the tracked artifact "
+        f"and keeps the full text in the gitignored overlay."
     )

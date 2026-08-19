@@ -2,15 +2,33 @@
 
 Two artifacts, not one.
 
-`data/processed/all_controls.json` is git-tracked and excludes every framework
-in `RESTRICTED_FRAMEWORK_IDS`. Those frameworks carry licensed control
-statements, and this repository is CC0, which is an affirmative grant that the
-publisher holds the rights and waives them. Gitignoring the per-framework file
-alone left this wide channel open: the merge globbed the same directory and
-inlined the untracked file verbatim into a tracked one.
+`data/processed/all_controls.json` is git-tracked. It excludes every framework
+in `RESTRICTED_FRAMEWORK_IDS` outright, and it carries every framework in
+`OVERLAY_FRAMEWORK_IDS` reduced to identifiers and titles with no prose. This
+repository is CC0, which is an affirmative grant that the publisher holds the
+rights and waives them. Gitignoring the per-framework file alone left this wide
+channel open: the merge globbed the same directory and inlined the untracked
+file verbatim into a tracked one.
+
+The filter used to read RESTRICTED_FRAMEWORK_IDS alone, which is the same
+defect one tier down. The seven conditional frameworks carry GPL-3.0 and CC
+BY-SA text, their per-framework files are gitignored, and the merge inlined
+them into a tracked artifact anyway. Nothing fired, because they happen to
+carry no prose today.
+
+Reduced to titles rather than dropped, and the difference is deliberate. A
+conditional framework's mapping stays tracked and published, because a mapping
+is a fact about two documents rather than a reproduction of either, and its
+titles are already published by OpenCRE. Measured on 2026-08-19: all 341
+tracked controls across the seven already have `description == title` and no
+`full_text`, so this reduction is byte-identical on current data and becomes a
+real filter the first time a parser writes prose. Dropping the frameworks
+outright would remove 341 controls and seven frameworks from the tracked
+corpus, shifting every count downstream, which is an owner decision rather
+than a leak fix.
 
 `data/processed/licensed/all_controls.json` is gitignored and carries the full
-corpus, restricted frameworks included, for local training and evaluation.
+corpus, every framework's prose included, for local training and evaluation.
 
 Read order for anything that trains or evaluates: prefer the licensed overlay
 when it is present, else fall back to the tracked file. The overlay is written
@@ -30,6 +48,7 @@ from pathlib import Path
 
 from tract.config import (
     HOLDOUT_FRAMEWORK_IDS,
+    OVERLAY_FRAMEWORK_IDS,
     PROCESSED_DIR,
     PROCESSED_FRAMEWORKS_DIR,
     PROCESSED_LICENSED_DIR,
@@ -99,6 +118,88 @@ def _drop_holdouts(
     return kept
 
 
+def _redact_prose(framework: dict[str, object]) -> tuple[dict[str, object], int]:
+    """Reduce one framework's controls to identifiers and titles.
+
+    Returns (framework, redacted_control_count). A control that already carries
+    no prose is returned as the same object, not a copy, so a corpus with
+    nothing to redact serialises to identical bytes. The tracked artifact's
+    sha256 is compared across LOFO folds, so a merge that rewrote equal values
+    into new dicts would still be safe here, but proving byte-identity by
+    construction is cheaper than arguing it from json.dumps's behaviour.
+
+    Raises:
+        ValueError: the framework's `controls` key is not a list. Same contract
+            as _control_count: a corrupt artifact fails rather than passing
+            through a filter that cannot inspect it.
+    """
+    controls = framework.get("controls", [])
+    if not isinstance(controls, list):
+        raise ValueError(
+            f"framework {framework.get('framework_id', '?')!r} has a "
+            f"'controls' key of type {type(controls).__name__}, expected list. "
+            f"Prose cannot be filtered out of a structure that is not a list "
+            f"of controls, and passing it through would publish it unchecked."
+        )
+
+    redacted = 0
+    out_controls: list[object] = []
+    for control in controls:
+        if not isinstance(control, dict):
+            raise ValueError(
+                f"framework {framework.get('framework_id', '?')!r} has a "
+                f"control of type {type(control).__name__}, expected dict"
+            )
+        title = str(control.get("title") or "")
+        description = str(control.get("description") or "")
+        carries_prose = description.strip() != title.strip()
+        carries_full_text = bool(control.get("full_text"))
+        if not (carries_prose or carries_full_text):
+            out_controls.append(control)
+            continue
+        replacement = dict(control)
+        replacement["description"] = title
+        if carries_full_text:
+            replacement["full_text"] = ""
+        out_controls.append(replacement)
+        redacted += 1
+
+    if redacted == 0:
+        return framework, 0
+    return {**framework, "controls": out_controls}, redacted
+
+
+def _tracked_view(
+    frameworks: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """The corpus as it may be committed: no restricted source, no overlay prose.
+
+    Two filters because the tiers mean two different things. A restricted
+    source may not appear in git in any form. A conditional source may appear
+    as identifiers and titles, which OpenCRE already publishes, and may not
+    appear as the publisher's own control statements.
+    """
+    view: list[dict[str, object]] = []
+    for framework in frameworks:
+        framework_id = framework.get("framework_id")
+        if framework_id in RESTRICTED_FRAMEWORK_IDS:
+            continue
+        if framework_id not in OVERLAY_FRAMEWORK_IDS:
+            view.append(framework)
+            continue
+        reduced, redacted = _redact_prose(framework)
+        if redacted:
+            logger.info(
+                "Reduced %s to titles in the tracked corpus: %d control "
+                "statement(s) withheld. Its licence permits reproduction on "
+                "terms a CC0 grant cannot carry; the full text is in the "
+                "gitignored overlay.",
+                framework_id, redacted,
+            )
+        view.append(reduced)
+    return view
+
+
 def _build(frameworks: list[dict[str, object]]) -> dict[str, object]:
     """Assemble one merged corpus from the frameworks it actually contains."""
     total_controls = sum(_control_count(f) for f in frameworks)
@@ -135,12 +236,14 @@ def main(
 
     frameworks = _drop_holdouts(frameworks)
 
-    restricted = [
-        f for f in frameworks if f.get("framework_id") in RESTRICTED_FRAMEWORK_IDS
+    # Presence of any overlay member on disk, not just a restricted one. The
+    # overlay is the only artifact that may hold a conditional framework's
+    # prose, so a checkout that parsed one needs the overlay written even when
+    # no restricted source is present.
+    overlay_members = [
+        f for f in frameworks if f.get("framework_id") in OVERLAY_FRAMEWORK_IDS
     ]
-    public = [
-        f for f in frameworks if f.get("framework_id") not in RESTRICTED_FRAMEWORK_IDS
-    ]
+    public = _tracked_view(frameworks)
 
     tracked = _build(public)
     tracked_path = output_dir / MERGED_FILENAME
@@ -151,23 +254,24 @@ def main(
     )
 
     overlay_path = licensed_dir / MERGED_FILENAME
-    if restricted:
+    if overlay_members:
         overlay = _build(frameworks)
         atomic_write_json(overlay, overlay_path)
         logger.info(
-            "Wrote gitignored overlay %s: %d frameworks (%d restricted), "
-            "%d total controls",
-            overlay_path, overlay["framework_count"], len(restricted),
+            "Wrote gitignored overlay %s: %d frameworks (%d whose text may not "
+            "be published), %d total controls",
+            overlay_path, overlay["framework_count"], len(overlay_members),
             overlay["total_controls"],
         )
         return
 
     if overlay_path.exists():
         # A surviving overlay would shadow the tracked corpus for every reader
-        # that prefers it, with no restricted source left to regenerate it.
+        # that prefers it, with no unpublishable source left to regenerate it.
         overlay_path.unlink()
         logger.info(
-            "Removed stale overlay %s: no restricted framework is on disk",
+            "Removed stale overlay %s: no framework whose text may not be "
+            "published is on disk",
             overlay_path,
         )
 
