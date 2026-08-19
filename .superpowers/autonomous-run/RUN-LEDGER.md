@@ -1021,3 +1021,57 @@ design: three more characters upstream silently converts A02's anchor from the e
 Description, with no test failing and no log line. Pre-truncate so `_sanitize_control` cannot fire,
 and assert no description reaches the limit. Contract Fact 2 exists because that function rewrites
 `full_text` behind the parser's back; surviving it by two characters is luck, not compliance.
+
+### CORRECTION TO R14, AND IT IS MY ERROR, OF EXACTLY THE KIND I HAD JUST RECORDED
+I wrote in R14 that "nothing is clobbered today, because A02 sits at description 1,998 and A04 at
+1,988 against DESCRIPTION_MAX_LENGTH 2,000. Inside the limit by single digits." **That is wrong.**
+
+The 1,998 and 1,988 I read ARE the truncated values. The source Descriptions sanitise to **2,263**
+and **2,938**, both over the limit, so `_sanitize_control` fired on both, truncated the description,
+and overwrote `full_text` with the full Description, discarding the entry the parser wrote.
+
+I measured the clobbered output and reasoned about it as though it were the source. That is the same
+error I had recorded against the brief one entry earlier, committed by me in the ruling that
+responded to it.
+
+The implementer caught it. Verified by arithmetic rather than argument:
+```
+        before full_text   after full_text
+A02              2,263            10,291     grew 4.5x
+A04              2,938            10,526     grew 3.6x
+A03              9,706             9,270     shrank by the stripped table
+```
+If 2,263 had been A02's entry, stripping a table could only shrink it. It grew, so 2,263 was the
+full Description. A03, which was never clobbered, moves in the opposite direction and by the right
+amount. R14 stands and was MORE urgent than I stated: this was not a two-character margin, it was
+already firing on two of ten.
+
+**The general lesson, now on record twice: a measurement taken from a processed artifact is a
+measurement of the pipeline, not of the source.** Both times it produced a confident wrong number.
+Measure the source, or state which you measured.
+
+### Task 5 final: `1a5a622`. 1,625 passing. 30 mutations, 30 killed.
+Shared anchor prefix **364 -> 12** for A01 vs A03, and **9** in anchor space after `prepare_anchor`
+strips markdown, which is what the encoder actually sees. All ten now open on `Overview` prose.
+Missing or renamed Factors RAISES rather than passing through, chosen because pass-through would put
+the table at the head of some anchors and not others, which is the inconsistency the removal exists
+to end. 12 repair-audit records, each carrying before and after as TEXT.
+
+### Ruling R15 — parser tasks stop committing `data/processed/all_controls.json`
+Task 5 found the real hazard of parallel parser tasks: `all_controls.json` is a SHARED derived
+artifact that every parser regenerates, so a task that commits it carries whatever another
+in-flight task has already rebuilt into it. Task 5 correctly declined to commit it for that reason.
+Two earlier tasks did commit it, which is inconsistent.
+
+From here: a parser task commits its own `data/processed/frameworks/<fw>.json`, its parser and its
+tests. **It does not commit `all_controls.json`.** The tracked merged corpus is therefore
+deliberately stale until Task 15, whose entire job is the rebuild and the per-control diff. It is
+derived, no parser assertion depends on it, and the gitignored overlay stays fresh because
+`test_prose_reachability` globs `parse_*.py` and would otherwise measure a new parser against a
+pre-parser corpus.
+
+### Operational hazard, the mirror of the mutant-left-behind
+A concurrent agent's `git restore` reverted Task 5's UNCOMMITTED derived artifact. Uncommitted
+derived files are not safe from another task's cleanup on a shared branch. Regeneration recovered it
+exactly because the parser source was untouched, which is the argument for derived artifacts being
+reproducible rather than precious.
