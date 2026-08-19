@@ -316,6 +316,22 @@ class ProseIndex:
     def __len__(self) -> int:
         return len(self._by_id)
 
+    def by_title(self, framework: str, section_name: str) -> TextSelection | None:
+        """The selection a title lookup would return, or None.
+
+        Exposed for tract.corpus_report, which must report which channel
+        answered a link and cannot get that from lookup's return value.
+        """
+        return self._by_title.get(
+            (canonical_framework(framework), section_name.strip().lower())
+        )
+
+    def by_id(self, framework: str, section_id: str) -> TextSelection | None:
+        """The selection an id lookup would return, or None."""
+        return self._by_id.get(
+            (canonical_framework(framework), normalize_section_id(section_id))
+        )
+
     def lookup(
         self, framework: str, section_id: str | None, section_name: str | None,
     ) -> TextSelection | None:
