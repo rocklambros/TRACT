@@ -737,3 +737,57 @@ theirs, adopted: run the validator over the existing 30 in report-only mode, con
 switch to raising in a separate commit. Schedule: after L3, before Task 9. Cost if wrong: a
 malformed `alt_titles` stays silently wrong for a few more tasks, on a field no human is currently
 authoring.
+
+### L1/L2 landed. Five commits. Ruling R10 on the tier, and one new leak channel.
+`217df5b` LICENSES/ with six sha256-pinned canonical texts, none paraphrased.
+`a525e06` NOTICE gains the modification statement, the csa_aicm entry, and a line saying the
+          csa_ccm ruling's BASIS is unrecorded.
+`95ab3b9` one licence declaration across both published cards and the bundle, and NOTICE plus
+          LICENSES/ now ship inside the artifacts.
+`64ac86c` the merge filter reads OVERLAY, not RESTRICTED.
+`a3ce055` `tract export-canonical` withholds control text for overlay frameworks.
+
+**The agent corrected my brief on the merge, and its version is better than what I specified.**
+I wrote that widening the filter was "a no-op on current data". Wrong: the seven conditional
+frameworks are IN the tracked corpus, 341 controls. Dropping them wholesale would have moved
+`all_controls.json`. It withholds PROSE instead, which reproduces the file byte-for-byte AND is the
+only reading under which the widened gate is not vacuous. This also silently answers the
+reproducibility argument (premortem F8): the tracked corpus is now deterministic from a fresh
+clone regardless of tier membership, so F8 no longer decides the tier question.
+
+**Ruling R10 — the tier keeps two members, not seven.**
+Remove `biml`, `samm`, `wstg`, `owasp_top10_2021`, `owasp_proactive_controls`. Keep `dsomm` and
+`csa_ccm`.
+- The five are CC BY-SA, and SEVEN other CC BY-SA frameworks are already tracked and published.
+  Five of twelve treated differently is defensible on no reading. L1 discharged the attribution and
+  notice obligations for all of them at once.
+- `dsomm` is GPL-3.0-only. §5's aggregation carve-out exempts *the other parts* of an aggregate, not
+  the covered work, and wants a "volume of a storage medium" rather than one interleaved JSON
+  document. Never published, one-way push, zero anchor cost.
+- `csa_ccm` stays and this REVERSES NOTHING. Because the merge now withholds prose rather than
+  dropping frameworks, overlay membership means titles and identifiers tracked, prose withheld.
+  That is strictly narrower than the owner's ruling, which is why it is safe to hold while the
+  ruling's basis is unrecorded.
+The copyleft gate is not deleted, its DEMAND changes: from "copyleft implies overlay" to "copyleft
+implies a NOTICE row, a shipped licence text matching the recorded SPDX id, and coverage by the
+modification statement."
+
+### OWNER DECISION OUTSTANDING: csa_aicm, and it is already in git twice
+Not escalated as a hypothetical. Measured:
+- `data/processed/frameworks/csa_aicm.json`: 243 controls, description min/median/max 39/176/485.
+- `opencre_export/CSA_AI_Controls_Matrix.csv`: **184 rows, all 184 carrying a description**, max 485
+  chars, TRACKED, in a directory `git check-ignore` reports NOT IGNORED.
+Licence: "Proprietary. (c) Cloud Security Alliance, all rights reserved... no redistribution."
+It is in NO tier. The structural cause is that the copyleft check matches the substrings `GPL` and
+`CC-BY-SA`, so a source that reserves rights OUTRIGHT matches neither and produces no membership.
+The model detects share-alike and is blind to the stricter posture.
+
+CLAUDE.md is explicit that CSA CCM and CSA AICM are different frameworks and must never be
+conflated, so the owner's csa_ccm ruling does not reach it.
+The fair counterargument, which I am not dismissing: CSA's notice permits "fair-use quotation with
+attribution", and 243 short attributed statements is a defensible quotation posture. What is missing
+is that nothing in the repository RECORDS that as the reasoning. The finding is not "remove
+csa_aicm", it is "the judgment that admitted it was never written down, and the tier model cannot
+express it."
+My action: leave it tracked (already published, removing un-publishes nothing), stop the NEXT export
+from writing prose it may not redistribute, and put it to the owner.
