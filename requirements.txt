@@ -6,6 +6,12 @@ beautifulsoup4==4.14.3
 # everything else here: pyproject.toml carries floors for the
 # distributable, this file carries the exact environment.
 pdfplumber==0.11.10
+# parse_csa_ccm.py reads the CCM workbook. The CCM sheet is a flat
+# four-column table, and reading it through the raw sheet XML would mean
+# reimplementing shared strings and inline formatting for one parser. With
+# defusedxml below installed, openpyxl.DEFUSEDXML reads True and the
+# workbook parses with entity handling hardened.
+openpyxl==3.1.5
 # XML parsing for MITRE CAPEC/CWE catalogs. The stdlib xml module is
 # vulnerable to XXE and entity-expansion, and these are downloaded files.
 defusedxml==0.7.1

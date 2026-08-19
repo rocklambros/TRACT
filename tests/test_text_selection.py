@@ -1067,18 +1067,41 @@ class TestMalformedAlternateTitles:
         the next full index build.
 
         The census moves with a reviewed parser change and never on its own,
-        which is why it is a number and not a lower bound.
+        which is why it is a table of numbers and not a lower bound.
+
+        Split into settled and pending because ruling R15 stopped parser tasks
+        committing data/processed/all_controls.json. The tracked corpus
+        therefore lags the parsers until Task 15 rebuilds it, while the
+        gitignored overlay is current, and a single total could only ever be
+        right for one of those two states. A settled framework is already in
+        both and must match exactly. A pending one contributes its declared
+        count where its parser has reached this corpus and nothing where it
+        has not, and moves to the settled table when Task 15 lands.
         """
+        settled = {
+            "nist_ai_100_2": 5,
+            "owasp_cheat_sheets": 25,
+            "owasp_top10_2021": 3,
+            "samm": 3,
+        }
+        pending = {"csa_ccm": 3}
+
         corpus = merged_corpus_path()
         if not corpus.exists():
             pytest.skip("no merged corpus in this checkout")
         records = json.loads(corpus.read_text(encoding="utf-8"))["frameworks"]
-        carriers = [
-            control
-            for record in records
-            for control in record.get("controls") or []
-            if (control.get("metadata") or {}).get("alt_titles")
-        ]
-        assert len(carriers) == 36
+        observed: dict[str, int] = {}
+        for record in records:
+            carriers = sum(
+                1 for control in record.get("controls") or []
+                if (control.get("metadata") or {}).get("alt_titles")
+            )
+            if carriers:
+                observed[str(record.get("framework_id"))] = carriers
+
+        assert {k: v for k, v in observed.items() if k in settled} == settled
+        assert set(observed) <= set(settled) | set(pending)
+        for framework_id, declared in pending.items():
+            assert observed.get(framework_id, 0) in (0, declared), framework_id
         # Raises if any carrier is malformed, which is the assertion.
         assert len(ProseIndex(records)) > 0

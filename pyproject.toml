@@ -22,6 +22,13 @@ dependencies = [
     "beautifulsoup4>=4.14.3",
     "lxml>=5.0",
     "defusedxml>=0.7.1",
+    # Pinned with == rather than a floor. CI installs `-e .`, so a floor
+    # resolves to whatever is newest on the day while requirements.txt pins
+    # 3.1.5, and the two files would then state different things. parse_csa_ccm
+    # reads the CCM workbook through it; reading the sheet XML directly would
+    # mean reimplementing shared strings for one parser. defusedxml above flips
+    # openpyxl's own DEFUSEDXML flag to True, so the workbook parses hardened.
+    "openpyxl==3.1.5",
     "requests>=2.31",
     "huggingface_hub>=0.24,<1",
 ]

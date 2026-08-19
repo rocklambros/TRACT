@@ -46,5 +46,13 @@ types-beautifulsoup4==4.12.0.20250516
 # scripts/phase1a/, stays green.
 types-defusedxml==0.7.0.20260504
 types-jsonschema==4.26.0.20260518
+# parse_csa_ccm.py imports openpyxl, which ships no py.typed. Without these
+# stubs `mypy --strict parsers/` fails on the import with "Library stubs not
+# installed". Stubs rather than an ignore_missing_imports override in
+# pyproject.toml, and rather than adding openpyxl itself to the runtime block
+# above: that block is for packages that ship py.typed and therefore buy real
+# checking, and an override would silence every openpyxl call site instead of
+# checking it.
+types-openpyxl==3.1.5.20260807
 types-PyYAML==6.0.12.20260724
 types-requests==2.33.0.20260712
