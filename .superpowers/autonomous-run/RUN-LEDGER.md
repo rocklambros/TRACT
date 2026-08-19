@@ -1475,3 +1475,32 @@ RunPod run dies at import, after the pod is provisioned and billing.** Never cau
 
 Three ST versions are in play: 3.2.0 (serving, `requirements-ml.txt`), 5.3.0 (what the agent tested
 under), 5.7.0 (training, `requirements-train.txt`). This is the gate before any GPU spend.
+
+### Task 11 (ENISA): COMPLETE. `d95de1e`. 1,854 -> 1,907 passing. 22 mutations, 22 killed.
+```
+enisa  68 links | by_title 68 | by_id 0 | unresolved 0 | anchors 33 | l/a 2.06
+       fallback 0 (was 33) | dropped_by_prose 0 (was 38) | wrong 0 of 68 | rate 1.0000
+```
+Measured on pdfplumber **0.11.10**, the pinned version, so these are the first CI-accurate PDF
+numbers in the plan. R14 would not have fired (longest 709). Shared prefix 0.
+
+**Mutation testing found a real data-corruption bug, not a test gap.** M17 was not a mutation, it
+was the fix: `DEFINITION_END_COLUMN = 5` admitted Table 3's ROTATED lifecycle header into the
+control "Model or data disclosure" as a trailing `a ta D`. Column 4 carries no definition text
+anywhere in either table, so the constant is now 4. Four mutations survived the first pass and
+three more were closed with new tests. Every mutation was verified twice, once in a full run and
+once with `TestRun` deselected to simulate CI.
+
+**Eleven false brief claims, the most of any task.** The sharpest: the two controls the brief calls
+"Annex-C-only" are PRINTED IN TABLE 5 at column 1, so **Annex C is not read at all** and an entire
+specified code path was unnecessary. Also 35 Table 5 units is really 37 (the count the document
+itself states), naive match is 57/68 not 51/68, NFKD+footnote is 68/68 not 62/68, the defect table
+is wrong in all three rows, and the six `ANNEX_C_VARIANTS` are dead entries no link spells.
+
+**Carried to Task 16:** `JOIN_CEILINGS`' enisa comment still says "with Annex C". The VALUE is
+correct and the RATIONALE is now false. The implementer correctly left the pre-registration block
+untouched rather than editing a criterion to match its own run.
+**Carried to Task 15:** `data/processed/all_controls.json` is dirty and uncommitted, now carrying
+eleven tasks' worth of parser output. That is R15 working as intended, and Task 15 owns the merge.
+`validate_all.py` still exits non-zero: enisa's 28 errors cleared, 11 pre-existing **etsi** errors
+remain, which is Task 13. The dispatch's "39 enisa errors" was really 28 enisa plus 11 etsi.
