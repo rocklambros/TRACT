@@ -15,6 +15,79 @@ listed framework's terms on its own content.
 This file records terms. It does not interpret them and offers no legal advice.
 
 
+Licence texts
+-------------
+
+`LICENSES/` carries the full text of every SPDX-identified licence named in the
+table below, one file per identifier, fetched from the publisher's own
+canonical plain text and unmodified. GPL-3.0 section 4 requires that a
+recipient receive a copy of the licence alongside the covered work, and CC
+BY-SA 4.0 section 3(a)(1)(A) requires retaining the licence or a URI to it.
+Naming an identifier here does not deliver either; `LICENSES/` does.
+
+  LICENSES/Apache-2.0.txt     LICENSES/CC-BY-SA-3.0.txt
+  LICENSES/CC-BY-4.0.txt      LICENSES/CC-BY-SA-4.0.txt
+  LICENSES/CC0-1.0.txt        LICENSES/GPL-3.0-only.txt
+
+Seventeen sources in the table below carry no SPDX identifier, so no licence
+text exists to ship for them. Eight state no terms at all in the artifact this
+project downloaded and are recorded UNDETERMINED. Nine carry the publisher's
+own prose notice, quoted in the table. Nothing is invented for either group.
+`tests/test_license_texts_shipped.py` derives the required set from
+`tract.config.FRAMEWORK_LICENSES` and fails if a text is missing, if a text is
+shipped that no framework declares, or if a shipped text's bytes change.
+
+
+Modifications to framework text
+-------------------------------
+
+TRACT does not store any framework's text as published. Every control statement
+that reaches `data/processed/` has passed through the transforms below, and the
+training and evaluation paths apply further transforms on top. GPL-3.0 section
+5(a) and CC BY-SA 4.0 section 3(a)(1)(B) both require a modified work to carry
+prominent notice that it was modified. This section is that notice.
+
+At storage, `tract/sanitize.py::sanitize_text`, applied to every control's
+title, description and full text by `sanitize_control`, in this fixed order:
+
+  1. Null bytes (U+0000) replaced with a space.
+  2. Unicode normalised to NFC.
+  3. Zero-width characters removed (U+200B, U+200C, U+200D, U+FEFF).
+  4. HTML entities unescaped, then HTML and XML tags removed.
+  5. PDF ligatures folded to ASCII: ff, fi, fl, ffi and ffl.
+  6. Hyphenation broken across a line rejoined, so "secu-\nrity" becomes
+     "security".
+  7. Runs of whitespace collapsed to one space, then leading and trailing
+     whitespace stripped.
+  8. Truncated on a word boundary. Descriptions at
+     `tract.config.DESCRIPTION_MAX_LENGTH` (2000 characters), titles at 500,
+     full text at 50,000. Where a description is truncated, the untruncated
+     sanitised string is preserved in the control's `full_text` field.
+
+At training and evaluation, `tract/text_selection.py`:
+
+  9. Markdown and site furniture removed by `strip_markup`, then a second NFC
+     normalisation and null-byte strip in `prepare_anchor`.
+ 10. Stop words removed when the arm calls for it, by
+     `tract/stopwords.py::filter_stopwords` against the 78-word list at
+     `data/processed/stopwords.json`. The list is generated from this corpus,
+     not borrowed, and the filter deletes matched words in place so identifiers
+     and thresholds survive. Text that would be emptied is returned unchanged.
+ 11. Truncated again to `tract.config.MAX_ANCHOR_CHARS` (2150 characters), the
+     encoder's 512-token budget. Truncation is counted and reported.
+
+Where a source document is damaged and the parser can prove the damage but not
+repair it, `tract.config.CONTROL_ELISION_MARKER` ("[...]") is inserted at the
+point of loss and the control is flagged under the `damaged` metadata key.
+`parsers/parse_iso_27001.py` is the only parser that does this today. The
+marker is editorial on purpose: a reader must not be able to mistake a repaired
+statement for the standard's own wording.
+
+None of these transforms is reversible from the stored text alone. Anyone
+relying on a framework's exact published wording must read it from that
+framework's publisher, not from this repository.
+
+
 Restricted sources
 ------------------
 
@@ -95,6 +168,29 @@ reserving redistribution. The project owner ruled on 2026-08-16 that CCM is
 redistributable for this project's purposes, and CCM is therefore not in
 RESTRICTED_FRAMEWORK_IDS. AICM was already tracked under the same terms. Both
 are recorded here as the publisher states them.
+
+The BASIS of the CCM ruling is not on record, and it must be. What is recorded
+is that the owner ruled, not why. "We hold a written agreement with CSA",
+"redistribution is covered by CSA membership" and "this is a fair-use judgment
+about the quantity reproduced" are three materially different bases with three
+different scopes, three different transferability properties for anyone forking
+this repository, and three different answers to whether the same reasoning
+reaches AICM. Until the basis is written down here, a downstream reader cannot
+evaluate the ruling and cannot tell whether it applies to their use.
+
+CSA's AI Controls Matrix (`csa_aicm`) is a live exposure, stated here without
+being resolved. Measured on 2026-08-19: 243 controls tracked in git at
+`data/processed/frameworks/csa_aicm.json`, description length 39 characters
+minimum, 176 median, 485 maximum, which is control prose and not titles. Its
+recorded notice is the same one CSA applies to CCM, reserving redistribution
+outright. It appears in no licence tier: not in RESTRICTED_FRAMEWORK_IDS, not
+in CONDITIONAL_FRAMEWORK_IDS, so not in OVERLAY_FRAMEWORK_IDS either. The
+structural reason is that the tier derivation in
+`tests/test_framework_licenses.py::_copyleft` selects on the substrings "GPL"
+and "CC-BY-SA", so a publisher that reserves rights outright matches neither
+and produces no tier membership at all. The model detects share-alike and is
+blind to the stricter posture. This is a question for the project owner, and it
+is a larger exposure than the copyleft frameworks the tiers were built for.
 
 
 Attribution
