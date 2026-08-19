@@ -1084,7 +1084,10 @@ class TestMalformedAlternateTitles:
             "owasp_top10_2021": 3,
             "samm": 3,
         }
-        pending = {"csa_ccm": 3}
+        # biml declares one: OpenCRE's `output:2` "Direct Output" names ara's
+        # [output:1:direct] while its id names a different risk, so the row is
+        # resolved by name.
+        pending = {"csa_ccm": 3, "biml": 1}
 
         corpus = merged_corpus_path()
         if not corpus.exists():

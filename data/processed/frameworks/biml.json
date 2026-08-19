@@ -1,290 +1,1798 @@
 {
   "controls": [
     {
-      "control_id": "biml:BIML-24(LLM): inference:9",
-      "description": "Hosting",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:1",
+      "description": "The number one risk in LLMs today is recursive pollution. This happens when an LLM model is trained on the open Internet (including errors and misinformation), creates content that is wrong, and then later eats that content when it (or another generation of models) is trained up again on a data ocean that includes its own pollution. Wrongness grows just like guitar feedback through an amp does. BIML identified this problem in 2020. See [BIML78 raw:8:looping], [LLMtop10:1:recursive pollution] and Shumailov.6",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-24(LLM): inference:9",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "recursive pollution",
+        "tag": "raw:1"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Hosting"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Recursive Pollution (BIML-24(LLM): raw:1)"
     },
     {
-      "control_id": "biml:BIML-24(LLM): input:2",
-      "description": "Prompt Injection",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:2",
+      "description": "Another LLM top ten risk is tied up in the training data challenge—gathering up an enormous enough pile of data to train an LLM generally involves scraping lots of it off the Internet. Needless to say, the Internet is full of poisonous, wrong, evil, misleading, and otherwise unfit for use data. Raw data are riddled with badness, and removing it all to disinfect training and input data is a gargantuan task. See [LLMtop10:6:poison in the data].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-24(LLM): input:2",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "poison in the data",
+        "tag": "raw:2"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Prompt Injection"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Poison In The Data (BIML-24(LLM): raw:2)"
     },
     {
-      "control_id": "biml:BIML-24(LLM): model:6",
-      "description": "Training Set and Prompt Reveal",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:3",
+      "description": "We have entered the era of data feudalism. LLM foundation models require huge oceans of data for training. But the oceans are being sectioned off by data moats. If entire enormous parts of the Internet (say Google search data, Twitter/X content, or GitHub code piles) are cordoned off, it is not clear what will happen to LLMs not already built and controlled by the data ocean owners. Similarly, owners of large data sets (e.g., the New York Times) have come to realize that their data are valuable in a new way and are demanding compensation. Who has access to the data pool, and why? Lock in for early LLM foundation model movers is a very real risk.",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-24(LLM): model:6",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "data feudalism",
+        "tag": "raw:3"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Training Set and Prompt Reveal"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Data Feudalism (BIML-24(LLM): raw:3)"
     },
     {
-      "control_id": "biml:BIML-24(LLM): raw:5",
-      "description": "Data Confidentiality",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:4",
+      "description": "LLM foundation models require vast troves of data for training. These data are often scraped from the public Internet (but all of those data may not be in the public domain or protected by fair use). That means that some training data are likely subject to Copyright, government regulation, or privacy controls like GDPR. There are a number of active legal cases (ongoing as of this writing) regarding Copyright infringement, misuse of non-public data, fair use, generative-model training, and generative-model output. These legal entanglements are worth careful consideration when building an LLM application. Where did the raw data modelled in the LLM foundation model come from? This is related to [LLMtop10:8:data ownership].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-24(LLM): raw:5",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "data rights",
+        "tag": "raw:4"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Data Confidentiality"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Data Rights (BIML-24(LLM): raw:4)"
     },
     {
-      "control_id": "biml:BIML-78(2020): alg:9",
-      "description": "Hyperparameters",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:5",
+      "description": "Preserving data confidentiality in an LLM is more challenging than in some other ML situations since the foundation model is built in a black box fashion out of underspecified training sets and is designed to model the data itself (i.e., become the data), aiming to reproduce similar data in a generative way. Recall that if an ML system is trained up on illegal, confidential, or sensitive data, it will have some aspects of those data built right into it through training. Attacks to extract sensitive and confidential information from ML systems (indirectly through normal use) are well known.10 See [LLMtop10:8:data ownership].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): alg:9",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "data confidentiality",
+        "tag": "raw:5"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Hyperparameters"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Data Confidentiality (BIML-24(LLM): raw:5)"
     },
     {
-      "control_id": "biml:BIML-78(2020): data:1",
-      "description": "Data Poisoning",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:6",
+      "description": "Public Internet data sources are not trustworthy, suitable, and reliable. The web is full of nonsense, garbage, and evil content, some of which is intentionally placed there to poison ML models. This has a direct impact on the trustworthiness of LLM foundation models. The interface of LLMs (natural language) also impacts trustworthiness since both input and output precision are loose. See [LLMtop10:2:data debt][LLMtop10:9:model trustworthiness].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): data:1",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "trustworthiness and curation",
+        "tag": "raw:6"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Data Poisoning"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Trustworthiness And Curation (BIML-24(LLM): raw:6)"
     },
     {
-      "control_id": "biml:BIML-78(2020): data:2",
-      "description": "Transfer",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:7",
+      "description": "If your data are poorly chosen, you may reach incorrect conclusions regarding your ML approach. You should always make sure your methods match your data and your data are properly vetted and monitored. In the LLM case this is much harder than usual for two reasons: 1) the dataset is immense (a data ocean, in fact) and is so large that vetting and monitoring is a huge challenge, and 2) the training dataset is controlled in a black box fashion and is not fully described. ML systems can fail just as much due to data problems as due to poorly chosen or implemented algorithms, hyperparameters, and other technical system issues. LLMs push the limits of utility risk in many ways. See [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): data:2",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "utility",
+        "tag": "raw:7"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Transfer"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Utility (BIML-24(LLM): raw:7)"
     },
     {
-      "control_id": "biml:BIML-78(2020): input:1",
-      "description": "Adversarial Examples",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:8",
+      "description": "Note that public data sources may include data that are in some way legally encumbered. This is especially problematic in the LLM situation. An obvious example is Copyrighted material that gets sucked up in a data stream. Another more insidious example is child pornography which is never legal.8 A third, and one of the most interesting legal issues, is that there may be legal requirements to “delete” data (e.g., from a GDPR request). What it means to “delete” data from a trained model is impossible to carry out (short of retraining the model from scratch from a data set with the deleted data removed, but that is expensive and often infeasible). Note that through the learning process, input data are always encoded in some way in the model itself during training. That means the internal representation developed by the model during learning (say, thresholds and weights) may end up being legally encumbered as well. This is related to [LLMtop10:8:data ownership].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): input:1",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "legal entanglements",
+        "tag": "raw:8"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Adversarial Examples"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Legal Entanglements (BIML-24(LLM): raw:8)"
     },
     {
-      "control_id": "biml:BIML-78(2020): model:4",
-      "description": "Training Set Reveal",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:9",
+      "description": "In some sense LLMs are frozen in time WRT their training data set. Often this will be several years earlier than the present. LLMs thus have a warped sense of history and experience and are often out of sync with current events and some worldviews. Retrieval Augmented Generation (RAG) provides some in-context learning and may be one way to finesse this issue.",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): model:4",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "time",
+        "tag": "raw:9"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Training Set Reveal"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Time (BIML-24(LLM): raw:9)"
     },
     {
-      "control_id": "biml:BIML-78(2020): model:5",
-      "description": "Steal the Box",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): raw:10",
+      "description": "Search is already being deeply impacted by LLMs. In some modern search designs, an MLbased commercial system searches the web and builds a prompt for an LLM. This LLM provides the user’s interface to search. When the LLM is wrong, hilarity ensues…or chaos.",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): model:5",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "query data",
+        "tag": "raw:10"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Steal the Box"
+      "parent_id": "BIML-24(LLM): raw",
+      "title": "Query Data (BIML-24(LLM): raw:10)"
     },
     {
-      "control_id": "biml:BIML-78(2020): raw:1",
-      "description": "Data Confidentiality",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:1",
+      "description": "If system output feeds back into the real world there is 4. inference algorithm always some risk that it may find its way back into input causing a feedback loop. This generic risk is particularly relevant for LLMs which are trained on enormous Internet 5. outputs scrapes and then have much of their output posted back to the public internet. When a feedback loop involves poisoning or otherwise tainting future training data, bad things happen. This is the number one LLM security risk today. See [BIML78 raw:8:looping], [LLMtop10:1:recursive pollution] and Shumailov.6",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): raw:1",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "recursive pollution",
+        "tag": "input:1"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Data Confidentiality"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Recursive Pollution (BIML-24(LLM): input:1)"
     },
     {
-      "control_id": "biml:BIML-78(2020): system:8",
-      "description": "Insider",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:2",
+      "description": "One of the most important categories of computer security risks is malicious input. The LLM version of malicious input has come to be known as prompt injection. In fact, you can think of prompt injection as the analog of adversarial examples in the ML vision situation. And as was the case with adversarial examples, prompt injection discussions tend to swamp out all other risks in peoples’ imaginations. This leads directly to an over-emphasis on red teaming (to the detriment of the field). All that said, playing around with LLM prompts is really fun and can be very enlightening. It is extremely unlikely that LLM behavior can be completely controlled through prompting alone. The stochastic nature of the basic LLM interface exacerbates this control issue. An LLM may seem to “do the right thing” sometimes and go completely off the rails with the very same prompts at other times. That makes LLM verification a challenge at best and an impossibility at worst. Much of what’s called “red teaming” in AI really amounts to prompt manipulation. See [LLMtop10:5:prompt manipulation].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "BIML-78(2020): system:8",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "prompt injection",
+        "tag": "input:2"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Insider"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Prompt Injection (BIML-24(LLM): input:2)"
     },
     {
-      "control_id": "biml:alg:11",
-      "description": "Parameters",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:3",
+      "description": "Many LLM models are open to the public and are thus susceptible to manipulation by an attacker. Note that an attacker can experiment with an LLM before carrying an attack out elsewhere. Recent research shows that these kind of manipulation attacks even transfer across models. One fun example of this risk is the DAN attack (that is, the “do anything now” attack). The public has taken an important role in prompt manipulation experiments.",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "alg:11",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "open to the public",
+        "tag": "input:3"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Parameters"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Open To The Public (BIML-24(LLM): input:3)"
     },
     {
-      "control_id": "biml:inference:4",
-      "description": "Hosting",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:4",
+      "description": "When it comes to LLMs, the entirety of the Internet, or at least an enormous portion of it, constitutes the training data. Sadly, the internet has become a cesspool of disinformation, bigotry, misogyny, and factually incorrect content. A knowledgeable attacker can take advantage of the LLMs training noise to make the LLM misbehave. This can often be accomplished by asking the LLM to do things it should not do or asking it to provide information that it should not disclose. This risk is directly related to [LLMtop10:9:model trustworthiness].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "inference:4",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "dirty input",
+        "tag": "input:4"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Hosting"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Dirty Input (BIML-24(LLM): input:4)"
     },
     {
-      "control_id": "biml:inference:9",
-      "description": "Hosting",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:5",
+      "description": "Sponge attacks provide ML systems with input that costs much more to process than is usually the case. The idea is to exhaust processing budget or at least make it cost prohibitive to continue processing. One example of a sponge attack in LLMs involves embedding Chinese characters into an English sentence.11",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "inference:9",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "sponge input",
+        "tag": "input:5"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Hosting"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Sponge Input (BIML-24(LLM): input:5)"
     },
     {
-      "control_id": "biml:input:2",
-      "description": "Controlled Input Stream",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:6",
+      "description": "English, which is the main interface language for LLMs, is an ambiguous interface. Natural language can be misleading, making LLMs susceptible to misinformation and manipulation both in training and in operations. LLMs have exhibited particularly bad performance when domain specificity is important. Models learn “average” token-based representations of complex terminology, failing to encode nuance and critical deep knowledge during their training on massive training data sets.",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "input:2",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "input ambiguity",
+        "tag": "input:6"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Controlled Input Stream"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Input Ambiguity (BIML-24(LLM): input:6)"
     },
     {
-      "control_id": "biml:model:2",
-      "description": "Trojan",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): input:7",
+      "description": "Because foundation models for LLMs are owned by huge corporations, their behavior is in some sense controlled by these corporations who then provide a black box component for use in LLM applications. LLM foundation model owners often impose restrictions on input to LLMs. This leads directly to data feudalism. See [raw:3:data feudalism].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "model:2",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "controlled input stream",
+        "tag": "input:7"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Trojan"
+      "parent_id": "BIML-24(LLM): input",
+      "title": "Controlled Input Stream (BIML-24(LLM): input:7)"
     },
     {
-      "control_id": "biml:output:2",
-      "description": "Direct Output",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): model:1",
+      "description": "Foundation models are not often controlled by LLM users. training validation test That means risk management decisions made by the LLM foundation model vendor 1. raw data have mostly been made for you (instead of by you or with you). Determining just how in th e world a l l e g a o r r n it in h g m evaluation some security tradeoffs are made is impossible given scarce information. No amount of outside➔in red teaming or testing can tell you all you need to know. Ultimately, an LLM 2. inputs 3. model foundation model user is provided with what amounts to an undocumented, unstable 4. inference algorithm API with sometimes unanticipated behavior. That makes the job of securing an LLM application exceedingly challenging. See [LLMtop10:4:black box opacity]. 5. outputs",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "output:2",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "black box opacity",
+        "tag": "model:1"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Direct Output"
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Black Box Opacity (BIML-24(LLM): model:1)"
     },
     {
-      "control_id": "biml:output:4",
-      "description": "Output Data Confidentiality",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): model:2",
+      "description": "LLM foundation models can be put to use in a very large number of ways. What’s important to remember is that LLMs are really auto-associative predictive generators. That is, they don’t really “understand” anything the way humans do. The upshot is, if LLMs are put to use in applications that require actual understanding and insight, they may fail catastrophically. As an example, consider the now-disbarred lawyer who used ChatGPT to create a brief filed in Federal court which included spurious citations of non-existent cases. Great care must be given to LLM use in various situations. See [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "output:4",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "improper use",
+        "tag": "model:2"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Output Data Confidentiality"
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Improper Use (BIML-24(LLM): model:2)"
     },
     {
-      "control_id": "biml:raw:3",
-      "description": "Storage",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "BIML-24(LLM): model:3",
+      "description": "The economics of LLMs do not work in the favor of science. Because building a model is so expensive, many academics can’t afford to build big ones. They can study commercial LLMs in a black box fashion, or they can build smaller models to experiment with, but this may not work. Because the black box is opaque, reproducibility is limited. This works in favor of first mover corporations and against other players. See [LLMtop10:7:reproducibility economics].",
+      "hierarchy_level": "risk",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "raw:3",
-        "opencre_standard_name": "BIML"
+        "document": "BIML-24(LLM)",
+        "label": "reproducibility",
+        "tag": "model:3"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Storage"
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Reproducibility (BIML-24(LLM): model:3)"
+    },
+    {
+      "control_id": "BIML-24(LLM): model:4",
+      "description": "There are a large number of LLM foundation models, and choosing which one to use is non-trivial given the paucity of technical information available to make such a decision. LLMs continue to proliferate, meaning that the risk of Trojan’ed models is probably substantial. Take care where you get your LLM model and who you get it from. Pay close attention to integrity. Recent work on “sleeper agents” from Anthropic is directly related to this risk.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "Trojan",
+        "tag": "model:4"
+      },
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Trojan (BIML-24(LLM): model:4)"
+    },
+    {
+      "control_id": "BIML-24(LLM): model:5",
+      "description": "ML and LLMs are appealing exactly because they fly in the face of brittle symbolic AI systems. When a model generalizes, it builds up a somewhat fluid representation if all goes well. The real trick is determining how much fluidity is too much. LLMs are auto-associative predictive generators which don’t “understand” but rather predict tokens. LLMs produce output that “sounds good” but may be wrong. (We really hate the term “hallucination” used by some to describe such wrongness, but it is in common use.) Sussing out the truth from what’s new, cool, and creative is a daunting task. See [LLMtop10:10:encoding integrity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "representation fluidity",
+        "tag": "model:5"
+      },
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Representation Fluidity (BIML-24(LLM): model:5)"
+    },
+    {
+      "control_id": "BIML-24(LLM): model:6",
+      "description": "LLMs learn (and sometimes directly memorize) a great deal about training input, some of which is possibly sensitive (see [raw:5:data confidentiality]), and store a representation internally that may include sensitive information. Be aware of the output your model produces and how it may reveal sensitive aspects of its training data and its prompting data.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "training set and prompt reveal",
+        "tag": "model:6"
+      },
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Training Set And Prompt Reveal (BIML-24(LLM): model:6)"
+    },
+    {
+      "control_id": "BIML-24(LLM): model:7",
+      "description": "LLMs are generally too big to directly rip off. This has an economic consequence of lock-in, should you build your application around a particular vendor. Switching out an LLM foundation model is a non-trivial undertaking since each model has its own quirks and foibles. Of course, many applications make use of multiple models in a chain (which in many cases does nothing to alleviate the lock-in risk). See [LLMtop10:7:reproducibility economics].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "vendor lock-in",
+        "tag": "model:7"
+      },
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Vendor Lock-in (BIML-24(LLM): model:7)"
+    },
+    {
+      "control_id": "BIML-24(LLM): model:8",
+      "description": "Choosing which foundation model to use is a critical choice. This choice is made difficult by the opacity of the black box and its associated risks. Comparing foundation models directly is not easy. See [LLMtop10:4:black box opacity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "picking a foundation",
+        "tag": "model:8"
+      },
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Picking A Foundation (BIML-24(LLM): model:8)"
+    },
+    {
+      "control_id": "BIML-24(LLM): model:9",
+      "description": "LLMs are chameleons. There are some modalities where LLM stochasticity and fluidity (in concert with seeming confidence) are really not a good thing. Managing representation fluidity within a single modality is already a challenge, doing so across multiple modalities promises to be even trickier.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "modality",
+        "tag": "model:9"
+      },
+      "parent_id": "BIML-24(LLM): model",
+      "title": "Modality (BIML-24(LLM): model:9)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:2",
+      "description": "LLM applications can be fielded without a real understanding of how a foundation model works or why it does what it does. Integrating an LLM foundation model that “just works” into a larger system that then relies on the LLM to perform properly and consistently is a very real risk. To top it all off, LLMs are, by their very design, stochastic. See [LLMtop10:4:black box opacity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "inscrutability",
+        "tag": "inference:2"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Inscrutability (BIML-24(LLM): inference:2)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:3",
+      "description": "LLMs have a propensity to be just plain wrong. Plan for that. (Using anthropomorphic terminology for error-making, such as the term “hallucinate” is not at all helpful.) See [LLMtop10:9:model trustworthiness].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "wrongness",
+        "tag": "inference:3"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Wrongness (BIML-24(LLM): inference:3)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:4",
+      "description": "In any stochastic model, real randomness is important. Seeds matter. Careful use of random number generation is fraught with risk.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "stochasticity",
+        "tag": "inference:4"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Stochasticity (BIML-24(LLM): inference:4)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:5",
+      "description": "LLM foundation models have a critical parameter called temperature that relaxes or tightens statistical choices. The impact of generating a more stochastic or less stochastic output depends on the application and the ways in which outputs are being used downstream. Be aware that this parameter exists and can sometimes be manipulated by users.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "hyperparameters",
+        "tag": "inference:5"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Hyperparameters (BIML-24(LLM): inference:5)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:6",
+      "description": "Some LLM chat systems allow user feedback which in turn can be a method for gaming an LLM service that incorporates such feedback for updating the system.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "feedback scores",
+        "tag": "inference:6"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Feedback Scores (BIML-24(LLM): inference:6)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:7",
+      "description": "Users of LLMs often “fine-tune” models with their own text. Determining whether an LLM is doing the right thing is a subjective exercise left to the person doing the testing.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "personal evaluation protocol",
+        "tag": "inference:7"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Personal Evaluation Protocol (BIML-24(LLM): inference:7)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:8",
+      "description": "Sometimes inference is indeterminate and can be camouflaged by the vagaries of natural language. In general, a bunch of text as output is not as clear as you may like it to be and may mask bad inference or bad associations, making evaluation much harder. Numbers and class labels do not translate well into text streams, and forcing the generation of these sorts of things is not a good application of a generic LLM.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "unstructured output",
+        "tag": "inference:8"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Unstructured Output (BIML-24(LLM): inference:8)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:9",
+      "description": "LLM foundation models are run on hosted, remote servers. Care must be taken to protect these machines against ML-related attacks (not to mention the usual pile of computer security stuff). Water, heat dissipation, and electricity are all important aspects of making ML work. Plan for what happens to your LLM application if the net goes down or if a physical attack on servers occurs.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "inference:9"
+        ],
+        "document": "BIML-24(LLM)",
+        "label": "hosting",
+        "tag": "inference:9"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "Hosting (BIML-24(LLM): inference:9)"
+    },
+    {
+      "control_id": "BIML-24(LLM): inference:10",
+      "description": "User interaction with an LLM is sometimes carried out in the clear. I/O traffic can be intercepted and manipulated in an attacker in the middle scenario. When a user decides to use any ML system that is remote, they expose their interests (and possibly their input) to the owners of the ML system. This risk is exacerbated by the fact that current LLM APIs are typically stateless, even during extended chat interactions with a model, any part of the conversation can be modified at any stage. Edge models must still communicate, but can shift the attack surface.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "user risk",
+        "tag": "inference:10"
+      },
+      "parent_id": "BIML-24(LLM): inference",
+      "title": "User Risk (BIML-24(LLM): inference:10)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:3",
+      "description": "LLM systems must be trustworthy to be put into use in situations outside of pure entertainment. Even a temporary or partial attack against output can cause trustworthiness to plummet. See [LLMtop10:9:model trustworthiness].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "provenance and trustworthiness",
+        "tag": "output:3"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Provenance And Trustworthiness (BIML-24(LLM): output:3)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:4",
+      "description": "LLM foundation models are in a state of legal flux as of the time of this writing. Various lawsuits may have a catastrophic impact on current approaches. Many of the concerns orbit around confidential and privacy-related information scraped off the Internet for training purposes. Copyright law and GDPR are directly relevant. See [LLMtop10:8:data ownership].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "output:4"
+        ],
+        "document": "BIML-24(LLM)",
+        "label": "data confidentiality",
+        "tag": "output:4"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Data Confidentiality (BIML-24(LLM): output:4)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:5",
+      "description": "When it comes to LLM foundation models, nobody is really sure how the trained systems do what they do. This is a direct affront on trustworthiness and can lead to challenges in some domains such as diagnostic medicine and math. The black box nature of LLM foundation models does nothing to help this situation. See [LLMtop10:4:black box opacity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "inscrutability",
+        "tag": "output:5"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Inscrutability (BIML-24(LLM): output:5)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:6",
+      "description": "Decisions that are simply presented to the world with no explanation are not transparent. LLMs present output in a confident (and often glib) manner with little of the reasoning exposed. Attacking opaque systems is much easier than attacking transparent systems, since it is harder to discern when something is going wrong. See [LLMtop10:4:black box opacity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "lack of transparency",
+        "tag": "output:6"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Lack Of Transparency (BIML-24(LLM): output:6)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:7",
+      "description": "Causing an LLM system to misbehave can erode trust in the entire discipline. LLMs already have some spectacular failures that have been highlighted, including faked multi-modal video demos, citation of non-existent legal cases, and promulgation of ridiculous “scientific facts.”",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "eroding trust",
+        "tag": "output:7"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Eroding Trust (BIML-24(LLM): output:7)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:8",
+      "description": "See [BIML78 input:4:looped input]. If system output feeds back into the real world there is some risk that it may find its way back into input causing a feedback loop. This has come to be known as recursive pollution. See [LLMtop10:1:recursive pollution].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "looped output",
+        "tag": "output:8"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Looped Output (BIML-24(LLM): output:8)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:9",
+      "description": "Bad associations can be camouflaged by the vagaries of natural language. When a system is classifying something (like, say, sentiment), a bunch of text as output is not as clear as you may like it to be. Class labels and numbers do not translate well into text streams, and forcing the generation of these sorts of things is not a good application of a generic LLM.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "unstructured output",
+        "tag": "output:9"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Unstructured Output (BIML-24(LLM): output:9)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:10",
+      "description": "ML regulation is proceeding apace even as the field evolves and changes rapidly. Our view is that the LLM foundation model black box is the best target for regulation. Keeping abreast to regulatory developments (and legal developments) is critical.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "regulation",
+        "tag": "output:10"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Regulation (BIML-24(LLM): output:10)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:11",
+      "description": "Many data-related component risks lead to bias in the behavior of an ML system. ML systems that operate on personal data or feed into high impact decision processes (such as credit scoring, employment, and medical diagnosis decisions) pose a great deal of risk. When biases are aligned with gender, race, or age attributes, operating the system may result in discrimination with respect to one of these protected classes. Using biased LLM subsystems is definitely illegal in some contexts, may be unethical, and is always irresponsible.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "black box discrimination",
+        "tag": "output:11"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Black Box Discrimination (BIML-24(LLM): output:11)"
+    },
+    {
+      "control_id": "BIML-24(LLM): output:12",
+      "description": "When an LLM is integrated into a larger system and its output is treated as high confidence data, users of the system may become overconfident in the operation of the system for its intended purpose. A low scrutiny stance with respect to the overall system makes it less likely that an attack against the LLM subsystem will be detected. Developing overconfidence in LLMs is made easier by the fact that they are often poorly understood and vaguely described. See [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "overconfidence",
+        "tag": "output:12"
+      },
+      "parent_id": "BIML-24(LLM): output",
+      "title": "Overconfidence (BIML-24(LLM): output:12)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:1",
+      "description": "The number one risk in LLMs today is recursive pollution. This happens when an LLM model is trained on the open Internet (including errors and misinformation), creates content that is wrong, and then later eats that content when it (or another generation) is trained up again on a data ocean that includes its own pollution. Controlling recursive pollution is a critical responsibility inside the black box of LLM foundation models. Regulation might ensure that recursive pollution is rare or impossible. See [LLMtop10:1:recursive pollution].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "recursive pollution",
+        "tag": "blackbox:1"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Recursive Pollution (BIML-24(LLM): blackbox:1)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:2",
+      "description": "The scale of the datasets required for pre-training means that LLM model developers use Internet scale datasets. Public Internet data sources are not trustworthy, suitable, and reliable. The web is full of nonsense, garbage, and evil content. This creates an immense quality control challenge, that is hard to overcome and has a direct impact on the trustworthiness of LLM foundation models. The coverage and annotation requirements for curating fine-tuning datasets create another great challenge, which then challenges our trust in the fitness of the model for the specific fine-tuning task. Regulation might require insight into data sources and data sets, including what processes are used to clean up raw data. See [LLMtop10:2:data debt].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "trustworthiness and curation",
+        "tag": "blackbox:2"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Trustworthiness And Curation (BIML-24(LLM): blackbox:2)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:3",
+      "description": "LLM foundation models require vast troves of data for training. These data are often scraped from the public Internet. That means that some training data are likely subject to Copyright, government regulation, or privacy controls like GDPR. There are a number of active legal cases (ongoing as of this writing) regarding Copyright infringement, misuse of non-public data, fair use, generative-model training, and generative-model output. These legal entanglements are worth careful consideration when building an LLM application. Regulation might require insight into data sources and data sets, including what processes are used to clean up raw data. See [LLMtop10:2:data debt].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "data rights",
+        "tag": "blackbox:3"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Data Rights (BIML-24(LLM): blackbox:3)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:4",
+      "description": "Since LLMs require oceans of data for training, use of public data sources is almost a guarantee. Some of these data sources may be legally encumbered. Consider copyrighted material, child pornography (never legal), or data protected by the GDPR “right to be forgotten.” Note that through the learning process, input data are always encoded in some way in the model itself during training. That means the internal representation developed by the model during learning (say, thresholds and weights) may end up being legally encumbered as well. Regulation might require insight into data sources and data sets, including what processes are used to ensure that data are not legally encumbered. See [LLMtop10:2:data debt].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "legal issues",
+        "tag": "blackbox:4"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Legal Issues (BIML-24(LLM): blackbox:4)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:5",
+      "description": "Preserving data confidentiality in an LLM is more challenging than in some other ML situations since the foundation model is built in a black box fashion out of underspecified training sets. Recall that if an ML system is trained up on confidential or sensitive data, it will have some aspects of those data built right into it through training. Attacks to extract sensitive and confidential information from ML systems (indirectly through normal use) are well known. Poisoned data, which can also find its way into the model, can be used to facilitate specific data extraction attacks. Regulation might require insight into data sources and data sets, including what processes are used to ensure that confidential data (like, say, social security numbers) is not part of training. See [LLMtop10:2:data debt].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "data confidentiality",
+        "tag": "blackbox:5"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Data Confidentiality (BIML-24(LLM): blackbox:5)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:6",
+      "description": "Both raw data in the world and data inside the black box are subject to poison. Since the datasets involved are so enormous, it is very hard to control or clean up all of the potentially harmful associations scraped up in raw data. This is a risk related both to data sensitivity and to the fact that the data themselves carry so much of the water in an LLM system. If you train up on poison, you are poisoned. A special case of poison in the data exists when an attacker intentionally injects poison into the data ocean. Regulation might require insight into data sources and data sets and make explicit what efforts have been made to avoid poison data. See [LLMtop10:6:poison in the data].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "poison in the data",
+        "tag": "blackbox:6"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Poison In The Data (BIML-24(LLM): blackbox:6)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:7",
+      "description": "Evaluation is tricky, and an evaluation data set must be designed and used with care. A bad evaluation data set that doesn’t reflect the data a system will see in production can mislead a researcher into thinking everything is working even when it’s not. Evaluation sets can also be too small or too similar to the training data to be useful. Evaluation processes are often trade secrets and are never exposed outside the black box. Poorly evaluated and tested LLM foundation models are particularly susceptible to improper use. Regulation might require insight into evaluation criteria, tests, and results. See [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "bad eval data",
+        "tag": "blackbox:7"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Bad Eval Data (BIML-24(LLM): blackbox:7)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:8",
+      "description": "Common sense evaluation and rigorous evaluation are not always the same thing. For example, evaluation of a natural language processing system may rely on “bags of words” instead of a more qualitative structural evaluation. This risk is particularly problematic when it comes to the idea of “red teaming.” By and large this has come to mean screwing around with prompt manipulation in an unprincipled but entertaining manner. Anthropomorphism is an insidious concern here—interpretation and generalization of red teaming outcomes in human terms does not meet the evaluation task. Simply put, this is not how security testing should be carried out. Regulation might require insight into evaluation criteria, tests, and results, especially for security risks. See [LLMtop10:4:black box opacity] and also [LLMtop10:5:prompt manipulation].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "pseudo-science",
+        "tag": "blackbox:8"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Pseudo-science (BIML-24(LLM): blackbox:8)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:9",
+      "description": "The data ocean is being carved up, and we have entered the era of data feudalism. Assembling an enormous data set without already owning enormous amounts of data may soon be impossible. LLM foundation models require huge oceans of data for training. Who has access to a large enough data pool, and why? Lock-in for early LLM foundation model movers is a very real risk. Further, transparency of and audibility of training data is required to understand and mitigate many of the risks incurred by LLM use. Whether regulation can even the playing field with regard to data access remains to be seen. See [LLMtop10:7:reproducibility economics].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "data feudalism",
+        "tag": "blackbox:9"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Data Feudalism (BIML-24(LLM): blackbox:9)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:10",
+      "description": "Human cognition and human understanding are not equivalent to what goes on inside an LLM. Auto-associative predictive generation models do not, in fact, understand or reason like people do. They simply produce associative predictions regarding next token. The raw data represented by a dirty scrape of the Internet are not likely to model human thinking in a reasonable manner. Anthropomorphism in evaluations is a particularly insidious concern, when models are evaluated with respect to human evaluation benchmarks (e.g., MCAT and LSAT scores) the meaning of the outcomes does not convey. See both [LLMtop10:4:black box opacity] and [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "cognitive dissimilarity",
+        "tag": "blackbox:10"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Cognitive Dissimilarity (BIML-24(LLM): blackbox:10)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:11",
+      "description": "Part of the challenge of tuning an ML system during the research process is understanding the search space being explored and choosing the right model architecture (and algorithm) to use and the right parameters for the algorithm itself. Thinking carefully about problem space exploration versus space exploitation will lead to a more robust model that is harder to attack. In the LLM foundation model case, models are so expensive to create that cost may put a damper on exploration (not to mention model opacity issues). See [LLMtop10:7:reproducibility economics].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "exploit-v-explore",
+        "tag": "blackbox:11"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Exploit-v-explore (BIML-24(LLM): blackbox:11)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:12",
+      "description": "Building an LLM foundation model is expensive. Because of the black box nature of the process, corners may be cut and intellectual shortcuts taken, and nobody will be the wiser. Outside organizations are easy to cut out of the process by citing costs. See [LLMtop10:7:reproducibility economics].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "reproducibility economics",
+        "tag": "blackbox:12"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Reproducibility Economics (BIML-24(LLM): blackbox:12)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:13",
+      "description": "Assembling a dataset involves doing some thinking and observation about the resulting representation inside the ML model. Robust representations result in fluid categorization behavior, proper generalization, and non-susceptibility to adversarial input. In the case of natural language used in LLM interfacing and training, full multi-task, multi-model and multi-lingual representations are unlikely to emerge, giving some tasks, modalities, and some languages uneven coverage. See [LLMtop10:9:model trustworthiness].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "dataset weak representation",
+        "tag": "blackbox:13"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Dataset Weak Representation (BIML-24(LLM): blackbox:13)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:14",
+      "description": "What constitutes private data? When Meta collected hundreds of millions of pictures of faces (with often vague or misleading permission), they got in some trouble with privacy advocates and users. Their “solution” was to erase the raw data, but only after encoding the data in their proprietary face2vec representation. If a face2vec representation is 1:1 and onto with raw face data from pictures, what is the difference? Did they really delete anything? These are tricky questions that unscrupulous companies are gaming to confuse users. Using re-representation to side-step tricky issues is not very hard inside the black box. Intentional malicious re-representation should be disallowed by regulation. This is related to [LLMtop10:10:encoding integrity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "misleading re-representation",
+        "tag": "blackbox:14"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Misleading Re-representation (BIML-24(LLM): blackbox:14)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:15",
+      "description": "LLMs use proprietary encoding and representation schemes built using unsupervised learning with an attention model. Representation inside the black box is opaque. There are open scientific questions that remain to be explored, such as: is self-attention really more amenable to interpretability than other schemes? When it comes to domain specificity (say, chemistry knowledge or medical terminology) how does the black box representation work? This is also related to [LLMtop10:10:encoding integrity] and [LLMtop10:7:reproducibility economics].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "representation opacity",
+        "tag": "blackbox:15"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Representation Opacity (BIML-24(LLM): blackbox:15)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:16",
+      "description": "Encoding integrity issues can be both introduced and exacerbated during training. Do aspects of the training process itself introduce security problems? Bias in raw data processing can impact ethical and moral implications. See [LLMtop10:10:encoding integrity].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "encoding integrity",
+        "tag": "blackbox:16"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Encoding Integrity (BIML-24(LLM): blackbox:16)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:17",
+      "description": "In ML, the machine becomes the data. That means if your data are bad, your machine will not do what you want it to do. This is exacerbated in the LLM case by the enormous size of the data ocean required for training. Cleaning up the data ocean is an already challenging task that seems to be getting harder instead of easier as pollution levels rise. If training data sets and the pollution removal controls are not made clear because they are hidden inside a black box, huge utility risk emerges. ML systems can fail just as much due to data problems as due to poorly chosen or implemented algorithms, hyper-parameters, and other technical system issues. LLMs push the limits of risk in many ways. This is particularly relevant to [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "utility",
+        "tag": "blackbox:17"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Utility (BIML-24(LLM): blackbox:17)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:18",
+      "description": "Evaluating the behavior of a pre-trained LLM foundation model that emerges from unsupervised learning and self-attention is a black art. Very little is published about how to do this. Existing benchmarks often test the wrong kinds of things. For example, they often focus on averages over not-fully-understood datasets and do not cover specific failure modes.12",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "evaluation",
+        "tag": "blackbox:18"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Evaluation (BIML-24(LLM): blackbox:18)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:19",
+      "description": "LLMs are so large (encompassing so many parameters) that memorization of some aspects of the training data ocean are inevitable. Memorization can deleteriously impact generalization. Associations that are too specific may cause wrongness.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "memorization",
+        "tag": "blackbox:19"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Memorization (BIML-24(LLM): blackbox:19)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:20",
+      "description": "LLMs loosen or tighten next token choice using a parameter called temperature. When the temperature is high, looser choices can be made. Temperature can be a very sensitive parameter if it is available to end users. Choice of temperature also has direct impact on model evaluation.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "temperature sensitivity",
+        "tag": "blackbox:20"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Temperature Sensitivity (BIML-24(LLM): blackbox:20)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:21",
+      "description": "In some sense LLMs are frozen in time WRT their training data set. Often this will be several years earlier than the present. LLMs thus have a warped sense of history and experience and are often out of sync with current events and some worldviews. This can lead to [LLMtop10:3:improper use].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "time",
+        "tag": "blackbox:21"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Time (BIML-24(LLM): blackbox:21)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:22",
+      "description": "Randomness has a long and important history in security. In particular, Monte Carlo randomness versus cryptographic randomness is a concern. When it comes to LLMs, setting weights and thresholds “randomly” must be done with care. Many pseudo-random number generators (PRNG) are not suitable for use. PRNG loops can really damage system behavior during learning. Having randomness reside in the black box makes it more likely to be done wrong.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "randomness",
+        "tag": "blackbox:22"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Randomness (BIML-24(LLM): blackbox:22)"
+    },
+    {
+      "control_id": "BIML-24(LLM): blackbox:23",
+      "description": "Search is already being deeply impacted by LLMs. In some modern search designs, an ML-based commercial system searches the web and builds a prompt for an LLM. This LLM provides the user’s interface to search. When the LLM is wrong, hilarity ensues…or chaos. Broad Concerns with LLM Use In our view, the biggest challenge in secure use of LLM technology is understanding and managing the 23 risks inherent in the black box foundation models. From the point of view of an LLM user (say, someone writing an application with an LLM module, someone using a chain of LLMs, or someone simply interacting with a chatbot), choosing which LLM foundation model to use is confusing. There are no useful metrics for users to compare to make a decision about which LLM to use, and not much in the way of data about which models are best to use in which situations or for what kinds of application.‡ Opening the black box would make these decisions possible (and easier). For this reason, we are in favor of regulating LLM foundation models. Not the use of these models, but the way in which they are built (and, most importantly, out of what) in the first place. We would like to see regulation that addresses the black box risks we identified above. In particular, more clarity around training data sets, including whether such data sets are known to be clean, would be very helpful. Also helpful would be policy statements regarding acceptable use for various LLM foundation models. Should LLMs 24 Berryville Institute of Machine Learning be used to do anything and everything at the discretion of the user? Probably not. So what should particular LLM foundation models not be used for according to the people who built them? We noted which particular blackbox risks above we think should be directly covered by regulation. Because of the data ocean they encapsulate and automate, LLMs reflect cultural bias in obvious and disturbing ways.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-24(LLM)",
+        "label": "query data",
+        "tag": "blackbox:23"
+      },
+      "parent_id": "BIML-24(LLM): blackbox",
+      "title": "Query Data (BIML-24(LLM): blackbox:23)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:1",
+      "description": "Preserving data confidentiality in an ML system is more challenging than in a standard computing situation. That’s because an ML system that is trained up on confidential or sensitive data will have some aspects of those data built right into it through training. Attacks to extract sensitive and confidential information from ML systems (indirectly through normal use) are well known.7:shokri Note that even sub-symbolic “feature” extraction may be useful since that can be used to hone adversarial input attacks.4:papernot",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "data confidentiality",
+        "tag": "raw:1"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Data Confidentiality (BIML-78(2020): raw:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:2",
+      "description": "Data sources are not trustworthy, suitable, and reliable. How might an attacker tamper with or otherwise poison raw input data? What happens if input drifts, changes, or disappears?8:barreno",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "trustworthiness",
+        "tag": "raw:2"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Trustworthiness (BIML-78(2020): raw:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:3",
+      "description": "Data are stored and managed in an insecure fashion. Who has access to the data pool, and why? Access controls can help mitigate this risk, but such controls are not really feasible when utilizing public data sources. This kind of risk brings to mind early attempts to create mathematically random data for cryptographic security through combining sets of inputs that could ultimately be influenced by an attacker (such as process id, network packet arrival time, and so on). Needless to say, entropy pools controlled by an attacker are low entropy indeed. Ask yourself what happens when an attacker controls your data sources.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "raw:3"
+        ],
+        "document": "BIML-78(2020)",
+        "label": "storage",
+        "tag": "raw:3"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Storage (BIML-78(2020): raw:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:4",
+      "description": "Note that public data sources may include data that are in some way legally encumbered. An obvious example is copyrighted material that gets sucked up in a data stream. Another more insidious example is child pornography which is never legal. A third, and one of the most interesting 10 Berryville Institute of Machine Learning legal issues now is that there may be legal requirements to “delete” data (e.g., from a GDPR request). What it means to “delete” data from a trained model is challenging to carry out (short of retraining the model from scratch from a data set with the deleted data removed, but that is expensive and often infeasible). Note that through the learning process, input data are always encoded in some way in the model itself during training. That means the internal representation developed by the model during learning (say, thresholds and weights) may end up being legally encumbered as well.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "legal",
+        "tag": "raw:4"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Legal (BIML-78(2020): raw:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:5",
+      "description": "Raw data are not representative of the problem you are trying to solve with ML. Is your sampling capability lossy? Are there ethical or moral implications built into your raw data (e.g., racist or xenophobic implications can be trained right into some facial recognition systems if data sets are poorly designed)?9:phillips",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "encoding integrity",
+        "tag": "raw:5"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Encoding Integrity (BIML-78(2020): raw:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:6",
+      "description": "Representation plays a critical role in input to an ML system. Carefully consider representation schemes, especially in cases of text, video, API, and sensors. Is your representation rich enough to do what you want it to do? For example, many encodings of images are compressed in a lossy manner. This will impact your model, figure out how.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "representation",
+        "tag": "raw:6"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Representation (BIML-78(2020): raw:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:7",
+      "description": "Text representation schemes are not all the same. If your system is counting on ASCII and it gets Unicode, what happens? Will your system recognize the incorrect encoding and fail gracefully or will it fail hard due to a misinterpreted mismatch?",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "text encoding",
+        "tag": "raw:7"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Text Encoding (BIML-78(2020): raw:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:8",
+      "description": "Model confounded by subtle feedback loops. If data output from the model are later used as input back into the same model, what happens? Note that this is rumored to have happened to Google translate in the early days when translations of pages made by the machine were used to train the machine itself. Hilarity ensued. To this day, Google restricts some translated search results through its own policies.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "looping",
+        "tag": "raw:8"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Looping (BIML-78(2020): raw:8)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:9",
+      "description": "Entangled data risk. Always note what data are meant to represent and be cognizant of data entanglement. For example, consider what happens if a public data source (or even an internal source from another project) decides to recode their representation or feature set. Note that “false features” can also present an entanglement problem as the famous husky-versus-wolf classifier demonstrated by acting (incorrectly) as a snow detector instead of a species detector. Know which parts of your data can change and which should not ever change.10:sculley",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "data entanglement",
+        "tag": "raw:9"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Data Entanglement (BIML-78(2020): raw:9)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:10",
+      "description": "Metadata may help or hurt an ML model. Make note of metadata included in a raw input dataset. Metadata may be a “hazardous feature” which appears useful on the face of it, but actually degrades generalization. Metadata may also be open to tampering attacks that can confuse an ML model.11:ribeiro More information is not always helpful and metadata may harbor spurious correlations. Consider this example: we might hope to boost performance of our image classifier by including exif data from the camera. But what if it turns out our training data images of dogs are all high resolution stock photos but our images of cats are mostly facebook memes? Our model will probably wind up making decisions based on metadata rather than content.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "metadata",
+        "tag": "raw:10"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Metadata (BIML-78(2020): raw:10)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:11",
+      "description": "If time matters in your ML model, consider time of data arrival a risk. Network lag is something easily controlled by an attacker. Plan around it.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "time",
+        "tag": "raw:11"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Time (BIML-78(2020): raw:11)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:12",
+      "description": "Always consider the technical source of input, including whether the expected input will always be available. Is the sensor you are counting on reliable? Sensor blinding attacks are one example of a risk faced by poorly designed input gathering systems. Note that consistent feature identification related to sensors is likely to require human calibration.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "sensor",
+        "tag": "raw:12"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Sensor (BIML-78(2020): raw:12)"
+    },
+    {
+      "control_id": "BIML-78(2020): raw:13",
+      "description": "If your data are poorly chosen or your model choice is poor, you may reach incorrect conclusions regarding your ML approach. Make sure your methods match your data and your data are properly vetted and monitored. Remember that ML systems can fail just as much due to data problems as due to poorly chosen or implemented algorithms, hyperparameters, and other technical system issues.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "utility",
+        "tag": "raw:13"
+      },
+      "parent_id": "BIML-78(2020): raw",
+      "title": "Utility (BIML-78(2020): raw:13)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:1",
+      "description": "Encoding integrity issues noted in [raw:5:encoding integrity] can be both introduced and exacerbated during pre-processing. Does the pre-processing step itself introduce security problems? Bias in raw data processing can impact ethical and moral implications. Normalization of Unicode to ASCII may introduce problems when encoding, for example, Spanish improperly, losing diacritics and accent marks.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "encoding integrity",
+        "tag": "assembly:1"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Encoding Integrity (BIML-78(2020): assembly:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:2",
+      "description": "The way data are “tagged and bagged” (or annotated into features) can be directly attacked, introducing attacker bias into a system. An ML system trained up on examples that are too specific will not be able to generalize well. Much of the human engineering time that goes into ML is spent cleaning, deleting, aggregating, organizing, and just all-out manipulating the data so that it can be consumed by an ML algorithm.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "annotation",
+        "tag": "assembly:2"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Annotation (BIML-78(2020): assembly:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:3",
+      "description": "Normalization changes the nature of raw data, and may do so to such an extent that the normalized data become exceedingly biased. One example might be an ML system that appears to carry out a complex real-world task, but actually is doing something much easier with normalized data. Destroying the feature of interest in a dataset may make it impossible to learn a viable solution.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "normalize",
+        "tag": "assembly:3"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Normalize (BIML-78(2020): assembly:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:4",
+      "description": "When building datasets for training, validation, and testing (all distinct types of data used in ML systems), care must be taken not to create bad data partitions. This may include analysis of and comparisons between subsets to ensure the ML system will behave as desired.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "partitioning",
+        "tag": "assembly:4"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Partitioning (BIML-78(2020): assembly:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:5",
+      "description": "Input from multiple sensors can in some cases help make an ML system more robust. However, note that how the learning algorithm chooses to treat a sensor may be surprising. One of the major challenges in ML is understanding how a “deep learning” system carries out its task. Data sensitivity is a big risk and should be carefully monitored when it comes to sensors placed in the real world.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "fusion",
+        "tag": "assembly:5"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Fusion (BIML-78(2020): assembly:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:6",
+      "description": "An attacker who knows how a raw data filtration scheme is set up may be able to leverage that knowledge into malicious input later in system deployment.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "filter",
+        "tag": "assembly:6"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Filter (BIML-78(2020): assembly:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:7",
+      "description": "If an attacker can influence the partitioning of datasets used in training and evaluation, they can in some sense practice mind control on the ML system as a whole. It is important that datasets reflect the reality the ML system designers are shooting for. Boosting an error rate in a sub-category might be one interesting attack. Because some deep learning ML systems are “opaque,” setting up special trigger conditions as an attacker may be more easily accomplished through manipulation of datasets than through other means.8:barreno BIML 13",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "adversarial partitions",
+        "tag": "assembly:7"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Adversarial Partitions (BIML-78(2020): assembly:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): assembly:8",
+      "description": "Randomness plays an important role in stochastic systems. An ML system that is depending on Monte Carlo randomness to work properly may be derailed by not-really-random “randomness.” Use of cryptographic randomness sources is encouraged. “Random” generation of dataset partitions may be at risk if the source of randomness is easy to control by an attacker interested in data poisoning.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "random",
+        "tag": "assembly:8"
+      },
+      "parent_id": "BIML-78(2020): assembly",
+      "title": "Random (BIML-78(2020): assembly:8)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:1",
+      "description": "All of the first three components in our generic model (raw data in the world, dataset assembly, and datasets) are subject to poisoning attacks whereby an attacker intentionally manipulates data in any or all of the three first components, possibly in a coordinated fashion, to cause ML training to go awry. In some sense, this is a risk related both to data sensitivity and to the fact that the data themselves carry so much of the water in an ML system. Data poisoning attacks require special attention. In particular, ML engineers should consider what fraction of the training data an attacker can control and to what extent.12:alfeld",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "poisoning",
+        "tag": "data:1"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Poisoning (BIML-78(2020): data:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:2",
+      "description": "Many ML systems are constructed by tuning an already trained base model so that its somewhat generic capabilities are fine-tuned with a round of specialized training. A transfer attack presents an important risk in this situation. In cases where the pretrained model is widely available, an attacker may be able to devise attacks using it that will be robust enough to succeed against your (unavailable to the attacker) tuned task-specific model. You should also consider whether the ML system you are fine-tuning could possibly be a Trojan that includes sneaky ML behavior that is unanticipated.13:mcgraw",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "transfer",
+        "tag": "data:2"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Transfer (BIML-78(2020): data:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:3",
+      "description": "If training, validation, and test sets are not “the same” from a data integrity, trustworthiness, and mathematical perspective, an ML model may appear to be doing something that it is not. For 14 Berryville Institute of Machine Learning example, an ML system trained up on six categories but only tested against two of the six may not ultimately be exhibiting proper behavior when it is fielded. More subtly, if an evaluation set is too similar to the training set, overfitting may be a risk. By contrast, when the evaluation set is too different from the eventual future inputs during operations, then it will not measure true performance. Barreno et al say it best when they say, “Analyzing and strengthening learning methods in the face of a broken stationarity assumption is the crux of the secure learning problem.”8:barreno",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "disimilarity",
+        "tag": "data:3"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Disimilarity (BIML-78(2020): data:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:4",
+      "description": "As in [raw:3:storage], data may be stored and managed in an insecure fashion. Who has access to the data pool, and why? Think about [system:8:insider] when working on storage.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "storage",
+        "tag": "data:4"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Storage (BIML-78(2020): data:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:5",
+      "description": "Assembling a dataset involves doing some thinking and observation about the resulting representation inside the ML model. Robust representations result in fluid categorization behavior, proper generalization, and non-susceptibility to adversarial input. As an example, a topic model trained on predominantly English input with a tiny bit of Spanish will group all Spanish topics into one uniform cluster (globbing all Spanish stuff together).",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "dataset weak rep",
+        "tag": "data:5"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Dataset Weak Rep (BIML-78(2020): data:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:6",
+      "description": "Some learning systems are “supervised” in a sense that the target result is known by the system designers (and labeled training data are available). Malicious introduction of misleading supervision would cause an ML system to be incorrectly trained. For example, a malicious supervisor might determine that each “tank” in a satellite photo is counted as two tanks. (See also [assembly:2:annotation].)",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "supervisor",
+        "tag": "data:6"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Supervisor (BIML-78(2020): data:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): data:7",
+      "description": "Real time data set manipulation can be particularly tricky in an online network where an attacker can slowly “retrain” the ML system to do the wrong thing by intentionally shifting the overall data set in certain directions.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "online",
+        "tag": "data:7"
+      },
+      "parent_id": "BIML-78(2020): data",
+      "title": "Online (BIML-78(2020): data:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:1",
+      "description": "An online learning system that continues to adjust its learning during operations may drift from its intended operational use case. Clever attackers can nudge an online learning system in the wrong direction on purpose.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "online",
+        "tag": "alg:1"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Online (BIML-78(2020): alg:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:2",
+      "description": "ML work has a tendency to be sloppily reported. Results that can’t be reproduced may lead to overconfidence in a particular ML system to perform as desired. Often, critical details are missing from the description of a reported model. Also, results tend to be very fragile—often running a training process on a different GPU (even one that is supposed to be spec-identical) can produce dramatically different results. In academic work, there is often a tendency to tweak the authors’ system until it outperforms the “baseline” (which doesn’t benefit from similar tweaking), resulting in misleading conclusions that make people think a particular idea is actually good when it wasn’t actually improving over simpler, earlier method.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "reproducibility",
+        "tag": "alg:2"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Reproducibility (BIML-78(2020): alg:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:3",
+      "description": "Part of the challenge of tuning an ML system during the research process is understanding the search space being explored and choosing the right model architecture (and algorithm) to use and the right parameters for the algorithm itself. Thinking carefully about problem space exploration versus space exploitation will lead to a more robust model that is harder to attack. Pick your algorithm with care. As an example, consider whether your system has an over-reliance on gradients and may possibly benefit from random restarting or evolutionary learning.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "exploit-v-explore",
+        "tag": "alg:3"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Exploit-v-explore (BIML-78(2020): alg:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:4",
+      "description": "Randomness has a long and important history in security. In particular, Monte Carlo randomness versus cryptographic randomness is a concern. When it comes to ML, setting weights and thresholds “randomly” must be done with care. Many pseudo-random number generators (PRNG) are not suitable for use. PRNG loops can really damage system behavior during learning. Cryptographic randomness directly intersects with ML when it comes to differential privacy. Using the wrong sort of random number generator can lead to subtle security problems.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "randomness",
+        "tag": "alg:4"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Randomness (BIML-78(2020): alg:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:5",
+      "description": "All ML learning algorithms may have blind spots. These blind spots may open an ML system up to easier attack through techniques that include adversarial examples.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "blind spots",
+        "tag": "alg:5"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Blind Spots (BIML-78(2020): alg:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:6",
+      "description": "Some algorithms may be unsuited for processing confidential information. For example, using a non-parametric method like k-nearest neighbors in a situation with sensitive medical records is probably a bad idea since exemplars will have to be stored on production servers. Algorithmic leakage is an issue that should be considered carefully.4:papernot",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "confidentiality",
+        "tag": "alg:6"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Confidentiality (BIML-78(2020): alg:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:7",
+      "description": "Noise is both friend and foe in an ML system. For some problems, raw data input need to be condensed and compacted (de-noised). For others, the addition of Gaussian noise during preprocessing can enhance an ML system’s generalization behavior. Getting this right involves careful thinking about data structure that is both explicit and well documented. Amenability to certain kinds of adversarial input attack is directly linked to this risk.14:goodfellow 16 Berryville Institute of Machine Learning",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "noise",
+        "tag": "alg:7"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Noise (BIML-78(2020): alg:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:8",
+      "description": "An ML system may end up oscillating and not properly converging if, for example, it is using gradient descent in a space where the gradient is misleading.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "oscillation",
+        "tag": "alg:8"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Oscillation (BIML-78(2020): alg:8)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:9",
+      "description": "One of the challenges in the ML literature is an over-reliance on “empirical” experiments to determine model parameters and an under-reliance on understanding why an ML system actually does what it does. ML systems have a number of hyperparameters, including, for example, learning rate and momentum in a gradient descent system. These parameters are those model settings not updated during learning (you can think of them as model configuration settings). Setting and tuning hyperparameters is somewhat of a black art subject to attacker influence. If an attacker can twiddle hyperparameters (tweaking, hiding, or even introducing them), bad things will happen. (Also see [inference:3:hyperparameters].)",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "hyperparameters",
+        "tag": "alg:9"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Hyperparameters (BIML-78(2020): alg:9)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:10",
+      "description": "Oversensitive hyperparameters are riskier hyperparameters, especially if they are not locked in. Sensitive hyperparameters not rigorously evaluated and explored can give you a weird kind of overfitting. For example, one specific risk is that experiments may not be sufficient to choose good hyperparameters. Hyperparameters can be a vector for accidental overfitting. In addition, hard to detect changes to hyperparameters would make an ideal insider attack.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "hyperparameter sensitivity",
+        "tag": "alg:10"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Hyperparameter Sensitivity (BIML-78(2020): alg:10)"
+    },
+    {
+      "control_id": "BIML-78(2020): alg:11",
+      "description": "In the case of transfer learning (see [data:2:transfer]) an attacker may intentionally post or ship or otherwise cause a target to use incorrect settings in a public model. Because of the open nature of ML algorithm and parameter sharing, this risk is particularly acute among ML practitioners who naively think “nobody would ever do that.”",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "alg:11"
+        ],
+        "document": "BIML-78(2020)",
+        "label": "parameters",
+        "tag": "alg:11"
+      },
+      "parent_id": "BIML-78(2020): alg",
+      "title": "Parameters (BIML-78(2020): alg:11)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:1",
+      "description": "A sufficiently powerful machine is capable of learning its training data set so well that it essentially builds a lookup table. This can be likened to memorizing its training data. The unfortunate side effect of “perfect” learning like this is an inability to generalize outside of the training set. Overfit models can be pretty easy to attack through input since adversarial examples need only be a short distance away in input space from training examples. Note that generative models can suffer from overfitting too, but the phenomenon may be much harder to spot. Also note that overfitting is also possible in concert with [data:6:online].",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "overfitting",
+        "tag": "eval:1"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Overfitting (BIML-78(2020): eval:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:2",
+      "description": "Evaluation is tricky, and an evaluation data set must be designed and used with care. A bad evaluation data set that doesn’t reflect the data it will see in production can mislead a researcher into thinking everything is working even when it’s not. Evaluation sets can also be too small or too similar to the training data to be useful.8:barreno For more, see Luke Oakden-Rayner’s blog entry “AI competitions don’t produce useful models” at https://lukeoakdenrayner.wordpress.com/ (accessed 10.8.19).",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "bad eval data",
+        "tag": "eval:2"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Bad Eval Data (BIML-78(2020): eval:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:3",
+      "description": "In some cases, evaluation data may be intentionally structured to make everything look great even when it’s not.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "cooking the books",
+        "tag": "eval:3"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Cooking The Books (BIML-78(2020): eval:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:4",
+      "description": "Common sense evaluation and rigorous evaluation are not always the same thing. For example, evaluation of an NLP system may rely on “bags of words” instead of a more qualitative structural evaluation.15:reiter",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "science",
+        "tag": "eval:4"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Science (BIML-78(2020): eval:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:5",
+      "description": "Just as data play a key role in ML systems, representation of those data in the learned network is important. When a model is crammed too full of overlapping information, it may suffer from catastrophic forgetting. This risk was much more apparent in the early ‘90s when networks (and the CPUs they ran on) were much smaller. However, even a large network may be subject to this problem. Online systems are, by design, more susceptible.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "catastrophic forgetting",
+        "tag": "eval:5"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Catastrophic Forgetting (BIML-78(2020): eval:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:6",
+      "description": "In an online model, the external data set available may be so vast that the ML system is simply overwhelmed. That is, the algorithm may not scale in performance from the data it learned on to real data. In online situations the rate at which data comes into the model may not align with the rate of anticipated data arrival. This can lead to both outright ML system failure and to a system that “chases its own tail.”",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "choking on big data",
+        "tag": "eval:6"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Choking On Big Data (BIML-78(2020): eval:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): eval:7",
+      "description": "Upstream attacks against data make training and its subsequent evaluation difficult.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "data problems",
+        "tag": "eval:7"
+      },
+      "parent_id": "BIML-78(2020): eval",
+      "title": "Data Problems (BIML-78(2020): eval:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): input:1",
+      "description": "One of the most important categories of computer security risks is malicious input. The ML version of malicious input has come to be known as adversarial examples. While important, adversarial examples have received so much attention that they swamp out all other risks in most people’s imagination.16:yuan",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "adversarial examples",
+        "tag": "input:1"
+      },
+      "parent_id": "BIML-78(2020): input",
+      "title": "Adversarial Examples (BIML-78(2020): input:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): input:2",
+      "description": "A trained ML system that takes as its input data from outside may be purposefully manipulated by an attacker. To think about why anybody would bother to do this, consider that the attacker may be someone under scrutiny by an ML algorithm (a loan seeker, a political dissident, a person to be authenticated, etc).",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "input:2"
+        ],
+        "document": "BIML-78(2020)",
+        "label": "controlled input stream",
+        "tag": "input:2"
+      },
+      "parent_id": "BIML-78(2020): input",
+      "title": "Controlled Input Stream (BIML-78(2020): input:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): input:3",
+      "description": "The real world is noisy and messy. Input data sets that are dirty enough will be hard to process. A malicious adversary can leverage this susceptibility by simply adding noise to the world.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "dirty input",
+        "tag": "input:3"
+      },
+      "parent_id": "BIML-78(2020): input",
+      "title": "Dirty Input (BIML-78(2020): input:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): input:4",
+      "description": "If system output feeds back into the real world there is some risk that it may find its way back into input causing a feedback loop. Sometimes this even happens with ML output data feeding back into training data.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "looped input",
+        "tag": "input:4"
+      },
+      "parent_id": "BIML-78(2020): input",
+      "title": "Looped Input (BIML-78(2020): input:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): input:5",
+      "description": "The same care that goes into data assembly (component 2) should be given to input, even in an online situation. This may be difficult for a number of reasons",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "pre-processing replication",
+        "tag": "input:5"
+      },
+      "parent_id": "BIML-78(2020): input",
+      "title": "Pre-processing Replication (BIML-78(2020): input:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): model:1",
+      "description": "ML-systems are re-used intentionally in transfer situations. The risk of transfer outside of intended use applies. Groups posting models for transfer would do well to precisely describe exactly what their systems do and how they control the risks in this document.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "improper re-use",
+        "tag": "model:1"
+      },
+      "parent_id": "BIML-78(2020): model",
+      "title": "Improper Re-use (BIML-78(2020): model:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): model:2",
+      "description": "Model transfer leads to the possibility that what is being reused may be a Trojaned (or otherwise damaged) version of the model being sought out.7:shokri",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "model:2"
+        ],
+        "document": "BIML-78(2020)",
+        "label": "Trojan",
+        "tag": "model:2"
+      },
+      "parent_id": "BIML-78(2020): model",
+      "title": "Trojan (BIML-78(2020): model:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): model:3",
+      "description": "ML is appealing exactly because it flies in the face of brittle symbolic AI systems. When a model generalizes from some examples, it builds up a somewhat fluid representation if all goes well. The real trick is determining how much fluidity is too much. Representation issues are some of the most difficult issues in ML, both in terms of primary input representation and in terms of internal representation and encoding. Striking a balance between generalization and specificity is the key to making ML useful.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "representation fludity",
+        "tag": "model:3"
+      },
+      "parent_id": "BIML-78(2020): model",
+      "title": "Representation Fludity (BIML-78(2020): model:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): model:4",
+      "description": "Most ML algorithms learn a great deal about input, some of which is possibly sensitive (see [raw:1:data confidentiality]), and store a representation internally that may include sensitive information. Algorithm choice can help control this risk, but be aware of the output your model produces and how it may reveal sensitive aspects of its training data. When it comes to sensitive data, one promising approach in privacy-preserving ML is differential privacy which we discuss below.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "training set reveal",
+        "tag": "model:4"
+      },
+      "parent_id": "BIML-78(2020): model",
+      "title": "Training Set Reveal (BIML-78(2020): model:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): model:5",
+      "description": "Training up an ML system is not free. Stealing ML system knowledge is possible through direct input/output observation. This is akin to reversing the model.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "steal the box",
+        "tag": "model:5"
+      },
+      "parent_id": "BIML-78(2020): model",
+      "title": "Steal The Box (BIML-78(2020): model:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): inference:1",
+      "description": "A fielded model operating in an online system (that is, still learning) can be pushed past its boundaries. An attacker may be able to carry this out quite easily.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "online",
+        "tag": "inference:1"
+      },
+      "parent_id": "BIML-78(2020): inference",
+      "title": "Online (BIML-78(2020): inference:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): inference:2",
+      "description": "In far too many cases, an ML system is fielded without a real understanding of how it works or why it does what it does. Integrating an ML system that “just works” into a larger system that then relies on the ML system to perform properly is a very real risk.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "inscrutability",
+        "tag": "inference:2"
+      },
+      "parent_id": "BIML-78(2020): inference",
+      "title": "Inscrutability (BIML-78(2020): inference:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): inference:3",
+      "description": "Inference algorithms have hyperparameters, for example sampling temperature in a generative model. If an attacker can surreptitiously modulate the hyperparameters for the inference algorithm after the evaluation process is complete, they can control the system’s behavior. (Also see [alg:9:hyperparameters].)",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "hyperparameters",
+        "tag": "inference:3"
+      },
+      "parent_id": "BIML-78(2020): inference",
+      "title": "Hyperparameters (BIML-78(2020): inference:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): inference:4",
+      "description": "Many ML systems are run on hosted, remote servers. Care must be taken to protect these machines against ML-related attacks (not to mention the usual pile of computer security stuff).",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_ids": [
+          "inference:4"
+        ],
+        "document": "BIML-78(2020)",
+        "label": "hosting",
+        "tag": "inference:4"
+      },
+      "parent_id": "BIML-78(2020): inference",
+      "title": "Hosting (BIML-78(2020): inference:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): inference:5",
+      "description": "When a user decides to use an ML system that is remote, they expose their interests (and possibly their input) to the owners of the ML system.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "user risk",
+        "tag": "inference:5"
+      },
+      "parent_id": "BIML-78(2020): inference",
+      "title": "User Risk (BIML-78(2020): inference:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:1",
+      "description": "An attacker tweaks the output stream directly. This will impact the larger system in which the ML subsystem is encompassed. There are many ways to do this kind of thing. Probably the most common attack would be to interpose between the output stream and the receiver. Because models are sometimes opaque, unverified output may simply be used with little scrutiny, meaning that an interposing attacker may have an easy time hiding in plain sight.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "alt_titles": [
+          "Direct Output"
+        ],
+        "document": "BIML-78(2020)",
+        "label": "direct",
+        "tag": "output:1"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Direct (BIML-78(2020): output:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:2",
+      "description": "ML systems must be trustworthy to be put into use. Even a temporary or partial attack against output can cause trustworthiness to plummet.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "provenance",
+        "tag": "output:2"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Provenance (BIML-78(2020): output:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:3",
+      "description": "Adversarial examples (see [input:1:adversarial examples]) lead to fallacious output. If those output escape into the world undetected, bad things can happen.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "miscategorization",
+        "tag": "output:3"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Miscategorization (BIML-78(2020): output:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:4",
+      "description": "In far too many cases with ML, nobody is really sure how the trained systems do what they do. This is a direct affront on trustworthiness and can lead to challenges in some domains such as diagnostic medicine.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "inscrutability",
+        "tag": "output:4"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Inscrutability (BIML-78(2020): output:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:5",
+      "description": "Decisions that are simply presented to the world with no explanation are not transparent. Attacking opaque systems is much easier than attacking transparent systems, since it is harder to discern when something is going wrong.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "transparency",
+        "tag": "output:5"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Transparency (BIML-78(2020): output:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:6",
+      "description": "Causing an ML system to misbehave can erode trust in the entire discipline. A GAN that produces uncomfortable sounds or images provides one example of how this might unfold.17:shane",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "eroding trust",
+        "tag": "output:6"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Eroding Trust (BIML-78(2020): output:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): output:7",
+      "description": "See [input:4:looped input]. If system output feeds back into the real world there is some risk that it may find its way back into input causing a feedback loop.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "looped output",
+        "tag": "output:7"
+      },
+      "parent_id": "BIML-78(2020): output",
+      "title": "Looped Output (BIML-78(2020): output:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:1",
+      "description": "Many data-related component risks lead to bias in the behavior of an ML system. ML systems that operate on personal data or feed into high impact decision processes (such as credit scoring, employment, and medical diagnosis decisions) pose a great deal of risk. When biases are aligned with gender, race, or age attributes, operating the system may result in discrimination with respect to one of these protected classes. Using biased ML subsystems is is definitely illegal in some contexts, may be unethical, and is always irresponsible.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "black box discrimination",
+        "tag": "system:1"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Black Box Discrimination (BIML-78(2020): system:1)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:2",
+      "description": "When an ML system with a particular error behavior is integrated into a larger system and its output is treated as high confidence data, users of the system may become overconfident in the operation of the system for its intended purpose. A low scrutiny stance with respect to the overall system makes it less likely that an attack against the ML subsystem will be detected. Developing overconfidence in ML is made easier by the fact that ML systems are often poorly understood and vaguely described. (See [output:5:transparency].)",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "overconfidence",
+        "tag": "system:2"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Overconfidence (BIML-78(2020): system:2)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:3",
+      "description": "Any ML system can and will make mistakes. For example, there are limitations to how effective the prediction of a target variable or class can be given certain input. If system users are unaware of the subtleties of ML, they may not be able to account for “incorrect” behavior. Lost confidence may follow logically. Ultimately, users may erroneously conclude that the ML system is not beneficial to operation at all and thus should be disregarded. In fact the ML system may operate on average much more effectively than other classifying technology and may be capable of scaling a decision process beyond human capability. Throwing out the baby with the bathwater is an ML risk. As an example, consider what happens when self-driving cars kill pedestrians.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "loss of confidence",
+        "tag": "system:3"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Loss Of Confidence (BIML-78(2020): system:3)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:4",
+      "description": "Confidence related risks such as [system:2:overconfidence] and [system:3:loss of confidence] are focused on the impact that common ML misunderstandings have on users of a system. Note that such risks can find their way out into society at large with impacts on policy-making (regarding the adoption or role of ML technologies) and the reputation of a company (regarding nefarious intentions, illegality, or competence). A good example is the Microsoft chatbot, Tay, which learned to converse by parsing raw twitter content and ultimately exhibited racist, xenophobic, and sexist behavior as a result. Microsoft pulled the plug on Tay. Tay was a black eye for ML in the eyes of the public.32:jagielski",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "public perception",
+        "tag": "system:4"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Public Perception (BIML-78(2020): system:4)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:5",
+      "description": "When ML output becomes input to a larger decision process, errors arising in the ML subsystem may propagate in unforeseen ways. For example, a classification decision may end up being treated as imputed metadata or otherwise silently impact a conditional decision process. The evaluation of ML subsystem performance in isolation from larger system context may not take into account the “regret” this may incur. That is, methods that evaluate ML accuracy may not evaluate utility, leading to what has been called regret in the ML literature.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "error propagation",
+        "tag": "system:5"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Error Propagation (BIML-78(2020): system:5)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:6",
+      "description": "When an ML subsystem operating within a larger system generates too many alarms, the subsystem may be ignored. This is particularly problematic when ML is being applied to solve a security problem like intrusion or misuse detection. False alarms may discourage users from paying attention, rendering the system useless.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "cry wolf",
+        "tag": "system:6"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Cry Wolf (BIML-78(2020): system:6)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:7",
+      "description": "If ML system components are distributed, especially across the Internet, preserving data integrity between components is particularly important. An attacker in the middle who can tamper with data streams coming and going from a remote ML component can cause real trouble.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "data integrity",
+        "tag": "system:7"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Data Integrity (BIML-78(2020): system:7)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:8",
+      "description": "As always in security, a malicious insider in an ML system can wreak havoc. Note for the record that data poisoning attacks (especially those that subtly bias a training set) can already be hard to spot. A malicious insider who wishes not to get caught would do well to hide in the data poisoning weeds.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "insider",
+        "tag": "system:8"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Insider (BIML-78(2020): system:8)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:9",
+      "description": "Data may be incorrectly encoded in a command, or vice versa. When data and API information are mixed, bad things happen in security. Know that APIs are a common attack target in security and are in some sense your public front door. How do you handle time and state? What about authentication?",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "API encoding",
+        "tag": "system:9"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "API Encoding (BIML-78(2020): system:9)"
+    },
+    {
+      "control_id": "BIML-78(2020): system:10",
+      "description": "Denial of service attacks have broad impact when service access impacts a decision process. When an ML system fails, recovery may not be possible. If you decide to rely entirely on an ML system that fails, recovery may not be possible, even if all of the data that feed the ML system are still around.",
+      "hierarchy_level": "risk",
+      "metadata": {
+        "document": "BIML-78(2020)",
+        "label": "denial of service",
+        "tag": "system:10"
+      },
+      "parent_id": "BIML-78(2020): system",
+      "title": "Denial Of Service (BIML-78(2020): system:10)"
     }
   ],
-  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "fetched_date": "2026-08-15",
   "framework_id": "biml",
   "framework_name": "BIML",
-  "mapping_unit_level": "section",
-  "source_url": "https://opencre.org",
-  "version": "opencre-2026-04-28"
+  "mapping_unit_level": "risk",
+  "source_files": [
+    {
+      "bytes": 875190,
+      "path": "BIML-LLM24.pdf",
+      "sha256": "1a41ba1a9218e6aecdcab46d2cc6cf8a3b99f6cc1c98a3683bf3a6e4964e955f"
+    },
+    {
+      "bytes": 848055,
+      "path": "ara.pdf",
+      "sha256": "247d7f06d8c768cc734dc84ab7004c6e4d645e91911af61002fd1743807ef312"
+    }
+  ],
+  "source_url": "https://berryvilleiml.com/results/",
+  "version": "BIML-78 (2020) + BIML-24 LLM (2024)"
 }
