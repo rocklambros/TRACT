@@ -21,14 +21,20 @@ from sentence_transformers import (
     SentenceTransformerTrainer,
     SentenceTransformerTrainingArguments,
 )
-from sentence_transformers.losses import MultipleNegativesRankingLoss
-from sentence_transformers.training_args import BatchSamplers
 
 from tract.encoders import resolve
 from tract.training.config import TrainingConfig
 from tract.training.data import HubAwareTemperatureSampler
+from tract.training.st_compat import resolve_symbol
 
 logger = logging.getLogger(__name__)
+
+# Both symbols moved into per-encoder subpackages in sentence-transformers 5.4.
+# The training pin is 5.7.0 and the serving pin is 3.2.0, so no single literal
+# import path works in both environments. See tract/training/st_compat.py for
+# the verified matrix.
+MultipleNegativesRankingLoss = resolve_symbol("MultipleNegativesRankingLoss")
+BatchSamplers = resolve_symbol("BatchSamplers")
 
 # Probes for the save/reload check in save_checkpoint. Mirrors the pattern in
 # tract/publish/merge.py. Content is arbitrary; only the embeddings matter.

@@ -17,13 +17,19 @@ from typing import Any, ClassVar, Iterator
 import numpy as np
 import torch
 from datasets import Dataset
-from sentence_transformers.sampler import DefaultBatchSampler
 
 from tract.hierarchy import CREHierarchy
 from tract.text_selection import ProseIndex, SelectionStats, select_control_text
 from tract.training.data_quality import TieredLink
+from tract.training.st_compat import resolve_symbol
 
 logger = logging.getLogger(__name__)
+
+# sentence-transformers moved this class from `.sampler` to `.base.sampler` in
+# 5.4, and the training pin (5.7.0) and the serving pin (3.2.0) sit on opposite
+# sides of that move. Resolving through the shim keeps one import working under
+# both. See tract/training/st_compat.py for the verified path matrix.
+DefaultBatchSampler = resolve_symbol("DefaultBatchSampler")
 
 AI_FRAMEWORK_NAMES: frozenset[str] = frozenset({
     "MITRE ATLAS", "NIST AI 100-2", "OWASP AI Exchange",
@@ -186,15 +192,16 @@ def build_training_pairs(
     return pairs
 
 
-# sentence-transformers ships py.typed, so whether this base class is a real
-# type or Any depends on whether it is installed. requirements-lint.txt leaves
-# the ML stack out on purpose, so CI resolves Any and `disallow_subclassing_any`
-# fires; a developer machine that installed the stack resolves the real class
-# and the ignore is dead instead. Listing `unused-ignore` alongside `misc` is
-# what makes one comment correct under both resolutions. Narrowed to those two
-# codes on purpose -- a bare `type: ignore` here would also swallow a genuine
-# signature conflict with the base class.
-class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc, unused-ignore]
+# The base class arrives from st_compat.resolve_symbol rather than a literal
+# import, because sentence-transformers 5.4 moved it and the training and
+# serving pins straddle that move. mypy therefore sees a module-level variable
+# of type Any and raises both `valid-type` and `misc` in every environment,
+# whether or not the ML stack is installed. That determinism is the point: the
+# previous literal import resolved to a real class on a developer machine and to
+# Any in the lint job, so one comment had to carry `unused-ignore` to stay
+# correct under both. Narrowed to those two codes on purpose -- a bare
+# `type: ignore` would also swallow a genuine signature conflict with the base.
+class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[valid-type, misc]
     """Batch sampler preventing hub AND anchor-text collisions with AI upsampling.
 
     Prevents two sources of MNRL false negatives:

@@ -137,12 +137,48 @@ jobs:
               raise SystemExit(f"pins did not resolve: {bad}")
           print("pinned stack verified:", {k: g for k, (_, g) in expected.items()})
           PY
+      # Runs BEFORE the regression tests on purpose. sentence-transformers 5.4
+      # reorganised the package, so a pin bump can break every training import
+      # while the regression tests below only surface it indirectly, deep in a
+      # model-loading test that downloads a checkpoint first. This step imports
+      # every module the pods import and costs seconds. scripts/phase1b/alpha.py
+      # is included because no test imports it, so it is invisible to the suite.
+      - name: Prove the training modules import under the pinned stack
+        env:
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          python - <<'PY'
+          import importlib
+          from tract.training.st_compat import (
+              SYMBOL_PATHS, installed_version, is_tested_version,
+              resolve_symbol_source,
+          )
+          version = installed_version()
+          if not is_tested_version(version):
+              raise SystemExit(
+                  f"sentence-transformers=={version} is outside the tested set; "
+                  f"add its layout to tract/training/st_compat.py first."
+              )
+          for module in (
+              "tract.training.data",
+              "tract.training.loop",
+              "scripts.phase1b.alpha",
+          ):
+              importlib.import_module(module)
+          sources = {s: resolve_symbol_source(s) for s in sorted(SYMBOL_PATHS)}
+          print(f"sentence-transformers=={version} resolves:")
+          for symbol, source in sources.items():
+              print(f"  {symbol} <- {source}")
+          PY
+
       - name: Run the training regression tests
         env:
           USE_TF: "0"
           TOKENIZERS_PARALLELISM: "false"
         run: |
-          python -m pytest tests/test_training_loop.py tests/test_firewall.py \
+          python -m pytest tests/test_st_compat.py tests/test_training_loop.py \
+            tests/test_firewall.py \
             tests/test_fold_aggregation.py tests/test_gate_decision.py \
             tests/test_runpod_safety.py tests/test_publish_merge.py \
             -q --timeout=900 -m "not integration"

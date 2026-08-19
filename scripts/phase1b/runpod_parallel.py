@@ -630,9 +630,57 @@ def _preflight_tracking() -> None:
     )
 
 
+def _preflight_training_stack() -> None:
+    """Refuse to provision until the pinned encoder stack can supply its symbols.
+
+    The pods install requirements-train.txt and then import the training
+    modules. sentence-transformers moves symbols between minor versions, so a
+    pin bump can turn every fold into a ModuleNotFoundError seconds after the
+    fleet starts billing. That is the most expensive place to learn about an
+    import path.
+
+    Two checks, because neither alone is sufficient. The pin check is the one
+    that matters: it reads the version the PODS will install and refuses when
+    that version's package layout was never read from its wheel. The local
+    resolve is a weaker cross-check, because the provisioning host usually
+    carries the serving pin rather than the training pin, so it proves the
+    shim works for the layout it can see and nothing more.
+    """
+    from tract.training.st_compat import (
+        SYMBOL_PATHS,
+        installed_version,
+        pinned_st_version,
+        require_tested_version,
+        resolve_symbol,
+    )
+
+    requirements = PROJECT_ROOT / "requirements-train.txt"
+    pinned = pinned_st_version(requirements)
+    require_tested_version(
+        pinned, f"Refusing to provision: {requirements.name} pins a stack TRACT "
+        f"cannot vouch for",
+    )
+    logger.info(
+        "Training-stack preflight: pods will install sentence-transformers==%s, "
+        "whose layout is covered.", pinned,
+    )
+
+    # Resolving every symbol rather than the first one, so a partial move is
+    # reported in full instead of one name at a time across successive runs.
+    local = installed_version()
+    for symbol in sorted(SYMBOL_PATHS):
+        resolve_symbol(symbol)
+    logger.info(
+        "Training-stack preflight: %d symbols resolved locally under "
+        "sentence-transformers==%s.", len(SYMBOL_PATHS), local,
+    )
+
+
 def provision(
     folds: list[str] | None = None, split: str = "test",
 ) -> list[dict[str, Any]]:
+    # Ordered cheapest-check-first. Both run before anything is created.
+    _preflight_training_stack()
     _preflight_tracking()
     configs = select_pod_configs(folds, split)
     logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",

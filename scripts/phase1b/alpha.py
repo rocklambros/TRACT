@@ -25,7 +25,7 @@ from sentence_transformers import (
     SentenceTransformerTrainer,
     SentenceTransformerTrainingArguments,
 )
-from sentence_transformers.losses import MultipleNegativesRankingLoss
+from tract.training.st_compat import resolve_symbol
 
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
@@ -39,6 +39,10 @@ from scripts.phase0.common import (
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
+
+# sentence-transformers 5.4 moved this out of `.losses` into the per-encoder
+# `.sentence_transformer.losses`. The shim resolves whichever layout is present.
+MultipleNegativesRankingLoss = resolve_symbol("MultipleNegativesRankingLoss")
 
 HELD_OUT: str = "MITRE ATLAS"
 OUTPUT_DIR: Path = Path("models/phase1b_alpha")

@@ -37,6 +37,16 @@
 # Install:  pip install -r requirements.txt -r requirements-train.txt
 -c requirements.txt
 
+# BUMPING sentence-transformers IS NOT A ONE-LINE CHANGE
+# 5.4.0 moved the training symbols into per-encoder subpackages and left
+# deprecation aliases behind for the old paths. The aliases still work on
+# 5.7.0, so the training code imports fine, but they are documented as
+# temporary. tract/training/st_compat.py resolves the canonical paths for every
+# version whose layout was read from its wheel, and lists them in
+# TESTED_VERSIONS. Changing the pin below to a version absent from that list
+# makes scripts/phase1b/runpod_parallel.py refuse to provision, on purpose:
+# an import that breaks on a pod breaks after the fleet is already billing.
+#
 # --- Encoder stack ---
 # tokenizers is pinned rather than left transitive because a patch release
 # changes tokenization, which changes embeddings, which changes hit@1.
