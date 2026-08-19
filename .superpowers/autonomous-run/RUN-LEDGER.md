@@ -401,3 +401,34 @@ would have silently dropped 25 items from the denominator.
 per-framework property. Training that weights CAPEC at 42.8% is weighting the
 least-agreed labels in the corpus most heavily. This belongs in the spec before
 Part 5, and it is a data decision, not an architecture one.
+
+## Panel aggregation decided 2026-08-18: ties 8.4% -> 1.2%
+
+My "odd panel prevents ties" claim was wrong for this problem. Odd parity
+guarantees a majority only when k=2. With 522 hubs, five models tied 7.2% of
+the time in shapes (2,2,1) and (1,1,1,1,1). Empirically, dropping Maverick
+raised ties 7.2% -> 8.4% while raising unanimity 24.4% -> 57.6%, so the fifth
+model was manufacturing scatter, not breaking ties.
+
+**Adopted rule, for the L3 adjudicator and any future panel:**
+1. Borda over the ranked ballot, primary=2 and acceptable=1, weighted by stated
+   confidence (high 1.0, medium 0.6, low 0.3). Resolves 245/250 = 98.0%.
+2. Tie -> higher count of primary votes. Resolves 2 more.
+3. Tie -> **CONTESTED**, reported as a finding, never forced. 3 items remain.
+
+Justifications, none of them the tie count:
+- Borda because the ballot is genuinely ranked and plurality discards
+  acceptable_hub_ids entirely. Approval was measured WORSE (14% ties) because
+  it spreads mass across more hubs.
+- Confidence weighting because calibration is verified monotone for all four
+  panel members with large spreads (Kimi .869/.338/.095, GLM .837/.367/.056,
+  DeepSeek .792/.224/.167, Grok .569/.180/.000). Maverick is flat
+  (.258/.250/.000), which independently confirms it as a weak judge.
+- CONTESTED as terminal because four calibrated frontier models splitting
+  evenly means the label is ambiguous, and that is the signal the panel exists
+  to surface when auditing OpenCRE.
+
+Discipline note: plurality agrees with the human at 0.788 and borda+confidence
+at 0.764. I took the LOWER one. Selecting an aggregation rule by which best
+reproduces the human would be circular, since human-panel agreement is a
+measured quantity in this study.
