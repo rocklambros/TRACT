@@ -865,3 +865,46 @@ B is switched off.
 
 Safe to land now: all 214 dsomm rows in `link_resolution_before.jsonl` are `unresolved` with
 `wrong_anchor_checked: False`, so the BEFORE baseline does not move. Verified.
+
+### R11 landed. `0d95868` + `e4988f6`. 1,520 -> 1,546 passing (+26).
+dsomm `wrong_anchor_risk` **198 of 213 -> 0 of 3**. The 3 survivors are detector C's uuid-suffixed
+WAF ids; 210 rows where B was the sole applicable detector went back to unchecked; zero rows are
+flagged-but-unchecked. The implementer re-derived the ratio over all 22 frameworks rather than
+trusting my measurement: dsomm 10.167, next highest biml 1.176, so the 2.0 threshold has headroom on
+both sides and that headroom is ASSERTED in a test rather than stated in a comment.
+
+`alt_titles` report-only came back CLEAN (30 carriers: owasp_cheat_sheets 25, nist_ai_100_2 5, plus
+40 legal empty lists, 0 rejected, identical in both corpora), so the raise landed as ruling P2
+sequenced it. Baselines did not move, proved empirically for Part B and by construction for Part A.
+
+17 mutations, 17 killed. One found a defect in the implementer's OWN test: the empty-entry probe
+called `lookup`, which short-circuits on a falsy name and returns `None` either way, so mutation B5
+survived it. They proved the blindness by forcing the key into `_by_title`, rewrote the probe to use
+`by_title`, and B5 then died. Fourth task running where mutation testing found something a green
+suite could not.
+
+### Ruling R12 — the tagged evidence path can silently destroy the baseline, and must not
+**Measured, and this is live right now:**
+```
+committed results/corpus/before.json  corpus_sha256 2440d7c0...
+corpus today                          corpus_sha256 5b0a4289...
+```
+The corpus moved when the DSOMM parser landed at `d8ad0c9`. `scripts/corpus_report.py --tag before`
+run today rebuilds the artifact against a DIFFERENT corpus and overwrites the committed baseline in
+place. `require_full_corpus` cannot catch it: that guard checks the framework COUNT, which is still
+31, not the corpus identity.
+
+This is ledger lesson 5 exactly, and it gets worse with every parser that lands. Ten remain.
+
+Ruling: the tagged write path refuses to overwrite an existing tagged artifact whose recorded
+`corpus_sha256` differs from the run's, and says both digests in the error. An explicit override
+flag exists for a deliberate recapture, because the ability to re-baseline is legitimate and only
+the SILENT version is the defect.
+
+The implementer found this, ran it, saw both files move, restored from git, and committed nothing.
+That is the right instinct and I am recording it as such.
+
+**Carried to Task 16:** `csa_ccm` and `etsi` both read `0 of 0` while `JOIN_WRONG_ANCHOR_BUDGET`
+pre-registers 1 each. Expected, since their parsers are Tasks 8 and 13 and have not run. Task 16
+must confirm both denominators are non-zero by then, or the two entries that exist so the gate "can
+fail in both directions" are blind.
