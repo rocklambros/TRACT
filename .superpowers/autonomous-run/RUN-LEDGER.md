@@ -715,3 +715,25 @@ visible via a warning and a counter). Owner decision before Task 15.
 `ValueError`, and `alt_ids: [None]` silently creates a key spelled `"None"`. Inherited from
 `alt_titles` so not a regression, but Tasks 9 and 12 HAND-AUTHOR this field and a stray `None`
 producing a silently wrong key is the exact failure mode this plan exists to eliminate.
+
+### Task 2: COMPLETE. `840367e` + `2799c6a`. 1,428 -> 1,476 passing (+48).
+Fix round 1 closed all four findings. The implementer reproduced both FIX-3 failure modes against
+pre-fix code before fixing (`TypeError` on `alt_ids: 937`, key spelled `"None"` on `[None]`), then
+ran a SECOND mutation round of 13 more wrong implementations. One of them (helper always raises)
+turns 13 tests red including `test_a_well_formed_field_does_not_raise`, which proves the new raise
+assertions cannot be satisfied by a reject-everything validator. Four round-1 mutations were
+re-anchored after the refactor and each still kills exactly the test it killed before, so the
+extraction retired no guarantee.
+
+Also dropped the `or []` on the `alt_ids` read, because that idiom folds `0` and `False` into
+"the author wrote nothing".
+
+**Ruling P2 — `alt_titles` gets the same validator, in its own commit, not in Task 2.**
+The implementer recommended this and I agree with their reasoning and their sequencing. It is
+arguably WORSE there: a stray `None` yields a key spelled `"none"` in the channel `lookup` tries
+FIRST. But its 30 carriers are parser-generated rather than hand-authored, so there is no author to
+catch today, and changing it risks moving the join recorded in `before.json`. Settlement path,
+theirs, adopted: run the validator over the existing 30 in report-only mode, confirm clean, then
+switch to raising in a separate commit. Schedule: after L3, before Task 9. Cost if wrong: a
+malformed `alt_titles` stays silently wrong for a few more tasks, on a field no human is currently
+authoring.
