@@ -91,6 +91,21 @@ class TestGenerateModelCard:
         assert "limitation" in content.lower()
 
     def test_contains_license(self, tmp_path) -> None:
+        """The front matter declares `other`, and the body says why.
+
+        This card declared `license: mit` while the dataset card built from the
+        same 31 sources declared `cc-by-sa-4.0`. `mit` stated the base model's
+        terms as though they covered the fine-tuned weights, the bundled
+        hierarchy and the hub descriptions.
+
+        The MIT reference survives in the body because the base model really is
+        MIT and its terms travel with the weights. What must not survive is the
+        front-matter declaration, so this asserts on both directions.
+        """
+        from tract.licensing import (
+            NOTICE_FILENAME,
+            published_license_frontmatter,
+        )
         from tract.publish.model_card import generate_model_card
         generate_model_card(
             tmp_path, fold_results=SAMPLE_FOLD_RESULTS,
@@ -98,7 +113,53 @@ class TestGenerateModelCard:
             bridge_summary=SAMPLE_BRIDGE, gpu_hours=2.5,
         )
         content = (tmp_path / "README.md").read_text()
+        front_matter = content.split("---", 2)[1]
+
+        assert published_license_frontmatter() in front_matter
+        assert "license: mit" not in front_matter, (
+            "the withdrawn MIT declaration is back in the model card's YAML"
+        )
+        assert NOTICE_FILENAME in content, (
+            "the card does not point a reader at the per-framework terms"
+        )
         assert "MIT" in content
+
+    def test_both_published_cards_declare_the_same_licence(
+        self, tmp_path,
+    ) -> None:
+        """Four declarations across three artifacts stated three answers.
+
+        Rendering both cards and comparing their licence blocks is what makes
+        that class of drift impossible to reintroduce by editing one file.
+        """
+        from tract.dataset.card import generate_dataset_card
+        from tract.licensing import published_license_frontmatter
+        from tract.publish.model_card import generate_model_card
+
+        model_dir = tmp_path / "model"
+        model_dir.mkdir()
+        generate_model_card(
+            model_dir, fold_results=SAMPLE_FOLD_RESULTS,
+            calibration=SAMPLE_CALIBRATION, ece_data=SAMPLE_ECE,
+            bridge_summary=SAMPLE_BRIDGE, gpu_hours=2.5,
+        )
+
+        dataset_dir = tmp_path / "dataset"
+        dataset_dir.mkdir()
+        generate_dataset_card(
+            dataset_dir,
+            framework_metadata=[],
+            review_metrics={},
+            bundle_stats={"total_rows": 0, "frameworks": 0},
+        )
+
+        block = published_license_frontmatter()
+        for card in (model_dir / "README.md", dataset_dir / "README.md"):
+            assert block in card.read_text(encoding="utf-8"), (
+                f"{card.parent.name} card does not carry the shared licence "
+                f"block. The two published cards must not state different "
+                f"terms for work drawn from the same sources."
+            )
 
     def test_contains_bridge_summary(self, tmp_path) -> None:
         from tract.publish.model_card import generate_model_card

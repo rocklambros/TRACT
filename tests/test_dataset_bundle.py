@@ -7,12 +7,21 @@ from pathlib import Path
 
 import pytest
 
+from tract import licensing
+from tract.config import PROJECT_ROOT
 from tract.crosswalk.schema import create_database, get_connection
 from tract.dataset.bundle import (
     _build_crosswalk_jsonl,
     _build_framework_metadata,
     _build_zenodo_metadata,
     bundle_dataset,
+)
+from tract.licensing import (
+    LICENSE_TEXTS_DIR,
+    NOTICE_FILENAME,
+    PUBLISHED_LICENSE_ID,
+    PUBLISHED_LICENSE_LINK,
+    PUBLISHED_LICENSE_NAME,
 )
 
 
@@ -226,31 +235,106 @@ class TestZenodoMetadata:
         assert "description" in data
         assert "creators" in data
         assert "license" in data
-        assert data["license"] == "CC-BY-SA-4.0"
+        # Not a single SPDX identifier. This file asserted CC-BY-SA-4.0 over
+        # content drawn from 31 publishers, and a human pastes it straight into
+        # Zenodo's form, so a wrong identifier here becomes a published grant.
+        assert data["license"] == PUBLISHED_LICENSE_ID
+        assert data["license_name"] == PUBLISHED_LICENSE_NAME
+        assert data["license_link"] == PUBLISHED_LICENSE_LINK
+        assert data["license"] != "CC-BY-SA-4.0"
         assert data["resource_type"] == "dataset"
         assert "keywords" in data
         assert isinstance(data["keywords"], list)
 
 
-class TestLicenseFile:
-    def test_license_exists_and_contains_cc(
+class TestLicensingFilesShipInTheBundle:
+    """The remedy has to reach the artifact, not only the source repository.
+
+    The bundle used to write a hand-typed CC BY-SA 4.0 deed summary as LICENSE
+    and ship nothing else. NOTICE carries the per-framework terms, the
+    modification statement GPL-3.0 section 5(a) requires, and the open
+    questions, and it was absent from the artifact most consumers touch.
+    LICENSES/ carries the texts GPL-3.0 section 4 requires to travel with the
+    work. Both are now copied, and these tests fail if either stops.
+    """
+
+    @pytest.fixture
+    def staging(
         self, bundle_db: Path, tmp_path: Path, dummy_files: dict[str, Path],
-    ) -> None:
-        staging = tmp_path / "staging"
+    ) -> Path:
+        target = tmp_path / "staging"
         bundle_dataset(
             db_path=bundle_db,
-            staging_dir=staging,
+            staging_dir=target,
             hierarchy_path=dummy_files["hierarchy"],
             hub_descriptions_path=dummy_files["hub_descriptions"],
             bridge_report_path=dummy_files["bridge_report"],
             review_metrics_path=dummy_files["review_metrics"],
         )
+        return target
 
-        license_file = staging / "LICENSE"
-        assert license_file.exists()
-        content = license_file.read_text(encoding="utf-8")
-        assert "Creative Commons" in content
-        assert "CC BY-SA 4.0" in content
+    def test_the_bundle_ships_notice(self, staging: Path) -> None:
+        notice = staging / NOTICE_FILENAME
+        assert notice.is_file(), (
+            f"{NOTICE_FILENAME} is not in the built bundle. The card's "
+            f"license_link points at it, so the published artifact would link "
+            f"to a file that is not there."
+        )
+        assert notice.read_bytes() == (PROJECT_ROOT / NOTICE_FILENAME).read_bytes()
+
+    def test_the_shipped_notice_carries_the_modification_statement(
+        self, staging: Path,
+    ) -> None:
+        """A NOTICE stripped of the section would satisfy existence alone."""
+        body = (staging / NOTICE_FILENAME).read_text(encoding="utf-8")
+        assert "Modifications to framework text" in body
+        assert "DESCRIPTION_MAX_LENGTH" in body
+
+    def test_the_bundle_ships_every_licence_text(self, staging: Path) -> None:
+        shipped = staging / LICENSE_TEXTS_DIR.name
+        assert shipped.is_dir(), (
+            f"{LICENSE_TEXTS_DIR.name}/ is not in the built bundle. GPL-3.0 "
+            f"section 4 requires the licence text to travel with the work."
+        )
+        names = {path.name for path in shipped.iterdir()}
+        expected = {path.name for path in LICENSE_TEXTS_DIR.iterdir()}
+        assert names == expected, (
+            f"the bundle ships {sorted(names)} and the repository holds "
+            f"{sorted(expected)}"
+        )
+
+    def test_the_bundle_license_is_the_repository_dedication(
+        self, staging: Path,
+    ) -> None:
+        """LICENSE is TRACT's own CC0 dedication, copied rather than retyped.
+
+        The previous body was a hand-typed summary of the CC BY-SA 4.0 deed,
+        so the artifact carried a paraphrase of a licence TRACT had no standing
+        to grant. Byte equality with the repository's LICENSE rules out both
+        the paraphrase and any future drift.
+        """
+        shipped = (staging / "LICENSE").read_bytes()
+        assert shipped == (PROJECT_ROOT / "LICENSE").read_bytes()
+        body = shipped.decode("utf-8")
+        assert "CC0 1.0 Universal" in body
+        assert "CC BY-SA 4.0" not in body, (
+            "the withdrawn CC BY-SA 4.0 grant is back in the bundle's LICENSE"
+        )
+
+    def test_the_bundle_refuses_to_build_without_the_licence_texts(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Fail loud, not quiet. A silent skip is how NOTICE went missing.
+
+        The failure direction that matters: if LICENSES/ is ever removed, the
+        publish path must stop rather than ship an artifact whose NOTICE points
+        at a directory that is not there.
+        """
+        monkeypatch.setattr(
+            licensing, "LICENSE_TEXTS_DIR", tmp_path / "absent",
+        )
+        with pytest.raises(FileNotFoundError, match="GPL-3.0 section 4"):
+            licensing.copy_licensing_files(tmp_path / "staging_out")
 
 
 class TestBundleDataset:

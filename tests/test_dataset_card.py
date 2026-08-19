@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from tract.dataset.card import generate_dataset_card
+from tract.licensing import NOTICE_FILENAME, published_license_frontmatter
 
 SAMPLE_FRAMEWORK_METADATA: list[dict] = [
     {
@@ -77,8 +78,31 @@ class TestYAMLFrontmatter:
         assert "language: en" in content
 
     def test_has_license_field(self, card_path: Path) -> None:
+        """The card declares `other` with a name and a link, not one identifier.
+
+        It used to declare `cc-by-sa-4.0` over content drawn from 31
+        publishers, one of them GPL-3.0 and two of whom reserve
+        redistribution. Read from tract.licensing so this test and the model
+        card's cannot pin two different answers.
+        """
         content = card_path.read_text(encoding="utf-8")
-        assert "license: cc-by-sa-4.0" in content
+        assert published_license_frontmatter() in content
+        assert "license: cc-by-sa-4.0" not in content, (
+            "the withdrawn CC BY-SA 4.0 grant is back in the dataset card"
+        )
+
+    def test_the_license_link_names_a_file_the_bundle_ships(self) -> None:
+        """A link is only useful if it resolves inside the published artifact.
+
+        `license_link: NOTICE` is a relative reference. The dataset bundle
+        copies NOTICE into the staging directory, and
+        tests/test_dataset_bundle.py asserts it lands there. This test holds
+        the two ends of that agreement together: pointing the card at a
+        filename the bundler does not write turns it red.
+        """
+        from tract.licensing import PUBLISHED_LICENSE_LINK
+
+        assert PUBLISHED_LICENSE_LINK == NOTICE_FILENAME
 
     def test_has_task_categories(self, card_path: Path) -> None:
         content = card_path.read_text(encoding="utf-8")

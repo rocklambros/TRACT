@@ -7,6 +7,15 @@ name = "tract"
 version = "0.1.0"
 description = "Translating Requirements Across CRE Trees"
 requires-python = ">=3.11"
+# TRACT's own code only. The wheel ships `tract*` and nothing else, so no
+# third-party framework text reaches it and CC0-1.0 is the whole truth here.
+# The dataset and the model weights are a different question with a different
+# answer, recorded in NOTICE and declared as `other` by both published cards.
+#
+# PEP 639 SPDX expression, which needs setuptools >= 77. The build requirement
+# above pins >= 82.0.1, so this cannot silently degrade to a classifier.
+license = "CC0-1.0"
+license-files = ["LICENSE", "NOTICE", "LICENSES/*.txt"]
 dependencies = [
     "pydantic>=2.0,<3.0",
     "pyyaml>=6.0",

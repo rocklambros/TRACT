@@ -245,6 +245,83 @@ class TestSourcesThatGrantNothingShipNoText:
         )
 
 
+class TestThePublishedDeclarationIsNotASingleGrant:
+    """`license: other` has to be earned by the corpus, not asserted.
+
+    The four declarations this replaced were each a single identifier, and each
+    was wrong in the same way: it granted terms over content drawn from
+    publishers who grant different terms. Deriving the "no single identifier
+    fits" claim from FRAMEWORK_LICENSES means the day it stops being true, this
+    fails and the decision is retaken rather than inherited.
+    """
+
+    def test_the_corpus_really_carries_conflicting_terms(self) -> None:
+        distinct = {
+            identifier
+            for licence in FRAMEWORK_LICENSES.values()
+            for identifier in spdx_identifiers(licence)
+        }
+        reservations = {
+            framework_id
+            for framework_id, licence in FRAMEWORK_LICENSES.items()
+            if not spdx_identifiers(licence)
+        }
+        assert len(distinct) > 1 and reservations, (
+            f"the corpus now carries {sorted(distinct)} and "
+            f"{len(reservations)} sources with no SPDX grant. If it has "
+            f"narrowed to one set of terms, a single identifier may now be "
+            f"correct for the published artifacts. Retake the decision in "
+            f"tract/licensing.py rather than leaving `other` in place."
+        )
+
+    def test_the_published_declaration_is_other(self) -> None:
+        """Guards the specific substitution the derivation above allows for.
+
+        Setting PUBLISHED_LICENSE_ID to any single identifier while the corpus
+        still carries conflicting terms is the original defect returning under
+        a different value.
+        """
+        from tract.licensing import PUBLISHED_LICENSE_ID
+
+        assert PUBLISHED_LICENSE_ID == "other", (
+            f"the published artifacts declare {PUBLISHED_LICENSE_ID!r}, a "
+            f"single grant over content from publishers whose terms conflict. "
+            f"See the test above for the derivation."
+        )
+
+    def test_pyproject_declares_the_project_licence(self) -> None:
+        """The wheel is TRACT's own code, so a single identifier IS right here.
+
+        pyproject.toml carried no `license` key at all, so the package the CLI
+        installs from stated nothing while three other artifacts stated three
+        different things. `tool.setuptools.packages.find` includes `tract*` and
+        nothing else, which is why CC0-1.0 is the whole truth for the wheel and
+        why this assertion is different from the one above.
+        """
+        import tomllib
+
+        data = tomllib.loads(
+            (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        )
+        project = data["project"]
+        assert project.get("license") == PROJECT_LICENSE_ID, (
+            f"pyproject.toml declares {project.get('license')!r}, not "
+            f"{PROJECT_LICENSE_ID!r}. The wheel carries TRACT's own code only."
+        )
+        assert data["tool"]["setuptools"]["packages"]["find"]["include"] == [
+            "tract*"
+        ], (
+            "the wheel now includes something other than tract*, so CC0-1.0 "
+            "may no longer cover everything it ships. Re-derive the licence."
+        )
+        license_files = project.get("license-files", [])
+        assert "LICENSE" in license_files
+        assert "NOTICE" in license_files, (
+            "the built distribution would carry no per-framework terms"
+        )
+        assert f"{LICENSE_TEXTS_DIR.name}/*{LICENSE_TEXT_SUFFIX}" in license_files
+
+
 def test_the_shipped_cc0_text_is_the_one_the_repository_grants_under() -> None:
     """LICENSES/CC0-1.0.txt and the root LICENSE must be the same legal code.
 

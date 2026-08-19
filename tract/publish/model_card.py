@@ -5,6 +5,12 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from tract.licensing import (
+    LICENSE_TEXTS_DIR,
+    NOTICE_FILENAME,
+    published_license_frontmatter,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -105,9 +111,14 @@ def generate_model_card(
     n_rejected = bridge_counts.get("rejected", 0)
     n_total = bridge_counts.get("total", 0)
 
+    # The licence block comes from tract.licensing, not from a literal here.
+    # This card declared `mit` while the dataset card declared `cc-by-sa-4.0`
+    # for work drawn from the same 31 sources.
+    license_block = published_license_frontmatter()
+
     card = f"""---
 language: en
-license: mit
+{license_block}
 tags:
   - security
   - compliance
@@ -571,9 +582,17 @@ for hub_id, hub in hierarchy["hubs"].items():
 
 ## License
 
-MIT License for model weights and code. The base model ([BAAI/bge-large-en-v1.5](https://huggingface.co/BAAI/bge-large-en-v1.5)) is also MIT licensed.
+**No single license covers this repository.** Read `{NOTICE_FILENAME}` before redistributing it.
 
-Bundled data files (CRE hierarchy, hub descriptions, bridge report) are sourced from publicly available security frameworks and [OpenCRE.org](https://opencre.org), provided under CC0 1.0 Universal.
+TRACT's own contributions — the training code, the schemas, the CRE hub assignments, and the bridge analysis — are dedicated to the public domain under **CC0 1.0 Universal**. The base model, [BAAI/bge-large-en-v1.5](https://huggingface.co/BAAI/bge-large-en-v1.5), is MIT licensed and its terms travel with the weights.
+
+The weights were fine-tuned on control statements from 31 security frameworks published under their own terms, including one under GPL-3.0, several under CC BY-SA, and some under notices that reserve redistribution. Those terms are not TRACT's to grant. `{NOTICE_FILENAME}` lists every framework and its terms; `{LICENSE_TEXTS_DIR.name}/` carries the full text of each SPDX-identified license named there.
+
+This card previously declared `license: mit`, which stated the base model's terms as though they covered the whole artifact. That was withdrawn. Whether model weights are a derivative work of their training data is unsettled, and this card does not assert an answer in either direction.
+
+Framework text was modified before training. See the modification statement in `{NOTICE_FILENAME}`.
+
+Bundled data files (CRE hierarchy, hub descriptions, bridge report) derive from [OpenCRE.org](https://opencre.org) and from the frameworks listed in `{NOTICE_FILENAME}`.
 """
 
     readme_path = staging_dir / "README.md"

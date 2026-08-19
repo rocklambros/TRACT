@@ -27,12 +27,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
 from tract.config import FRAMEWORK_LICENSES, PROJECT_ROOT, UNDETERMINED_LICENSE
+
+logger = logging.getLogger(__name__)
 
 # ── Shipped licence texts ─────────────────────────────────────────────────
 #
@@ -58,6 +61,96 @@ _SPDX_OPERATORS: Final[frozenset[str]] = frozenset({"AND", "OR", "WITH"})
 
 # The SPDX short-identifier grammar: letters, digits, dot, plus and hyphen.
 _SPDX_IDENTIFIER: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.+-]*$")
+
+
+# ── Licence metadata for published artifacts ──────────────────────────────
+#
+# One source for the model card, the dataset card and the Zenodo record. They
+# used to declare `mit`, `cc-by-sa-4.0` and `CC-BY-SA-4.0` respectively while
+# pyproject.toml declared nothing, so a consumer reading any two of them got
+# different terms for the same work.
+#
+# The value is `other` because no single identifier is true. The dataset draws
+# on 31 frameworks including GPL-3.0 DSOMM and sources whose notices reserve
+# redistribution. A CC BY-SA 4.0 grant over that is a conflicting affirmative
+# grant, which is a worse error than the CC0 over-claim it was meant to fix:
+# CC0 at least claims only what TRACT holds, while a share-alike grant purports
+# to license other publishers' terms onto a downstream recipient.
+#
+# HuggingFace card metadata supports exactly this shape: `license: other` with
+# a `license_name` and a `license_link`. The link is the NOTICE file shipped
+# inside the artifact, so it resolves for a consumer who holds only the
+# download and never visits the source repository.
+PUBLISHED_LICENSE_ID: Final[str] = "other"
+PUBLISHED_LICENSE_NAME: Final[str] = "tract-mixed-sources"
+NOTICE_FILENAME: Final[str] = "NOTICE"
+PUBLISHED_LICENSE_LINK: Final[str] = NOTICE_FILENAME
+
+# The canonical source repository, quoted in both cards so a consumer who wants
+# the full record can reach it. README.md and the model card citation agree on
+# this URL.
+SOURCE_REPOSITORY_URL: Final[str] = "https://github.com/rocklambros/TRACT"
+
+
+def published_license_frontmatter() -> str:
+    """The three YAML lines every published card declares its licence with.
+
+    Returned as text rather than as a dict because both cards are rendered from
+    f-string templates and a structured value would be re-serialised twice, in
+    two places, which is how they diverged the first time.
+    """
+    return (
+        f"license: {PUBLISHED_LICENSE_ID}\n"
+        f"license_name: {PUBLISHED_LICENSE_NAME}\n"
+        f"license_link: {PUBLISHED_LICENSE_LINK}"
+    )
+
+
+def copy_licensing_files(staging_dir: Path) -> None:
+    """Copy LICENSE, NOTICE and LICENSES/ into a published artifact.
+
+    Shared by the dataset bundle and the model publish path. Neither shipped
+    NOTICE before, so the whole licensing record lived only in the source
+    repository while the artifacts most consumers download carried a single
+    wrong grant and no per-framework terms at all. Both cards' `license_link`
+    resolves to the NOTICE this function delivers.
+
+    Raises:
+        FileNotFoundError: LICENSE, NOTICE or LICENSES/ is missing. Publishing
+            an artifact whose licence record is incomplete is the outcome this
+            function exists to prevent, so it is fatal rather than a warning.
+    """
+    import shutil
+
+    # Every precondition before any write. A partial licence record in a
+    # staging directory is worse than none: the publish path continues past it
+    # and uploads an artifact that looks complete.
+    sources = (PROJECT_ROOT / "LICENSE", PROJECT_ROOT / NOTICE_FILENAME)
+    for source in sources:
+        if not source.is_file():
+            raise FileNotFoundError(
+                f"{source} is missing, so the published artifact would carry "
+                f"no licence record. Restore it before publishing."
+            )
+    if not LICENSE_TEXTS_DIR.is_dir():
+        raise FileNotFoundError(
+            f"{LICENSE_TEXTS_DIR} is missing. GPL-3.0 section 4 requires the "
+            f"licence text to travel with the work, and {NOTICE_FILENAME} "
+            f"points recipients at that directory."
+        )
+
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    for source in sources:
+        shutil.copy2(source, staging_dir / source.name)
+    shutil.copytree(
+        LICENSE_TEXTS_DIR,
+        staging_dir / LICENSE_TEXTS_DIR.name,
+        dirs_exist_ok=True,
+    )
+    logger.info(
+        "Copied LICENSE, %s and %s/ into %s",
+        NOTICE_FILENAME, LICENSE_TEXTS_DIR.name, staging_dir,
+    )
 
 
 def spdx_identifiers(licence: str) -> tuple[str, ...]:
