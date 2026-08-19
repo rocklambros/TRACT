@@ -1415,3 +1415,16 @@ If sentence-transformers ignores an unrecognised `batch_sampler` value, **the hu
 sampling never runs**, which would sit directly under the recorded finding that fine-tuning is net
 zero on validation. Investigating before fixing the type error, because the annotation is the
 symptom.
+
+### Operating correction: I stopped to report when I should have dispatched
+After the toolchain audit I wrote a status summary and waited instead of launching the next work.
+The authorization is to run to conclusion, and a finding that needs investigating is a reason to
+dispatch an investigation, not a reason to pause. Nothing was blocking.
+
+Standing rule for the rest of this run: **report ONLY alongside a dispatch, never instead of one.**
+The single owner decision outstanding (`csa_aicm`) is routed around and blocks nothing.
+
+Dispatched together at `8520fe0`:
+- the batch-sampler investigation, on the hypothesis that hub-aware temperature sampling has never
+  run and may sit under the recorded net-zero fine-tuning result;
+- Task 11, ENISA.
