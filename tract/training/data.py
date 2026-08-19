@@ -186,8 +186,15 @@ def build_training_pairs(
     return pairs
 
 
-# DefaultBatchSampler is Any because sentence-transformers ships no stubs.
-class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
+# sentence-transformers ships py.typed, so whether this base class is a real
+# type or Any depends on whether it is installed. requirements-lint.txt leaves
+# the ML stack out on purpose, so CI resolves Any and `disallow_subclassing_any`
+# fires; a developer machine that installed the stack resolves the real class
+# and the ignore is dead instead. Listing `unused-ignore` alongside `misc` is
+# what makes one comment correct under both resolutions. Narrowed to those two
+# codes on purpose -- a bare `type: ignore` here would also swallow a genuine
+# signature conflict with the base class.
+class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc, unused-ignore]
     """Batch sampler preventing hub AND anchor-text collisions with AI upsampling.
 
     Prevents two sources of MNRL false negatives:
@@ -257,6 +264,16 @@ class HubAwareTemperatureSampler(DefaultBatchSampler):  # type: ignore[misc]
             valid_label_columns=valid_label_columns,
             generator=generator, seed=seed,
         )
+        # __iter__ seeds its RNG from self.generator and self.seed. The base
+        # class assigns both, but only from sentence-transformers 5.3 onward,
+        # and mypy resolves whichever version the machine happens to carry --
+        # against the 3.2 serving pin those reads have no attribute to bind
+        # to. Owning the two that arrive as arguments keeps the contract
+        # __iter__ depends on inside this class, so a base-class change cannot
+        # drop it silently. self.epoch stays with SetEpochMixin, which owns it:
+        # the trainer calls set_epoch() between epochs to mutate it.
+        self.generator = generator
+        self.seed = seed
         self.temperature = (
             self._temperature_override
             if self._temperature_override is not None else temperature

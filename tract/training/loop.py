@@ -264,7 +264,23 @@ def train_model(
         metric_for_best_model="eval_loss" if eval_dataset is not None else None,
         greater_is_better=False if eval_dataset is not None else None,
         report_to="none",
-        batch_sampler=HubAwareTemperatureSampler if use_custom_sampler else BatchSamplers.BATCH_SAMPLER,
+        # Passing the CLASS is the supported surface, not a mistake. From
+        # sentence-transformers 5.3 the field is typed
+        # `BatchSamplers | str | DefaultBatchSampler | Callable[..., DefaultBatchSampler]`,
+        # __post_init__ coerces only `str`, and
+        # SentenceTransformerTrainer.get_batch_sampler runs
+        # `if inspect.isclass(...) and issubclass(..., DefaultBatchSampler)`
+        # then instantiates it with the dataset (trainer.py:673 in 5.3.0,
+        # base/trainer.py:748 in 5.7.0). Verified by driving that dispatch:
+        # see TestTrainerReachesTheCustomSampler in tests/test_training_data.py.
+        # The 3.2 serving pin, which is what mypy resolves on a machine that
+        # installed the ML stack, still types the field `BatchSamplers | str`;
+        # `unused-ignore` covers the lint environment, where the whole class
+        # is Any and no arg-type error is raised at all.
+        batch_sampler=(
+            HubAwareTemperatureSampler if use_custom_sampler  # type: ignore[arg-type, unused-ignore]
+            else BatchSamplers.BATCH_SAMPLER
+        ),
     )
 
     _assert_memory_budget(config)

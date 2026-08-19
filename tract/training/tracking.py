@@ -37,7 +37,13 @@ WANDB_GRAPHQL_URL = "https://api.wandb.ai/graphql"
 class WandbRun(Protocol):
     """The subset of the wandb run object this module uses."""
 
-    url: str
+    # A bare `url: str` declares a settable attribute of a non-optional type,
+    # and wandb.sdk.wandb_run.Run.url is neither: it is a read-only property
+    # returning `str | None`, because an offline run has no URL. A real run
+    # therefore failed to satisfy this protocol on both counts. Only the
+    # logging call site reads it, and "%s" formats None without complaint.
+    @property
+    def url(self) -> str | None: ...
 
     def log(self, data: dict[str, Any]) -> None: ...
     def finish(self, exit_code: int = 0) -> None: ...
