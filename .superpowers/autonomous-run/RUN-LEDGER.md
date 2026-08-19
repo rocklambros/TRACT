@@ -1287,3 +1287,48 @@ New corpus sizes measured to scratch, each source sha256 matching its parser's i
 **The csa_aicm escalation is larger than I framed it.** It is not 243 controls of AICM prose. It is
 243 controls of which 138 are verbatim CCM specifications, so the owner's decision on AICM is also a
 decision about CCM text that is already tracked.
+
+### Task 9 (NIST SSDF): COMPLETE. `0b1cdbf`. 1,762 -> 1,807 passing. 18 mutations, 0 survivors.
+```
+nist_ssdf  46 links | by_title 0 | by_id 46 | unresolved 0 | anchors 42 | l/a 1.10
+           truncated 0 | wrong 44 of 44 | hubs 28 | rate 1.0000
+```
+Shared anchor prefix 0. R14 would not have fired (max description 333). The implementer cut the
+Notional Examples column OUT of the anchor, against the brief, because `ProseIndex` prefers
+`full_text` unconditionally and the brief's own docstring argues the examples do not belong there.
+Text kept verbatim in metadata. Right call.
+
+### Ruling R19 — a SECOND reason detector B cannot fire, and it is derivable too
+`wrong_anchor_risk` reads **44 of 44**. This is R11's shape through a different mechanism, and
+`coarse_name_frameworks()` cannot catch it because SSDF's ids and names are 1:1.
+
+R11 covered names that label a COARSER LEVEL than ids. SSDF's problem is that the name is a
+DIFFERENT KIND from the title: `section_name` is the task statement verbatim, `title` is the task id.
+Detector B compares a 156-character statement against "PO.1.1".
+
+I measured the shape mismatch across every framework rather than special-casing SSDF:
+```
+nist_ssdf                 name median 156   title median   6   ratio 26.1x
+mitre_atlas / csa_ccm                                          ratio  1.2x
+asvs                      name median 158   title median 157   ratio  1.0x
+everything else                                          0.1x to 1.2x
+```
+ASVS is the case that proves the rule is right: its names are long AND its titles are long, so they
+are the same KIND and it is correctly not flagged. The rule is shape mismatch, not absolute length.
+A threshold of 4.0 selects exactly `nist_ssdf` at 26.1x with the next candidate at 1.2x, which is
+more headroom than R11's 2.0 threshold had.
+
+So: a second derived predicate beside `coarse_name_frameworks()`, same design, membership asserted
+against the data rather than declared. Two distinct reasons detector B compares incomparable things,
+each measured, each with a test that fails if a framework acquires or loses the property.
+
+### pdfplumber pin resolved before it could bite
+`requirements.txt` pinned 0.11.10 while 0.11.4 was installed, so every PDF number in this plan came
+from a build CI would not reproduce, and `expected_task_cells = 47` sat under an `expected_count`
+gate. I installed the pinned version and re-ran: **SSDF holds exactly**, 45 tests pass, join row
+identical at 46 links / 42 anchors / rate 1.0000. A risk, not a defect, and now the two remaining
+PDF parsers (ENISA, ETSI) will be measured on the version CI uses.
+
+**Operational note:** a full-suite count taken while an agent is mid-write is not a measurement. I
+read 14 failures and the 14th was `test_the_gate_fires_on_a_planted_quotation` caught between
+writes; the same file passes 13 of 13 moments later.
