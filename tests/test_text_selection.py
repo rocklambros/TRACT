@@ -1087,7 +1087,12 @@ class TestMalformedAlternateTitles:
         # biml declares one: OpenCRE's `output:2` "Direct Output" names ara's
         # [output:1:direct] while its id names a different risk, so the row is
         # resolved by name.
-        pending = {"csa_ccm": 3, "biml": 1}
+        # etsi declares two, on clauses 5.2.2 and 5.3.2. Those are the only
+        # curated rows whose section_id is a technique name rather than a
+        # clause number, so they reach a clause through no other channel. The
+        # other 22 names are deliberately NOT declared: two of them name two
+        # clauses each, and a title alternate answers before any id.
+        pending = {"csa_ccm": 3, "biml": 1, "etsi": 2}
 
         corpus = merged_corpus_path()
         if not corpus.exists():
