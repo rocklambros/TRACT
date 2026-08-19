@@ -1075,3 +1075,52 @@ A concurrent agent's `git restore` reverted Task 5's UNCOMMITTED derived artifac
 derived files are not safe from another task's cleanup on a shared branch. Regeneration recovered it
 exactly because the parser source was untouched, which is the argument for derived artifacts being
 reproducible rather than precious.
+
+### Task 6 (OWASP Proactive Controls): COMPLETE. `edae179`. 1,662 passing. 21 mutations, 21 killed.
+```
+owasp_proactive_controls  76  by_title 0  by_id 76  unresolved 0  anchors 10  l/a 7.60
+                          truncated 61  wrong 0  rate 1.0000
+```
+Was 0 of 76 resolved, 0 anchors. Only this framework moved against `before.json`.
+
+**SIX false brief claims, and one of them no test could have caught.** An unnamed THIRD tree,
+`docs/archive/2024/the-top-10/`, reuses **every stem** of the current tree, so a stem-keyed member
+filter reads 20 files and emits each id twice. The exact-set completeness check I demanded in the
+dispatch cannot see that, because the set is still exactly C1 to C10. Also: `v3/*` is not the decoy
+the brief named (it holds zero markdown), `truncated` is 61 rather than 0, and an `expected_count=1`
+fixture masked the very check it was written to demonstrate.
+
+**R14 fired on SIX of ten here, not zero.** C2, C3, C4, C7, C8 and C9 all sanitise past 2,000, so
+the brief's uncapped body would have discarded six anchors. My R14 premise measurement was wrong and
+I corrected it, but the ruling itself was right and is now confirmed systemic rather than a Task 5
+quirk: two frameworks, eight controls, would have shipped a Description where the parser intended an
+entry.
+
+**Three mutations survived round one and every one was a real test defect, not an equivalent
+mutant.** M6: budget and hard limit were indistinguishable because every fixture overshot both, so a
+1,918-char case was added in the only band where they differ. M14/M17: a 118-character fixture
+sentence happened to place a space at exactly `BUDGET-1`, making word-cut and hard-cut produce the
+same string. One padding character separated them. That is the level of care this bar is now buying.
+
+Shared anchor prefix is 12 characters (`"Description "` left by `strip_markup`), 0.6% of budget
+against the Top 10's 17%, so R13's strip does not apply here. Pinned by a test that dies when a
+preamble is injected.
+
+### Ruling R16 — parser tasks run ONE AT A TIME from here
+Two agents have now tripped over parallel execution on this branch, in mirror-image ways:
+- Task 5's uncommitted derived artifact was reverted by Task 6's `git restore`.
+- Task 6 had to decline to commit `all_controls.json` because it had accumulated Task 5's rebuild.
+Task 6 named the correct rule itself: do not run a shared regeneration while another parser task is
+open. Parser tasks share `data/processed/all_controls.json`, the gitignored overlay, and
+`merge_all_controls.py`, so they are not the disjoint work I treated them as.
+
+Tasks 7 through 13 are serialized. The cost is wall-clock on CPU work; the benefit is no
+shared-artifact race and no cross-task git operation. For local parser work correctness outranks
+throughput, and the owner's instruction was speed on GPU, not on this.
+
+### Cross-cutting item for the diagnostics phase, not a parser defect
+61 of 76 Proactive Controls links land on TRUNCATED anchors, and for the four short controls the
+anchor reaches into `## Implementation`, which `strip_remediation` does not cut. Anchor COMPOSITION,
+which sections make up the 2,150 characters an encoder sees, is now a question spanning at least
+three frameworks. R13 answered it for one table in one framework. It deserves a corpus-wide pass
+once all eleven parsers have landed and the real distribution is visible.
