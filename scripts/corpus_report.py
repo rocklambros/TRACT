@@ -25,6 +25,8 @@ from tract.corpus_report import (
     CORPUS_EVIDENCE_DIR,
     build_corpus_report,
     format_table,
+    require_full_corpus,
+    require_portable_paths,
     write_link_resolution,
     wrong_anchor_applicable,
 )
@@ -66,6 +68,12 @@ def main() -> None:
         print(f"wrote {args.out}")
 
     if args.tag is not None:
+        # A tagged artifact is committed evidence that a later run is compared
+        # against, so both guards run before anything is written. --out stays
+        # unguarded on purpose: it is the scratch path, and nothing is gated
+        # on what it produces.
+        require_full_corpus(report)
+        require_portable_paths(report)
         summary = CORPUS_EVIDENCE_DIR / f"{args.tag}.json"
         detail = CORPUS_EVIDENCE_DIR / f"link_resolution_{args.tag}.jsonl"
         atomic_write_json(report.to_json(), summary)

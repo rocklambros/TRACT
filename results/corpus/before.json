@@ -1,8 +1,8 @@
 {
   "corpus_framework_count": 31,
-  "corpus_path": "/Users/klambros/github_projects/TRACT/data/processed/licensed/all_controls.json",
+  "corpus_path": "data/processed/licensed/all_controls.json",
   "corpus_sha256": "2440d7c062055f665edba134f78e998a560e1056883d7885c643c4435ff9de2d",
-  "links_path": "/Users/klambros/github_projects/TRACT/data/training/hub_links_curated.jsonl",
+  "links_path": "data/training/hub_links_curated.jsonl",
   "links_sha256": "3d42cbd396f26cc7842f0ad3d9a24d48a154fade6fcc6731f0068b756a4a9bdd",
   "max_anchor_chars": 2150,
   "per_framework": [
