@@ -592,3 +592,36 @@ a tracked file and pass without.
 **Open, queued for the fix round:** `results/corpus/before.json` records absolute machine paths
 (`/Users/klambros/...`), so the byte-identical re-run claim holds on this laptop only and a
 username would ship in a CC0 repository. Must be REPO_ROOT-relative.
+
+### Task 1 review: spec PASS, quality CHANGES REQUESTED. Fix round 1 dispatched.
+The reviewer recomputed the headline figures independently of the instrument (calling
+`select_control_text` directly rather than `_fallback_anchor`) and got 299 fallback anchors, 558
+prose-rule exclusions, 31 frameworks, and byte-identical regeneration matching the committed
+artifacts. 1,396 passing, +33, mypy --strict clean on 6 modules, nothing pushed, no `git add -f`.
+
+**The v2 defect class is closed, and on real data rather than in fixtures.** The channel-parity
+test now compares 3,666 resolving links against an index of 3,703 controls. The rebuilt
+wrong-anchor detector fires 40 times where the old title-only one fired 9, and the split is
+**31 through the id channel, 9 through title** - the old detector was structurally blind to 31 of 40.
+
+**Eight findings, two must-fix. The first is the defect class I have been ruling against all run,
+committed inside my own fix for it.** `PRE_EXISTING_EXPOSURE` is not a ratchet: the reviewer added
+a hypothetical copyleft framework, watched the test fail once, appended the id to the allowlist,
+and both tests went green with the set silently growing 7 to 8. The assertion message prescribed
+exactly that remedy. A guard whose documented remedy is "add it to the exception list" is not a
+guard. Fixed by asserting the set by equality AND asserting every member's file is tracked today,
+which is what "pre-existing" actually means.
+Second must-fix: `_load_records` has a first-list-value fallback its own docstring says it does not
+have, so `{"controls": [...]}` returns controls as framework records and every count reads 0
+silently.
+
+**Carried to Task 16, closable by neither of us:** no assertion can falsify a wrong `JOIN_CEILINGS`
+value. The eleven pending ceilings are predictions from parser tasks that have not run, and
+`test_each_floor_is_its_ceiling_rounded_down` only checks two hand-written dicts against each other.
+**Task 16 must treat a ceiling miss as a hypothesis failure, not a parser failure**, or an executor
+will "fix" a correct parser to satisfy a wrong prediction.
+
+**CI is red for a reason my untracking commit widened.**
+`test_the_registry_names_no_framework_that_does_not_exist` compares registry names to files on
+disk, and CI has no parser run, so the nine overlay frameworks have no file. It was 2 wide before
+`b26570e` and is 9 wide now. In the fix round.
