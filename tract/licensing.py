@@ -32,7 +32,101 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from tract.config import PROJECT_ROOT
+from tract.config import FRAMEWORK_LICENSES, PROJECT_ROOT, UNDETERMINED_LICENSE
+
+# ── Shipped licence texts ─────────────────────────────────────────────────
+#
+# GPL-3.0 section 4 requires that a recipient of a covered work receive "a copy
+# of this License along with the Program", and CC BY-SA 4.0 section 3(a)(1)(A)
+# requires retaining a URI or hyperlink to the licence. Recording an SPDX
+# identifier in NOTICE names the terms; it does not deliver them. This
+# directory delivers them.
+#
+# The layout is the one Scancode, FOSSA, ClearlyDefined and `reuse lint` parse:
+# a top-level LICENSES/ directory, one file per SPDX identifier, filename equal
+# to the identifier plus .txt, body equal to the publisher's own text.
+LICENSE_TEXTS_DIR: Final[Path] = PROJECT_ROOT / "LICENSES"
+LICENSE_TEXT_SUFFIX: Final[str] = ".txt"
+
+# TRACT's own contributions. Not in FRAMEWORK_LICENSES, which records only
+# third-party framework terms, so it is named separately rather than derived.
+PROJECT_LICENSE_ID: Final[str] = "CC0-1.0"
+
+# SPDX expression operators, per the SPDX specification's licence expression
+# grammar. Tokens that are operators are not identifiers.
+_SPDX_OPERATORS: Final[frozenset[str]] = frozenset({"AND", "OR", "WITH"})
+
+# The SPDX short-identifier grammar: letters, digits, dot, plus and hyphen.
+_SPDX_IDENTIFIER: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.+-]*$")
+
+
+def spdx_identifiers(licence: str) -> tuple[str, ...]:
+    """The SPDX identifiers inside one recorded licence, in registry order.
+
+    A recorded licence is treated as an SPDX expression when every
+    whitespace-separated token is either an operator or matches the SPDX
+    identifier grammar. Prose reservations fail that test because English
+    carries commas and parentheses, which the grammar excludes: "(c) ENISA
+    2021. Reproduction authorised..." stops at "(c)". The UNDETERMINED sentinel
+    is excluded by name, since it matches the grammar and names no licence.
+
+    A prose reservation returns an empty tuple. There is no licence text to
+    ship for a source that grants nothing, and inventing one would be the
+    guess FRAMEWORK_LICENSES exists to make visible.
+
+    The residual risk is a future single-word prose licence such as
+    "Proprietary", which this reads as an identifier and which then demands a
+    file that cannot exist. That surfaces as a red build naming the framework,
+    which is the intended direction to fail in.
+    """
+    if licence.strip() == UNDETERMINED_LICENSE:
+        return ()
+    tokens = licence.split()
+    if not tokens:
+        return ()
+    identifiers: list[str] = []
+    for token in tokens:
+        if token in _SPDX_OPERATORS:
+            continue
+        if not _SPDX_IDENTIFIER.match(token):
+            return ()
+        identifiers.append(token)
+    return tuple(identifiers)
+
+
+def required_license_text_ids() -> frozenset[str]:
+    """Every SPDX identifier this repository must ship a licence text for.
+
+    Derived from FRAMEWORK_LICENSES rather than kept as a second hand-written
+    list, so a newly ingested framework under a licence nobody has shipped the
+    text of turns the gate red instead of joining the tree silently.
+    """
+    required = {PROJECT_LICENSE_ID}
+    for licence in FRAMEWORK_LICENSES.values():
+        required.update(spdx_identifiers(licence))
+    return frozenset(required)
+
+
+def shipped_license_text_ids() -> frozenset[str]:
+    """Every SPDX identifier with a text file under LICENSES/ right now.
+
+    Raises:
+        FileNotFoundError: LICENSES/ is absent. Fatal rather than empty: an
+            empty result would read as "nothing is required" to a caller that
+            compares the two sets, which is the silence this directory ends.
+    """
+    if not LICENSE_TEXTS_DIR.is_dir():
+        raise FileNotFoundError(
+            f"{LICENSE_TEXTS_DIR} is missing. It carries the licence texts "
+            f"GPL-3.0 section 4 and CC BY-SA section 3(a)(1)(A) require this "
+            f"repository to deliver alongside the framework content it "
+            f"redistributes."
+        )
+    return frozenset(
+        path.stem
+        for path in LICENSE_TEXTS_DIR.glob(f"*{LICENSE_TEXT_SUFFIX}")
+    )
+
 
 # ── Fingerprint parameters ────────────────────────────────────────────────
 #
