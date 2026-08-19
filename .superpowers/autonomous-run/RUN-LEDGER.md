@@ -625,3 +625,29 @@ will "fix" a correct parser to satisfy a wrong prediction.
 `test_the_registry_names_no_framework_that_does_not_exist` compares registry names to files on
 disk, and CI has no parser run, so the nine overlay frameworks have no file. It was 2 wide before
 `b26570e` and is 9 wide now. In the fix round.
+
+### Task 1: COMPLETE. `6ae964b` -> `a23b121`, seven commits.
+1,357 -> 1,403 passing (+46), same 11 environmental failures, mypy --strict clean, ruff clean.
+
+**I verified the three high-risk fixes myself rather than accepting the report.**
+- The ratchet, run as the reviewer's exact attack: injecting a hypothetical copyleft framework into
+  `FRAMEWORK_LICENSES` fails the gate; appending that id to `PRE_EXISTING_EXPOSURE` then fails
+  `test_the_recorded_exposure_is_closed` (set equality) AND
+  `test_every_recorded_exposure_is_tracked_in_git_today` (the real definition of pre-existing).
+  Two independent catches where there were none. Files restored, tree clean.
+- The census guard `require_full_corpus` raises with a specific message, is wired into the CLI at
+  `scripts/corpus_report.py:75`, and is tested in BOTH directions: a 1-framework corpus raises, and
+  the full corpus passes. It covers every tag, not just `before`, because an AFTER built from a
+  partial corpus is the same defect.
+- `before.json` now records `data/processed/licensed/all_controls.json` rather than
+  `/Users/klambros/...`. No home directory anywhere in tracked evidence. Regeneration is
+  byte-identical: `git status --porcelain results/corpus/` is empty after a fresh run.
+
+**Still open and recorded, not resolved:**
+- The seven-framework copyleft exposure (691 links). Ruling R8 makes it visible and un-growable.
+  Owner decision.
+- `test_the_registry_names_no_framework_that_does_not_exist` now exempts nine overlay ids by name,
+  so a genuinely stale overlay registry entry goes uncaught. The trade is against CI-red on every
+  run. Partially covered by `test_no_framework_reaches_the_overlay_on_an_unread_licence`.
+- **For Task 16:** no assertion can falsify a wrong `JOIN_CEILINGS` value. Treat a ceiling miss as
+  a hypothesis failure, not a parser failure.
