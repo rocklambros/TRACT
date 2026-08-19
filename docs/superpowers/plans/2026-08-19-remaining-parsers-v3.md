@@ -3741,16 +3741,23 @@ share one.
 
 ```bash
 PY=/Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+# Ruling R10: this framework is CC BY-SA and is TRACKED. Seven other CC BY-SA
+# frameworks were already tracked and published, so treating this one
+# differently was defensible on no reading. LICENSES/, the NOTICE modification
+# statement and one licence declaration across the published artifacts discharge
+# the attribution and notice obligations. Assert it is NOT in the overlay, so a
+# future tier change that silently recaptures it fails here.
 "$PY" -c "
 from tract.config import OVERLAY_FRAMEWORK_IDS
-assert 'samm' in OVERLAY_FRAMEWORK_IDS, 'Contract Rule 3 has not landed; stop'
-print('overlay routing: on')
+assert 'samm' not in OVERLAY_FRAMEWORK_IDS, 'tier changed under this task; stop'
+print('routing: tracked')
 "
-git check-ignore -v data/processed/frameworks/samm.json \
-  || { echo "NOT IGNORED. the Rule 3 .gitignore lines are missing; stop"; exit 1; }
+git check-ignore -q data/processed/frameworks/samm.json \
+  && { echo "samm.json is ignored but R10 tracks it; stop"; exit 1; }
 PYTHONPATH=. "$PY" -m pytest tests/test_licensed_text_not_tracked.py \
                               tests/test_framework_licenses.py -q
-git add parsers/parse_samm.py tests/test_parse_samm.py
+git add parsers/parse_samm.py tests/test_parse_samm.py \
+        data/processed/frameworks/samm.json data/processed/all_controls.json
 git commit -m "feat: parse SAMM at the stream, with a statement that fits the encoder"
 ```
 
@@ -4246,16 +4253,23 @@ processed file routes to the gitignored overlay and is not staged.
 
 ```bash
 PY=/Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+# Ruling R10: this framework is CC BY-SA and is TRACKED. Seven other CC BY-SA
+# frameworks were already tracked and published, so treating this one
+# differently was defensible on no reading. LICENSES/, the NOTICE modification
+# statement and one licence declaration across the published artifacts discharge
+# the attribution and notice obligations. Assert it is NOT in the overlay, so a
+# future tier change that silently recaptures it fails here.
 "$PY" -c "
 from tract.config import OVERLAY_FRAMEWORK_IDS
-assert 'owasp_top10_2021' in OVERLAY_FRAMEWORK_IDS, 'Contract Rule 3 has not landed; stop'
-print('overlay routing: on')
+assert 'owasp_top10_2021' not in OVERLAY_FRAMEWORK_IDS, 'tier changed under this task; stop'
+print('routing: tracked')
 "
-git check-ignore -v data/processed/frameworks/owasp_top10_2021.json \
-  || { echo "NOT IGNORED. the Rule 3 .gitignore lines are missing; stop"; exit 1; }
+git check-ignore -q data/processed/frameworks/owasp_top10_2021.json \
+  && { echo "owasp_top10_2021.json is ignored but R10 tracks it; stop"; exit 1; }
 PYTHONPATH=. "$PY" -m pytest tests/test_licensed_text_not_tracked.py \
                               tests/test_framework_licenses.py -q
-git add parsers/parse_owasp_top10_2021.py tests/test_parse_owasp_top10_2021.py
+git add parsers/parse_owasp_top10_2021.py tests/test_parse_owasp_top10_2021.py \
+        data/processed/frameworks/owasp_top10_2021.json data/processed/all_controls.json
 git commit -m "feat: parse the ten OWASP Top 10 2021 categories from the English 2021 tree"
 ```
 
@@ -4586,17 +4600,25 @@ worst in the corpus after `owasp_cheat_sheets` at 7.98.
 
 ```bash
 PY=/Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+# Ruling R10: this framework is CC BY-SA and is TRACKED. Seven other CC BY-SA
+# frameworks were already tracked and published, so treating this one
+# differently was defensible on no reading. LICENSES/, the NOTICE modification
+# statement and one licence declaration across the published artifacts discharge
+# the attribution and notice obligations. Assert it is NOT in the overlay, so a
+# future tier change that silently recaptures it fails here.
 "$PY" -c "
 from tract.config import OVERLAY_FRAMEWORK_IDS
-assert 'owasp_proactive_controls' in OVERLAY_FRAMEWORK_IDS, 'Contract Rule 3 has not landed; stop'
-print('overlay routing: on')
+assert 'owasp_proactive_controls' not in OVERLAY_FRAMEWORK_IDS, 'tier changed under this task; stop'
+print('routing: tracked')
 "
-git check-ignore -v data/processed/frameworks/owasp_proactive_controls.json \
-  || { echo "NOT IGNORED. the Rule 3 .gitignore lines are missing; stop"; exit 1; }
+git check-ignore -q data/processed/frameworks/owasp_proactive_controls.json \
+  && { echo "owasp_proactive_controls.json is ignored but R10 tracks it; stop"; exit 1; }
 PYTHONPATH=. "$PY" -m pytest tests/test_licensed_text_not_tracked.py \
                               tests/test_framework_licenses.py -q
 git add parsers/parse_owasp_proactive_controls.py \
-        tests/test_parse_owasp_proactive_controls.py
+        tests/test_parse_owasp_proactive_controls.py \
+        data/processed/frameworks/owasp_proactive_controls.json \
+        data/processed/all_controls.json
 git commit -m "feat: parse the ten Proactive Controls from the current mkdocs tree"
 ```
 
@@ -5091,16 +5113,23 @@ git check-ignore -v data/processed/repair_audit/wstg.jsonl \
 
 ```bash
 PY=/Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+# Ruling R10: this framework is CC BY-SA and is TRACKED. Seven other CC BY-SA
+# frameworks were already tracked and published, so treating this one
+# differently was defensible on no reading. LICENSES/, the NOTICE modification
+# statement and one licence declaration across the published artifacts discharge
+# the attribution and notice obligations. Assert it is NOT in the overlay, so a
+# future tier change that silently recaptures it fails here.
 "$PY" -c "
 from tract.config import OVERLAY_FRAMEWORK_IDS
-assert 'wstg' in OVERLAY_FRAMEWORK_IDS, 'Contract Rule 3 has not landed; stop'
-print('overlay routing: on')
+assert 'wstg' not in OVERLAY_FRAMEWORK_IDS, 'tier changed under this task; stop'
+print('routing: tracked')
 "
-git check-ignore -v data/processed/frameworks/wstg.json \
-  || { echo "NOT IGNORED. the Rule 3 .gitignore lines are missing; stop"; exit 1; }
+git check-ignore -q data/processed/frameworks/wstg.json \
+  && { echo "wstg.json is ignored but R10 tracks it; stop"; exit 1; }
 PYTHONPATH=. "$PY" -m pytest tests/test_licensed_text_not_tracked.py \
                               tests/test_framework_licenses.py -q
-git add parsers/parse_wstg.py tests/test_parse_wstg.py
+git add parsers/parse_wstg.py tests/test_parse_wstg.py \
+        data/processed/frameworks/wstg.json data/processed/all_controls.json
 git commit -m "feat: parse WSTG on the ID table, merging the one id that owns two files"
 ```
 
@@ -8828,16 +8857,23 @@ running this parser against both pinned PDFs and resolving all 21 links through 
 
 ```bash
 PY=/Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+# Ruling R10: this framework is CC BY-SA and is TRACKED. Seven other CC BY-SA
+# frameworks were already tracked and published, so treating this one
+# differently was defensible on no reading. LICENSES/, the NOTICE modification
+# statement and one licence declaration across the published artifacts discharge
+# the attribution and notice obligations. Assert it is NOT in the overlay, so a
+# future tier change that silently recaptures it fails here.
 "$PY" -c "
 from tract.config import OVERLAY_FRAMEWORK_IDS
-assert 'biml' in OVERLAY_FRAMEWORK_IDS, 'Contract Rule 3 has not landed; stop'
-print('overlay routing: on')
+assert 'biml' not in OVERLAY_FRAMEWORK_IDS, 'tier changed under this task; stop'
+print('routing: tracked')
 "
-git check-ignore -v data/processed/frameworks/biml.json \
-  || { echo "NOT IGNORED. the Rule 3 .gitignore lines are missing; stop"; exit 1; }
+git check-ignore -q data/processed/frameworks/biml.json \
+  && { echo "biml.json is ignored but R10 tracks it; stop"; exit 1; }
 git check-ignore -v data/processed/repair_audit/biml.jsonl \
   || { echo "audit NOT IGNORED. stop and fix .gitignore before committing"; exit 1; }
-git add parsers/parse_biml.py tests/test_parse_biml.py
+git add parsers/parse_biml.py tests/test_parse_biml.py \
+        data/processed/frameworks/biml.json data/processed/all_controls.json
 git commit -m "feat: scope BIML risks to their document so two id spaces stop colliding"
 ```
 
