@@ -1585,3 +1585,56 @@ Two smaller things the fix exposed: the declared-target check blamed `NAME_CONFL
 missing alt_title target, including entries from the new table, and the synthetic fixtures could not
 exercise that check at all because they never produced `data:1`. Both fixed. The variant table is
 derived from the tracked link file and verified to fail in both directions.
+
+### Task 13 (ETSI): COMPLETE. `343161f`. ALL ELEVEN PARSERS ARE DONE. 2,059 passing.
+```
+etsi  36 links | by_title 5 | by_id 31 | unresolved 0 | anchors 14 | l/a 2.571
+      truncated 29 | rate 1.0000
+```
+**The page-header bug is fixed and verified in both directions.** Clauses 5, 6 and 7 now carry three
+distinct real headings, 25 numbers still match, none twice, and the guard fires exactly 3 times.
+**`validate_all.py` exits 0 for the first time in this run**: "32 frameworks, 0 errors", all 11 etsi
+errors cleared. No ETSI text reached git: the artifact is ignored, no `git add -f`, and the
+fingerprint gate returns clean on the parser, the tests, the commit message, the full diff AND the
+report.
+
+19 mutations, all died in full and CI-deselected runs. Six survived a first pass, including one that
+survived CI-ONLY because the synthetic fixture had no contents page. Nine false measured claims plus
+three design defects: clause 7 is 887 chars not 2,776 (the brief's figure was 68% Annex A
+change-history table), it is a page HEADER not a footer, and Step 1 aborts on the pinned pdfplumber.
+
+**Three defects the brief never mentioned, found and fixed, one of them material:** 32 furniture
+lines carrying **656 characters of the document identifier inside 14 clause bodies**. That is a
+learnable framework shortcut sitting in the anchor: a model could identify ETSI from the boilerplate
+rather than from the security content. Also Annex A leaking into clause 7, and a contents page held
+out only by an untested 81-character heading bound.
+
+### Ruling R21 — R11 was one-directional and the world is not
+ETSI reports `wrong_anchor_risk 32 of 36` against a pre-registered budget of 1, and
+`COARSE_NAME_RATIO` can never reach it. I measured `distinct(ids)/distinct(names)` across every
+framework with ten or more links:
+```
+dsomm          183/18  10.17   names COARSER   <- R11 covers
+biml            20/17   1.18
+(19 frameworks between 0.99 and 1.18)
+nist_ai_100_2   20/28   0.71   names FINER     <- uncovered
+etsi            16/24   0.67   names FINER     <- uncovered
+enisa           10/33   0.30   names FINER     <- uncovered
+```
+Coarse names mean many ids share one name. Fine names mean the id reached a PARENT while the name
+describes a CHILD. Both make detector B compare incomparable things, so the predicate must be
+symmetric. The data separates cleanly: the 1:1 cluster bottoms out at 0.99 and the next value down
+is 0.71, so a fine threshold has real headroom rather than being fitted to admit ETSI.
+
+`enisa` qualifies structurally at 0.30 but resolves entirely by title, so detector B never runs for
+it. It is included anyway: the property belongs to the link file, not to whether a channel happened
+to fire, and excluding it would make membership depend on the run.
+
+**The pre-registered budget of 1 is CORRECT and stays.** Detectors A and C give 1 of 9 for ETSI;
+detector B adds the other 31. Scoping B properly makes the pre-registration right rather than
+requiring it to move. Task 16 asserts only on the eleven pending frameworks, so `nist_ai_100_2`'s
+20 of 45 is out of scope, recorded rather than gated, and means its wrong-anchor figure is not
+meaningful either.
+
+`csa_ccm`'s budget of 1 was flagged for the same suspicion and is fine: `by_id` is 0, so detector B
+cannot run there and the 1 comes from detector A, which is the IPY case it was registered for.
