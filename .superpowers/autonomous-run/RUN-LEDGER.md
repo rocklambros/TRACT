@@ -1124,3 +1124,42 @@ anchor reaches into `## Implementation`, which `strip_remediation` does not cut.
 which sections make up the 2,150 characters an encoder sees, is now a question spanning at least
 three frameworks. R13 answered it for one table in one framework. It deserves a corpus-wide pass
 once all eleven parsers have landed and the real distribution is visible.
+
+### R14 blast radius: bounded to the NEW parsers. I over-alarmed twice before getting this right.
+While Task 7 ran I checked whether R14 had already fired across the existing corpus. Three passes,
+each narrowing, and the first two were my own false positives. Recording all three because the
+wrong turns are the useful part.
+
+**Pass 1, wrong.** Flagged "description sits within 15 chars of the 2,000 cap" as the signature.
+That returned 362 controls across 14 frameworks and looked like a corpus-wide disaster. It is not a
+signature at all: a parser that DELIBERATELY caps its description at 2,000, which is exactly what
+R14 asks for, lands in that band by design.
+
+**Pass 2, also wrong.** Tightened to "full_text is the continued description". 377 controls. Still
+wrong, because it cannot distinguish the intended design (`description = truncate(body)`,
+`full_text = body`) from the clobber (`sanitize` writing the description into `full_text`). Both
+produce a full_text that starts with the description.
+
+**Pass 3, correct.** `_sanitize_control` only fires when description EXCEEDS 2,000, and it only
+DESTROYS something when the parser's `full_text` is a DIFFERENT text. Both conditions together:
+```
+owasp_llm_top10_2026   10
+owasp_top10_2021        1   (A04, Task 5's deliberate cap)
+                       11   corpus-wide
+```
+Then ran the holdout's parser and compared emitted against stored:
+```
+LLM01:2026  raw desc 1991  raw full_text 19621  ->  stored 19574   survived
+LLM02:2026  raw desc 1992  raw full_text 12029  ->  stored 11990   survived
+```
+It caps at 1,991 to 1,998, under the limit, and its distinct 19k anchor survives intact.
+
+**Conclusion: R14's blast radius outside Tasks 5 and 6 is ZERO.** Every pre-existing parser already
+caps correctly. R14 is a defect in the BRIEFS, which omit the cap, not in the shipped corpus. It hit
+2 of 10 controls in Task 5 and 6 of 10 in Task 6 because both parsers were written from briefs that
+never mentioned it. The dispatch instruction I now give every remaining task is the fix, and the
+existing corpus needs no remediation.
+
+**The lesson I keep relearning this run: a signature that matches the correct behaviour is not a
+signature.** Passes 1 and 2 would each have produced a confident, wrong, expensive finding. The only
+thing that settled it was running the parser and comparing what it emits against what is stored.
