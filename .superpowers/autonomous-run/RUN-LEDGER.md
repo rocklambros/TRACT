@@ -791,3 +791,35 @@ csa_aicm", it is "the judgment that admitted it was never written down, and the 
 express it."
 My action: leave it tracked (already published, removing un-publishes nothing), stop the NEXT export
 from writing prose it may not redistribute, and put it to the owner.
+
+### LICENSING WORKSTREAM COMPLETE. R8(b) implemented in full. 7 commits.
+1,357 -> **1,496 passing**, same 11 environmental failures, licensed gate 28/28,
+`results/corpus/` byte-identical, `mypy --strict` error set unchanged.
+
+Final tiers: RESTRICTED `{etsi, iso_27001}`, CONDITIONAL `{csa_ccm, dsomm}`, OVERLAY the union.
+The five CC BY-SA frameworks are tracked again, in the order that keeps CI honest.
+
+**`data/processed/all_controls.json` did NOT move.** sha256 `7106642c...` before and after, verified
+by me. All five artifacts carry `description == title` and no `full_text`, so the redaction they
+stopped receiving was already a no-op. No published metric shifts.
+
+**I verified the new copyleft gate can fail**, rather than accepting it. Injecting a
+`ghost_copyleft = CC-BY-SA-4.0` entry with no NOTICE row turns
+`test_every_copyleft_framework_is_named_in_notice` red. The demand changed from "copyleft implies
+overlay" to "copyleft implies a NOTICE row, a shipped licence text matching the recorded SPDX id,
+and coverage by the modification statement", and it still bites. `PRE_EXISTING_EXPOSURE` and its
+three tests were deleted, correctly: the set was a carve-out from a demand that no longer exists.
+
+Across the two licensing agents: 12 mutations run, all killed their targets. One assertion was
+rewritten after a mutation exposed it failing for the wrong reason, which is the failure mode a
+mutation audit exists to find and which a passing test suite cannot.
+
+**Second leak channel found and closed.** `opencre_export/` was tracked, NOT gitignored, and every
+CSV carried a populated description column: CSA 184/184 rows at up to 485 chars, EU AI Act 84/84 at
+up to 2000, MITRE ATLAS 128/128, and two more. `exportable_description` now lives in
+`tract/licensing.py`, shared by both exporters and applied per row on that row's own framework_id.
+The five existing CSVs are deliberately untouched, and a new test reads each one back and fails if
+an overlay framework's description appears.
+
+Standing rule added: every commit carries a Conventional Commits prefix. Two L3 commits omitted one
+and were left alone, because rewriting history for a prefix costs more risk than it buys.
