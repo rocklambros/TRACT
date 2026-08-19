@@ -651,3 +651,24 @@ disk, and CI has no parser run, so the nine overlay frameworks have no file. It 
   run. Partially covered by `test_no_framework_reaches_the_overlay_on_an_unread_licence`.
 - **For Task 16:** no assertion can falsify a wrong `JOIN_CEILINGS` value. Treat a ceiling miss as
   a hypothesis failure, not a parser failure.
+
+---
+
+## OWNER DIRECTIVES, 2026-08-19 (second unattended authorization)
+
+1. **Ruling R8: option (b).** Fix the declaration rather than move 691 links. Implementation and
+   its premortem below.
+2. Premortem every major decision BEFORE implementing it, not after.
+3. Test and validate after each task.
+4. All remaining inference and training on RunPod, for SPEED. An API path is acceptable only where
+   it is genuinely FASTER, not merely cheaper. Spend approved.
+5. No shortcuts. Take the most complete and correct solution at every fork.
+6. Impeccable branch and commit hygiene so the branch merges cleanly into main at the end.
+7. Catch my own errors and say so.
+
+### Branch strategy for the merge-clean requirement
+Working branch is `semantic-rebuild`, off `main`. A stale memory note says DO NOT PUSH it because
+ISO prose had escaped through three channels. **That is now stale**: the tree-wide fingerprint gate
+is green (8 passed), the four named files were cleaned, and the only remaining licensed-text hit in
+the tree was an ISO quotation in a superseded plan, which is gitignored on purpose. Re-verify the
+gate immediately before any push, never on the strength of this note.
