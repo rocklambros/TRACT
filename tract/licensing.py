@@ -317,8 +317,22 @@ def shipped_license_text_ids() -> frozenset[str]:
 # title, and the title column is deliberately excluded here because OpenCRE
 # publishes those titles openly and they are already tracked.
 #
-# Raising this number to make a known overlap pass would be the "gate that
-# cannot fire" defect. If the tree collides at 12, fix the tree.
+# STANDING RULE, adopted 2026-08-19: RAISING THIS NUMBER TO CLEAR A HIT IS
+# FORBIDDEN. It is the "gate that cannot fire" defect and this project has
+# rejected that shape repeatedly. If the tree collides at 12, fix the tree.
+#
+# The rule has teeth because the numbers are known. During the R18 redaction the
+# longest run of licensed text in a tracked document was 30 words and the
+# shortest quoted control statement was 13, so n=14 would have cleared one
+# offender and n=31 would have cleared every one of them, silently, with the
+# text still in git. tests/test_licensed_text_not_tracked.py pins this constant
+# so a change has to be argued rather than typed.
+#
+# The window is a FALSE-POSITIVE control, not a licence boundary. Text shorter
+# than 12 words is not thereby licensed to anyone. The same redaction swept at
+# n=7 and found four real DSOMM fragments of 7 to 9 words that no gate would
+# ever catch; they were removed because they were the publisher's wording, not
+# because a test demanded it.
 NGRAM_WORDS: Final[int] = 12
 
 # 128 bits of each digest. Over ~7 million candidate windows against ~17,000
@@ -335,13 +349,87 @@ FINGERPRINT_PATH: Final[Path] = (
     PROJECT_ROOT / "tests" / "fixtures" / "licensed_text_fingerprints.json"
 )
 
+# ── Which frameworks the fingerprint corpus covers ────────────────────────
+#
+# The corpus used to cover RESTRICTED_FRAMEWORK_IDS, so it held etsi and
+# iso_27001 and nothing else. dsomm and csa_ccm route to the same gitignored
+# overlay for the same reason -- their publishers' terms are ones a CC0 grant
+# cannot carry -- and neither contributed a single n-gram. A task brief then
+# asked for a tracked test fixture quoting real CCM specification text, the
+# implementer invented the strings instead of copying them, and had they not,
+# nothing here would have fired. A control whose enforcement is "someone reads
+# carefully" is not a control.
+#
+# Derived from OVERLAY_FRAMEWORK_IDS rather than listed, so a framework moved
+# into the overlay tier later is either fingerprinted or names itself in the
+# KeyError that scripts/build_licensed_fingerprints.py raises for a framework
+# with no extractor. Neither outcome is silence.
+#
+# Two exclusions, both deferrals with a named trigger rather than exemptions.
+#
+#   csa_aicm  Its 243 control statements are deliberately TRACKED today, at a
+#             176-character median, pending an owner ruling on whether CSA's
+#             notice permits that. It sits outside OVERLAY_FRAMEWORK_IDS as of
+#             2026-08-19, so subtracting it changes nothing today. The entry is
+#             here so a ruling that moves it into the overlay does not switch
+#             this gate on as a side effect.
+#
+#   csa_ccm   Deferred on the AICM ruling above, because the two are not
+#             separable questions. MEASURED 2026-08-19: 138 of the 243 tracked
+#             AICM descriptions are byte-identical, after
+#             normalise_for_fingerprint, to a CCM control specification
+#             carrying the SAME control id. CSA built AICM on CCM's control set
+#             and reused CCM's wording for the domains that are not
+#             AI-specific. So fingerprinting csa_ccm reds six tracked
+#             AICM-derived artifacts and fails the branch on a question nobody
+#             has answered rather than on a defect.
+#
+#             The trigger is the AICM ruling, either way. If AICM prose leaves
+#             the tracked tree, csa_ccm gates cleanly and comes off this list.
+#             If AICM prose stays, this line records why csa_ccm cannot join.
+#
+#             What was explicitly NOT done: trimming the CCM fingerprint corpus
+#             to skip the shared 138. That produces a gate which passes because
+#             it stopped looking, and the CCM extractor is registered in
+#             scripts/build_licensed_fingerprints.py at full coverage, ready
+#             and measured, so flipping this is a one-line change.
+FINGERPRINT_EXCLUDED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "csa_aicm", "csa_ccm",
+})
+
+
+def fingerprinted_framework_ids() -> frozenset[str]:
+    """Every framework the tracked fingerprint corpus must cover.
+
+    Raises:
+        ValueError: an excluded id names no framework this project knows. A
+            typo would silently exclude nothing and read as though it excluded
+            something, which is the shape of a gate that quietly widened.
+    """
+    unknown = FINGERPRINT_EXCLUDED_FRAMEWORK_IDS - set(FRAMEWORK_LICENSES)
+    if unknown:
+        raise ValueError(
+            f"FINGERPRINT_EXCLUDED_FRAMEWORK_IDS names {sorted(unknown)}, "
+            f"which is not in FRAMEWORK_LICENSES. An exclusion that matches no "
+            f"framework excludes nothing while reading as a live decision."
+        )
+    return frozenset(OVERLAY_FRAMEWORK_IDS) - FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
+
 # The generated file's schema. The gate asserts these are the ONLY keys
 # present, which is what makes "this file contains no licensed text" a checked
 # property rather than a claim: there is no free-text field to hide prose in.
 FINGERPRINT_TOP_LEVEL_KEYS: Final[frozenset[str]] = frozenset({
     "salt", "algorithm", "ngram_words", "hash_hex_chars", "generator",
-    "documents", "fingerprints",
+    "documents", "fingerprints", "deferred_framework_ids",
 })
+
+# `deferred_framework_ids` records WHICH overlay frameworks this corpus does not
+# cover, so a reader of the fixture alone can see the hole rather than infer it
+# from a count. It holds framework IDS AND NOTHING ELSE, deliberately: the
+# reason a framework is deferred is prose, and this file has no free-text field
+# on purpose. The reasons live in FINGERPRINT_EXCLUDED_FRAMEWORK_IDS above and
+# in the gate's docstring. The gate asserts this list equals that constant, so
+# the fixture and the code cannot drift.
 FINGERPRINT_DOCUMENT_KEYS: Final[frozenset[str]] = frozenset({
     "framework_id", "filename", "source_sha256", "ngram_count",
 })
@@ -425,6 +513,7 @@ class LicensedFingerprints:
     hash_hex_chars: int
     documents: tuple[LicensedDocument, ...]
     fingerprints: frozenset[str]
+    deferred_framework_ids: frozenset[str]
 
     @classmethod
     def load(cls, path: Path | None = None) -> LicensedFingerprints:
@@ -481,12 +570,23 @@ class LicensedFingerprints:
             )
             for entry in data["documents"]
         )
+        deferred = frozenset(str(v) for v in data["deferred_framework_ids"])
+        if deferred != FINGERPRINT_EXCLUDED_FRAMEWORK_IDS:
+            raise ValueError(
+                f"{target}: deferred_framework_ids is {sorted(deferred)} but "
+                f"FINGERPRINT_EXCLUDED_FRAMEWORK_IDS is "
+                f"{sorted(FINGERPRINT_EXCLUDED_FRAMEWORK_IDS)}. The fixture and "
+                f"the code disagree about which frameworks this corpus does not "
+                f"cover, so one of them is telling a reader the wrong thing "
+                f"about the size of the hole. Regenerate the file."
+            )
         return cls(
             salt=str(data["salt"]),
             ngram_words=int(data["ngram_words"]),
             hash_hex_chars=int(data["hash_hex_chars"]),
             documents=documents,
             fingerprints=frozenset(str(value) for value in data["fingerprints"]),
+            deferred_framework_ids=deferred,
         )
 
     def first_hit(self, text: str) -> str | None:

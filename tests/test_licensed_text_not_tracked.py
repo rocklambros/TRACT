@@ -22,6 +22,36 @@ It now runs off `tests/fixtures/licensed_text_fingerprints.json`, a tracked
 file of salted hashes carrying no text. A missing fingerprint file is a
 failure, never a skip. See tract/licensing.py for the parameters and
 scripts/build_licensed_fingerprints.py for the rebuild.
+
+The third defect was scope. The corpus covered RESTRICTED_FRAMEWORK_IDS, so it
+held etsi and iso_27001 and nothing else, while dsomm and csa_ccm routed to the
+same gitignored overlay for the same reason and contributed no fingerprints at
+all. A task brief then asked an implementer to quote real CSA CCM specification
+text into a tracked CC0 fixture. The implementer invented the strings instead,
+and nothing here would have fired if they had not. Scanning the tree with the
+widened corpus found the text already in git: six documents transcribing raw
+sources under a "Verbatim sample" heading, a channel nobody had checked because
+the gate that cleared them only knew two frameworks.
+
+Scope is now `tract.licensing.fingerprinted_framework_ids()`: OVERLAY_FRAMEWORK_IDS
+less FINGERPRINT_EXCLUDED_FRAMEWORK_IDS. Two frameworks are deferred, and both
+are deferrals with a named trigger rather than exemptions:
+
+  csa_aicm  Its 243 control statements are deliberately tracked pending an owner
+            ruling on whether CSA's notice permits that. It is outside the
+            overlay tier today, so the entry only stops a future ruling from
+            switching this gate on as a side effect.
+  csa_ccm   Deferred on the same ruling, because the two are one question.
+            MEASURED: 138 of the 243 tracked AICM descriptions are
+            byte-identical, after normalise_for_fingerprint, to a CCM control
+            specification under the SAME control id. Gating csa_ccm therefore
+            reds six tracked AICM-derived artifacts and fails the branch on an
+            unanswered question rather than on a defect.
+
+Trimming the CCM corpus to skip the shared 138 was considered and rejected: it
+produces a gate that passes because it stopped looking. csa_ccm's extractor is
+registered and measured at full coverage, so reversing the deferral is a
+one-line change to a frozenset rather than new code.
 """
 from __future__ import annotations
 
@@ -33,17 +63,27 @@ from pathlib import Path
 import pytest
 
 from tract.config import (
+    FRAMEWORK_LICENSES,
     OVERLAY_FRAMEWORK_IDS,
     PROCESSED_DIR,
+    RAW_FRAMEWORKS_DIR,
     RESTRICTED_FRAMEWORK_IDS,
 )
 from tract.licensing import (
     FINGERPRINT_DOCUMENT_KEYS,
+    FINGERPRINT_EXCLUDED_FRAMEWORK_IDS,
     FINGERPRINT_PATH,
     FINGERPRINT_TOP_LEVEL_KEYS,
+    NGRAM_WORDS,
     LicensedFingerprints,
     fingerprint_ngrams,
+    fingerprinted_framework_ids,
 )
+
+# The generator's own extractors, imported rather than reimplemented. The
+# positive control below used to hand-roll the ISO Annex A row parse, so the
+# test's copy and the generator's could drift apart with nothing to notice.
+from scripts.build_licensed_fingerprints import _EXTRACTORS
 
 # RESTRICTED_FRAMEWORK_IDS lives in tract/config.py, not here. The merge step
 # reads the same constant to decide what stays out of the tracked corpus, and
@@ -112,28 +152,125 @@ class TestTheFingerprintFileCarriesNoText:
             )
         for document in data["documents"]:
             assert set(document) == set(FINGERPRINT_DOCUMENT_KEYS)
-            assert document["framework_id"] in RESTRICTED_FRAMEWORK_IDS
+            assert document["framework_id"] in fingerprinted_framework_ids()
             assert _SHA256_RE.match(document["source_sha256"])
             assert isinstance(document["ngram_count"], int)
             # A filename, not a document body. Bounded so a future change
             # cannot start writing an excerpt into this field.
             assert len(document["filename"]) <= 128
 
-    def test_every_restricted_framework_contributed_fingerprints(
+        # Ids and nothing else. The reason a framework is deferred is prose, and
+        # this file has no free-text field on purpose, so a "reason" string here
+        # would be the one place licensed text could sit unnoticed.
+        for framework_id in data["deferred_framework_ids"]:
+            assert isinstance(framework_id, str)
+            assert framework_id in FRAMEWORK_LICENSES, (
+                f"deferred_framework_ids names {framework_id!r}, which is not a "
+                f"framework. This field carries ids, never prose."
+            )
+
+    def test_the_recorded_deferrals_match_the_code(self) -> None:
+        """The fixture and the constant must agree on the size of the hole.
+
+        A reader holding only the fixture should be able to see which overlay
+        frameworks it does not cover. If that list drifts from the constant the
+        generator reads, the fixture tells them the wrong thing.
+
+        Reads the raw JSON rather than taking the `fingerprints` fixture, and
+        that is the whole point. LicensedFingerprints.load already raises on a
+        mismatch, so an assertion against the LOADED object could never fail:
+        the loader would have raised first and the test would have been a
+        tautology dressed as a check. Mutation testing caught exactly that --
+        blanking the field in the file killed the suite through the loader while
+        this assertion never ran.
+        """
+        data = json.loads(FINGERPRINT_PATH.read_text(encoding="utf-8"))
+        assert (
+            frozenset(data["deferred_framework_ids"])
+            == FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
+        ), (
+            f"the fixture records {sorted(data['deferred_framework_ids'])} as "
+            f"deferred but the code defers "
+            f"{sorted(FINGERPRINT_EXCLUDED_FRAMEWORK_IDS)}."
+        )
+
+    def test_the_loader_rejects_a_fixture_that_misstates_its_deferrals(
+        self, tmp_path: Path
+    ) -> None:
+        """The guard behind the tautology above, exercised where it lives.
+
+        Reachable in both directions: the unmodified file loads, and the same
+        file with one id removed from `deferred_framework_ids` does not.
+        """
+        data = json.loads(FINGERPRINT_PATH.read_text(encoding="utf-8"))
+        good = tmp_path / "good.json"
+        good.write_text(json.dumps(data), encoding="utf-8")
+        assert LicensedFingerprints.load(good).deferred_framework_ids == (
+            FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
+        )
+
+        data["deferred_framework_ids"] = sorted(
+            FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
+        )[1:]
+        bad = tmp_path / "bad.json"
+        bad.write_text(json.dumps(data), encoding="utf-8")
+        with pytest.raises(ValueError, match="deferred_framework_ids"):
+            LicensedFingerprints.load(bad)
+
+    def test_the_gate_still_covers_something(self) -> None:
+        """A deferral that reached every framework would empty the gate.
+
+        Separated from the deferral-equality test because it fails for a
+        different reason and would otherwise hide behind it.
+        """
+        assert fingerprinted_framework_ids(), (
+            "every overlay framework is deferred, so this gate checks nothing"
+        )
+
+    def test_every_framework_in_scope_contributed_fingerprints(
         self, fingerprints: LicensedFingerprints
     ) -> None:
-        """A restricted source with no fingerprints is an unguarded source."""
+        """A source in scope with no fingerprints is an unguarded source."""
         covered = {document.framework_id for document in fingerprints.documents}
-        assert covered == set(RESTRICTED_FRAMEWORK_IDS), (
-            f"fingerprints cover {sorted(covered)} but "
-            f"RESTRICTED_FRAMEWORK_IDS is {sorted(RESTRICTED_FRAMEWORK_IDS)}. "
-            f"Run `python -m scripts.build_licensed_fingerprints`."
+        assert covered == fingerprinted_framework_ids(), (
+            f"fingerprints cover {sorted(covered)} but the corpus is scoped to "
+            f"{sorted(fingerprinted_framework_ids())}. Run "
+            f"`python -m scripts.build_licensed_fingerprints`."
         )
         for document in fingerprints.documents:
             assert document.ngram_count > 0, (
                 f"{document.framework_id} contributed no n-grams, so nothing "
                 f"about that source is actually being checked"
             )
+
+    def test_every_overlay_framework_has_an_extractor(self) -> None:
+        """Including the deferred ones, so a deferral stays reversible.
+
+        A deferred framework whose extractor was never written or was later
+        deleted turns a licence decision into a code project. csa_ccm is
+        deferred and its extractor is registered for exactly this reason.
+        """
+        missing = sorted(set(OVERLAY_FRAMEWORK_IDS) - set(_EXTRACTORS))
+        assert not missing, (
+            f"overlay framework(s) {missing} have no fingerprint extractor. A "
+            f"framework added to the tier must be gated or explicitly deferred, "
+            f"and either way the extractor has to exist."
+        )
+
+    def test_the_ngram_window_has_not_been_widened(self) -> None:
+        """Standing rule: raising NGRAM_WORDS to clear a hit is forbidden.
+
+        Pinned so the change has to be argued rather than typed. During the R18
+        redaction the longest run of licensed text in a tracked document was 30
+        words and the shortest quoted control statement was 13, so n=14 would
+        have cleared one offender and n=31 would have cleared all of them with
+        the text still in git.
+
+        12 is also the measured floor: at n=10 CSA AICM's own HRS-10 collides
+        with ISO A.6.6 on shared NDA boilerplate. So this is not a free
+        parameter in either direction.
+        """
+        assert NGRAM_WORDS == 12
 
 
 def test_the_gate_fires_on_a_planted_quotation(
@@ -161,6 +298,7 @@ def test_the_gate_fires_on_a_planted_quotation(
         hash_hex_chars=fingerprints.hash_hex_chars,
         documents=fingerprints.documents,
         fingerprints=fingerprints.fingerprints | set(grams),
+        deferred_framework_ids=fingerprints.deferred_framework_ids,
     )
 
     victim = tmp_path / "innocent_looking.json"
@@ -175,33 +313,72 @@ def test_the_gate_fires_on_a_planted_quotation(
     assert fingerprints.first_hit(planted) is None
 
 
-def test_real_fingerprints_flag_a_real_statement(
-    fingerprints: LicensedFingerprints,
+@pytest.mark.parametrize("framework_id", sorted(fingerprinted_framework_ids()))
+def test_real_text_planted_in_a_tracked_looking_file_is_flagged(
+    fingerprints: LicensedFingerprints, tmp_path: Path, framework_id: str,
 ) -> None:
-    """End-to-end check against the actual restricted source.
+    """End-to-end positive control, per framework, against the real source.
 
     Redundant with the planted-quotation test above, which is why this one may
     skip: it needs the gitignored source, and the gate itself must not. Kept
     because it is the only check that the committed hashes were computed from
-    the document they claim.
-    """
-    source = (
-        REPO_ROOT / "data" / "raw" / "frameworks" / "iso_27001"
-        / "ISO_IEC_27001_2022_en.md"
-    )
-    if not source.exists():
-        pytest.skip("raw ISO source absent; the planted-quotation test covers this")
+    the documents they claim, one framework at a time. A rebuild that silently
+    dropped a framework's n-grams would pass every structural test in this file
+    and fail here.
 
-    statements = [
-        line.strip().strip("|").split("|")[2].strip()
-        for line in source.read_text(encoding="utf-8").splitlines()
-        if line.startswith("|") and len(line.strip().strip("|").split("|")) == 3
-        and re.match(r"^\d+\.\d+$", line.strip().strip("|").split("|")[0].strip())
-    ]
-    longest = max(statements, key=len)
-    assert fingerprints.first_hit(longest) is not None, (
-        "the committed fingerprints do not match the source they name. "
-        "Re-run `python -m scripts.build_licensed_fingerprints`."
+    The statement is written into a file and the file's BODY is scanned, rather
+    than passing the string straight to first_hit. That is the path
+    test_no_verbatim_licensed_statement_anywhere_in_the_tree takes, JSON
+    escaping and all, so a normalisation change that breaks the tree scan
+    breaks this too.
+
+    The extraction comes from the generator's own `_EXTRACTORS`. It used to be a
+    hand-rolled copy of the ISO Annex A row parse living in this file, which
+    could drift from the generator with nothing to notice. Hand-rolling this
+    logic has already produced one false negative on a file the real gate caught
+    seconds later.
+    """
+    filename, extract = _EXTRACTORS[framework_id]
+    source = RAW_FRAMEWORKS_DIR / framework_id / filename
+    if not source.exists():
+        pytest.skip(
+            f"raw {framework_id} source absent; the planted-quotation test "
+            f"covers the mechanism"
+        )
+
+    units = extract(source)
+    assert units, f"{framework_id}: the extractor returned no units"
+
+    # The recorded count must match what the extractor produces right now. Only
+    # checking that SOME window matches would let an extractor quietly narrow:
+    # dropping `risk` and `measure` from a DSOMM statement still leaves
+    # `description`, whose windows are a subset of the stored ones, so every
+    # other assertion in this file would stay green while the corpus lost 90% of
+    # its coverage.
+    recorded = next(
+        d.ngram_count for d in fingerprints.documents
+        if d.framework_id == framework_id
+    )
+    rebuilt = sum(len(fingerprint_ngrams(unit)) for unit in units)
+    assert rebuilt == recorded, (
+        f"{framework_id} records {recorded} n-grams but its extractor now "
+        f"yields {rebuilt}. The extraction changed without the fixture being "
+        f"regenerated, so the corpus no longer describes what could leak."
+    )
+
+    longest = max(units, key=len)
+
+    victim = tmp_path / "innocent_looking.json"
+    victim.write_text(
+        json.dumps({"control_id": "X.1", "description": longest}),
+        encoding="utf-8",
+    )
+    hit = fingerprints.first_hit(victim.read_text(encoding="utf-8"))
+    assert hit is not None, (
+        f"the committed fingerprints do not flag {framework_id}'s own longest "
+        f"statement. Either they were built from a different document than the "
+        f"one they name, or that framework's n-grams were dropped. Re-run "
+        f"`python -m scripts.build_licensed_fingerprints`."
     )
 
 
@@ -244,10 +421,17 @@ def test_no_verbatim_licensed_statement_anywhere_in_the_tree(
     )
 
 
-def test_restricted_framework_files_are_not_tracked() -> None:
-    """The per-framework JSON for a licensed source must be gitignored."""
+def test_overlay_framework_files_are_not_tracked() -> None:
+    """The per-framework JSON for an overlay source must be gitignored.
+
+    Widened from RESTRICTED_FRAMEWORK_IDS to OVERLAY_FRAMEWORK_IDS. The narrow
+    form checked two of the four frameworks that route to the gitignored
+    overlay, so dsomm's GPL-3.0 text and csa_ccm's reserved text could have been
+    committed with nothing watching. All four pass today; the point is that the
+    fifth cannot arrive unchecked.
+    """
     tracked = _tracked_files()
-    for framework_id in sorted(RESTRICTED_FRAMEWORK_IDS):
+    for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):
         path = f"data/processed/frameworks/{framework_id}.json"
         assert path not in tracked, (
             f"{path} is tracked by git. This repository is CC0, so committing "
@@ -256,18 +440,21 @@ def test_restricted_framework_files_are_not_tracked() -> None:
         )
 
 
-def test_every_restricted_framework_has_a_gitignore_line() -> None:
+def test_every_overlay_framework_has_a_gitignore_line() -> None:
     """Untracking a file is not enough; the next parser run re-adds it.
 
     `git rm --cached` removes the file from the index. Without a .gitignore
     entry the next `git add -A` after a parser run puts it straight back, and
     the test above only catches that once it has already happened.
+
+    Widened to OVERLAY_FRAMEWORK_IDS alongside the test above, for the same
+    reason.
     """
     ignore_lines = {
         line.strip()
         for line in (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
     }
-    for framework_id in sorted(RESTRICTED_FRAMEWORK_IDS):
+    for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):
         expected = f"data/processed/frameworks/{framework_id}.json"
         assert expected in ignore_lines, (
             f"{expected} is missing from .gitignore, so a parser run followed "
