@@ -1163,3 +1163,44 @@ existing corpus needs no remediation.
 **The lesson I keep relearning this run: a signature that matches the correct behaviour is not a
 signature.** Passes 1 and 2 would each have produced a confident, wrong, expensive finding. The only
 thing that settled it was running the parser and comparing what it emits against what is stored.
+
+### Task 7 (WSTG): COMPLETE. `8fca3f4`. 1,662 -> 1,721 passing. 33 mutations, 1 real survivor.
+```
+wstg  links 118  by_title 0  by_id 109  unresolved 9  anchors 52  l/a 2.10
+      truncated 29  dropped_by_prose 2  wrong 0  rate 0.923729
+```
+0.923729 IS the arithmetic ceiling, to six places. The 9 unresolved are the four bogus ids that
+appear in the link file and nowhere in the archive. Before: 0 of 118, 0 anchors, because the tracked
+`wstg.json` was an OpenCRE stub whose descriptions were copies of their own section_id.
+
+**SIX false brief claims.** The census is 116 not 115 and the brief contradicts itself in its own
+Step 5; the cut list is case-sensitive and misses `## How To Test`, leaving one statement 74% test
+procedure; `MEMBER` is unanchored and its `.*` spans directories; and the brief's
+`full_text = whole body` design would have truncated **104 of 115** while the same brief predicted
+`truncated ~20`.
+
+**R14 would have fired on 45 of 115 here.** Largest count yet, against 6 of 10 in Task 6 and 2 of 10
+in Task 5. The parser pre-caps at 1,800 and the longest shipped description is 1,792. The dispatch
+instruction is carrying real weight, not ceremony.
+
+**The one mutation survivor was a real test defect**, not an equivalent mutant: a cut heading leaked
+into `description` and the test could not see it because it read `full_text or description`, so the
+surviving field masked the corrupted one. Fixed to scan both.
+
+### Ruling R17 — five withdrawn WSTG tests are aliased to their successors, not shipped
+The brief never mentions withdrawals. Measured: eight archive members are withdrawal notices, and
+five of them name a successor:
+```
+WSTG-ATHN-01 -> WSTG-CRYP-03      WSTG-ERRH-02 -> WSTG-ERRH-01
+WSTG-IDNT-05 -> WSTG-IDNT-04      WSTG-INFO-09 -> WSTG-INFO-08
+WSTG-INPV-03 -> WSTG-CONF-06
+```
+**Three of those five carry curated links** (`WSTG-ATHN-01`, `WSTG-ERRH-02`, `WSTG-INPV-03`),
+verified by me against the tracked link file. Shipping the notices as controls would anchor three
+curated links on the string "This content has been merged into WSTG-XXX", which is not a security
+statement and would train the model on a redirect. Aliasing through `alt_ids` resolves them to the
+successor's real test content instead.
+
+That is also the whole explanation for `distinct_anchors` reading 52 rather than the brief's
+expected 55: the three retired ids share their successor's anchor. The gate is a floor, not an
+equality, so nothing fails. Accepted.
