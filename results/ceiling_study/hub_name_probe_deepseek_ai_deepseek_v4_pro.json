@@ -1,0 +1,417 @@
+{
+  "hub_names": [
+    {
+      "exact_match": false,
+      "hub_id": "010-678",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Improvement management"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "036-810",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Let cryptographic modules fail securely"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "041-173",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "AI engineering controls"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "043-703",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Testing against sensitive data extraction by inference"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "046-257",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Clear authentication data from client storage"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "065-183",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Disallow default credentials"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "065-782",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Ensure session timeout (soft/hard)"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "112-648",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Change management"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "123-124",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Minimize permissions"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "124-564",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Configuration Management"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "134-412",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Protect sensitive functionalities against race conditions"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "145-310",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Sanitize, disable, or sandbox untrusted SVG scriptable content"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "146-556",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Authenticate consistently"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "148-420",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Log integrity"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "155-155",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Architecture"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "157-430",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Protect and clear cached sensitive data"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "171-222",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Check binary integrity before deployment"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "204-272",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Sensitive AI output handling"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "227-045",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Identify sensitive data and subject it to a policy"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "253-452",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Securely automate build and deployment in pipeline"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "260-200",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Log in consistent format across system"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "265-800",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Check source code and third party libraries to not contain malicious code"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "330-281",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Use least privilege OS accounts for system (components)"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "341-076",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Minimize communication"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "377-680",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Reject non-whitelisted content types"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "384-015",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Evasion-preventing training"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "387-848",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Parse JSON safely"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "402-706",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Log relevant"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "417-342",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Provide reusable application security controls"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "423-055",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Data supply chain management"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "440-372",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Augmentation data confidentiality controls"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "473-177",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Deploy/build"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "486-813",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Configuration"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "503-455",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Input and output protection"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "527-034",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Protect communication between application components"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "532-878",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Limit REST HTTP methods"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "601-182",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Parallel execution robustness"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "611-051",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Enforce schema on XML structure/field"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "613-285",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Supply chain management"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "626-250",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Design review"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "633-428",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Authentication"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "636-347",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "HTTP security headers"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "661-440",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Federated learning"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "663-550",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Testing against model theft by inference"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "743-110",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Do not disclose technical information in HTTP header or response"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "745-356",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Development process audit trail"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "787-638",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Technical instructions"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "802-101",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Specific input attack controls at inference"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "808-425",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Notify users about anomalies in their usage patterns"
+    },
+    {
+      "exact_match": false,
+      "hub_id": "883-173",
+      "recall": "none",
+      "recalled_name": "",
+      "true_name": "Model hosting supply chain mannagement"
+    }
+  ],
+  "run": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "batch_size": 25,
+    "cost_usd": 0.004,
+    "finished_at": "2026-08-19T05:14:19.267528+00:00",
+    "max_tokens": 16384,
+    "mode": "hub_name_exposure_probe",
+    "model_id": "deepseek-ai/DeepSeek-V4-Pro",
+    "n_failed_attempts": 0,
+    "n_items": 250,
+    "parse_counters": {},
+    "pricing_usd_per_mtok": {
+      "input": 0.66,
+      "output": 1.98
+    },
+    "prompt_source": "claudedocs/ceiling-study-runbook.md",
+    "provider_pin": "streamlake",
+    "reasoning_effort": "low",
+    "route": "openrouter",
+    "route_model_id": "deepseek/deepseek-v4-pro",
+    "served_model_snapshot": [
+      "deepseek/deepseek-v4-pro"
+    ],
+    "served_providers": [
+      "StreamLake"
+    ],
+    "started_at": "2026-08-19T05:13:31.798637+00:00",
+    "temperature": 0.0,
+    "usage": [
+      {
+        "attempt": 1,
+        "batch_index": 1,
+        "billed_cost_usd": 0.002289033075,
+        "cached_tokens": 445,
+        "completion_tokens": 1572,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 27.53,
+        "ok": true,
+        "prompt_tokens": 561,
+        "reasoning_tokens": 843,
+        "response_id": "gen-1787116411-90EAfO9hrkO0tWeSbq4u",
+        "served_model": "deepseek/deepseek-v4-pro",
+        "served_provider": "StreamLake"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 2,
+        "billed_cost_usd": 0.00174583248,
+        "cached_tokens": 428,
+        "completion_tokens": 1173,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 19.93,
+        "ok": true,
+        "prompt_tokens": 561,
+        "reasoning_tokens": 444,
+        "response_id": "gen-1787116439-a4n7I9Yi1Gd6vV984us6",
+        "served_model": "deepseek/deepseek-v4-pro",
+        "served_provider": "StreamLake"
+      }
+    ]
+  }
+}

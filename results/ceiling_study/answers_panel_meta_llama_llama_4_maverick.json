@@ -1,0 +1,2556 @@
+{
+  "items": [
+    {
+      "acceptable_hub_ids": [
+        "757-271"
+      ],
+      "confidence": "high",
+      "item_index": 1,
+      "notes": "",
+      "primary_hub_id": "757-271"
+    },
+    {
+      "acceptable_hub_ids": [
+        "261-010"
+      ],
+      "confidence": "high",
+      "item_index": 2,
+      "notes": "",
+      "primary_hub_id": "261-010"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 3,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 4,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "430-722"
+      ],
+      "confidence": "high",
+      "item_index": 5,
+      "notes": "",
+      "primary_hub_id": "430-722"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 6,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781"
+      ],
+      "confidence": "high",
+      "item_index": 7,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-728"
+      ],
+      "confidence": "high",
+      "item_index": 8,
+      "notes": "",
+      "primary_hub_id": "028-728"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 9,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-083"
+      ],
+      "confidence": "high",
+      "item_index": 10,
+      "notes": "",
+      "primary_hub_id": "058-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "536-158"
+      ],
+      "confidence": "high",
+      "item_index": 11,
+      "notes": "",
+      "primary_hub_id": "536-158"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 12,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 13,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 14,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 15,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 16,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 17,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "552"
+      ],
+      "confidence": "high",
+      "item_index": 18,
+      "notes": "",
+      "primary_hub_id": "552"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 19,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "176-154"
+      ],
+      "confidence": "high",
+      "item_index": 20,
+      "notes": "",
+      "primary_hub_id": "176-154"
+    },
+    {
+      "acceptable_hub_ids": [
+        "651"
+      ],
+      "confidence": "high",
+      "item_index": 21,
+      "notes": "",
+      "primary_hub_id": "651"
+    },
+    {
+      "acceptable_hub_ids": [
+        "474-203"
+      ],
+      "confidence": "high",
+      "item_index": 22,
+      "notes": "",
+      "primary_hub_id": "474-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 23,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "824-732"
+      ],
+      "confidence": "high",
+      "item_index": 24,
+      "notes": "",
+      "primary_hub_id": "824-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781"
+      ],
+      "confidence": "high",
+      "item_index": 25,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 26,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710",
+        "615-663"
+      ],
+      "confidence": "medium",
+      "item_index": 27,
+      "notes": "The control is about AI model poisoning, which is directly related to the hub '481-710 -- AI model poisoning'. While '615-663 -- Data poisoning of train/finetune/augmentation data' is a related concept, it's a more specific type of poisoning.",
+      "primary_hub_id": "481-710"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-870",
+        "077-772"
+      ],
+      "confidence": "medium",
+      "item_index": 28,
+      "notes": "The control is about training data confidentiality threats, which aligns with '220-870 -- Training data confidentiality threats'. '077-772 -- Direct training or test data leak' is a related but more specific threat.",
+      "primary_hub_id": "220-870"
+    },
+    {
+      "acceptable_hub_ids": [
+        "486-813"
+      ],
+      "confidence": "high",
+      "item_index": 29,
+      "notes": "",
+      "primary_hub_id": "486-813"
+    },
+    {
+      "acceptable_hub_ids": [
+        "547-824"
+      ],
+      "confidence": "high",
+      "item_index": 30,
+      "notes": "",
+      "primary_hub_id": "547-824"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "item_index": 31,
+      "notes": "",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "item_index": 32,
+      "notes": "The control is about direct prompt injection, which is a specific type of AI model behavior integrity threat through inference. '012-625 -- Indirect prompt injection' is related but distinct.",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 33,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "182-732",
+        "342-781"
+      ],
+      "confidence": "medium",
+      "item_index": 34,
+      "notes": "The control is about direct runtime model leak, which is a threat to model confidentiality. '342-781 -- Direct development-time model leak' is a related but distinct threat.",
+      "primary_hub_id": "182-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 35,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "medium",
+      "item_index": 36,
+      "notes": "The control is about AI resource exhaustion attacks, which is related to '230-318 -- AI resource exhaustion attack'. '623-550 -- Denial Of Service protection' is a broader concept that could also apply.",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 37,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540",
+        "044-202"
+      ],
+      "confidence": "medium",
+      "item_index": 38,
+      "notes": "The control is about obscuring confidence in AI output, which relates to '034-540 -- Model inversion / Membership inference' and '044-202 -- Data disclosure in model output' as both involve extracting information from model outputs.",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "362-550"
+      ],
+      "confidence": "high",
+      "item_index": 39,
+      "notes": "",
+      "primary_hub_id": "362-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "medium",
+      "item_index": 40,
+      "notes": "The control is about backdoor poisoning, a type of AI model poisoning. '481-710 -- AI model poisoning' is the broader category.",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-235"
+      ],
+      "confidence": "high",
+      "item_index": 41,
+      "notes": "",
+      "primary_hub_id": "077-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347"
+      ],
+      "confidence": "high",
+      "item_index": 42,
+      "notes": "",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 43,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "240-464"
+      ],
+      "confidence": "high",
+      "item_index": 44,
+      "notes": "",
+      "primary_hub_id": "240-464"
+    },
+    {
+      "acceptable_hub_ids": [
+        "554-083"
+      ],
+      "confidence": "high",
+      "item_index": 45,
+      "notes": "",
+      "primary_hub_id": "554-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "268-272",
+        "765-788"
+      ],
+      "confidence": "medium",
+      "item_index": 46,
+      "notes": "The control is about classifying personal data regarding retention. '765-788 -- Classify sensitive data in protection levels' is related but broader.",
+      "primary_hub_id": "268-272"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 47,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347"
+      ],
+      "confidence": "high",
+      "item_index": 48,
+      "notes": "",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347"
+      ],
+      "confidence": "high",
+      "item_index": 49,
+      "notes": "",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 50,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "810-884"
+      ],
+      "confidence": "high",
+      "item_index": 51,
+      "notes": "",
+      "primary_hub_id": "810-884"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527"
+      ],
+      "confidence": "high",
+      "item_index": 52,
+      "notes": "",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "114-853"
+      ],
+      "confidence": "high",
+      "item_index": 53,
+      "notes": "",
+      "primary_hub_id": "114-853"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-108"
+      ],
+      "confidence": "high",
+      "item_index": 54,
+      "notes": "",
+      "primary_hub_id": "010-108"
+    },
+    {
+      "acceptable_hub_ids": [
+        "545-243"
+      ],
+      "confidence": "high",
+      "item_index": 55,
+      "notes": "",
+      "primary_hub_id": "545-243"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 56,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 57,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "182-732"
+      ],
+      "confidence": "high",
+      "item_index": 58,
+      "notes": "",
+      "primary_hub_id": "182-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781"
+      ],
+      "confidence": "high",
+      "item_index": 59,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-728"
+      ],
+      "confidence": "high",
+      "item_index": 60,
+      "notes": "",
+      "primary_hub_id": "028-728"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-286"
+      ],
+      "confidence": "high",
+      "item_index": 61,
+      "notes": "",
+      "primary_hub_id": "613-286"
+    },
+    {
+      "acceptable_hub_ids": [
+        "048-612"
+      ],
+      "confidence": "high",
+      "item_index": 62,
+      "notes": "",
+      "primary_hub_id": "048-612"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-083"
+      ],
+      "confidence": "high",
+      "item_index": 63,
+      "notes": "",
+      "primary_hub_id": "058-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "182-732"
+      ],
+      "confidence": "high",
+      "item_index": 64,
+      "notes": "",
+      "primary_hub_id": "182-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 65,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "020-540"
+      ],
+      "confidence": "high",
+      "item_index": 66,
+      "notes": "",
+      "primary_hub_id": "020-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "124-564"
+      ],
+      "confidence": "medium",
+      "item_index": 67,
+      "notes": "The control is about using a non-standard cryptographic implementation, which is related to the Dependency integrity hub.",
+      "primary_hub_id": "124-564"
+    },
+    {
+      "acceptable_hub_ids": [
+        "173-554"
+      ],
+      "confidence": "high",
+      "item_index": 68,
+      "notes": "",
+      "primary_hub_id": "173-554"
+    },
+    {
+      "acceptable_hub_ids": [
+        "482-771"
+      ],
+      "confidence": "high",
+      "item_index": 69,
+      "notes": "",
+      "primary_hub_id": "482-771"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 70,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "555-083"
+      ],
+      "confidence": "high",
+      "item_index": 71,
+      "notes": "",
+      "primary_hub_id": "555-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347"
+      ],
+      "confidence": "high",
+      "item_index": 72,
+      "notes": "",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "780-757"
+      ],
+      "confidence": "high",
+      "item_index": 73,
+      "notes": "",
+      "primary_hub_id": "780-757"
+    },
+    {
+      "acceptable_hub_ids": [
+        "737-086"
+      ],
+      "confidence": "high",
+      "item_index": 74,
+      "notes": "",
+      "primary_hub_id": "737-086"
+    },
+    {
+      "acceptable_hub_ids": [
+        "799"
+      ],
+      "confidence": "high",
+      "item_index": 75,
+      "notes": "",
+      "primary_hub_id": "799"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 76,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "268-272",
+        "074-873"
+      ],
+      "confidence": "high",
+      "item_index": 77,
+      "notes": "",
+      "primary_hub_id": "268-272"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202",
+        "077-235"
+      ],
+      "confidence": "high",
+      "item_index": 78,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "440-361",
+        "173-554"
+      ],
+      "confidence": "high",
+      "item_index": 79,
+      "notes": "",
+      "primary_hub_id": "440-361"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "medium",
+      "item_index": 80,
+      "notes": "The control is about input validation, which is related to injection protection.",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 81,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 82,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 83,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 84,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 85,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 86,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "182-732",
+        "077-772"
+      ],
+      "confidence": "high",
+      "item_index": 87,
+      "notes": "",
+      "primary_hub_id": "182-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "482-771"
+      ],
+      "confidence": "high",
+      "item_index": 88,
+      "notes": "",
+      "primary_hub_id": "482-771"
+    },
+    {
+      "acceptable_hub_ids": [
+        "430-722",
+        "064-808"
+      ],
+      "confidence": "high",
+      "item_index": 89,
+      "notes": "",
+      "primary_hub_id": "430-722"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 90,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "232-034"
+      ],
+      "confidence": "high",
+      "item_index": 91,
+      "notes": "",
+      "primary_hub_id": "232-034"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-083",
+        "463-577"
+      ],
+      "confidence": "high",
+      "item_index": 92,
+      "notes": "",
+      "primary_hub_id": "058-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036"
+      ],
+      "confidence": "high",
+      "item_index": 93,
+      "notes": "",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540",
+        "182-732"
+      ],
+      "confidence": "high",
+      "item_index": 94,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 95,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 96,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "208-805"
+      ],
+      "confidence": "high",
+      "item_index": 97,
+      "notes": "",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 98,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 99,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 100,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781",
+        "267-786"
+      ],
+      "confidence": "high",
+      "item_index": 101,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 102,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 103,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385",
+        "182-732"
+      ],
+      "confidence": "high",
+      "item_index": 104,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "253-452"
+      ],
+      "confidence": "high",
+      "item_index": 105,
+      "notes": "",
+      "primary_hub_id": "253-452"
+    },
+    {
+      "acceptable_hub_ids": [
+        "701-654",
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 106,
+      "notes": "",
+      "primary_hub_id": "701-654"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625",
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 107,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-744"
+      ],
+      "confidence": "high",
+      "item_index": 108,
+      "notes": "",
+      "primary_hub_id": "615-744"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 109,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "268-272",
+        "765-788"
+      ],
+      "confidence": "high",
+      "item_index": 110,
+      "notes": "",
+      "primary_hub_id": "268-272"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "011-322"
+      ],
+      "confidence": "high",
+      "item_index": 111,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 112,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527"
+      ],
+      "confidence": "high",
+      "item_index": 113,
+      "notes": "",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 114,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "307-507",
+        "263-184"
+      ],
+      "confidence": "high",
+      "item_index": 115,
+      "notes": "",
+      "primary_hub_id": "307-507"
+    },
+    {
+      "acceptable_hub_ids": [
+        "482-866",
+        "268-272"
+      ],
+      "confidence": "high",
+      "item_index": 116,
+      "notes": "",
+      "primary_hub_id": "482-866"
+    },
+    {
+      "acceptable_hub_ids": [
+        "555-083",
+        "536-158"
+      ],
+      "confidence": "high",
+      "item_index": 117,
+      "notes": "",
+      "primary_hub_id": "555-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347"
+      ],
+      "confidence": "high",
+      "item_index": 118,
+      "notes": "",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-083"
+      ],
+      "confidence": "high",
+      "item_index": 119,
+      "notes": "",
+      "primary_hub_id": "058-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 120,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781",
+        "287-305"
+      ],
+      "confidence": "high",
+      "item_index": 121,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 122,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "663-550",
+        "011-087"
+      ],
+      "confidence": "high",
+      "item_index": 123,
+      "notes": "",
+      "primary_hub_id": "663-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 124,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-254",
+        "307-242"
+      ],
+      "confidence": "high",
+      "item_index": 125,
+      "notes": "",
+      "primary_hub_id": "028-254"
+    },
+    {
+      "acceptable_hub_ids": [
+        "073-507",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 126,
+      "notes": "",
+      "primary_hub_id": "073-507"
+    },
+    {
+      "acceptable_hub_ids": [
+        "653-242"
+      ],
+      "confidence": "high",
+      "item_index": 127,
+      "notes": "",
+      "primary_hub_id": "653-242"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202",
+        "077-772"
+      ],
+      "confidence": "high",
+      "item_index": 128,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 129,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-772",
+        "220-870"
+      ],
+      "confidence": "high",
+      "item_index": 130,
+      "notes": "",
+      "primary_hub_id": "077-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 131,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527"
+      ],
+      "confidence": "high",
+      "item_index": 132,
+      "notes": "",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-286",
+        "701-654"
+      ],
+      "confidence": "high",
+      "item_index": 133,
+      "notes": "",
+      "primary_hub_id": "613-286"
+    },
+    {
+      "acceptable_hub_ids": [
+        "915"
+      ],
+      "confidence": "high",
+      "item_index": 134,
+      "notes": "",
+      "primary_hub_id": "915"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527"
+      ],
+      "confidence": "high",
+      "item_index": 135,
+      "notes": "",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "136-200",
+        "888-770"
+      ],
+      "confidence": "high",
+      "item_index": 136,
+      "notes": "",
+      "primary_hub_id": "136-200"
+    },
+    {
+      "acceptable_hub_ids": [
+        "745-356"
+      ],
+      "confidence": "high",
+      "item_index": 137,
+      "notes": "",
+      "primary_hub_id": "745-356"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 138,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765",
+        "028-728"
+      ],
+      "confidence": "high",
+      "item_index": 139,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "522-616"
+      ],
+      "confidence": "high",
+      "item_index": 140,
+      "notes": "",
+      "primary_hub_id": "522-616"
+    },
+    {
+      "acceptable_hub_ids": [
+        "267-031"
+      ],
+      "confidence": "high",
+      "item_index": 141,
+      "notes": "",
+      "primary_hub_id": "267-031"
+    },
+    {
+      "acceptable_hub_ids": [
+        "142-555",
+        "768-532"
+      ],
+      "confidence": "high",
+      "item_index": 142,
+      "notes": "",
+      "primary_hub_id": "142-555"
+    },
+    {
+      "acceptable_hub_ids": [
+        "182-732",
+        "141-385"
+      ],
+      "confidence": "high",
+      "item_index": 143,
+      "notes": "",
+      "primary_hub_id": "182-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 144,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "533-635",
+        "244-750"
+      ],
+      "confidence": "high",
+      "item_index": 145,
+      "notes": "",
+      "primary_hub_id": "533-635"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 146,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710",
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 147,
+      "notes": "",
+      "primary_hub_id": "481-710"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-727"
+      ],
+      "confidence": "high",
+      "item_index": 148,
+      "notes": "",
+      "primary_hub_id": "028-727"
+    },
+    {
+      "acceptable_hub_ids": [
+        "661-440"
+      ],
+      "confidence": "high",
+      "item_index": 149,
+      "notes": "",
+      "primary_hub_id": "661-440"
+    },
+    {
+      "acceptable_hub_ids": [
+        "172-101"
+      ],
+      "confidence": "high",
+      "item_index": 150,
+      "notes": "",
+      "primary_hub_id": "172-101"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838",
+        "555-083",
+        "536-158",
+        "011-322",
+        "483-253"
+      ],
+      "confidence": "high",
+      "item_index": 151,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 152,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "533-635",
+        "244-750"
+      ],
+      "confidence": "high",
+      "item_index": 153,
+      "notes": "",
+      "primary_hub_id": "533-635"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 154,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 155,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 156,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 157,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "128-128"
+      ],
+      "confidence": "high",
+      "item_index": 158,
+      "notes": "",
+      "primary_hub_id": "128-128"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 159,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 160,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "161-451",
+        "356-282"
+      ],
+      "confidence": "high",
+      "item_index": 161,
+      "notes": "",
+      "primary_hub_id": "161-451"
+    },
+    {
+      "acceptable_hub_ids": [
+        "128-128"
+      ],
+      "confidence": "high",
+      "item_index": 162,
+      "notes": "",
+      "primary_hub_id": "128-128"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 163,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-254",
+        "307-507"
+      ],
+      "confidence": "high",
+      "item_index": 164,
+      "notes": "",
+      "primary_hub_id": "028-254"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285",
+        "613-287"
+      ],
+      "confidence": "high",
+      "item_index": 165,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 166,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "444-058",
+        "408-838",
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 167,
+      "notes": "",
+      "primary_hub_id": "444-058"
+    },
+    {
+      "acceptable_hub_ids": [
+        "622-203",
+        "881-321"
+      ],
+      "confidence": "high",
+      "item_index": 168,
+      "notes": "",
+      "primary_hub_id": "622-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570"
+      ],
+      "confidence": "high",
+      "item_index": 169,
+      "notes": "",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "701-654",
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 170,
+      "notes": "",
+      "primary_hub_id": "701-654"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 171,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 172,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "128-128"
+      ],
+      "confidence": "high",
+      "item_index": 173,
+      "notes": "",
+      "primary_hub_id": "128-128"
+    },
+    {
+      "acceptable_hub_ids": [
+        "780-757",
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 174,
+      "notes": "",
+      "primary_hub_id": "780-757"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625",
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 175,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 176,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625",
+        "370-877"
+      ],
+      "confidence": "medium",
+      "item_index": 177,
+      "notes": "The control is about direct prompt injection, which is a specific type of AI model behavior integrity threat. While it's closely related to other AI-specific threats, the primary focus is on direct prompt injection.",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 178,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-870",
+        "738-144"
+      ],
+      "confidence": "medium",
+      "item_index": 179,
+      "notes": "The control is about maintaining AI dataset provenance, which relates to training data confidentiality threats and conventional threats to AI input, output, and augmentation data.",
+      "primary_hub_id": "220-870"
+    },
+    {
+      "acceptable_hub_ids": [
+        "576-042",
+        "520-617"
+      ],
+      "confidence": "medium",
+      "item_index": 180,
+      "notes": "The control is about dictionary-based password attacks, which is related to credential recovery and authentication mechanisms.",
+      "primary_hub_id": "576-042"
+    },
+    {
+      "acceptable_hub_ids": [
+        "862-452",
+        "616-305"
+      ],
+      "confidence": "low",
+      "item_index": 181,
+      "notes": "The control is about generative AI model alignment, which is a broad topic that could relate to multiple hubs under 'Development processes for security' or 'Technical application security controls'.",
+      "primary_hub_id": "862-452"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-083"
+      ],
+      "confidence": "high",
+      "item_index": 182,
+      "notes": "",
+      "primary_hub_id": "058-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "124-564",
+        "080-466"
+      ],
+      "confidence": "medium",
+      "item_index": 183,
+      "notes": "The control is about system component inventory, which is related to configuration management and developer configuration management.",
+      "primary_hub_id": "124-564"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540",
+        "044-202"
+      ],
+      "confidence": "high",
+      "item_index": 184,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "306-130",
+        "302-130"
+      ],
+      "confidence": "medium",
+      "item_index": 185,
+      "notes": "The control is about TCP Window scanning, which is related to other types of TCP scanning techniques.",
+      "primary_hub_id": "306-130"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "item_index": 186,
+      "notes": "The control is about data reconstruction, which is related to evasion attacks and prompt injection attacks.",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "224-087"
+      ],
+      "confidence": "high",
+      "item_index": 187,
+      "notes": "",
+      "primary_hub_id": "224-087"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 188,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "302-130",
+        "306-130"
+      ],
+      "confidence": "medium",
+      "item_index": 189,
+      "notes": "The control is about TCP FIN scanning, which is related to other types of TCP scanning techniques.",
+      "primary_hub_id": "302-130"
+    },
+    {
+      "acceptable_hub_ids": [
+        "646-285",
+        "533-635"
+      ],
+      "confidence": "medium",
+      "item_index": 190,
+      "notes": "The control is about checking AI compliance, which is related to AI compliance management and AI security education.",
+      "primary_hub_id": "646-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "224-087"
+      ],
+      "confidence": "high",
+      "item_index": 191,
+      "notes": "",
+      "primary_hub_id": "224-087"
+    },
+    {
+      "acceptable_hub_ids": [
+        "867-642",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 192,
+      "notes": "",
+      "primary_hub_id": "867-642"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 193,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 194,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "482-771",
+        "824-732"
+      ],
+      "confidence": "medium",
+      "item_index": 195,
+      "notes": "The control is about overflow variables and tags, which is related to integer overflow weaknesses and memory-safe functions.",
+      "primary_hub_id": "482-771"
+    },
+    {
+      "acceptable_hub_ids": [
+        "171-222",
+        "307-507"
+      ],
+      "confidence": "high",
+      "item_index": 196,
+      "notes": "",
+      "primary_hub_id": "171-222"
+    },
+    {
+      "acceptable_hub_ids": [
+        "1252"
+      ],
+      "confidence": "high",
+      "item_index": 197,
+      "notes": "",
+      "primary_hub_id": "1252"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 198,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838",
+        "467-215"
+      ],
+      "confidence": "high",
+      "item_index": 199,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-308",
+        "146-706"
+      ],
+      "confidence": "high",
+      "item_index": 200,
+      "notes": "",
+      "primary_hub_id": "010-308"
+    },
+    {
+      "acceptable_hub_ids": [
+        "217-163"
+      ],
+      "confidence": "high",
+      "item_index": 201,
+      "notes": "",
+      "primary_hub_id": "217-163"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-727"
+      ],
+      "confidence": "high",
+      "item_index": 202,
+      "notes": "",
+      "primary_hub_id": "028-727"
+    },
+    {
+      "acceptable_hub_ids": [
+        "362-550"
+      ],
+      "confidence": "high",
+      "item_index": 203,
+      "notes": "",
+      "primary_hub_id": "362-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 204,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347"
+      ],
+      "confidence": "high",
+      "item_index": 205,
+      "notes": "",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "182-732",
+        "342-781"
+      ],
+      "confidence": "high",
+      "item_index": 206,
+      "notes": "",
+      "primary_hub_id": "182-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "278-413"
+      ],
+      "confidence": "high",
+      "item_index": 207,
+      "notes": "",
+      "primary_hub_id": "278-413"
+    },
+    {
+      "acceptable_hub_ids": [
+        "463-577"
+      ],
+      "confidence": "high",
+      "item_index": 208,
+      "notes": "",
+      "primary_hub_id": "463-577"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527"
+      ],
+      "confidence": "high",
+      "item_index": 209,
+      "notes": "",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 210,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 211,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-235"
+      ],
+      "confidence": "high",
+      "item_index": 212,
+      "notes": "",
+      "primary_hub_id": "077-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "124-564"
+      ],
+      "confidence": "high",
+      "item_index": 213,
+      "notes": "",
+      "primary_hub_id": "124-564"
+    },
+    {
+      "acceptable_hub_ids": [
+        "475-586",
+        "034-540"
+      ],
+      "confidence": "medium",
+      "item_index": 214,
+      "notes": "The control text spans multiple privacy-related hubs, but primarily focuses on training data confidentiality threats through inference.",
+      "primary_hub_id": "475-586"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202"
+      ],
+      "confidence": "high",
+      "item_index": 215,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 216,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 217,
+      "notes": "",
+      "primary_hub_id": "481-710"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-286"
+      ],
+      "confidence": "high",
+      "item_index": 218,
+      "notes": "",
+      "primary_hub_id": "613-286"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-235"
+      ],
+      "confidence": "high",
+      "item_index": 219,
+      "notes": "",
+      "primary_hub_id": "077-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 220,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "278-413"
+      ],
+      "confidence": "high",
+      "item_index": 221,
+      "notes": "",
+      "primary_hub_id": "278-413"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 222,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 223,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "224-321"
+      ],
+      "confidence": "high",
+      "item_index": 224,
+      "notes": "",
+      "primary_hub_id": "224-321"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-727"
+      ],
+      "confidence": "high",
+      "item_index": 225,
+      "notes": "",
+      "primary_hub_id": "028-727"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625",
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 226,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "798"
+      ],
+      "confidence": "high",
+      "item_index": 227,
+      "notes": "",
+      "primary_hub_id": "798"
+    },
+    {
+      "acceptable_hub_ids": [
+        "020-540",
+        "182-732",
+        "486-813"
+      ],
+      "confidence": "high",
+      "item_index": 228,
+      "notes": "",
+      "primary_hub_id": "020-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-235",
+        "217-163"
+      ],
+      "confidence": "high",
+      "item_index": 229,
+      "notes": "",
+      "primary_hub_id": "077-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 230,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-286",
+        "613-287"
+      ],
+      "confidence": "high",
+      "item_index": 231,
+      "notes": "",
+      "primary_hub_id": "613-286"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285",
+        "613-286"
+      ],
+      "confidence": "high",
+      "item_index": 232,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625",
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 233,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "item_index": 234,
+      "notes": "",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 235,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 236,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "473-758"
+      ],
+      "confidence": "high",
+      "item_index": 237,
+      "notes": "",
+      "primary_hub_id": "473-758"
+    },
+    {
+      "acceptable_hub_ids": [
+        "217-163",
+        "173-554"
+      ],
+      "confidence": "high",
+      "item_index": 238,
+      "notes": "",
+      "primary_hub_id": "217-163"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 239,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "235"
+      ],
+      "confidence": "high",
+      "item_index": 240,
+      "notes": "",
+      "primary_hub_id": "235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "241-751",
+        "858-745"
+      ],
+      "confidence": "high",
+      "item_index": 241,
+      "notes": "",
+      "primary_hub_id": "241-751"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 242,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 243,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "IA-4"
+      ],
+      "confidence": "high",
+      "item_index": 244,
+      "notes": "",
+      "primary_hub_id": "IA-4"
+    },
+    {
+      "acceptable_hub_ids": [
+        "1021"
+      ],
+      "confidence": "high",
+      "item_index": 245,
+      "notes": "",
+      "primary_hub_id": "1021"
+    },
+    {
+      "acceptable_hub_ids": [
+        "842-876"
+      ],
+      "confidence": "high",
+      "item_index": 246,
+      "notes": "",
+      "primary_hub_id": "842-876"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 247,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625",
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 248,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285",
+        "613-286"
+      ],
+      "confidence": "high",
+      "item_index": 249,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 250,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    }
+  ],
+  "run": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "batch_size": 25,
+    "cost_usd": 0.1626,
+    "finished_at": "2026-08-19T04:42:48.330352+00:00",
+    "max_tokens": 16384,
+    "mode": "open_book_annotation",
+    "model_id": "meta-llama/Llama-4-Maverick",
+    "n_failed_attempts": 0,
+    "n_items": 250,
+    "parse_counters": {
+      "invented_primary": 17,
+      "missing": 0,
+      "truncated_acceptable": 0
+    },
+    "pricing_usd_per_mtok": {
+      "input": 0.2,
+      "output": 0.8
+    },
+    "prompt_source": "claudedocs/ceiling-study-runbook.md",
+    "provider_pin": "DeepInfra",
+    "reasoning_effort": "low",
+    "route": "openrouter",
+    "route_model_id": "meta-llama/llama-4-maverick",
+    "served_model_snapshot": [
+      "meta-llama/llama-4-maverick"
+    ],
+    "served_providers": [
+      "DeepInfra"
+    ],
+    "started_at": "2026-08-19T04:39:59.662962+00:00",
+    "temperature": 0.0,
+    "usage": [
+      {
+        "attempt": 1,
+        "batch_index": 1,
+        "billed_cost_usd": 0.0160764,
+        "cached_tokens": 0,
+        "completion_tokens": 1195,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 17.77,
+        "ok": true,
+        "prompt_tokens": 75602,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114399-1DZQGYMjxHNlPAr9yaOm",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 2,
+        "billed_cost_usd": 0.0167746,
+        "cached_tokens": 0,
+        "completion_tokens": 1555,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 19.88,
+        "ok": true,
+        "prompt_tokens": 77653,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114417-JVRcMhlisBPbS4WHpI0z",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 3,
+        "billed_cost_usd": 0.016204,
+        "cached_tokens": 0,
+        "completion_tokens": 1219,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 14.81,
+        "ok": true,
+        "prompt_tokens": 76144,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114437-mSePYiUQg0OOXQM84ASF",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 4,
+        "billed_cost_usd": 0.0161946,
+        "cached_tokens": 0,
+        "completion_tokens": 1272,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 13.87,
+        "ok": true,
+        "prompt_tokens": 75885,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114452-bJ0QcvsacSngqbUOTQJX",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 5,
+        "billed_cost_usd": 0.016258,
+        "cached_tokens": 0,
+        "completion_tokens": 1273,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 15.34,
+        "ok": true,
+        "prompt_tokens": 76198,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114466-uUILyfUG7CAQZzDkaZnJ",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 6,
+        "billed_cost_usd": 0.0160962,
+        "cached_tokens": 0,
+        "completion_tokens": 1264,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 17.3,
+        "ok": true,
+        "prompt_tokens": 75425,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114481-8k46suTsUZoIreCICd9f",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 7,
+        "billed_cost_usd": 0.0161674,
+        "cached_tokens": 0,
+        "completion_tokens": 1298,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 15.79,
+        "ok": true,
+        "prompt_tokens": 75645,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114498-R8zG3OltBrODKENiQxdP",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 8,
+        "billed_cost_usd": 0.0164384,
+        "cached_tokens": 0,
+        "completion_tokens": 1545,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 21.71,
+        "ok": true,
+        "prompt_tokens": 76012,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114514-9ThiMYL3DjR56a0ZQ5dU",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 9,
+        "billed_cost_usd": 0.0161266,
+        "cached_tokens": 0,
+        "completion_tokens": 1233,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 16.02,
+        "ok": true,
+        "prompt_tokens": 75701,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114536-wSpdtNJoDhpxCXMUCtLL",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 10,
+        "billed_cost_usd": 0.0162304,
+        "cached_tokens": 0,
+        "completion_tokens": 1288,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 16.13,
+        "ok": true,
+        "prompt_tokens": 76000,
+        "reasoning_tokens": 0,
+        "response_id": "gen-1787114552-luGf9C9t3dHkUEb8dune",
+        "served_model": "meta-llama/llama-4-maverick",
+        "served_provider": "DeepInfra"
+      }
+    ]
+  }
+}

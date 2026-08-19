@@ -701,3 +701,187 @@ CEILING_STUDY_TEST_FRAMEWORKS: Final[tuple[str, ...]] = (
 # design doc table). The scorer reports this alongside the achieved
 # half-width so a wider-than-planned result is visible rather than silent.
 CEILING_STUDY_TARGET_HALF_WIDTH: Final[float] = 0.059
+
+# ── LLM judge panel ──────────────────────────────────────────────────────
+# Three model families answer the same blind annotation prompt the human
+# answered, to separate "OpenCRE's CAPEC links are poor" from "one human's
+# reading of CAPEC is idiosyncratic". Three families rather than three
+# checkpoints of one family: correlated pretraining would make agreement
+# between two judges evidence of shared lineage rather than of the label.
+#
+# Every candidate route is OpenAI-compatible, so one client covers all of
+# them and the only per-route variables are the base URL, the model id
+# spelling, and where the key lives. Ordered by preference: an aggregator
+# reaches all three with one key, per-vendor keys are cheapest, and the
+# HuggingFace router is the fallback that needs no new vendor relationship.
+#
+# The HF router was verified working on 2026-08-18 against all three models
+# and is the only route with a credential already on this machine. It is
+# last in preference because its free monthly allowance is small, not
+# because it does not work.
+PANEL_ROUTES: Final[dict[str, dict[str, str]]] = {
+    "openrouter": {
+        "base_url": "https://openrouter.ai/api/v1",
+        "pass_entry": "openrouter/api-key",
+        "env_var": "OPENROUTER_API_KEY",
+    },
+    "moonshot": {
+        "base_url": "https://api.moonshot.ai/v1",
+        "pass_entry": "moonshot/api-key",
+        "env_var": "MOONSHOT_API_KEY",
+    },
+    "deepseek": {
+        "base_url": "https://api.deepseek.com",
+        "pass_entry": "deepseek/api-key",
+        "env_var": "DEEPSEEK_API_KEY",
+    },
+    "zhipu": {
+        "base_url": "https://api.z.ai/api/paas/v4",
+        "pass_entry": "zhipu/api-key",
+        "env_var": "ZHIPU_API_KEY",
+    },
+    "hf_router": {
+        "base_url": "https://router.huggingface.co/v1",
+        "pass_entry": "huggingface/read-token",
+        "env_var": "HF_TOKEN",
+    },
+}
+
+# Per-route model id spellings. The same weights are called different things
+# by different resellers, and sending the wrong spelling is a 404 rather
+# than a silent substitution, which is the failure mode worth having.
+PANEL_MODEL_IDS: Final[dict[str, dict[str, str]]] = {
+    "moonshotai/Kimi-K3": {
+        "openrouter": "moonshotai/kimi-k3",
+        "moonshot": "kimi-k3",
+        "hf_router": "moonshotai/Kimi-K3:fireworks-ai",
+    },
+    "z-ai/GLM-5.3": {
+        "openrouter": "z-ai/glm-5.3",
+        "zhipu": "glm-5.3",
+    },
+    "deepseek-ai/DeepSeek-V4-Pro": {
+        "openrouter": "deepseek/deepseek-v4-pro",
+        "deepseek": "deepseek-v4-pro",
+        "hf_router": "deepseek-ai/DeepSeek-V4-Pro:fireworks-ai",
+    },
+    "meta-llama/Llama-4-Maverick": {
+        "openrouter": "meta-llama/llama-4-maverick",
+    },
+    "x-ai/Grok-4.20": {
+        "openrouter": "x-ai/grok-4.20",
+    },
+}
+
+# OpenRouter load-balances one model id across several backends, and those
+# backends differ in quantization. The same prompt served at fp4 and at bf16
+# is not the same judge. Each model is pinned to one backend with fallbacks
+# disabled, so a routing decision cannot silently become an experimental
+# variable. Chosen for full context length first, then for the least lossy
+# quantization available, then for first-party serving.
+PANEL_OPENROUTER_PROVIDER_PIN: Final[dict[str, str]] = {
+    # DeepInfra's bf16 endpoint is the only unquantized one and was the first
+    # pin, but kimi-k3 is rate-limited upstream across OpenRouter's shared
+    # pool and it never cleared. BaseTen's fp8 is the next best, and it has
+    # the side benefit of matching the fp8 the other quantized members run
+    # at, so precision is one fewer difference across the panel.
+    "moonshotai/Kimi-K3": "baseten/fp8",
+    "z-ai/GLM-5.3": "Z.AI",                  # fp8, first party, sole provider
+    # DeepSeek's own endpoint 404s for this account at any token budget, so
+    # the pin is the best third party: fp8 at 1M context, not the fp4 ones.
+    "deepseek-ai/DeepSeek-V4-Pro": "streamlake",
+    "meta-llama/Llama-4-Maverick": "DeepInfra",  # fp8 at 1M, others cap at 128k
+    "x-ai/Grok-4.20": "xAI",                 # first party, sole provider
+}
+
+# Pinned when the route is the HF router, so the serving provider is not a
+# free variable there either.
+PANEL_PROVIDER: Final[str] = "fireworks-ai"
+
+# Greedy decoding. The study measures where a model family lands, not the
+# spread of its sampling distribution, and a judge that answers differently
+# on re-run cannot be audited against the file committed alongside it.
+PANEL_TEMPERATURE: Final[float] = 0.0
+
+# Every panel member is a thinking model and reasoning tokens bill at the
+# output rate. Applied to all five rather than only to the expensive ones,
+# so deliberation budget stays constant across the panel.
+#
+# Sent as OpenRouter's unified `reasoning: {"effort": ...}` object. The
+# OpenAI-style `reasoning_effort` string is NOT honoured on that route: a
+# control call sent with `reasoning_effort="low"` spent all 3,000 of its
+# allowed tokens on reasoning, while the same call with the object form
+# spent 560. Sending the wrong spelling does not error, it just silently
+# runs at full effort and bills for it.
+PANEL_REASONING_EFFORT: Final[str] = "low"
+
+# 25 items per request, matching the batch size the runbook specifies for
+# the human study. All three models have a 1M-token context and could take
+# all 250 items at once, so this is about answer quality across a long list
+# and about comparability with the human protocol, not about context.
+PANEL_BATCH_SIZE: Final[int] = 25
+
+# Set by the tightest endpoint on the panel, not by preference. OpenRouter
+# filters out any backend whose max_completion_tokens is below the requested
+# max_tokens, and DeepInfra caps Kimi and Llama at 16,384. Asking for more
+# does not raise a parameter error, it returns "No endpoints found" and
+# looks like the model does not exist.
+#
+# Uniform across all five so deliberation budget is not a variable, and
+# large enough for a 25-item batch: measured 2,475 completion tokens for 3
+# items at the verbose end, and reasoning at "low" is bounded.
+PANEL_MAX_TOKENS: Final[int] = 16384
+
+PANEL_TIMEOUT_S: Final[int] = 900
+
+# Tuned for the failure actually seen: an upstream provider 429 on a pinned
+# backend, where fallbacks are deliberately disabled so there is nowhere
+# else to go and the only cure is waiting. A 4-attempt, 4-second-base
+# schedule gives up after about a minute, which is far too soon. This one
+# spans roughly twenty minutes.
+PANEL_MAX_RETRIES: Final[int] = 6
+PANEL_RETRY_BASE_DELAY_S: Final[float] = 20.0
+
+# Five, not three, and odd on purpose: an even panel can split 2-2 on
+# exactly the contested CAPEC items the study turns on, and a tie there has
+# no majority to compare the human against. Five distinct labs, three
+# Chinese and two American, so that convergence cannot be dismissed as one
+# training-data monoculture agreeing with itself.
+PANEL_MODELS: Final[tuple[str, ...]] = (
+    "moonshotai/Kimi-K3",
+    "z-ai/GLM-5.3",
+    "deepseek-ai/DeepSeek-V4-Pro",
+    "meta-llama/Llama-4-Maverick",
+    "x-ai/Grok-4.20",
+)
+
+# (input, output) USD per million tokens, per route, read from the
+# provider's posted rate for the pinned backend. Used only for the dry-run
+# estimate: the executed run records `usage.cost` returned by OpenRouter on
+# every response, which is the amount actually billed.
+PANEL_PRICING_USD_PER_MTOK: Final[dict[str, dict[str, tuple[float, float]]]] = {
+    "moonshotai/Kimi-K3": {
+        "openrouter": (2.85, 14.25),
+        "moonshot": (3.00, 15.00),
+        "hf_router": (3.00, 15.00),
+    },
+    "z-ai/GLM-5.3": {
+        "openrouter": (1.40, 4.40),
+        "zhipu": (1.40, 4.40),
+    },
+    "deepseek-ai/DeepSeek-V4-Pro": {
+        "openrouter": (0.66, 1.98),
+        "deepseek": (0.435, 0.87),
+        "hf_router": (1.74, 3.48),
+    },
+    "meta-llama/Llama-4-Maverick": {
+        "openrouter": (0.20, 0.80),
+    },
+    "x-ai/Grok-4.20": {
+        "openrouter": (1.25, 2.50),
+    },
+}
+
+# The probe framework for contamination. Published after every panel
+# member's training cutoff, so memorised OpenCRE mappings cannot cover it.
+PANEL_CONTAMINATION_PROBE_FRAMEWORK: Final[str] = "owasp_llm_top10"
