@@ -10,6 +10,11 @@ from __future__ import annotations
 import pytest
 
 pytest.importorskip("torch")
+# `datasets` reaches this module through tract.training.loop, so guarding torch
+# alone is not enough. CI's test job installs requirements.txt, which carries
+# neither, and it runs pytest with -x, so an unguarded import here does not skip
+# one file, it aborts the whole suite before any other test runs.
+pytest.importorskip("datasets")
 
 import torch  # noqa: E402
 from torch import nn  # noqa: E402

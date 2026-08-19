@@ -6,6 +6,11 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
+# CI's test job installs requirements.txt, which does not carry anthropic,
+# and it runs pytest with -x. An unguarded import here does not skip one
+# file, it aborts the entire suite during collection before any test runs.
+pytest.importorskip("anthropic")
+
 from anthropic.types import TextBlock
 
 from tract.proposals.cluster import Cluster
