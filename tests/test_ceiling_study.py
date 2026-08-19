@@ -10,6 +10,7 @@ wrong quietly invalidates the study rather than raising an error:
 """
 from __future__ import annotations
 
+import inspect
 import json
 from pathlib import Path
 
@@ -17,12 +18,21 @@ import pytest
 
 from tract.ceiling_study import (
     AnchorRecord,
+    _link_priority,
+    _load_eligible_links,
     apportion_with_caps,
+    build_anchor_pool,
     build_answer_key,
     build_answer_template,
     build_ceiling_study,
+    eligible_framework_ids,
     sample_ceiling_items,
 )
+from tract.config import CEILING_STUDY_DIR, CONTESTED_RECOVERY_DEFAULT
+from tract.text_selection import ProseIndex
+from tract.training.data_quality import curated_link_filter_report, link_key
+
+CEILING_ITEMS_PATH = CEILING_STUDY_DIR / "ceiling_items.json"
 
 
 def _make_record(framework_id: str, index: int, hub_id: str) -> AnchorRecord:
@@ -269,3 +279,107 @@ class TestBuildCeilingStudyIntegration:
             gold_ids.update(entry["valid_gold_hub_ids"])
         leaked = [gold_id for gold_id in gold_ids if gold_id in items_blob]
         assert leaked == []
+
+
+@pytest.mark.skipif(
+    not Path("data/training/hub_links_curated.jsonl").exists(),
+    reason="requires the committed corpus (data/training, data/processed)",
+)
+class TestTheStudyPoolIsTheTrainingPool:
+    """The mirror the docstring promises, asserted rather than described.
+
+    _load_eligible_links used to inline its own assign_quality_tier call under
+    a docstring claiming it mirrored training. Nothing checked the claim, so
+    the day the two gates differed the study would have sampled from a pool
+    training never used and no test would have moved.
+    """
+
+    def test_the_two_pools_hold_the_same_links(self) -> None:
+        eligible = eligible_framework_ids()
+        report, _ = curated_link_filter_report()
+        training = {
+            link_key(tiered.link) for tiered in report.kept
+            if tiered.link.get("framework_id") in eligible
+        }
+        study = {link_key(link) for link in _load_eligible_links(eligible)}
+        assert study == training
+
+    def test_link_priority_cannot_be_called_without_the_index(self) -> None:
+        """A defaulted index would let the priority call stop mirroring too.
+
+        _link_priority ranks the link that represents a multi-link anchor, and
+        it ranks by quality tier. The tier now depends on the resolved anchor,
+        so an index-free call would rank on a stale contract while the pool
+        around it moved.
+        """
+        parameter = inspect.signature(_link_priority).parameters["prose_index"]
+        assert parameter.default is inspect.Parameter.empty
+
+    def test_no_anchor_in_the_pool_is_a_section_title(self) -> None:
+        """The gate admits only resolved links, so the pool is prose throughout.
+
+        build_anchor_pool calls select_control_text, which falls back to the
+        title when the index misses. A link that reached the pool unresolved
+        put a bare section title in front of a human reviewer who scored it as
+        a control statement.
+        """
+        index = ProseIndex.load()
+        pool = build_anchor_pool(_load_eligible_links(eligible_framework_ids()), index)
+        titles = [
+            record.anchor_key for records in pool.values() for record in records
+            if record.text_source == "title"
+        ]
+        assert titles == []
+
+    def test_the_sampling_frame_is_the_size_this_task_left_it(self) -> None:
+        """The frame the scored 250 were drawn from is not the frame today.
+
+        MEASURED. owasp_ai_exchange goes 62 -> 63 on the anchor gate alone,
+        and capec 339 -> 349 with cwe 240 -> 245 only when the contested
+        recovery is on, so the two commits are pinned apart here rather than
+        averaged. None of the seven eligible frameworks is licensed, so these
+        hold with the overlay and without it.
+
+        Pinned because sample_ceiling_items draws with rng.sample over the
+        pool, so the frame size alone changes which items are drawn at a fixed
+        seed. That is how items were replaced under the scored study without a
+        single existing test moving.
+        """
+        pool = build_anchor_pool(_load_eligible_links(eligible_framework_ids()),
+                                 ProseIndex.load())
+        assert {fw: len(records) for fw, records in pool.items()} == {
+            "capec": 349 if CONTESTED_RECOVERY_DEFAULT else 339,
+            "cwe": 245 if CONTESTED_RECOVERY_DEFAULT else 240,
+            "nist_800_53": 298,
+            "mitre_atlas": 43, "nist_ai_100_2": 22,
+            "owasp_ai_exchange": 63, "owasp_llm_top10": 6,
+        }
+
+    def test_every_scored_study_item_is_still_an_anchor_in_the_pool(self) -> None:
+        """The human's 250 answers stay joinable to the pool they scored.
+
+        The frame moved, so build_ceiling_study() no longer redraws the
+        committed sample. That is recorded in the module docstring and in the
+        run ledger rather than hidden. What must not also break is the join:
+        if a scored anchor stopped existing, alpha-1 and alpha-5 would be
+        measured against text no longer in the corpus.
+        """
+        items = json.loads(
+            CEILING_ITEMS_PATH.read_text(encoding="utf-8")
+        )
+        records = items["items"] if isinstance(items, dict) else items
+        pool = build_anchor_pool(_load_eligible_links(eligible_framework_ids()),
+                                 ProseIndex.load())
+        present = {
+            (framework_id, record.anchor_key)
+            for framework_id, group in pool.items() for record in group
+        }
+        missing = [
+            (item["framework_id"], item["control_id"]) for item in records
+            if (item["framework_id"], item["control_text"].lower().strip())
+            not in present
+        ]
+        assert missing == [], (
+            "these scored ceiling-study items no longer exist as anchors, so "
+            f"the measured alpha-1 cannot be reproduced against them: {missing}"
+        )

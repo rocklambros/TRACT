@@ -13,6 +13,7 @@ invisible because both sides of the eval agreed with each other.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import re
 from collections import Counter
@@ -157,10 +158,26 @@ def merged_corpus_path() -> Path:
     The overlay exists only where the restricted source does, and
     merge_all_controls deletes a stale one, so its presence always means this
     checkout holds licensed prose. A run that used it and a run that did not
-    are distinguishable: the fold metadata records the corpus sha256.
+    are distinguishable, because the fold metadata records the digest of THIS
+    path. That sentence used to be false: orchestrate.py hashed
+    PROCESSED_DIR / "all_controls.json" unconditionally while ProseIndex.load
+    read whatever this function returned, so two runs hundreds of links apart
+    recorded the same digest for two different corpora. See
+    merged_corpus_sha256 below, which is what the recorder now calls.
     """
     overlay = PROCESSED_LICENSED_DIR / "all_controls.json"
     return overlay if overlay.exists() else PROCESSED_DIR / "all_controls.json"
+
+
+def merged_corpus_sha256(path: Path | None = None) -> str:
+    """The digest of the corpus a run read.
+
+    Takes no shortcut through the tracked path. A caller that wants the digest
+    of a specific file passes it; a caller that wants "whatever this run read"
+    passes nothing and gets merged_corpus_path().
+    """
+    source = path or merged_corpus_path()
+    return hashlib.sha256(source.read_bytes()).hexdigest()
 
 
 def _is_prose(description: str, title: str) -> bool:
@@ -334,7 +351,15 @@ class ProseIndex:
     matches the title for others.
     """
 
-    def __init__(self, controls: list[dict[str, Any]]) -> None:
+    def __init__(
+        self, controls: list[dict[str, Any]], source_path: Path | None = None,
+    ) -> None:
+        # Where this index came from, or None when a caller built it from
+        # literals. Anything that records provenance for a run must read the
+        # path the index ACTUALLY used, never merged_corpus_path() a second
+        # time: that is the defect this attribute exists to make unrepeatable,
+        # and it already shipped once in orchestrate.py.
+        self.source_path: Path | None = source_path
         self._by_id: dict[tuple[str, str], TextSelection] = {}
         self._by_title: dict[tuple[str, str], TextSelection] = {}
         pending_alternates: list[tuple[tuple[str, str], TextSelection]] = []
@@ -486,7 +511,7 @@ class ProseIndex:
         records = data if isinstance(data, list) else next(
             (v for v in data.values() if isinstance(v, list)), []
         )
-        index = cls(records)
+        index = cls(records, source_path=source)
         logger.info(
             "Prose index from %s: %d controls by id (real and alternate), "
             "%d by title, %d real id collisions, %d alternate id collisions",
@@ -503,6 +528,22 @@ class ProseIndex:
         empty, which the looser meaning still serves.
         """
         return len(self._by_id)
+
+    def answerable_frameworks(self) -> frozenset[str]:
+        """Canonical framework names this index can answer at least one key for.
+
+        A framework whose parser output has not reached the corpus this index
+        was built from cannot resolve any link, so every one of its links is
+        dropped for a reason that is a property of the checkout rather than of
+        the gate. Callers that need to derive an expected link count from the
+        corpus they read need to tell those two cases apart, and counting
+        framework RECORDS in the corpus file cannot: a framework can carry a
+        record whose controls all restate their titles, which contributes no
+        index key and answers nothing.
+        """
+        return frozenset(
+            {key[0] for key in self._by_id} | {key[0] for key in self._by_title}
+        )
 
     def by_title(self, framework: str, section_name: str) -> TextSelection | None:
         """The selection a title lookup would return, or None.

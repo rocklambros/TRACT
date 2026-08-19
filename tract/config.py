@@ -529,11 +529,40 @@ PHASE1B_WANDB_PROJECT: Final[str] = "tract-phase1b"
 LOFO_WANDB_PROJECT: Final[str] = "tract-lofo-rederivation"
 LOFO_WANDB_ENTITY: Final[str | None] = None
 
-PHASE1B_DROPPED_FRAMEWORKS: Final[frozenset[str]] = frozenset({
-    "nist_800_63",
-    "owasp_proactive_controls",
+# A link is worth training on when the text the model sees is substantial.
+# Both of the gates this replaces tested link["section_name"], a title the
+# model never sees: a framework deny list naming nist_800_63 and
+# owasp_proactive_controls, and a 10-character floor on the same field.
+# Between them they dropped 278 of 4,405 curated links, 155 by the deny list
+# and 123 by the floor, while admitting links that resolved to no control at
+# all and trained on their title instead. [measured]
+#
+# The threshold is unchanged at 10 characters. Only the field it is applied to
+# moved, from the title to the anchor the encoder is handed.
+PHASE1B_MIN_ANCHOR_TEXT_LENGTH: Final[int] = 10
+
+# Frameworks whose recovered links are a decision rather than a repair. The
+# anchor gate restores 44 capec and 16 cwe links that the title floor dropped,
+# and those are the terse ones ("UDP Ping", "Fuzzing", "Pharming"). The human
+# ceiling study measured capec agreement with OpenCRE at alpha-1 = 0.181
+# [0.113, 0.277] on n=83 [measured, results/ceiling_study/panel_agreement.md],
+# so recovering its least-agreed stratum is not self-evidently progress.
+# filter_training_links(recover_contested=False) is the lever the later
+# training-mix decision needs, and it is not entangled with the eleven other
+# frameworks' 202 recoveries.
+CONTESTED_RECOVERY_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "capec",
+    "cwe",
 })
-PHASE1B_MIN_SECTION_TEXT_LENGTH: Final[int] = 10
+
+# What a caller that passes nothing gets. Both entry points that expose the
+# lever default to this one constant, so the shipped decision cannot half-move
+# when only one signature is edited.
+#
+# False here holds the 60 contested links out while the eleven other
+# frameworks' 202 net recoveries land. Flipping it to True is its own commit,
+# and reverting that commit restores this line without disturbing them.
+CONTESTED_RECOVERY_DEFAULT: Final[bool] = False
 
 # ── Phase 1C: Guardrails, Active Learning & Crosswalk DB ─────────────
 

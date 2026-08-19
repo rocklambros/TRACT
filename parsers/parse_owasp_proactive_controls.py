@@ -9,12 +9,12 @@ can only help where a curator wrote a name, and here the name is the id.
 tests/test_parse_owasp_proactive_controls.py derives that claim from the
 tracked link file, so a respelling upstream fails rather than passes quietly.
 
-This framework contributes zero training links today: it is named in
-PHASE1B_DROPPED_FRAMEWORKS, and every one of its section_names is shorter than
-PHASE1B_MIN_SECTION_TEXT_LENGTH. Both gates test a title. Retiring them so they
-test the resolved anchor is a separate task; this parser is the thing that
-makes retiring them safe, because until the prose exists there is nothing for
-the gate to test.
+This framework contributed zero training links until the gate moved to the
+resolved anchor. It used to be named in a framework deny list, and every one
+of its section_names is shorter than the ten-character floor that also applied
+to the title. Both retired gates tested a title. All 76 links now train, on
+the prose this parser produces, because the gate reads
+PHASE1B_MIN_ANCHOR_TEXT_LENGTH against the anchor the encoder is handed.
 
 Three trees in the pinned archive carry the `c<N>-` filename pattern, not two.
 [measured]

@@ -11,7 +11,6 @@ Orchestrates the full Phase 1B pipeline:
 """
 from __future__ import annotations
 
-import hashlib
 import logging
 import os
 import subprocess
@@ -42,7 +41,7 @@ from tract.training.data import (
     pairs_to_dataset,
 )
 from tract.training.data_quality import (
-    CURATED_PATH,
+    fold_input_digests,
     load_and_filter_curated_links,
 )
 from tract.training.evaluate import (
@@ -50,7 +49,7 @@ from tract.training.evaluate import (
     fold_stratified_bootstrap_ci,
     paired_bootstrap_delta,
 )
-from tract.stopwords import STOPWORDS_PATH, load_stopwords
+from tract.stopwords import load_stopwords
 from tract.text_selection import (
     ProseIndex,
     SelectionStats,
@@ -127,11 +126,8 @@ def _get_git_sha() -> str:
         return "unknown"
 
 
-def _artifact_sha256(path: Path) -> str | None:
-    """Hash an input artifact, or None if the arm did not read it."""
-    if not path.exists():
-        return None
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 
 
 def run_single_fold(
@@ -342,16 +338,10 @@ def run_single_fold(
     # is the half that changes when a parser is re-run. Hashing the files
     # rather than the parsed objects means anyone with the repo can re-derive
     # them with sha256sum.
-    fold_record["inputs"] = {
-        "curated_links_sha256": _artifact_sha256(CURATED_PATH),
-        "all_controls_sha256": (
-            _artifact_sha256(PROCESSED_DIR / "all_controls.json")
-            if prose_index is not None else None
-        ),
-        "stopwords_sha256": (
-            _artifact_sha256(STOPWORDS_PATH) if stopwords is not None else None
-        ),
-    }
+    fold_record["inputs"] = fold_input_digests(
+        with_prose=prose_index is not None,
+        with_stopwords=stopwords is not None,
+    )
     atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
 
     return result

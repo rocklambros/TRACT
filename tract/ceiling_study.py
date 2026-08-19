@@ -18,10 +18,30 @@ by this module:
 the item stream and the answer key as two separate return values for exactly
 that reason: nothing downstream of this function can accidentally staple the
 gold hub back onto an item.
+
+The sampling frame moved when the training gate moved to the resolved anchor.
+`_load_eligible_links` mirrors training, and training now admits links whose
+section title was too short for the retired floor. `sample_ceiling_items`
+draws with `rng.sample` over the resulting pool, so the frame size alone
+changes which items come out at the same seed.
+
+MEASURED, against `results/ceiling_study/ceiling_items.json`, the 250 items
+the owner and the five LLM panels scored:
+
+  owasp_ai_exchange 62 -> 63 anchors, on the anchor gate alone
+      207 of 250 items hold their position, 43 are replaced
+  capec 339 -> 349 and cwe 240 -> 245, when the contested recovery is on
+      82 of 250 items hold their position, 77 are replaced
+
+So `build_ceiling_study()` no longer redraws the scored sample, and reverting
+the recovery commit does not restore it either. Those artifacts stand as a
+record, and every one of their 250 anchors is still in the pool, which a test
+asserts, so alpha-1 and alpha-5 remain measurable against the text that was
+scored. What is gone is the ability to regenerate the sample from this code.
+Any new draw is not comparable to the scored 250 without saying so.
 """
 from __future__ import annotations
 
-import json
 import logging
 import math
 import random
@@ -35,16 +55,17 @@ from tract.config import (
     CEILING_STUDY_TEST_FRAMEWORKS,
     CEILING_STUDY_VALIDATION_FRAMEWORKS,
     PROCESSED_DIR,
-    TRAINING_DIR,
 )
 from tract.hierarchy import CREHierarchy
 from tract.io import load_json
 from tract.text_selection import ProseIndex, select_control_text
-from tract.training.data_quality import QualityTier, assign_quality_tier
+from tract.training.data_quality import (
+    QualityTier,
+    assign_quality_tier,
+    curated_link_filter_report,
+)
 
 logger = logging.getLogger(__name__)
-
-CURATED_LINKS_PATH: Final = TRAINING_DIR / "hub_links_curated.jsonl"
 
 # Same priority training gives quality tiers when a text collapses two links
 # onto one anchor (tract/training/data.py:TIER_PRIORITY): prefer human
@@ -116,32 +137,40 @@ class AnchorRecord:
 def _load_eligible_links(allowed_framework_ids: frozenset[str]) -> list[dict[str, str]]:
     """Curated links, quality-filtered, restricted to the eligible frameworks.
 
-    Mirrors tract.training.data_quality.load_and_filter_curated_links exactly
-    (same assign_quality_tier call) so the study pool is the pool training
-    would use, not an approximation of it.
+    Calls tract.training.data_quality.curated_link_filter_report, the function
+    training calls, rather than repeating the gate beside it. The previous
+    version inlined an assign_quality_tier(record) call under a docstring
+    claiming it mirrored training. When that function gained a resolved-anchor
+    argument, the copy here would have kept compiling against the old contract
+    and quietly stopped mirroring: the study pool would keep the section-title
+    gate while training moved to the anchor gate, and nothing would raise.
     """
-    links: list[dict[str, str]] = []
-    with open(CURATED_LINKS_PATH, encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            record: dict[str, str] = json.loads(line)
-            if record.get("framework_id") not in allowed_framework_ids:
-                continue
-            if assign_quality_tier(record) is QualityTier.DROPPED:
-                continue
-            links.append(record)
-    return links
+    report, _ = curated_link_filter_report()
+    return [
+        tiered.link for tiered in report.kept
+        if tiered.link.get("framework_id") in allowed_framework_ids
+    ]
 
 
-def _link_priority(link: dict[str, str]) -> tuple[int, str, str]:
+def _link_priority(
+    link: dict[str, str], prose_index: ProseIndex,
+) -> tuple[int, str, str]:
     """Sort key preferring higher-quality tiers, then section id, then name.
 
     Used both to pick which raw link represents a multi-link anchor's
     control_id/control_title and, via the same ordering, its primary hub.
+
+    Takes the index because assign_quality_tier now needs the anchor. The one
+    caller, build_anchor_pool, already holds it.
     """
-    tier = assign_quality_tier(link).value
+    selection = prose_index.lookup(
+        link.get("standard_name", ""),
+        link.get("section_id"),
+        link.get("section_name"),
+    )
+    tier = assign_quality_tier(
+        link, selection.text if selection else None,
+    ).value
     return (
         _TIER_PRIORITY.get(tier, 99),
         link.get("section_id", ""),
@@ -184,7 +213,7 @@ def build_anchor_pool(
     pool: dict[str, list[AnchorRecord]] = {}
     for (framework_id, anchor_key), members in groups.items():
         text, source = resolved[(framework_id, anchor_key)]
-        representative = min(members, key=_link_priority)
+        representative = min(members, key=lambda m: _link_priority(m, prose_index))
         gold_hub_ids = tuple(sorted({m["cre_id"] for m in members}))
 
         record = AnchorRecord(

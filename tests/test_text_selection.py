@@ -1119,3 +1119,57 @@ class TestMalformedAlternateTitles:
             assert observed.get(framework_id, 0) in (0, declared), framework_id
         # Raises if any carrier is malformed, which is the assertion.
         assert len(ProseIndex(records)) > 0
+
+
+class TestAnswerableFrameworks:
+    """Which frameworks an index can answer, as opposed to which it lists.
+
+    The distinction carries weight downstream. tests/test_data_quality.py
+    derives an expected training-link count from it, and deriving that count
+    from the corpus file's framework RECORDS instead scored a real corpus 240
+    links off. [measured]
+    """
+
+    def test_a_framework_with_indexed_prose_is_answerable(self) -> None:
+        index = ProseIndex([{
+            "framework_name": "MITRE ATLAS",
+            "controls": [{
+                "control_id": "AML.T0001", "title": "Data Poisoning",
+                "description": "An adversary contaminates the training corpus "
+                               "so the resulting model behaves as they intend.",
+            }],
+        }])
+        assert index.answerable_frameworks() == frozenset({"MITRE ATLAS"})
+
+    def test_a_framework_whose_controls_restate_their_titles_is_not(self) -> None:
+        """A present record that contributes no key answers nothing.
+
+        ProseIndex skips a control whose description adds nothing over its
+        title, so this framework has a record in the corpus and no way to
+        resolve a link.
+        """
+        index = ProseIndex([{
+            "framework_name": "DSOMM",
+            "controls": [{
+                "control_id": "D1", "title": "Backups",
+                "description": "Backups",
+            }],
+        }])
+        assert index.answerable_frameworks() == frozenset()
+        assert index.lookup("DSOMM", "D1", "Backups") is None
+
+    def test_it_reports_the_canonical_name_the_links_are_joined_on(self) -> None:
+        """Links carry standard_name, so the set has to be comparable to it."""
+        index = ProseIndex([{
+            "framework_name": "OWASP Top 10 2021",
+            "controls": [{
+                "control_id": "A03", "title": "Injection",
+                "description": "The application passes untrusted input into an "
+                               "interpreter without separating code from data.",
+            }],
+        }])
+        answerable = index.answerable_frameworks()
+        assert canonical_framework("OWASP Top 10 2021") in answerable
+
+    def test_an_empty_index_answers_nothing(self) -> None:
+        assert ProseIndex([]).answerable_frameworks() == frozenset()
