@@ -61,6 +61,30 @@ def _framework_ids_in_processed() -> set[str]:
     return on_disk | {Path(name).stem for name in tracked}
 
 
+def _tracked_framework_files() -> set[str]:
+    """Paths git tracks under data/processed/frameworks/, right now."""
+    return set(
+        subprocess.run(
+            ["git", "ls-files", "data/processed/frameworks/"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+        ).stdout.split()
+    )
+
+
+def _copyleft() -> set[str]:
+    """Frameworks whose recorded licence a CC0 grant cannot carry.
+
+    GPL and CC BY-SA both require the copy to keep the licence. CC0 asserts
+    the publisher holds the rights and waives them, which is the opposite
+    claim, so a copyleft source cannot sit in a CC0 tree.
+    """
+    return {
+        framework_id
+        for framework_id, licence in FRAMEWORK_LICENSES.items()
+        if "GPL" in licence or "CC-BY-SA" in licence
+    }
+
+
 def _notice_rows() -> dict[str, str]:
     rows: dict[str, str] = {}
     for line in NOTICE_PATH.read_text(encoding="utf-8").splitlines():
@@ -88,8 +112,20 @@ class TestEveryFrameworkHasALicence:
         )
 
     def test_the_registry_names_no_framework_that_does_not_exist(self) -> None:
-        """A stale entry is a claim about a framework nobody ships."""
-        extra = sorted(set(FRAMEWORK_LICENSES) - _framework_ids_in_processed())
+        """A stale entry is a claim about a framework nobody ships.
+
+        Overlay frameworks are exempt by name. Their artifacts are untracked
+        by design and only exist after a local parser run, so on a fresh CI
+        checkout they have no file on disk and no file in git. Without the
+        exemption this test reports all nine as stale registry entries and CI
+        is red on every run. The test still catches a registry name matching
+        no framework at all, which is what it is for.
+        """
+        extra = sorted(
+            set(FRAMEWORK_LICENSES)
+            - _framework_ids_in_processed()
+            - OVERLAY_FRAMEWORK_IDS
+        )
         assert not extra, (
             f"{extra} are in FRAMEWORK_LICENSES with no artifact under "
             f"data/processed/frameworks/. Remove the entry or restore the file."
@@ -118,15 +154,23 @@ class TestLicenceTiering:
     permit reproduction on conditions as unconditionally publishable.
     """
 
-    # Copyleft frameworks whose processed files were tracked before the tiers
-    # existed. Moving them to the overlay now would pull 691 curated links out
-    # of the tracked corpus (asvs 277, owasp_cheat_sheets 391,
+    # Copyleft frameworks whose processed files were already tracked when the
+    # tiers landed. Moving them to the overlay would pull 691 curated links
+    # out of the tracked corpus (asvs 277, owasp_cheat_sheets 391,
     # owasp_llm_top10 13, owasp_ml_top10 10) and shift every published metric,
     # so it is an owner decision with its own change record rather than a side
-    # effect of adding the tiers. Naming them here keeps the exposure in
-    # tracked code: a newly added copyleft framework is absent from this list
-    # and fails the test below.
-    PRE_EXISTING_EXPOSURE = frozenset({
+    # effect of adding the tiers.
+    #
+    # This is a ratchet, not an allowlist, and the difference is the whole
+    # point. Three assertions hold it shut: the set is asserted by equality
+    # below, so widening it means editing a line whose only purpose is to say
+    # it must not widen. Every member must have a tracked artifact in git
+    # today, which is what "pre-existing" actually means and which a new
+    # framework cannot satisfy. No member may carry a non-copyleft
+    # licence. A newly added copyleft framework fails
+    # test_every_copyleft_framework_is_conditional and cannot be silenced by
+    # appending a name here.
+    PRE_EXISTING_EXPOSURE: frozenset[str] = frozenset({
         "asvs",
         "owasp_agentic_top10",
         "owasp_cheat_sheets",
@@ -137,9 +181,30 @@ class TestLicenceTiering:
     })
 
     def test_the_two_tiers_do_not_overlap(self) -> None:
+        """One framework cannot be both unconditionally barred and conditional.
+
+        There is no assertion here that OVERLAY equals the union of the two.
+        tract/config.py defines OVERLAY as that union, so such an assertion
+        restates a definition and its attainable range is {True}.
+        """
         assert not (RESTRICTED_FRAMEWORK_IDS & CONDITIONAL_FRAMEWORK_IDS)
-        assert OVERLAY_FRAMEWORK_IDS == (
-            RESTRICTED_FRAMEWORK_IDS | CONDITIONAL_FRAMEWORK_IDS
+
+    def test_no_framework_reaches_the_overlay_on_an_unread_licence(self) -> None:
+        """Routing is a claim about terms, so the terms must have been read.
+
+        UNDETERMINED means the staged artifact stated nothing. Withholding a
+        framework's text on a licence nobody read is a guess, in the same way
+        that publishing it would be.
+        """
+        unread = sorted(
+            framework_id for framework_id in OVERLAY_FRAMEWORK_IDS
+            if FRAMEWORK_LICENSES.get(framework_id, UNDETERMINED_LICENSE)
+            in ("", UNDETERMINED_LICENSE)
+        )
+        assert not unread, (
+            f"{unread} route to the overlay with a licence recorded as "
+            f"{UNDETERMINED_LICENSE}. Read the terms off the staged source "
+            f"and record them, or take the framework out of the tier."
         )
 
     def test_every_copyleft_framework_is_conditional(self) -> None:
@@ -151,30 +216,66 @@ class TestLicenceTiering:
         assertion from FRAMEWORK_LICENSES means a newly added copyleft source
         fails this test rather than silently joining the tracked corpus.
         """
-        copyleft = {
-            framework_id
-            for framework_id, licence in FRAMEWORK_LICENSES.items()
-            if "GPL" in licence or "CC-BY-SA" in licence
-        }
-        missing = copyleft - OVERLAY_FRAMEWORK_IDS - self.PRE_EXISTING_EXPOSURE
+        missing = _copyleft() - OVERLAY_FRAMEWORK_IDS - self.PRE_EXISTING_EXPOSURE
         assert not missing, (
             f"{sorted(missing)} carry a copyleft or share-alike licence and are "
             f"not routed to the overlay. A CC0 repository cannot carry their "
-            f"terms. Add them to CONDITIONAL_FRAMEWORK_IDS, or record them in "
-            f"PRE_EXISTING_EXPOSURE with the reason and an owner."
+            f"terms. Add them to CONDITIONAL_FRAMEWORK_IDS, or take the "
+            f"exposure to the owner for a recorded ruling. Do not append them "
+            f"to PRE_EXISTING_EXPOSURE: that set is closed by equality below "
+            f"and by the tracked-artifact check, and a framework added after "
+            f"the tiers landed is not pre-existing by definition."
+        )
+
+    def test_the_recorded_exposure_is_closed(self) -> None:
+        """The ratchet. Widening the set means editing this line.
+
+        Without an equality assertion the name PRE_EXISTING_EXPOSURE asserts a
+        temporal property that nothing enforces, and the remedy printed by the
+        test above becomes "append the id here", which retires the gate one
+        name at a time.
+        """
+        assert self.PRE_EXISTING_EXPOSURE == frozenset({
+            "asvs",
+            "owasp_agentic_top10",
+            "owasp_cheat_sheets",
+            "owasp_dsgai",
+            "owasp_llm_top10",
+            "owasp_llm_top10_2026",
+            "owasp_ml_top10",
+        }), (
+            "PRE_EXISTING_EXPOSURE changed. It records the copyleft frameworks "
+            "already tracked when the licence tiers landed, which is a closed "
+            "historical fact and not a list to extend. A framework that needs "
+            "an exception now goes to the owner for a recorded ruling."
+        )
+
+    def test_every_recorded_exposure_is_tracked_in_git_today(self) -> None:
+        """What "pre-existing" actually means, asserted rather than asserted by name.
+
+        A framework added after the tiers landed has no tracked artifact,
+        because CONDITIONAL_FRAMEWORK_IDS routes new copyleft sources to the
+        gitignored overlay. So it cannot join this set without a second,
+        visible change that untracks nothing and tracks licensed prose.
+        """
+        tracked = _tracked_framework_files()
+        untracked = sorted(
+            framework_id for framework_id in self.PRE_EXISTING_EXPOSURE
+            if f"data/processed/frameworks/{framework_id}.json" not in tracked
+        )
+        assert not untracked, (
+            f"{untracked} are recorded as pre-existing copyleft exposure and "
+            f"have no tracked artifact under data/processed/frameworks/. The "
+            f"set records what was already in git when the tiers landed. If "
+            f"the exposure was resolved, remove the id from the set."
         )
 
     def test_the_recorded_exposure_names_only_copyleft_frameworks(self) -> None:
         """A stale name in the exposure list would hide a real routing gap."""
-        copyleft = {
-            framework_id
-            for framework_id, licence in FRAMEWORK_LICENSES.items()
-            if "GPL" in licence or "CC-BY-SA" in licence
-        }
-        stale = sorted(self.PRE_EXISTING_EXPOSURE - copyleft)
+        stale = sorted(self.PRE_EXISTING_EXPOSURE - _copyleft())
         assert not stale, (
             f"{stale} are recorded as pre-existing copyleft exposure and carry "
-            f"no copyleft licence. Remove them: an inflated exposure list can "
+            f"no copyleft licence. Remove them. An inflated exposure list can "
             f"absorb a genuine routing gap."
         )
 
@@ -202,19 +303,14 @@ class TestLicenceTiering:
         Asserting the .gitignore line and asserting the file is untracked are
         two different claims, and only the second one is the guarantee.
         """
-        tracked = set(
-            subprocess.run(
-                ["git", "ls-files", "data/processed/frameworks/"],
-                cwd=REPO_ROOT, capture_output=True, text=True, check=True,
-            ).stdout.split()
-        )
+        tracked = _tracked_framework_files()
         offenders = sorted(
             framework_id for framework_id in OVERLAY_FRAMEWORK_IDS
             if f"data/processed/frameworks/{framework_id}.json" in tracked
         )
         assert not offenders, (
             f"{offenders} route to the overlay and are still tracked. A "
-            f".gitignore line is ignored for an already-tracked path; run "
+            f".gitignore line is ignored for an already-tracked path. Run "
             f"`git rm --cached` on each before any parser writes prose into it."
         )
 
