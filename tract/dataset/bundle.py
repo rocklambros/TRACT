@@ -214,8 +214,10 @@ def _build_zenodo_metadata(output_path: Path) -> None:
     zenodo = {
         "title": "TRACT Crosswalk Dataset v1.0",
         "description": (
-            "Human-reviewed security framework crosswalk mapping "
-            "31 frameworks to 522 CRE hubs"
+            "Security framework crosswalk mapping 31 frameworks to 522 CRE "
+            "hubs. Most rows are links imported from OpenCRE; 878 are model "
+            "predictions assessed by a single reviewer. The dataset as a "
+            "whole is not human-reviewed."
         ),
         "creators": [{"name": "Lambros, Rock", "orcid": ""}],
         "license": "CC-BY-SA-4.0",

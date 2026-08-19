@@ -95,7 +95,7 @@ def generate_dataset_card(
 
 # TRACT Crosswalk Dataset
 
-A human-reviewed crosswalk mapping **{total_rows:,} security controls** from **{n_frameworks} frameworks** to **522 CRE hubs** — the first large-scale, multi-framework security taxonomy alignment dataset with expert review and calibrated quality metrics.
+A crosswalk mapping **{total_rows:,} control-to-hub assignments** across **{n_frameworks} frameworks** and **522 CRE hubs**. Most rows are links imported from OpenCRE; **{model_count:,}** are model predictions that a single reviewer assessed. The dataset as a whole is not human-reviewed, and no row here should be read as carrying that warrant. See "Review Methodology and Quality" for what was reviewed, by whom, and how well.
 
 ---
 
@@ -285,7 +285,7 @@ Key model details:
 - Confidence: Platt-scaled (temperature calibration) — NOT raw cosine similarity
 
 ### Stage 3: Expert Human Review
-A cybersecurity domain expert reviewed **all {total_reviewed:,} model predictions** (878 real predictions + 20 hidden calibration items). For each prediction, the reviewer:
+A **single** cybersecurity domain expert reviewed **all {total_reviewed:,} model predictions** (878 real predictions + 20 hidden calibration items). One reviewer means inter-rater reliability is unmeasured, and the calibration agreement rate below is the only evidence of review quality. This stage covers the model predictions only, not the imported OpenCRE links. For each prediction, the reviewer:
 1. Read the control's full text to understand its security intent
 2. Evaluated whether the model's suggested CRE hub was semantically appropriate
 3. Made one of three decisions: **accept** (correct hub), **reassign** (better hub exists), or **reject** (no hub fits)

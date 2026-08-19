@@ -191,3 +191,42 @@ class TestOutputFile:
         )
         assert isinstance(result, Path)
         assert result == tmp_path / "README.md"
+
+
+class TestNoUnwarrantedReviewClaim:
+    """The dataset is not human-reviewed as a whole, and the card must not say it is.
+
+    An earlier card claimed every assignment was expert-reviewed. That was false:
+    most rows are links imported from OpenCRE, and the reviewed subset is the
+    model predictions only, assessed by one reviewer. The claim was corrected in
+    the published artifact, but the generator kept producing the original wording,
+    so the next publish would have silently restored it. These tests pin the
+    correction to the generator rather than to the artifact it emits.
+    """
+
+    def test_headline_does_not_call_the_whole_dataset_human_reviewed(
+        self, card_path: Path
+    ) -> None:
+        headline = card_path.read_text(encoding="utf-8").split("---")[2]
+        lowered = headline.lower()
+        assert "human-reviewed crosswalk" not in lowered
+        assert "not human-reviewed" in lowered
+
+    def test_review_stage_states_a_single_reviewer(self, card_path: Path) -> None:
+        text = card_path.read_text(encoding="utf-8")
+        assert "**single** cybersecurity domain expert" in text
+        assert "inter-rater reliability is unmeasured" in text.lower()
+
+    def test_review_stage_scopes_itself_to_model_predictions(
+        self, card_path: Path
+    ) -> None:
+        text = card_path.read_text(encoding="utf-8")
+        assert "not the imported OpenCRE links" in text
+
+    def test_limitations_still_disclose_the_single_reviewer(
+        self, card_path: Path
+    ) -> None:
+        # Defence in depth: the headline and the methodology section can both be
+        # rewritten without touching Limitations, so assert it independently.
+        text = card_path.read_text(encoding="utf-8").lower()
+        assert "single reviewer" in text
