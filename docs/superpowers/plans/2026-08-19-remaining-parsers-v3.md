@@ -11073,12 +11073,18 @@ class TestTheStopRuleIsAnAssertion:
 
 
 class TestTheSnapshotIsARollback:
-    """etsi.json, iso_27001.json and licensed/all_controls.json are untracked.
+    """Every OVERLAY_FRAMEWORK_IDS artifact is untracked, and so is the overlay.
 
-    .gitignore lines 37, 38 and 39. scripts/fetch_frameworks.py has no
-    iso_27001 entry at all [measured], so ISO's raw source is hand-staged and
-    its output is re-derivable from no scripted path. ISO is the corpus's only
-    high-prose fold.
+    Four of them now, not two: rulings R4 and R10 added csa_ccm and dsomm to
+    the tier after this task was written, and R18 gated dsomm in the
+    licensed-text fingerprint corpus. Derive the snapshot set from
+    OVERLAY_FRAMEWORK_IDS rather than naming files, or a fifth member added
+    later is silently left without a rollback.
+
+    git checkout recovers a tracked artifact. It cannot recover these, and
+    scripts/fetch_frameworks.py has no iso_27001 entry at all [measured], so
+    ISO's raw source is hand-staged and its output is re-derivable from no
+    scripted path. ISO is the corpus's only high-prose fold.
     """
 
     def test_a_snapshot_restores_byte_for_byte(self, tmp_path: Path) -> None:
@@ -11160,7 +11166,9 @@ changed, and to be able to put it back.
 Three properties the previous version did not have.
 
 Reversible. data/processed/frameworks/etsi.json, iso_27001.json and
-licensed/all_controls.json are untracked (.gitignore 37-39), and
+licensed/all_controls.json are untracked, along with every other member of
+OVERLAY_FRAMEWORK_IDS (four at the time of writing: etsi, iso_27001, csa_ccm,
+dsomm). Derive the set, do not list it. And
 scripts/fetch_frameworks.py has no iso_27001 entry at all, so ISO's output is
 re-derivable from no scripted path. --commit snapshots every overwritable file
 first and --restore puts them back.
