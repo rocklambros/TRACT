@@ -1245,3 +1245,43 @@ carries 243 controls at 176-char median and 485 max of real CSA prose, and `all_
 carries it too because AICM is in no tier. Sample: "Establish, document, approve, communicate,
 apply, evaluate and maintain audit and assurance policies and proce...". The branch is unpushed, so
 nothing has escaped.
+
+### R18 HALTED at its own stop condition. Fifth escape channel found, and it is partly mine.
+The agent applied the widened gate, found the tree NOT clean, committed nothing, reverted both
+touched modules byte-for-byte, and reported. That is the stop condition working, and it is the first
+time in this run an agent has stopped rather than fixed.
+
+**12 tracked files reproduce 12 or more consecutive words of CCM or DSOMM text.**
+`.superpowers/autonomous-run/source-structures.md` is TRACKED and carries "Verbatim sample" blocks:
+the CCM workbook's full 30-word `A&A-01` specification and a DSOMM activity's raw `risk`/`measure`
+(27 words, GPL-3.0). Five more tracked docs quote it, including three
+`docs/superpowers/plans/*-remaining-parsers*.md` and **RUN-LEDGER.md**, this file.
+
+**This is my error and it has a precise shape.** I scanned the plans for licensed text before making
+`docs/superpowers/plans/` trackable, and reported them clean. That scan used the real gate, which is
+the right instinct, but the gate's corpus covers only `etsi` and `iso_27001`. CCM and DSOMM text was
+invisible to it. "Clean" meant "clean of two frameworks", and I wrote it as though it meant clean.
+It is also the likely source of the Task 8 brief's CCM text.
+
+### Amended R18 — DSOMM now, CCM deferred with a named trigger
+The agent's second finding changes the ruling: **138 of 243 tracked AICM descriptions are
+byte-identical (normalised) to a CCM specification under the same control id.** CCM and AICM are
+therefore not separable questions, and gating CCM turns six AICM artifacts red, all tracked
+deliberately pending the owner decision I escalated.
+
+- `dsomm` joins the fingerprint corpus now. GPL-3.0, deliberately gitignored, no overlap with
+  anything tracked.
+- `csa_ccm` is HELD OUT, with the reason recorded in the fixture and the test docstring: 57% of its
+  text is shared with a framework nobody has ruled on, so the gate would fail the branch on an
+  unanswered question rather than on a defect. A deferral with a trigger, not an exemption.
+- **Trimming the CCM corpus to dodge the shared 138 is forbidden.** A gate that passes because it
+  stopped looking is the defect class this run exists to reject.
+- Raising `NGRAM_WORDS` to clear a hit is likewise forbidden, and goes in the docstring.
+
+New corpus sizes measured to scratch, each source sha256 matching its parser's independent pin:
+`csa_ccm` 2,900 · `dsomm` 10,374 · `etsi` 10,778 · `iso_27001` 706. Cross-framework overlap is
+**zero**, so every hit attributes to exactly one publisher.
+
+**The csa_aicm escalation is larger than I framed it.** It is not 243 controls of AICM prose. It is
+243 controls of which 138 are verbatim CCM specifications, so the owner's decision on AICM is also a
+decision about CCM text that is already tracked.
