@@ -1059,11 +1059,12 @@ class TestMalformedAlternateTitles:
     ) -> None:
         """The report-only sweep, kept as a regression gate.
 
-        30 non-empty carriers were clean when this landed, and the SAMM parser
+        30 non-empty carriers were clean when this landed, the SAMM parser
         added the three streams whose curated link name is spelled differently
-        from SAMM's own model. A parser that starts emitting a null or an
-        unquoted number into alt_titles fails here rather than at the next
-        full index build.
+        from SAMM's own model, and the OWASP Top 10 2021 parser added the
+        three categories OpenCRE respells. A parser that starts emitting a
+        null or an unquoted number into alt_titles fails here rather than at
+        the next full index build.
 
         The census moves with a reviewed parser change and never on its own,
         which is why it is a number and not a lower bound.
@@ -1078,6 +1079,6 @@ class TestMalformedAlternateTitles:
             for control in record.get("controls") or []
             if (control.get("metadata") or {}).get("alt_titles")
         ]
-        assert len(carriers) == 33
+        assert len(carriers) == 36
         # Raises if any carrier is malformed, which is the assertion.
         assert len(ProseIndex(records)) > 0
