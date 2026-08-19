@@ -212,3 +212,39 @@ as a cheap probe to run, not as a blocker. Demoted to the residual list with a c
   called the whole 5,238-row crosswalk human-reviewed. Fixed at `5fa2c75`; all four new tests were
   verified to FAIL against the old wording before being accepted, so they are not vacuous
   (ledger lesson 9 applied to my own fix).
+
+---
+
+## Ruling R7 — the tracked ceiling study stays tracked; the licence record is the defect
+
+The Task 16 author flagged `results/ceiling_study/` as a possible fifth licensed-text channel.
+Measured: `ceiling_items.json` IS tracked (24 files under that directory are) and carries 250
+`control_text` fields, median 764 characters.
+
+Provenance of those 250 items and their recorded licence:
+
+| framework | items | FRAMEWORK_LICENSES |
+|---|---|---|
+| capec | 83 | UNDETERMINED |
+| owasp_ai_exchange | 54 | UNDETERMINED |
+| mitre_atlas | 43 | Apache-2.0 |
+| cwe | 28 | UNDETERMINED |
+| nist_ai_100_2 | 22 | UNDETERMINED |
+| nist_800_53 | 14 | UNDETERMINED |
+| owasp_llm_top10 | 6 | CC-BY-SA-4.0 |
+
+**The good news is real and worth stating: zero items come from a RESTRICTED framework.** No ETSI,
+no ISO 27001. The fingerprint gate did its job on the channel it was built for.
+
+**Ruling: keep it tracked.** The 250 owner annotations key on `item_index` alone, so removing the
+items file makes the single most expensive asset in the project unreproducible and unauditable.
+That cost is certain; the licence risk is not. CAPEC and CWE are MITRE works, NIST 800-53 and
+NIST AI 100-2 are US Government works not subject to domestic copyright, and MITRE ATLAS is
+Apache-2.0. The 6 CC-BY-SA-4.0 items are attributable under NOTICE.
+
+**What IS a defect, and it is not the tracking:** 201 of 250 items come from frameworks whose
+licence nobody ever determined. `UNDETERMINED` is a record of absent work, not a finding of
+permissiveness, and this run has now twice reasoned about exposure using a field that five of
+seven relevant frameworks do not populate. Determining those five is a task, not a footnote.
+Cost if this ruling is wrong: 6 CC-BY-SA items sit in a CC0 file, attributable and removable in one
+commit, against a study that would otherwise be unreproducible.

@@ -65,12 +65,16 @@ is how licensed text escaped four times.
 **Fix: add negations to `.gitignore` immediately after `results/`.**
 
 ```
-results/
+results/*
 !results/corpus/
-!results/corpus/**
 !results/ceiling_study/
-!results/ceiling_study/**
 ```
+
+**CORRECTED 2026-08-19.** My first draft of this rule said `results/` plus `!results/corpus/**`.
+That does not work and the Task 16 author caught it. Reproduced on git 2.50.1: an excluded
+*directory* is never descended into, so no negation beneath it can rescue a file. `results/`
+stages nothing; `results/*` plus `!results/corpus/` stages `results/corpus/a.json`. Use the
+second form and verify with `git check-ignore -v` in the same step that writes the artifact.
 
 Then every `git add` of an evidence artifact is an ordinary add. Anchor every path in tests to
 `REPO_ROOT`, never a relative path. **Delete `pytest.skip("no BEFORE artifact in this checkout")`** —
