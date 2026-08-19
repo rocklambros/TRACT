@@ -1,5 +1,105 @@
 # R18 — widen the licensed-text fingerprint corpus to the overlay tier
 
+**Status: LANDED for DSOMM. CSA CCM deferred with a named trigger.**
+
+Owner: TRACT. Date: 2026-08-19. Branch: `semantic-rebuild`.
+
+Three commits:
+
+| commit | what |
+|---|---|
+| `b43ff2ba` | the halt report, kept below as the record of why stage 1 was needed |
+| `4931997446489e41e21becca5e5f5add1091ef0b` | stage 1, redact CCM and DSOMM text from six tracked documents |
+| `a9602e90b97c5d52ff65b19310ad925c43aa4fe5` | stage 2, gate DSOMM, defer CSA CCM |
+
+## Outcome
+
+- Fingerprint corpus **11,472 to 21,158**. `dsomm` 10,374, `etsi` 10,778,
+  `iso_27001` 706. `csa_ccm` measured at 2,900 and held out.
+- Residual after redaction, swept at **n=7, n=9 and n=12**: zero in the
+  documentation channel at every width, and zero for DSOMM anywhere in the tree.
+  The six remaining CCM hits are all `csa_aicm`-derived and are the deferral.
+- Suite **1,814 passed, 13 failed**, failure list byte-identical to the
+  pre-existing environmental 13. The gate file went 8 to 15 tests. The rest of
+  the count delta is the concurrent SSDF parser task, which committed at
+  `0b1cdbf`.
+- `mypy --strict` clean on both touched modules.
+
+## Sub-threshold sweep, the part no gate would have caught
+
+Sweeping at n=7 found four more real DSOMM fragments of 7 to 9 words in three
+plan documents, below the 12-word window and therefore invisible to the gate
+forever. They were redacted anyway. The window is a false-positive control, not
+a licence boundary, and text four words under the alarm is not thereby licensed
+to anyone.
+
+The same sweep is what confirms n=12 is right: at n=9 the only remaining DSOMM
+"hits" tree-wide are shared OWASP cheat-sheet URLs and one SAMM sentence DSOMM
+cites, all of which vanish at n=12. Collisions below, coverage above.
+
+## What the coordinator's message got wrong, or did not know
+
+1. **"Six named so far ... there may be more."** There were more, but not more
+   files. The same six files carried four additional DSOMM fragments beneath the
+   gate's window. A re-scan at n=12 after redacting the visible blocks would have
+   reported clean and left them in place.
+2. **The `A&A-02` statement was quoted in full**, not partially: its real
+   specification is 13 words and all 13 were present in four documents. That is
+   the number that makes the `NGRAM_WORDS` standing rule concrete, since n=14
+   clears it.
+3. **`test_the_recorded_deferrals_match_the_code` was a tautology as first
+   written.** `LicensedFingerprints.load` already raises on a deferral mismatch,
+   so an assertion against the loaded object could never fail. Mutation M7 found
+   it: blanking the field killed the suite through the loader while the
+   assertion under test never ran. This is the same shape as the defect the brief
+   cited, two guards sharing one failure path. Split into a raw-JSON check and a
+   direct loader test, both now independently reachable.
+4. **The stage-1 redaction target list was slightly off.** `RUN-LEDGER.md`'s hit
+   was not a fixture block but a 14-word sample quoted inside prose that was
+   describing the AICM exposure. Quoting the text to describe the leak reproduced
+   the leak.
+
+## Mutation list
+
+Every mutation was run with `PYTHONDONTWRITEBYTECODE=1` against a pristine
+snapshot, restored before and after. Final diff against the snapshot is empty,
+confirming no mutant survived in the tree.
+
+| # | mutation | killed by |
+|---|---|---|
+| M1 | `fingerprinted_framework_ids` forgets to subtract exclusions | `test_every_framework_in_scope_contributed_fingerprints`, `[csa_ccm]` positive control |
+| M2 | scope reverted to `RESTRICTED_FRAMEWORK_IDS`, the old narrow gate | schema test, in-scope coverage test |
+| M3 | `NGRAM_WORDS` 12 to 14, the forbidden "clear a hit" move | `test_the_ngram_window_has_not_been_widened` plus all four positive controls |
+| M4 | deferred `csa_ccm` extractor deleted | `test_every_overlay_framework_has_an_extractor` |
+| M5 | DSOMM extractor narrowed to `description` only | `[dsomm]` positive control, via the n-gram count check |
+| M6 | `dsomm` added to the deferral set | schema test |
+| M7 | `deferred_framework_ids` blanked in the fixture | **survivor of a sort**: killed by the loader, not by the test meant to check it. Exposed the tautology in item 3 above. |
+| M7b | field blanked AND loader guard disabled | `test_the_recorded_deferrals_match_the_code` and the loader test, after the fix |
+| M8 | `dsomm`'s `.gitignore` line removed | `test_every_overlay_framework_has_a_gitignore_line`, which the widening bought |
+| M9 | every overlay framework deferred, emptying the gate | `test_the_gate_still_covers_something` |
+| M10 | loader deferral guard disabled, fixture left correct | loader test only, confirming the guard is exercised rather than always-on |
+| M11 | 563 words of real DSOMM text planted in a **tracked** file | `test_no_verbatim_licensed_statement_anywhere_in_the_tree`. The end-to-end proof. Probe was unstaged and deleted, verified, and the gate returned green. |
+
+One survivor, M7, and it exposed a real test defect rather than a code defect.
+
+## Deferral, and what reverses it
+
+`csa_ccm` is held out because 138 of 243 tracked `csa_aicm` descriptions are
+byte-identical to a CCM specification under the same control id. The trigger is
+the AICM ruling, either way:
+
+- AICM prose leaves the tracked tree, `csa_ccm` gates cleanly and comes off
+  `FINGERPRINT_EXCLUDED_FRAMEWORK_IDS`.
+- AICM prose stays, and that constant is the record of why `csa_ccm` cannot join.
+
+The extractor is registered and measured at full coverage, and
+`test_every_overlay_framework_has_an_extractor` keeps it that way, so the
+reversal is a decision rather than a code project.
+
+---
+
+# Original halt report, preserved
+
 **Status: HALTED at requirement 4. R18 is NOT landed. No behaviour changed.**
 
 Owner: TRACT. Date: 2026-08-19. Branch: `semantic-rebuild`.
