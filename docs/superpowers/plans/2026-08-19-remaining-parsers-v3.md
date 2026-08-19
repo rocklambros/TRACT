@@ -1895,7 +1895,141 @@ JOIN_FLOORS: Final[Mapping[str, float]] = {
     "samm": 1.00,
     "wstg": 0.92,
 }
+
+
+# Pre-registered wrong-anchor counts, one entry per framework where the title
+# channel can answer at all. Task 16 gates on these instead of on `== 0`.
+#
+# `== 0` is unfailable for nine of the eleven, because their links resolve
+# entirely through the id channel and `wrong_anchor_risk` increments only inside
+# the title branch. A gate whose maximum attainable value is zero certifies
+# nothing. These two are the frameworks where the title channel is live and the
+# count is genuinely non-zero, so the assertion can fail in both directions.
+#
+#   csa_ccm  1  link `IPY` carries `section_name` "Interoperability and
+#               portability policy and procedures", which is control IPY-01's
+#               title, not the IPY domain's name ("Interoperability &
+#               Portability"). Title-first therefore answers with IPY-01.
+#               Task 8 rules that IPY-01 is the correct target. [measured,
+#               ML Engineer; link text confirmed by the orchestrator]
+#   etsi     1  link `6.3.1` carries the name "Mitigating model stealing",
+#               which resolves to clause 6.3. [measured, ML Engineer]
+#
+# A framework absent from this mapping must report zero, and Task 16 asserts
+# `by_title == 0` for it rather than asserting an unfailable risk count.
+JOIN_WRONG_ANCHOR_BUDGET: Final[Mapping[str, int]] = {
+    "csa_ccm": 1,
+    "etsi": 1,
+}
 ```
+
+- [ ] **Step 7a: Land the licence tiers before any parser writes a processed file**
+
+Tasks 3 through 13 each branch on `OVERLAY_FRAMEWORK_IDS` to decide whether their processed file is
+tracked. Task 3 is DSOMM, which is GPL-3.0-only, so the routing has to exist before the first parser
+runs, not when the corpus is merged. Add to `tract/config.py`:
+
+```python
+# tract/config.py: add below RESTRICTED_FRAMEWORK_IDS
+
+# Reproduction is permitted, but on terms a CC0 grant cannot carry. CC0 is not a
+# disclaimer; it is an affirmative assertion that the publisher holds the rights
+# and waives them, which is false for GPL-3.0 and for share-alike text. These
+# frameworks' processed files route to the gitignored overlay exactly as the
+# restricted ones do, and their ASSIGNMENTS stay tracked and published, because
+# a mapping is a fact about two documents rather than a reproduction of either.
+# Training reads the overlay, so this costs zero anchors. See rulings R4 to R6.
+CONDITIONAL_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "dsomm",                     # GPL-3.0-only
+    "biml",                      # CC-BY-SA-3.0 AND CC-BY-SA-4.0
+    "samm",                      # CC-BY-SA-4.0
+    "wstg",                      # CC-BY-SA-4.0
+    "owasp_top10_2021",          # CC-BY-SA-4.0
+    "owasp_proactive_controls",  # CC-BY-SA-4.0
+    "csa_ccm",                   # all rights reserved, no redistribution
+})
+
+# What routes to the overlay. RESTRICTED_FRAMEWORK_IDS keeps its narrower
+# meaning everywhere else: the fingerprint gate and the "must never appear in
+# git in any form" rule.
+OVERLAY_FRAMEWORK_IDS: Final[frozenset[str]] = (
+    RESTRICTED_FRAMEWORK_IDS | CONDITIONAL_FRAMEWORK_IDS
+)
+```
+
+Then the `.gitignore` lines that make the routing real, appended beside the two restricted entries:
+
+```
+data/processed/frameworks/dsomm.json
+data/processed/frameworks/biml.json
+data/processed/frameworks/samm.json
+data/processed/frameworks/wstg.json
+data/processed/frameworks/owasp_top10_2021.json
+data/processed/frameworks/owasp_proactive_controls.json
+data/processed/frameworks/csa_ccm.json
+```
+
+- [ ] **Step 7b: Prove the tiering holds in both directions**
+
+```python
+# tests/test_framework_licenses.py: create
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from tract.config import (
+    CONDITIONAL_FRAMEWORK_IDS,
+    FRAMEWORK_LICENSES,
+    OVERLAY_FRAMEWORK_IDS,
+    RESTRICTED_FRAMEWORK_IDS,
+)
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def test_the_two_tiers_do_not_overlap() -> None:
+    assert not (RESTRICTED_FRAMEWORK_IDS & CONDITIONAL_FRAMEWORK_IDS)
+    assert OVERLAY_FRAMEWORK_IDS == RESTRICTED_FRAMEWORK_IDS | CONDITIONAL_FRAMEWORK_IDS
+
+
+def test_every_copyleft_framework_is_conditional() -> None:
+    """The tier is derived from the recorded licence, not from a hand list.
+
+    The binary set this replaces modelled licence STATUS and not licence CLASS,
+    so seven frameworks whose licences permit reproduction on conditions were
+    treated as unconditionally publishable. Deriving the assertion from
+    FRAMEWORK_LICENSES means a newly added copyleft source fails this test
+    rather than silently joining the tracked corpus.
+    """
+    copyleft = {
+        framework_id
+        for framework_id, licence in FRAMEWORK_LICENSES.items()
+        if "GPL" in licence or "CC-BY-SA" in licence
+    }
+    missing = copyleft - OVERLAY_FRAMEWORK_IDS
+    assert not missing, (
+        f"{sorted(missing)} carry a copyleft or share-alike licence and are not "
+        f"routed to the overlay. A CC0 repository cannot carry their terms."
+    )
+
+
+def test_every_overlay_framework_has_a_gitignore_line() -> None:
+    ignored = {
+        line.strip()
+        for line in (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    }
+    for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):
+        expected = f"data/processed/frameworks/{framework_id}.json"
+        assert expected in ignored, (
+            f"{framework_id} routes to the overlay but {expected} is not in "
+            f".gitignore, so its text would be tracked."
+        )
+```
+
+Run: `PYTHONPATH=. "$PY" -m pytest tests/test_framework_licenses.py -q`
+Expected: 3 passed. `test_every_copyleft_framework_is_conditional` fails before
+`CONDITIONAL_FRAMEWORK_IDS` exists, which is the point.
 
 - [ ] **Step 8: Add the channel-parity test, with the loader that reads a dict**
 
