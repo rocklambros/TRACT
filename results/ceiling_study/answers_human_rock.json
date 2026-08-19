@@ -1,0 +1,2527 @@
+{
+  "items": [
+    {
+      "item_index": 1,
+      "primary_hub_id": "172-101",
+      "acceptable_hub_ids": [
+        "172-101"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 2,
+      "primary_hub_id": "755-340",
+      "acceptable_hub_ids": [
+        "755-340",
+        "225-553"
+      ],
+      "confidence": "high",
+      "notes": "The control establishes an organization wide AI management system spanning inventory, risk, accountability, education, and compliance."
+    },
+    {
+      "item_index": 3,
+      "primary_hub_id": "423-055",
+      "acceptable_hub_ids": [
+        "423-055",
+        "615-663"
+      ],
+      "confidence": "medium",
+      "notes": "The poisoning occurs through externally sourced training data, so data supply chain controls and training data poisoning are both defensible."
+    },
+    {
+      "item_index": 4,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "623-550"
+      ],
+      "confidence": "medium",
+      "notes": "The attack primarily evades network filtering, although its slow fragment variant can also exhaust resources."
+    },
+    {
+      "item_index": 5,
+      "primary_hub_id": "170-772",
+      "acceptable_hub_ids": [
+        "170-772",
+        "400-007"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 6,
+      "primary_hub_id": "538-446",
+      "acceptable_hub_ids": [
+        "538-446",
+        "010-308"
+      ],
+      "confidence": "medium",
+      "notes": "The weakness concerns neutralizing special characters before downstream interpretation, which fits general unstructured input sanitization."
+    },
+    {
+      "item_index": 7,
+      "primary_hub_id": "342-781",
+      "acceptable_hub_ids": [
+        "342-781"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 8,
+      "primary_hub_id": "527-034",
+      "acceptable_hub_ids": [
+        "527-034",
+        "636-854"
+      ],
+      "confidence": "high",
+      "notes": "The failure is loss of encryption after edge TLS termination on the internal application path."
+    },
+    {
+      "item_index": 9,
+      "primary_hub_id": "073-507",
+      "acceptable_hub_ids": [
+        "073-507",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "notes": "The umbrella technique explicitly includes both direct and indirect prompt injection, so neither leaf alone covers the full control."
+    },
+    {
+      "item_index": 10,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no dedicated network reconnaissance hub, making layered network detection the closest operational home."
+    },
+    {
+      "item_index": 11,
+      "primary_hub_id": "843-475",
+      "acceptable_hub_ids": [
+        "843-475"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 12,
+      "primary_hub_id": "061-186",
+      "acceptable_hub_ids": [
+        "061-186",
+        "031-447",
+        "538-446"
+      ],
+      "confidence": "high",
+      "notes": "The bypass depends on inconsistent URL decoding and slash interpretation across validation and processing components."
+    },
+    {
+      "item_index": 13,
+      "primary_hub_id": "058-527",
+      "acceptable_hub_ids": [
+        "058-527",
+        "336-512",
+        "132-146"
+      ],
+      "confidence": "medium",
+      "notes": "The pattern centers on manipulated name or route resolution, with pharming as its concrete example."
+    },
+    {
+      "item_index": 14,
+      "primary_hub_id": "146-871",
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 15,
+      "primary_hub_id": "061-186",
+      "acceptable_hub_ids": [
+        "061-186",
+        "538-446",
+        "031-447"
+      ],
+      "confidence": "high",
+      "notes": "The attack exploits inconsistent Unicode interpretation between validation and downstream processing."
+    },
+    {
+      "item_index": 16,
+      "primary_hub_id": "012-625",
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 17,
+      "primary_hub_id": "384-015",
+      "acceptable_hub_ids": [
+        "384-015",
+        "408-838",
+        "467-215"
+      ],
+      "confidence": "high",
+      "notes": "The control is the parent training defense and names both adversarial training and robust distillation as examples."
+    },
+    {
+      "item_index": 18,
+      "primary_hub_id": "872-574",
+      "acceptable_hub_ids": [
+        "872-574",
+        "286-500"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 19,
+      "primary_hub_id": "134-207",
+      "acceptable_hub_ids": [
+        "134-207",
+        "760-764"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 20,
+      "primary_hub_id": "576-262",
+      "acceptable_hub_ids": [
+        "576-262"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 21,
+      "primary_hub_id": "278-646",
+      "acceptable_hub_ids": [
+        "278-646",
+        "234-282",
+        "683-036"
+      ],
+      "confidence": "medium",
+      "notes": "The pattern covers raw audio and physical interception, which falls between secure communication and physical protection leaves."
+    },
+    {
+      "item_index": 22,
+      "primary_hub_id": "474-203",
+      "acceptable_hub_ids": [
+        "474-203"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 23,
+      "primary_hub_id": "641-760",
+      "acceptable_hub_ids": [
+        "641-760",
+        "761-417"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 24,
+      "primary_hub_id": "824-732",
+      "acceptable_hub_ids": [
+        "824-732"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 25,
+      "primary_hub_id": "818-434",
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 26,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no dedicated network reconnaissance leaf, so layered network detection is the closest fit for firewall rule scanning."
+    },
+    {
+      "item_index": 27,
+      "primary_hub_id": "715-223",
+      "acceptable_hub_ids": [
+        "715-223",
+        "336-512"
+      ],
+      "confidence": "medium",
+      "notes": "The attack succeeds by substituting a lookalike location for a legitimate resource, making source authenticity the central control."
+    },
+    {
+      "item_index": 28,
+      "primary_hub_id": "220-442",
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 29,
+      "primary_hub_id": "157-430",
+      "acceptable_hub_ids": [
+        "157-430",
+        "846-302",
+        "617-524"
+      ],
+      "confidence": "high",
+      "notes": "The attack covers both application and browser caches, making the location neutral cache protection hub the best assignment."
+    },
+    {
+      "item_index": 30,
+      "primary_hub_id": "547-824",
+      "acceptable_hub_ids": [
+        "547-824"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 31,
+      "primary_hub_id": "234-282",
+      "acceptable_hub_ids": [
+        "234-282",
+        "135-200"
+      ],
+      "confidence": "medium",
+      "notes": "The policy governs physical and environmental protection, while policy review is a secondary procedural aspect."
+    },
+    {
+      "item_index": 32,
+      "primary_hub_id": "073-507",
+      "acceptable_hub_ids": [
+        "073-507",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "notes": "The control explicitly defines both direct and indirect prompt injection, so the inference threat parent is more complete than either leaf."
+    },
+    {
+      "item_index": 33,
+      "primary_hub_id": "742-431",
+      "acceptable_hub_ids": [
+        "742-431",
+        "674-425",
+        "170-772"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 34,
+      "primary_hub_id": "182-732",
+      "acceptable_hub_ids": [
+        "182-732",
+        "034-540",
+        "141-385"
+      ],
+      "confidence": "medium",
+      "notes": "The umbrella technique includes both training data inference attacks and functional model extraction through the inference API."
+    },
+    {
+      "item_index": 35,
+      "primary_hub_id": "623-550",
+      "acceptable_hub_ids": [
+        "623-550",
+        "132-146"
+      ],
+      "confidence": "medium",
+      "notes": "Packet dropping denies service availability even though it does not exhaust resources."
+    },
+    {
+      "item_index": 36,
+      "primary_hub_id": "230-318",
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 37,
+      "primary_hub_id": "831-570",
+      "acceptable_hub_ids": [
+        "831-570",
+        "482-771",
+        "314-131"
+      ],
+      "confidence": "medium",
+      "notes": "The failure is an unchecked buffer expansion during processing, not ordinary request volume exhaustion."
+    },
+    {
+      "item_index": 38,
+      "primary_hub_id": "010-108",
+      "acceptable_hub_ids": [
+        "010-108"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 39,
+      "primary_hub_id": "834-645",
+      "acceptable_hub_ids": [
+        "834-645",
+        "362-550",
+        "278-646"
+      ],
+      "confidence": "medium",
+      "notes": "The hostile subapplication collects participant identifiers without authorization, closely matching unauthorized third party data collection."
+    },
+    {
+      "item_index": 40,
+      "primary_hub_id": "615-663",
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 41,
+      "primary_hub_id": "077-235",
+      "acceptable_hub_ids": [
+        "077-235"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 42,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no OS fingerprinting leaf, so network attack detection is the closest operational home."
+    },
+    {
+      "item_index": 43,
+      "primary_hub_id": "220-442",
+      "acceptable_hub_ids": [
+        "220-442",
+        "801-310",
+        "368-633"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 44,
+      "primary_hub_id": "428-544",
+      "acceptable_hub_ids": [
+        "428-544",
+        "240-464"
+      ],
+      "confidence": "medium",
+      "notes": "The required action is role specific training, although its subject matter is contingency planning."
+    },
+    {
+      "item_index": 45,
+      "primary_hub_id": "860-723",
+      "acceptable_hub_ids": [
+        "860-723"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 46,
+      "primary_hub_id": "571-640",
+      "acceptable_hub_ids": [
+        "571-640",
+        "362-550"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 47,
+      "primary_hub_id": "034-540",
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 48,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no port reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 49,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no port reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 50,
+      "primary_hub_id": "187-083",
+      "acceptable_hub_ids": [
+        "187-083",
+        "886-662"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 51,
+      "primary_hub_id": "810-884",
+      "acceptable_hub_ids": [
+        "810-884"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 52,
+      "primary_hub_id": "058-527",
+      "acceptable_hub_ids": [
+        "058-527",
+        "623-550",
+        "336-512"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 53,
+      "primary_hub_id": "114-853",
+      "acceptable_hub_ids": [
+        "114-853"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 54,
+      "primary_hub_id": "430-722",
+      "acceptable_hub_ids": [
+        "430-722",
+        "010-108"
+      ],
+      "confidence": "medium",
+      "notes": "The control reduces general output fidelity, while the confidence obscuring leaf is limited to probability and certainty metadata."
+    },
+    {
+      "item_index": 55,
+      "primary_hub_id": "538-770",
+      "acceptable_hub_ids": [
+        "538-770",
+        "724-770"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 56,
+      "primary_hub_id": "230-318",
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550",
+        "886-662",
+        "187-083"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 57,
+      "primary_hub_id": "760-765",
+      "acceptable_hub_ids": [
+        "760-765",
+        "366-835"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 58,
+      "primary_hub_id": "805-126",
+      "acceptable_hub_ids": [
+        "805-126"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 59,
+      "primary_hub_id": "637-021",
+      "acceptable_hub_ids": [
+        "637-021"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 60,
+      "primary_hub_id": "636-854",
+      "acceptable_hub_ids": [
+        "636-854",
+        "760-765",
+        "036-147",
+        "683-036"
+      ],
+      "confidence": "medium",
+      "notes": "The attack depends on active interception of cleartext web traffic, with script injection as the resulting browser exploit."
+    },
+    {
+      "item_index": 61,
+      "primary_hub_id": "881-234",
+      "acceptable_hub_ids": [
+        "881-234",
+        "613-285",
+        "423-055",
+        "852-770",
+        "883-173"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 62,
+      "primary_hub_id": "048-612",
+      "acceptable_hub_ids": [
+        "048-612",
+        "821-541"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 63,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no protocol fingerprinting leaf, so network attack detection is the closest fit."
+    },
+    {
+      "item_index": 64,
+      "primary_hub_id": "141-385",
+      "acceptable_hub_ids": [
+        "141-385",
+        "182-732"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 65,
+      "primary_hub_id": "683-036",
+      "acceptable_hub_ids": [
+        "683-036",
+        "278-646"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 66,
+      "primary_hub_id": "020-540",
+      "acceptable_hub_ids": [
+        "020-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 67,
+      "primary_hub_id": "742-431",
+      "acceptable_hub_ids": [
+        "742-431",
+        "674-425",
+        "170-772"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 68,
+      "primary_hub_id": "173-554",
+      "acceptable_hub_ids": [
+        "173-554"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 69,
+      "primary_hub_id": "831-570",
+      "acceptable_hub_ids": [
+        "831-570",
+        "314-131"
+      ],
+      "confidence": "medium",
+      "notes": "The MIME conversion routine is merely the parser context; the security failure is a buffer overflow."
+    },
+    {
+      "item_index": 70,
+      "primary_hub_id": "041-188",
+      "acceptable_hub_ids": [
+        "041-188"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 71,
+      "primary_hub_id": "364-516",
+      "acceptable_hub_ids": [
+        "364-516",
+        "555-083",
+        "547-824",
+        "011-322",
+        "043-703"
+      ],
+      "confidence": "medium",
+      "notes": "The validation control deliberately spans backdoors, leakage, adversarial influence, and drift, so no single validation leaf is complete."
+    },
+    {
+      "item_index": 72,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no host reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 73,
+      "primary_hub_id": "780-757",
+      "acceptable_hub_ids": [
+        "780-757",
+        "430-722"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 74,
+      "primary_hub_id": "547-283",
+      "acceptable_hub_ids": [
+        "547-283",
+        "777-470"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 75,
+      "primary_hub_id": "176-154",
+      "acceptable_hub_ids": [
+        "176-154",
+        "630-573",
+        "623-550",
+        "660-867"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 76,
+      "primary_hub_id": "467-215",
+      "acceptable_hub_ids": [
+        "467-215"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 77,
+      "primary_hub_id": "074-873",
+      "acceptable_hub_ids": [
+        "074-873",
+        "356-282"
+      ],
+      "confidence": "medium",
+      "notes": "The control governs general information lifecycle and retention, while the available retention leaves are limited to sensitive, personal, or training data."
+    },
+    {
+      "item_index": 78,
+      "primary_hub_id": "044-202",
+      "acceptable_hub_ids": [
+        "044-202",
+        "204-272",
+        "034-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 79,
+      "primary_hub_id": "440-372",
+      "acceptable_hub_ids": [
+        "440-372"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 80,
+      "primary_hub_id": "653-242",
+      "acceptable_hub_ids": [
+        "653-242",
+        "010-308"
+      ],
+      "confidence": "medium",
+      "notes": "Missing, undefined, or incorrectly counted fields are structural input conformance failures best handled through schema validation."
+    },
+    {
+      "item_index": 81,
+      "primary_hub_id": "761-417",
+      "acceptable_hub_ids": [
+        "761-417"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 82,
+      "primary_hub_id": "623-550",
+      "acceptable_hub_ids": [
+        "623-550",
+        "653-242"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 83,
+      "primary_hub_id": "831-570",
+      "acceptable_hub_ids": [
+        "831-570",
+        "314-131",
+        "175-235"
+      ],
+      "confidence": "medium",
+      "notes": "The binary file is the delivery vector, but the exploited weakness is unsafe memory handling in the parser."
+    },
+    {
+      "item_index": 84,
+      "primary_hub_id": "615-663",
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 85,
+      "primary_hub_id": "686-110",
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 86,
+      "primary_hub_id": "777-470",
+      "acceptable_hub_ids": [
+        "777-470",
+        "545-243",
+        "112-273"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 87,
+      "primary_hub_id": "034-540",
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 88,
+      "primary_hub_id": "482-771",
+      "acceptable_hub_ids": [
+        "482-771"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 89,
+      "primary_hub_id": "430-722",
+      "acceptable_hub_ids": [
+        "430-722",
+        "064-808"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 90,
+      "primary_hub_id": "208-830",
+      "acceptable_hub_ids": [
+        "208-830",
+        "058-527",
+        "336-512",
+        "157-430"
+      ],
+      "confidence": "low",
+      "notes": "The attack spans application, browser, DNS, and ARP caches, while the taxonomy provides only location specific cache controls."
+    },
+    {
+      "item_index": 91,
+      "primary_hub_id": "232-217",
+      "acceptable_hub_ids": [
+        "232-217"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 92,
+      "primary_hub_id": "703-813",
+      "acceptable_hub_ids": [
+        "703-813",
+        "058-083"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 93,
+      "primary_hub_id": "683-036",
+      "acceptable_hub_ids": [
+        "683-036",
+        "132-146"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 94,
+      "primary_hub_id": "034-540",
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 95,
+      "primary_hub_id": "623-550",
+      "acceptable_hub_ids": [
+        "623-550",
+        "132-146"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 96,
+      "primary_hub_id": "370-877",
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 97,
+      "primary_hub_id": "538-770",
+      "acceptable_hub_ids": [
+        "538-770",
+        "227-045",
+        "308-515"
+      ],
+      "confidence": "medium",
+      "notes": "The metadata is a derived representation of protected data and therefore requires the same access restrictions as the source resource."
+    },
+    {
+      "item_index": 98,
+      "primary_hub_id": "615-663",
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 99,
+      "primary_hub_id": "032-213",
+      "acceptable_hub_ids": [
+        "032-213",
+        "234-282",
+        "036-810"
+      ],
+      "confidence": "medium",
+      "notes": "The attack physically perturbs hardware during cryptographic operations, and the taxonomy lacks a dedicated fault injection control."
+    },
+    {
+      "item_index": 100,
+      "primary_hub_id": "686-110",
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 101,
+      "primary_hub_id": "818-434",
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 102,
+      "primary_hub_id": "660-867",
+      "acceptable_hub_ids": [
+        "660-867",
+        "534-605"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 103,
+      "primary_hub_id": "380-540",
+      "acceptable_hub_ids": [
+        "380-540",
+        "134-412"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 104,
+      "primary_hub_id": "818-434",
+      "acceptable_hub_ids": [
+        "818-434",
+        "141-385",
+        "077-772"
+      ],
+      "confidence": "medium",
+      "notes": "The collection spans models, datasets, and telemetry, so no single confidentiality threat leaf covers every artifact type."
+    },
+    {
+      "item_index": 105,
+      "primary_hub_id": "286-500",
+      "acceptable_hub_ids": [
+        "286-500",
+        "247-250",
+        "713-684",
+        "872-574"
+      ],
+      "confidence": "medium",
+      "notes": "The technique disables operating system security tooling and logs, while the taxonomy lacks a dedicated defense evasion hub."
+    },
+    {
+      "item_index": 106,
+      "primary_hub_id": "852-770",
+      "acceptable_hub_ids": [
+        "852-770",
+        "701-654",
+        "265-800"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 107,
+      "primary_hub_id": "012-625",
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 108,
+      "primary_hub_id": "615-744",
+      "acceptable_hub_ids": [
+        "615-744"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 109,
+      "primary_hub_id": "622-203",
+      "acceptable_hub_ids": [
+        "622-203",
+        "082-530",
+        "077-781"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 110,
+      "primary_hub_id": "356-282",
+      "acceptable_hub_ids": [
+        "356-282",
+        "268-272",
+        "571-640"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 111,
+      "primary_hub_id": "011-322",
+      "acceptable_hub_ids": [
+        "011-322",
+        "433-442"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 112,
+      "primary_hub_id": "205-522",
+      "acceptable_hub_ids": [
+        "205-522",
+        "204-272"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 113,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no protocol fingerprinting leaf, so network attack detection is the closest fit."
+    },
+    {
+      "item_index": 114,
+      "primary_hub_id": "408-838",
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 115,
+      "primary_hub_id": "326-704",
+      "acceptable_hub_ids": [
+        "326-704",
+        "155-155",
+        "613-285"
+      ],
+      "confidence": "medium",
+      "notes": "The requirement is an architecture and sourcing decision to replace untrustworthy critical components through custom development."
+    },
+    {
+      "item_index": 116,
+      "primary_hub_id": "488-626",
+      "acceptable_hub_ids": [
+        "488-626"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 117,
+      "primary_hub_id": "146-871",
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 118,
+      "primary_hub_id": "623-347",
+      "acceptable_hub_ids": [
+        "623-347",
+        "881-321"
+      ],
+      "confidence": "medium",
+      "notes": "The device unlock key is a shared high privilege credential, although the hub is phrased in terms of shared accounts."
+    },
+    {
+      "item_index": 119,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no topology reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 120,
+      "primary_hub_id": "615-663",
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 121,
+      "primary_hub_id": "818-434",
+      "acceptable_hub_ids": [
+        "818-434",
+        "765-788",
+        "227-045"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 122,
+      "primary_hub_id": "010-308",
+      "acceptable_hub_ids": [
+        "010-308",
+        "482-771",
+        "831-570"
+      ],
+      "confidence": "medium",
+      "notes": "The weakness is failure to validate an untrusted index or offset before resource access, not necessarily arithmetic overflow."
+    },
+    {
+      "item_index": 123,
+      "primary_hub_id": "141-385",
+      "acceptable_hub_ids": [
+        "141-385"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 124,
+      "primary_hub_id": "286-500",
+      "acceptable_hub_ids": [
+        "286-500",
+        "171-222",
+        "347-352"
+      ],
+      "confidence": "low",
+      "notes": "CRE has no dedicated secure boot attestation hub; operating system integrity is the closest available scope."
+    },
+    {
+      "item_index": 125,
+      "primary_hub_id": "028-254",
+      "acceptable_hub_ids": [
+        "028-254",
+        "336-512",
+        "715-223",
+        "307-507"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 126,
+      "primary_hub_id": "073-507",
+      "acceptable_hub_ids": [
+        "073-507",
+        "686-110",
+        "012-625",
+        "217-163"
+      ],
+      "confidence": "medium",
+      "notes": "The integrity attack manipulates model behavior during inference and can arise through either direct prompts or untrusted retrieved sources."
+    },
+    {
+      "item_index": 127,
+      "primary_hub_id": "653-242",
+      "acceptable_hub_ids": [
+        "653-242",
+        "010-308"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 128,
+      "primary_hub_id": "044-202",
+      "acceptable_hub_ids": [
+        "044-202",
+        "204-272",
+        "173-554",
+        "077-235"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 129,
+      "primary_hub_id": "623-550",
+      "acceptable_hub_ids": [
+        "623-550",
+        "611-051"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 130,
+      "primary_hub_id": "077-772",
+      "acceptable_hub_ids": [
+        "077-772"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 131,
+      "primary_hub_id": "342-641",
+      "acceptable_hub_ids": [
+        "342-641",
+        "761-417",
+        "576-262"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 132,
+      "primary_hub_id": "308-515",
+      "acceptable_hub_ids": [
+        "308-515",
+        "542-488",
+        "132-146"
+      ],
+      "confidence": "low",
+      "notes": "The attack exploits disclosure of precise system time, but CRE has no timing metadata disclosure leaf."
+    },
+    {
+      "item_index": 133,
+      "primary_hub_id": "881-234",
+      "acceptable_hub_ids": [
+        "881-234",
+        "423-055",
+        "852-770",
+        "613-287",
+        "577-260"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 134,
+      "primary_hub_id": "042-550",
+      "acceptable_hub_ids": [
+        "042-550"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 135,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no network configuration reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 136,
+      "primary_hub_id": "187-083",
+      "acceptable_hub_ids": [
+        "187-083",
+        "886-662"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 137,
+      "primary_hub_id": "148-420",
+      "acceptable_hub_ids": [
+        "148-420",
+        "048-612",
+        "713-683",
+        "821-541"
+      ],
+      "confidence": "high",
+      "notes": "The attack spans forged entries and direct modification or deletion, so the log integrity parent is more complete than either child."
+    },
+    {
+      "item_index": 138,
+      "primary_hub_id": "230-318",
+      "acceptable_hub_ids": [
+        "230-318",
+        "012-625",
+        "623-550",
+        "108-316"
+      ],
+      "confidence": "medium",
+      "notes": "The control covers AI specific availability attacks, including both computational exhaustion and indirect prompt injection that disables capabilities."
+    },
+    {
+      "item_index": 139,
+      "primary_hub_id": "843-475",
+      "acceptable_hub_ids": [
+        "843-475"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 140,
+      "primary_hub_id": "208-830",
+      "acceptable_hub_ids": [
+        "208-830",
+        "538-770",
+        "758-262"
+      ],
+      "confidence": "medium",
+      "notes": "A core dump is a temporary file containing sensitive process memory, and the taxonomy has no dedicated dump protection leaf."
+    },
+    {
+      "item_index": 141,
+      "primary_hub_id": "380-540",
+      "acceptable_hub_ids": [
+        "380-540",
+        "134-412",
+        "670-660"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 142,
+      "primary_hub_id": "768-532",
+      "acceptable_hub_ids": [
+        "768-532"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 143,
+      "primary_hub_id": "141-385",
+      "acceptable_hub_ids": [
+        "141-385"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 144,
+      "primary_hub_id": "061-186",
+      "acceptable_hub_ids": [
+        "061-186",
+        "538-446",
+        "031-447"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 145,
+      "primary_hub_id": "533-635",
+      "acceptable_hub_ids": [
+        "533-635",
+        "244-750",
+        "428-544"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 146,
+      "primary_hub_id": "623-550",
+      "acceptable_hub_ids": [
+        "623-550",
+        "653-242",
+        "831-563"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 147,
+      "primary_hub_id": "481-710",
+      "acceptable_hub_ids": [
+        "481-710",
+        "615-663",
+        "701-654",
+        "867-642"
+      ],
+      "confidence": "medium",
+      "notes": "The umbrella category includes poisoned training data, compromised model artifacts, and direct model manipulation."
+    },
+    {
+      "item_index": 148,
+      "primary_hub_id": "605-735",
+      "acceptable_hub_ids": [
+        "605-735",
+        "634-733",
+        "426-842"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 149,
+      "primary_hub_id": "661-440",
+      "acceptable_hub_ids": [
+        "661-440"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 150,
+      "primary_hub_id": "152-725",
+      "acceptable_hub_ids": [
+        "152-725",
+        "286-500",
+        "132-146"
+      ],
+      "confidence": "medium",
+      "notes": "The attack abuses privileged account enumeration functionality, and CRE has no dedicated account discovery hub."
+    },
+    {
+      "item_index": 151,
+      "primary_hub_id": "384-015",
+      "acceptable_hub_ids": [
+        "384-015",
+        "408-838",
+        "467-215",
+        "146-871",
+        "641-760"
+      ],
+      "confidence": "medium",
+      "notes": "The control combines model design, configuration, and training defenses against evasion, while CRE divides those techniques across several leaves."
+    },
+    {
+      "item_index": 152,
+      "primary_hub_id": "480-071",
+      "acceptable_hub_ids": [
+        "480-071"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 153,
+      "primary_hub_id": "533-635",
+      "acceptable_hub_ids": [
+        "533-635"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 154,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no port reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 155,
+      "primary_hub_id": "220-442",
+      "acceptable_hub_ids": [
+        "220-442",
+        "202-604",
+        "012-625"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 156,
+      "primary_hub_id": "683-036",
+      "acceptable_hub_ids": [
+        "683-036",
+        "742-431",
+        "674-425",
+        "435-702"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 157,
+      "primary_hub_id": "641-760",
+      "acceptable_hub_ids": [
+        "641-760"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 158,
+      "primary_hub_id": "368-633",
+      "acceptable_hub_ids": [
+        "368-633",
+        "123-124",
+        "724-770"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 159,
+      "primary_hub_id": "370-877",
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 160,
+      "primary_hub_id": "683-036",
+      "acceptable_hub_ids": [
+        "683-036",
+        "435-702",
+        "634-733"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 161,
+      "primary_hub_id": "788-323",
+      "acceptable_hub_ids": [
+        "788-323"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 162,
+      "primary_hub_id": "152-725",
+      "acceptable_hub_ids": [
+        "152-725",
+        "368-633"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 163,
+      "primary_hub_id": "155-155",
+      "acceptable_hub_ids": [
+        "155-155",
+        "146-871",
+        "761-417"
+      ],
+      "confidence": "medium",
+      "notes": "The control is an architectural redundancy pattern using multiple sensors and modalities, for which CRE has no dedicated sensor fusion leaf."
+    },
+    {
+      "item_index": 164,
+      "primary_hub_id": "028-254",
+      "acceptable_hub_ids": [
+        "028-254",
+        "715-223",
+        "307-507"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 165,
+      "primary_hub_id": "881-234",
+      "acceptable_hub_ids": [
+        "881-234"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 166,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no OS fingerprinting leaf, so network attack detection is the closest fit."
+    },
+    {
+      "item_index": 167,
+      "primary_hub_id": "567-025",
+      "acceptable_hub_ids": [
+        "567-025"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 168,
+      "primary_hub_id": "622-203",
+      "acceptable_hub_ids": [
+        "622-203",
+        "082-530"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 169,
+      "primary_hub_id": "831-570",
+      "acceptable_hub_ids": [
+        "831-570",
+        "314-131"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 170,
+      "primary_hub_id": "701-654",
+      "acceptable_hub_ids": [
+        "701-654"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 171,
+      "primary_hub_id": "307-507",
+      "acceptable_hub_ids": [
+        "307-507",
+        "141-555",
+        "623-550",
+        "831-570"
+      ],
+      "confidence": "medium",
+      "notes": "The attack depends on accepting a corrupted file without trustworthy integrity verification, though impacts vary by parser behavior."
+    },
+    {
+      "item_index": 172,
+      "primary_hub_id": "205-522",
+      "acceptable_hub_ids": [
+        "205-522",
+        "333-480",
+        "860-723",
+        "843-475"
+      ],
+      "confidence": "medium",
+      "notes": "The safety instructions operate as automated deployment-time behavioral constraints rather than training-time model alignment."
+    },
+    {
+      "item_index": 173,
+      "primary_hub_id": "724-770",
+      "acceptable_hub_ids": [
+        "724-770",
+        "247-250"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 174,
+      "primary_hub_id": "780-757",
+      "acceptable_hub_ids": [
+        "780-757"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 175,
+      "primary_hub_id": "012-625",
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 176,
+      "primary_hub_id": "760-765",
+      "acceptable_hub_ids": [
+        "760-765",
+        "366-835"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 177,
+      "primary_hub_id": "202-604",
+      "acceptable_hub_ids": [
+        "202-604"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 178,
+      "primary_hub_id": "623-550",
+      "acceptable_hub_ids": [
+        "623-550",
+        "176-154"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 179,
+      "primary_hub_id": "423-055",
+      "acceptable_hub_ids": [
+        "423-055"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 180,
+      "primary_hub_id": "802-056",
+      "acceptable_hub_ids": [
+        "802-056",
+        "158-874",
+        "576-651"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 181,
+      "primary_hub_id": "860-723",
+      "acceptable_hub_ids": [
+        "860-723"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 182,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no host discovery leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 183,
+      "primary_hub_id": "287-823",
+      "acceptable_hub_ids": [
+        "287-823",
+        "863-521",
+        "162-655"
+      ],
+      "confidence": "medium",
+      "notes": "The inventory covers all system components, while the only inventory leaf is limited to third party dependencies."
+    },
+    {
+      "item_index": 184,
+      "primary_hub_id": "034-540",
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 185,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no port or OS reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 186,
+      "primary_hub_id": "034-540",
+      "acceptable_hub_ids": [
+        "034-540",
+        "043-703"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 187,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "630-573",
+        "743-110"
+      ],
+      "confidence": "medium",
+      "notes": "The attack uses automated Ajax enumeration for reconnaissance, and CRE has no general footprinting leaf."
+    },
+    {
+      "item_index": 188,
+      "primary_hub_id": "886-662",
+      "acceptable_hub_ids": [
+        "886-662"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 189,
+      "primary_hub_id": "132-146",
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "notes": "The taxonomy has no port reconnaissance leaf, so layered network detection is the closest fit."
+    },
+    {
+      "item_index": 190,
+      "primary_hub_id": "646-285",
+      "acceptable_hub_ids": [
+        "646-285"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 191,
+      "primary_hub_id": "308-515",
+      "acceptable_hub_ids": [
+        "308-515",
+        "132-146",
+        "743-110"
+      ],
+      "confidence": "medium",
+      "notes": "Fingerprinting exploits observable system details, while CRE has only protocol specific disclosure leaves."
+    },
+    {
+      "item_index": 192,
+      "primary_hub_id": "867-642",
+      "acceptable_hub_ids": [
+        "867-642"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 193,
+      "primary_hub_id": "230-318",
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 194,
+      "primary_hub_id": "155-155",
+      "acceptable_hub_ids": [
+        "155-155",
+        "708-355",
+        "326-704"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 195,
+      "primary_hub_id": "831-570",
+      "acceptable_hub_ids": [
+        "831-570",
+        "314-131"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 196,
+      "primary_hub_id": "307-507",
+      "acceptable_hub_ids": [
+        "307-507",
+        "881-234",
+        "852-770",
+        "423-055",
+        "171-222"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 197,
+      "primary_hub_id": "314-131",
+      "acceptable_hub_ids": [
+        "314-131",
+        "286-500"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 198,
+      "primary_hub_id": "686-110",
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 199,
+      "primary_hub_id": "408-838",
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 200,
+      "primary_hub_id": "010-308",
+      "acceptable_hub_ids": [
+        "010-308",
+        "061-186",
+        "538-446"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 201,
+      "primary_hub_id": "217-163",
+      "acceptable_hub_ids": [
+        "217-163",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "notes": "The control spans poisoned retrieval content and indirect prompt injection, with augmentation data manipulation providing the broader fit."
+    },
+    {
+      "item_index": 202,
+      "primary_hub_id": "028-727",
+      "acceptable_hub_ids": [
+        "028-727",
+        "060-472"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 203,
+      "primary_hub_id": "617-524",
+      "acceptable_hub_ids": [
+        "617-524"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 204,
+      "primary_hub_id": "488-626",
+      "acceptable_hub_ids": [
+        "488-626",
+        "430-722"
+      ],
+      "confidence": "medium",
+      "notes": "The text covers both private training and output perturbation, with training data obfuscation providing the closest primary leaf."
+    },
+    {
+      "item_index": 205,
+      "primary_hub_id": "177-260",
+      "acceptable_hub_ids": [
+        "177-260",
+        "065-782",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "A device lock preserves rather than terminates the session, so the session parent avoids the timeout leaf's exclusion."
+    },
+    {
+      "item_index": 206,
+      "primary_hub_id": "715-644",
+      "acceptable_hub_ids": [
+        "715-644",
+        "538-770",
+        "703-813"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 207,
+      "primary_hub_id": "220-442",
+      "acceptable_hub_ids": [
+        "220-442",
+        "368-633"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 208,
+      "primary_hub_id": "114-277",
+      "acceptable_hub_ids": [
+        "114-277",
+        "177-260"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 209,
+      "primary_hub_id": "746-705",
+      "acceptable_hub_ids": [
+        "746-705",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "CRE has no process discovery leaf, so functional authorization is the closest protection against unauthorized process enumeration."
+    },
+    {
+      "item_index": 210,
+      "primary_hub_id": "041-188",
+      "acceptable_hub_ids": [
+        "041-188"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 211,
+      "primary_hub_id": "061-186",
+      "acceptable_hub_ids": [
+        "061-186",
+        "538-446"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 212,
+      "primary_hub_id": "538-770",
+      "acceptable_hub_ids": [
+        "538-770",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "notes": "CRE has no local data discovery leaf, so data access control is the closest protection for files, databases, and stored secrets."
+    },
+    {
+      "item_index": 213,
+      "primary_hub_id": "286-500",
+      "acceptable_hub_ids": [
+        "286-500"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 214,
+      "primary_hub_id": "475-586",
+      "acceptable_hub_ids": [
+        "475-586",
+        "034-540",
+        "044-202",
+        "141-385"
+      ],
+      "confidence": "medium",
+      "notes": "The text surveys several privacy attacks, and no single leaf covers reconstruction, membership, memorization, property inference, and model extraction together."
+    },
+    {
+      "item_index": 215,
+      "primary_hub_id": "044-202",
+      "acceptable_hub_ids": [
+        "044-202"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 216,
+      "primary_hub_id": "308-515",
+      "acceptable_hub_ids": [
+        "308-515"
+      ],
+      "confidence": "low",
+      "notes": "CRE has no general software reverse engineering leaf, so Prevent security disclosure is the nearest non AI scope."
+    },
+    {
+      "item_index": 217,
+      "primary_hub_id": "481-710",
+      "acceptable_hub_ids": [
+        "481-710",
+        "867-642",
+        "701-654"
+      ],
+      "confidence": "medium",
+      "notes": "The text spans federated development time poisoning and supply chain poisoning, making the model poisoning parent the only complete fit."
+    },
+    {
+      "item_index": 218,
+      "primary_hub_id": "613-285",
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 219,
+      "primary_hub_id": "538-770",
+      "acceptable_hub_ids": [
+        "538-770",
+        "126-668"
+      ],
+      "confidence": "medium",
+      "notes": "CRE has no repository mining leaf, so data access control is the closest protection for collaborative stores and enterprise databases."
+    },
+    {
+      "item_index": 220,
+      "primary_hub_id": "760-765",
+      "acceptable_hub_ids": [
+        "760-765",
+        "366-835",
+        "541-441"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 221,
+      "primary_hub_id": "220-442",
+      "acceptable_hub_ids": [
+        "220-442",
+        "368-633"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 222,
+      "primary_hub_id": "424-242",
+      "acceptable_hub_ids": [
+        "424-242",
+        "356-282"
+      ],
+      "confidence": "medium",
+      "notes": "Former tenant resource reallocation is closest to decommissioning, though CRE lacks a cloud data remanence leaf."
+    },
+    {
+      "item_index": 223,
+      "primary_hub_id": "615-663",
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 224,
+      "primary_hub_id": "380-540",
+      "acceptable_hub_ids": [
+        "380-540"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 225,
+      "primary_hub_id": "028-727",
+      "acceptable_hub_ids": [
+        "028-727",
+        "342-055"
+      ],
+      "confidence": "medium",
+      "notes": "The attack is a read oriented CSRF variant, so the generic CSRF hub fits despite standard token limitations."
+    },
+    {
+      "item_index": 226,
+      "primary_hub_id": "205-522",
+      "acceptable_hub_ids": [
+        "205-522",
+        "843-475",
+        "204-272"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 227,
+      "primary_hub_id": "774-888",
+      "acceptable_hub_ids": [
+        "774-888",
+        "813-610",
+        "065-183"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 228,
+      "primary_hub_id": "276-748",
+      "acceptable_hub_ids": [
+        "276-748"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 229,
+      "primary_hub_id": "157-430",
+      "acceptable_hub_ids": [
+        "157-430",
+        "208-830"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 230,
+      "primary_hub_id": "108-316",
+      "acceptable_hub_ids": [
+        "108-316",
+        "010-308",
+        "623-550"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 231,
+      "primary_hub_id": "881-234",
+      "acceptable_hub_ids": [
+        "881-234",
+        "863-521",
+        "852-770",
+        "423-055"
+      ],
+      "confidence": "medium",
+      "notes": "The BOM spans model and data provenance, so the AI supply chain parent is more complete than either child."
+    },
+    {
+      "item_index": 232,
+      "primary_hub_id": "613-285",
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 233,
+      "primary_hub_id": "843-475",
+      "acceptable_hub_ids": [
+        "843-475",
+        "205-522"
+      ],
+      "confidence": "medium",
+      "notes": "The paragraph spans several defenses, but its moderator and filtering mechanisms map most directly to prompt injection I/O handling."
+    },
+    {
+      "item_index": 234,
+      "primary_hub_id": "234-282",
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 235,
+      "primary_hub_id": "342-641",
+      "acceptable_hub_ids": [
+        "342-641"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 236,
+      "primary_hub_id": "760-764",
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 237,
+      "primary_hub_id": "473-758",
+      "acceptable_hub_ids": [
+        "473-758",
+        "157-430"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 238,
+      "primary_hub_id": "088-316",
+      "acceptable_hub_ids": [
+        "088-316"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 239,
+      "primary_hub_id": "881-234",
+      "acceptable_hub_ids": [
+        "881-234",
+        "852-770",
+        "423-055",
+        "883-173"
+      ],
+      "confidence": "medium",
+      "notes": "The entry spans model, data, and hosting dependencies, making the AI supply chain parent the only complete fit."
+    },
+    {
+      "item_index": 240,
+      "primary_hub_id": "743-237",
+      "acceptable_hub_ids": [
+        "743-237"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 241,
+      "primary_hub_id": "058-443",
+      "acceptable_hub_ids": [
+        "058-443"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 242,
+      "primary_hub_id": "208-805",
+      "acceptable_hub_ids": [
+        "208-805",
+        "155-155"
+      ],
+      "confidence": "low",
+      "notes": "CRE has no hardware debug authorization leaf, so disabling production debug functionality is the nearest scope."
+    },
+    {
+      "item_index": 243,
+      "primary_hub_id": "641-760",
+      "acceptable_hub_ids": [
+        "641-760",
+        "567-025"
+      ],
+      "confidence": "medium",
+      "notes": "The control primarily distorts inference inputs but also describes training data distortion as a secondary use."
+    },
+    {
+      "item_index": 244,
+      "primary_hub_id": "586-842",
+      "acceptable_hub_ids": [
+        "586-842",
+        "247-250"
+      ],
+      "confidence": "low",
+      "notes": "CRE lacks an identifier lifecycle leaf, so secure user management is closest for username and account identifiers."
+    },
+    {
+      "item_index": 245,
+      "primary_hub_id": "480-071",
+      "acceptable_hub_ids": [
+        "480-071"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 246,
+      "primary_hub_id": "703-813",
+      "acceptable_hub_ids": [
+        "703-813",
+        "184-284"
+      ],
+      "confidence": "medium",
+      "notes": "Inference monitoring fits model inputs and outputs, while general security event logging also fits the agent action trail."
+    },
+    {
+      "item_index": 247,
+      "primary_hub_id": "061-186",
+      "acceptable_hub_ids": [
+        "061-186",
+        "538-446"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 248,
+      "primary_hub_id": "106-447",
+      "acceptable_hub_ids": [
+        "106-447"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 249,
+      "primary_hub_id": "613-285",
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "high",
+      "notes": ""
+    },
+    {
+      "item_index": 250,
+      "primary_hub_id": "481-710",
+      "acceptable_hub_ids": [
+        "481-710",
+        "867-642",
+        "615-663"
+      ],
+      "confidence": "medium",
+      "notes": "The technique spans direct model modification and data driven poisoning, so the model poisoning parent is the only complete fit."
+    }
+  ]
+}
