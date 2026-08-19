@@ -21,6 +21,7 @@ import io
 import json
 import zipfile
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -37,6 +38,7 @@ from tract.config import (
 )
 from tract.corpus_report import CURATED_LINKS_PATH, build_corpus_report
 from tract.parsers.base import BaseParser
+from tract.text_selection import prepare_anchor
 
 TITLES: dict[str, str] = {
     "A01": "Broken Access Control",
@@ -138,11 +140,51 @@ def _parser_for(tmp_path: Path, codes: tuple[str, ...], name: str) -> (
     raw = tmp_path / name
     raw.mkdir(exist_ok=True)
     (raw / ARCHIVE_NAME).write_bytes(_archive(codes))
-    instance = OwaspTop102021Parser(raw_dir=raw, output_dir=tmp_path / "out")
+    return _instance(tmp_path, raw)
+
+
+def _instance(tmp_path: Path, raw: Path) -> OwaspTop102021Parser:
+    """Audit dir is redirected so a test never writes the real one."""
+    instance = OwaspTop102021Parser(
+        raw_dir=raw,
+        output_dir=tmp_path / "out",
+        audit_dir=tmp_path / "audit",
+    )
     # A fixture archive is not the pinned one, so the real digest is stood
     # down here rather than the gate being widened to accept two archives.
     instance.expected_sha256 = None  # type: ignore[misc]
     return instance
+
+
+def _shipped() -> dict[str, dict[str, Any]]:
+    """The tracked artifact, keyed by control id."""
+    return {
+        control["control_id"]: control
+        for control in json.loads(
+            (PROCESSED_FRAMEWORKS_DIR / "owasp_top10_2021.json").read_text(
+                encoding="utf-8",
+            )
+        )["controls"]
+    }
+
+
+def _shared_prefix(texts: list[str]) -> int:
+    """Characters every one of `texts` shares from the front."""
+    count = 0
+    for chars in zip(*texts):
+        if len(set(chars)) > 1:
+            break
+        count += 1
+    return count
+
+
+def _audit_records(tmp_path: Path) -> list[dict[str, object]]:
+    path = tmp_path / "audit" / "owasp_top10_2021.jsonl"
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 @pytest.fixture()
@@ -183,16 +225,27 @@ class TestParse:
         assert "trusted server-side code" not in text
         assert "CWEs Mapped" not in text
 
-    def test_full_text_carries_the_whole_entry_below_the_heading(
+    def test_full_text_is_the_entry_below_the_heading_without_the_factors_table(
         self, parser: OwaspTop102021Parser,
     ) -> None:
         control = parser.parse()[0]
         assert control.full_text is not None
-        assert control.full_text.startswith("## Factors")
+        assert control.full_text.startswith("## Overview")
         assert "Moving up from the fifth position" in control.full_text
         assert "trusted server-side code" in control.full_text
         # The heading line is consumed, not carried.
         assert "A01:2021" not in control.full_text
+        # The statistics table is gone, and only it.
+        assert "CWEs Mapped" not in control.full_text
+        assert "55.97%" not in control.full_text
+
+    def test_every_anchor_opens_on_prose_rather_than_the_table(
+        self, parser: OwaspTop102021Parser,
+    ) -> None:
+        """The point of the removal: no shared table heading the anchors."""
+        entries = [c.full_text or "" for c in parser.parse()]
+        assert all(e.startswith("## Overview") for e in entries)
+        assert not any("## Factors" in e for e in entries)
 
     def test_only_the_declared_categories_carry_alt_titles(
         self, parser: OwaspTop102021Parser,
@@ -230,10 +283,50 @@ class TestGuards:
                 "# A01:2021 – X\n\n## Overview\n\nNo body.\n",
             )
         (raw / ARCHIVE_NAME).write_bytes(payload.getvalue())
-        broken = OwaspTop102021Parser(raw_dir=raw, output_dir=tmp_path / "out")
-        broken.expected_sha256 = None  # type: ignore[misc]
         with pytest.raises(ValueError, match="no '## Description' section"):
-            broken.parse()
+            _instance(tmp_path, raw).parse()
+
+    def test_a_missing_factors_section_is_refused(
+        self, tmp_path: Path,
+    ) -> None:
+        """A renamed or dropped table must not pass silently.
+
+        The alternative -- leave the entry untouched and count it -- would put
+        a CWE-count table at the head of this anchor and not the other nine.
+        """
+        raw = tmp_path / "nofactors"
+        raw.mkdir()
+        payload = io.BytesIO()
+        with zipfile.ZipFile(payload, "w") as archive:
+            archive.writestr(
+                "Top10-abc/2021/docs/en/A01_2021-X.md",
+                "# A01:2021 – X\n\n## Risk Factors\n\n| a |\n\n"
+                "## Description\n\nA statement long enough to be prose here.\n",
+            )
+        (raw / ARCHIVE_NAME).write_bytes(payload.getvalue())
+        with pytest.raises(ValueError, match="no '## Factors' section"):
+            _instance(tmp_path, raw).parse()
+
+    def test_a_trailing_factors_section_is_refused(
+        self, tmp_path: Path,
+    ) -> None:
+        """Bounded by the next heading, never by end-of-entry.
+
+        With `\\Z` as an alternative the pattern would swallow the rest of the
+        entry, so this proves the bound is the heading and not the end.
+        """
+        raw = tmp_path / "trailing"
+        raw.mkdir()
+        payload = io.BytesIO()
+        with zipfile.ZipFile(payload, "w") as archive:
+            archive.writestr(
+                "Top10-abc/2021/docs/en/A01_2021-X.md",
+                "# A01:2021 – X\n\n## Description\n\nA statement of the risk "
+                "that is long enough to count as prose.\n\n## Factors\n\n| a |\n",
+            )
+        (raw / ARCHIVE_NAME).write_bytes(payload.getvalue())
+        with pytest.raises(ValueError, match="no '## Factors' section"):
+            _instance(tmp_path, raw).parse()
 
     def test_markdown_with_no_category_heading_is_refused(self) -> None:
         with pytest.raises(ValueError, match="no 'A0N:2021"):
@@ -343,7 +436,7 @@ class TestRun:
         assert [s.path for s in output.source_files] == [ARCHIVE_NAME]
 
     def test_a_title_length_statement_trips_the_prose_floor(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        self, tmp_path: Path,
     ) -> None:
         """Nothing else here proves the floor is set to a non-zero value."""
         raw = tmp_path / "thin"
@@ -353,14 +446,13 @@ class TestRun:
             for code, title in TITLES.items():
                 archive.writestr(
                     f"Top10-abc/2021/docs/en/{code}_2021-Entry.md",
-                    f"# {code}:2021 – {title}\n\n## Description\n\nShort.\n",
+                    f"# {code}:2021 – {title}\n\n## Factors\n\n| a |\n\n"
+                    f"## Description\n\nShort.\n",
                 )
         (raw / ARCHIVE_NAME).write_bytes(payload.getvalue())
-        thin = OwaspTop102021Parser(raw_dir=raw, output_dir=tmp_path / "out")
-        thin.expected_sha256 = None  # type: ignore[misc]
         (tmp_path / "out").mkdir()
         with pytest.raises(ValueError, match="below the declared floor"):
-            thin.run()
+            _instance(tmp_path, raw).run()
 
     def test_the_anchor_survives_sanitisation(
         self, parser: OwaspTop102021Parser, tmp_path: Path,
@@ -373,26 +465,26 @@ class TestRun:
             assert len(control.full_text) > len(control.description)
 
 
-class TestTheClobberIsReal:
-    """_sanitize_control replaces full_text when description overflows.
+class TestTheDescriptionCapProtectsTheAnchor:
+    """_sanitize_control rewrites full_text when description overflows.
 
-    Two of the ten real categories hit this: A02's Description sanitises to
-    2,377 characters and A04's to 2,944, both over DESCRIPTION_MAX_LENGTH.
-    For those two the whole-entry full_text this parser writes is discarded
-    and the anchor becomes the Description alone. [measured on the pinned
-    archive]
+    Two real categories used to hit this: A02's Description sanitises to
+    2,263 characters and A04's to 2,938, both over DESCRIPTION_MAX_LENGTH, so
+    both shipped the Description as their anchor and the entry was discarded.
+    The parser now caps description on a word boundary, which is the only way
+    a parser can stop the base class rewriting the field.
 
-    The fixture above cannot show that, because its descriptions are short.
-    Without this class the docstring's claim would be untested and the two
-    real categories would diverge from it in silence.
+    A02 and A04 sat at 1,998 and 1,988 AFTER that rewrite, inside the limit by
+    single digits, so reading the artifact alone says the opposite of what is
+    happening. That is why this class builds the overflow rather than
+    asserting on stored lengths.
     """
 
-    def test_an_overflowing_description_displaces_the_whole_entry(
-        self, tmp_path: Path,
-    ) -> None:
+    @staticmethod
+    def _overflowing(tmp_path: Path) -> Path:
         raw = tmp_path / "long"
         raw.mkdir()
-        long_body = ("Access control enforces policy such that users. " * 60)
+        long_body = "Access control enforces policy such that users. " * 60
         assert len(long_body) > DESCRIPTION_MAX_LENGTH
         payload = io.BytesIO()
         with zipfile.ZipFile(payload, "w") as archive:
@@ -400,25 +492,75 @@ class TestTheClobberIsReal:
                 body = long_body if code == "A01" else "A shorter statement. " * 8
                 archive.writestr(
                     f"Top10-abc/2021/docs/en/{code}_2021-Entry.md",
-                    f"# {code}:2021 – {title}\n\n## Description\n\n{body}\n\n"
+                    f"# {code}:2021 – {title}\n\n## Factors\n\n| a |\n\n"
+                    f"## Description\n\n{body}\n\n"
                     f"## How to Prevent\n\nUse trusted server-side code.\n",
                 )
         (raw / ARCHIVE_NAME).write_bytes(payload.getvalue())
-        instance = OwaspTop102021Parser(raw_dir=raw, output_dir=tmp_path / "out")
-        instance.expected_sha256 = None  # type: ignore[misc]
+        return raw
+
+    def test_an_overflowing_description_no_longer_displaces_the_entry(
+        self, tmp_path: Path,
+    ) -> None:
+        instance = _instance(tmp_path, self._overflowing(tmp_path))
         (tmp_path / "out").mkdir()
         controls = {c.control_id: c for c in instance.run().controls}
 
         overflowed = controls["A01"]
         assert overflowed.full_text is not None
         # The remediation heading is in the entry and not in the Description,
-        # so its absence is the proof that the entry was displaced.
-        assert "trusted server-side code" not in overflowed.full_text
-        assert len(overflowed.description) <= DESCRIPTION_MAX_LENGTH
+        # so its presence is the proof that the entry survived.
+        assert "trusted server-side code" in overflowed.full_text
+        assert len(overflowed.description) < DESCRIPTION_MAX_LENGTH
 
-        kept = controls["A02"]
-        assert kept.full_text is not None
-        assert "trusted server-side code" in kept.full_text
+    def test_the_cap_is_recorded_as_a_before_and_after_pair(
+        self, tmp_path: Path,
+    ) -> None:
+        instance = _instance(tmp_path, self._overflowing(tmp_path))
+        instance.parse()
+        records = _audit_records(tmp_path)
+        capped = [
+            r for r in records
+            if r["repair"] == "description_capped_to_protect_full_text"
+        ]
+        assert [r["control_id"] for r in capped] == ["A01"]
+        assert len(str(capped[0]["before"])) > len(str(capped[0]["after"]))
+        assert str(capped[0]["after"]) in str(capped[0]["before"])
+
+    def test_a_description_inside_the_limit_is_not_capped(
+        self, parser: OwaspTop102021Parser, tmp_path: Path,
+    ) -> None:
+        parser.parse()
+        assert not [
+            r for r in _audit_records(tmp_path)
+            if r["repair"] == "description_capped_to_protect_full_text"
+        ]
+
+
+class TestRepairAudit:
+    """A count says a repair fired. Only the pair says what moved."""
+
+    def test_every_category_records_the_removed_factors_table(
+        self, parser: OwaspTop102021Parser, tmp_path: Path,
+    ) -> None:
+        parser.parse()
+        records = [
+            r for r in _audit_records(tmp_path)
+            if r["repair"] == "factors_section_removed"
+        ]
+        assert [r["control_id"] for r in records] == list(CATEGORY_IDS)
+        first = records[0]
+        assert first["field"] == "full_text"
+        # Before carries the table, after does not, and after is what shipped.
+        assert "CWEs Mapped" in str(first["before"])
+        assert "CWEs Mapped" not in str(first["after"])
+        assert str(first["after"]).startswith("## Overview")
+
+    def test_the_audit_is_written_even_though_it_holds_source_text(
+        self, parser: OwaspTop102021Parser, tmp_path: Path,
+    ) -> None:
+        parser.parse()
+        assert (tmp_path / "audit" / "owasp_top10_2021.jsonl").exists()
 
 
 class TestRealCorpus:
@@ -440,27 +582,59 @@ class TestRealCorpus:
         assert [c["title"] for c in controls] == list(TITLES.values())
         assert all(c["full_text"] for c in controls)
 
-    def test_two_categories_ship_a_displaced_anchor(self) -> None:
-        """The measured consequence of TestTheClobberIsReal on real text.
+    def test_no_category_ships_a_displaced_anchor(self) -> None:
+        """A02 and A04 used to fail this. Ruling 2 is why they do not.
 
-        A02 and A04 are the two whose Description overflows. Their full_text
-        is the Description, so it holds no remediation text; the other eight
-        carry the whole entry and do. A parser change that moved the boundary
-        either way fails here.
+        Every entry carries a How to Prevent heading, so its absence would
+        mean the base class had replaced full_text with the Description.
         """
-        controls = {
-            c["control_id"]: c
-            for c in json.loads(
-                (PROCESSED_FRAMEWORKS_DIR / "owasp_top10_2021.json").read_text(
-                    encoding="utf-8",
-                )
-            )["controls"]
-        }
+        controls = _shipped()
         displaced = {
             key for key, control in controls.items()
-            if "## How to Prevent" not in (control["full_text"] or "")
+            if "How to Prevent" not in (control["full_text"] or "")
         }
-        assert displaced == {"A02", "A04"}
+        assert displaced == set()
+
+    def test_no_description_reaches_the_limit_that_rewrites_full_text(
+        self,
+    ) -> None:
+        """The margin A02 and A04 survived on was two characters. [measured]
+
+        Under the cap the largest shipped description is well inside the
+        limit, and a source edition that grew one cannot silently convert an
+        anchor from the entry to a truncated Description.
+        """
+        lengths = {
+            key: len(control["description"])
+            for key, control in _shipped().items()
+        }
+        assert max(lengths.values()) < DESCRIPTION_MAX_LENGTH, lengths
+
+    def test_the_factors_table_reaches_no_anchor(self) -> None:
+        """Ruling 1. The table is 529 characters in all ten. [measured]"""
+        for key, control in _shipped().items():
+            entry = control["full_text"] or ""
+            assert entry.startswith("## Overview"), key
+            assert "CWEs Mapped" not in entry, key
+            assert "Max Incidence Rate" not in entry, key
+
+    def test_the_ten_anchors_share_almost_no_leading_text(self) -> None:
+        """The number Ruling 1 was issued to move.
+
+        With the Factors table the ten shipped entries shared a 69-character
+        prefix and A01 and A03 shared 364. Without it they share the twelve
+        characters of "## Overview ", which prepare_anchor reduces to the nine
+        the encoder sees. Fails in both directions: a longer shared prefix
+        means boilerplate came back, a shorter one means the Overview heading
+        stopped being the common opening. [measured]
+        """
+        entries = [c["full_text"] or "" for c in _shipped().values()]
+        assert _shared_prefix(entries) == 12
+        anchors = [prepare_anchor(e)[0] for e in entries]
+        assert _shared_prefix(anchors) == 9
+        assert len({len(a) for a in anchors}) > 0
+        # Truncation still collapses nothing: ten entries, ten anchors.
+        assert len(set(anchors)) == 10
 
     def test_the_join_is_seventeen_of_seventeen_through_the_title_channel(
         self,

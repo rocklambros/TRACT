@@ -18,26 +18,48 @@ where the category moved in the rankings) and the two remediation headings in
 tract.config.REMEDIATION_HEADINGS that this framework is the original reason
 for.
 
-`full_text` is the whole entry below the heading line, and `full_text` is
-normally the anchor: ProseIndex prefers it over description unconditionally.
-Measured on the pinned archive the ten entries run 4,821 to 9,706 characters
-against a MAX_ANCHOR_CHARS budget of 2,150, so every one of the 17 curated
-links resolves onto a truncated anchor and the corpus report records
-`truncated == 17`. The anchor is the opening 2,150 characters of the category
-page, which spends its first ~900 on the Factors table and the Overview before
-reaching the Description.
+`full_text` is the entry below the heading line with the `## Factors` section
+removed, and `full_text` is the anchor: ProseIndex prefers it over description
+unconditionally. Measured on the pinned archive the ten stripped entries run
+4,546 to 10,662 characters against a MAX_ANCHOR_CHARS budget of 2,150, so
+every one of the 17 curated links resolves onto a truncated anchor and the
+corpus report records `truncated == 17`.
 
-Two categories are an exception, and it is not this parser's choice.
-`_sanitize_control` calls `sanitize_text(description, return_full=True)` and
-assigns whatever that returns to `full_text`, keeping the parser's own value
-only when the description fits DESCRIPTION_MAX_LENGTH. A02's Description
-sanitises to 2,377 characters and A04's to 2,944, both over the 2,000
-character limit, so for those two the whole entry is discarded and the anchor
-is the Description alone. [measured] Both replacements still exceed
-MAX_ANCHOR_CHARS, so the join counters do not move and nothing downstream can
-see the substitution. tests/test_parse_owasp_top10_2021.py pins which two they
-are, in both directions, so a change to either budget shows up as a failure
-rather than as a quiet change of anchor.
+Why the Factors section is removed. It is a markdown table of CWE counts,
+incidence rates and CVE totals, 529 characters in every one of the ten
+entries, and the first 364 characters of A01's and A03's anchors were
+byte-identical because of it. [measured] That is about a fifth of the anchor
+budget spent on text that is the same string in every category, which is
+shared non-discriminative signal pulling ten category embeddings toward each
+other -- the opposite of what a hub-assignment anchor is for. Removing it
+takes the prefix the ten anchors share from 69 characters to 12, and every
+anchor now opens on the Overview's prose about the risk. [measured]
+
+The removal is structural, anchored on the literal `## Factors` heading and
+bounded by the next `##` heading. A future edition that drops or renames the
+section produces no match and this parser RAISES rather than passing the entry
+through. Passing through would put a stats table back at the head of some
+anchors and not others, which is the exact inconsistency this removal exists
+to end, and a parser that already refuses a nine-category list should not
+accept a silent change to what every anchor opens with.
+
+This is a removal of publisher boilerplate, not an assembly of new text, so
+`text_origin` stays unset. Do not set it to synthetic: every remaining
+character is the publisher's, in the publisher's order, and the corpus report
+uses that key to separate parser-written statements from publisher-written
+ones.
+
+`description` is capped at DESCRIPTION_MAX_LENGTH by this parser, on a word
+boundary. That is not cosmetic. `_sanitize_control` calls
+`sanitize_text(description, return_full=True)` and assigns whatever that
+returns to `full_text`, keeping the parser's own value only when the
+description fits. A02's Description sanitises to 2,263 characters and A04's to
+2,938, both over the 2,000 limit, so before the cap those two shipped the
+Description as their anchor and the entry was discarded. [measured] The cap
+keeps every description inside the limit, so the base class cannot rewrite
+`full_text` and all ten anchors are entries. Nothing is lost: the complete
+Description text is inside `full_text`, which is the field the model reads.
+Both transforms write a before/after record through `write_repair_audit`.
 
 The found id tuple must equal CATEGORY_IDS exactly. COUNT_TOLERANCE is 10%, so
 _check_expected_count accepts 9 categories of 10, and those ten carry 1.7
@@ -56,6 +78,7 @@ from collections.abc import Mapping
 from io import BytesIO
 from typing import ClassVar, Final
 
+from tract.config import DESCRIPTION_MAX_LENGTH
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -80,6 +103,14 @@ HEADING: Final[re.Pattern[str]] = re.compile(
 )
 DESCRIPTION: Final[re.Pattern[str]] = re.compile(
     r"^##\s+Description\s*$(.*?)(?=^##\s|\Z)", re.M | re.S
+)
+# Anchored on the literal heading and bounded by the next one, so a renamed or
+# absent section matches nothing and the parser raises instead of cutting a
+# span it did not identify. `\Z` is deliberately NOT an alternative here: a
+# Factors section with no following heading would swallow the rest of the
+# entry, which is the one failure this pattern must not have.
+FACTORS: Final[re.Pattern[str]] = re.compile(
+    r"^##\s+Factors\s*$.*?(?=^##\s)", re.M | re.S
 )
 
 CATEGORY_IDS: Final[tuple[str, ...]] = tuple(f"A{n:02d}" for n in range(1, 11))
@@ -136,6 +167,7 @@ class OwaspTop102021Parser(BaseParser):
         payload = self.read_source_bytes(ARCHIVE_NAME)
         self._check_digest(payload)
         controls: list[Control] = []
+        repairs: list[dict[str, object]] = []
         with zipfile.ZipFile(BytesIO(payload)) as archive:
             for name in sorted(n for n in archive.namelist() if MEMBER.search(n)):
                 text = archive.read(name).decode("utf-8")
@@ -154,7 +186,9 @@ class OwaspTop102021Parser(BaseParser):
                     )
                     continue
                 controls.append(
-                    self.control_from_markdown(text, self.title_variants)
+                    self.control_from_markdown(
+                        text, self.title_variants, repairs,
+                    )
                 )
         found = tuple(c.control_id for c in controls)
         if found != CATEGORY_IDS:
@@ -166,6 +200,9 @@ class OwaspTop102021Parser(BaseParser):
                 f"_check_expected_count would accept it."
             )
         self._check_title_variants(controls)
+        # Written unconditionally, after the completeness check, so the file on
+        # disk always describes a full ten-category run.
+        self.write_repair_audit(repairs)
         return controls
 
     def _check_digest(self, payload: bytes) -> None:
@@ -221,11 +258,17 @@ class OwaspTop102021Parser(BaseParser):
         cls,
         text: str,
         variants: Mapping[str, tuple[str, ...]] | None = None,
+        repairs: list[dict[str, object]] | None = None,
     ) -> Control:
         """One category from one markdown file.
 
+        `repairs` is an optional sink. Both text-moving transforms append a
+        before/after pair to it, which parse() hands to write_repair_audit. A
+        count would say a repair fired; only the pair says what moved.
+
         Raises:
-            ValueError: If the file has no heading or no Description section.
+            ValueError: If the file has no heading, no Description section, or
+                no removable Factors section.
         """
         heading = HEADING.search(text)
         if heading is None:
@@ -233,30 +276,83 @@ class OwaspTop102021Parser(BaseParser):
                 "owasp_top10_2021: markdown with no 'A0N:2021 - Title' "
                 "heading reached control_from_markdown."
             )
+        control_id = heading.group(1)
         body = DESCRIPTION.search(text)
         if body is None:
             raise ValueError(
-                f"owasp_top10_2021: {heading.group(1)} has no '## Description' "
+                f"owasp_top10_2021: {control_id} has no '## Description' "
                 f"section. Unhandled, its statement would fall back to the "
                 f"Overview, which is commentary about the survey rather than "
                 f"about the risk."
             )
+        entry = text[heading.end():].strip()
+        stripped, removed = FACTORS.subn("", entry, count=1)
+        if removed != 1:
+            raise ValueError(
+                f"owasp_top10_2021: {control_id} has no '## Factors' section "
+                f"followed by another '##' heading, so there is nothing this "
+                f"parser can identify as the statistics table. All ten "
+                f"entries carried one at 529 characters when this landed. "
+                f"Passing the entry through would put a table of CWE counts "
+                f"at the head of this anchor and not the others; removing a "
+                f"span the pattern did not match would be worse. Re-read the "
+                f"edition and decide."
+            )
+        stripped = stripped.strip()
+        statement, capped = cls._cap_description(body.group(1).strip())
+        if repairs is not None:
+            repairs.append({
+                "control_id": control_id,
+                "repair": "factors_section_removed",
+                "field": "full_text",
+                "before": entry,
+                "after": stripped,
+            })
+            if capped:
+                repairs.append({
+                    "control_id": control_id,
+                    "repair": "description_capped_to_protect_full_text",
+                    "field": "description",
+                    "before": body.group(1).strip(),
+                    "after": statement,
+                })
         # Every H1 carries a trailing icon image with a style attribute. It is
         # markup rather than name, and it would otherwise be indexed as part
         # of the title key.
         title = heading.group(2).split("![", 1)[0].strip()
         metadata: dict[str, str | list[str]] = {}
-        declared = (variants or {}).get(heading.group(1))
+        declared = (variants or {}).get(control_id)
         if declared:
             metadata["alt_titles"] = list(declared)
         return Control(
-            control_id=heading.group(1),
+            control_id=control_id,
             title=title,
-            description=body.group(1).strip(),
-            full_text=text[heading.end():].strip(),
+            description=statement,
+            full_text=stripped,
             hierarchy_level="category",
             metadata=metadata or None,
         )
+
+    @staticmethod
+    def _cap_description(text: str) -> tuple[str, bool]:
+        """Keep description inside DESCRIPTION_MAX_LENGTH, on a word boundary.
+
+        Sanitisation only shrinks this corpus (whitespace collapse over
+        markdown indentation), so a raw cut at the limit lands under it once
+        run() sanitises. The test suite asserts the shipped result rather than
+        trusting that, because a pathological expansion would silently hand
+        full_text back to the base class.
+
+        Returns the text and whether the cut fired.
+        """
+        if len(text) <= DESCRIPTION_MAX_LENGTH:
+            return text, False
+        cut = text[:DESCRIPTION_MAX_LENGTH].rsplit(" ", 1)[0]
+        # Mirrors sanitize_text's own guard: a body with no space in its first
+        # half would otherwise be cut to almost nothing.
+        if len(cut) < DESCRIPTION_MAX_LENGTH // 2:
+            cut = text[:DESCRIPTION_MAX_LENGTH]
+        return cut, True
 
 
 def main() -> None:
