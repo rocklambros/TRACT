@@ -6,6 +6,7 @@ and a word that names a CRE hub is never treated as boilerplate.
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 import pytest
@@ -570,3 +571,249 @@ class TestArmProcessingOrder:
         text = filtered[0].control_text.lower()
         assert "owaspai" not in text and "https" not in text
         assert "adversary contaminates" in text
+
+
+class TestAlternateIds:
+    """A retired or malformed id may add a key. It may never displace one."""
+
+    LONG = "A control statement long enough to clear the prose bar easily. " * 3
+
+    def _index(self) -> ProseIndex:
+        return ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "PS.1.1", "title": "Protect code",
+                 "description": self.LONG + " Real PS.1.1.",
+                 "metadata": {"alt_ids": ["code, executable code"]}},
+                {"control_id": "PW.8.1", "title": "Test executable",
+                 "description": self.LONG + " Real PW.8.1."},
+            ],
+        }])
+
+    def test_alternate_id_resolves(self) -> None:
+        hit = self._index().lookup("Demo", "code, executable code", None)
+        assert hit is not None
+        assert hit.text.endswith("Real PS.1.1.")
+
+    def test_alternate_never_displaces_a_real_id(self) -> None:
+        """The alternate is declared first, in corpus order, on purpose."""
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "A-1", "title": "First",
+                 "description": self.LONG + " First.",
+                 "metadata": {"alt_ids": ["A-2"]}},
+                {"control_id": "A-2", "title": "Second",
+                 "description": self.LONG + " Second."},
+            ],
+        }])
+        hit = index.lookup("Demo", "A-2", None)
+        assert hit is not None
+        assert hit.text.endswith("Second.")
+
+    def test_alternate_never_displaces_a_real_id_declared_earlier(self) -> None:
+        """Order must not matter. The second pass is what carries this."""
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "A-2", "title": "Second",
+                 "description": self.LONG + " Second."},
+                {"control_id": "A-1", "title": "First",
+                 "description": self.LONG + " First.",
+                 "metadata": {"alt_ids": ["A-2"]}},
+            ],
+        }])
+        hit = index.lookup("Demo", "A-2", None)
+        assert hit is not None
+        assert hit.text.endswith("Second.")
+
+    def test_two_alternates_claiming_one_key_keep_the_first(self) -> None:
+        """Alternates are first-writer-wins among themselves, and counted."""
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "B-1", "title": "One",
+                 "description": self.LONG + " One.",
+                 "metadata": {"alt_ids": ["shared"]}},
+                {"control_id": "B-2", "title": "Two",
+                 "description": self.LONG + " Two.",
+                 "metadata": {"alt_ids": ["shared"]}},
+            ],
+        }])
+        hit = index.lookup("Demo", "shared", None)
+        assert hit is not None
+        assert hit.text.endswith("One.")
+        assert index.alternate_id_collisions == 1
+
+    def test_two_real_ids_claiming_one_key_keep_the_last(self) -> None:
+        """Real ids are last-writer-wins and unguarded. Pinned, not fixed.
+
+        Changing this would move the join measured in Task 1's BEFORE
+        artifact. The current corpus carries zero such collisions among
+        indexed controls. [measured]
+        """
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "C-1", "title": "One",
+                 "description": self.LONG + " One."},
+                {"control_id": "C-1", "title": "Two",
+                 "description": self.LONG + " Two."},
+            ],
+        }])
+        hit = index.lookup("Demo", "C-1", None)
+        assert hit is not None
+        assert hit.text.endswith("Two.")
+        assert index.real_id_collisions == 1
+
+    def test_two_real_titles_claiming_one_key_keep_the_first(self) -> None:
+        """The other half of the asymmetry, pinned for the same reason.
+
+        82 of these exist in the corpus today: AIUC-1 Standard 73,
+        NIST AI 100-2 7, EU AI Act 1, NIST AI RMF 1. [measured]
+        """
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "D-1", "title": "Same title",
+                 "description": self.LONG + " One."},
+                {"control_id": "D-2", "title": "Same title",
+                 "description": self.LONG + " Two."},
+            ],
+        }])
+        hit = index.lookup("Demo", None, "Same title")
+        assert hit is not None
+        assert hit.text.endswith("One.")
+
+    def test_a_clean_index_reports_no_collisions_of_either_kind(self) -> None:
+        """The zero direction of both counters, so neither can only rise."""
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "E-1", "title": "One",
+                 "description": self.LONG + " One.",
+                 "metadata": {"alt_ids": ["E-legacy"]}},
+                {"control_id": "E-2", "title": "Two",
+                 "description": self.LONG + " Two."},
+            ],
+        }])
+        assert index.real_id_collisions == 0
+        assert index.alternate_id_collisions == 0
+
+    def test_alternate_id_is_normalised_like_a_real_one(self) -> None:
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "X-1", "title": "Only",
+                 "description": self.LONG + " Only.",
+                 "metadata": {"alt_ids": ["2.2"]}},
+            ],
+        }])
+        assert index.lookup("Demo", "Sec. 2.2", None) is not None
+
+    def test_a_prefixed_alternate_is_normalised_when_it_is_stored(self) -> None:
+        """The half of normalisation the lookup side cannot cover.
+
+        The brief's case stores a bare "2.2" and looks up "Sec. 2.2", which
+        passes whether or not the store side normalises, because lookup
+        normalises anyway. This one stores the prefixed spelling and looks up
+        the bare one, so it fails unless normalize_section_id runs on the way
+        in. OpenCRE writes both spellings, so both directions are live.
+        """
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "X-2", "title": "Only",
+                 "description": self.LONG + " Only.",
+                 "metadata": {"alt_ids": ["Sec. 3.4"]}},
+            ],
+        }])
+        assert index.lookup("Demo", "3.4", None) is not None
+
+    def test_a_bare_string_alternate_is_accepted(self) -> None:
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "Y-1", "title": "Only",
+                 "description": self.LONG + " Only.",
+                 "metadata": {"alt_ids": "Y-legacy"}},
+            ],
+        }])
+        assert index.lookup("Demo", "Y-legacy", None) is not None
+
+    def test_an_empty_alternate_is_ignored(self) -> None:
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "Z-1", "title": "Only",
+                 "description": self.LONG + " Only.",
+                 "metadata": {"alt_ids": ["", "   "]}},
+            ],
+        }])
+        assert len(index) == 1
+        assert index.alternate_id_collisions == 0
+
+    def test_a_dead_alternate_is_reported_rather_than_dropped_in_silence(
+        self, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """An alternate losing to a real id is correct, and still worth a line.
+
+        The join counts cannot say which of several declarations did nothing,
+        so a parser author who writes an alternate a real control already
+        spells needs the log to find it. Not counted: the two counters are the
+        interface later parser tasks read.
+        """
+        with caplog.at_level(logging.WARNING, logger="tract.text_selection"):
+            index = ProseIndex([{
+                "framework_name": "Demo",
+                "controls": [
+                    {"control_id": "F-1", "title": "One",
+                     "description": self.LONG + " One.",
+                     "metadata": {"alt_ids": ["F-2"]}},
+                    {"control_id": "F-2", "title": "Two",
+                     "description": self.LONG + " Two."},
+                ],
+            }])
+        assert index.alternate_id_collisions == 0
+        assert sum(
+            "already a real control id" in record.message
+            for record in caplog.records
+        ) == 1
+
+    def test_a_live_alternate_is_not_reported_as_dead(
+        self, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """The other direction, so the warning above cannot fire on everything."""
+        with caplog.at_level(logging.WARNING, logger="tract.text_selection"):
+            ProseIndex([{
+                "framework_name": "Demo",
+                "controls": [
+                    {"control_id": "G-1", "title": "One",
+                     "description": self.LONG + " One.",
+                     "metadata": {"alt_ids": ["G-legacy"]}},
+                ],
+            }])
+        assert not [
+            record for record in caplog.records
+            if "already a real control id" in record.message
+        ]
+
+    def test_an_alternate_on_a_control_the_prose_rule_drops_adds_nothing(
+        self,
+    ) -> None:
+        """The channel cannot rescue a control ProseIndex never indexed.
+
+        This is why CWE-937 needs its alt_id attached to a different control
+        rather than to itself, and the corpus test in
+        tests/test_corpus_report.py depends on it.
+        """
+        index = ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "W-1", "title": "Restated",
+                 "description": "Restated",
+                 "metadata": {"alt_ids": ["W-legacy"]}},
+            ],
+        }])
+        assert len(index) == 0
+        assert index.lookup("Demo", "W-legacy", None) is None

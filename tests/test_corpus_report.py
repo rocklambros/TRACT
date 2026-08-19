@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from tract.config import PROJECT_ROOT
+from tract.config import PROJECT_ROOT, PROSE_MIN_EXTRA_CHARS
 from tract.corpus_report import (
     JOIN_CEILINGS,
     JOIN_FLOORS,
@@ -704,3 +704,158 @@ class TestEvidenceGuards:
                     f"{path.name} carries {marker!r}, which is an absolute "
                     f"machine path in a committed artifact"
                 )
+
+
+class TestAlternateIdsAgainstTheRealCorpus:
+    """The new channel, exercised on the corpus rather than on a fixture.
+
+    cwe resolves 612 of 613 curated links. The miss is section_id "937", an
+    obsolete CWE category whose description is shorter than its title plus
+    PROSE_MIN_EXTRA_CHARS, so ProseIndex never indexes it. [measured]
+    Attaching "937" as an alt_id to any indexed CWE control closes the gap,
+    which is a property of the channel rather than of that control.
+
+    cwe is deliberately the subject: it is in the tracked corpus, so these run
+    on a checkout with no licensed overlay.
+    """
+
+    def _cwe_only(self, tmp_path: Path) -> tuple[Path, Path]:
+        from tract.corpus_report import CURATED_LINKS_PATH, _load_records
+        from tract.text_selection import merged_corpus_path
+
+        records = [
+            record for record in _load_records(merged_corpus_path())
+            if record.get("framework_name") == "CWE"
+        ]
+        assert len(records) == 1, "expected exactly one CWE record"
+        corpus = tmp_path / "cwe.json"
+        corpus.write_text(
+            json.dumps(
+                {"framework_count": 1, "frameworks": records,
+                 "generated_date": "2026-01-01",
+                 "total_controls": len(records[0]["controls"])},
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        rows = [
+            line for line in
+            CURATED_LINKS_PATH.read_text(encoding="utf-8").splitlines()
+            if line.strip() and json.loads(line)["framework_id"] == "cwe"
+        ]
+        links = tmp_path / "cwe.jsonl"
+        links.write_text("\n".join(rows) + "\n", encoding="utf-8")
+        return corpus, links
+
+    @staticmethod
+    def _is_indexed(control: dict[str, object]) -> bool:
+        """The prose rule, spelled out, so the donor is one ProseIndex holds."""
+        return bool(str(control.get("full_text") or "").strip()) or (
+            len(str(control.get("description") or "").strip())
+            > len(str(control.get("title") or "").strip())
+            + PROSE_MIN_EXTRA_CHARS
+        )
+
+    def test_the_unresolved_cwe_link_stays_unresolved_without_an_alt_id(
+        self, tmp_path: Path,
+    ) -> None:
+        corpus, links = self._cwe_only(tmp_path)
+        row = build_corpus_report(links, corpus).by_id("cwe")
+        assert row.links == 613
+        assert row.unresolved == 1
+        assert row.by_title + row.by_id == 612
+        assert row.by_id == 18
+
+    def test_an_alt_id_closes_it(self, tmp_path: Path) -> None:
+        corpus, links = self._cwe_only(tmp_path)
+        data = json.loads(corpus.read_text(encoding="utf-8"))
+        controls = data["frameworks"][0]["controls"]
+        target = next(c for c in controls if self._is_indexed(c))
+        metadata = dict(target.get("metadata") or {})
+        metadata["alt_ids"] = ["937"]
+        target["metadata"] = metadata
+        corpus.write_text(json.dumps(data, sort_keys=True), encoding="utf-8")
+
+        row = build_corpus_report(links, corpus).by_id("cwe")
+        assert row.unresolved == 0
+        # 18 before, so the id channel carried the new one and the title
+        # channel did not quietly answer it instead.
+        assert row.by_id == 19
+        assert row.resolution_rate == pytest.approx(1.0)
+
+    @pytest.mark.parametrize("donor_after_the_real_id", [False, True])
+    def test_an_alt_id_cannot_take_a_live_cwe_id(
+        self, tmp_path: Path, donor_after_the_real_id: bool,
+    ) -> None:
+        """The guarantee, on real data: 79 is a real CWE and must not move.
+
+        Run in both corpus orders. The donor before CWE-79 fails an
+        implementation that writes alternates in the first pass under
+        first-writer-wins. The donor after it fails one that writes them in the
+        first pass under the real ids' last-writer-wins rule. One order alone
+        leaves half the failure space unreachable.
+        """
+        corpus, links = self._cwe_only(tmp_path)
+        data = json.loads(corpus.read_text(encoding="utf-8"))
+        controls = data["frameworks"][0]["controls"]
+        position = next(
+            i for i, c in enumerate(controls) if str(c["control_id"]) == "79"
+        )
+        real = controls[position]
+        assert self._is_indexed(real), "CWE-79 must be in the index to be taken"
+        candidates = (
+            controls[position + 1:] if donor_after_the_real_id
+            else controls[:position]
+        )
+        other = next(
+            c for c in candidates
+            if str(c["control_id"]) != "79" and self._is_indexed(c)
+        )
+        metadata = dict(other.get("metadata") or {})
+        metadata["alt_ids"] = ["79"]
+        other["metadata"] = metadata
+        corpus.write_text(json.dumps(data, sort_keys=True), encoding="utf-8")
+
+        from tract.corpus_report import _load_records
+        from tract.text_selection import ProseIndex
+
+        index = ProseIndex(_load_records(corpus))
+        hit = index.by_id("CWE", "79")
+        assert hit is not None
+        expected = str(real.get("full_text") or "").strip() or str(
+            real["description"]
+        ).strip()
+        assert hit.text == expected
+        # The donor's own text is distinct, so the assertion above discriminates
+        # rather than passing because both controls read the same.
+        donor_text = str(other.get("full_text") or "").strip() or str(
+            other["description"]
+        ).strip()
+        assert donor_text != expected
+
+
+class TestIsoStillResolves:
+    """92 of 94 lived only in a comment. Now it is a gate.
+
+    Skipped as a named group when the licensed overlay is absent, per Rule 7,
+    because gating on file existence never skips: the tracked corpus always
+    exists and the restricted rows would hard-fail in CI on data that cannot
+    legally be there.
+    """
+
+    def test_iso_resolves_92_of_94_with_91_distinct_anchors(self) -> None:
+        from tract.corpus_report import FULL_CORPUS_FRAMEWORK_COUNT
+
+        report = build_corpus_report()
+        if report.corpus_framework_count < FULL_CORPUS_FRAMEWORK_COUNT:
+            pytest.skip(
+                f"corpus has {report.corpus_framework_count} frameworks "
+                f"against {FULL_CORPUS_FRAMEWORK_COUNT} in the full set, so "
+                f"the licensed overlay is absent from this checkout and the "
+                f"restricted rows cannot be asserted"
+            )
+        row = report.by_id("iso_27001")
+        assert row.links == 94
+        assert row.by_title + row.by_id == 92
+        assert row.distinct_anchors == 91
+        assert row.dropped_by_prose_rule == 2

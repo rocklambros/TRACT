@@ -55,6 +55,10 @@ PARSER_BACKED_WITH_LINKS: Final[frozenset[str]] = frozenset({
 # their own titles plus PROSE_MIN_EXTRA_CHARS, so ProseIndex excludes them on
 # purpose. A broken join scores 0.000, so this floor separates the two cases
 # with a wide margin and does not need editing every time the corpus is rebuilt.
+#
+# ISO's 92/94 is no longer only a comment. tests/test_corpus_report.py::
+# TestIsoStillResolves asserts it, along with the 91 distinct anchors and the
+# 2 controls the prose rule drops, wherever the licensed overlay is present.
 MIN_RESOLUTION_RATE: Final[float] = 0.90
 
 

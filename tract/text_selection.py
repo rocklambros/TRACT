@@ -252,6 +252,13 @@ class ProseIndex:
         self._by_id: dict[tuple[str, str], TextSelection] = {}
         self._by_title: dict[tuple[str, str], TextSelection] = {}
         pending_alternates: list[tuple[tuple[str, str], TextSelection]] = []
+        pending_alternate_ids: list[tuple[tuple[str, str], TextSelection]] = []
+        # Two controls can claim one key on either side. Neither case raises,
+        # because the corpus is a fact rather than an input this class
+        # validates, but neither is silent either: an unreported collision is
+        # a control that vanished from the join with no column to see it in.
+        self.real_id_collisions: int = 0
+        self.alternate_id_collisions: int = 0
 
         for record in controls:
             framework = canonical_framework(record.get("framework_name", ""))
@@ -267,9 +274,45 @@ class ProseIndex:
                 else:
                     continue  # title restated; nothing to gain over the link
 
+                # Bound here rather than beside the alt_titles read below,
+                # because both kinds of alternate need it and one binding
+                # cannot drift from the other.
+                metadata = control.get("metadata") or {}
+
                 control_id = normalize_section_id(control.get("control_id"))
                 if control_id:
+                    # Last writer wins, deliberately unchanged. The two sides
+                    # of this class are asymmetric on purpose: a real title is
+                    # first-writer-wins a few lines below, a real id is not.
+                    # Aligning them would move the join measured in
+                    # results/corpus/before.json, which is a separate decision
+                    # with a separate owner. So the whole "an alternate never
+                    # displaces a real key" guarantee rests on the second pass
+                    # over pending_alternate_ids, not on the rule here.
+                    if (framework, control_id) in self._by_id:
+                        self.real_id_collisions += 1
+                        logger.warning(
+                            "Two %s controls claim id %r; the later one wins "
+                            "and the earlier is unreachable by id.",
+                            framework, control_id,
+                        )
                     self._by_id[(framework, control_id)] = selection
+
+                # Retired and malformed ids, held back for the same reason
+                # alt_titles are: an alternate must never take the key of a
+                # control whose real id spells it. NIST SSDF has two curated
+                # links whose section_id is a mid-sentence fragment of the
+                # task text, and BIML has eight whose id is document-scoped
+                # upstream but unprefixed in OpenCRE.
+                alternate_ids = metadata.get("alt_ids") or []
+                if isinstance(alternate_ids, str):
+                    alternate_ids = [alternate_ids]
+                for raw_id in alternate_ids:
+                    alt_id = normalize_section_id(str(raw_id))
+                    if alt_id:
+                        pending_alternate_ids.append(
+                            ((framework, alt_id), selection)
+                        )
 
                 # Real titles are indexed in this pass. Alternates are held
                 # back and applied afterwards, because "first writer wins"
@@ -281,7 +324,6 @@ class ProseIndex:
                 # Attacks", so the Generative-AI eval item resolved to the
                 # Predictive-AI chapter's text. That is a wrong anchor, not a
                 # fallback, and nothing downstream could see it.
-                metadata = control.get("metadata") or {}
                 alternates = metadata.get("alt_titles") or []
                 if isinstance(alternates, str):
                     alternates = [alternates]
@@ -299,6 +341,41 @@ class ProseIndex:
             if key_pair not in self._by_title:
                 self._by_title[key_pair] = selection
 
+        # The same second pass on the id side, and the only thing standing
+        # between an alternate and a real id, since real ids above are
+        # last-writer-wins. Running after every real id is in place makes the
+        # guarantee hold in both corpus orders. Among themselves the first
+        # writer wins, matching alt_titles, and a loser is counted rather than
+        # dropped in silence.
+        claimed_by_alternate: set[tuple[str, str]] = set()
+        for key_pair, selection in pending_alternate_ids:
+            if key_pair in self._by_id:
+                if key_pair in claimed_by_alternate:
+                    self.alternate_id_collisions += 1
+                    logger.warning(
+                        "Two %s controls declare alternate id %r; the first "
+                        "one keeps the key.", key_pair[0], key_pair[1],
+                    )
+                else:
+                    # Lost to a real id, which is the correct outcome and the
+                    # point of this pass. It is still worth a line: a parser
+                    # author who declares an alternate that a real control
+                    # already spells has written a dead entry, and the join
+                    # numbers alone cannot say which of several declarations
+                    # did nothing. Not counted, because the two counters are
+                    # the interface later parser tasks read, and a dead
+                    # declaration is an authoring defect rather than a corpus
+                    # collision.
+                    logger.warning(
+                        "A %s control declares alternate id %r, which is "
+                        "already a real control id. The real control keeps "
+                        "the key and the alternate does nothing.",
+                        key_pair[0], key_pair[1],
+                    )
+                continue
+            self._by_id[key_pair] = selection
+            claimed_by_alternate.add(key_pair)
+
     @classmethod
     def load(cls, path: Path | None = None) -> ProseIndex:
         source = path or merged_corpus_path()
@@ -308,12 +385,20 @@ class ProseIndex:
         )
         index = cls(records)
         logger.info(
-            "Prose index from %s: %d controls by id, %d by title",
+            "Prose index from %s: %d controls by id (real and alternate), "
+            "%d by title, %d real id collisions, %d alternate id collisions",
             source.name, len(index._by_id), len(index._by_title),
+            index.real_id_collisions, index.alternate_id_collisions,
         )
         return index
 
     def __len__(self) -> int:
+        """Keys on the id side, real and alternate together.
+
+        This stopped meaning "controls carrying a real id" when alt_ids
+        landed. Callers use it as a smoke check that the index is not near
+        empty, which the looser meaning still serves.
+        """
         return len(self._by_id)
 
     def by_title(self, framework: str, section_name: str) -> TextSelection | None:
