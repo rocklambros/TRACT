@@ -192,6 +192,32 @@ class TestLicenceTiering:
                 f".gitignore, so its text would be tracked."
             )
 
+    def test_no_overlay_framework_is_still_tracked(self) -> None:
+        """A .gitignore line does nothing to a file git already tracks.
+
+        All seven conditional files were tracked when the tier landed, so the
+        seven new .gitignore lines were inert and the routing was decorative:
+        `git check-ignore` reported them unignored, and the next parser run
+        would have committed GPL-3.0 and CC BY-SA prose over the top of a stub.
+        Asserting the .gitignore line and asserting the file is untracked are
+        two different claims, and only the second one is the guarantee.
+        """
+        tracked = set(
+            subprocess.run(
+                ["git", "ls-files", "data/processed/frameworks/"],
+                cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+            ).stdout.split()
+        )
+        offenders = sorted(
+            framework_id for framework_id in OVERLAY_FRAMEWORK_IDS
+            if f"data/processed/frameworks/{framework_id}.json" in tracked
+        )
+        assert not offenders, (
+            f"{offenders} route to the overlay and are still tracked. A "
+            f".gitignore line is ignored for an already-tracked path; run "
+            f"`git rm --cached` on each before any parser writes prose into it."
+        )
+
 
 class TestEverySourceHasALicence:
     def test_no_source_licence_is_empty(self) -> None:

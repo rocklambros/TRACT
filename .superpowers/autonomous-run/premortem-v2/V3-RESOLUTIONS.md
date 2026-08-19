@@ -116,3 +116,54 @@ an LLM pre-pass is a proxy and "a proxy labelled as a ceiling is the same catego
 withdrawn accuracy figure". Committing four files with `LLM_PROXY` in the name beside the real
 250-item human study invites exactly that misreading. Whichever task first commits a ceiling-study
 artifact must add them explicitly, with a header stating they are a proxy, or leave them out.
+
+---
+
+## Ruling R8 — the licence tier is a "do not make it worse" rule, not a legal distinction
+
+The Task 1 implementer found that my `CONDITIONAL_FRAMEWORK_IDS` is incoherent as a licence
+argument. Verified: **13** frameworks are copyleft under `FRAMEWORK_LICENSES`; my tier lists 7.
+The 7 I left out are asvs, owasp_agentic_top10, owasp_cheat_sheets, owasp_dsgai, owasp_llm_top10,
+owasp_llm_top10_2026 and owasp_ml_top10, carrying **691 curated links** (asvs 277,
+owasp_cheat_sheets 391, owasp_llm_top10 13, owasp_ml_top10 10, three with zero).
+
+If CC-BY-SA text cannot sit in a CC0 repository, all 13 must move. If NOTICE cures it, only
+GPL-3.0 dsomm needs the overlay and I over-restricted five. Six-of-thirteen is defensible on
+neither reading, and I should say so plainly rather than let the constant imply a legal finding.
+
+NOTICE is stronger than I assumed when I wrote R4. It states: "The CC0 dedication does not, and
+cannot, cover third-party framework content ... those terms continue to apply to that framework's
+text wherever it appears in this repository or in artifacts built from it", and it names every
+framework with its licence and upstream URL. That substantially discharges CC-BY-SA's attribution
+limb. Share-alike is the open question, and GPL-3.0 is the genuinely contestable case, which is
+why dsomm belongs in the overlay under any reading.
+
+**Ruling, stated for what it is.** The tier is drawn on PUBLICATION STATE, not on licence class:
+
+- Text this plan is about to write, which has never been published: route to the overlay. It is
+  reversible in one direction and not the other, it costs zero training anchors, and all seven
+  files are pure stubs today (measured: 0 prose controls across all of them), so nothing is lost.
+- Text already tracked and already published under NOTICE: leave it, ratchet against growth, and
+  let the owner decide. Moving it now un-publishes nothing, moves 691 links out of the tracked
+  corpus, and entangles this plan with a decision that is not its own.
+
+I am NOT claiming asvs and wstg are legally different. They are not. I am claiming that an
+unattended run should not enlarge an exposure it cannot evaluate, and should not resolve a
+published-artifact question while the owner is away.
+
+**Owner decision, the sharper version.** The conflict is between the repository's CC0 declaration
+and its bundled content. There are two levers, and only one of them is about the data:
+  (a) remove the content: move all 13 to the overlay, 691 links leave the tracked corpus;
+  (b) fix the declaration: state in LICENSE, as NOTICE already does, that CC0 covers TRACT's own
+      contributions and that bundled third-party text retains its terms.
+(b) is cheaper, changes no metric, and is what NOTICE already argues. It is a licensing call,
+not an engineering one, which is why it is yours.
+
+### Concern 2, from the same implementer, was worse than reported and is FIXED
+All seven conditional files were **tracked**, and git applies no ignore rule to a tracked path.
+The seven new `.gitignore` lines were therefore inert and the whole tier was decorative:
+`git check-ignore` reported every one of them unignored. Untracked with `git rm --cached` (files
+kept on disk), and `test_no_overlay_framework_is_still_tracked` now asserts it. Verified
+non-vacuous in both directions: re-adding dsomm to the index fails the test, removing it passes.
+The implementer's suggestion that "the first parser task to rewrite one owns the `git rm --cached`"
+is exactly the decorative-control shape of ledger lesson 4, so it was done now instead.
