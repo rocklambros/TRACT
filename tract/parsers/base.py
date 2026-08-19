@@ -192,9 +192,11 @@ class BaseParser(SourceReader, ABC):
         """Fraction of controls whose description is more than their title.
 
         Both conditions must hold. A byte-copy of the title is not prose no
-        matter how long the title is: nist_ssdf has a 156-character median
-        description and a 0% real-prose rate because its descriptions are long
-        titles.
+        matter how long the title is: nist_ssdf used to have a 156-character
+        median description and a 0% real-prose rate, because its 44 controls
+        were built from OpenCRE link rows whose section_name and section_id
+        both hold the task statement. parsers/parse_nist_ssdf.py reads the
+        source table instead and titles each task by its id.
 
         Controls marked damaged are excluded from both sides of the ratio.
         Counting one as prose lets a statement with a known hole in it clear
