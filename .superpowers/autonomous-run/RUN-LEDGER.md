@@ -1549,3 +1549,39 @@ BatchSamplers                 st.training_args st.training_args st.sentence_tran
 
 The agent's own framing, which I am adopting: this buys future-proofing and a spend gate, **not a
 rescued campaign.** Reading the commit as "fixed a crash" would be wrong.
+
+### Task 12 (BIML): COMPLETE. `5d3656d` + my fix `a050569`. 1,995 passing. 22 mutations, 22 killed.
+```
+biml  21 links | by_title 3 | by_id 18 | unresolved 0 | anchors 19 | l/a 1.105
+      truncated 0 | dropped_by_prose 0 | wrong 0 of 21 | rate 1.0000
+```
+**Eleven false brief claims, four of which changed shipped text**, and one is a new species: the
+brief reported a JOIN COLUMN as a parser property (max body 39,093, not 1,999). Also `data:2`, a
+live curated link, was getting three unrelated summary paragraphs, and titles collide INSIDE one
+document, so the brief's own uniqueness test fails on real data. R14 would have fired on 7 of 146
+under the brief's rule. M2 survived the CI-deselected subset because the lowercase-continuation
+shape existed only in the real PDFs; fixed by giving the synthetic fixture that shape.
+
+### Ruling R20 — a naming difference is not an anchor defect, and the omission was mine
+The implementer flagged that Task 16 would fail biml, and asked for a ruling rather than editing the
+budget. Correct instinct. I measured it through the instrument rather than my own join, after my
+first hand-rolled query found only one of the two rows because it ignored `alt_ids`:
+```
+BIML-78(2020): data:1   OpenCRE "Data Poisoning"              source "Poisoning"
+BIML-24(LLM): output:4  OpenCRE "Output Data Confidentiality" source "Data Confidentiality"
+both channel=id, both anchors correct
+```
+OpenCRE prefixes the component onto BIML's descriptor. Identical in kind to SAMM's three misspelled
+stream names, so the same remedy applies: declare the OpenCRE spelling as an `alt_title`.
+`wrong_anchor_risk` 2 -> 0, `by_title` 1 -> 3, anchors and rate unchanged, no collision possible.
+
+**The budget entry was my omission, not a change of criterion.** biml predicts `by_title > 0` by
+design, and Task 16 asserts `by_title == 0` for any framework outside `JOIN_WRONG_ANCHOR_BUDGET`,
+so the absence would have failed a healthy run. I wrote that mapping in Task 1 before the biml
+parser existed and never revisited it. Registered at **0**, not the 2 first measured: recording a
+spelling difference as an anchor defect would leave the gate unable to see a real one.
+
+Two smaller things the fix exposed: the declared-target check blamed `NAME_CONFLICTS` for every
+missing alt_title target, including entries from the new table, and the synthetic fixtures could not
+exercise that check at all because they never produced `data:1`. Both fixed. The variant table is
+derived from the tracked link file and verified to fail in both directions.
