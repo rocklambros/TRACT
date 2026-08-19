@@ -21,18 +21,25 @@ from pathlib import Path
 
 import pytest
 
-from tract.config import PROJECT_ROOT, PROSE_MIN_EXTRA_CHARS
+from tract.config import (
+    PROCESSED_FRAMEWORKS_DIR,
+    PROJECT_ROOT,
+    PROSE_MIN_EXTRA_CHARS,
+)
 from tract.corpus_report import (
+    COARSE_NAME_RATIO,
     CORPUS_EVIDENCE_DIR,
     CURATED_LINKS_PATH,
     DETECTOR_B_INAPPLICABLE,
+    FINE_NAME_RATIO,
     JOIN_CEILINGS,
     JOIN_FLOORS,
+    JOIN_WRONG_ANCHOR_BUDGET,
     CorpusReport,
     _load_links,
     build_corpus_report,
     check_join_floors,
-    coarse_name_frameworks,
+    name_level_mismatch_frameworks,
     require_full_corpus,
     require_unmoved_corpus,
     wrong_anchor_applicable,
@@ -508,13 +515,20 @@ class TestWrongAnchorRisk:
 
 
 class TestDetectorBApplicability:
-    """Detector B is off where the link file names a coarser level than its ids.
+    """Detector B is off where the link file names a different level from its ids.
 
-    DSOMM's link file carries 18 sub-dimension names against 183 activity
-    uuids, and `section_name` equals the resolved control's title for 0 of 214
-    links. Detector B compares a name against that title, so for this framework
-    it compares two levels of the source hierarchy and can only ever fire. The
-    198 it reported were a fact about the source, not 198 wrong anchors.
+    Two directions, and the predicate covers both.
+
+    Names COARSER, ruling R11. DSOMM's link file carries 18 sub-dimension names
+    against 183 activity uuids, and `section_name` equals the resolved control's
+    title for 0 of 214 links. The 198 detector B reported were a fact about the
+    source, not 198 wrong anchors.
+
+    Names FINER, ruling R21. ETSI carries 24 technique names against 16 clause
+    ids, so the id reaches a parent while the name describes one of its
+    children. B compares a technique against a clause title, which is the same
+    mismatch mirrored, and it reported 32 of 36 against a pre-registered budget
+    of 1.
 
     Membership is derived from a measurable property rather than declared and
     trusted, and the first test below is the ratchet that holds the two equal.
@@ -543,6 +557,39 @@ class TestDetectorBApplicability:
             "link_type": "LinkedTo",
         }
 
+    def _shaped_links(
+        self, tmp_path: Path, distinct_ids: int, distinct_names: int, name: str,
+    ) -> Path:
+        """A link file with exactly the requested id and name cardinalities.
+
+        Built rather than written out because the fine boundary is 17 ids over
+        20 names, and twenty literal rows would hide the one property the test
+        is about. Every row past the smaller cardinality reuses that side's last
+        value, so the ratio is exact rather than approximate.
+        """
+        rows = max(distinct_ids, distinct_names)
+        return self._framework_links(tmp_path, [
+            self._link(
+                "shaped",
+                f"a-{min(n, distinct_ids - 1)}",
+                f"Name {min(n, distinct_names - 1)}",
+            )
+            for n in range(rows)
+        ], name=name)
+
+    def test_the_shaped_fixture_has_the_cardinalities_it_claims(
+        self, tmp_path: Path,
+    ) -> None:
+        """The helper every boundary test below rests on, checked once.
+
+        A helper that quietly produced 20 ids over 20 names would make each
+        boundary test assert something other than what it reads as.
+        """
+        grouped = _load_links(self._shaped_links(tmp_path, 17, 20, "shape"))
+        links = grouped["shaped"]
+        assert len({r["section_id"] for r in links}) == 17
+        assert len({r["section_name"] for r in links}) == 20
+
     def test_the_declared_set_equals_the_derived_set(self) -> None:
         """The ratchet, over the real curated link file.
 
@@ -551,15 +598,9 @@ class TestDetectorBApplicability:
         framework that acquires the property and is not declared is in the
         derived set and not the declared one. Neither can land quietly.
         """
-        assert DETECTOR_B_INAPPLICABLE == coarse_name_frameworks()
+        assert DETECTOR_B_INAPPLICABLE == name_level_mismatch_frameworks()
 
-    def test_the_real_link_file_puts_only_dsomm_over_the_ratio(self) -> None:
-        """The measurement the threshold rests on, asserted rather than cited.
-
-        22 frameworks carry curated links. dsomm sits at 10.2x and every other
-        framework sits at roughly 1:1, so the 2.0 threshold has room on both
-        sides and is not a number fitted to one framework's current shape.
-        """
+    def _real_ratios(self) -> dict[str, float]:
         grouped = _load_links(CURATED_LINKS_PATH)
         assert len(grouped) == 22
         ratios: dict[str, float] = {}
@@ -569,28 +610,103 @@ class TestDetectorBApplicability:
             ids.discard("")
             names.discard("")
             ratios[framework_id] = len(ids) / len(names)
-        assert ratios["dsomm"] > 10.0
-        others = sorted(v for k, v in ratios.items() if k != "dsomm")
-        assert others[-1] < 1.5
+        return ratios
 
-    def test_the_ratio_decides_membership_at_the_boundary(
+    def test_the_real_link_file_splits_into_three_groups(self) -> None:
+        """The measurement both thresholds rest on, asserted rather than cited.
+
+        22 frameworks carry curated links. One sits above the coarse threshold,
+        three sit below the fine one, and the other eighteen cluster around 1:1.
+        Membership of each group is named here, so a link-file change that moves
+        a framework between groups fails before it reaches the exemption set.
+        """
+        ratios = self._real_ratios()
+        assert {k for k, v in ratios.items() if v >= COARSE_NAME_RATIO} == {
+            "dsomm",
+        }
+        assert {k for k, v in ratios.items() if v <= FINE_NAME_RATIO} == {
+            "enisa", "etsi", "nist_ai_100_2",
+        }
+        assert ratios["dsomm"] == pytest.approx(183 / 18)
+        assert ratios["nist_ai_100_2"] == pytest.approx(20 / 28)
+        assert ratios["etsi"] == pytest.approx(16 / 24)
+        assert ratios["enisa"] == pytest.approx(10 / 33)
+
+    def test_both_thresholds_sit_in_a_gap_the_data_opens(self) -> None:
+        """Neither number is fitted to one framework's current shape.
+
+        The nearest measured value on each side of each threshold, and the
+        headroom between them. This fails if a threshold moves toward the data
+        and it fails if the data moves toward a threshold, which is what makes
+        the two numbers a measurement rather than a preference.
+        """
+        ratios = self._real_ratios()
+        middle = sorted(
+            v for v in ratios.values() if FINE_NAME_RATIO < v < COARSE_NAME_RATIO
+        )
+        assert len(middle) == 18
+
+        # Fine side. mitre_atlas at 43/44 is the floor of the 1:1 cluster, which
+        # is tighter than the 0.99 ruling R21 quotes, and is the value the
+        # headroom above is measured against.
+        assert middle[0] == pytest.approx(43 / 44)
+        assert FINE_NAME_RATIO - ratios["nist_ai_100_2"] > 0.13
+        assert middle[0] - FINE_NAME_RATIO > 0.12
+
+        # Coarse side. biml at 20/17 is the top of the cluster.
+        assert middle[-1] == pytest.approx(20 / 17)
+        assert COARSE_NAME_RATIO - middle[-1] > 0.8
+        assert ratios["dsomm"] - COARSE_NAME_RATIO > 8.0
+
+    def test_the_reciprocal_of_the_coarse_threshold_would_miss_the_defect(
+        self,
+    ) -> None:
+        """0.5 is the tidy fine threshold and it is empirically wrong.
+
+        Stated as a test rather than only as a comment, because 1 / 2.0 is the
+        change a later reader is most likely to make on symmetry grounds alone.
+        """
+        ratios = self._real_ratios()
+        reciprocal = {k for k, v in ratios.items() if v <= 1.0 / COARSE_NAME_RATIO}
+        assert "etsi" not in reciprocal
+        assert "nist_ai_100_2" not in reciprocal
+
+    def test_the_coarse_ratio_decides_membership_at_its_boundary(
         self, tmp_path: Path,
     ) -> None:
         """Exactly at the ratio is a member, just under it is not."""
-        at_ratio = self._framework_links(tmp_path, [
-            self._link("coarse", "a-1", "Group"),
-            self._link("coarse", "a-2", "Group"),
-            self._link("coarse", "a-3", "Other"),
-            self._link("coarse", "a-4", "Other"),
-        ], name="at")
-        assert coarse_name_frameworks(at_ratio) == frozenset({"coarse"})
+        assert name_level_mismatch_frameworks(
+            self._shaped_links(tmp_path, 4, 2, "coarse_at")
+        ) == frozenset({"shaped"})
+        assert name_level_mismatch_frameworks(
+            self._shaped_links(tmp_path, 3, 2, "coarse_under")
+        ) == frozenset()
 
-        under_ratio = self._framework_links(tmp_path, [
-            self._link("fine", "a-1", "Group"),
-            self._link("fine", "a-2", "Group"),
-            self._link("fine", "a-3", "Other"),
-        ], name="under")
-        assert coarse_name_frameworks(under_ratio) == frozenset()
+    def test_the_fine_ratio_decides_membership_at_its_boundary(
+        self, tmp_path: Path,
+    ) -> None:
+        """The mirror. 17/20 is exactly 0.85 and is a member, 18/20 is not."""
+        assert name_level_mismatch_frameworks(
+            self._shaped_links(tmp_path, 17, 20, "fine_at")
+        ) == frozenset({"shaped"})
+        assert name_level_mismatch_frameworks(
+            self._shaped_links(tmp_path, 18, 20, "fine_over")
+        ) == frozenset()
+
+    def test_a_framework_between_the_two_thresholds_is_not_a_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """The eighteen 1:1 frameworks keep detector B.
+
+        A predicate widened until it admits ETSI would take the whole corpus
+        with it, and the equality ratchet alone cannot see that: it compares two
+        sets built from the same link file. This reads the middle of the range
+        directly.
+        """
+        for ids, names, label in ((1, 1, "one"), (43, 44, "atlas"), (20, 17, "biml")):
+            assert name_level_mismatch_frameworks(
+                self._shaped_links(tmp_path, ids, names, label)
+            ) == frozenset(), label
 
     def test_a_link_file_with_no_names_does_not_divide_by_zero(
         self, tmp_path: Path,
@@ -600,7 +716,7 @@ class TestDetectorBApplicability:
             self._link("nameless", "a-1", ""),
             self._link("nameless", "a-2", ""),
         ])
-        assert coarse_name_frameworks(path) == frozenset()
+        assert name_level_mismatch_frameworks(path) == frozenset()
 
     def test_detector_b_is_skipped_for_a_member_and_not_for_anyone_else(
         self, tmp_path: Path,
@@ -685,6 +801,166 @@ class TestDetectorBApplicability:
         report = build_corpus_report()
         assert report.by_id("dsomm").wrong_anchor_risk == 0
         assert wrong_anchor_applicable(report)["dsomm"] == 3
+
+    def test_detector_b_is_skipped_for_a_fine_name_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """ETSI's shape: the id reaches a clause, the name is a technique in it.
+
+        Identical link content under two framework_ids, one of them declared, so
+        the only variable between the two rows is membership.
+        """
+        corpus = _corpus(tmp_path, [
+            {"control_id": "6.3", "title": "Model hardening",
+             "description": LONG + " Clause."},
+        ])
+        links = self._framework_links(tmp_path, [
+            self._link("etsi", "6.3", "Mitigating model stealing"),
+            self._link("demo", "6.3", "Mitigating model stealing"),
+        ])
+        report = build_corpus_report(links, corpus)
+        applicable = wrong_anchor_applicable(report)
+
+        assert report.by_id("demo").by_id == 1
+        assert report.by_id("demo").wrong_anchor_risk == 1
+        assert applicable["demo"] == 1
+
+        assert report.by_id("etsi").by_id == 1
+        assert report.by_id("etsi").wrong_anchor_risk == 0
+        # B was the only applicable check, so the denominator goes with it.
+        assert applicable["etsi"] == 0
+
+    def test_detector_c_still_fires_for_a_fine_name_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """A rolled-up ETSI clause and its child presenting one anchor.
+
+        An implementation that exempts a fine-name framework from the whole
+        wrong-anchor column instead of from detector B reads 0 here.
+        """
+        shared = LONG + " Rolled-up clause."
+        corpus = _corpus(tmp_path, [
+            {"control_id": "6.2", "title": "Model stealing", "description": shared},
+            {"control_id": "6.2.1", "title": "Query throttling",
+             "description": shared},
+        ])
+        links = self._framework_links(tmp_path, [
+            self._link("etsi", "6.2", "6.2"),
+            self._link("etsi", "6.2.1", "6.2.1"),
+        ])
+        report = build_corpus_report(links, corpus)
+        assert report.by_id("etsi").distinct_anchors == 1
+        assert report.by_id("etsi").wrong_anchor_risk == 2
+        assert wrong_anchor_applicable(report)["etsi"] == 2
+
+    def test_detector_a_still_fires_for_a_fine_name_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """The title-channel check, which the fine exemption must not reach."""
+        corpus = _corpus(tmp_path, [
+            {"control_id": "6.3", "title": "Mitigating model stealing",
+             "description": LONG + " Clause 6.3."},
+            {"control_id": "6.3.1", "title": "Query throttling",
+             "description": LONG + " Clause 6.3.1.",
+             "metadata": {"alt_titles": ["Mitigating model stealing"]}},
+        ])
+        links = self._framework_links(tmp_path, [
+            self._link("etsi", "6.3.1", "Mitigating model stealing"),
+        ])
+        report = build_corpus_report(links, corpus)
+        assert report.by_id("etsi").by_title == 1
+        assert report.by_id("etsi").wrong_anchor_risk == 1
+        assert wrong_anchor_applicable(report)["etsi"] == 1
+
+    def _framework_join(self, tmp_path: Path, framework_id: str) -> CorpusReport:
+        """The curated-link join against one framework's own tracked artifact.
+
+        Not against data/processed/all_controls.json. Ruling R15 keeps that
+        shared derived file out of a parser task's commit, so it lags the
+        parsers that have landed and a test reading it asserts state no commit
+        carries. Every column the join reports is computed per framework, so a
+        one-framework corpus produces the same row, and the three figures below
+        were confirmed identical against the full 31-framework overlay.
+        tests/test_parse_enisa.py builds its join the same way.
+        """
+        record_path = PROCESSED_FRAMEWORKS_DIR / f"{framework_id}.json"
+        if not record_path.exists():
+            pytest.skip(f"{framework_id} has no processed artifact in this checkout")
+        corpus = tmp_path / f"{framework_id}.json"
+        corpus.write_text(
+            json.dumps(
+                {"frameworks": [json.loads(record_path.read_text(encoding="utf-8"))]},
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        return build_corpus_report(corpus_path=corpus)
+
+    def test_the_real_etsi_row_meets_its_pre_registered_budget(
+        self, tmp_path: Path,
+    ) -> None:
+        """1 of 9, against the 1 JOIN_WRONG_ANCHOR_BUDGET registered.
+
+        Before the predicate became symmetric this read 32 of 36. Detector B
+        supplied 31 of those 32, and the survivor is the 6.3.1 row the budget
+        entry names, resolved through the title channel by detector A. The
+        denominator stays live at 9, five title-channel checks and four
+        id-channel ones, so the 1 is not a zero over nothing.
+
+        ETSI is in RESTRICTED_FRAMEWORK_IDS, so its processed artifact is
+        gitignored and this skips in a checkout that has no licensed text. The
+        skip is stated rather than implied, and the predicate tests above assert
+        etsi's membership from the tracked link file, so the exemption itself
+        stays gated everywhere.
+        """
+        report = self._framework_join(tmp_path, "etsi")
+        row = report.by_id("etsi")
+        assert row.by_title == 5
+        assert row.by_id == 31
+        assert row.wrong_anchor_risk == 1
+        assert wrong_anchor_applicable(report)["etsi"] == 9
+        assert row.wrong_anchor_risk == JOIN_WRONG_ANCHOR_BUDGET["etsi"]
+        flagged = [
+            entry for entry in report.resolution_rows
+            if entry.framework_id == "etsi" and entry.wrong_anchor
+        ]
+        assert [entry.section_id for entry in flagged] == ["6.3.1"]
+        assert [entry.channel for entry in flagged] == ["title"]
+
+    def test_the_real_nist_ai_100_2_row_keeps_its_title_channel_findings(
+        self, tmp_path: Path,
+    ) -> None:
+        """8 of 29, down from 20 of 45, and every survivor is detector A.
+
+        The twelve that left were id-channel detector B flags on links whose
+        names sit one level finer than their ids. The eight that stay are
+        title-channel links pointing at Sec. 2.2.4 whose names resolve to their
+        own technique instead, which is a real disagreement between the two
+        channels and has to survive an exemption aimed at detector B.
+        """
+        report = self._framework_join(tmp_path, "nist_ai_100_2")
+        assert report.by_id("nist_ai_100_2").wrong_anchor_risk == 8
+        assert wrong_anchor_applicable(report)["nist_ai_100_2"] == 29
+        flagged = [
+            entry for entry in report.resolution_rows
+            if entry.framework_id == "nist_ai_100_2" and entry.wrong_anchor
+        ]
+        assert {entry.channel for entry in flagged} == {"title"}
+
+    def test_the_real_enisa_row_does_not_move(self, tmp_path: Path) -> None:
+        """Declared, and unchanged, which is the point of declaring it.
+
+        Every enisa link resolves through the title channel, so detector B never
+        ran for it and the exemption costs nothing. Membership follows the link
+        file rather than the run, and this is the assertion that says so. An
+        implementation that switched off the whole wrong-anchor column for a
+        member would take the denominator of 68 with it.
+        """
+        report = self._framework_join(tmp_path, "enisa")
+        assert "enisa" in DETECTOR_B_INAPPLICABLE
+        assert report.by_id("enisa").by_id == 0
+        assert report.by_id("enisa").wrong_anchor_risk == 0
+        assert wrong_anchor_applicable(report)["enisa"] == 68
 
 
 class TestFloors:

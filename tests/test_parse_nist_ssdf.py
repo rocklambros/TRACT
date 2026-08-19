@@ -47,7 +47,7 @@ from tract.corpus_report import (
     JOIN_WRONG_ANCHOR_BUDGET,
     CorpusReport,
     build_corpus_report,
-    coarse_name_frameworks,
+    name_level_mismatch_frameworks,
     wrong_anchor_applicable,
 )
 from tract.parsers.base import BaseParser
@@ -650,19 +650,21 @@ class TestShippedArtifact:
         resolved control's title for 0 of 46 links, never rarely, which is the
         exact reading that retired B for dsomm under ruling R11.
 
-        `coarse_name_frameworks()` cannot see it, because that criterion is
-        distinct(section_id) / distinct(section_name) and here the two are 1:1
-        at 44 and 44. So the declared exemption set stays as it is and this
-        number is asserted rather than silenced. It fails in both directions: a
-        title that started containing the statement drops it, and a link whose
-        name stopped differing from its id drops it too.
+        `name_level_mismatch_frameworks()` cannot see it, because that criterion
+        is distinct(section_id) / distinct(section_name) and here the two are
+        1:1 at 44 and 44. That stays true after ruling R21 made the criterion
+        symmetric: 1.0 sits between the two thresholds, not at either. So the
+        declared exemption set stays as it is and this number is asserted rather
+        than silenced. It fails in both directions: a title that started
+        containing the statement drops it, and a link whose name stopped
+        differing from its id drops it too.
         """
         report = _join(tmp_path)
         assert report.by_id("nist_ssdf").wrong_anchor_risk == 44
         assert wrong_anchor_applicable(report)["nist_ssdf"] == 44
         assert "nist_ssdf" not in JOIN_WRONG_ANCHOR_BUDGET
         assert "nist_ssdf" not in DETECTOR_B_INAPPLICABLE
-        assert "nist_ssdf" not in coarse_name_frameworks()
+        assert "nist_ssdf" not in name_level_mismatch_frameworks()
 
 
 class TestRun:

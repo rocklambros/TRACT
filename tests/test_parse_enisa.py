@@ -61,7 +61,7 @@ from tract.corpus_report import (
     CorpusReport,
     build_corpus_report,
     check_join_floors,
-    coarse_name_frameworks,
+    name_level_mismatch_frameworks,
     wrong_anchor_applicable,
 )
 from tract.parsers.base import BaseParser
@@ -872,13 +872,19 @@ class TestShippedArtifact:
         second answer to disagree with. That is a property of this parser's id
         scheme rather than of the detector, and it fails here if a later change
         makes the id channel answer with different text.
+
+        Ruling R21 declared enisa detector-B-inapplicable at 10 ids over 33
+        names, and the two numbers above did not move, because detector B never
+        ran for a framework whose links all resolve by title. Both memberships
+        are asserted here so that the exemption stays visible next to the row it
+        does not change.
         """
         report = _join(tmp_path)
         assert report.by_id("enisa").wrong_anchor_risk == 0
         assert wrong_anchor_applicable(report)["enisa"] == 68
         assert "enisa" not in JOIN_WRONG_ANCHOR_BUDGET
-        assert "enisa" not in DETECTOR_B_INAPPLICABLE
-        assert "enisa" not in coarse_name_frameworks()
+        assert "enisa" in DETECTOR_B_INAPPLICABLE
+        assert "enisa" in name_level_mismatch_frameworks()
 
     def test_the_link_file_needs_no_alternate_title_table(self) -> None:
         """Derived from tracked files, so it fails in both directions.

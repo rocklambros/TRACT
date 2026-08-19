@@ -29,7 +29,8 @@ Columns, and the failure each one answers:
     dropped_by_prose_rule           controls ProseIndex never indexed, corpus-wide
     wrong_anchor_risk               three detectors, two of them id-side, with
                                     B skipped where the link file names a
-                                    coarser level than its ids identify
+                                    different level from the one its ids
+                                    identify, in either direction
     anchor_source_*                 what kind of text the anchor is
     distinct_hubs / links_per_hub   hub-side concentration, for a later
                                     agreement study
@@ -458,12 +459,35 @@ def _is_ancestor_id(parent: str, child: str) -> bool:
 # by accident.
 COARSE_NAME_RATIO: Final[float] = 2.0
 
+# The mirror, ruling R21. At or below this ratio the link file identifies a
+# COARSER level than it names: the id reaches a parent and the name describes
+# one of that parent's children, so detector B compares a technique name against
+# a clause title. That is R11's mismatch with the two sides swapped, and B can
+# only ever fire here as well.
+#
+# 0.85 sits in the middle of a gap the measurement opens, not at the reciprocal
+# of COARSE_NAME_RATIO. The reciprocal, 0.5, is the tidy choice and is
+# empirically wrong: etsi at 0.6667 and nist_ai_100_2 at 0.7143 both carry the
+# property and both sit above it, so 0.5 would leave the defect uncovered.
+#
+# Measured over the same 22 frameworks on 2026-08-19. Nothing at all sits
+# between 0.7143 and 0.9773:
+#   nearest value below   nist_ai_100_2  20/28 = 0.7143   headroom 0.1357
+#   nearest value above   mitre_atlas    43/44 = 0.9773   headroom 0.1273
+# Ruling R21 records the 1:1 cluster as bottoming out at 0.99. The measured
+# floor is mitre_atlas at 0.9773, which is the tighter of the two sides and is
+# what the headroom above is quoted against. Crossing 0.85 takes four more
+# distinct ids or five fewer distinct names for nist_ai_100_2, and seven more
+# distinct names or six fewer distinct ids for mitre_atlas, so no name repair
+# and no handful of new links moves a framework across it by accident.
+FINE_NAME_RATIO: Final[float] = 0.85
 
-def _coarse_name_frameworks(
+
+def _name_level_mismatch(
     grouped: Mapping[str, Sequence[Mapping[str, Any]]],
 ) -> frozenset[str]:
-    """Frameworks whose link file names a coarser level than it identifies."""
-    coarse: set[str] = set()
+    """Frameworks whose link file names a different level from the one it identifies."""
+    mismatched: set[str] = set()
     for framework_id, links in grouped.items():
         ids = {str(link.get("section_id") or "").strip() for link in links}
         names = {str(link.get("section_name") or "").strip() for link in links}
@@ -475,12 +499,16 @@ def _coarse_name_frameworks(
         # skips rather than raises.
         if not names:
             continue
-        if len(ids) / len(names) >= COARSE_NAME_RATIO:
-            coarse.add(framework_id)
-    return frozenset(coarse)
+        ratio = len(ids) / len(names)
+        # Symmetric on purpose. R11 covered ids outnumbering names and left the
+        # mirror uncovered, which is how ETSI reported 32 flags against a
+        # pre-registered budget of 1.
+        if ratio >= COARSE_NAME_RATIO or ratio <= FINE_NAME_RATIO:
+            mismatched.add(framework_id)
+    return frozenset(mismatched)
 
 
-def coarse_name_frameworks(links_path: Path | None = None) -> frozenset[str]:
+def name_level_mismatch_frameworks(links_path: Path | None = None) -> frozenset[str]:
     """The derived set, read from the curated link file.
 
     Derived rather than hand-listed on purpose. A set somebody can append a
@@ -490,22 +518,41 @@ def coarse_name_frameworks(links_path: Path | None = None) -> frozenset[str]:
     tests/test_corpus_report.py::TestDetectorBApplicability is where the two
     are held equal.
     """
-    return _coarse_name_frameworks(_load_links(links_path or CURATED_LINKS_PATH))
+    return _name_level_mismatch(_load_links(links_path or CURATED_LINKS_PATH))
 
 
 # The DECLARED set. Runtime reads this rather than re-deriving per run, so a
 # framework acquires the exemption through a reviewed edit here and not through
 # a link-file change nobody looked at. The test asserts this equals
-# coarse_name_frameworks() exactly, which fails in both directions: a name
-# added here without the property fails, and a framework that acquires the
+# name_level_mismatch_frameworks() exactly, which fails in both directions: a
+# name added here without the property fails, and a framework that acquires the
 # property without being declared here fails too.
 #
-# dsomm: the link file names the SUB-DIMENSION ("Deployment") while the id
-# names the ACTIVITY ("Inventory of production components"). section_name
-# equals the resolved control's title for 0 of 214 links, never rarely, so
-# detector B's 198 hits were a fact about the source's shape rather than a
-# wrong anchor. Ruling R11. Detectors A and C still apply.
-DETECTOR_B_INAPPLICABLE: Final[frozenset[str]] = frozenset({"dsomm"})
+# Detectors A and C still apply to every member. Only B is switched off.
+#
+# dsomm, names COARSER, ruling R11. The link file names the SUB-DIMENSION
+#   ("Deployment") while the id names the ACTIVITY ("Inventory of production
+#   components"). section_name equals the resolved control's title for 0 of 214
+#   links, never rarely, so detector B's 198 hits were a fact about the source's
+#   shape rather than a wrong anchor.
+#
+# etsi, nist_ai_100_2, names FINER, ruling R21. The id reaches a clause and the
+#   name describes a technique inside that clause, so B compares a technique
+#   against a clause title. ETSI is where this was measured: 32 of 36 flagged
+#   against a pre-registered budget of 1. With B scoped correctly, detectors A
+#   and C leave 1 of 9, which is the registered figure met rather than moved,
+#   and the survivor is the 6.3.1 row the budget names. nist_ai_100_2 drops from
+#   20 of 45 to 8 of 29, all eight of them detector A on the title channel.
+#   [measured 2026-08-19]
+#
+# enisa, names FINER at 0.30, and its row does not move. Every enisa link
+#   resolves through the title channel, so detector B never runs for it and the
+#   exemption changes nothing today. It is declared anyway. The property belongs
+#   to the link file, and membership that turned on whether a channel happened
+#   to fire would be membership nobody could predict from the tracked inputs.
+DETECTOR_B_INAPPLICABLE: Final[frozenset[str]] = frozenset(
+    {"dsomm", "enisa", "etsi", "nist_ai_100_2"}
+)
 
 
 @dataclass
@@ -546,9 +593,9 @@ def _wrong_anchor(
        paragraph. This is the NIST AI 100-2 failure that put title first in the
        lookup order, and neither A nor B can see it.
 
-    `detector_b` is False where the link file names a coarser level of the
-    source's hierarchy than its ids identify, which makes B a comparison
-    between two different levels rather than a check. See
+    `detector_b` is False where the link file names a different level of the
+    source's hierarchy from the one its ids identify, in either direction,
+    which makes B a comparison between two levels rather than a check. See
     DETECTOR_B_INAPPLICABLE. Only B is switched off, so A and C still run and a
     member framework can still be flagged by either.
 
