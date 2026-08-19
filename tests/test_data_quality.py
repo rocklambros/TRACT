@@ -719,9 +719,9 @@ class TestTheShippedContestedDefault:
         ).parameters["recover_contested"].default
         assert inner is outer is CONTESTED_RECOVERY_DEFAULT
 
-    def test_the_shipped_decision_is_to_hold_the_contested_links_back(self) -> None:
-        """The one line the recovery commit flips."""
-        assert CONTESTED_RECOVERY_DEFAULT is False
+    def test_the_shipped_decision_is_to_recover_the_contested_links(self) -> None:
+        """The one line reverting the recovery commit flips back."""
+        assert CONTESTED_RECOVERY_DEFAULT is True
 
     def test_a_caller_that_passes_nothing_gets_the_shipped_decision(self) -> None:
         index = _index_with("CAPEC", "125", "Flooding")

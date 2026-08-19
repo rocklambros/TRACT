@@ -559,10 +559,10 @@ CONTESTED_RECOVERY_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
 # lever default to this one constant, so the shipped decision cannot half-move
 # when only one signature is edited.
 #
-# False here holds the 60 contested links out while the eleven other
-# frameworks' 202 net recoveries land. Flipping it to True is its own commit,
-# and reverting that commit restores this line without disturbing them.
-CONTESTED_RECOVERY_DEFAULT: Final[bool] = False
+# True recovers the 60 contested links, taking training links to 4,389. It is
+# its own commit, and reverting that commit restores this line to False
+# without disturbing the eleven other frameworks' 202 net recoveries.
+CONTESTED_RECOVERY_DEFAULT: Final[bool] = True
 
 # ── Phase 1C: Guardrails, Active Learning & Crosswalk DB ─────────────
 
