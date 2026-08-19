@@ -235,10 +235,15 @@ def _index() -> ProseIndex:
             {
                 "control_id": "2a44b708",
                 "title": "Inventory of production components",
+                # [Redacted under R18 stage 1: this string opened with the real
+                # DSOMM `measure` wording for this activity. Nine words, under
+                # the 12-word gate, so nothing would have caught it. DSOMM is
+                # GPL-3.0-only. Reworded; the uuid and title are unchanged
+                # because OpenCRE publishes both.]
                 "description": (
-                    "A documented inventory of artifacts in production, such "
-                    "as container images, is maintained and kept current by "
-                    "the team that owns the deployment."
+                    "The team that owns a deployment keeps a current list of "
+                    "what is running there, container images included, and "
+                    "says where that list lives."
                 ),
             },
         ],
@@ -586,7 +591,7 @@ Build and Deployment:
       level: 1
     Pinning of artifacts:
       uuid: f3c4971e-9f4d-4e59-8ed0-f0bdb6262477
-      risk: Unauthorized manipulation of artifacts might be difficult to spot.
+      risk: A tampered artifact can reach production without anyone noticing.
       measure: Pinning of artifacts ensures changes happen only when intended.
       level: 2
 Culture and Organization:
@@ -4324,18 +4329,25 @@ ROWS: list[tuple[str, str, str, str]] = [
     ("", "", "", ""),
     ("Control Domain", "Control Title", "Control ID", "Control Specification"),
     ("Audit & Assurance - A&A", "", "", ""),
+    # [Redacted under R18 stage 1: the three column-D strings below were real CCM
+    # Control Specifications. CSA's notice reserves redistribution, so they may
+    # not sit in a tracked CC0 file. Replaced with invented wording of the same
+    # shape, matching tests/test_parse_csa_ccm.py where the ids overlap. Ids,
+    # domains and titles are unchanged; they are public in OpenCRE's link dump
+    # and already tracked. The embedded "\n" is kept: it is what exercises the
+    # parser's whitespace collapsing, which is why the fixture carries it.]
     ("Audit & Assurance", "Audit and Assurance Policy and Procedures", "A&A-01",
-     "Establish, document, approve, communicate, apply, evaluate and maintain\n"
-     "audit and assurance policies and procedures and standards."),
+     "Publish the cadence on which the ledger is read, and keep each\n"
+     "reading where the next reader can find it without asking anyone."),
     ("Audit & Assurance", "Independent Assessments", "A&A-02",
-     "Conduct independent audit and assurance assessments according to\n"
-     "relevant standards at least annually."),
+     "Rotate the outside reader so that no one reader signs two\n"
+     "consecutive cycles of the same ledger."),
     ("Infrastructure Security - I&S", "", "", ""),
     ("Infrastructure Security",
      "Infrastructure and Virtualization Security Policy and Procedures",
      "I&S-01",
-     "Establish, document, approve, communicate, apply, evaluate and maintain\n"
-     "infrastructure and virtualization security policies and procedures."),
+     "Name the layers of the estate this policy reaches, and record the\n"
+     "owner who answers for each one."),
     ("End of Standard", "", "", ""),
     ("© Copyright 2026 Cloud Security Alliance - All rights reserved.", "", "", ""),
 ]

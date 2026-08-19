@@ -2972,8 +2972,10 @@ MODEL: dict[str, Any] = {
                 "uuid": "2a44b708-734f-4463-b0cb-86dc46344b2f",
                 "risk": "Without an inventory of deployed artifacts it is not "
                         "possible to know where a vulnerable image runs.",
-                "measure": "A documented inventory of artifacts in production "
-                           "is maintained and kept current.",
+                # [Redacted under R18 stage 1: opened with the real DSOMM
+                # `measure` wording, 9 words, under the 12-word gate.]
+                "measure": "The owning team keeps a current list of what runs "
+                           "in production and says where it lives.",
                 "level": 1,
             },
             "Pinning of artifacts": {
@@ -5320,19 +5322,24 @@ ROWS: list[tuple[str, str, str, str]] = [
     ("", "", "", ""),
     ("Control Domain", "Control Title", "Control ID", "Control Specification"),
     ("Audit & Assurance - A&A", "", "", ""),
+    # [Redacted under R18 stage 1: the four column-D strings below were real CCM
+    # Control Specifications. CSA's notice reserves redistribution, so they may
+    # not sit in a tracked CC0 file. Replaced with the invented wording that
+    # shipped in tests/test_parse_csa_ccm.py. Ids, domains and titles are
+    # unchanged; they are public in OpenCRE's link dump and already tracked.]
     ("Audit & Assurance", "Audit and Assurance Policy and Procedures", "A&A-01",
-     "Establish, document, approve, communicate, apply, evaluate and maintain "
-     "audit and assurance policies and procedures and standards."),
+     "Publish the cadence on which the ledger is read, and keep each reading "
+     "where the next reader can find it without asking anyone."),
     ("Audit & Assurance", "Independent Assessments", "A&A-02",
-     "Conduct independent audit and assurance assessments according to "
-     "relevant standards at least annually."),
+     "Rotate the outside reader so that no one reader signs two consecutive "
+     "cycles of the same ledger."),
     ("Infrastructure Security - I&S", "", "", ""),
     ("Infrastructure Security", "Capacity and Resource Planning", "I&S-02",
-     "Plan and monitor the availability, quality, and adequate capacity of "
-     "resources in order to deliver the required system performance."),
+     "Plan headroom against measured demand rather than against the shape of "
+     "last year's purchase order."),
     ("Infrastructure Security", "Network Defense", "I&S-09",
-     "Define, implement and evaluate processes, procedures and defense-in-depth "
-     "techniques for protection against network-based attacks."),
+     "Screen traffic at the perimeter and keep the screening rules under the "
+     "same change control as the hosts behind them."),
     ("End of Standard", "", "", ""),
     ("© Copyright 2026 Cloud Security Alliance - All rights reserved.",
      "", "", ""),

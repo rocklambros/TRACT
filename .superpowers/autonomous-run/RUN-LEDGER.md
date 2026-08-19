@@ -1242,9 +1242,11 @@ it would turn the branch red on a question that has not been answered yet.
 
 **Verified exposure, unchanged and still the owner's call:** `data/processed/frameworks/csa_aicm.json`
 carries 243 controls at 176-char median and 485 max of real CSA prose, and `all_controls.json`
-carries it too because AICM is in no tier. Sample: "Establish, document, approve, communicate,
-apply, evaluate and maintain audit and assurance policies and proce...". The branch is unpushed, so
-nothing has escaped.
+carries it too because AICM is in no tier. [Redacted under R18 stage 1: a 14-word sample of the
+`A&A-01` statement stood here. It was real CSA text in a tracked CC0 file, and quoting it to
+describe the exposure reproduced the exposure. The shape is a policy-and-procedures control whose
+statement opens with a verb series and closes with a review-frequency clause.] The branch is
+unpushed, so nothing has escaped.
 
 ### R18 HALTED at its own stop condition. Fifth escape channel found, and it is partly mine.
 The agent applied the widened gate, found the tree NOT clean, committed nothing, reverted both

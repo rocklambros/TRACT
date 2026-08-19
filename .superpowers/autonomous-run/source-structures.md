@@ -54,21 +54,28 @@ level. 194 leaf activities total across the file (counted by summing
   section_name. A parser matching purely on section_name would collapse
   dozens of distinct controls into one.
 
-**Verbatim sample** (one full Activity):
+**Structural sample** (one full Activity, wording invented). [Redacted under R18
+stage 1: this block was headed "Verbatim sample" and reproduced a real Activity's
+`risk` and `measure` fields, 27 consecutive words. DSOMM is GPL-3.0-only, which
+this CC0 repository cannot carry. The field names, nesting, types and optionality
+below are the real schema; every sentence is invented.]
+
 ```yaml
-Inventory of production components:
-  uuid: 2a44b708-734f-4463-b0cb-86dc46344b2f
-  description: |
-    ... [full text confirmed present under Build and Deployment > Deployment] ...
-  risk: In case a vulnerability of severity high or critical exists, it needs
-    to be known where an artifacts (e.g. container image) with that vulnerability
-    is deployed.
-  measure: A documented inventory of artifacts in production like container images...
-  level: 1
-  references:
-    openCRE:
-    - https://www.opencre.org/node/standard/DevSecOps%20Maturity%20Model%20%28DSOMM%29/section/Deployment/subsection/Inventory%20of%20production%20components
+<Activity name>:                 # str, the YAML key, becomes the control title
+  uuid: <uuid4>                  # str, REQUIRED, the only id OpenCRE links on
+  description: |                 # str, OPTIONAL, block scalar, present on 53 of
+    Invented placeholder text.   #   194 activities and non-empty on 51
+  risk: <one or two sentences>   # str, non-empty on all 194
+  measure: <one or two sentences># str, non-empty on all 194
+  level: 1                       # int 1-5, assessment state, NOT control text
+  references:                    # mapping, OPTIONAL
+    openCRE:                     # list[str] of opencre.org node URLs whose
+    - https://www.opencre.org/... #   path carries section + subsection, NOT uuid
 ```
+
+Statement text is `description`, `risk` and `measure` joined in that order.
+`description` alone would leave 143 of 194 activities empty, which `Control`
+rejects.
 (Trimmed for length; the full record also carries `assessment`,
 `difficultyOfImplementation`, `usefulness`, `implementation` (a list of named
 tool links), `isImplemented`, `evidence`, `comments`, `tags`.)
@@ -791,15 +798,22 @@ Two row types interleaved:
   problem class as SAMM (stream vs. activity) and DSOMM (subdimension vs.
   activity).
 
-**Verbatim sample** (row 4, first real control):
+**Structural sample** (row 4, first real control; specification invented).
+[Redacted under R18 stage 1: this block was headed "Verbatim sample" and
+transcribed the workbook's row 4 in full, including the complete 30-word
+`A&A-01` Control Specification. CSA's notice reserves redistribution, so that
+text may not sit in a tracked CC0 file. The four column labels and the domain,
+title and id values are unchanged: they are public in OpenCRE's link dump and
+already tracked in `data/training/hub_links*`. Only column D is replaced.]
+
 ```
-Control Domain: Audit & Assurance
-Control Title:  Audit and Assurance Policy and Procedures
-Control ID:     A&A-01
-Control Specification: Establish, document, approve, communicate, apply,
-evaluate and maintain audit and assurance policies and procedures and
-standards. Review and update the policies and procedures at least
-annually, or upon significant changes.
+Control Domain: Audit & Assurance          # col A, str, repeated per control row
+Control Title:  Audit and Assurance Policy and Procedures   # col B, str
+Control ID:     A&A-01                     # col C, str, "<CODE>-<NN>"
+Control Specification: Publish the cadence on which the ledger is read, and
+keep each reading where the next reader can find it without asking anyone.
+                                           # col D, str, multi-sentence,
+                                           # 6 to 67 words, median 23
 ```
 
 **Count**: 207 control rows, 17 domains. OpenCRE's link rows: 29 (mix of
