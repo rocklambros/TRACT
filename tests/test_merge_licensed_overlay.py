@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -232,7 +233,9 @@ class TestConditionalFrameworkProseStaysOutOfTheTrackedMerge:
         assert conditional, "no conditional framework to exercise the filter"
         return conditional[0]
 
-    def _run(self, tmp_path: Path, description: str) -> tuple[dict, dict]:
+    def _run(
+        self, tmp_path: Path, description: str,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         frameworks_dir = tmp_path / "frameworks"
         frameworks_dir.mkdir()
         (frameworks_dir / "public_fw.json").write_text(

@@ -3,6 +3,19 @@
 Produces per-framework JSON snapshots and changesets for OpenCRE's
 incremental import RFC. The export_history table tracks prior exports
 for changeset generation.
+
+Licence filtering lives here, not only in .gitignore. `CanonicalControl`
+carries full control text for every framework, the default output directory is
+./canonical_export, and that directory was not gitignored, so
+`tract export-canonical && git add -A` staged ISO 27001 and ETSI statements
+into a CC0 repository. Gitignoring the directory closes that door and does
+nothing about the one the command exists to open: the stated destination is a
+third-party RFC, outside git entirely.
+
+So a framework in OVERLAY_FRAMEWORK_IDS exports its section identifiers, its
+titles and its CRE mappings, and exports a standing sentence in place of its
+control text. See tract.licensing.withheld_control_text for why that shape and
+not omission.
 """
 from __future__ import annotations
 
@@ -12,7 +25,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from tract.config import OVERLAY_FRAMEWORK_IDS
 from tract.crosswalk.schema import get_connection
+from tract.licensing import withheld_control_text
 from tract.export.canonical_schema import (
     CanonicalControl,
     Changeset,
@@ -87,6 +102,32 @@ def _query_canonical_assignments(
         conn.close()
 
 
+def exportable_description(framework_id: str, description: str) -> str:
+    """The control text this framework's licence permits TRACT to hand over.
+
+    Returns the description unchanged for a framework TRACT may redistribute,
+    and a standing sentence naming the licence for one it may not.
+
+    Keyed on the framework rather than on the text, deliberately. A check that
+    tried to judge "is this string too much of the standard" would need a
+    threshold, and a threshold is the kind of parameter that gets raised until
+    the gate stops firing.
+
+    Raises:
+        ValueError: framework_id is empty. A row with no framework cannot be
+            checked against any tier, and defaulting it to "publishable" is
+            how an unfiltered source would reach an RFC.
+    """
+    if not framework_id:
+        raise ValueError(
+            "cannot decide export licensing for a control with no "
+            "framework_id. Every canonical control must name its framework."
+        )
+    if framework_id not in OVERLAY_FRAMEWORK_IDS:
+        return description
+    return withheld_control_text(framework_id)
+
+
 def build_snapshot(
     db_path: Path,
     framework_id: str,
@@ -108,19 +149,33 @@ def build_snapshot(
 
     seen_controls: dict[str, CanonicalControl] = {}
     control_mappings: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    withheld = 0
 
     for row in rows:
         cid = row["control_id"]
         if cid not in seen_controls:
+            description = exportable_description(
+                row["framework_id"], row["description"] or "",
+            )
+            if description != (row["description"] or ""):
+                withheld += 1
             seen_controls[cid] = CanonicalControl(
                 control_id=cid,
                 framework_id=row["framework_id"],
                 section_id=row["section_id"],
                 title=row["title"],
-                description=row["description"],
+                description=description,
                 hyperlink=hyperlink_fn(row["framework_id"], row["section_id"]),
             )
         control_mappings[cid].append(row)
+
+    if withheld:
+        logger.info(
+            "Withheld control text for %d of %s's controls: its licence does "
+            "not permit TRACT to redistribute the publisher's wording. "
+            "Identifiers, titles and CRE mappings are exported in full.",
+            withheld, framework_id,
+        )
 
     controls = sorted(seen_controls.values(), key=lambda c: c.control_id)
 
@@ -457,6 +512,12 @@ def export_canonical(
             "mappings": len(snapshot.mappings),
             "changeset_summary": changeset.summary.model_dump(),
             "impact_scope": changeset.impact.scope,
+            # Reported per framework so a dry run shows the withholding before
+            # anything is sent. Not part of the snapshot schema on purpose:
+            # compute_content_hash dumps every field, so a new one would make
+            # every snapshot already in export_history fail its integrity check
+            # on load.
+            "control_text_withheld": fw_id in OVERLAY_FRAMEWORK_IDS,
         }
 
         if dry_run:

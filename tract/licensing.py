@@ -106,6 +106,35 @@ def published_license_frontmatter() -> str:
     )
 
 
+def withheld_control_text(framework_id: str) -> str:
+    """What stands in for a control statement TRACT may not redistribute.
+
+    Used by the canonical export, whose stated destination is an OpenCRE RFC.
+    That is a third-party channel outside git, so a .gitignore line does
+    nothing for it and the filter has to live in the exporter.
+
+    An explanatory sentence rather than an empty string. A recipient holding
+    only snapshot.json needs to tell "this publisher's terms do not permit us
+    to hand you the text" apart from "this control has no description", and an
+    empty field says the second thing. The sentence is TRACT's own wording, so
+    nobody can mistake it for the standard's.
+
+    Identifiers and titles are not withheld. OpenCRE already publishes the
+    section identifiers and names of every framework in this corpus, and the
+    mapping is the deliverable an RFC is asking for. Omitting these frameworks
+    outright would drop their mappings from the proposal entirely, which
+    withholds TRACT's own CC0 contribution to protect somebody else's text.
+    """
+    identifiers = spdx_identifiers(FRAMEWORK_LICENSES.get(framework_id, ""))
+    terms = " AND ".join(identifiers) if identifiers else "its publisher's own notice"
+    return (
+        f"[Control text withheld. {framework_id} is published under {terms}, "
+        f"which TRACT cannot sublicense. Section identifier, title and CRE "
+        f"mapping are unaffected. See {NOTICE_FILENAME} at "
+        f"{SOURCE_REPOSITORY_URL}.]"
+    )
+
+
 def copy_licensing_files(staging_dir: Path) -> None:
     """Copy LICENSE, NOTICE and LICENSES/ into a published artifact.
 

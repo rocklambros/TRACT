@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
 from tract.crosswalk.schema import create_database
+from tract.export.canonical_schema import StandardSnapshot
 from tract.crosswalk.store import (
     insert_assignments,
     insert_controls,
@@ -509,3 +511,219 @@ class TestExportCanonical:
         snap = StandardSnapshot.model_validate_json(snap_path.read_text(encoding="utf-8"))
         assert snap.framework_id == "fw1"
         assert len(snap.content_hash) == 64
+
+
+# ── Licence filtering ─────────────────────────────────────────────────────
+#
+# `grep -c` for RESTRICTED, licens or OVERLAY in tract/export/canonical.py and
+# canonical_schema.py returned 0 for both. CanonicalControl carries full
+# control text for every framework, the default output directory is
+# ./canonical_export at the repository root, and that directory was not
+# gitignored, so `tract export-canonical && git add -A` staged ISO 27001 and
+# ETSI control statements into a CC0 repository.
+#
+# The gitignore line closes the git channel. These tests cover the other one:
+# the command's stated destination is an OpenCRE RFC, which is a third party
+# outside git, where no ignore rule applies.
+
+_LICENSED_PROSE = (
+    "Regional facility credentials shall be issued, reviewed and revoked "
+    "under a documented process approved by the accountable security lead."
+)
+
+
+@pytest.fixture
+def overlay_db(tmp_path: Path) -> tuple[Path, str]:
+    """One publishable framework and one whose text may not be redistributed.
+
+    The overlay framework is taken from the live constant rather than named
+    here, so the fixture cannot drift out of step with the tier it tests.
+    """
+    from tract.config import OVERLAY_FRAMEWORK_IDS
+
+    overlay_id = sorted(OVERLAY_FRAMEWORK_IDS)[0]
+    db_path = tmp_path / "overlay_test.db"
+    create_database(db_path)
+    insert_frameworks(db_path, [
+        {"id": "public_fw", "name": "Public FW", "version": "1.0",
+         "fetch_date": "2026-05-04", "control_count": 1},
+        {"id": overlay_id, "name": overlay_id.upper(), "version": "1.0",
+         "fetch_date": "2026-05-04", "control_count": 1},
+    ])
+    insert_hubs(db_path, [
+        {"id": "h1", "name": "Hub 1", "path": "R > H1", "parent_id": None},
+    ])
+    insert_controls(db_path, [
+        {"id": "public_fw:c1", "framework_id": "public_fw", "section_id": "c1",
+         "title": "Public control", "description": _LICENSED_PROSE,
+         "full_text": None},
+        {"id": f"{overlay_id}:c1", "framework_id": overlay_id,
+         "section_id": "c1", "title": "Overlay control",
+         "description": _LICENSED_PROSE, "full_text": None},
+    ])
+    insert_assignments(db_path, [
+        {"control_id": "public_fw:c1", "hub_id": "h1", "confidence": 0.8,
+         "in_conformal_set": 1, "is_ood": 0,
+         "provenance": "active_learning_round_2", "source_link_id": None,
+         "model_version": None, "review_status": "accepted"},
+        {"control_id": f"{overlay_id}:c1", "hub_id": "h1", "confidence": 0.8,
+         "in_conformal_set": 1, "is_ood": 0,
+         "provenance": "active_learning_round_2", "source_link_id": None,
+         "model_version": None, "review_status": "accepted"},
+    ])
+    return db_path, overlay_id
+
+
+class TestExportWithholdsUnpublishableControlText:
+    def _snapshot(self, db_path: Path, framework_id: str) -> StandardSnapshot:
+        from tract.export.canonical import build_snapshot
+
+        return build_snapshot(
+            db_path=db_path,
+            framework_id=framework_id,
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_name=framework_id.upper(),
+        )
+
+    def test_an_overlay_framework_exports_no_control_text(
+        self, overlay_db: tuple[Path, str],
+    ) -> None:
+        db_path, overlay_id = overlay_db
+        snap = self._snapshot(db_path, overlay_id)
+        assert _LICENSED_PROSE not in snap.model_dump_json(), (
+            f"{overlay_id}'s control statement reached a canonical export. "
+            f"The export's destination is an OpenCRE RFC, outside git, so no "
+            f".gitignore rule stops it."
+        )
+
+    def test_a_publishable_framework_keeps_its_control_text(
+        self, overlay_db: tuple[Path, str],
+    ) -> None:
+        """The other direction. A filter that withheld everything would pass
+        the test above and destroy the deliverable."""
+        db_path, _ = overlay_db
+        snap = self._snapshot(db_path, "public_fw")
+        assert snap.controls[0].description == _LICENSED_PROSE
+
+    def test_identifiers_titles_and_mappings_survive(
+        self, overlay_db: tuple[Path, str],
+    ) -> None:
+        """Withheld text, not a withheld framework.
+
+        Omitting overlay frameworks would drop their CRE mappings from the
+        proposal, which withholds TRACT's own CC0 contribution in order to
+        protect somebody else's text. OpenCRE already publishes these section
+        identifiers and names.
+        """
+        db_path, overlay_id = overlay_db
+        snap = self._snapshot(db_path, overlay_id)
+        assert len(snap.controls) == 1
+        assert len(snap.mappings) == 1
+        control = snap.controls[0]
+        assert control.section_id == "c1"
+        assert control.title == "Overlay control"
+        assert control.hyperlink
+        assert snap.mappings[0].hub_id == "h1"
+
+    def test_the_placeholder_says_why_and_names_the_licence(
+        self, overlay_db: tuple[Path, str],
+    ) -> None:
+        """An empty string reads as "no description", which is a lie.
+
+        A recipient holding only snapshot.json has to be able to tell a
+        withheld statement from an absent one.
+        """
+        from tract.config import FRAMEWORK_LICENSES
+        from tract.licensing import NOTICE_FILENAME, spdx_identifiers
+
+        db_path, overlay_id = overlay_db
+        description = self._snapshot(db_path, overlay_id).controls[0].description
+        assert description, "the placeholder is empty, so it explains nothing"
+        assert "withheld" in description.lower()
+        assert overlay_id in description
+        assert NOTICE_FILENAME in description
+        identifiers = spdx_identifiers(FRAMEWORK_LICENSES.get(overlay_id, ""))
+        for identifier in identifiers:
+            assert identifier in description
+
+    def test_every_overlay_framework_is_filtered_not_just_the_first(self) -> None:
+        """Driven by the set. A per-framework hole would survive the tests above."""
+        from tract.config import OVERLAY_FRAMEWORK_IDS
+        from tract.export.canonical import exportable_description
+
+        assert OVERLAY_FRAMEWORK_IDS, "no overlay tier to enforce"
+        leaked = sorted(
+            framework_id for framework_id in OVERLAY_FRAMEWORK_IDS
+            if exportable_description(framework_id, _LICENSED_PROSE)
+            == _LICENSED_PROSE
+        )
+        assert not leaked, f"{leaked} export their control text unfiltered"
+
+    def test_a_control_with_no_framework_raises(self) -> None:
+        """Fail loud. Defaulting an unattributed row to publishable is how an
+        unfiltered source would reach an RFC."""
+        from tract.export.canonical import exportable_description
+
+        with pytest.raises(ValueError, match="no framework_id"):
+            exportable_description("", _LICENSED_PROSE)
+
+    def test_the_written_snapshot_and_changeset_carry_no_control_text(
+        self, overlay_db: tuple[Path, str], tmp_path: Path,
+    ) -> None:
+        """End to end, on the bytes that actually leave the machine."""
+        from tract.export.canonical import export_canonical
+
+        db_path, overlay_id = overlay_db
+        output_dir = tmp_path / "canonical_export"
+        results = export_canonical(
+            db_path=db_path,
+            framework_ids=[overlay_id, "public_fw"],
+            output_dir=output_dir,
+            confidence_floor=0.3,
+            confidence_overrides={},
+            model_adapter_hash="abc123",
+            tract_version="def456",
+            hyperlink_fn=lambda fw, sec: f"https://example.com/{fw}/{sec}",
+            framework_names={overlay_id: overlay_id.upper(), "public_fw": "Public FW"},
+        )
+        assert results[overlay_id]["control_text_withheld"] is True
+        assert results["public_fw"]["control_text_withheld"] is False
+
+        for name in ("snapshot.json", "changeset.json"):
+            body = (output_dir / overlay_id / name).read_text(encoding="utf-8")
+            assert _LICENSED_PROSE not in body, (
+                f"{overlay_id}/{name} carries the publisher's control text"
+            )
+        public_body = (
+            output_dir / "public_fw" / "snapshot.json"
+        ).read_text(encoding="utf-8")
+        assert _LICENSED_PROSE in public_body
+
+
+def test_the_default_export_directory_is_gitignored() -> None:
+    """The smaller half of the fix, and the one a stray `git add -A` needs.
+
+    Asserted against git rather than against the .gitignore text, because a
+    line that is present and shadowed by a later negation ignores nothing.
+    """
+    import subprocess
+    from pathlib import Path
+
+    from tract.config import PHASE5_CANONICAL_EXPORT_DIR
+
+    repo_root = Path(__file__).resolve().parent.parent
+    probe = (
+        PHASE5_CANONICAL_EXPORT_DIR.relative_to(repo_root) / "fw" / "snapshot.json"
+    )
+    result = subprocess.run(
+        ["git", "check-ignore", "-q", str(probe)],
+        cwd=repo_root, capture_output=True,
+    )
+    assert result.returncode == 0, (
+        f"{probe} is not ignored by git. `tract export-canonical && "
+        f"git add -A` would stage every framework's control text."
+    )
