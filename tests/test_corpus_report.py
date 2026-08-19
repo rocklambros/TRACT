@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import json
 import math
+import os
+import re
 from pathlib import Path
 
 import pytest
@@ -840,7 +842,13 @@ class TestEvidenceGuards:
         ])
         report = build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), corpus)
         assert report.corpus_framework_count == 1
-        with pytest.raises(ValueError, match="refusing to write tagged evidence"):
+        # Match text unique to the census guard. `require_full_corpus` and
+        # `require_portable_paths` both open "refusing to write tagged
+        # evidence", so matching that prefix alone accepts either one. A
+        # mutation that skipped the census guard entirely already passed a test
+        # written that way, because portable-paths fired on the tmp_path corpus
+        # and the message still matched.
+        with pytest.raises(ValueError, match=r"from a corpus of 1 frameworks"):
             require_full_corpus(report)
 
     def test_the_full_corpus_passes_the_census_guard(self) -> None:
@@ -1306,3 +1314,69 @@ class TestIsoStillResolves:
         assert row.by_title + row.by_id == 92
         assert row.distinct_anchors == 91
         assert row.dropped_by_prose_rule == 2
+
+
+class TestGuardMessagesAreDistinguishable:
+    """Two guards opening with the same words made a passing test meaningless.
+
+    `require_full_corpus` and `require_portable_paths` both begin "refusing to
+    write tagged evidence". A mutation that skipped the census guard was caught
+    by portable-paths instead, the message still satisfied
+    `pytest.raises(match="refusing to write tagged evidence")`, and the test
+    went green while asserting nothing about the guard it was named for.
+
+    The messages are not rewritten here, because other tests match on them and
+    the wording carries real diagnostic value. What is asserted is that no
+    guard's message can be identified by a prefix that another guard shares, so
+    a future `match=` written lazily fails loudly rather than passing for the
+    wrong reason.
+    """
+
+    def _messages(self) -> dict[str, str]:
+        """One raised message per guard, each triggered on its own condition."""
+        import inspect
+
+        from tract import corpus_report
+
+        sources = {
+            name: inspect.getsource(obj)
+            for name, obj in vars(corpus_report).items()
+            if name.startswith("require_") and inspect.isfunction(obj)
+        }
+        assert len(sources) >= 3, (
+            f"expected at least three require_* guards, found {sorted(sources)}"
+        )
+        opens: dict[str, str] = {}
+        for name, src in sources.items():
+            match = re.search(r'f?"(refusing to [^"]+)"', src)
+            assert match, f"{name} raises no message beginning 'refusing to'"
+            opens[name] = match.group(1)
+        return opens
+
+    def test_no_guard_message_is_a_prefix_of_another(self) -> None:
+        opens = self._messages()
+        for name, text in opens.items():
+            for other_name, other in opens.items():
+                if name == other_name:
+                    continue
+                shared = os.path.commonprefix([text, other])
+                assert shared != text and shared != other, (
+                    f"{name} and {other_name} share the whole of the shorter "
+                    f"message, so pytest.raises(match=...) on it cannot tell "
+                    f"them apart:\n  {name}: {text!r}\n  {other_name}: {other!r}"
+                )
+
+    def test_every_guard_is_identifiable_within_its_first_forty_characters(
+        self,
+    ) -> None:
+        """Forty characters is about what a reader copies into a `match=`."""
+        opens = self._messages()
+        heads = {name: text[:40] for name, text in opens.items()}
+        collisions = [
+            (a, b) for a in heads for b in heads if a < b and heads[a] == heads[b]
+        ]
+        assert not collisions, (
+            f"these guards are indistinguishable in their first forty "
+            f"characters: {collisions}. Give one of each pair a distinct "
+            f"opening so a short match cannot select the wrong guard."
+        )
