@@ -908,3 +908,38 @@ That is the right instinct and I am recording it as such.
 pre-registers 1 each. Expected, since their parsers are Tasks 8 and 13 and have not run. Task 16
 must confirm both denominators are non-zero by then, or the two entries that exist so the gate "can
 fail in both directions" are blind.
+
+### Task 4 (SAMM): COMPLETE. `217ee73`. 1,559 -> 1,590 passing (+31). 22 mutations, 22 killed.
+```
+samm  links 30  by_title 30  by_id 0  unresolved 0  anchors 30  l/a 1.00  wrong 0 of 30  rate 1.0000
+```
+Was 30 links, 0 resolved, 30 controls outside the prose index entirely.
+
+**Third consecutive task to find a false `[measured]` claim in its own brief.** The brief asserted
+section_name matches for 30 of 30. It is **27 of 30**. Verified by me from the tracked files:
+```
+V-AA-A  OpenCRE "Achitecture validation"  vs SAMM "Architecture Validation"   (missing r)
+V-AA-B  OpenCRE "Achitecture mitigation"  vs SAMM "Architecture Mitigation"   (missing r)
+G-PC-A  OpenCRE "Policy & Standards"      vs SAMM "Policy and Standards"      (ampersand)
+```
+Two are upstream typos in OpenCRE, one is an ampersand variance.
+
+**I checked whether declaring these as `alt_titles` papers over a real finding. It does not.**
+Detector B fires when the resolved control's title does not contain the link's name, so under a
+column named `wrong_anchor_risk` a typo is a false positive: the anchor is provably right because
+the `section_id` IS the stream's own filename stem. The parser's comment reaches the same
+conclusion independently and says the flag "would be a fact about OpenCRE's spelling rather than
+about the anchor." The variance is MORE visible declared in parser source with each typo named than
+it would be as a count in a report column.
+
+**I attacked the derivation test in both directions rather than trusting it.** Injecting a variant
+that is not needed FAILS; deleting one that is needed FAILS. A real ratchet, so an entry that stops
+being necessary and a mismatch that newly appears both surface.
+
+**The licensing architecture is proven on real data.** The tracked `all_controls.json` now carries
+dsomm 194 controls and csa_ccm 29 with **zero prose and zero full_text** on both, and no restricted
+framework at all. GPL-3.0 text reaches training through the overlay and never reaches git.
+
+Also correct, and a deviation from the brief in the right direction: SAMM's statement is marked
+`text_origin: synthetic` because it joins four source records in a parser-chosen order. The brief
+set no marker. That is the interface rule applied without being told twice.
