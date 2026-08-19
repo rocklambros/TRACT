@@ -126,8 +126,78 @@ class TestCorpusShape:
     def test_a_corpus_with_no_records_raises(self, tmp_path: Path) -> None:
         path = tmp_path / "empty.json"
         path.write_text(json.dumps({"total_controls": 0}), encoding="utf-8")
-        with pytest.raises(ValueError, match="no list of framework records"):
+        with pytest.raises(ValueError, match="no list under 'frameworks'"):
             build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), path)
+
+    def test_a_list_under_the_wrong_key_raises_instead_of_being_used(
+        self, tmp_path: Path,
+    ) -> None:
+        """The silent zero the "first list value" fallback used to produce.
+
+        {"controls": [...]} was accepted as a list of framework records, so
+        every framework missed, every count read zero, and nothing failed or
+        logged. A renamed 'frameworks' key did the same. This is the failure
+        the whole module exists to make impossible, so it raises and names the
+        keys it found.
+        """
+        path = tmp_path / "renamed.json"
+        path.write_text(json.dumps({
+            "controls": [
+                {"control_id": "C-1", "title": "One", "description": LONG},
+            ],
+            "meta": {},
+        }, sort_keys=True), encoding="utf-8")
+        with pytest.raises(ValueError, match=r"Keys found: \['controls', 'meta'\]"):
+            build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), path)
+
+    def test_a_corpus_that_is_neither_shape_names_what_it_parsed_as(
+        self, tmp_path: Path,
+    ) -> None:
+        path = tmp_path / "scalar.json"
+        path.write_text(json.dumps("not a corpus"), encoding="utf-8")
+        with pytest.raises(ValueError, match="It parsed as str"):
+            build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), path)
+
+
+class TestLinkFileFailures:
+    """Every failure names the file, the line and the record.
+
+    A bare JSONDecodeError or KeyError from a 4,405-line file tells a reader
+    nothing about which line to open.
+    """
+
+    def test_malformed_json_names_the_line(self, tmp_path: Path) -> None:
+        path = tmp_path / "links.jsonl"
+        path.write_text(
+            json.dumps(_row("C-1", "One"), sort_keys=True) + "\n"
+            + "{not json\n",
+            encoding="utf-8",
+        )
+        corpus = _corpus(tmp_path, [])
+        with pytest.raises(ValueError, match="line 2 is not valid JSON"):
+            build_corpus_report(path, corpus)
+
+    def test_a_missing_framework_id_names_the_line_and_the_keys(
+        self, tmp_path: Path,
+    ) -> None:
+        path = tmp_path / "links.jsonl"
+        path.write_text(
+            json.dumps({"section_id": "C-1", "cre_id": "1-1"}, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        corpus = _corpus(tmp_path, [])
+        with pytest.raises(
+            ValueError, match=r"line 1 has no 'framework_id'",
+        ):
+            build_corpus_report(path, corpus)
+
+    def test_a_json_array_line_is_rejected(self, tmp_path: Path) -> None:
+        path = tmp_path / "links.jsonl"
+        path.write_text(json.dumps([1, 2, 3]) + "\n", encoding="utf-8")
+        corpus = _corpus(tmp_path, [])
+        with pytest.raises(ValueError, match="line 1 holds a list"):
+            build_corpus_report(path, corpus)
 
 
 class TestAnchorCollapse:
@@ -510,7 +580,7 @@ class TestChannelParity:
         assert records, f"{corpus} produced no framework records"
         index = ProseIndex(records)
         assert len(index) > 1000, (
-            f"prose index holds {len(index)} controls; a near-empty index "
+            f"prose index holds {len(index)} controls, and a near-empty index "
             f"makes every assertion below vacuous"
         )
 
@@ -537,8 +607,100 @@ class TestChannelParity:
 
     def test_the_report_resolves_a_useful_number_of_links(self) -> None:
         """A second guard against an index that silently held nothing."""
+        from tract.corpus_report import (
+            FULL_CORPUS_FRAMEWORK_COUNT, TRACKED_CORPUS_FRAMEWORK_COUNT,
+        )
+        from tract.config import PROCESSED_LICENSED_DIR
+
         report = build_corpus_report()
         resolved = report.totals.by_title + report.totals.by_id
         assert report.totals.links == 4405
         assert resolved >= 3600, resolved
-        assert report.corpus_framework_count >= 29
+
+        # `>= 29` passed at both censuses, so it could not tell a checkout
+        # with the overlay from one without. The census is one of exactly two
+        # known values, and which one is decided by whether the overlay file
+        # is on disk. A corpus that quietly lost a framework fails here.
+        overlay = PROCESSED_LICENSED_DIR / "all_controls.json"
+        expected = (
+            FULL_CORPUS_FRAMEWORK_COUNT if overlay.exists()
+            else TRACKED_CORPUS_FRAMEWORK_COUNT
+        )
+        assert report.corpus_framework_count == expected, (
+            f"corpus holds {report.corpus_framework_count} frameworks against "
+            f"{expected} expected with overlay present={overlay.exists()}"
+        )
+
+
+class TestEvidenceGuards:
+    """A tagged artifact is committed evidence, so both guards run first."""
+
+    def test_a_partial_corpus_cannot_overwrite_the_baseline(
+        self, tmp_path: Path,
+    ) -> None:
+        """--tag before on a checkout with no overlay is ledger lesson 5.
+
+        The report still builds, because floors_for_report handles a partial
+        corpus by name. Only the tagged write is refused.
+        """
+        from tract.corpus_report import require_full_corpus
+
+        corpus = _corpus(tmp_path, [
+            {"control_id": "C-1", "title": "One", "description": LONG},
+        ])
+        report = build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), corpus)
+        assert report.corpus_framework_count == 1
+        with pytest.raises(ValueError, match="refusing to write tagged evidence"):
+            require_full_corpus(report)
+
+    def test_the_full_corpus_passes_the_census_guard(self) -> None:
+        """The guard must be reachable in the passing direction too."""
+        from tract.corpus_report import (
+            FULL_CORPUS_FRAMEWORK_COUNT, require_full_corpus,
+        )
+        from tract.config import PROCESSED_LICENSED_DIR
+
+        if not (PROCESSED_LICENSED_DIR / "all_controls.json").exists():
+            pytest.skip("no licensed overlay in this checkout")
+        report = build_corpus_report()
+        assert report.corpus_framework_count == FULL_CORPUS_FRAMEWORK_COUNT
+        require_full_corpus(report)
+
+    def test_an_absolute_path_cannot_reach_a_committed_artifact(
+        self, tmp_path: Path,
+    ) -> None:
+        """tmp_path sits outside the repository, so both paths stay absolute."""
+        from tract.corpus_report import require_portable_paths
+
+        corpus = _corpus(tmp_path, [
+            {"control_id": "C-1", "title": "One", "description": LONG},
+        ])
+        report = build_corpus_report(_links(tmp_path, [_row("C-1", "One")]), corpus)
+        with pytest.raises(ValueError, match="absolute path"):
+            require_portable_paths(report)
+
+    def test_the_repo_corpus_records_relative_paths(self) -> None:
+        from tract.corpus_report import require_portable_paths
+
+        report = build_corpus_report()
+        assert not Path(report.corpus_path).is_absolute(), report.corpus_path
+        assert not Path(report.links_path).is_absolute(), report.links_path
+        require_portable_paths(report)
+
+    def test_no_committed_evidence_file_carries_an_absolute_path(self) -> None:
+        """A CC0 repository must not publish the author's home directory.
+
+        Checks the bytes on disk rather than the object in memory, because the
+        artifact is what ships.
+        """
+        from tract.corpus_report import CORPUS_EVIDENCE_DIR
+
+        written = sorted(CORPUS_EVIDENCE_DIR.glob("*"))
+        assert written, f"no evidence under {CORPUS_EVIDENCE_DIR}"
+        for path in written:
+            body = path.read_text(encoding="utf-8")
+            for marker in ("/Users/", "/home/", "/root/", "C:\\\\"):
+                assert marker not in body, (
+                    f"{path.name} carries {marker!r}, which is an absolute "
+                    f"machine path in a committed artifact"
+                )

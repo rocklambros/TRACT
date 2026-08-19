@@ -76,6 +76,7 @@ CORPUS_EVIDENCE_DIR: Final[Path] = PROJECT_ROOT / "results" / "corpus"
 # rows, and gating on file existence never skips because the tracked file
 # always exists. Task 15 owns updating this if the rebuild changes the census.
 FULL_CORPUS_FRAMEWORK_COUNT: Final[int] = 31
+TRACKED_CORPUS_FRAMEWORK_COUNT: Final[int] = 29
 
 # A parser that assembles an anchor out of several source fragments marks it,
 # so the report can separate parser-written text from publisher-written text.
@@ -219,15 +220,53 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _repo_relative(path: Path) -> str:
+    """A path as the repository sees it, so no artifact ships a home directory.
+
+    An absolute path in a committed artifact does two kinds of harm. It puts
+    the author's username in a CC0 repository intended for publication, and it
+    makes the byte-identical regeneration property hold on one laptop only. A
+    path outside the repository is returned unchanged, and the --tag write path
+    refuses to commit an artifact that carries one.
+    """
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(PROJECT_ROOT.resolve()))
+    except ValueError:
+        return str(resolved)
+
+
 def _load_links(path: Path) -> dict[str, list[dict[str, str]]]:
+    """Curated links grouped by framework_id, one JSON object per line.
+
+    Every failure names the file, the 1-indexed line and the record. A bare
+    JSONDecodeError or KeyError from a 4,405-line file tells a reader nothing
+    about which line to open.
+    """
     grouped: dict[str, list[dict[str, str]]] = {}
     with path.open(encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
+        for number, raw in enumerate(handle, start=1):
+            line = raw.strip()
             if not line:
                 continue
-            row = json.loads(line)
-            grouped.setdefault(row["framework_id"], []).append(row)
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise ValueError(
+                    f"{path} line {number} is not valid JSON: {error}. The "
+                    f"curated link file is one JSON object per line."
+                ) from error
+            if not isinstance(row, dict):
+                raise ValueError(
+                    f"{path} line {number} holds a {type(row).__name__} where "
+                    f"a JSON object was expected: {line[:200]!r}"
+                )
+            if "framework_id" not in row:
+                raise ValueError(
+                    f"{path} line {number} has no 'framework_id'. Keys found: "
+                    f"{sorted(row)}. Record: {line[:200]!r}"
+                )
+            grouped.setdefault(str(row["framework_id"]), []).append(row)
     return grouped
 
 
@@ -236,8 +275,11 @@ def _load_records(path: Path) -> list[dict[str, Any]]:
 
     Both real corpus files are mappings keyed
     [framework_count, frameworks, generated_date, total_controls]. [measured]
-    Preferring the named key rather than "the first list value" means a new
-    top-level list cannot silently take over.
+    Only the named key answers. There is no "first list value" fallback: it
+    would accept {"controls": [...]} as a list of framework records, every
+    framework would then miss, and the whole report would read zero with no
+    error and no log line. A silent zero is the failure this module exists to
+    make impossible, so a renamed key raises here instead.
     """
     data = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(data, list):
@@ -246,12 +288,17 @@ def _load_records(path: Path) -> list[dict[str, Any]]:
         records = data.get("frameworks")
         if isinstance(records, list):
             return records
-        for value in data.values():
-            if isinstance(value, list):
-                return value
+        raise ValueError(
+            f"{path} is a mapping with no list under 'frameworks'. Keys found: "
+            f"{sorted(data)}. The merged corpus is either a list of framework "
+            f"records or a mapping carrying one under 'frameworks'. Guessing "
+            f"at another key would return the wrong records and every count "
+            f"below would read zero without failing."
+        )
     raise ValueError(
-        f"{path} holds no list of framework records. The merged corpus is "
-        f"either a list or a mapping carrying one under 'frameworks'."
+        f"{path} holds no list of framework records. It parsed as "
+        f"{type(data).__name__}. The merged corpus is either a list of "
+        f"framework records or a mapping carrying one under 'frameworks'."
     )
 
 
@@ -645,13 +692,65 @@ def build_corpus_report(
     return CorpusReport(
         per_framework=rows,
         totals=totals,
-        corpus_path=str(corpus_file),
+        corpus_path=_repo_relative(corpus_file),
         corpus_sha256=_sha256(corpus_file),
         corpus_framework_count=len(records),
-        links_path=str(links_file),
+        links_path=_repo_relative(links_file),
         links_sha256=_sha256(links_file),
         resolution_rows=resolution_rows,
     )
+
+
+def require_full_corpus(report: CorpusReport) -> None:
+    """Refuse to write committed evidence built from a partial corpus.
+
+    A checkout without the licensed overlay resolves merged_corpus_path() to
+    the 29-framework tracked file, and `--tag before` would then overwrite the
+    31-framework baseline in place with no diff in any column that says so.
+    Every later comparison would run against the wrong baseline, which is
+    ledger lesson 5. The report itself still builds on a partial corpus, and
+    floors_for_report() handles that case by name. Only the tagged write is
+    blocked.
+
+    Raises:
+        ValueError: If the corpus census is short of the full set.
+    """
+    if report.corpus_framework_count != FULL_CORPUS_FRAMEWORK_COUNT:
+        raise ValueError(
+            f"refusing to write tagged evidence from a corpus of "
+            f"{report.corpus_framework_count} frameworks against "
+            f"{FULL_CORPUS_FRAMEWORK_COUNT} in the full set. "
+            f"{report.corpus_path} is the tracked corpus, not the licensed "
+            f"overlay, so this run cannot see the restricted frameworks and "
+            f"the artifact would silently replace the baseline every later "
+            f"comparison is read against. Restore "
+            f"data/processed/licensed/all_controls.json, or pass --out to "
+            f"write a scratch file that nothing is gated on."
+        )
+
+
+def require_portable_paths(report: CorpusReport) -> None:
+    """Refuse to write committed evidence carrying an absolute path.
+
+    Raises:
+        ValueError: If either recorded path is absolute.
+    """
+    absolute = sorted(
+        f"{name}={value}"
+        for name, value in (
+            ("corpus_path", report.corpus_path),
+            ("links_path", report.links_path),
+        )
+        if Path(value).is_absolute()
+    )
+    if absolute:
+        raise ValueError(
+            f"refusing to write tagged evidence carrying an absolute path: "
+            f"{absolute}. A committed artifact ships to a CC0 repository, so "
+            f"it must not carry a home directory, and an absolute path makes "
+            f"byte-identical regeneration hold on one machine only. Build the "
+            f"report from paths inside the repository."
+        )
 
 
 def write_link_resolution(report: CorpusReport, path: Path) -> None:
@@ -867,7 +966,7 @@ JOIN_FLOORS: Final[Mapping[str, float]] = {
 #               title, not the IPY domain's name ("Interoperability &
 #               Portability"). Title-first therefore answers with IPY-01.
 #               Task 8 rules that IPY-01 is the correct target. [measured,
-#               ML Engineer; link text confirmed by the orchestrator]
+#               ML Engineer, link text confirmed by the orchestrator]
 #   etsi     1  link `6.3.1` carries the name "Mitigating model stealing",
 #               which resolves to clause 6.3. [measured, ML Engineer]
 #
