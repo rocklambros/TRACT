@@ -1676,3 +1676,46 @@ nobody has to take my word for which one is the gain.
 **CI is red on this branch and the reason is R15 working as designed:** four tests fail in a
 tracked-files-only checkout because `all_controls.json` and several per-framework artifacts are
 deliberately uncommitted. Task 15 owns the merge and closes it.
+
+### Task 14: COMPLETE. `a3fa178` + `c2a70e1`. 2,107 passing. 15 mutations, 15 killed.
+**Training links 4,127 -> 4,389**, exactly the strict-gate figure I ruled. A name-fallback gate
+gives 4,401, which confirms the ruling rather than assuming it. Decomposition:
+```
+nist_800_63 0->78   owasp_proactive 0->76   capec 1755->1799   dsomm 176->213
+cwe 596->612        enisa 59->68            biml 14->21        owasp_ai_exchange 62->64
+etsi 35->36         owasp_top10_2021 16->17 wstg 118->109
+```
+**wstg DECREASES**, which is the strict gate working: the nine bogus-id links whose names clear a
+10-character floor no longer train a punctuation-bearing identifier as an anchor.
+Net +262 = 60 contested + 202 other, not the brief's 274. Title anchors 12 -> 0 over 7 strings, not
+the brief's 525/251.
+
+The `orchestrate.py` corpus-hash bug is fixed, and moved to `data_quality.fold_input_digests` for a
+good reason I had not considered: `orchestrate` cannot be imported without `datasets`, which is
+absent from `requirements.txt`, so a rule left there is **testable in no environment**.
+The ceiling-study mirror now breaks loudly (no default on `resolved_text` or `_link_priority`'s
+index) plus a test asserting the two pools hold the same links.
+
+**Twelve false brief claims, and one was in MY dispatch too.** I repeated the brief's
+"validation roster 1,244 -> 1,264". That figure is unreproducible and internally inconsistent. The
+LOFO validation eval corpus is **1,614 -> 1,614**, unchanged, because it is built from
+`load_curated_links()` and was never gated. The ceiling validation pool moves 877 -> 892.
+Also: the brief's own thin-anchor test asserts the wrong side of the floor, because `"Do backups"`
+is exactly 10 characters; `EXPECTED_UNRESOLVED` omits dsomm entirely; and Step 8's derivation
+miscounts by 240 on a tracked-only corpus.
+
+### Ruling R22 — the annotated ceiling study gets pinned, because it can silently drift
+The brief claimed "the 250 drawn items survive". **It is backwards: 77 of 250 are replaced**, 43 of
+them at the first commit. Verified: `build_ceiling_study()` derives its sample from the live link
+pool and a seed, and Task 14 changed that pool. Task 15 will change it again.
+
+Nothing measured is invalid. `results/ceiling_study/ceiling_items.json` is tracked, the 250 human
+answers are complete and key on `item_index`, and every anchor still exists. But the study is no
+longer REPRODUCIBLE from code, and the drift is silent.
+
+That is unacceptable for the single most expensive asset in the project: 250 items a domain expert
+annotated by hand, which produced the alpha-1 = 0.181 CAPEC finding this whole run has been reading
+against. **The annotated study must never silently change.** A fresh draw is a NEW study with its
+own name, not a redraw of the old one. Pin the sample to the tracked artifact, and make a
+disagreement between code and artifact fail loudly rather than resolve in favour of whichever ran
+last.
