@@ -51,6 +51,51 @@ def normalize_section_id(section_id: str | None) -> str:
     return _SECTION_ID_PREFIX.sub("", text).strip()
 
 
+def _alternate_ids(
+    declared: Any, framework: str, control_id: Any,
+) -> list[str]:
+    """The normalised alternate ids one control declares.
+
+    Accepts a single string or a list of strings and refuses everything else,
+    rather than coercing with str(). The strictness is aimed at one specific
+    reader: alt_ids is hand-authored, so the two shapes a human gets wrong are
+    an unquoted number and a stray null. Under coercion the first is not
+    iterable at all and raises a bare TypeError from inside __init__, while the
+    second becomes a key spelled "None" that matches no link and still reports
+    as a live alternate. The second is the silent wrong answer this whole
+    instrument exists to remove, so both raise here instead, naming the record.
+
+    An empty or whitespace-only string stays legal and is skipped, which keeps
+    a trailing entry in a hand-edited list from being a hard failure.
+
+    Raises:
+        ValueError: If the field or any entry is not a string.
+    """
+    if declared is None:
+        return []
+    entries = [declared] if isinstance(declared, str) else declared
+    if not isinstance(entries, (list, tuple)):
+        raise ValueError(
+            f"{framework} control {control_id!r} declares "
+            f"metadata['alt_ids'] as {type(declared).__name__} {declared!r}. "
+            f"It must be a string or a list of strings."
+        )
+    normalised: list[str] = []
+    for position, raw in enumerate(entries):
+        if not isinstance(raw, str):
+            raise ValueError(
+                f"{framework} control {control_id!r} declares "
+                f"metadata['alt_ids'][{position}] as {type(raw).__name__} "
+                f"{raw!r}. Every alternate id must be a string. Coerced it "
+                f"would become the key {str(raw)!r}, which matches no link "
+                f"and still reports as a live alternate."
+            )
+        alt_id = normalize_section_id(raw)
+        if alt_id:
+            normalised.append(alt_id)
+    return normalised
+
+
 def canonical_framework(name: str) -> str:
     """Normalise a framework name to its control-side spelling."""
     key = _WHITESPACE.sub(" ", (name or "").strip()).lower()
@@ -292,7 +337,7 @@ class ProseIndex:
                     if (framework, control_id) in self._by_id:
                         self.real_id_collisions += 1
                         logger.warning(
-                            "Two %s controls claim id %r; the later one wins "
+                            "Two %s controls claim id %r. The later one wins "
                             "and the earlier is unreachable by id.",
                             framework, control_id,
                         )
@@ -304,15 +349,17 @@ class ProseIndex:
                 # links whose section_id is a mid-sentence fragment of the
                 # task text, and BIML has eight whose id is document-scoped
                 # upstream but unprefixed in OpenCRE.
-                alternate_ids = metadata.get("alt_ids") or []
-                if isinstance(alternate_ids, str):
-                    alternate_ids = [alternate_ids]
-                for raw_id in alternate_ids:
-                    alt_id = normalize_section_id(str(raw_id))
-                    if alt_id:
-                        pending_alternate_ids.append(
-                            ((framework, alt_id), selection)
-                        )
+                #
+                # Read without `or []`, unlike alt_titles below. That idiom
+                # folds 0 and False into "the author wrote nothing", and both
+                # are malformed values a validator should see.
+                for alt_id in _alternate_ids(
+                    metadata.get("alt_ids"), framework,
+                    control.get("control_id"),
+                ):
+                    pending_alternate_ids.append(
+                        ((framework, alt_id), selection)
+                    )
 
                 # Real titles are indexed in this pass. Alternates are held
                 # back and applied afterwards, because "first writer wins"
@@ -348,13 +395,30 @@ class ProseIndex:
         # writer wins, matching alt_titles, and a loser is counted rather than
         # dropped in silence.
         claimed_by_alternate: set[tuple[str, str]] = set()
+        reported_dead: set[tuple[str, str]] = set()
         for key_pair, selection in pending_alternate_ids:
             if key_pair in self._by_id:
                 if key_pair in claimed_by_alternate:
                     self.alternate_id_collisions += 1
+                    # Phrased without a subject count on purpose. One control
+                    # declaring alt_ids ["dup", "dup"] reaches this branch and
+                    # increments the counter, which is right because a key was
+                    # contested either way, so "two controls" would be false
+                    # for half the cases that produce the line.
                     logger.warning(
-                        "Two %s controls declare alternate id %r; the first "
-                        "one keeps the key.", key_pair[0], key_pair[1],
+                        "%s alternate id %r is declared more than once. The "
+                        "first declaration keeps the key and the rest do "
+                        "nothing.", key_pair[0], key_pair[1],
+                    )
+                elif key_pair in reported_dead:
+                    # A repeat of the line below. Without a distinct phrasing
+                    # the log holds two identical entries and a reader cannot
+                    # tell two competing authors from one duplicated entry.
+                    logger.warning(
+                        "Another %s alternate id %r also loses to the real "
+                        "control that spells it. Two or more declarations of "
+                        "this key are dead, not one.",
+                        key_pair[0], key_pair[1],
                     )
                 else:
                     # Lost to a real id, which is the correct outcome and the
@@ -366,6 +430,7 @@ class ProseIndex:
                     # the interface later parser tasks read, and a dead
                     # declaration is an authoring defect rather than a corpus
                     # collision.
+                    reported_dead.add(key_pair)
                     logger.warning(
                         "A %s control declares alternate id %r, which is "
                         "already a real control id. The real control keeps "

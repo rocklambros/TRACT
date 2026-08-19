@@ -780,6 +780,64 @@ class TestAlternateIds:
             for record in caplog.records
         ) == 1
 
+    def test_one_control_declaring_a_key_twice_counts_and_reads_correctly(
+        self, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """A single control can contest a key with itself.
+
+        alt_ids ["dup", "dup"] on one control increments the counter, which is
+        right, because a key was contested either way. So the message must not
+        say "two controls": that is false for half the cases producing it.
+        """
+        with caplog.at_level(logging.WARNING, logger="tract.text_selection"):
+            index = ProseIndex([{
+                "framework_name": "Demo",
+                "controls": [
+                    {"control_id": "J-1", "title": "One",
+                     "description": self.LONG + " One.",
+                     "metadata": {"alt_ids": ["dup", "dup"]}},
+                ],
+            }])
+        assert index.alternate_id_collisions == 1
+        hit = index.lookup("Demo", "dup", None)
+        assert hit is not None
+        assert hit.text.endswith("One.")
+        contested = [
+            record.message for record in caplog.records
+            if "declared more than once" in record.message
+        ]
+        assert len(contested) == 1
+        assert "controls" not in contested[0], contested[0]
+
+    def test_two_dead_declarations_of_one_key_are_distinguishable_from_one(
+        self, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Both lose to the real id, which is correct, and both are reported.
+
+        Without the second phrasing the log holds two identical lines, and a
+        reader cannot tell two competing authors from one duplicated entry.
+        Still uncounted: alternate_id_collisions stays the count of alternates
+        that lost to another alternate.
+        """
+        with caplog.at_level(logging.WARNING, logger="tract.text_selection"):
+            index = ProseIndex([{
+                "framework_name": "Demo",
+                "controls": [
+                    {"control_id": "H-1", "title": "One",
+                     "description": self.LONG + " One.",
+                     "metadata": {"alt_ids": ["H-3"]}},
+                    {"control_id": "H-2", "title": "Two",
+                     "description": self.LONG + " Two.",
+                     "metadata": {"alt_ids": ["H-3"]}},
+                    {"control_id": "H-3", "title": "Three",
+                     "description": self.LONG + " Three."},
+                ],
+            }])
+        assert index.alternate_id_collisions == 0
+        messages = [record.message for record in caplog.records]
+        assert sum("the alternate does nothing" in m for m in messages) == 1
+        assert sum("are dead, not one" in m for m in messages) == 1
+
     def test_a_live_alternate_is_not_reported_as_dead(
         self, caplog: pytest.LogCaptureFixture,
     ) -> None:
@@ -817,3 +875,71 @@ class TestAlternateIds:
         }])
         assert len(index) == 0
         assert index.lookup("Demo", "W-legacy", None) is None
+
+
+class TestMalformedAlternateIds:
+    """A hand-authored alt_ids entry fails loud, naming the record.
+
+    Tasks 9 and 12 write this field by hand, so the two shapes a human gets
+    wrong are the two that must not pass. Under bare str() coercion neither
+    does anything useful: an unquoted number is not iterable at all, and a
+    stray null becomes a key spelled "None" that matches no link while
+    reporting as a live alternate. Both are the silent-wrong-answer failure
+    this plan exists to remove.
+    """
+
+    LONG = "A control statement long enough to clear the prose bar easily. " * 3
+
+    def _build(self, alt_ids: object) -> ProseIndex:
+        return ProseIndex([{
+            "framework_name": "Demo",
+            "controls": [
+                {"control_id": "PS.1.1", "title": "Protect code",
+                 "description": self.LONG + " Real PS.1.1.",
+                 "metadata": {"alt_ids": alt_ids}},
+            ],
+        }])
+
+    @pytest.mark.parametrize("alt_ids", [937, 12.5, True, {"a": "b"}])
+    def test_a_field_that_is_not_a_string_or_a_list_raises(
+        self, alt_ids: object,
+    ) -> None:
+        with pytest.raises(ValueError, match="must be a string or a list"):
+            self._build(alt_ids)
+
+    @pytest.mark.parametrize("alt_ids", [[None], [937], [["nested"]], ["ok", 1]])
+    def test_an_entry_that_is_not_a_string_raises(self, alt_ids: object) -> None:
+        with pytest.raises(ValueError, match="must be a string"):
+            self._build(alt_ids)
+
+    def test_the_message_names_the_framework_the_control_and_the_value(
+        self,
+    ) -> None:
+        """A ValueError from a 31-framework corpus is useless without these."""
+        with pytest.raises(ValueError) as error:
+            self._build([None])
+        message = str(error.value)
+        assert "Demo" in message
+        assert "PS.1.1" in message
+        assert "None" in message
+        assert "alt_ids" in message
+
+    def test_the_message_names_the_offending_position_in_the_list(self) -> None:
+        """Which entry, not just which control. BIML declares eight."""
+        with pytest.raises(ValueError) as error:
+            self._build(["fine", "also fine", 937])
+        assert "[2]" in str(error.value)
+
+    @pytest.mark.parametrize("alt_ids", ["Y-legacy", ["A", "B"], [], None])
+    def test_a_well_formed_field_does_not_raise(self, alt_ids: object) -> None:
+        """The passing direction, so the guard cannot simply always raise."""
+        assert len(self._build(alt_ids)) >= 1
+
+    def test_a_falsy_non_string_is_not_read_as_an_absent_field(self) -> None:
+        """`metadata.get("alt_ids") or []` swallowed 0 and False.
+
+        Dropping the `or []` is what lets those two reach the type check
+        instead of being read as "the author wrote nothing".
+        """
+        with pytest.raises(ValueError, match="must be a string or a list"):
+            self._build(0)
