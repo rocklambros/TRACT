@@ -1204,3 +1204,44 @@ successor's real test content instead.
 That is also the whole explanation for `distinct_anchors` reading 52 rather than the brief's
 expected 55: the three retired ids share their successor's anchor. The gate is a floor, not an
 equality, so nothing fails. Accepted.
+
+### Task 8 (CSA CCM): COMPLETE. `855406f`. 1,721 -> 1,762 passing. 41 mutations, 41 killed.
+```
+csa_ccm  29 links | by_title 29 | by_id 0 | unresolved 0 | anchors 29 | l/a 1.00
+         wrong 1 of 29 | anchor_source: desc 15, synthetic 14 | hubs 27 | rate 1.0000
+```
+Prose fraction 0.9910714 (IAM-07 at 58 chars, STA-06 at 43), floor set to 0.99: passes at 222/224,
+fails at 221/224. R14 would NOT have fired here, longest spec 510 and longest domain statement 596
+against 2,000. Shared anchor prefix 0. The 14 synthetic domain aggregates are marked and audited.
+
+**`by_title` measured 29, not the 26 I passed down and not the brief's 7.** And `wrong_anchor_risk`
+measures **2** without a title-variant table, not 1: detector B also flags `AIS-04`, whose v4.1.0
+rename means neither name contains the other. Declaring `OPENCRE_TITLE_VARIANTS` for AIS-04/05/06 on
+the Task 4 precedent brings it to exactly the pre-registered budget of 1. `JOIN_WRONG_ANCHOR_BUDGET`
+untouched, which is the right way round: the budget was pre-registered and the parser met it.
+
+**Seven false brief claims, and the worst one would have leaked licensed text.** The brief's fixture
+QUOTES REAL CCM SPECIFICATION TEXT into a tracked CC0 test file. The implementer invented every
+string instead. The brief's own `TestAudit` also cannot pass against its own parser, and it carried
+a TOCTOU gap that hashes one read of the workbook and parses a second.
+
+The single round-one mutation survivor was a real test defect: `expected_count` 224 -> 207 is
+swallowed by the 10% tolerance band. Fixed by asserting
+`expected_count == expected_control_rows + expected_domains`, so the two granularities cannot drift.
+
+### Ruling R18 — the fingerprint gate widens from RESTRICTED to OVERLAY
+The gate that catches licensed text reaching git covers only `etsi` and `iso_27001`. Task 8 proves
+that is too narrow: **its brief would have committed real CCM specification text to a tracked file,
+and no gate would have caught it.** Only an implementer reading carefully stopped it, which is
+exactly the "control that depends on someone noticing" shape this run keeps rejecting.
+
+Widen the fingerprint corpus to `OVERLAY_FRAMEWORK_IDS`, adding `csa_ccm` and `dsomm`. Both have
+text that is deliberately kept out of git, so both deserve the same tripwire ETSI and ISO have.
+`csa_aicm` is NOT added: its prose is deliberately tracked pending the owner's decision, and gating
+it would turn the branch red on a question that has not been answered yet.
+
+**Verified exposure, unchanged and still the owner's call:** `data/processed/frameworks/csa_aicm.json`
+carries 243 controls at 176-char median and 485 max of real CSA prose, and `all_controls.json`
+carries it too because AICM is in no tier. Sample: "Establish, document, approve, communicate,
+apply, evaluate and maintain audit and assurance policies and proce...". The branch is unpushed, so
+nothing has escaped.
