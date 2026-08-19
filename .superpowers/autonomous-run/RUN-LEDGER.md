@@ -1638,3 +1638,41 @@ meaningful either.
 
 `csa_ccm`'s budget of 1 was flagged for the same suspicion and is fine: `by_id` is 0, so detector B
 cannot run there and the 1 comes from detector A, which is the IPY case it was registered for.
+
+### R21 landed. `9968835` + my corrections `d8f1c42`. 2,063 passing.
+`FINE_NAME_RATIO = 0.85`, `DETECTOR_B_INAPPLICABLE = {dsomm, enisa, etsi, nist_ai_100_2}`, derived
+and asserted equal. `coarse_name_frameworks` renamed `name_level_mismatch_frameworks`.
+**ETSI now reads `wrong_anchor_risk 1` over a denominator of 9 and MEETS its pre-registered budget
+of 1.** The agent verified the decomposition itself rather than trusting Task 13: B on gives 32/36,
+B off gives 1/9, and the survivor is the `6.3.1` title-channel row the budget was registered for.
+15 mutations, zero survivors, killed in both a full run and a tracked-files-only checkout.
+
+**The agent corrected my ledger and I corrected the agent.** R21 recorded the 1:1 cluster as
+bottoming out at 0.99; they found `mitre_atlas` at 43/44 = 0.9773 and quoted the tighter headroom.
+Both figures are right on different definitions, and neither of us had checked which one the code
+used. It stripped but did not fold case, so `"Validate AI Model"` and `"Validate AI model"` counted
+as two names when `ProseIndex` treats them as one. The ratio has to measure what the JOIN measures,
+so it now folds: mitre_atlas is 43/43 = 1.0000 and the real nearest value above 0.85 is
+`iso_27001` at 92/93 = 0.9892. **No framework's membership changes either way**, so the correction
+buys an accurate stated headroom (0.1392, not 0.1273) and nothing else.
+
+Also fixed two parser docstrings that named the renamed function and asserted the opposite of the
+truth. NIST SSDF's still cannot be derived by that predicate and should not be: its mismatch is one
+of KIND, a statement-shaped name against an id-shaped title, which a count-based ratio does not
+measure. That is R19's territory and it stays asserted in its own test rather than silenced.
+
+### ALL ELEVEN PARSERS COMPLETE. State entering Task 14:
+```
+corpus: licensed overlay, 31 frameworks
+links 4405 | by_title 3736 | by_id 653 | unresolved 16 | rate 0.9964
+distinct_anchors 1895 (baseline 1450) | fallback_anchors 11
+frameworks under their floor: 0
+```
+`distinct_anchors` +445, of which **299 replace fallback anchors the trainer already had**, so the
+honest new-anchor figure is about +146. That is the number the rebuilt instrument exists to show,
+and it is why the v2 headline of +452 was rejected. Both columns are reported side by side, so
+nobody has to take my word for which one is the gain.
+
+**CI is red on this branch and the reason is R15 working as designed:** four tests fail in a
+tracked-files-only checkout because `all_controls.json` and several per-framework artifacts are
+deliberately uncommitted. Task 15 owns the merge and closes it.
