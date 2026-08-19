@@ -1504,3 +1504,48 @@ untouched rather than editing a criterion to match its own run.
 eleven tasks' worth of parser output. That is R15 working as intended, and Task 15 owns the merge.
 `validate_all.py` still exits non-zero: enisa's 28 errors cleared, 11 pre-existing **etsi** errors
 remain, which is Task 13. The dispatch's "39 enisa errors" was really 28 enisa plus 11 etsi.
+
+### ST 5.7.0 "import break": REFUTED. My second wrong hypothesis in a row, same root cause.
+`1cd317b`. The agent built an isolated scratch venv on the exact training pin (ST 5.7.0,
+torch 2.13.0, transformers 4.57.6) and **all three "broken" imports succeed.** 5.7.0 installs
+`_DeprecatedModuleFinder` on `sys.meta_path` (`sentence_transformers/util/deprecated_import.py`),
+whose `DEPRECATED_MODULE_PATHS` aliases `.sampler`, `.losses` and `.training_args`. They emit a
+`DeprecationWarning` and resolve, and there is no `filterwarnings=error` anywhere, so nothing is
+fatal. **No pod would have died at import.**
+
+I listed the wheel and concluded from absent files that imports would fail. The listing was right;
+the conclusion was not.
+
+### THE PATTERN IN MY OWN WORK, NAMED
+Three times now I have inferred RUNTIME behaviour from a STATIC artifact and been wrong:
+1. R14 blast radius, passes 1 and 2: inferred a clobber from the SHAPE of stored JSON. Flagged 362
+   then 377 controls. Both signatures matched the CORRECT behaviour. Real answer, from running a
+   parser and comparing emitted against stored: zero.
+2. R14's premise: read a TRUNCATED description as though it were the source. Same error the brief
+   had made, committed inside my correction of it.
+3. This: read a wheel NAMELIST as though it were import behaviour, missing a meta_path alias.
+Every time, the correction came from an agent RUNNING the thing. A file listing is evidence about
+files. An import is evidence about imports. **When the claim is about behaviour, execute it.**
+
+### What actually landed, and it is worth having
+- `tract/training/st_compat.py`: an ordered `(module, attribute)` ladder per symbol, raising with
+  the installed version and every path tried. It catches `ModuleNotFoundError` only when the missing
+  module is the candidate or its parent, so a missing torch cannot masquerade as a layout change.
+- Verified compatibility matrix, read from wheels and confirmed by importing real 3.2.0 and 5.7.0:
+```
+                              3.2.0            5.3.0            5.7.0
+DefaultBatchSampler           st.sampler       st.sampler       st.base.sampler
+MultipleNegativesRankingLoss  st.losses        st.losses        st.sentence_transformer.losses
+BatchSamplers                 st.training_args st.training_args st.sentence_transformer.training_args
+```
+- `_preflight_training_stack()` is the FIRST statement in `provision()`, ahead of the WandB check.
+  It reads the pin from `requirements-train.txt`, which is what the pods install, and refuses a
+  version absent from `TESTED_VERSIONS`. Fail-closed before any pod bills.
+- CI catches the class at two levels now, and the `training-stack` import step covers
+  `scripts/phase1b/alpha.py`, which no test imported at all.
+- 45 tests, suite 1,907 -> 1,951. 13 mutations, 12 killed locally; **M7 survived locally and was
+  killed under real 5.7.0**, because both loss-import orderings are indistinguishable under 3.2.0.
+  That is precisely the gap the `training-stack` job exists to close.
+
+The agent's own framing, which I am adopting: this buys future-proofing and a spend gate, **not a
+rescued campaign.** Reading the commit as "fixed a crash" would be wrong.
