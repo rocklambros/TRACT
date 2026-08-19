@@ -1332,3 +1332,34 @@ PDF parsers (ENISA, ETSI) will be measured on the version CI uses.
 **Operational note:** a full-suite count taken while an agent is mid-write is not a measurement. I
 read 14 failures and the 14th was `test_the_gate_fires_on_a_planted_quotation` caught between
 writes; the same file passes 13 of 13 moments later.
+
+### R18 LANDED for DSOMM. `4931997` redaction, `a9602e9` gate, `62378b7` report.
+Fixture 11,472 -> **21,158** fingerprints: dsomm 10,374, etsi 10,778, iso_27001 706. `csa_ccm` and
+`csa_aicm` recorded as DEFERRED in the fixture itself, with the reason, so the hold is visible
+rather than an absence. Gate file 8 -> 15 tests, whole suite 1,814 passing, mypy clean.
+Residual swept at n=7, n=9 AND n=12: **zero for DSOMM anywhere in the tree, zero in the
+documentation channel at every width.** The six remaining CCM hits are all csa_aicm-derived and are
+exactly the deferral.
+
+**Three corrections to my instructions, all mine to own.**
+1. I said "six files, there may be more". Right count, wrong DEPTH. The same six carried four
+   further DSOMM fragments at 7 to 9 words, under the 12-word window. A clean n=12 re-scan would
+   have declared victory with them still in git. Sweeping at multiple widths was the agent's idea,
+   not mine.
+2. I described one CCM control as partially quoted. It was quoted in FULL, at 13 words, across four
+   documents. That is precisely why "raise NGRAM_WORDS to clear a hit" is forbidden: n=14 would
+   have cleared it by not looking.
+3. **The ledger's own hit was not a fixture block. It was a sample I quoted inside prose describing
+   the AICM exposure.** Describing the leak reproduced it. I did that while writing up the very
+   finding, which means the failure mode survives knowing about it, and the only defence is the
+   gate rather than care. This entry names no source text for that reason.
+
+**Tenth mutation finding, and it is the two-guards-one-path shape again.** M7 blanked the deferral
+list and SURVIVED the test written to catch it: `load()` already raises on a deferral mismatch, so
+an assertion against the loaded object could never fail. Split into a raw-JSON check plus a direct
+loader test, both now independently reachable. The agent also fixed the pre-existing hand-rolled ISO
+row parse I flagged, replacing it with the generator's own extractors, and added an n-gram-count
+assertion so a narrowing extractor cannot silently lose coverage.
+
+The tracked-file and gitignore tests widened from 2 frameworks to all 4 overlay members, so the
+structural checks no longer lag the tier.
