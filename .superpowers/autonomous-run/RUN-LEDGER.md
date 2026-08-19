@@ -981,3 +981,43 @@ match on them.
    mutant. Caught only because a failure list contained five tests it had no business touching.
    Every mutation harness must restore from a pristine on-disk snapshot before AND after each
    mutation, and run in the background rather than against the tool timeout.
+
+### Task 5 (OWASP Top 10 2021): `562ba9b`. 1,615 passing. 19 mutations, 19 killed.
+```
+top10  links 17  by_title 17  by_id 0  unresolved 0  anchors 10  l/a 1.70
+       truncated 17  wrong 0  hubs 16  rate 1.0000
+```
+Before state was 0 of 17 resolved: the OpenCRE stub's description WAS its own title, so
+`ProseIndex` skipped it entirely. Not a weaker anchor, no anchor.
+
+**Fourth consecutive task to find a false `[measured]` claim in its brief, and this one is a new
+failure mode.** The brief stated descriptions run 581 to 1,998. They run 582 to 2,944.
+**1,998 is A02 AFTER truncation, so the brief measured its own clobbered output and published it as
+a source measurement.** Same defect on the entry range: the brief's 2,263 minimum is A02's
+Description, not an entry. The minimum of the brief's own `[measured]` range WAS the bug.
+Also: the brief's fixture used a different French filename, so it could not catch a stem-only
+member filter. The real archive holds **twelve** identically-named
+`A01_2021-Broken_Access_Control.md` members, and a stem-only filter reads Arabic.
+
+### Ruling R13 — strip the Factors table from the anchor
+I measured the implementer's concern rather than accepting its ~900-char estimate, and the shape is
+more lopsided than reported:
+- **A01 and A03 share 364 BYTE-IDENTICAL leading characters.** First divergence is at char 364,
+  inside the numbers row. The entire table header and its markdown pipe rule are common text.
+- Eight of ten anchors reach security prose at char 429 to 436.
+- A02 and A04 differ in kind: `full_text` opens with prose at char 0 and carries no `##` heading.
+
+Eight anchors spend ~20% of a 2,150-char budget on a CWE-count table whose first 364 characters are
+the same string in every one. For a bi-encoder that is not wasted budget, it is shared
+NON-DISCRIMINATIVE signal pulling the ten categories' embeddings toward each other, which inverts
+what a hub-assignment anchor is for. Strip it structurally on the `## Factors` heading, emit a
+repair audit carrying before and after text rather than lengths, and do NOT mark it synthetic
+because removing boilerplate is not assembling text.
+
+### Ruling R14 — the parser owns its anchor, not a two-character margin
+Nothing is clobbered today only because A02 sits at description 1,998 and A04 at 1,988 against
+`DESCRIPTION_MAX_LENGTH` 2,000. Inside the limit by single digits. That is a coincidence, not a
+design: three more characters upstream silently converts A02's anchor from the entry to a truncated
+Description, with no test failing and no log line. Pre-truncate so `_sanitize_control` cannot fire,
+and assert no description reaches the limit. Contract Fact 2 exists because that function rewrites
+`full_text` behind the parser's back; surviving it by two characters is luck, not compliance.
