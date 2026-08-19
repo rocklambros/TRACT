@@ -195,3 +195,20 @@ as a cheap probe to run, not as a blocker. Demoted to the residual list with a c
   every publish; the erratum lives only in `README.md`. The next publish overwrites the correction and
   destroys the `#erratum-2026-08-15` anchor the README links to. Held only by the standing
   republication ban. **Fix the generators before any publish, not after.**
+
+---
+
+## Post-adjudication verifications by the orchestrator
+
+- **V10. The 63 dangling published rows are exact.** `build/dataset/crosswalk_v1.0.jsonl` holds
+  5,238 rows; **56** carry an `enisa:...Table 3:/Table 5:` control_id and **7** carry a retired
+  `csa_ccm:...IVS-0*` id. Both id shapes are dissolved by the rebuild. Governance finding #8 stands
+  as measured.
+- **V11. The erratum anchor was live-broken.** `README.md:48` links to
+  `#erratum-2026-08-15` on the model card; `tract/publish/model_card.py` contained **no** erratum
+  text, so the next `publish-hf` would have regenerated the card without it. Fixed at `a82680b`
+  with four tests, one of which pins the exact heading string that produces the anchor.
+- **V12. The false review claim was in the generator, not the artifact.** `dataset/card.py` headline
+  called the whole 5,238-row crosswalk human-reviewed. Fixed at `5fa2c75`; all four new tests were
+  verified to FAIL against the old wording before being accepted, so they are not vacuous
+  (ledger lesson 9 applied to my own fix).
