@@ -24,7 +24,9 @@ from pathlib import Path
 
 from scripts.fetch_frameworks import MANIFEST_PATH, SOURCES
 from tract.config import (
+    CONDITIONAL_FRAMEWORK_IDS,
     FRAMEWORK_LICENSES,
+    OVERLAY_FRAMEWORK_IDS,
     PROCESSED_FRAMEWORKS_DIR,
     RESTRICTED_FRAMEWORK_IDS,
     UNDETERMINED_LICENSE,
@@ -103,6 +105,91 @@ class TestEveryFrameworkHasALicence:
                 f"{framework_id} is restricted on the strength of a licence "
                 f"recorded as {UNDETERMINED_LICENSE}. Restricting a source "
                 f"whose terms nobody read is a guess in the other direction."
+            )
+
+
+class TestLicenceTiering:
+    """Two tiers, because a binary set modelled the wrong property.
+
+    RESTRICTED means "must never appear in git in any form" and drives the
+    fingerprint gate. CONDITIONAL means "reproduction is permitted on terms a
+    CC0 grant cannot carry", which is a different fact with the same routing
+    consequence. The old single set treated seven frameworks whose licences
+    permit reproduction on conditions as unconditionally publishable.
+    """
+
+    # Copyleft frameworks whose processed files were tracked before the tiers
+    # existed. Moving them to the overlay now would pull 691 curated links out
+    # of the tracked corpus (asvs 277, owasp_cheat_sheets 391,
+    # owasp_llm_top10 13, owasp_ml_top10 10) and shift every published metric,
+    # so it is an owner decision with its own change record rather than a side
+    # effect of adding the tiers. Naming them here keeps the exposure in
+    # tracked code: a newly added copyleft framework is absent from this list
+    # and fails the test below.
+    PRE_EXISTING_EXPOSURE = frozenset({
+        "asvs",
+        "owasp_agentic_top10",
+        "owasp_cheat_sheets",
+        "owasp_dsgai",
+        "owasp_llm_top10",
+        "owasp_llm_top10_2026",
+        "owasp_ml_top10",
+    })
+
+    def test_the_two_tiers_do_not_overlap(self) -> None:
+        assert not (RESTRICTED_FRAMEWORK_IDS & CONDITIONAL_FRAMEWORK_IDS)
+        assert OVERLAY_FRAMEWORK_IDS == (
+            RESTRICTED_FRAMEWORK_IDS | CONDITIONAL_FRAMEWORK_IDS
+        )
+
+    def test_every_copyleft_framework_is_conditional(self) -> None:
+        """The tier is derived from the recorded licence, not from a hand list.
+
+        The binary set this replaces modelled licence STATUS and not licence
+        CLASS, so seven frameworks whose licences permit reproduction on
+        conditions were treated as unconditionally publishable. Deriving the
+        assertion from FRAMEWORK_LICENSES means a newly added copyleft source
+        fails this test rather than silently joining the tracked corpus.
+        """
+        copyleft = {
+            framework_id
+            for framework_id, licence in FRAMEWORK_LICENSES.items()
+            if "GPL" in licence or "CC-BY-SA" in licence
+        }
+        missing = copyleft - OVERLAY_FRAMEWORK_IDS - self.PRE_EXISTING_EXPOSURE
+        assert not missing, (
+            f"{sorted(missing)} carry a copyleft or share-alike licence and are "
+            f"not routed to the overlay. A CC0 repository cannot carry their "
+            f"terms. Add them to CONDITIONAL_FRAMEWORK_IDS, or record them in "
+            f"PRE_EXISTING_EXPOSURE with the reason and an owner."
+        )
+
+    def test_the_recorded_exposure_names_only_copyleft_frameworks(self) -> None:
+        """A stale name in the exposure list would hide a real routing gap."""
+        copyleft = {
+            framework_id
+            for framework_id, licence in FRAMEWORK_LICENSES.items()
+            if "GPL" in licence or "CC-BY-SA" in licence
+        }
+        stale = sorted(self.PRE_EXISTING_EXPOSURE - copyleft)
+        assert not stale, (
+            f"{stale} are recorded as pre-existing copyleft exposure and carry "
+            f"no copyleft licence. Remove them: an inflated exposure list can "
+            f"absorb a genuine routing gap."
+        )
+
+    def test_every_overlay_framework_has_a_gitignore_line(self) -> None:
+        ignored = {
+            line.strip()
+            for line in (
+                REPO_ROOT / ".gitignore"
+            ).read_text(encoding="utf-8").splitlines()
+        }
+        for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):
+            expected = f"data/processed/frameworks/{framework_id}.json"
+            assert expected in ignored, (
+                f"{framework_id} routes to the overlay but {expected} is not in "
+                f".gitignore, so its text would be tracked."
             )
 
 

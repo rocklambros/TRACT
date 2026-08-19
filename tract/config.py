@@ -83,6 +83,30 @@ CONTROL_ELISION_MARKER: Final[str] = "[...]"
 # is recorded in NOTICE and in the run ledger; do not reverse it here.
 RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"etsi", "iso_27001"})
 
+# Reproduction is permitted, but on terms a CC0 grant cannot carry. CC0 is not a
+# disclaimer; it is an affirmative assertion that the publisher holds the rights
+# and waives them, which is false for GPL-3.0 and for share-alike text. These
+# frameworks' processed files route to the gitignored overlay exactly as the
+# restricted ones do, and their ASSIGNMENTS stay tracked and published, because
+# a mapping is a fact about two documents rather than a reproduction of either.
+# Training reads the overlay, so this costs zero anchors. See rulings R4 to R6.
+CONDITIONAL_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "dsomm",                     # GPL-3.0-only
+    "biml",                      # CC-BY-SA-3.0 AND CC-BY-SA-4.0
+    "samm",                      # CC-BY-SA-4.0
+    "wstg",                      # CC-BY-SA-4.0
+    "owasp_top10_2021",          # CC-BY-SA-4.0
+    "owasp_proactive_controls",  # CC-BY-SA-4.0
+    "csa_ccm",                   # all rights reserved, no redistribution
+})
+
+# What routes to the overlay. RESTRICTED_FRAMEWORK_IDS keeps its narrower
+# meaning everywhere else: the fingerprint gate and the "must never appear in
+# git in any form" rule.
+OVERLAY_FRAMEWORK_IDS: Final[frozenset[str]] = (
+    RESTRICTED_FRAMEWORK_IDS | CONDITIONAL_FRAMEWORK_IDS
+)
+
 # ── Pretraining-contamination holdout ─────────────────────────────────────
 # Frameworks parsed into data/processed/frameworks/ that must never reach a
 # training roster, a LOFO fold roster, the curated link file, or the merged

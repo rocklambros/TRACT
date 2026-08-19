@@ -61,6 +61,18 @@ venv/
 # terms and tests/test_licensed_text_not_tracked.py for the enforcement.
 data/processed/frameworks/etsi.json
 data/processed/frameworks/iso_27001.json
+# One line per member of tract.config.CONDITIONAL_FRAMEWORK_IDS. These
+# publishers permit reproduction on terms a CC0 grant cannot carry: GPL-3.0 and
+# CC BY-SA both require the copy to keep the licence, and CC0 asserts the
+# opposite. Their assignments stay tracked and published, because a mapping is a
+# fact about two documents rather than a reproduction of either.
+data/processed/frameworks/dsomm.json
+data/processed/frameworks/biml.json
+data/processed/frameworks/samm.json
+data/processed/frameworks/wstg.json
+data/processed/frameworks/owasp_top10_2021.json
+data/processed/frameworks/owasp_proactive_controls.json
+data/processed/frameworks/csa_ccm.json
 data/processed/licensed/
 # Repair audit records quote source text verbatim on both sides of a move, so
 # a restricted framework's audit file carries the same licensed prose the two
