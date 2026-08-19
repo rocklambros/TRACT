@@ -33,7 +33,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from tract.config import FRAMEWORK_LICENSES, PROJECT_ROOT, UNDETERMINED_LICENSE
+from tract.config import (
+    FRAMEWORK_LICENSES,
+    OVERLAY_FRAMEWORK_IDS,
+    PROJECT_ROOT,
+    UNDETERMINED_LICENSE,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +138,40 @@ def withheld_control_text(framework_id: str) -> str:
         f"mapping are unaffected. See {NOTICE_FILENAME} at "
         f"{SOURCE_REPOSITORY_URL}.]"
     )
+
+
+def exportable_description(framework_id: str, description: str) -> str:
+    """The control text this framework's licence permits TRACT to hand over.
+
+    Returns the description unchanged for a framework TRACT may redistribute,
+    and `withheld_control_text` for one it may not.
+
+    Lives here rather than in either exporter because there are two of them and
+    they were not the same. `tract export-canonical` gained a licence filter and
+    `tract export --opencre` did not, so the CSV path kept writing a populated
+    `<Standard>|description` column for every framework it was given, into a
+    default output directory at the repository root that was not gitignored. One
+    function, two call sites, so the next exporter added inherits the filter
+    rather than repeating the omission.
+
+    Keyed on the framework rather than on the text, deliberately. A check that
+    tried to judge "is this string too much of the standard" would need a
+    threshold, and a threshold is the kind of parameter that gets raised until
+    the gate stops firing.
+
+    Raises:
+        ValueError: framework_id is empty. A row with no framework cannot be
+            checked against any tier, and defaulting it to "publishable" is
+            how an unfiltered source would reach a third-party channel.
+    """
+    if not framework_id:
+        raise ValueError(
+            "cannot decide export licensing for a control with no "
+            "framework_id. Every exported control must name its framework."
+        )
+    if framework_id not in OVERLAY_FRAMEWORK_IDS:
+        return description
+    return withheld_control_text(framework_id)
 
 
 def copy_licensing_files(staging_dir: Path) -> None:

@@ -27,7 +27,10 @@ from typing import Any, Callable
 
 from tract.config import OVERLAY_FRAMEWORK_IDS
 from tract.crosswalk.schema import get_connection
-from tract.licensing import withheld_control_text
+# Re-exported at this module's old import path on purpose. The implementation
+# moved to tract.licensing so `tract export --opencre` could share it instead
+# of growing a second copy that drifts.
+from tract.licensing import exportable_description
 from tract.export.canonical_schema import (
     CanonicalControl,
     Changeset,
@@ -100,32 +103,6 @@ def _query_canonical_assignments(
         return [dict(r) for r in rows]
     finally:
         conn.close()
-
-
-def exportable_description(framework_id: str, description: str) -> str:
-    """The control text this framework's licence permits TRACT to hand over.
-
-    Returns the description unchanged for a framework TRACT may redistribute,
-    and a standing sentence naming the licence for one it may not.
-
-    Keyed on the framework rather than on the text, deliberately. A check that
-    tried to judge "is this string too much of the standard" would need a
-    threshold, and a threshold is the kind of parameter that gets raised until
-    the gate stops firing.
-
-    Raises:
-        ValueError: framework_id is empty. A row with no framework cannot be
-            checked against any tier, and defaulting it to "publishable" is
-            how an unfiltered source would reach an RFC.
-    """
-    if not framework_id:
-        raise ValueError(
-            "cannot decide export licensing for a control with no "
-            "framework_id. Every canonical control must name its framework."
-        )
-    if framework_id not in OVERLAY_FRAMEWORK_IDS:
-        return description
-    return withheld_control_text(framework_id)
 
 
 def build_snapshot(

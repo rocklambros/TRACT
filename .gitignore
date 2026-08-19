@@ -88,6 +88,16 @@ data/processed/repair_audit/
 # tract/export/canonical.py withholds the text itself. See
 # tests/test_canonical_export.py.
 canonical_export/
+# The same defect in the sibling path. `tract export --opencre` writes a
+# `<Standard>|description` column holding the publisher's own control statement,
+# and its default output directory is ./opencre_export at the repository root.
+# This line stops the NEXT run's output from being staged. It does not untrack
+# the seven files already in git: those were committed before the filter
+# existed, `git rm` on them would move published metrics and un-publish
+# nothing, and the framework they expose is an open owner question recorded in
+# NOTICE. tract/export/opencre_csv.py withholds the text itself, which is the
+# half of the fix that reaches OpenCRE's importer.
+opencre_export/
 
 # Claude-specific working documentation. Analyses, runbooks and summaries that
 # support the work without being part of it. Untracked on purpose.

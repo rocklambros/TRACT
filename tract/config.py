@@ -609,6 +609,10 @@ PHASE5_OPENCRE_STALENESS_URL: Final[str] = "https://opencre.org/rest/v1/root_cre
 PHASE5_OPENCRE_STALENESS_TIMEOUT_S: Final[int] = 30
 PHASE5_GROUND_TRUTH_PROVENANCE: Final[str] = "ground_truth_T1-AI"
 PHASE5_CANONICAL_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "canonical_export"
+# Default output of `tract export --opencre`. Named here rather than repeated
+# as "./opencre_export" at two CLI call sites, so the gitignore gate and the
+# CLI cannot disagree about which directory has to be ignored.
+PHASE5_OPENCRE_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "opencre_export"
 
 # ── Phase 2B: Bridge Analysis ─────────────────────────────────────────
 

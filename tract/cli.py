@@ -53,6 +53,7 @@ from tract.config import (
     PHASE3_DATASET_REPO_ID,
     PHASE3_DATASET_STAGING_DIR,
     PHASE3_REVIEW_OUTPUT_DIR,
+    PHASE5_OPENCRE_EXPORT_DIR,
     PROCESSED_DIR,
     TRACT_MODEL_PINNED_REVISION,
     TRAINING_DIR,
@@ -1058,7 +1059,7 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
     from tract.export.opencre_names import TRACT_TO_OPENCRE_NAME
     from tract.io import atomic_write_json
 
-    output_dir = Path(args.output_dir) if args.output_dir else Path("./opencre_export")
+    output_dir = Path(args.output_dir) if args.output_dir else PHASE5_OPENCRE_EXPORT_DIR
 
     confidence_floor = PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR
     confidence_overrides = dict(PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES)
@@ -1173,7 +1174,7 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
 
 
 def _cmd_export_opencre_proposals(args: argparse.Namespace) -> None:
-    output_dir = Path(args.output_dir) if args.output_dir else Path("./opencre_export")
+    output_dir = Path(args.output_dir) if args.output_dir else PHASE5_OPENCRE_EXPORT_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
 
     from tract.io import load_json
