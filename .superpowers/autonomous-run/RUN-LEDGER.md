@@ -1428,3 +1428,50 @@ Dispatched together at `8520fe0`:
 - the batch-sampler investigation, on the hypothesis that hub-aware temperature sampling has never
   run and may sit under the recorded net-zero fine-tuning result;
 - Task 11, ENISA.
+
+### Batch-sampler investigation: MY HYPOTHESIS WAS REFUTED. `3afd5e0`.
+I proposed that `batch_sampler=HubAwareTemperatureSampler` passes a class where an enum is expected,
+so the sampler never runs, and that this might sit under the net-zero fine-tuning result. **Wrong.**
+Passing the class is the DOCUMENTED sentence-transformers API:
+`trainer.py:673` (5.3.0) does `if inspect.isclass(...) and issubclass(..., DefaultBatchSampler):
+return self.args.batch_sampler(dataset, **kwargs)`.
+The agent drove the real `get_batch_sampler` with a stub trainer and no model: the class arm returned
+a `HubAwareTemperatureSampler` whose own `__iter__` executed and emitted 5 collision-free batches,
+while the enum arm returned `DefaultBatchSampler` and never called it. **Hub-aware sampling is not a
+candidate cause of the net-zero result.** I asked to be told if I was wrong and I was told.
+
+### I also over-called "CI is red". It was green.
+A CI-identical venv (`requirements-lint.txt` only) reports mypy `Success` before AND after. The six
+errors appear only on a machine carrying the `phase0` extra, where mypy checks TRAINING code against
+the SERVING pin (ST 3.2.0). `ignore_missing_imports` applies only when an import is actually missing,
+so **the gate's verdict depends on which optional packages happen to be installed.** That is the real
+structural defect, and it is worse than a red job: the same commit type-checks differently on
+different machines. The six errors are fixed anyway and now clear in both environments.
+
+### GPU-SPEND BLOCKER, found by that agent and verified by me against the published wheel
+`requirements-train.txt` pins `sentence-transformers==5.7.0`. That release REORGANISED the package.
+I downloaded the 5.7.0 wheel and listed it rather than trusting the report:
+```
+top level of sentence_transformers/ in 5.7.0:
+  __init__.py  backend  base  cross_encoder  py.typed  sentence_transformer  sparse_encoder  util
+```
+No `sampler`, no `losses`, no `training_args`. They moved:
+```
+sampler        -> sentence_transformers/base/sampler.py
+training_args  -> sentence_transformers/base/training_args.py  (+ per-encoder variants)
+losses         -> sentence_transformers/base/losses/          (+ per-encoder variants)
+top-level __init__ re-exports DefaultBatchSampler, but NOT MultipleNegativesRankingLoss or BatchSamplers
+```
+Against the current imports:
+```
+tract/training/data.py:20    from sentence_transformers.sampler import DefaultBatchSampler
+tract/training/loop.py:24    from sentence_transformers.losses import MultipleNegativesRankingLoss
+tract/training/loop.py:25    from sentence_transformers.training_args import BatchSamplers
+scripts/phase1b/alpha.py:28  from sentence_transformers.losses import MultipleNegativesRankingLoss
+```
+All four raise `ModuleNotFoundError` under the version the training stack installs. **The next
+RunPod run dies at import, after the pod is provisioned and billing.** Never caught because the
+`training-stack` CI job is new on this unpushed branch and has never executed.
+
+Three ST versions are in play: 3.2.0 (serving, `requirements-ml.txt`), 5.3.0 (what the agent tested
+under), 5.7.0 (training, `requirements-train.txt`). This is the gate before any GPU spend.
