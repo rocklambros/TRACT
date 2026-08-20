@@ -14,6 +14,28 @@ results/*
 # decision to take deliberately, with a header saying what they are.
 results/ceiling_study/*LLM_PROXY*
 results/ceiling_study/answers_llm_proxy.json
+# `results/*` above also excluded results/phase1b, which is where the LOFO
+# orchestrator writes and where runpod_parallel's `collect` rsyncs a fleet's
+# output. Forty-five fold results were tracked before that rule landed, so the
+# breakage was invisible: `git status` stayed clean while every NEW fold result
+# a run produced was silently unstageable. A run on a rented fleet would have
+# reached the end with its evidence on disk and nothing to push.
+#
+# Allowlist rather than denylist. The directory holds 2.2 GB of optimizer state
+# and safetensors against a few MB of JSON, so naming what to keep is the safe
+# direction: a new binary artifact type defaults to excluded instead of landing
+# in git.
+!results/phase1b/
+results/phase1b/**
+!results/phase1b/**/
+!results/phase1b/**/*.json
+!results/phase1b/**/*.md
+# Weights last, so these win over the *.json line above. A saved model's
+# tokenizer.json and config.json tracked without the tensors they describe read
+# like a checkpoint that is present when it is not, and the tokenizers alone
+# account for 35 of the 39 MB this section would otherwise expose.
+results/phase1b/**/checkpoint-*/
+results/phase1b/**/model/
 *.db
 __pycache__/
 .env
