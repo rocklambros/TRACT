@@ -35,6 +35,13 @@ docs/session-prompts.md
 hub_proposals/
 .worktrees/
 notebooks/.ipynb_checkpoints/
+# The rule above only covered checkpoints under notebooks/, but the narrative
+# notebook lives at the repository root and Jupyter writes its checkpoints
+# beside it. That directory reached 8.1 MB of stale copies carrying the same
+# outputs as the tracked notebook, which is a second, unscanned path for any
+# text the licensed-text gate is meant to keep out of the tree.
+.ipynb_checkpoints/
+.DS_Store
 # Specs and plans are the design record for a research project whose deliverable
 # is reproducibility, and a criterion that lives in an untracked file can be
 # edited mid-run with no diff. Scratch under docs/superpowers/ stays ignored;
