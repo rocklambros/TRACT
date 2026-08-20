@@ -87,6 +87,15 @@ DOCKER_IMAGE: Final[str] = (
     "bf9f4b90f4a8cd55d902b74003859fd6bce06255bb135acd964a7b71bf31fa05"
 )
 
+# The interpreter inside DOCKER_IMAGE, which is what every pin in
+# requirements-train.txt has to install on. The digest above is
+# 1.1.0-cu1300-torch291-ubuntu2404-cluster, and Ubuntu 24.04's system python3
+# is 3.12; the 2026-08-14 canary confirmed it by tripping PEP 668's
+# externally-managed guard, which is why _bootstrap_pod exports
+# PIP_BREAK_SYSTEM_PACKAGES. Kept beside the digest on purpose: the two facts
+# change together, because the Python is a property of the image.
+POD_PYTHON_VERSION: Final[str] = "3.12"
+
 # Budget controls. The $1000 ceiling was prose; these make it a gate.
 BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "2000"))
 # Refuse a part whose rate would burn the budget faster than the run can finish.
@@ -639,13 +648,28 @@ def _preflight_training_stack() -> None:
     fleet starts billing. That is the most expensive place to learn about an
     import path.
 
-    Two checks, because neither alone is sufficient. The pin check is the one
-    that matters: it reads the version the PODS will install and refuses when
-    that version's package layout was never read from its wheel. The local
-    resolve is a weaker cross-check, because the provisioning host usually
-    carries the serving pin rather than the training pin, so it proves the
-    shim works for the layout it can see and nothing more.
+    Three checks, because none alone is sufficient.
+
+    The INSTALL check runs first and is the widest. Every earlier check here
+    asked a question about imports, and an import check assumes the stack
+    installed. scipy==1.18.0 is the case that proves the gap: it declares
+    `Requires-Python: >=3.12`, so on any 3.11 interpreter `pip install -r
+    requirements-train.txt` dies during resolution, the symbols never exist to
+    be imported, and the fleet is already billing. So resolve the pinned set
+    against the interpreter inside DOCKER_IMAGE, and refuse when any pin's
+    declared floor excludes it.
+
+    The PIN check reads the sentence-transformers version the PODS will install
+    and refuses when that version's package layout was never read from its
+    wheel. The local resolve is a weaker cross-check, because the provisioning
+    host usually carries the serving pin rather than the training pin, so it
+    proves the shim works for the layout it can see and nothing more.
     """
+    from tract import supply_chain
+    from tract.supply_chain import (
+        find_python_incompatible_pins,
+        parse_exact_pins,
+    )
     from tract.training.st_compat import (
         SYMBOL_PATHS,
         installed_version,
@@ -655,6 +679,27 @@ def _preflight_training_stack() -> None:
     )
 
     requirements = PROJECT_ROOT / "requirements-train.txt"
+
+    pins = parse_exact_pins(requirements)
+    # Read off the module rather than imported by name so a test can substitute
+    # a metadata table for the PyPI round trip.
+    violations = find_python_incompatible_pins(
+        pins, POD_PYTHON_VERSION, supply_chain.fetch_requires_python,
+    )
+    if violations:
+        detail = "; ".join(v.message() for v in violations)
+        raise RuntimeError(
+            f"Refusing to provision: {len(violations)} of {len(pins)} pins in "
+            f"{requirements.name} cannot install on the pod interpreter "
+            f"(Python {POD_PYTHON_VERSION} in {DOCKER_IMAGE}). {detail}. The "
+            f"pods install this file after they exist, so shipping it would "
+            f"buy a fleet that dies at dependency resolution."
+        )
+    logger.info(
+        "Training-stack preflight: all %d pins in %s admit Python %s.",
+        len(pins), requirements.name, POD_PYTHON_VERSION,
+    )
+
     pinned = pinned_st_version(requirements)
     require_tested_version(
         pinned, f"Refusing to provision: {requirements.name} pins a stack TRACT "

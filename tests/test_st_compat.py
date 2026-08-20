@@ -329,9 +329,20 @@ class TestProvisioningIsBlocked:
         )
         return tmp_path
 
+    @staticmethod
+    def _no_network_metadata() -> Any:
+        """The preflight now also resolves every pin's Requires-Python against
+        the pod interpreter. These tests are about the layout check, so the
+        metadata comes from here rather than PyPI."""
+        def _fetch(name: str, version: str) -> str:
+            return ">=3.9"
+        return _fetch
+
     def test_untested_pin_stops_provision_before_any_pod_is_created(
         self, tmp_path: Path,
     ) -> None:
+        from tract import supply_chain
+
         from scripts.phase1b import runpod_parallel as rp
 
         def _must_not_run(*args: Any, **kwargs: Any) -> Any:
@@ -340,7 +351,11 @@ class TestProvisioningIsBlocked:
             )
 
         root = self._requirements_root(tmp_path, "6.0.0")
-        with patch.object(rp, "PROJECT_ROOT", root), \
+        with patch.object(
+                    supply_chain, "fetch_requires_python",
+                    self._no_network_metadata(),
+                ), \
+                patch.object(rp, "PROJECT_ROOT", root), \
                 patch.object(rp, "_preflight_tracking", _must_not_run), \
                 patch.object(rp, "select_pod_configs", _must_not_run), \
                 patch.object(rp, "rank_available_gpus", _must_not_run), \
@@ -353,10 +368,16 @@ class TestProvisioningIsBlocked:
         pytest.importorskip(
             "sentence_transformers", reason="the local resolve needs the stack",
         )
+        from tract import supply_chain
+
         from scripts.phase1b import runpod_parallel as rp
 
         root = self._requirements_root(tmp_path, "5.7.0")
-        with patch.object(rp, "PROJECT_ROOT", root):
+        with patch.object(
+                    supply_chain, "fetch_requires_python",
+                    self._no_network_metadata(),
+                ), \
+                patch.object(rp, "PROJECT_ROOT", root):
             assert rp._preflight_training_stack() is None
 
     def test_the_preflight_runs_ahead_of_the_tracking_preflight(

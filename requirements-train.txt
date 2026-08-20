@@ -61,9 +61,23 @@ tokenizers==0.22.2
 # see the save/reload regression test in tests/test_training_loop.py before
 # moving either pin.
 peft==0.20.0
-datasets==3.6.0
+# 5.0.1 closes PYSEC-2026-3716, a path traversal in the folder-based dataset
+# builders. Only Dataset.from_list is used here, which is unchanged across the
+# 3.x -> 5.x boundary, and the pods prove the import in the training-stack job.
+# pyproject.toml's phase0 extra had to widen from `<4` to `<6` to admit it: the
+# pods install the extra first and this file second, so a cap below the pin
+# would have made the second install fight the first.
+datasets==5.0.1
 einops==0.8.2
 
 # --- Calibration ---
-scipy==1.18.0
+# NOT 1.18.0, which declares `Requires-Python: >=3.12`. Two interpreters have
+# to accept this file. The pods run the Debian 3.12 in the digest-pinned
+# ubuntu2404 image, and pyproject.toml declares `requires-python = ">=3.11"`,
+# which requirements-ml.txt shares a scipy pin with. 1.17.1 is the last release
+# whose floor is >=3.11, so it is the one version that satisfies both.
+# scripts/phase1b/runpod_parallel.py:_preflight_training_stack now refuses to
+# provision when any pin here excludes the pod's interpreter, so the next
+# version of this mistake costs a preflight rather than a fleet.
+scipy==1.17.1
 scikit-learn==1.9.0

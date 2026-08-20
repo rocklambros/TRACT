@@ -31,6 +31,10 @@ dependencies = [
     "openpyxl==3.1.5",
     "requests>=2.31",
     "huggingface_hub>=0.24,<1",
+    # tract/supply_chain.py evaluates Requires-Python specifiers with it. It
+    # already arrived transitively through huggingface_hub; declared here
+    # because the code imports it directly and a transitive is not a contract.
+    "packaging>=24.0",
 ]
 
 [project.optional-dependencies]
@@ -53,7 +57,10 @@ phase0 = [
     "numpy>=1.26,<3",
     "scipy>=1.12,<2",
     "scikit-learn>=1.4,<2",
-    "datasets>=2.18,<4",
+    # Widened from <4 to admit the 5.0.1 pin in requirements-train.txt, which
+    # closes the PYSEC-2026-3716 path traversal. The pods install this extra
+    # and then that file, so a cap below the pin makes the two installs fight.
+    "datasets>=2.18,<6",
     "einops>=0.7,<1",
     # Imported by tract/training/loop.py and scripts/phase1b/alpha.py. Absent
     # from this list until now, so the extra never installed a working
