@@ -2129,3 +2129,52 @@ would have anchored three curated links on a redirect.
 
 Neither framework contributes any training links, so there is no training impact. Both are published,
 so the repository should be right before the next publish. Dispatched together.
+
+### TASK 16 COMPLETE. `0a72b4e`. THE SIXTEEN-TASK PLAN IS DONE.
+Local `29 passed, 0 skipped`. **A real `git clone` of the branch, with no `data/raw` and no overlay:
+`26 passed, 3 skipped`**, the three named as dsomm/etsi/iso_27001 with the licence reason. That is
+the Jetson scenario tested for real rather than simulated. Full suite 2,243 local / 2,182 in the
+clone, same nine environmental failures in both.
+
+**The AFTER headline, with both columns, independently derived:**
+```
+links resolved        3,666 -> 4,389 of 4,405
+distinct_anchors      1,450 -> 1,895   +445   NOT the gain
+trainer-visible       1,754 -> 1,906   +152   the gain
+the eleven alone        299 ->   451   +152
+fallback                304 ->    11
+statement-sourced     3,666 -> 4,340 plus 49 parser-assembled
+not-indexed             558 ->    92
+truncated               559 ->   737
+DSOMM supplies +165. etsi -10, wstg -3, nist_ssdf -2, six flat.
+```
+**+152 confirmed independently**, matching the figure I ruled from a different direction. The v2
+headline of +452 is refuted by the instrument v2 was supposed to be gated on.
+
+65 assertions, **34 fail in both directions**; the other 31 are one-directional by design (floor,
+ratchet, emptiness, positive control) and every one has a reachable failure. 29 mutations, 29 killed,
+each run in overlay and no-overlay mode.
+
+**Two mutations survived the first pass and both exposed defects in the agent's OWN tests.** The
+silent-group test compared the skipped set against the set that DEFINED it, so both legs were
+tautological. And the framework census came from a glob, so deleting a processed file removed that
+framework from every `TestSpecAcceptance` check: **the exact hole its own docstring claims to
+close.** Nine false brief claims plus three that would have halted a healthy run.
+
+### Ruling R19 was never implemented, and Task 16 found it again
+I ruled it after Task 9 and only the COUNT-based predicate exists. `nist_ssdf` reports
+**44 wrong anchors of 44 applicable checks**: detector B comparing a 156-character task statement
+against a title field holding a 6-character identifier. R11 covers names that are coarser, R21 added
+names that are finer, and neither ratio can see a mismatch of KIND, because SSDF's ids and names are
+1:1 at 44 each.
+
+A detector firing on 100% of its applicable checks certifies nothing, which is the same defect as
+one that can never fire. Measured earlier across every framework:
+```
+nist_ssdf     name median 156  title median   6   ratio 26.1
+mitre_atlas                27              22         1.2
+asvs                      158             157         1.0   long BOTH, correctly not flagged
+owasp_proactive             2              32         0.1
+```
+ASVS is what proves the rule: long names AND long titles are the same KIND. A threshold of 4.0
+selects exactly nist_ssdf with the next candidate at 1.2.
