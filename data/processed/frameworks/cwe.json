@@ -15991,6 +15991,13 @@
   "framework_id": "cwe",
   "framework_name": "CWE",
   "mapping_unit_level": "weakness",
+  "source_files": [
+    {
+      "bytes": 2021351,
+      "path": "cwec_latest.xml.zip",
+      "sha256": "3976f599e5e5200219a3108bb896d06e2a88fbb293369e1883cb423a5e9d7d50"
+    }
+  ],
   "source_url": "https://cwe.mitre.org",
   "version": "4.20"
 }

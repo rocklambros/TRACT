@@ -5934,9 +5934,9 @@
   "mapping_unit_level": "requirement",
   "source_files": [
     {
-      "bytes": 114056004,
+      "bytes": 114092452,
       "path": "asvs.zip",
-      "sha256": "ec4af168324e1d859040276a3cafff5fb70d31e0b004f200119956023181202e"
+      "sha256": "b6c05edea5b9da9762b997e248da2246d06eee50c86c9864daed2599215585c3"
     }
   ],
   "source_url": "https://github.com/OWASP/ASVS",

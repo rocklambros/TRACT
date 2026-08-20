@@ -51,6 +51,30 @@ TRACKED_CORPUS = PROJECT_ROOT / "data" / "processed" / "all_controls.json"
 LONG = "A control statement long enough to clear every prose bar. " * 4
 
 
+def _corpus_carries_prose(framework_id: str) -> bool:
+    """Whether the corpus THIS checkout reads holds statements for a framework.
+
+    parsers/merge_all_controls.py reduces every OVERLAY_FRAMEWORK_IDS member to
+    identifiers and titles in the tracked corpus and keeps its prose only in
+    the gitignored overlay. ProseIndex indexes a control when its description
+    exceeds its title, so a reduced framework resolves nothing and every
+    per-framework assertion about its join measures the licence tier instead of
+    the parser. Derived from the corpus rather than from a list of framework
+    ids, so the same assertions stay live wherever the overlay is present.
+    """
+    corpus = json.loads(merged_corpus_path().read_text(encoding="utf-8"))
+    for framework in corpus.get("frameworks", []):
+        if str(framework.get("framework_id")) != framework_id:
+            continue
+        return any(
+            str(control.get("full_text") or "").strip()
+            or str(control.get("description") or "").strip()
+            != str(control.get("title") or "").strip()
+            for control in framework.get("controls") or []
+        )
+    return False
+
+
 def _corpus(
     directory: Path,
     controls: list[dict[str, object]],
@@ -798,6 +822,13 @@ class TestDetectorBApplicability:
         """
         if not merged_corpus_path().exists():
             pytest.skip("no merged corpus in this checkout")
+        if not _corpus_carries_prose("dsomm"):
+            # Ruling R10 put DSOMM in OVERLAY_FRAMEWORK_IDS, so the tracked
+            # corpus carries its titles and withholds its statements. Nothing
+            # resolves, the denominator is 0 by construction, and that is the
+            # licence tiering working rather than the detector failing. The
+            # live case is asserted wherever the gitignored overlay exists.
+            pytest.skip("this checkout's corpus withholds DSOMM's prose")
         report = build_corpus_report()
         assert report.by_id("dsomm").wrong_anchor_risk == 0
         assert wrong_anchor_applicable(report)["dsomm"] == 3
@@ -1290,8 +1321,18 @@ class TestUnmovedCorpusGuard:
         summary = CORPUS_EVIDENCE_DIR / "before.json"
         if not summary.exists():
             pytest.skip("no committed baseline in this checkout")
-        report = build_corpus_report()
         recorded = json.loads(summary.read_text(encoding="utf-8"))
+        if not str(merged_corpus_path()).endswith(str(recorded["corpus_path"])):
+            # The baseline was taken from the gitignored overlay and this
+            # checkout reads the tracked corpus, which holds two frameworks
+            # fewer by licence rather than by drift. The counts differ for a
+            # reason the guard is not about, so the premise below is false and
+            # asserting it would report a licence tier as a corpus move.
+            pytest.skip(
+                f"baseline recorded {recorded['corpus_path']} and this checkout "
+                f"reads {merged_corpus_path()}"
+            )
+        report = build_corpus_report()
         if recorded["corpus_sha256"] == report.corpus_sha256:
             pytest.skip("baseline and corpus agree; nothing for the guard to stop")
         assert recorded["corpus_framework_count"] == report.corpus_framework_count

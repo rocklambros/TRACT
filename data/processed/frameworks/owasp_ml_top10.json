@@ -117,9 +117,9 @@
   "mapping_unit_level": "risk",
   "source_files": [
     {
-      "bytes": 53027622,
+      "bytes": 53048090,
       "path": "owasp_ml_top10.zip",
-      "sha256": "045d7146954612463f4163b83cb419902fd8a0513ef98a8ff1a81d117e6b8444"
+      "sha256": "42d169c33943e5c3168a6ee0d9a1f76739cca2f4606dcfba0bd66f1377e04052"
     }
   ],
   "source_url": "https://owasp.org/www-project-machine-learning-security-top-10/",

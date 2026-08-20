@@ -1,0 +1,2749 @@
+{
+  "n_rows": 341,
+  "n_rows_by_framework": {
+    "biml": 1,
+    "csa_ccm": 7,
+    "enisa": 56,
+    "etsi": 2,
+    "nist_800_63": 79,
+    "nist_ssdf": 2,
+    "owasp_proactive_controls": 76,
+    "wstg": 118
+  },
+  "n_rows_by_id_lineage": {
+    "gone": 78,
+    "id_reshaped": 263
+  },
+  "n_rows_never_joined_by_equality": 782,
+  "note": "Published rows in build/dataset/crosswalk_v1.0.jsonl whose control identity the corpus rebuild retires. Measured by differencing: a row counts here only if its section_id named a control in the pre-rebuild corpus and names none in the rebuilt one, so the frameworks that never joined by string equality are excluded rather than blamed on the rebuild. Every row carries review_status='ground_truth'. tract/export/canonical.py filters on review_status='accepted', so diff_snapshots never sees them and no UPDATE_CONTROL or DELETE_CONTROL changeset will mention them. Republication is banned here, so this file is the record until that ban lifts. id_lineage says how recoverable each row is: prefix_only means the identifier survives verbatim once the redundant framework prefix is dropped, id_reshaped means it survives under a folded case or separator, gone means the control has no successor identifier at all.",
+  "rows": [
+    {
+      "control_id": "biml:biml:output:2",
+      "framework_id": "biml",
+      "hub_id": "020-540",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "biml:output:2"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-01",
+      "framework_id": "csa_ccm",
+      "hub_id": "862-452",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-01"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-02",
+      "framework_id": "csa_ccm",
+      "hub_id": "560-224",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-02"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-04",
+      "framework_id": "csa_ccm",
+      "hub_id": "286-500",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-04"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-05",
+      "framework_id": "csa_ccm",
+      "hub_id": "336-512",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-05"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-06",
+      "framework_id": "csa_ccm",
+      "hub_id": "515-021",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-06"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-08",
+      "framework_id": "csa_ccm",
+      "hub_id": "273-600",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-08"
+    },
+    {
+      "control_id": "csa_ccm:csa_ccm:IVS-09",
+      "framework_id": "csa_ccm",
+      "hub_id": "132-146",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "csa_ccm:IVS-09"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "012-625",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "020-540",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "034-540",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "044-202",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "073-507",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "077-772",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "141-385",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "182-732",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "220-870",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "230-318",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "267-786",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "342-781",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "370-877",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "481-710",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "615-663",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "686-110",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "701-654",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 3:",
+      "framework_id": "enisa",
+      "hub_id": "867-642",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 3:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "010-108",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "011-087",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "041-188",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "043-703",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "058-443",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "088-316",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "146-871",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "204-272",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "220-442",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "234-123",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "276-748",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "342-641",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "408-838",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "423-055",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "430-722",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "440-372",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "444-058",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "467-215",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "474-203",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "488-626",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "532-102",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "533-635",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "547-824",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "567-025",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "576-262",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "641-760",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "646-285",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "661-440",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "703-813",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "715-644",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "761-417",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "768-532",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "805-126",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "818-434",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "852-770",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "854-183",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "881-234",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "enisa:enisa:Table 5:",
+      "framework_id": "enisa",
+      "hub_id": "883-173",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "enisa:Table 5:"
+    },
+    {
+      "control_id": "etsi:etsi:data-sanitisation",
+      "framework_id": "etsi",
+      "hub_id": "041-188",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "etsi:data-sanitisation"
+    },
+    {
+      "control_id": "etsi:etsi:retraining",
+      "framework_id": "etsi",
+      "hub_id": "854-183",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "etsi:retraining"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "065-183",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "813-610",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "881-321",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "027-555",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "077-781",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "078-427",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "082-530",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "103-707",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "158-874",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "270-634",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "327-505",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "338-370",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "487-305",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "543-621",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "576-651",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "581-525",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "604-025",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "622-203",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "622-835",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "623-347",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "630-577",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "715-681",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "751-176",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "767-435",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "772-358",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "802-056",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "807-565",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-2-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "101-217",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-2-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-2-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "346-640",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-2-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-2-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "513-845",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-2-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-3-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "102-811",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-3-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-3-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "168-186",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-3-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-3-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "206-254",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-3-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-3-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "342-764",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-3-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-3-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "354-753",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-3-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-3-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "816-631",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-3-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-4-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "404-126",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-4-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-4-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "543-428",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-4-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-4-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "681-823",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-4-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-4-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "802-056",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-4-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-4-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "841-757",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-4-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-5-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "404-126",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-5-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-5-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "543-428",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-5-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-5-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "646-227",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-5-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-5-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "681-823",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-5-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-5-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "802-056",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-5-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-5-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "841-757",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-5-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-7-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "002-801",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-7-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-7-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "287-251",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-7-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-1-7-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "783-255",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-1-7-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "440-361",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-10",
+      "framework_id": "nist_800_63",
+      "hub_id": "354-752",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-10"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "802-056",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-3",
+      "framework_id": "nist_800_63",
+      "hub_id": "076-470",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-3"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-5",
+      "framework_id": "nist_800_63",
+      "hub_id": "333-858",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-5"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-6",
+      "framework_id": "nist_800_63",
+      "hub_id": "558-807",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-6"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-8",
+      "framework_id": "nist_800_63",
+      "hub_id": "524-446",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-8"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:5-2-9",
+      "framework_id": "nist_800_63",
+      "hub_id": "525-361",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:5-2-9"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:6-1-2-3",
+      "framework_id": "nist_800_63",
+      "hub_id": "235-658",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:6-1-2-3"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:6-1-2-3",
+      "framework_id": "nist_800_63",
+      "hub_id": "358-860",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:6-1-2-3"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:6-1-3",
+      "framework_id": "nist_800_63",
+      "hub_id": "553-413",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:6-1-3"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:6-1-4",
+      "framework_id": "nist_800_63",
+      "hub_id": "138-448",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:6-1-4"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "002-630",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "455-358",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "457-165",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "673-736",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "704-530",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "727-043",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "232-034",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "688-081",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "705-182",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "804-220",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-1-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "551-400",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-1-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-2",
+      "framework_id": "nist_800_63",
+      "hub_id": "065-782",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-2"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-2-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "052-821",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-2-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:7-2-1",
+      "framework_id": "nist_800_63",
+      "hub_id": "618-403",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:7-2-1"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:a-3",
+      "framework_id": "nist_800_63",
+      "hub_id": "622-835",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:a-3"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:a-3",
+      "framework_id": "nist_800_63",
+      "hub_id": "623-347",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:a-3"
+    },
+    {
+      "control_id": "nist_800_63:nist_800_63:are-g",
+      "framework_id": "nist_800_63",
+      "hub_id": "342-055",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "nist_800_63:are-g"
+    },
+    {
+      "control_id": "nist_ssdf:nist_ssdf:code-executable-code-and-configuration-as-code-based-on-the-principle-of-least-p",
+      "framework_id": "nist_ssdf",
+      "hub_id": "080-466",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "nist_ssdf:code-executable-code-and-configuration-as-code-based-on-the-principle-of-least-p"
+    },
+    {
+      "control_id": "nist_ssdf:nist_ssdf:should-be-performed-to-find-vulnerabilities-not-identified-by-previous-reviews-a",
+      "framework_id": "nist_ssdf",
+      "hub_id": "570-487",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "nist_ssdf:should-be-performed-to-find-vulnerabilities-not-identified-by-previous-reviews-a"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c1",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "068-102",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c1"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c1",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "820-877",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c1"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c10",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "067-050",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c10",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "118-602",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c10",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "166-151",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c10",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "344-611",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c10",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "612-435",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c10",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "863-636",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c10"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c2",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "715-223",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c2"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c2",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "715-334",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c2"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c2",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "860-084",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c2"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c2",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "863-521",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c2"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c3",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "064-808",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c3"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c3",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "278-413",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c3"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c3",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "330-281",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c3"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c3",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "527-034",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c3"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c3",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "732-873",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c3"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "064-808",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "134-207",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "366-835",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "531-558",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "533-516",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "607-671",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "620-101",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "806-367",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c4",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "857-718",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c4"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "031-447",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "042-550",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "184-284",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "515-021",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "542-445",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "653-242",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "762-616",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c5",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "848-711",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c5"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "002-630",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "027-555",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "065-782",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "078-427",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "082-530",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "158-874",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "270-634",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "342-055",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "457-165",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "543-621",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "576-651",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "581-525",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "622-203",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "688-081",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "704-530",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "705-182",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "715-681",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "727-043",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "767-435",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "804-220",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c6",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "807-565",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c6"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c7",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "117-371",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c7"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c7",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "184-284",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c7"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c7",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "368-633",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c7"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c7",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "801-310",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c7"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c7",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "817-808",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c7"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "032-213",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "122-287",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "227-045",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "340-375",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "504-340",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "742-431",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c8",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "745-045",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c8"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "026-280",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "048-612",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "067-050",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "240-274",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "260-200",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "418-853",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "555-048",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "713-683",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "owasp_proactive_controls:owasp_proactive_controls:c9",
+      "framework_id": "owasp_proactive_controls",
+      "hub_id": "770-361",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "owasp_proactive_controls:c9"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-appe-d",
+      "framework_id": "wstg",
+      "hub_id": "533-516",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-appe-d"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-appe-d",
+      "framework_id": "wstg",
+      "hub_id": "620-101",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-appe-d"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-01",
+      "framework_id": "wstg",
+      "hub_id": "270-634",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-02",
+      "framework_id": "wstg",
+      "hub_id": "235-658",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-03",
+      "framework_id": "wstg",
+      "hub_id": "802-056",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-06",
+      "framework_id": "wstg",
+      "hub_id": "473-758",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-06"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-07",
+      "framework_id": "wstg",
+      "hub_id": "327-505",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-07",
+      "framework_id": "wstg",
+      "hub_id": "455-885",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-07",
+      "framework_id": "wstg",
+      "hub_id": "487-305",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-07",
+      "framework_id": "wstg",
+      "hub_id": "630-577",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-07",
+      "framework_id": "wstg",
+      "hub_id": "751-176",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-08",
+      "framework_id": "wstg",
+      "hub_id": "772-358",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-08"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athn-09",
+      "framework_id": "wstg",
+      "hub_id": "581-525",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athn-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-01",
+      "framework_id": "wstg",
+      "hub_id": "675-168",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-01",
+      "framework_id": "wstg",
+      "hub_id": "737-086",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-01",
+      "framework_id": "wstg",
+      "hub_id": "742-056",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-02",
+      "framework_id": "wstg",
+      "hub_id": "152-725",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-02",
+      "framework_id": "wstg",
+      "hub_id": "524-603",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-02",
+      "framework_id": "wstg",
+      "hub_id": "650-560",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-03",
+      "framework_id": "wstg",
+      "hub_id": "713-683",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-athz-04",
+      "framework_id": "wstg",
+      "hub_id": "304-667",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-athz-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl",
+      "framework_id": "wstg",
+      "hub_id": "630-573",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl",
+      "framework_id": "wstg",
+      "hub_id": "725-682",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl",
+      "framework_id": "wstg",
+      "hub_id": "746-705",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-03",
+      "framework_id": "wstg",
+      "hub_id": "048-612",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-08",
+      "framework_id": "wstg",
+      "hub_id": "314-701",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-08"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-09",
+      "framework_id": "wstg",
+      "hub_id": "112-273",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-09",
+      "framework_id": "wstg",
+      "hub_id": "307-111",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-09",
+      "framework_id": "wstg",
+      "hub_id": "545-243",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-09",
+      "framework_id": "wstg",
+      "hub_id": "660-052",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-busl-09",
+      "framework_id": "wstg",
+      "hub_id": "814-322",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-busl-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-01",
+      "framework_id": "wstg",
+      "hub_id": "065-388",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-01",
+      "framework_id": "wstg",
+      "hub_id": "257-668",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-01",
+      "framework_id": "wstg",
+      "hub_id": "607-671",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-02",
+      "framework_id": "wstg",
+      "hub_id": "317-743",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-02",
+      "framework_id": "wstg",
+      "hub_id": "387-848",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-03",
+      "framework_id": "wstg",
+      "hub_id": "542-445",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-04",
+      "framework_id": "wstg",
+      "hub_id": "232-217",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-05",
+      "framework_id": "wstg",
+      "hub_id": "646-462",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-05"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-07",
+      "framework_id": "wstg",
+      "hub_id": "316-272",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-09",
+      "framework_id": "wstg",
+      "hub_id": "480-071",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-12",
+      "framework_id": "wstg",
+      "hub_id": "046-257",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-12"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-12",
+      "framework_id": "wstg",
+      "hub_id": "455-358",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-12"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-clnt-12",
+      "framework_id": "wstg",
+      "hub_id": "617-524",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-clnt-12"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-02",
+      "framework_id": "wstg",
+      "hub_id": "402-706",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-02",
+      "framework_id": "wstg",
+      "hub_id": "843-841",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-03",
+      "framework_id": "wstg",
+      "hub_id": "615-744",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-04",
+      "framework_id": "wstg",
+      "hub_id": "462-245",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-06",
+      "framework_id": "wstg",
+      "hub_id": "483-715",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-06"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-07",
+      "framework_id": "wstg",
+      "hub_id": "036-147",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-conf-10",
+      "framework_id": "wstg",
+      "hub_id": "336-512",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-conf-10"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-01",
+      "framework_id": "wstg",
+      "hub_id": "248-646",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-01",
+      "framework_id": "wstg",
+      "hub_id": "745-045",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-01",
+      "framework_id": "wstg",
+      "hub_id": "767-701",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-02",
+      "framework_id": "wstg",
+      "hub_id": "036-810",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-03",
+      "framework_id": "wstg",
+      "hub_id": "186-540",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "027-210",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "170-772",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "224-321",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "267-468",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "433-122",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "441-132",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "482-866",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "483-883",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "542-488",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "664-571",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "674-425",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "742-431",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-cryp-04",
+      "framework_id": "wstg",
+      "hub_id": "786-224",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-cryp-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-errh-01",
+      "framework_id": "wstg",
+      "hub_id": "166-151",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-errh-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-errh-02",
+      "framework_id": "wstg",
+      "hub_id": "513-183",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-errh-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-idnt-01",
+      "framework_id": "wstg",
+      "hub_id": "368-633",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-idnt-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-idnt-01",
+      "framework_id": "wstg",
+      "hub_id": "817-808",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-idnt-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-info",
+      "framework_id": "wstg",
+      "hub_id": "743-110",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-info"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-00",
+      "framework_id": "wstg",
+      "hub_id": "031-447",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-00"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-00",
+      "framework_id": "wstg",
+      "hub_id": "538-446",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-00"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-00",
+      "framework_id": "wstg",
+      "hub_id": "653-242",
+      "id_lineage": "gone",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-00"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-01",
+      "framework_id": "wstg",
+      "hub_id": "065-388",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-01",
+      "framework_id": "wstg",
+      "hub_id": "257-668",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-01",
+      "framework_id": "wstg",
+      "hub_id": "366-835",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-02",
+      "framework_id": "wstg",
+      "hub_id": "065-388",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-02",
+      "framework_id": "wstg",
+      "hub_id": "257-668",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-03",
+      "framework_id": "wstg",
+      "hub_id": "532-878",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-04",
+      "framework_id": "wstg",
+      "hub_id": "743-237",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-05",
+      "framework_id": "wstg",
+      "hub_id": "064-808",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-05"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-05",
+      "framework_id": "wstg",
+      "hub_id": "732-873",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-05"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-06",
+      "framework_id": "wstg",
+      "hub_id": "531-558",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-06"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-07",
+      "framework_id": "wstg",
+      "hub_id": "134-207",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-07",
+      "framework_id": "wstg",
+      "hub_id": "611-051",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-07",
+      "framework_id": "wstg",
+      "hub_id": "764-507",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-07"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-09",
+      "framework_id": "wstg",
+      "hub_id": "134-207",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-09"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-10",
+      "framework_id": "wstg",
+      "hub_id": "881-434",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-10"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-11",
+      "framework_id": "wstg",
+      "hub_id": "547-283",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-11"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-11",
+      "framework_id": "wstg",
+      "hub_id": "657-084",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-11"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-12",
+      "framework_id": "wstg",
+      "hub_id": "683-722",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-12"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-12",
+      "framework_id": "wstg",
+      "hub_id": "857-718",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-12"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-13",
+      "framework_id": "wstg",
+      "hub_id": "831-570",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-13"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-inpv-18",
+      "framework_id": "wstg",
+      "hub_id": "422-005",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-inpv-18"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-01",
+      "framework_id": "wstg",
+      "hub_id": "551-054",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-01",
+      "framework_id": "wstg",
+      "hub_id": "582-541",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-01",
+      "framework_id": "wstg",
+      "hub_id": "618-403",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-01",
+      "framework_id": "wstg",
+      "hub_id": "704-530",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-01",
+      "framework_id": "wstg",
+      "hub_id": "727-043",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-01"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-02",
+      "framework_id": "wstg",
+      "hub_id": "232-034",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-02",
+      "framework_id": "wstg",
+      "hub_id": "342-055",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-02",
+      "framework_id": "wstg",
+      "hub_id": "455-358",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-02",
+      "framework_id": "wstg",
+      "hub_id": "688-081",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-02",
+      "framework_id": "wstg",
+      "hub_id": "705-182",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-02",
+      "framework_id": "wstg",
+      "hub_id": "804-220",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-02"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-03",
+      "framework_id": "wstg",
+      "hub_id": "002-630",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-03"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-04",
+      "framework_id": "wstg",
+      "hub_id": "333-888",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-04",
+      "framework_id": "wstg",
+      "hub_id": "402-133",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-04"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-05",
+      "framework_id": "wstg",
+      "hub_id": "060-472",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-05"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-05",
+      "framework_id": "wstg",
+      "hub_id": "464-084",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-05"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-06",
+      "framework_id": "wstg",
+      "hub_id": "238-346",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-06"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-06",
+      "framework_id": "wstg",
+      "hub_id": "457-165",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-06"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-06",
+      "framework_id": "wstg",
+      "hub_id": "673-736",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-06"
+    },
+    {
+      "control_id": "wstg:wstg:wstg-sess-07",
+      "framework_id": "wstg",
+      "hub_id": "065-782",
+      "id_lineage": "id_reshaped",
+      "review_status": "ground_truth",
+      "section_id": "wstg:wstg-sess-07"
+    }
+  ]
+}

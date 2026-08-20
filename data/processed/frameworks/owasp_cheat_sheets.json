@@ -1405,9 +1405,9 @@
   "mapping_unit_level": "cheat_sheet",
   "source_files": [
     {
-      "bytes": 16338045,
+      "bytes": 16362253,
       "path": "cheatsheets.zip",
-      "sha256": "5bcaa82245dc14fc1900c0afe9708396dbc362b533adaf2156f36219d3a98770"
+      "sha256": "f2ede0212f2550c578d9ce65a71185c2c4937528b8496ca1d8e9611ff9e068f3"
     }
   ],
   "source_url": "https://cheatsheetseries.owasp.org",

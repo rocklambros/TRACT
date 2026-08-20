@@ -80,7 +80,7 @@ At training and evaluation, `tract/text_selection.py`:
   9. Markdown and site furniture removed by `strip_markup`, then a second NFC
      normalisation and null-byte strip in `prepare_anchor`.
  10. Stop words removed when the arm calls for it, by
-     `tract/stopwords.py::filter_stopwords` against the 78-word list at
+     `tract/stopwords.py::filter_stopwords` against the 81-word list at
      `data/processed/stopwords.json`. The list is generated from this corpus,
      not borrowed, and the filter deletes matched words in place so identifiers
      and thresholds survive. Text that would be emptied is returned unchanged.

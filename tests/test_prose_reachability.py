@@ -27,6 +27,7 @@ import pytest
 
 from tract.config import (
     OPENCRE_FRAMEWORK_ID_MAP,
+    OVERLAY_FRAMEWORK_IDS,
     PARSERS_DIR,
     RESTRICTED_FRAMEWORK_IDS,
     TRAINING_DIR,
@@ -156,12 +157,36 @@ def test_every_parser_backed_framework_resolves_its_links() -> None:
 
     corpus_path, index = _load_corpus()
     parser_names = _parser_framework_names()
-    present = {
+    frameworks = json.loads(
+        corpus_path.read_text(encoding="utf-8")
+    ).get("frameworks", [])
+    present = {str(framework.get("framework_id")) for framework in frameworks}
+
+    # A framework whose prose this corpus withholds is in the same position as
+    # one it omits: ProseIndex indexes a control only when its description
+    # exceeds its title, so an overlay member reduced to titles can resolve
+    # nothing and 0/214 is the correct answer rather than a broken join. This
+    # arrived with rulings R4 and R10, which moved csa_ccm and dsomm into
+    # OVERLAY_FRAMEWORK_IDS, so the tracked corpus carries them without prose
+    # while the gitignored overlay carries them with it. Derived from the
+    # corpus rather than listed, so the same test still demands resolution
+    # wherever the overlay is present.
+    withheld = {
         str(framework.get("framework_id"))
-        for framework in json.loads(
-            corpus_path.read_text(encoding="utf-8")
-        ).get("frameworks", [])
+        for framework in frameworks
+        if str(framework.get("framework_id")) in OVERLAY_FRAMEWORK_IDS
+        and not any(
+            str(control.get("full_text") or "").strip()
+            or str(control.get("description") or "").strip()
+            != str(control.get("title") or "").strip()
+            for control in framework.get("controls") or []
+        )
     }
+    if withheld:
+        logger.info(
+            "prose withheld from %s for %s, so their links cannot resolve here",
+            corpus_path.name, sorted(withheld),
+        )
 
     totals: dict[str, int] = {}
     resolved: dict[str, int] = {}
@@ -174,7 +199,7 @@ def test_every_parser_backed_framework_resolves_its_links() -> None:
             framework_id = OPENCRE_FRAMEWORK_ID_MAP.get(standard_name)
             if framework_id is None or framework_id not in parser_names:
                 continue
-            if framework_id not in present:
+            if framework_id not in present or framework_id in withheld:
                 continue
             totals[framework_id] = totals.get(framework_id, 0) + 1
             if index.lookup(

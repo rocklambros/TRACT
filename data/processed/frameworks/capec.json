@@ -6147,6 +6147,13 @@
   "framework_id": "capec",
   "framework_name": "CAPEC",
   "mapping_unit_level": "attack_pattern",
+  "source_files": [
+    {
+      "bytes": 3849998,
+      "path": "capec_latest.xml",
+      "sha256": "70279a2dff0cb0ad79e546adb07828335a704ad5210e047e09e986172fc9e34d"
+    }
+  ],
   "source_url": "https://capec.mitre.org",
   "version": "3.9"
 }
