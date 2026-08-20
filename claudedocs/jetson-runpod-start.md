@@ -3,6 +3,16 @@
 Written on the Mac, 2026-08-20, at branch `semantic-rebuild` / PR #62.
 Read this before provisioning anything.
 
+Two things happen before a pod exists, and both are further down the page than
+their order suggests:
+
+1. **Four owner decisions get answered and committed.** See "Owner decisions:
+   answer these before provisioning". Two of them change what the campaign
+   does, and one of them decides which branch the results land on.
+2. **P2 and P3 from the premortem get fixed.** Both are single-function
+   changes. P2 can abandon four healthy folds and leave five GPUs billing. P3
+   can destroy a paid-for result permanently.
+
 ## The prompt
 
 Paste this into a fresh Claude Code session on the Jetson, from the repository
@@ -15,17 +25,24 @@ root:
 >
 > Work in this order and do not skip ahead:
 >
-> 1. Verify the environment against the "Before you provision" checklist in the
->    briefing. Report each item as pass or fail with the command output that
->    settled it. Stop if any fails.
-> 2. Run `/adversarial-premortem-complete` against
->    `scripts/phase1b/runpod_parallel.py` and the Campaign 2 design. This has
->    never been done and no GPU money is spent until it is. Fix what it finds
->    at Plausible or above, then tell me what you fixed and what you parked.
-> 3. Run the campaign per `results/phase1b/CAMPAIGN2.md`. Five arms on
+> 1. Get the four owner decisions answered. They are in the briefing under
+>    "Owner decisions: answer these before provisioning". Ask me all four as
+>    multiple choice in one message, write my answers into the decision record
+>    at the bottom of that section, and commit. Do not create a pod until that
+>    commit exists.
+> 2. Verify the environment against the "Before you provision" checklist.
+>    Report each item as pass or fail with the command output that settled it.
+>    Stop if any fails.
+> 3. Read "Adversarial premortem: the orchestrator". Confirm or refute P1
+>    through P6 on this machine by running the code, not by reading it. Fix P2
+>    and P3 before provisioning and apply the P1 and P5 mitigations. Then run
+>    your own `/adversarial-premortem-complete` pass over
+>    `scripts/phase1b/runpod_parallel.py`, because mine was one reviewer and
+>    the skill uses six. Tell me what you fixed and what you parked.
+> 4. Run the campaign per `results/phase1b/CAMPAIGN2.md`. Five arms on
 >    validation, then the test set once with the winner. All five arms re-run.
 >    Do not reuse the A1 or A2 results already in the repository.
-> 4. After each `collect`, confirm `git status` shows the new fold results,
+> 5. After each `collect`, confirm `git status` shows the new fold results,
 >    run the licensed-text gate, commit, and push.
 >
 > Rules that hold the whole way: no `git push --force`, no `git add -f`, no
@@ -95,12 +112,162 @@ not comparable to anything a new arm produces. Re-run all five arms. A stale
 result may be kept and compared against its own recorded inputs. It may not be
 quoted as a current measurement.
 
-**3. The RunPod orchestrator has never had its own premortem.** A green
+**3. Nothing stops a pod except a live orchestrator or a person.** A green
 `_preflight_training_stack()` is not clearance for an unattended run. It checks
-that the sentence-transformers pin resolves, nothing more. Everything else
-about the fleet path is unaudited: teardown on failure, partial-collect
-recovery, budget enforcement, what happens when one pod of five dies mid-fold.
-Do the premortem first.
+that the sentence-transformers pin resolves, nothing more. The next section is
+the premortem, and its first finding is the one to internalise: the create
+payload carries no server-side stop, and `full_pipeline` leaves the fleet
+running on every failure path by design.
+
+## Adversarial premortem: the orchestrator
+
+Run on the Mac against `scripts/phase1b/runpod_parallel.py` at `38555da`, by
+one reviewer reading the code. Treat it as a head start, not as the finished
+job. The `/adversarial-premortem-complete` skill runs six perspectives across
+five rounds and will find things a single pass did not. Confirm or refute each
+finding below by running the code on the Jetson, because four hypotheses were
+refuted during the last session and every one of them came from reading an
+artifact instead of executing it.
+
+The premortem narrative: it is six weeks from now, the campaign produced no
+usable number, and the RunPod bill is four figures. Working backward, here is
+how that happened.
+
+| id | finding | impact | confidence |
+|---|---|---|---|
+| P1 | No server-side stop. A dead orchestrator bills until a human acts | High | Confirmed |
+| P2 | A `pass` timeout at fold launch aborts the fleet and abandons in-flight folds | High | Likely |
+| P3 | `collect` verifies transport, not payload | High | Plausible |
+| P4 | The documented budget default is half the enforced one | Low | Confirmed |
+| P5 | The extension cap permits about $970 for a $90 campaign | Medium | Confirmed |
+| P6 | The deadline warns and does not stop | Medium | Confirmed |
+
+### P1. The only thing between a crashed orchestrator and an open-ended bill is you
+
+`create_pod` in `scripts/phase0/runpod_provision.py:242` sends no TTL, no
+auto-stop and no idle timeout. `reap`'s own docstring says it plainly at
+`runpod_parallel.py:1312`. `full_pipeline`'s `finally` at lines 1424 to 1437
+then leaves the fleet running on **every** failure path, deliberately, because
+terminating a pod whose results have not been collected destroys paid-for work.
+That trade is correct. It also means a failure at minute five bills for as long
+as nobody looks.
+
+Five pods at roughly $2.70 an hour is $13.50 an hour. An eight-hour overnight
+gap is about $108, which exceeds this campaign's entire $90 budget.
+
+The Jetson makes this worse than a laptop would, because the run is unattended
+by design. Mitigations, all of which you apply before provisioning:
+
+- Run the orchestrator under `tmux` or `nohup` so a dropped SSH session to the
+  Jetson does not kill it. A killed orchestrator is the exact scenario with no
+  bound.
+- Schedule an independent reaper. A cron or `at` job at T+8h that runs
+  `python -m scripts.phase1b.runpod_parallel reap --confirm` costs nothing when
+  the run finished cleanly, because `reap` finds no targets and exits. It is
+  the only bound that survives the orchestrator dying.
+- Make `reap --confirm` the first command of any session that resumes after an
+  unexplained gap. Run it before you read logs and before you form a theory.
+
+### P2. One `pass` timeout takes down four healthy folds
+
+`_run_fold_on_pod` calls `_get_pod_env()` at line 911, one line **above** the
+`try` that starts at 912. `_get_pod_env` calls `_get_hf_read_token`, which
+shells out to `subprocess.run(["pass", ...], timeout=10)` at line 228 and
+raises `RuntimeError` on any failure. So `_run_fold_on_pod` can raise instead
+of returning a status dict.
+
+`run_folds` then calls `result = f.result()` at line 1058 with no guard. The
+bootstrap loop twenty lines above it, at 1027 to 1031, does catch, and its
+comment explains exactly why: "one bad pod aborted the whole fleet while the
+other four kept billing." The fold loop did not get the same treatment.
+
+The trigger: five worker threads call `pass` at the same instant when the folds
+launch. The GPG agent serialises decryption, and it cannot run pinentry from a
+non-tty worker thread, so an expired agent cache makes all five race the same
+ten-second timeout. One raise ends the `as_completed` loop, discards the other
+four futures' results, and reaches `full_pipeline`'s `finally` with
+`results_are_safe` still False. Five GPUs keep billing and four folds that were
+about to succeed are abandoned.
+
+Fix both halves before provisioning:
+
+- Hoist `_get_pod_env()` out of `_run_fold_on_pod` and call it once on the main
+  thread in `run_folds`, passing the dict in. One `pass` invocation instead of
+  five concurrent ones removes the race entirely.
+- Wrap line 1058 the way line 1027 is wrapped, so a fold that raises becomes a
+  failed fold rather than a failed fleet.
+
+Warm the agent as well with `gpg-connect-agent 'keepalive' /bye` before the
+run. That is a mitigation and not the fix, because it narrows the window
+without closing it.
+
+### P3. A collected fold and an empty directory look the same
+
+`collect` at lines 1094 to 1110 records a role as failed only when
+`_rsync_from` raises. An rsync against a directory that exists and holds no
+fold record exits 0 and is counted as collected.
+
+The path to unrecoverable loss: a fold exits 0 without writing
+`fold_result.json`, so `failed_folds` is empty and `uncollected` is empty.
+`full_pipeline` sets `results_are_safe = True` at line 1423, `teardown()` runs,
+and the pods are destroyed. `aggregate` then fails with nothing left to re-run
+and the GPU hours are already spent.
+
+Fix: after each rsync, assert that
+`results/phase1b/<config>/fold_<role>/fold_result.json` exists and parses as
+JSON, and append the role to `failed` when it does not. Verifying the payload
+rather than the transport is the whole point of the function.
+
+### P4. The docstring understates the budget by half
+
+Line 20 tells the operator `TRACT_RUNPOD_BUDGET_USD (default 1000)`. Line 100
+reads `"2000"`. Anyone sizing a run against the documented figure is working
+with half the real ceiling. One-line fix, and set the variable explicitly for
+this campaign regardless.
+
+### P5. A cap that permits ten times the expected spend is not a cap
+
+`MAX_DEADLINE_EXTENSIONS` defaults to 12 at line 109 and `MAX_RUN_HOURS`
+defaults to 6. That is 72 hours of fleet time before the extension refusal
+fires. At five pods and roughly $2.70 an hour, about $970. Campaign 2 needs
+$90.
+
+Set both for this campaign before you provision:
+
+```bash
+export TRACT_RUNPOD_BUDGET_USD=200
+export TRACT_RUNPOD_MAX_ARMS=6
+```
+
+Six arms covers five validation arms plus the single test round, which is
+exactly what the pre-registration calls for. Anything beyond that is a signal
+to stop and think rather than a window to extend into.
+
+### P6. The mid-run deadline reports, it does not enforce
+
+The `_check_deadline()` call inside the fold loop at lines 1065 to 1068 is
+wrapped and only logs `DEADLINE EXCEEDED`. The comment states the reasoning:
+in-flight folds are already paid for, so aborting buys nothing back. That is
+defensible on its own. Read together with P1 it means `MAX_RUN_HOURS` is a log
+line, not a spend control, and the scheduled reaper in P1 is the thing actually
+holding the wall.
+
+### What the orchestrator already does well
+
+Calibration matters, so here is where not to spend premortem effort. This
+module has been through several hardening rounds and the scars are visible in
+its comments. `teardown` terminates only this run's pods rather than every pod
+on the account. `reap` falls back to matching the account's running pods by
+name when the state file is missing or stale, which is the exact situation it
+exists for. Bootstrap failures are isolated per pod. Folds run detached under
+`setsid nohup`, so a dropped SSH session no longer kills an hour of training.
+A fleet provisioned for one split refuses to run another before spending
+anything. The budget check prices the wall time the timeouts actually permit
+rather than the wall time the code intends. Poll errors retry instead of being
+read as fold failures.
+
+The gap is not carelessness. It is that every fix so far was written after an
+incident, and the failure modes above have not had their incident yet.
 
 ## Before you provision
 
@@ -108,7 +275,13 @@ Every item is a command with an answer, not a judgment call.
 
 | check | how |
 |---|---|
-| on the right branch | `git status` shows `semantic-rebuild`, clean tree |
+| four decisions answered | the decision record has four filled rows, committed |
+| P2 and P3 fixed | the two code changes are committed and their tests pass |
+| spend bounds set | `TRACT_RUNPOD_BUDGET_USD=200` and `TRACT_RUNPOD_MAX_ARMS=6` exported |
+| orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
+| independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
+| GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
+| on the right branch | `git status` shows the branch D3 selected, clean tree |
 | corpus is complete | the `assert_corpus_matches_training_links()` snippet above returns without raising |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
 | credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
@@ -196,20 +369,103 @@ echo. On the 115 non-echo items title and prose tie exactly at 0.4174, McNemar
 p=1.000. Nine of 147 test items appeared verbatim as a training anchor for their
 own answer under title anchors, and zero do under prose.
 
-## Owner decisions, open
+## Owner decisions: answer these before provisioning
 
-Do not resolve these. Surface them and wait.
+These have been carried across three sessions without an answer, which is
+itself a decision, taken by default and by nobody. Two of them change what the
+campaign does. Two do not, and they are here because carrying them costs more
+than closing them.
 
-- **`csa_aicm` licensing.** 243 tracked controls under a no-redistribution
-  notice, 138 of them byte-identical to a CSA CCM specification. Widening the
-  fingerprint corpus to `csa_ccm` waits on this.
-- **98 unopenable checkpoints** under `results/`, all adapter-only with no
-  `config.json`. The fix makes the failure explicit rather than repairing them.
-  Re-saving artifacts whose provenance nobody has checked is a decision.
-- **PR #62 is a draft.** Converting it to ready-for-review and merging are the
-  owner's call.
-- **Publisher-acronym stripping** is an unmeasured ablation. The toggle defaults
-  off. Whether it helps is unknown, not assumed.
+**The gate: do not create a pod until all four are answered and the answers are
+committed to the decision record at the end of this section.** Ask all four in
+one message as multiple choice. Do not ask them one at a time across the run,
+and do not pick for the owner.
+
+Each option below carries a recommendation. A recommendation is not an answer.
+
+### D1. `csa_aicm` licensing. Blocks the fingerprint corpus, not the campaign
+
+243 `csa_aicm` controls are tracked under a no-redistribution notice, and 138
+of them are byte-identical to a CSA CCM specification. The licensed-text gate
+excludes both `csa_aicm` and `csa_ccm`, so neither is protected by it today.
+CSA CCM and CSA AICM are different frameworks and the ruling on one does not
+carry to the other.
+
+- **(a) Treat `csa_aicm` as an overlay.** Withhold its prose from git the way
+  ETSI, ISO 27001, CSA CCM and DSOMM already are, keeping titles and
+  identifiers. Costs those controls' prose on a fresh clone.
+- **(b) Confirm redistribution is permitted, then add both to the fingerprint
+  corpus and keep them tracked.** *Recommended if the CSA membership terms
+  allow it.* CCM was already ruled redistributable and 138 of the 243 are the
+  same bytes as CCM, so the two rulings should not diverge.
+- **(c) Leave as-is.** Tracked, ungated, undeclared. This is the status quo and
+  it is the option that has failed for three sessions.
+
+Only the owner can read the CSA membership agreement. If that reading does not
+happen, the answer is (a), because an unverified (b) is (c) wearing a hat.
+
+### D2. 98 unopenable checkpoints. Blocks nothing, costs 2.2 GB
+
+Every checkpoint under `results/` is adapter-only with no `config.json`, so
+`load_fold_model` cannot open any of them. `assert_loadable_checkpoint` now
+makes that failure explicit rather than silent.
+
+- **(a) Leave them and move on.** *Recommended.* They are also stale against
+  the rebuilt corpus, so nothing that matters would load them even if they
+  opened. Revisit after Campaign 2 lands.
+- **(b) Re-save all 98 with the backbone config.** Makes them loadable and
+  rewrites 98 artifacts whose provenance nobody has audited.
+- **(c) Delete them.** Reclaims the disk and destroys the provenance
+  permanently. Tempting, and irreversible, which is why it is not the
+  recommendation while a campaign is about to produce replacements.
+
+### D3. PR #62. Changes where the Jetson pushes
+
+The branch is 210-plus commits ahead of `main`, zero behind, with all eight CI
+jobs green. It is still a draft.
+
+- **(a) Mark ready and merge the corpus rebuild now, then run Campaign 2 from
+  `main` on a fresh branch.** *Recommended.* The rebuild is independently
+  correct and does not depend on any campaign result. Keeping it draft couples
+  an infrastructure change to an experiment's outcome, and a long-lived branch
+  rots a little more each day it waits.
+- **(b) Keep it draft until Campaign 2 produces a number, and push campaign
+  results onto `semantic-rebuild`.** One merge instead of two, at the cost of a
+  branch that keeps growing and a rebuild that stays unmerged for no reason of
+  its own.
+
+The answer decides where results go. Under (a) the Jetson branches from `main`.
+Under (b) it pushes to `semantic-rebuild`. Do not guess this one, because
+guessing wrong means moving commits later.
+
+### D4. Publisher-acronym stripping. Changes the arm count
+
+Whether stripping publisher acronyms from anchors helps is unmeasured. The
+toggle defaults off.
+
+- **(a) Leave it off. Five arms exactly as pre-registered.** *Recommended.*
+  `CAMPAIGN2.md` fixes K=5 and shows why: the minimum detectable effect is 11.4
+  hit@1 points on the 147-item test set and 3.5 on validation. Adding a sixth
+  arm after seeing campaign 1's results is the selection optimism the Šidák
+  correction exists to bound, and it would make the pre-registered
+  `n_configurations=5` wrong.
+- **(b) Add it as a sixth arm.** Requires amending the pre-registration in a
+  commit that lands before any arm runs, and calling `gate_decision` with
+  `n_configurations=6`. Amending a pre-registration after seeing results is
+  legitimate only when the amendment is dated and committed first.
+- **(c) Run it as its own campaign later,** pre-registered on its own terms.
+
+### Decision record
+
+Fill this in with the owner's answers, commit it, and only then provision.
+Leaving a row blank is not an answer.
+
+| id | decision | answer | date | note |
+|---|---|---|---|---|
+| D1 | `csa_aicm` licensing | | | |
+| D2 | 98 unopenable checkpoints | | | |
+| D3 | PR #62 merge timing | | | |
+| D4 | publisher-acronym arm | | | |
 
 ## Where things are
 
