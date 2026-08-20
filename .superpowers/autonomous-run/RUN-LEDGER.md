@@ -1806,3 +1806,56 @@ stopwords is that the trade "has to be shown, not assumed", measured as an ablat
 symmetric option is a framework-identity set stripped regardless of frequency, the mirror of
 `PROTECTED_WORDS` protecting hub vocabulary. **This belongs in the diagnostics phase**, beside the
 anchor-composition question already carried from Task 6, and it gets measured rather than assumed.
+
+---
+
+## OWNER DIRECTIVE 2026-08-19 (third): fix the deferrals, stop short of RunPod, and
+## make the repo self-sufficient for a Jetson that only pulls from GitHub
+
+That last clause changes the deliverable. The branch has to be PUSHED and a machine that has never
+seen this laptop has to be able to run from it.
+
+### The Jetson problem, measured before fixing
+A fresh clone has the training links but NOT the licensed prose:
+```
+data/training/hub_links_training.jsonl   TRACKED   4,389 links, identity only, no anchor text
+data/processed/all_controls.json         TRACKED   29 frameworks, overlay prose withheld
+data/processed/licensed/all_controls.json  NOT tracked  31 frameworks
+data/raw/                                  NOT tracked
+```
+The overlay indexes **4,667** controls, the tracked corpus **4,135**. And **370 of the 4,389
+training links belong to the four overlay frameworks** (dsomm 213, iso_27001 92, etsi 36,
+csa_ccm 29). Those 370 resolve to nothing without the overlay.
+
+**So a Jetson clone trains on 4,019 links and reports the same shape of output as a complete run.**
+8.4% of the training set, weighted toward DSOMM, which is the plan's single largest anchor gain, and
+`merged_corpus_path()` falls back silently because falling back is correct for a READER.
+
+Fixed at `a0dd8a1`: `assert_corpus_matches_training_links()` compares the digest of the corpus a run
+reads against the digest recorded in `hub_links_training.meta.json`, and refuses when they differ,
+naming both. **The check is on the DIGEST, not on file existence**, because both files exist on a
+fresh clone and existence cannot tell a complete corpus from a partial one. The sidecar already
+recorded the digest, so no new provenance was needed.
+`docs/RUNNING_ELSEWHERE.md` documents the three ways forward: transfer `data/raw/` and re-parse
+(the only option that keeps the digest verifiable end to end), transfer the overlay directly, or
+accept the shortfall deliberately and never compare the result to a figure measured on 4,389.
+
+### Deferrals, re-examined. Three were already closed and I had not noticed.
+- `results/corpus/retired_control_ids.json` EXISTS and is tracked. Task 15 made the reconciliation
+  record for the orphaned published rows.
+- Parsers declaring a real `min_prose_fraction` went **2 of 21 to 13 of 32**. The eleven new
+  parsers all declared one.
+- `tract/training/orchestrate.py` IS referenced by three test files, not zero.
+
+Still open and now dispatched:
+- **R23**, the framework-identity stopword asymmetry. My first derived set of 27 tokens was too
+  broad: it caught `matrix`, `profile`, `regulation`, `eu` and `cop`, ordinary words that merely
+  occur inside a framework's title. The agent has to find a tighter criterion and justify it.
+- **Task 16**, the acceptance suite, the last task in the plan.
+- **The 19 unfloored parsers.** Every one measures cleanly, thirteen at exactly 1.0000, with
+  `nist_ai_rmf` 0.7639 and `aiuc_1` 0.8333 as outliers worth understanding before a floor is set on
+  them, because a low prose fraction can mean a terse source OR a parser dropping text, and a floor
+  would enshrine the second.
+
+Genuinely the owner's, not deferrals of mine: the `csa_aicm` licensing question, and the `csa_ccm`
+fingerprint deferral that waits on it.
