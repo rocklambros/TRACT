@@ -730,3 +730,70 @@ class TestTheShippedContestedDefault:
                 "cre_id": "1", "link_type": "LinkedTo"}
         kept = len(filter_training_links([link], index).kept)
         assert kept == (1 if CONTESTED_RECOVERY_DEFAULT else 0)
+
+
+class TestCorpusIdentityPreflight:
+    """A fresh clone trains on 8.4% fewer links and says nothing about it.
+
+    `merged_corpus_path()` prefers the gitignored licensed overlay and falls
+    back to the tracked corpus when it is absent. That is correct for a reader
+    and wrong for a trainer: 370 of the 4,389 training links belong to the four
+    overlay frameworks, so without the overlay they resolve to nothing and the
+    run trains on 4,019 while reporting the same shape of output.
+
+    Existence cannot catch it, because both files exist. Only the digest can.
+    """
+
+    def _meta(self, tmp_path: Path, digest: str | None) -> Path:
+        path = tmp_path / "hub_links_training.meta.json"
+        body: dict[str, object] = {"n_links": 4389}
+        if digest is not None:
+            body["corpus_sha256"] = digest
+        path.write_text(json.dumps(body, sort_keys=True), encoding="utf-8")
+        return path
+
+    def test_the_matching_corpus_passes_and_returns_its_digest(
+        self, tmp_path: Path
+    ) -> None:
+        from tract.text_selection import merged_corpus_sha256
+        from tract.training.data_quality import assert_corpus_matches_training_links
+
+        actual = merged_corpus_sha256()
+        assert assert_corpus_matches_training_links(
+            self._meta(tmp_path, actual)
+        ) == actual
+
+    def test_a_different_corpus_is_refused_and_names_both_digests(
+        self, tmp_path: Path
+    ) -> None:
+        from tract.text_selection import merged_corpus_sha256
+        from tract.training.data_quality import (
+            CorpusMismatchError,
+            assert_corpus_matches_training_links,
+        )
+
+        wrong = "0" * 64
+        with pytest.raises(CorpusMismatchError) as caught:
+            assert_corpus_matches_training_links(self._meta(tmp_path, wrong))
+        message = str(caught.value)
+        assert wrong in message
+        assert merged_corpus_sha256() in message
+        assert "RUNNING_ELSEWHERE" in message
+
+    def test_an_absent_sidecar_stops_rather_than_passing_quietly(
+        self, tmp_path: Path
+    ) -> None:
+        from tract.training.data_quality import assert_corpus_matches_training_links
+
+        with pytest.raises(FileNotFoundError):
+            assert_corpus_matches_training_links(tmp_path / "absent.json")
+
+    def test_a_sidecar_with_no_digest_is_refused(self, tmp_path: Path) -> None:
+        """Predates the anchor gate, so it cannot say which corpus it used."""
+        from tract.training.data_quality import (
+            CorpusMismatchError,
+            assert_corpus_matches_training_links,
+        )
+
+        with pytest.raises(CorpusMismatchError, match="records no corpus_sha256"):
+            assert_corpus_matches_training_links(self._meta(tmp_path, None))

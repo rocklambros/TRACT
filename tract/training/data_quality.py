@@ -380,3 +380,68 @@ def save_training_links(
         corpus_sha256[:16],
     )
     return output_hash
+
+
+class CorpusMismatchError(RuntimeError):
+    """The corpus this run reads is not the one the training links were built from."""
+
+
+def assert_corpus_matches_training_links(meta_path: Path | None = None) -> str:
+    """Refuse to train against a corpus the training links were not built from.
+
+    A fresh clone has no `data/processed/licensed/` overlay, because four
+    frameworks reserve or condition redistribution and their prose is
+    deliberately kept out of git. `merged_corpus_path()` falls back to the
+    tracked corpus without complaint, which is the right behaviour for a
+    reader and the wrong behaviour for a trainer.
+
+    Measured on this branch: the overlay indexes 4,667 controls and the tracked
+    corpus 4,135, and **370 of the 4,389 training links belong to the four
+    overlay frameworks** (dsomm 213, iso_27001 92, etsi 36, csa_ccm 29). Those
+    370 resolve to nothing without the overlay, so a run on a fresh clone
+    trains on 4,019 links and reports the same figures as a run on 4,389. The
+    difference is 8.4% of the training set and nothing in the output says so.
+
+    So the check is on the DIGEST, not on file existence. Existence cannot
+    distinguish a complete corpus from a partial one, and both files exist.
+
+    Returns:
+        The digest of the corpus this run reads, when it matches.
+
+    Raises:
+        FileNotFoundError: The metadata sidecar is absent, so there is nothing
+            to check against and a silent pass would be worse than a stop.
+        CorpusMismatchError: The corpus differs from the one recorded.
+    """
+    path = meta_path or TRAINING_META_PATH
+    if not path.exists():
+        raise FileNotFoundError(
+            f"{repo_relative(path)} is absent, so the corpus this run reads "
+            f"cannot be checked against the corpus the training links were "
+            f"built from. Regenerate it with save_training_links before "
+            f"training, rather than training against an unverified corpus."
+        )
+    recorded = json.loads(path.read_text(encoding="utf-8"))
+    expected = str(recorded.get("corpus_sha256") or "")
+    actual = merged_corpus_sha256()
+    if not expected:
+        raise CorpusMismatchError(
+            f"{repo_relative(path)} records no corpus_sha256, so it predates "
+            f"the anchor gate and cannot say which corpus produced its links."
+        )
+    if expected != actual:
+        raise CorpusMismatchError(
+            f"refusing to train: this run reads a different corpus from the "
+            f"one the training links were built against.\n"
+            f"  recorded in {repo_relative(path)}  {expected}\n"
+            f"  this run reads                     {actual}\n"
+            f"  reading                            "
+            f"{repo_relative(merged_corpus_path())}\n"
+            f"The usual cause on a fresh clone is a missing "
+            f"data/processed/licensed/ overlay. Four frameworks reserve or "
+            f"condition redistribution, so their prose is not in git and must "
+            f"be staged out of band. Without it, 370 of the 4,389 training "
+            f"links resolve to nothing and the run silently trains on 4,019. "
+            f"See docs/RUNNING_ELSEWHERE.md."
+        )
+    return actual
