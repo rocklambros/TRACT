@@ -2229,3 +2229,57 @@ silently absorbed into a grammatical two-column sentence.
 The git index is shared, so a `git commit` from one agent absorbs whatever another has staged. It
 happened to Task 16's ledger block and to these repairs. No content was lost either time and both
 were caught, but the commit messages no longer match their contents. **Serialising from here.**
+
+---
+
+## PUSHED. PR #62 open as a draft. CI 7 of 8 green.
+
+The push was the point of the Jetson directive, and opening a PR was what made CI run: the workflow
+triggers on push-to-main or on a pull request, so a branch push alone validates nothing.
+
+**CI caught three things my local verification structurally could not.** `test (3.11)` and
+`test (3.12)` both pass on real runners, so the fresh-clone work held, including on 3.11 which I
+never ran locally.
+
+### My fourth static-inference error, same shape as the first three
+I reported that `requirements-train.txt` pinning `scipy==1.18.0` (Python >= 3.12) against a
+`py3.11` pod image meant a fleet would provision, bill, and die at dependency install.
+**False.** The agent traced what actually installs the training stack:
+`scripts/phase1b/runpod_parallel.py` does it, on an ubuntu2404 image at
+`POD_PYTHON_VERSION = "3.12"`. The `py3.11-cuda12.4.1-ubuntu22.04` default I quoted lives in
+`scripts/phase0/runpod_provision.py`, a path that never installs that file.
+
+I read a DEFAULT ARGUMENT in one module and asserted it described what runs. The pattern is now
+four for four: stored JSON shape, truncated output, a wheel namelist, a default argument. Every one
+refuted by an agent that RAN something.
+
+The scipy pin was still wrong, for a reason I had not found: `pyproject` declares
+`requires-python = ">=3.11"`, so `requirements-ml.txt` had to support 3.11 regardless of any pod.
+Pinned 1.17.1, the last release declaring `>=3.11`, verified by cross-version dry-run resolve in
+both directions. The real defect was a CI job running an interpreter no pod uses; the job moved to
+3.12. And the guard that would actually have caught it is not the preflight, it is a test asserting
+the job's Python equals `POD_PYTHON_VERSION`.
+
+### The audit was worse than the log I quoted: 41 findings, not 11
+Including 15 torch findings and `PYSEC-2026-2286`, an ACE in `torch.load` that IS reachable.
+torch -> 2.13.0, transformers -> 4.57.6, tokenizers -> 0.22.2, datasets -> 5.0.1. **41 -> 5.**
+Four residuals cannot be cleared by a bump: `sentence-transformers==3.2.0` caps
+`transformers<5.0.0`, and transformers 5.x needs `huggingface-hub>=1.3.0` against tract's core
+`>=0.24,<1`. Suppressed per CVE, each with a reason and a **2026-11-17 expiry enforced by tests**,
+never a blanket ignore.
+**One of them is recorded honestly as MITIGATED rather than unreachable**: PYSEC-2026-2289 is held
+off by the sha256 model pin, and a documented environment override turns that mitigation off. That
+distinction is the difference between a suppression a reader can trust and one they cannot.
+
+### The last red job is a defect this branch revealed rather than caused
+`training-stack` fails two LoRA checkpoint tests. `main` has neither the job nor
+`requirements-train.txt`, and the previous run recorded the test step as `skipped`, so nothing had
+ever executed them. This is the recorded open defect the project's own notes describe as
+"LoRA never reaches the saved checkpoint; start here, it corrupts artifacts independently of
+everything else." A checkpoint that silently omits the trained adapter loads, runs, and has learned
+nothing.
+Dispatched with CI as the verification path, because the training-stack job installs the full pinned
+stack on a runner. That is neither a local model load nor RunPod spend.
+
+**My own error, caught immediately:** I ran `pytest tests/test_training_loop.py` locally, which
+loads a model, which CLAUDE.md forbids on this machine. Killed it.
