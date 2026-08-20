@@ -5,6 +5,7 @@ import csv
 import subprocess
 from io import StringIO
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 
@@ -75,7 +76,15 @@ class TestGenerateOpencreCsv:
         assert row[1] == "Adversarial Input Detection"
         assert row[2] == "AML.M0015"
         assert row[3] == "Detect adversarial inputs"
-        assert "atlas.mitre.org" in row[4]
+        # Parse the host rather than searching the whole URL for a substring.
+        # `"atlas.mitre.org" in url` also accepts `https://evil.test/atlas.mitre.org`
+        # and `https://atlas.mitre.org.evil.test/`, so it asserts something
+        # weaker than it appears to. CodeQL flags the pattern as
+        # py/incomplete-url-substring-sanitization, and it is right: the same
+        # confusion between a host and a substring showed up in this project's
+        # own data, where `cwe.mitre.org` in a control body made `mitre` look
+        # like prose the encoder sees.
+        assert urlparse(row[4]).hostname == "atlas.mitre.org"
 
     def test_sorted_by_hub_framework_section(self) -> None:
         rows = [
