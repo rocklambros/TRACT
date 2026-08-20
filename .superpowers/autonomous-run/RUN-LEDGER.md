@@ -2283,3 +2283,44 @@ stack on a runner. That is neither a local model load nor RunPod spend.
 
 **My own error, caught immediately:** I ran `pytest tests/test_training_loop.py` locally, which
 loads a model, which CLAUDE.md forbids on this machine. Killed it.
+
+### ALL 8 CI JOBS PASS on PR #62. `3bc5239`. `training-stack` 162 passed, 0 failed, 0 skipped.
+
+**The diagnosis I passed down was wrong, and acting on it would have hidden the defect.**
+My brief named `test_verify_checkpoint_roundtrip_passes_on_match` and `test_saves_metadata`. Both
+were PASSING. The real failures were `test_adapter_survives_save_and_reload` and
+`test_merges_adapter_only_checkpoint`. And the prior agent's proposed fix, routing two call sites
+through `_reload_saved_model`, **would have greened the tests while leaving every checkpoint
+unopenable.**
+
+**Real root cause, re-derived from a CI traceback rather than from reading:**
+`transformers.save_pretrained` guards the config write with `if not _hf_peft_config_loaded`
+(`modeling_utils.py:3914`), so an adapter save writes **no `config.json` at all**. ST 5.7 then
+resolves the model fine through `find_adapter_config_file`, calls `AutoProcessor.from_pretrained`
+on the same directory, falls through its whole chain to `AutoConfig.from_pretrained(dir)`, and
+raises. The decisive evidence was `config_dict = {}` in the traceback.
+
+**`_reload_saved_model` was a bespoke loader that read checkpoints in a way no consumer does, and
+that is precisely why the two tests I named were green.** It is deleted, so
+`verify_checkpoint_roundtrip` now reloads the way a consumer would. A production-code equivalent of
+a test that passes while asserting nothing.
+
+New `tract/training/checkpoint.py` carries no ML imports, so it is testable off-GPU: it writes the
+backbone's config beside the adapter and guards readers. 10 mutations killed, and an eleventh
+survived first, exposing that the `merge.py` guard had no test at all.
+
+### OWNER DECISION: 98 existing checkpoints cannot be opened
+All 98 under `results/` are adapter-only with no `config.json`, so `load_fold_model` cannot load any
+of them today. The fix makes that failure EXPLICIT rather than repairing them, which is the right
+default: silently re-saving 98 checkpoints would rewrite artifacts whose provenance nobody has
+checked. Re-saving them is a decision, not a cleanup.
+
+This closes the recorded blocker the project's own notes call "start here". The note's headline was
+right and its mechanism was not: the adapter does reach the checkpoint, the config does not, so the
+checkpoint is unreadable rather than empty.
+
+### Not verified, and it should be said plainly
+The fix is exercised in CI on real MiniLM weights on CPU. It is NOT exercised on a real RunPod fold
+with BGE-large or Qwen3 under fp16 and gradient checkpointing. The written config comes from the
+live backbone and is architecture-independent, so residual risk is low, but it is not zero for the
+Qwen arm and no publish artifact was built.
