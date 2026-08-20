@@ -409,18 +409,47 @@ class TestTheSnapshotIsARollback:
         second = snapshot_processed(tmp_path / "s", members=[source / "etsi.json"])
         assert first == second
 
-    def test_the_irrecoverable_set_is_derived_from_the_licence_tiering(self) -> None:
+    def test_the_irrecoverable_set_is_derived_from_the_licence_tiering(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
         """A hand-written list leaves every new overlay member with no rollback.
 
         Rulings R4 and R10 added csa_ccm and dsomm after the brief named three
         files. Deriving the set is what makes the next addition automatic.
+
+        Driven through a substituted tier rather than read off the real one, so
+        it still fails on a checkout that holds none of the overlay files. That
+        is every CI run, and an assertion that reduces to {} == {} there would
+        pass a hardcoded list without complaint.
         """
-        derived = {path.stem for path in irrecoverable_members()
-                   if path.parent == PROCESSED_FRAMEWORKS_DIR}
-        on_disk = {fid for fid in OVERLAY_FRAMEWORK_IDS
+        frameworks = tmp_path / "frameworks"
+        frameworks.mkdir()
+        for name in ("etsi", "iso_27001", "csa_ccm", "dsomm", "capec"):
+            (frameworks / f"{name}.json").write_text("{}\n", encoding="utf-8")
+        monkeypatch.setattr("scripts.rebuild_corpus.PROCESSED_FRAMEWORKS_DIR",
+                            frameworks)
+        monkeypatch.setattr("scripts.rebuild_corpus.PROCESSED_LICENSED_DIR",
+                            tmp_path / "licensed")
+        monkeypatch.setattr("scripts.rebuild_corpus.OVERLAY_FRAMEWORK_IDS",
+                            frozenset({"etsi", "iso_27001", "csa_ccm", "dsomm"}))
+        assert {path.stem for path in irrecoverable_members()} == {
+            "etsi", "iso_27001", "csa_ccm", "dsomm",
+        }
+
+        # The next member added to the tier is covered without editing this file.
+        monkeypatch.setattr("scripts.rebuild_corpus.OVERLAY_FRAMEWORK_IDS",
+                            frozenset({"etsi", "iso_27001", "csa_ccm", "dsomm",
+                                       "capec"}))
+        assert {path.stem for path in irrecoverable_members()} == {
+            "etsi", "iso_27001", "csa_ccm", "dsomm", "capec",
+        }
+
+    def test_the_tier_holds_the_four_members_the_rulings_left(self) -> None:
+        assert OVERLAY_FRAMEWORK_IDS == {"etsi", "iso_27001", "csa_ccm", "dsomm"}
+        present = {fid for fid in OVERLAY_FRAMEWORK_IDS
                    if (PROCESSED_FRAMEWORKS_DIR / f"{fid}.json").exists()}
-        assert derived == on_disk
-        assert len(on_disk) == 4
+        assert {path.stem for path in irrecoverable_members()
+                if path.parent == PROCESSED_FRAMEWORKS_DIR} == present
 
     def test_the_production_call_demands_the_irrecoverable_set(self) -> None:
         """The default path is the one that can lose ISO, so it carries the demand.
