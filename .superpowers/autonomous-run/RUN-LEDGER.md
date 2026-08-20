@@ -1859,3 +1859,273 @@ Still open and now dispatched:
 
 Genuinely the owner's, not deferrals of mine: the `csa_aicm` licensing question, and the `csa_ccm`
 fingerprint deferral that waits on it.
+
+## Phase A-parsers COMPLETE — 2026-08-19, Task 16 of 16
+
+Eleven parsers, both title-keyed link gates retired, the corpus rebuilt from pinned sources, and an
+acceptance suite that gates the result. Every number below is sourced from
+`results/corpus/after_parsers.json`, `results/corpus/before.json`, their two link-resolution JSONL
+companions, or a named measurement in this run. Nothing here comes from the plan file, which is
+gitignored and untracked.
+
+### Artifacts, and the corpus each was measured on
+
+| artifact | sha256 | corpus sha256 | frameworks |
+|---|---|---|---|
+| `results/corpus/before.json` | `bcbbcd4181ddb69a` | `2440d7c062055f66` | 31 |
+| `results/corpus/after_parsers.json` | `4120cbdd94831e6d` | `b251446957d468fc` | 31 |
+| `results/corpus/link_resolution_before.jsonl` | `993db8e0f54a5962` | `2440d7c062055f66` | 31 |
+| `results/corpus/link_resolution_after_parsers.jsonl` | `bf5a32b74792a6f2` | `b251446957d468fc` | 31 |
+
+Both sides read `data/processed/licensed/all_controls.json` and the same curated link file,
+`data/training/hub_links_curated.jsonl` at `3d42cbd396f26cc7`, so every delta below is a corpus
+change and none of it is a link-file change. The AFTER state went under its own tag because
+`require_unmoved_corpus` refuses `--tag before` once the corpus has moved, and it has moved several
+times. `before.json` stays byte-identical.
+
+### Totals [measured]
+
+| total | before | after |
+|---|---|---|
+| links resolved | 3,666 | **4,389 of 4,405** (0.8322 to 0.9964) |
+| unresolved | 739 | 16 |
+| join anchors (`distinct_anchors`) | 1,450 | 1,895 |
+| **trainer-visible anchors** | **1,754** | **1,906**, a delta of **+152** |
+| fallback anchors | 304 | 11 |
+| statement-sourced anchors | 3,666 | 4,340 |
+| parser-assembled anchors | 0 | 49 |
+| controls outside the prose index | 558 | 92 |
+| truncated | 559 | 737 |
+| wrong-anchor flags | 40 | 74 |
+| corpus frameworks | 31 | 31 |
+
+### The headline is +152, and the correction matters more than the size
+
+`distinct_anchors` moved 1,450 to 1,895, which reads as +445. **That number is wrong to quote on its
+own**, and the v2 plan's +452 was the same error one measurement further out. The eleven frameworks'
+734 links already reached **299 distinct anchors** before any parser existed, because
+`select_control_text` falls back to `section_name` rather than failing, so the trainer was never
+looking at zero anchors for them.
+
+Measured on what the trainer actually sees, which is the union of resolved anchor text and fallback
+section names, the corpus moved **1,754 to 1,906, a delta of +152 [measured, both link-resolution
+JSONLs, distinct `anchor_sha256` over rows with a non-empty anchor]**. The eleven alone moved 299 to
+451, also +152, so every unit of the gain is theirs and no untouched framework contributed one.
+
+**+445 and +452 must never enter a summary of this work.** The instrument's own module docstring
+records the same figure of +152 and the same reason.
+
+The gain is also not distributed. **DSOMM supplies 165 of the 152 net**, three frameworks lose
+anchors, and six move by exactly zero:
+
+| framework | trainer-visible anchors | why |
+|---|---|---|
+| `dsomm` | 18 to 183 (**+165**) | 214 links collapsed onto 18 sub-dimension names and now reach 182 activity statements |
+| `biml` | 17 to 19 (+2) | two ids that shared a `section_name` across the two documents separated |
+| six flat | +0 each | `csa_ccm`, `enisa`, `nist_800_63`, `owasp_proactive_controls`, `owasp_top10_2021`, `samm`. The link file already gave each link a distinct fallback name, so the anchor COUNT was already right and only the anchor TEXT was wrong |
+| `wstg` | 59 to 56 (-3) | nine links name ids absent from the archive and keep a literal id as their anchor |
+| `nist_ssdf` | 44 to 42 (-2) | two task statements are byte-identical in the source |
+| `etsi` | 24 to 14 (**-10**) | declared in advance. Clause grain, chosen over prose-heuristic segmentation of technique names that appear mid-sentence in 9 of 24 cases |
+
+**The column that moves for all eleven is the text, not the count.** Statement-sourced anchors for
+the eleven went **0 to 674**, with a further **49 parser-assembled**, over 723 resolved links. Before
+their parsers, all eleven resolved 0 links and reached 0 statement anchors.
+
+### Per framework [measured, `after_parsers.json` against `before.json`]
+
+`*` marks the eleven this plan gave a parser to.
+
+| framework | resolved | join anchors | trainer-visible anchors | fallback | statement | synthetic |
+|---|---|---|---|---|---|---|
+| `asvs` | 277 to 277 of 277 | 277 to 277 | 277 to 277 (+0) | 0 to 0 | 277 to 277 | 0 to 0 |
+| `biml`* | 0 to 21 of 21 | 0 to 19 | 17 to 19 (+2) | 17 to 0 | 0 to 21 | 0 to 0 |
+| `capec` | 1799 to 1799 of 1799 | 349 to 349 | 349 to 349 (+0) | 0 to 0 | 1799 to 1799 | 0 to 0 |
+| `csa_ccm`* | 0 to 29 of 29 | 0 to 29 | 29 to 29 (+0) | 29 to 0 | 0 to 15 | 0 to 14 |
+| `cwe` | 612 to 612 of 613 | 245 to 245 | 246 to 246 (+0) | 1 to 1 | 612 to 612 | 0 to 0 |
+| `dsomm`* | 0 to 213 of 214 | 0 to 182 | 18 to 183 (+165) | 18 to 1 | 0 to 213 | 0 to 0 |
+| `enisa`* | 0 to 68 of 68 | 0 to 33 | 33 to 33 (+0) | 33 to 0 | 0 to 68 | 0 to 0 |
+| `etsi`* | 0 to 36 of 36 | 0 to 14 | 24 to 14 (-10) | 24 to 0 | 0 to 32 | 0 to 4 |
+| `iso_27001` | 92 to 92 of 94 | 91 to 91 | 93 to 93 (+0) | 2 to 2 | 92 to 92 | 0 to 0 |
+| `mitre_atlas` | 65 to 65 of 65 | 43 to 43 | 43 to 43 (+0) | 0 to 0 | 65 to 65 | 0 to 0 |
+| `nist_800_53` | 298 to 298 of 300 | 298 to 298 | 300 to 300 (+0) | 2 to 2 | 298 to 298 | 0 to 0 |
+| `nist_800_63`* | 0 to 78 of 79 | 0 to 24 | 25 to 25 (+0) | 25 to 1 | 0 to 78 | 0 to 0 |
+| `nist_ai_100_2` | 45 to 45 of 45 | 22 to 22 | 22 to 22 (+0) | 0 to 0 | 45 to 45 | 0 to 0 |
+| `nist_ssdf`* | 0 to 46 of 46 | 0 to 42 | 44 to 42 (-2) | 44 to 0 | 0 to 46 | 0 to 0 |
+| `owasp_ai_exchange` | 64 to 64 of 64 | 63 to 63 | 63 to 63 (+0) | 0 to 0 | 64 to 64 | 0 to 0 |
+| `owasp_cheat_sheets` | 391 to 391 of 391 | 49 to 49 | 49 to 49 (+0) | 0 to 0 | 391 to 391 | 0 to 0 |
+| `owasp_llm_top10` | 13 to 13 of 13 | 6 to 6 | 6 to 6 (+0) | 0 to 0 | 13 to 13 | 0 to 0 |
+| `owasp_ml_top10` | 10 to 10 of 10 | 7 to 7 | 7 to 7 (+0) | 0 to 0 | 10 to 10 | 0 to 0 |
+| `owasp_proactive_controls`* | 0 to 76 of 76 | 0 to 10 | 10 to 10 (+0) | 10 to 0 | 0 to 76 | 0 to 0 |
+| `owasp_top10_2021`* | 0 to 17 of 17 | 0 to 10 | 10 to 10 (+0) | 10 to 0 | 0 to 17 | 0 to 0 |
+| `samm`* | 0 to 30 of 30 | 0 to 30 | 30 to 30 (+0) | 30 to 0 | 0 to 0 | 0 to 30 |
+| `wstg`* | 0 to 109 of 118 | 0 to 52 | 59 to 56 (-3) | 59 to 4 | 0 to 108 | 0 to 1 |
+| **TOTAL** | 3666 to 4389 of 4405 | 1450 to 1895 | **1754 to 1906 (+152)** | 304 to 11 | 3666 to 4340 | 0 to 49 |
+
+### Everything else the AFTER state says
+
+- **Training links 4,127 to 4,389 [measured, `data/training/hub_links_training.meta.json`,
+  `n_links: 4389`, output sha256 `d53e7783c75a9f78`]**. Not 4,401 and not 4,402. Sixteen curated
+  links resolve to nothing and none of them reaches the trainer.
+- **`dropped_by_prose_rule` 558 to 92 [measured]**. The 558 counts every framework in the corpus and
+  not only the link-bearing subset, which is why an earlier figure of 522 was low by 36.
+- **Rebuild diff from Task 15 [measured, `results/corpus/rebuild_diff.json`]: unchanged 3,784,
+  changed 2, added 969, removed 436, renamed 0.** `renamed` is reported separately from `removed` on
+  purpose, and it is genuinely empty.
+- **`truncated` 559 to 737**, mostly `wstg` and `etsi`. Recorded, and asserted on by nothing, because
+  no task derived a ceiling for it.
+- **Zero frameworks sit below their `JOIN_FLOORS` floor**, all 22 of them, on the AFTER artifact and
+  on the live corpus.
+- **`owasp_cheat_sheets` is still the worst concentration in the corpus**, 391 links on 49 anchors
+  with 384 truncated. It has a parser, so it was out of scope, and after this plan nothing else is
+  close. Second is `owasp_proactive_controls` at 76 links on 10 anchors.
+
+### The acceptance suite
+
+`tests/test_corpus_acceptance.py`, 29 tests, 63 assertions. Local run with the licensed overlay:
+**29 passed, 0 skipped**. Fresh-clone run with only tracked files, no `data/raw/` and no overlay:
+**26 passed, 3 skipped**, and the three are named with the licence that causes each:
+
+- `dsomm`, GPL-3.0-only, `test_dsomm_stopped_collapsing_onto_its_sub_dimensions`
+- `etsi`, reproduction by written permission only, `test_etsi_registered_only_the_names_that_cannot_collide`
+- `iso_27001`, single-user store licence, `test_iso_still_resolves`
+
+Eight of the eleven parsers keep asserting against the live corpus in CI. All eleven, including the
+three above, are gated on every machine through the tracked AFTER artifact, whose rows are
+cross-checked against the live report wherever both can see, so the artifact cannot be hand-edited.
+
+**Mutation testing: 29 plausible wrong implementations, one per test, run in both modes, 29 killed,
+0 survivors.** Two mutations survived the first pass and were fixed rather than reported:
+
+1. `test_the_silent_group_is_exactly_the_overlay` compared the skipped set against
+   `OVERLAY_FRAMEWORK_IDS` while the skipped set was DEFINED by subtracting that same set. Both legs
+   were tautologies. It now compares against which rows the corpus actually collapses without the
+   overlay, so a framework skipped under a licence it does not need fails, and so does a framework
+   that collapses for a reason no licence explains.
+2. `_expected_framework_ids()` derived the census from a glob of `data/processed/frameworks/`, so
+   deleting a framework's processed JSON removed it from every check in `TestSpecAcceptance`, which
+   is the exact hole that class's docstring claims to close. The census now includes the parser
+   modules, which are tracked, and a missing processed file is reported by name.
+
+### Two findings the eleven parsers left behind
+
+**`nist_ssdf` flags 44 wrong anchors out of 44 applicable checks [measured].** Not a wrong anchor.
+`parse_nist_ssdf` titles each task by its own id, so every control's title reads `PO.1.1`, while the
+curated link file's `section_name` holds the full task statement. Detector B asks whether the name
+appears in the resolved control's title, and an identifier cannot contain a sentence, so B fires on
+every id-channel link it reaches. All 46 resolved links reach a real `full_text` task statement.
+
+This is R11 and R21's defect class in a **third form**. Those two cover a link file that NAMES a
+different level from the one it IDENTIFIES, measured as a ratio of distinct ids to distinct names,
+and `nist_ssdf` reads exactly 1.0000 on that ratio, so `name_level_mismatch_frameworks()` cannot see
+it. The repair is a second derived property covering a framework whose processed titles ARE its
+identifiers, and it belongs to whoever next owns `tract/corpus_report.py`. Task 16 does not own the
+instrument, so the 44 is pinned exactly, its cause is asserted separately, and it fails in both
+directions.
+
+**Every SAMM anchor is text this project wrote [measured: `anchor_source_synthetic` 30 of 30].**
+`honest_prose_fraction` scores SAMM at 1.0000 against its declared floor of 1.0, and it counts a
+parser-assembled statement as prose because no column separates the two. Corpus-wide the figure is
+49 synthetic anchors across `samm` 30, `csa_ccm` 14, `etsi` 4 and `wstg` 1, and the suite now pins
+it per framework so a parser cannot start synthesising without a reviewer seeing it.
+
+### Frameworks whose acceptance rows CI cannot assert
+
+`csa_ccm`, `dsomm`, `etsi`, `iso_27001`. Named in the skip message, gated through the AFTER
+artifact, and never silenced by deleting a floor.
+
+### Nine false claims in the Task 16 brief [measured, each re-derived]
+
+1. `JOIN_FLOORS` holds **22** floors, not 11. `PENDING = tuple(sorted(JOIN_FLOORS))` as the brief
+   wrote it would have put `asvs` and `capec` in the pending set. The eleven are derived from the
+   BEFORE artifact instead, as the frameworks that resolved 0 links.
+2. The BEFORE artifact is `results/corpus/before.json`, not `before_8cf44b3.json`.
+3. BEFORE `distinct_anchors` is **1,450**, not 1,749.
+4. AFTER `distinct_anchors` is **1,895**, not 1,902, and the honest delta is **+152**, not +153.
+5. Fallback anchors for the eleven after the parsers: **6**, not "about 16".
+6. Statement-sourced anchors for the eleven: **674**, not "about 718". The remaining 49 of the 723
+   resolved links are parser-assembled, which the brief's figure conflates.
+7. Controls outside the prose index after: **92**, not "about 83".
+8. Training links: **4,389**, not 4,401.
+9. `biml` resolves **3** links by title, not 1 (ruling R20 declared three alt_titles), and `etsi`
+   resolves **5**, not 2. The brief's `by_title == 2` for ETSI counts the declared alternates and
+   misses three links that name a clause heading verbatim.
+
+Three more that would have halted a healthy run. The brief's wrong-anchor test asserts
+`by_title == 0` for any framework outside `JOIN_WRONG_ANCHOR_BUDGET`, and `enisa` (68),
+`owasp_top10_2021` (17) and `samm` (30) all resolve entirely by title. Its `assert compared >= 22`
+on the artifact cross-check reads 18 in CI. Its
+`anchor_source_full_text + anchor_source_description > 0` fails on `samm`, which reads 0.
+
+One correction to the dispatch itself: **all eleven** of the new parsers declare a real
+`min_prose_fraction`, not six.
+
+### What this task did not close
+
+- **Source content integrity.** Six upstream sources accept community pull requests. A sha256 pin
+  proves the bytes did not change in transit and says nothing about who wrote them. `nist_800_63` is
+  deliberately unpinned, because Cloudflare injects a per-response bot token, and it now supplies 78
+  training links where it supplied 0. `etsi` is fetched with a spoofed browser user-agent.
+  `--accept-new-hash` is an alert with no adjudication rule, and an alert nobody knows how to answer
+  gets approved. The rule this run proposes and does not implement: a changed hash on a
+  community-editable source is not accepted in the same session it is observed, the extracted text
+  is diffed against the previous processed artifact, and acceptance waits until every changed
+  control id maps to a dated upstream commit or release note a human has opened.
+- **Repair audits are unreadable to anyone else.** `data/processed/repair_audit/` is gitignored, so
+  no reviewer on another machine and no CI job can open one, and the records store
+  `statement_lengths` rather than the before-and-after text pair `write_repair_audit`'s own docstring
+  says a reviewer needs. The gitignore line is right for restricted frameworks and wrong as a
+  blanket rule.
+- **The `csa_aicm` licensing question.** Its 243 control statements are tracked under the identical
+  CSA notice as `csa_ccm`, and **138 of the 243 descriptions are byte-identical, after
+  `normalise_for_fingerprint`, to a CCM control specification under the same control id**. The
+  fingerprint gate defers both frameworks on one unanswered ruling. This is the owner's.
+- **`owasp` is a stopword and thirteen other framework-identity tokens are not.** Ruling R23 left
+  this open on purpose. `cwe`, `capec`, `biml`, `asvs`, `mitre`, `wstg`, `csa` and `enisa` all carry
+  source identity, none appears in hub data, and all keep their token because document frequency
+  concentrates them in one framework each while OWASP spans ten. A model can shortcut on `cwe` and
+  no longer on `owasp`, which is an inconsistency across LOFO folds rather than a stopword question.
+- **Nineteen parsers had no prose floor when this suite landed.** The suite ratchets the count so it
+  cannot grow and does not raise it. That work is in flight separately, and the ratchet is
+  deliberately one-sided so the two do not collide.
+- **Five of the eleven parsers never reach `parse()` outside a skip in CI**: `csa_ccm`, `nist_ssdf`,
+  `enisa`, `biml` and `etsi`, which are the two PDFs, the XLSX and the multi-document pair, meaning
+  the most fragile extraction paths. `TestCommittedAfterReport` gates their OUTPUT on every machine
+  and does not exercise their CODE.
+- **`.github/workflows/ci.yml:65` still runs `pytest tests/ -x`**, so the first failure anywhere
+  stops every later test file, including the licensed-text gate. This run works around it locally by
+  running that gate first and alone. The workflow is untouched.
+
+### Prose floors: all 19 closed. `f815146`. 2,216 -> 2,251 passing. 9 mutations, no survivors.
+Every parser now declares a floor: thirteen at 1.00, capec and cwe at 0.99, csa_aicm 0.97, cosai
+0.96, aiuc_1 0.83, nist_ai_rmf 0.76. All 32 parsers ran end to end and wrote artifacts
+byte-identical to the committed ones, so the floors describe the shipped corpus rather than a
+hoped-for one. A new test reads the DECLARED attribute by AST, so it passes in a fresh clone with no
+`data/raw/`, and a newly added parser without a floor fails rather than shipping with the gate off.
+
+The agent repaired three fixtures that carried toy one-line text rather than relaxing the floors to
+accommodate them. That is the right way round and worth recording: `expected_count` describes sample
+size, `min_prose_fraction` describes the text, so a toy fixture is a fixture defect.
+
+### TWO PUBLISHED DEFECTS FOUND BY MEASURING THE OUTLIERS, NOW DISPATCHED
+I asked why `nist_ai_rmf` sat at 0.7639 and `aiuc_1` at 0.8333 before letting a floor enshrine
+either. One is a terse source and one is a bug.
+
+**`nist_ai_rmf` splits 67 of its 72 controls mid-sentence.** `SUBCATEGORY_RE` captures the title as
+`[^\n]*`, which stops at the source markdown's hard line wrap, and every RMF subcategory is one
+sentence. So the title takes line one and the description takes the rest:
+```
+title:       'Legal and regulatory requirements involving AI'
+description: 'are understood, managed, and documented.'
+```
+Neither half is a control statement. **72 rows of this are in the published dataset.** The 0.7639
+measures where a document converter wrapped its lines, not the source's prose, so the new 0.76 floor
+would have enshrined a defect. Same class as ENISA's rotated table header and ETSI's page header:
+a regex reading layout as content, passing every gate the parser declared.
+
+**`aiuc_1` is honest at 0.8333** (22 descriptions are genuinely under 60 characters in the source,
+median 76), **but it ships two `RETIRED - merged into ...` tombstones as live controls**, `E007.1`
+and `E014.1`, both published. That is ruling R17's shape exactly, where WSTG's withdrawal notices
+would have anchored three curated links on a redirect.
+
+Neither framework contributes any training links, so there is no training impact. Both are published,
+so the repository should be right before the next publish. Dispatched together.
