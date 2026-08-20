@@ -15,6 +15,13 @@ class SampleAiuc1Parser(Aiuc1Parser):
     must stay real, so the test declares what this input contains instead of
     asking the gate to look the other way. count_deviation_reason exists for a
     source that genuinely changed, not for a test that feeds a sample.
+
+    min_prose_fraction is deliberately NOT overridden. It states a property of
+    the text rather than of the sample size, so the fixture has to carry
+    activity statements as long as the real ones. Both fixture activities are
+    verbatim source text for that reason. Shortening one puts the fixture below
+    the 0.83 floor, and the right response is to restore the text rather than
+    to relax the parser.
     """
 
     expected_count: ClassVar[int] = 2

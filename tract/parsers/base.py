@@ -169,6 +169,24 @@ class BaseParser(SourceReader, ABC):
     # The floor this parser's output must clear. Measured on stored text, not
     # on the join-path prose_fraction telemetry, which records whether a
     # lookup hit rather than whether the text is prose.
+    #
+    # 0.0 is the off position, and a parser that never overrides it has no
+    # prose gate at all. Nineteen parsers sat here while thirteen declared a
+    # floor, so the fleet was half-covered by omission rather than by decision.
+    # tests/test_prose_floor_declarations.py now refuses a parser that leaves
+    # this at the default.
+    #
+    # Convention: declare the measured fraction rounded DOWN to two decimal
+    # places, so the parser passes on today's source and fails on a regression.
+    # A wholly-prose source therefore declares 1.0 and stops on its first
+    # non-prose control. When that fires, run the parser, list the controls
+    # whose description is shorter than HONEST_PROSE_MIN_CHARS or byte-equal to
+    # their title, and decide which of two things happened. If the source
+    # genuinely added a terse control, lower the floor to the newly measured
+    # value in the same commit that moves version and fetched_date, so the
+    # artifact and its floor never disagree. If the parser lost text, fix the
+    # parser and leave the floor alone. Never relax a floor without naming the
+    # control that forced it.
     min_prose_fraction: ClassVar[float] = 0.0
     # Set to a written reason when a parser legitimately reads no raw file.
     # Unset means an empty source manifest is a bug and run() refuses to

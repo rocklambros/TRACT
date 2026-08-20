@@ -31,6 +31,12 @@ class CosaiParser(BaseParser):
     mapping_unit_level = "control"
     expected_count = 55
     fetched_date: ClassVar[str] = "2026-04-28"
+    # 53 of 55 controls clear HONEST_PROSE_MIN_CHARS, giving 0.9636, and the
+    # floor fires at 52/55 (0.9455), so its margin is one control. [measured
+    # 2026-08-19] The two misses are one-line source statements of 51 and 52
+    # characters (controlInputValidationAndSanitization and
+    # controlIncidentResponseManagement), not truncation.
+    min_prose_fraction: ClassVar[float] = 0.96
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []

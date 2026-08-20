@@ -187,6 +187,11 @@ class AsvsParser(BaseParser):
     # 286 requirements in 4.0.3 less the eight withdrawn tombstones.
     expected_count = 278
     fetched_date: ClassVar[str] = "2026-08-14"
+    # All 278 requirements carry a statement and none equals its title. The
+    # shortest is 190 characters, so the attainable value is exactly 1.0 and the
+    # floor fires at 277/278 (0.9964) the moment one requirement decays to its
+    # own heading. [measured 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / ARCHIVE_NAME

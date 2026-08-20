@@ -76,6 +76,11 @@ class OwaspAiExchangeParser(BaseParser):
     expected_count = 107
     expected_count_is_floor: ClassVar[bool] = True
     fetched_date: ClassVar[str] = "2026-08-14"
+    # All 107 controls carry a statement and none equals its title. The shortest
+    # is 141 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 106/107 (0.9907) if one control decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []

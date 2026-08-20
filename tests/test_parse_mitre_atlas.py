@@ -13,6 +13,11 @@ class SampleMitreAtlasParser(MitreAtlasParser):
 
     The fixture holds 4 of the 202 mapping units. run()'s count gate is real
     and must stay real, so the test declares what this input contains.
+
+    min_prose_fraction is deliberately NOT overridden. ATLAS is wholly prose
+    and its floor is 1.0, so every one of the four fixture units has to carry a
+    full statement. A fixture trimmed to one-line stubs fails here, which is
+    the gate working rather than the gate being wrong.
     """
 
     expected_count: ClassVar[int] = 4

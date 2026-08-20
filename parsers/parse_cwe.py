@@ -79,6 +79,15 @@ class CweParser(BaseParser):
     expected_count = 1300
     expected_count_is_floor: ClassVar[bool] = True
     fetched_date: ClassVar[str] = "2026-08-14"
+    # 1,321 of 1,331 weaknesses carry a statement, giving 0.9925. [measured
+    # 2026-08-19] The ten misses are genuinely one-line entries, mostly category
+    # nodes such as CWE-1397 ("Weaknesses in this category are related to
+    # comparison.", 54 characters).
+    #
+    # At this catalog size two decimal places buys four weaknesses of slack, so
+    # the floor fires at 1,317/1,331 (0.9895). It catches the Description read
+    # breaking across the catalog rather than a single upstream edit.
+    min_prose_fraction: ClassVar[float] = 0.99
 
     def parse(self) -> list[Control]:
         root = self._read_catalog()

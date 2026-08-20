@@ -24,6 +24,16 @@ class MitreAtlasParser(BaseParser):
     mapping_unit_level = "technique"
     expected_count = 202
     fetched_date: ClassVar[str] = "2026-04-28"
+    # All 202 units carry a statement and none equals its title, so the
+    # attainable value is exactly 1.0 and the floor fires at 201/202 (0.9950).
+    # [measured 2026-08-19]
+    #
+    # The margin is thin on one entry. AML.M0004's description is 62 characters
+    # against a 60-character threshold, so an upstream copy edit that shortens
+    # it trips this gate. That is the intended behaviour: read the failure,
+    # confirm the shorter text is the real source, then lower the floor in the
+    # same commit that moves version and fetched_date.
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         data = json.loads(self.read_source("ATLAS_compiled.json"))

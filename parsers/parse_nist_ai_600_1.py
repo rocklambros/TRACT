@@ -41,6 +41,11 @@ class NistAi600Parser(BaseParser):
     mapping_unit_level = "risk_category"
     expected_count = 12
     fetched_date: ClassVar[str] = "2026-04-28"
+    # All 12 risk categories carry a statement and none equals its title. The
+    # shortest is 933 characters, so the attainable value is exactly 1.0 and the
+    # floor fires at 11/12 (0.9167) if one category decays to its heading.
+    # [measured 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         text = self.read_source("nist_ai_600_1.md")

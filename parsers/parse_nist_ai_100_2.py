@@ -126,6 +126,12 @@ class NistAi1002Parser(BaseParser):
     # not a floor: both halves of the count are enumerated by the source.
     expected_count = 66
     fetched_date: ClassVar[str] = "2026-08-14"
+    # All 66 units carry a statement and none equals its title. The shortest is
+    # 81 characters, so the attainable value is exactly 1.0 and the floor fires
+    # at 65/66 (0.9848) if one taxonomy section or named technique decays to its
+    # heading. [measured 2026-08-19] This parser reads a PDF, so the floor also
+    # covers a layout-engine change that empties a section body.
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         # Read through the recording reader so the artifact records which

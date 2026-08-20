@@ -13,6 +13,10 @@ class SampleCsaAicmParser(CsaAicmParser):
 
     The fixture holds 2 of the 243 controls. run()'s count gate is real and
     must stay real, so the test declares what this input contains.
+
+    min_prose_fraction is deliberately NOT overridden. It states a property of
+    the text rather than of the sample size, so both fixture specifications
+    carry their full source wording and clear the 0.97 floor.
     """
 
     expected_count: ClassVar[int] = 2

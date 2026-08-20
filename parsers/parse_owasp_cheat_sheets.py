@@ -212,6 +212,11 @@ class OwaspCheatSheetsParser(BaseParser):
     expected_count = 120
     expected_count_is_floor: ClassVar[bool] = True
     fetched_date: ClassVar[str] = "2026-08-14"
+    # All 120 sheets carry a statement and none equals its title. The shortest
+    # is 771 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 119/120 (0.9917) if one sheet decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         archive = self.raw_dir / ARCHIVE_NAME

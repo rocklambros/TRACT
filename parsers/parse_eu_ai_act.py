@@ -218,6 +218,11 @@ class EuAiActParser(BaseParser):
     mapping_unit_level = "article"
     expected_count = 126  # 113 articles + 13 annexes
     fetched_date: ClassVar[str] = "2026-08-14"
+    # All 126 units carry a statement and none equals its title. The shortest is
+    # 149 characters, so the attainable value is exactly 1.0 and the floor fires
+    # at 125/126 (0.9921) if one article or annex decays to its heading.
+    # [measured 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         """Parse Articles 1-113 and Annexes I-XIII from the EUR-Lex HTML.

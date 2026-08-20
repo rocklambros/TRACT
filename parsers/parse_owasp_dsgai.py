@@ -52,6 +52,11 @@ class OwaspDsgaiParser(BaseParser):
     mapping_unit_level = "risk"
     expected_count = 21
     fetched_date: ClassVar[str] = "2026-08-14"
+    # All 21 risks carry a statement and none equals its title. The shortest is
+    # 1,941 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 20/21 (0.9524) if one risk decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         """Parse DSGAI sections from the pdftotext output.

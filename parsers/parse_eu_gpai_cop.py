@@ -33,6 +33,11 @@ class EuGpaiCopParser(BaseParser):
     mapping_unit_level = "measure"
     expected_count = 40
     fetched_date: ClassVar[str] = "2026-04-28"
+    # All 40 measures carry a statement and none equals its title. The shortest
+    # is 157 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 39/40 (0.9750) if one measure decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         text = self.read_source("gpai_code_of_practice_combined.md")

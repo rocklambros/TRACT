@@ -24,6 +24,20 @@ class Aiuc1Parser(BaseParser):
     mapping_unit_level = "activity"
     expected_count = 132
     fetched_date: ClassVar[str] = "2026-04-28"
+    # 110 of 132 activities carry a statement longer than HONEST_PROSE_MIN_CHARS,
+    # giving 0.8333, and the floor fires at 109/132 (0.8258). [measured
+    # 2026-08-19]
+    #
+    # The 22 short ones are short in the source, not lost by the parser. Each
+    # activity record holds exactly id, description, category and evidence_types,
+    # parse() copies description verbatim, and no field is discarded. Median
+    # source description is 76 characters and the minimum is 27. Two of the 22
+    # are "RETIRED - merged into ..." tombstones.
+    #
+    # The floor sits well below 1.0 because the source is terse. It still stops
+    # a collapse onto the parent control title, which is what all 132 activities
+    # would inherit if the description read broke.
+    min_prose_fraction: ClassVar[float] = 0.83
 
     def parse(self) -> list[Control]:
         data = json.loads(self.read_source("aiuc-1-standard.json"))

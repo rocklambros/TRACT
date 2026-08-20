@@ -58,6 +58,16 @@ class CapecParser(BaseParser):
     expected_count = 500
     expected_count_is_floor: ClassVar[bool] = True
     fetched_date: ClassVar[str] = "2026-08-14"
+    # 556 of 558 patterns carry a statement, giving 0.9964. [measured
+    # 2026-08-19] CAPEC-434 and CAPEC-435 ship an empty <Description/> in
+    # MITRE's own XML, so the fallback below sets description to the pattern
+    # name and those two read as title-only. That is upstream, not a parse loss.
+    #
+    # Two decimal places is the fleet convention, and at this catalog size it
+    # buys four patterns of slack: the floor fires at 552/558 (0.9892). It is a
+    # tripwire for the Description read breaking across the catalog, not for a
+    # single upstream edit.
+    min_prose_fraction: ClassVar[float] = 0.99
 
     def parse(self) -> list[Control]:
         source = self.raw_dir / "capec_latest.xml"
