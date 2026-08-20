@@ -13,6 +13,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from tract.config import PROJECT_ROOT
+
 
 def atomic_write_json(data: Any, path: Path | str) -> None:
     """Atomically write data as formatted JSON to *path*.
@@ -102,3 +104,26 @@ def load_json(path: Path | str) -> Any:
     """
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def repo_relative(path: Path) -> str:
+    """A path as the repository sees it, so no artifact ships a home directory.
+
+    An absolute path in a committed artifact does two kinds of harm. It puts
+    the author's username into a repository intended for publication, and it
+    makes byte-identical regeneration hold on one machine only.
+
+    This lives here rather than in a caller because it has now been needed in
+    two unrelated writers: the corpus evidence report and the training-link
+    metadata. The second one reintroduced the defect the first had already
+    fixed, because the rule lived in a module it did not import.
+
+    A path outside the repository is returned unchanged, so a caller writing to
+    a scratch directory gets a usable absolute path rather than a wrong
+    relative one.
+    """
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(PROJECT_ROOT.resolve()))
+    except ValueError:
+        return str(resolved)

@@ -30,7 +30,7 @@ from tract.config import (
     PHASE1B_MIN_ANCHOR_TEXT_LENGTH,
     TRAINING_DIR,
 )
-from tract.io import atomic_write_json
+from tract.io import atomic_write_json, repo_relative
 from tract.text_selection import ProseIndex, merged_corpus_path, merged_corpus_sha256
 
 logger = logging.getLogger(__name__)
@@ -204,7 +204,14 @@ def filter_training_links(
         dropped_unresolved=sorted(unresolved),
         dropped_thin_anchor=sorted(thin),
         dropped_contested=sorted(contested),
-        corpus_path=None if source is None else str(source),
+        # Repo-relative, for the same two reasons corpus_report._repo_relative
+        # gives: an absolute path puts the author's username into a CC0
+        # repository intended for publication, and it makes the artifact
+        # reproducible on exactly one laptop. This file is TRACKED, so both
+        # apply. Task 1 fixed the identical defect in results/corpus/before.json
+        # and it reappeared here because the rule lived in a helper this module
+        # did not import.
+        corpus_path=None if source is None else repo_relative(source),
         corpus_sha256=None if source is None else merged_corpus_sha256(source),
     )
 
@@ -352,7 +359,10 @@ def save_training_links(
 
     atomic_write_json(
         {
-            "corpus_path": str(merged_corpus_path()),
+            # Repo-relative: this file is TRACKED, so an absolute path would
+            # put a username into a CC0 repository and make the artifact
+            # reproducible on one machine only.
+            "corpus_path": repo_relative(merged_corpus_path()),
             "corpus_sha256": corpus_sha256,
             "curated_links_sha256": raw_hash,
             "n_links": len(output_records),

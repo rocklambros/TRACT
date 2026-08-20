@@ -95,3 +95,62 @@ class TestLoadJson:
 
         with pytest.raises(json.JSONDecodeError):
             load_json(target)
+
+
+class TestNoTrackedArtifactShipsAHomeDirectory:
+    """An absolute path in a committed artifact has bitten this project twice.
+
+    Task 1 fixed it in results/corpus/before.json. Task 14 reintroduced it in
+    data/training/hub_links_training.meta.json, because the rule lived in a
+    private helper in a module the training path did not import. It is now
+    tract.io.repo_relative and this test is the thing that notices the third
+    time rather than a reviewer.
+
+    Two harms, both real: a username ships in a repository intended for
+    publication, and byte-identical regeneration holds on one machine only.
+    """
+
+    def test_repo_relative_strips_the_repository_root(self) -> None:
+        from tract.config import PROJECT_ROOT
+        from tract.io import repo_relative
+
+        inside = PROJECT_ROOT / "data" / "processed" / "all_controls.json"
+        assert repo_relative(inside) == "data/processed/all_controls.json"
+
+    def test_a_path_outside_the_repository_is_returned_whole(
+        self, tmp_path: Path
+    ) -> None:
+        """A scratch path has no relative form, and a wrong one is worse."""
+        from tract.io import repo_relative
+
+        outside = tmp_path / "scratch.json"
+        assert repo_relative(outside) == str(outside.resolve())
+
+    def test_no_tracked_json_artifact_carries_an_absolute_path(self) -> None:
+        import subprocess
+
+        from tract.config import PROJECT_ROOT
+
+        tracked = subprocess.run(
+            ["git", "ls-files", "data", "results"],
+            cwd=PROJECT_ROOT, capture_output=True, text=True, check=True,
+        ).stdout.split()
+        offenders: list[str] = []
+        for name in tracked:
+            if not name.endswith((".json", ".jsonl")):
+                continue
+            path = PROJECT_ROOT / name
+            if not path.exists():
+                continue
+            try:
+                body = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue
+            # A JSON string value that begins at the filesystem root. Matching
+            # the quote keeps ordinary prose mentioning a path out of it.
+            if '"/Users/' in body or '"/home/' in body or '"/root/' in body:
+                offenders.append(name)
+        assert not offenders, (
+            f"{offenders} carry an absolute path in a tracked artifact. Use "
+            f"tract.io.repo_relative when writing a path into a committed file."
+        )

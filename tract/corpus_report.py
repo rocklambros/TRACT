@@ -53,7 +53,7 @@ from tract.config import (
     RESTRICTED_FRAMEWORK_IDS,
     TRAINING_DIR,
 )
-from tract.io import atomic_write_text
+from tract.io import atomic_write_text, repo_relative
 from tract.text_selection import (
     ProseIndex,
     TextSelection,
@@ -224,19 +224,8 @@ def _sha256(path: Path) -> str:
 
 
 def _repo_relative(path: Path) -> str:
-    """A path as the repository sees it, so no artifact ships a home directory.
-
-    An absolute path in a committed artifact does two kinds of harm. It puts
-    the author's username in a CC0 repository intended for publication, and it
-    makes the byte-identical regeneration property hold on one laptop only. A
-    path outside the repository is returned unchanged, and the --tag write path
-    refuses to commit an artifact that carries one.
-    """
-    resolved = path.resolve()
-    try:
-        return str(resolved.relative_to(PROJECT_ROOT.resolve()))
-    except ValueError:
-        return str(resolved)
+    """Delegates to tract.io.repo_relative, kept for the existing callers."""
+    return repo_relative(path)
 
 
 def _load_links(path: Path) -> dict[str, list[dict[str, str]]]:
