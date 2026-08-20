@@ -31,13 +31,13 @@ def _framework_files() -> list[Path]:
     reason="no processed corpus in this checkout",
 )
 class TestCorpusInvariants:
-    # Plan 1 lands the contract and ISO. The remaining 11 title-only
-    # frameworks are Plan 1b, and these tests stay red until then. That is
-    # deliberate: a skipped invariant is a forgotten invariant.
-    pytestmark = pytest.mark.xfail(
-        reason="11 frameworks await parsers, tracked in Plan 1b",
-        strict=False,
-    )
+    # These carried a non-strict xfail reading "11 frameworks await parsers,
+    # tracked in Plan 1b". Plan 1b landed all eleven, so the three started
+    # XPASSing and the marker became the thing its own comment warned about:
+    # under strict=False an invariant that breaks again reports XFAIL and the
+    # suite stays green. Verified against the tracked-only set a fresh checkout
+    # sees, which is 28 framework files rather than the 32 present locally:
+    # no orphans, no zero-prose framework, no synthesised version string.
 
     def test_every_framework_file_has_a_parser(self) -> None:
         orphans = sorted(
