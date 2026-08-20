@@ -17,6 +17,7 @@ import pytest
 
 from scripts.rebuild_corpus import (
     BASELINE_PATH,
+    DECLARED_DROPPED_KEYS,
     DECLARED_MOVED_KEYS,
     EXPECTED_CHANGED_FRAMEWORK_IDS,
     EXPECTED_UNCHANGED_RECORDS,
@@ -652,15 +653,20 @@ def test_the_rebuild_diff_records_what_the_run_reported() -> None:
         (REPO_ROOT / "results/corpus/rebuild_diff.json").read_text(encoding="utf-8")
     )
     assert diff["unchanged"] == EXPECTED_UNCHANGED_RECORDS
-    assert diff["changed"] == sorted(DECLARED_MOVED_KEYS)
-    assert len(diff["removed"]) == 436
+    # A dropped record has no live digest, so it leaves through the removed
+    # bucket rather than the changed one. Both are declared, and the split is
+    # what tells a reader whether a control was rewritten or withdrawn.
+    assert diff["changed"] == sorted(DECLARED_MOVED_KEYS - DECLARED_DROPPED_KEYS)
+    assert DECLARED_DROPPED_KEYS <= set(diff["removed"])
+    assert len(diff["removed"]) == 436 + len(DECLARED_DROPPED_KEYS)
     buckets = diff["removed_classification"]
     assert (len(buckets["prefix_only"]) + len(buckets["id_reshaped"])
-            + len(buckets["gone"])) == 436
+            + len(buckets["gone"])) == 436 + len(DECLARED_DROPPED_KEYS)
     touched = {key.split(":", 1)[0]
                for key in diff["changed"] + diff["added"] + diff["removed"]}
     assert touched == (
-        EXPECTED_CHANGED_FRAMEWORK_IDS | {"owasp_llm_top10_2026", "nist_ai_100_2"}
+        EXPECTED_CHANGED_FRAMEWORK_IDS
+        | {"owasp_llm_top10_2026", "nist_ai_100_2", "nist_ai_rmf", "aiuc_1"}
     )
     # Nothing outside the eleven reproduces anything but its own bytes, and
     # the five whose source_files block moved carry 0 differing controls.

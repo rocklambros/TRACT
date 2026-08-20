@@ -1513,19 +1513,6 @@
       "title": "Conduct vendor due diligence"
     },
     {
-      "control_id": "E007.1",
-      "description": "RETIRED - merged into E004.",
-      "hierarchy_level": "activity",
-      "metadata": {
-        "category": "Core",
-        "domain": "Accountability",
-        "evidence_types": []
-      },
-      "parent_id": "E007",
-      "parent_name": "Document system change approvals",
-      "title": "Document system change approvals"
-    },
-    {
       "control_id": "E008.1",
       "description": "Quarterly reviews of decision processes including AI system changes, foundational model selection.",
       "hierarchy_level": "activity",
@@ -1752,19 +1739,6 @@
       "parent_id": "E013",
       "parent_name": "Implement quality management system",
       "title": "Implement quality management system"
-    },
-    {
-      "control_id": "E014.1",
-      "description": "RETIRED - merged into E017.",
-      "hierarchy_level": "activity",
-      "metadata": {
-        "category": "Core",
-        "domain": "Accountability",
-        "evidence_types": []
-      },
-      "parent_id": "E014",
-      "parent_name": "Share transparency reports",
-      "title": "Share transparency reports"
     },
     {
       "control_id": "E015.1",

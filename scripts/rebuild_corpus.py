@@ -84,16 +84,77 @@ EXPECTED_ADDED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
 # is byte-identical, and two consecutive fresh runs agree. requirements.txt now
 # pins pdfminer.six and these two records are regenerated under that pin, so a
 # third movement here is drift this pin was supposed to stop. [measured]
-DECLARED_MOVED_KEYS: Final[frozenset[str]] = frozenset({
+PDF_LAYOUT_MOVED_KEYS: Final[frozenset[str]] = frozenset({
     "nist_ai_100_2:2.1", "nist_ai_100_2:3.1",
 })
+# Two parsers repaired after the baseline was taken, named one record at a
+# time so a repair that reached further than its own framework shows up here.
+#
+# nist_ai_rmf moves all 72 of its subcategories. The source is a PDF converted
+# to markdown and the parser captured the title as `[^\n]*`, which stops at the
+# converter's hard line wrap, so every control shipped as two halves of one
+# sentence and the second half also carried whatever page furniture sat between
+# the wrap and the next marker. [measured 2026-08-19]
+#
+# aiuc_1 moves two of its 132 records, and both leave the corpus rather than
+# changing text, so they are declared separately below. The other 130
+# activities are byte-identical, which is why they are absent from this list.
+REPAIRED_PARSER_MOVED_KEYS: Final[frozenset[str]] = frozenset({
+    "nist_ai_rmf:GOVERN 1.1",
+    "nist_ai_rmf:GOVERN 1.2", "nist_ai_rmf:GOVERN 1.3",
+    "nist_ai_rmf:GOVERN 1.4", "nist_ai_rmf:GOVERN 1.5",
+    "nist_ai_rmf:GOVERN 1.6", "nist_ai_rmf:GOVERN 1.7",
+    "nist_ai_rmf:GOVERN 2.1", "nist_ai_rmf:GOVERN 2.2",
+    "nist_ai_rmf:GOVERN 2.3", "nist_ai_rmf:GOVERN 3.1",
+    "nist_ai_rmf:GOVERN 3.2", "nist_ai_rmf:GOVERN 4.1",
+    "nist_ai_rmf:GOVERN 4.2", "nist_ai_rmf:GOVERN 4.3",
+    "nist_ai_rmf:GOVERN 5.1", "nist_ai_rmf:GOVERN 5.2",
+    "nist_ai_rmf:GOVERN 6.1", "nist_ai_rmf:GOVERN 6.2",
+    "nist_ai_rmf:MANAGE 1.1", "nist_ai_rmf:MANAGE 1.2",
+    "nist_ai_rmf:MANAGE 1.3", "nist_ai_rmf:MANAGE 1.4",
+    "nist_ai_rmf:MANAGE 2.1", "nist_ai_rmf:MANAGE 2.2",
+    "nist_ai_rmf:MANAGE 2.3", "nist_ai_rmf:MANAGE 2.4",
+    "nist_ai_rmf:MANAGE 3.1", "nist_ai_rmf:MANAGE 3.2",
+    "nist_ai_rmf:MANAGE 4.1", "nist_ai_rmf:MANAGE 4.2",
+    "nist_ai_rmf:MANAGE 4.3", "nist_ai_rmf:MAP 1.1", "nist_ai_rmf:MAP 1.2",
+    "nist_ai_rmf:MAP 1.3", "nist_ai_rmf:MAP 1.4", "nist_ai_rmf:MAP 1.5",
+    "nist_ai_rmf:MAP 1.6", "nist_ai_rmf:MAP 2.1", "nist_ai_rmf:MAP 2.2",
+    "nist_ai_rmf:MAP 2.3", "nist_ai_rmf:MAP 3.1", "nist_ai_rmf:MAP 3.2",
+    "nist_ai_rmf:MAP 3.3", "nist_ai_rmf:MAP 3.4", "nist_ai_rmf:MAP 3.5",
+    "nist_ai_rmf:MAP 4.1", "nist_ai_rmf:MAP 4.2", "nist_ai_rmf:MAP 5.1",
+    "nist_ai_rmf:MAP 5.2", "nist_ai_rmf:MEASURE 1.1",
+    "nist_ai_rmf:MEASURE 1.2", "nist_ai_rmf:MEASURE 1.3",
+    "nist_ai_rmf:MEASURE 2.1", "nist_ai_rmf:MEASURE 2.10",
+    "nist_ai_rmf:MEASURE 2.11", "nist_ai_rmf:MEASURE 2.12",
+    "nist_ai_rmf:MEASURE 2.13", "nist_ai_rmf:MEASURE 2.2",
+    "nist_ai_rmf:MEASURE 2.3", "nist_ai_rmf:MEASURE 2.4",
+    "nist_ai_rmf:MEASURE 2.5", "nist_ai_rmf:MEASURE 2.6",
+    "nist_ai_rmf:MEASURE 2.7", "nist_ai_rmf:MEASURE 2.8",
+    "nist_ai_rmf:MEASURE 2.9", "nist_ai_rmf:MEASURE 3.1",
+    "nist_ai_rmf:MEASURE 3.2", "nist_ai_rmf:MEASURE 3.3",
+    "nist_ai_rmf:MEASURE 4.1", "nist_ai_rmf:MEASURE 4.2",
+    "nist_ai_rmf:MEASURE 4.3",
+})
+# Records outside the eleven that leave the corpus rather than change text.
+# E007.1 and E014.1 held "RETIRED - merged into E004." and "RETIRED - merged
+# into E017.", the withdrawal notices the Q1 2026 update left in place, and
+# parsers/parse_aiuc_1.py no longer ships them. They land in the diff report's
+# removed bucket, not its changed bucket, and the baseline check counts them as
+# moved because a key with no live digest has moved as surely as one whose text
+# changed. [measured 2026-08-19]
+DECLARED_DROPPED_KEYS: Final[frozenset[str]] = frozenset({
+    "aiuc_1:E007.1", "aiuc_1:E014.1",
+})
+DECLARED_MOVED_KEYS: Final[frozenset[str]] = (
+    PDF_LAYOUT_MOVED_KEYS | REPAIRED_PARSER_MOVED_KEYS | DECLARED_DROPPED_KEYS
+)
 
 # Baseline records outside the eleven that must reproduce, derived from the
 # baseline itself rather than from the run it gates: 4,261 pre-rebuild records
-# minus the 475 inside the eleven is 3,786, minus the 2 declared above. capec
+# minus the 475 inside the eleven is 3,786, minus the 76 declared above. capec
 # 558 and cwe 1,331 reproduce byte-identically under defusedxml, which is half
-# of this total on its own. [measured]
-EXPECTED_UNCHANGED_RECORDS: Final[int] = 3784
+# of this total on its own. [measured 2026-08-19]
+EXPECTED_UNCHANGED_RECORDS: Final[int] = 3710
 
 # Fields that decide which text a link resolves to, and therefore what a
 # rebuild can silently move. Order is fixed because it is serialised.

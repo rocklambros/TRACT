@@ -111,3 +111,23 @@ would otherwise land after the fleet is already billing.
 
 The RunPod orchestrator has NOT been through its own premortem yet. Do not treat
 a green preflight as clearance for an unattended run.
+
+## Before quoting any recorded number
+
+```bash
+PYTHONPATH=. python3 -m tract.staleness
+```
+
+Every fold records the digests of the three files it read: the curated links,
+the merged corpus and the stopword list. The report compares each against the
+file today and names what moved.
+
+At the time of writing, **27 of 32 recorded fold results are stale**, because
+the corpus rebuild and the stopword regeneration both moved under them. That is
+expected and correct. A stale result may be kept, and may be compared against
+its own recorded inputs. It may not be quoted as a current measurement without
+re-running it.
+
+The suite asserts that every result records at least one digest, so staleness
+stays detectable. It does not fail on staleness itself, because a suite that
+went red for the whole of a rebuild would be silenced rather than heeded.
