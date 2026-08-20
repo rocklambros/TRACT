@@ -143,6 +143,57 @@ behind the layout check; the refusal downgraded to a warning; the CI job put
 back on 3.11; one suppression flag dropped from the workflow; `|| true` appended
 to the audit; scipy reverted to 1.18.0.
 
+## What the install fix uncovered, and why it is not patched here
+
+`training-stack` is still red, on a different failure. Fixing the install moved
+the job from dying at `pip install` to running the regression tests for the
+first time, and two of them fail:
+
+- `tests/test_training_loop.py::TestLoRACheckpointPersistence::test_adapter_survives_save_and_reload`
+- `tests/test_publish_merge.py::TestMergeRealAdapter::test_merges_adapter_only_checkpoint`
+
+Both raise the same error: `ValueError: Unrecognized model in <dir>. Should have
+a model_type key in its config.json`.
+
+**Not caused by this change.** `main` carries neither the `training-stack` job
+nor `requirements-train.txt`, so these two tests have never executed in CI
+anywhere. On this branch the previous run's "Run the training regression tests"
+step is recorded as `skipped`, because the job died at install. The repins in
+this commit were scipy and datasets; the failing call is
+`SentenceTransformer(<adapter-only dir>)` resolving a transformers `AutoConfig`,
+which neither touches.
+
+**One root cause, two call sites.** A LoRA checkpoint written by `model.save()`
+is adapter-only: `adapter_config.json` plus `adapter_model.safetensors`, no base
+config and no base weights. `tract/training/loop.py:315:_reload_saved_model`
+already documents this and works around it by loading the base named inside the
+adapter config and attaching the adapter. Two places bypass that routine and
+call the constructor directly:
+
+- `tract/publish/merge.py:95` — `model = SentenceTransformer(str(model_dir))`, the first line of `merge_lora_adapters`. It dies before ever reaching its own adapter-only branch at lines 118-128, which was written for exactly this case.
+- `tests/test_training_loop.py:200` — asserts a naked `SentenceTransformer(saved)` reproduces the adapted model, which is the contract `loop.py`'s docstring says sentence-transformers does not offer for an adapter-only directory.
+
+**The workaround is proven to work under this exact stack.**
+`test_verify_checkpoint_roundtrip_passes_on_match` passed in the same CI run,
+and it goes through `verify_checkpoint_roundtrip` → `_reload_saved_model` on an
+adapter-only checkpoint. So the reload strategy is sound and only the two call
+sites above are wrong.
+
+**Fix shape**, not applied here. `merge_lora_adapters` needs the *unmerged*
+adapter model to compute its pre-merge reference embeddings, so it cannot simply
+call `_reload_saved_model`, which merges eagerly. It needs the same load
+stopping one step earlier: build the SentenceTransformer from
+`base_model_name_or_path`, attach `PeftModel.from_pretrained(...)` to the
+backbone with `_set_backbone` without merging, then let the existing
+`hasattr(inner, "merge_and_unload")` branch do the merge and the verification.
+
+**Why it is not patched here.** It is a production change to the LoRA publish
+path, which project memory flags as the defect that "corrupts artifacts
+independently of everything else". Verifying it needs a real model load, which
+the standing rules put on a pod and off this machine, so any patch would be a
+blind push into the artifact path. It is a distinct defect from the three in the
+brief and wants its own change with a pod behind it.
+
 ## Concerns
 
 1. **The serving stack's reproduction claim is now unproven, and the file says
@@ -159,3 +210,8 @@ to the audit; scipy reverted to 1.18.0.
    imports, verified in a clean venv. It has not been exercised against a real
    model load, which needs a pod.
 4. The expiry lands on 2026-11-17 and will fail the suite that day by design.
+5. **`training-stack` is still red**, on the LoRA checkpoint defect above rather
+   than on anything in this commit. Seven of eight checks pass: `lint`,
+   `model-pins`, `test (3.11)`, `test (3.12)`, `audit`, `CodeQL` and
+   `Analyze Python`. Inside `training-stack` the install, the pin assertion and
+   the import proof all pass now, and 157 of 159 regression tests pass.
