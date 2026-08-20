@@ -36,6 +36,24 @@ results/phase1b/**
 # account for 35 of the 39 MB this section would otherwise expose.
 results/phase1b/**/checkpoint-*/
 results/phase1b/**/model/
+# results/review is PHASE3_REVIEW_OUTPUT_DIR, and it carried the same defect in
+# a quieter form: four tracked files inside an ignored directory, so a re-export
+# under a new filename would have vanished while the existing four kept showing
+# as modified. Everything it holds is JSON and markdown, so the whole directory
+# is re-included rather than filtered.
+!results/review/
+# results/bridge holds bridge_report.json, the Phase 2B record of which bridge
+# candidates an expert accepted. `tract bridge` writes it and nothing was
+# reading it back out of git, because git could not see it.
+!results/bridge/
+# results/phase1c is excluded apart from one carve-out. crosswalk.db is covered
+# by *.db, deployment_model/ is weights, and similarities/ is .npz arrays, so
+# the directory defaults to excluded. calibration/ is the exception: ece_gate.json
+# is a gate verdict, and a gate whose result cannot be committed is a gate
+# nobody can check.
+!results/phase1c/
+results/phase1c/*
+!results/phase1c/calibration/
 *.db
 __pycache__/
 .env
