@@ -30,8 +30,10 @@ from pathlib import Path
 from typing import Any, Final, Literal, NamedTuple
 
 from scripts.score_ceiling_study import AnswerRow, ScoredItem, score_items
+from tract.ceiling_study import load_ceiling_items
 from tract.config import (
     CEILING_STUDY_DIR,
+    CEILING_STUDY_PINNED_ITEMS,
     EXIT_USER_ERROR,
     PANEL_CONTAMINATION_PROBE_FRAMEWORK,
     PANEL_MODELS,
@@ -66,10 +68,16 @@ class ItemMeta(NamedTuple):
 
 
 def _load_items_metadata(path: Path) -> dict[int, ItemMeta]:
-    data = load_json(path)
+    """Item metadata, from the study of record rather than a fresh draw.
+
+    load_ceiling_items verifies the pinned artifact against its provenance
+    record before returning it (ruling R22). Every annotator file this script
+    reads keys on item_index, so an items file that moved under them would
+    re-point the human's answers and all five panels' at once.
+    """
     return {
-        int(item["item_index"]): ItemMeta(str(item["framework_id"]), str(item["stratum"]))
-        for item in data["items"]
+        item["item_index"]: ItemMeta(item["framework_id"], item["stratum"])
+        for item in load_ceiling_items(path)
     }
 
 
@@ -772,7 +780,7 @@ def build_report(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--items", type=Path, default=CEILING_STUDY_DIR / "ceiling_items.json")
+    parser.add_argument("--items", type=Path, default=CEILING_STUDY_PINNED_ITEMS)
     parser.add_argument("--key", type=Path, default=CEILING_STUDY_DIR / "ceiling_answer_key.json")
     parser.add_argument(
         "--human", type=Path, default=CEILING_STUDY_DIR / "answers_human_rock.json"

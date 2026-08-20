@@ -18,10 +18,12 @@ import sys
 from pathlib import Path
 from typing import Any, Literal, TypedDict
 
+from tract.ceiling_study import load_ceiling_items
 from tract.config import (
     CEILING_STUDY_DIR,
     CEILING_STUDY_MAX_ACCEPTABLE_HUBS,
     CEILING_STUDY_N_ITEMS,
+    CEILING_STUDY_PINNED_ITEMS,
     CEILING_STUDY_TARGET_HALF_WIDTH,
     EXIT_USER_ERROR,
 )
@@ -54,11 +56,16 @@ class ScoredItem(TypedDict):
 
 
 def _load_items_metadata(path: Path) -> dict[int, tuple[str, str]]:
-    """item_index -> (framework_id, stratum), from the (ground-truth-free) items file."""
-    data = load_json(path)
+    """item_index -> (framework_id, stratum), from the (ground-truth-free) items file.
+
+    Goes through load_ceiling_items rather than load_json, so scoring the
+    study of record verifies it against its provenance record first (ruling
+    R22). The answers key on item_index, so an items file that changed under
+    them would silently re-point every one of 250 hand-made answers.
+    """
     out: dict[int, tuple[str, str]] = {}
-    for item in data["items"]:
-        out[int(item["item_index"])] = (str(item["framework_id"]), str(item["stratum"]))
+    for item in load_ceiling_items(path):
+        out[item["item_index"]] = (item["framework_id"], item["stratum"])
     return out
 
 
@@ -164,7 +171,7 @@ def _report_group(title: str, scored: list[ScoredItem]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--items", type=Path, default=CEILING_STUDY_DIR / "ceiling_items.json",
+        "--items", type=Path, default=CEILING_STUDY_PINNED_ITEMS,
         help="Path to ceiling_items.json (ground-truth-free item metadata).",
     )
     parser.add_argument(

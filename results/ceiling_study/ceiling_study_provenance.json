@@ -1,0 +1,53 @@
+{
+  "divergence_when_pinned": {
+    "anchor_pool_sizes": {
+      "capec": 349,
+      "cwe": 245,
+      "mitre_atlas": 43,
+      "nist_800_53": 298,
+      "nist_ai_100_2": 22,
+      "owasp_ai_exchange": 63,
+      "owasp_llm_top10": 6
+    },
+    "corpus_path": "data/processed/all_controls.json",
+    "corpus_sha256": "ebaed9878d289d24bb3e175e1105662dfd73e9da7dde7f056bbf9992cdb52ac0",
+    "curated_links_sha256": "3d42cbd396f26cc7842f0ad3d9a24d48a154fade6fcc6731f0068b756a4a9bdd",
+    "licensed_overlay_changes_nothing": true,
+    "measured_at_commit": "7a8465bde1996800aaacd80b1814ccbf9701e4ae",
+    "note": "How far a draw at seed 42 had moved by the time this record was written. Measured, not carried forward. The two counts answer different questions and the run ledger conflated them: every answer file keys on item_index, so positions_replaced is the one that governs whether an answer still lines up. Identified by the digests below rather than by a date, because the pool keeps moving and a number without its inputs goes stale silently.",
+    "pinned_items_absent": 77,
+    "positions_held": 82,
+    "positions_replaced": 168
+  },
+  "drawn_from": {
+    "anchor_pool_sizes": {
+      "capec": 339,
+      "cwe": 240,
+      "mitre_atlas": 43,
+      "nist_800_53": 298,
+      "nist_ai_100_2": 22,
+      "owasp_ai_exchange": 62,
+      "owasp_llm_top10": 6
+    },
+    "code_commit": "62afd39d4a6809c9e11080a9d4e165bb22f58598",
+    "corpus_path": "data/processed/all_controls.json",
+    "corpus_sha256": "ceef7fc6dc586f68e74bf7b35f82ce24294cddc69917d9997ade5f8a8cb4c91f",
+    "curated_links_path": "data/training/hub_links_curated.jsonl",
+    "curated_links_sha256": "3d42cbd396f26cc7842f0ad3d9a24d48a154fade6fcc6731f0068b756a4a9bdd",
+    "recovery": "reproduced",
+    "recovery_note": "Not inferred. The repository tree at 62afd39 was extracted and build_ceiling_study() run against it, and it returned all 250 pinned items in their pinned positions. Every value below is therefore confirmed by replay rather than read off a commit. The replay was possible because the code at that commit read data/processed/all_controls.json directly: merged_corpus_path() and its licensed overlay did not exist yet, so there is no gitignored input to guess at.",
+    "seed": 42
+  },
+  "pinned_artifact": {
+    "answers": [
+      "results/ceiling_study/answers_human_rock.json",
+      "results/ceiling_study/ceiling_answer_key.json"
+    ],
+    "n_items": 250,
+    "path": "results/ceiling_study/ceiling_items.json",
+    "sha256": "2a83b6f78fa23afecce1071978361eadb980608ec7a62a32bcfba9d3de335da5"
+  },
+  "ruling": "R22",
+  "schema_version": 1,
+  "what_this_is": "The provenance of the annotated ceiling study. results/ceiling_study/ceiling_items.json is the study of record: 250 items a domain expert scored by hand, and the source of the alpha-1 = 0.181 CAPEC figure this rebuild reads its metrics against. build_ceiling_study() draws from the live curated-link pool, so it answers what a study drawn today would look like, not what was scored. This file records what the scored study was drawn from, so the two can never be confused again."
+}

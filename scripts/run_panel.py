@@ -42,9 +42,11 @@ from typing import Any, Final, TypedDict
 
 import requests
 
+from tract.ceiling_study import require_pinned_study_unmodified
 from tract.config import (
     CEILING_STUDY_DIR,
     CEILING_STUDY_MAX_ACCEPTABLE_HUBS,
+    CEILING_STUDY_PINNED_ITEMS,
     CEILING_STUDY_SEED,
     EXIT_OFFLINE,
     EXIT_USER_ERROR,
@@ -765,7 +767,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", required=True, choices=list(PANEL_MODELS))
     parser.add_argument(
-        "--items", type=Path, default=CEILING_STUDY_DIR / "ceiling_items.json"
+        "--items", type=Path, default=CEILING_STUDY_PINNED_ITEMS
     )
     parser.add_argument(
         "--hub-reference", type=Path, default=CEILING_STUDY_DIR / "hub_reference.md"
@@ -814,6 +816,17 @@ def main() -> int:
     for path in (args.items, args.hub_reference):
         if not path.exists():
             print(f"error: file not found: {path}", file=sys.stderr)
+            return EXIT_USER_ERROR
+
+    # Ruling R22. This script also serves contamination_control_items.json,
+    # whose item_index is negative by design, so it cannot go through
+    # load_ceiling_items. The tripwire still applies when the run is aimed at
+    # the annotated study, which is the run that spends money against it.
+    if args.items.resolve() == CEILING_STUDY_PINNED_ITEMS.resolve():
+        try:
+            require_pinned_study_unmodified(args.items)
+        except ValueError as error:
+            print(f"error: {error}", file=sys.stderr)
             return EXIT_USER_ERROR
 
     _RETRY_LOG.clear()

@@ -777,6 +777,20 @@ CEILING_STUDY_N_ITEMS: Final[int] = 250
 CEILING_STUDY_STRATUM_SIZE: Final[int] = 125
 CEILING_STUDY_MAX_ACCEPTABLE_HUBS: Final[int] = 5
 
+# Ruling R22. The 250 items a domain expert annotated by hand live in exactly
+# one file, and that file is the study of record. build_ceiling_study() draws
+# from the live curated-link pool, so it answers "what would a study drawn
+# today look like", never "what did the owner score". Those two answers
+# separated when Task 14 moved the link gates, and nothing said so.
+CEILING_STUDY_PINNED_ITEMS: Final[Path] = CEILING_STUDY_DIR / "ceiling_items.json"
+CEILING_STUDY_PROVENANCE_PATH: Final[Path] = (
+    CEILING_STUDY_DIR / "ceiling_study_provenance.json"
+)
+# A fresh draw is a NEW study with its own name. It lands here, one
+# subdirectory per name, so no new draw can share a path with the pinned
+# artifact even by a typo.
+CEILING_STUDY_NEW_DIR: Final[Path] = CEILING_STUDY_DIR / "studies"
+
 # Only frameworks whose text is stable under the pending corpus rebuild are
 # eligible. The other 15 curated frameworks either have a parser landing
 # (biml, csa_ccm, dsomm, enisa, etsi, iso_27001, nist_800_63, nist_ssdf,
