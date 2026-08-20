@@ -11,11 +11,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from tract.staleness import (
     TRACKED_INPUTS,
-    ResultStatus,
     check_result,
     describe,
     scan,
