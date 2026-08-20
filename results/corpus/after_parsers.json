@@ -340,7 +340,7 @@
       "standard_name": "NIST SSDF",
       "truncated": 0,
       "unresolved": 0,
-      "wrong_anchor_risk": 44
+      "wrong_anchor_risk": 0
     },
     {
       "anchor_source_description": 29,
@@ -557,6 +557,6 @@
     "standard_name": "",
     "truncated": 737,
     "unresolved": 16,
-    "wrong_anchor_risk": 74
+    "wrong_anchor_risk": 30
   }
 }

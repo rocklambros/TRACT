@@ -30,7 +30,9 @@ Columns, and the failure each one answers:
     wrong_anchor_risk               three detectors, two of them id-side, with
                                     B skipped where the link file names a
                                     different level from the one its ids
-                                    identify, in either direction
+                                    identify, in either direction, or names a
+                                    different KIND of label from the titles its
+                                    ids reach
     anchor_source_*                 what kind of text the anchor is
     distinct_hubs / links_per_hub   hub-side concentration, for a later
                                     agreement study
@@ -45,6 +47,7 @@ import re
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from statistics import median
 from typing import Any, Final
 
 from tract.config import (
@@ -521,12 +524,159 @@ def name_level_mismatch_frameworks(links_path: Path | None = None) -> frozenset[
     return _name_level_mismatch(_load_links(links_path or CURATED_LINKS_PATH))
 
 
+# median len(section_name) / median len(control title) at or above this, and the
+# link file names a different KIND of label from the one its ids reach. R11 and
+# R21 both derive from distinct(section_id) / distinct(section_name), so both see
+# GRANULARITY only. Neither can see two labels that sit at the same granularity
+# and are different SORTS of thing, and nist_ssdf is that case: 44 ids over 44
+# names reads exactly 1.0 and no count threshold reaches it, while its
+# section_name is the task STATEMENT and the title its id reaches is the task
+# IDENTIFIER. Detector B then holds a 156-character sentence against "PO.1.1"
+# and flagged 44 of 44 applicable checks. A detector that fires on every check
+# it can make certifies as little as one that can never fire.
+#
+# Kept as its own number rather than folded into the count ratio. The two
+# measure different properties, and one column carrying both would read as
+# neither.
+#
+# FOLDED lengths on both sides, through _fold, which is the exact string
+# detector B compares. Whitespace collapsing changes length and case folding can
+# too, so measuring the raw form would describe a comparison the detector does
+# not make. That is the defect already fixed once in _name_level_mismatch.
+#
+# Measured over the 22 frameworks carrying curated links on 2026-08-19, over the
+# population B compares: links with a name, an id-channel hit, a non-empty title,
+# and a name that differs from its own id, which is B's own guard.
+#   nearest value above   nist_ssdf      156.5/6.0  = 26.0833   headroom 19.0833
+#   nearest value below   nist_ai_100_2   20.0/11.0 =  1.8182   headroom  5.1818
+# Nothing sits between them. 7.0 is the GEOMETRIC midpoint of that gap rounded
+# to a whole number, sqrt(1.8182 * 26.0833) = 6.8865. Geometric rather than
+# arithmetic because the quantity is a ratio, so equal headroom means equal
+# multiples: nist_ai_100_2's names must grow from 20 folded characters to 77 to
+# reach the threshold (x3.85), and nist_ssdf's titles must grow from 6 to 23 to
+# fall below it (x3.73). Neither a name repair nor a handful of new links moves
+# a framework across it by accident.
+#
+# asvs is the case that proves the rule and it stays unflagged at 158.0/157.0 =
+# 1.0064. Its names are long AND its titles are long, so the two sides are the
+# same kind of label and B works on all 277 links. The property is shape
+# MISMATCH, not absolute length, and a predicate keyed on name length alone
+# would retire a working detector on asvs at 158 characters while catching
+# nist_ssdf at 156.5.
+#
+# ONE-SIDED, not symmetric. A name much SHORTER than its title looks like the
+# mirror and is not one. The three frameworks at the bottom of the range, wstg
+# at 0.3243, nist_800_63 at 0.2692 and owasp_proactive_controls at 0.0625, all
+# report zero wrong anchors today, and none of them does so because of a shape
+# property. Their section_name IS their section_id on every link, so B's own
+# guard retires it before any comparison happens: measured over the population B
+# compares, all three have no comparable links at all. [measured 2026-08-19]
+# Declaring them would switch off a detector that is already inert and grow the
+# exemption set without covering anything.
+#
+# The low end also holds a framework where B WORKS. biml sits at 0.3816 over 20
+# comparable links and reports 0 against a pre-registered budget of 0, and it
+# sits 0.06 below wstg. A symmetric threshold low enough to spare biml catches
+# only the three already-inert frameworks, and one high enough to catch wstg
+# retires biml's working detector. Neither trade is worth making, so the mirror
+# stays uncovered until a framework is measured that needs it.
+NAME_KIND_RATIO: Final[float] = 7.0
+
+
+def _name_kind_mismatch(
+    grouped: Mapping[str, Sequence[Mapping[str, Any]]],
+    index: ProseIndex,
+    facts: Mapping[tuple[str, str], ControlFacts],
+) -> frozenset[str]:
+    """Frameworks naming a different KIND of label from the titles their ids reach."""
+    mismatched: set[str] = set()
+    for framework_id, links in grouped.items():
+        canonical = canonical_framework(str(links[0].get("standard_name") or ""))
+        names: list[int] = []
+        titles: list[int] = []
+        for link in links:
+            name = _fold(str(link.get("section_name") or ""))
+            if not name:
+                continue
+            normalized = normalize_section_id(link.get("section_id"))
+            if not normalized:
+                continue
+            # Detector B's own guard, repeated so the ratio measures the
+            # population B reads. A link whose name restates its id is never
+            # compared, and counting it would describe a comparison that does
+            # not happen. This is what takes wstg, nist_800_63 and
+            # owasp_proactive_controls to zero comparable links.
+            if name == _fold(normalized):
+                continue
+            # The id channel, not the channel the join happened to use. B
+            # returns before its own branch whenever the title channel answered,
+            # so the title it compares is always the one the id reached, and
+            # membership that turned on which channel fired would be membership
+            # nobody could predict from the inputs.
+            hit = index.by_id(canonical, normalized)
+            if hit is None:
+                continue
+            control = facts.get((canonical, hit.text))
+            title = _fold(control.title) if control is not None else ""
+            if not title:
+                continue
+            names.append(len(name))
+            titles.append(len(title))
+        # No comparable link means B never runs, so it is already inert and
+        # there is nothing to declare. This is also the guard against an empty
+        # median, and the two reasons agree, which is why the branch skips
+        # rather than raises. Every appended title is non-empty, so the divisor
+        # below is at least 1 and cannot be zero.
+        if not names:
+            continue
+        if median(names) / median(titles) >= NAME_KIND_RATIO:
+            mismatched.add(framework_id)
+    return frozenset(mismatched)
+
+
+def name_kind_mismatch_frameworks(
+    links_path: Path | None = None, corpus_path: Path | None = None,
+) -> frozenset[str]:
+    """The third derived set, read from the curated link file and the corpus.
+
+    Needs the corpus because the property is a relation between a name and a
+    TITLE, and titles live in the corpus rather than in the link file. A
+    checkout without the licensed overlay cannot measure the frameworks whose
+    prose that overlay carries, so those contribute nothing here. None of them
+    holds the property when the overlay is present, and
+    tests/test_corpus_report.py::TestDetectorBKindMismatch asserts that by name
+    where the overlay exists and skips as a named group where it does not.
+    """
+    grouped = _load_links(links_path or CURATED_LINKS_PATH)
+    records = _load_records(corpus_path or merged_corpus_path())
+    facts, _ = _control_facts(records)
+    return _name_kind_mismatch(grouped, ProseIndex(records), facts)
+
+
+def detector_b_inapplicable_frameworks(
+    links_path: Path | None = None, corpus_path: Path | None = None,
+) -> frozenset[str]:
+    """The union of all three derived predicates, which the declared set equals.
+
+    One accessor rather than three call sites, so a fourth predicate added later
+    reaches the ratchet by construction instead of by somebody remembering to
+    widen the assertion.
+    """
+    grouped = _load_links(links_path or CURATED_LINKS_PATH)
+    records = _load_records(corpus_path or merged_corpus_path())
+    facts, _ = _control_facts(records)
+    return _name_level_mismatch(grouped) | _name_kind_mismatch(
+        grouped, ProseIndex(records), facts,
+    )
+
+
 # The DECLARED set. Runtime reads this rather than re-deriving per run, so a
 # framework acquires the exemption through a reviewed edit here and not through
 # a link-file change nobody looked at. The test asserts this equals
-# name_level_mismatch_frameworks() exactly, which fails in both directions: a
-# name added here without the property fails, and a framework that acquires the
-# property without being declared here fails too.
+# detector_b_inapplicable_frameworks() exactly, the union of all three derived
+# predicates, which fails in both directions: a name added here without any of
+# the three properties fails, and a framework that acquires one without being
+# declared here fails too.
 #
 # Detectors A and C still apply to every member. Only B is switched off.
 #
@@ -550,8 +700,25 @@ def name_level_mismatch_frameworks(links_path: Path | None = None) -> frozenset[
 #   exemption changes nothing today. It is declared anyway. The property belongs
 #   to the link file, and membership that turned on whether a channel happened
 #   to fire would be membership nobody could predict from the tracked inputs.
+#
+# nist_ssdf, names a different KIND, ruling R19. Its ids and names are 1:1 at 44
+#   each, so the count ratio reads exactly 1.0 and R11 and R21 are both blind to
+#   it. The link file's section_name is the task STATEMENT and parse_nist_ssdf
+#   titles each task by its own id, so B compared a 156-character sentence
+#   against "PO.1.1" and flagged 44 of 44 applicable checks. The anchors were
+#   never wrong: all 46 resolved links reach a full_text task statement.
+#
+#   With B scoped correctly the row reads 0 of 0, and that denominator is honest
+#   rather than convenient. Detectors A and C both still run for nist_ssdf and
+#   neither has anything to reach: by_title is 0, so A never enters its branch,
+#   and the framework's 44 normalised ids are all leaf tasks at one depth with no
+#   ancestor pair among them, so C finds no candidate. The link file offers
+#   nothing any detector can check, which is a fact about the source, and
+#   wrong_anchor_applicable() reporting 0 of 0 is what stops that reading as a
+#   pass. Trading 44 of 44 for 0 of 0 removes a false positive and adds no
+#   certification. [measured 2026-08-19]
 DETECTOR_B_INAPPLICABLE: Final[frozenset[str]] = frozenset(
-    {"dsomm", "enisa", "etsi", "nist_ai_100_2"}
+    {"dsomm", "enisa", "etsi", "nist_ai_100_2", "nist_ssdf"}
 )
 
 

@@ -47,6 +47,7 @@ from tract.corpus_report import (
     JOIN_WRONG_ANCHOR_BUDGET,
     CorpusReport,
     build_corpus_report,
+    name_kind_mismatch_frameworks,
     name_level_mismatch_frameworks,
     wrong_anchor_applicable,
 )
@@ -636,35 +637,44 @@ class TestShippedArtifact:
         assert row.anchor_source_synthetic == 0
         assert row.fallback_anchors == 0
 
-    def test_detector_b_is_saturated_and_that_is_a_fact_about_the_link_file(
+    def test_detector_b_is_inapplicable_here_and_the_cause_still_holds(
         self, tmp_path: Path,
     ) -> None:
-        """44 of 44, which is dsomm's signature and not a wrong anchor.
+        """0 of 0 under ruling R19, where this read 44 of 44 before it.
 
-        The task brief declared 0 here on the premise that `wrong_anchor_risk`
-        increments only inside the title branch. That premise describes an
-        older `_wrong_anchor`. The current one runs detector B on the id
-        channel: the link's `section_name` is the task STATEMENT while the
-        control's title is the task ID, so B compares a 160-character sentence
-        against "PO.1.1" and can only ever fire. `section_name` equals the
-        resolved control's title for 0 of 46 links, never rarely, which is the
-        exact reading that retired B for dsomm under ruling R11.
+        The saturation was never a wrong anchor. The link's `section_name` is
+        the task STATEMENT while the control's title is the task ID, so detector
+        B compared a 156-character sentence against "PO.1.1" and could only ever
+        fire. `section_name` equals the resolved control's title for 0 of 46
+        links, never rarely, which is the exact reading that retired B for dsomm
+        under ruling R11.
 
-        `name_level_mismatch_frameworks()` cannot see it, because that criterion
-        is distinct(section_id) / distinct(section_name) and here the two are
-        1:1 at 44 and 44. That stays true after ruling R21 made the criterion
-        symmetric: 1.0 sits between the two thresholds, not at either. So the
-        declared exemption set stays as it is and this number is asserted rather
-        than silenced. It fails in both directions: a title that started
-        containing the statement drops it, and a link whose name stopped
-        differing from its id drops it too.
+        `name_level_mismatch_frameworks()` still cannot see it, and that is
+        asserted below rather than assumed. Its criterion is
+        distinct(section_id) / distinct(section_name), here 1:1 at 44 and 44, so
+        1.0 sits between COARSE_NAME_RATIO and FINE_NAME_RATIO and neither R11
+        nor R21 reaches it. R19 added a third derived predicate on the KIND of
+        label rather than its granularity, and that one does reach it.
+
+        The zero denominator is honest rather than convenient. Detectors A and C
+        both still run and neither has anything to reach: `by_title` is 0, so A
+        never enters its branch, and the 44 normalised ids are leaf tasks at one
+        depth with no ancestor pair between them, so C finds no candidate. This
+        fails in both directions. A title that started carrying real prose drops
+        nist_ssdf out of the kind predicate and the declared set stops matching.
+        A roll-up id entering the link file gives C a candidate and the
+        denominator stops being 0.
         """
         report = _join(tmp_path)
-        assert report.by_id("nist_ssdf").wrong_anchor_risk == 44
-        assert wrong_anchor_applicable(report)["nist_ssdf"] == 44
+        assert report.by_id("nist_ssdf").wrong_anchor_risk == 0
+        assert wrong_anchor_applicable(report)["nist_ssdf"] == 0
+        assert report.by_id("nist_ssdf").by_title == 0
         assert "nist_ssdf" not in JOIN_WRONG_ANCHOR_BUDGET
-        assert "nist_ssdf" not in DETECTOR_B_INAPPLICABLE
+        assert "nist_ssdf" in DETECTOR_B_INAPPLICABLE
+        # The count-based predicate is still blind to it, which is why R19 was
+        # needed. Asserting the absence keeps the two criteria distinguishable.
         assert "nist_ssdf" not in name_level_mismatch_frameworks()
+        assert "nist_ssdf" in name_kind_mismatch_frameworks()
 
 
 class TestRun:

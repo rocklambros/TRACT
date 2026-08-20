@@ -17,11 +17,13 @@ import json
 import math
 import os
 import re
+import statistics
 from pathlib import Path
 
 import pytest
 
 from tract.config import (
+    OVERLAY_FRAMEWORK_IDS,
     PROCESSED_FRAMEWORKS_DIR,
     PROJECT_ROOT,
     PROSE_MIN_EXTRA_CHARS,
@@ -35,16 +37,29 @@ from tract.corpus_report import (
     JOIN_CEILINGS,
     JOIN_FLOORS,
     JOIN_WRONG_ANCHOR_BUDGET,
+    NAME_KIND_RATIO,
+    ControlFacts,
     CorpusReport,
+    _control_facts,
+    _fold,
+    _is_ancestor_id,
     _load_links,
+    _load_records,
     build_corpus_report,
     check_join_floors,
+    detector_b_inapplicable_frameworks,
+    name_kind_mismatch_frameworks,
     name_level_mismatch_frameworks,
     require_full_corpus,
     require_unmoved_corpus,
     wrong_anchor_applicable,
 )
-from tract.text_selection import merged_corpus_path
+from tract.text_selection import (
+    ProseIndex,
+    canonical_framework,
+    merged_corpus_path,
+    normalize_section_id,
+)
 
 TRACKED_CORPUS = PROJECT_ROOT / "data" / "processed" / "all_controls.json"
 
@@ -614,15 +629,50 @@ class TestDetectorBApplicability:
         assert len({r["section_id"] for r in links}) == 17
         assert len({r["section_name"] for r in links}) == 20
 
-    def test_the_declared_set_equals_the_derived_set(self) -> None:
-        """The ratchet, over the real curated link file.
+    def test_the_declared_set_equals_the_union_of_the_derived_predicates(
+        self,
+    ) -> None:
+        """The ratchet, over the real curated link file and the real corpus.
 
         Fails in both directions by construction. A framework declared without
-        the property is in the declared set and not the derived one. A
-        framework that acquires the property and is not declared is in the
-        derived set and not the declared one. Neither can land quietly.
+        any of the three properties is in the declared set and not the derived
+        one. A framework that acquires one and is not declared is in the derived
+        set and not the declared one. Neither can land quietly.
+
+        Compared against the UNION accessor rather than against the count
+        predicate alone. Asserting equality with name_level_mismatch_frameworks()
+        would now fail on nist_ssdf, which holds the kind property and not the
+        count one, and lowering the assertion to a subset check would retire the
+        half of the ratchet that catches an undeclared framework.
         """
-        assert DETECTOR_B_INAPPLICABLE == name_level_mismatch_frameworks()
+        derived = detector_b_inapplicable_frameworks()
+        assert DETECTOR_B_INAPPLICABLE == derived
+        # The two directions again, separately, each with its own message. The
+        # equality above states both and a later reader weakening it to a subset
+        # check loses one of them silently, so each leg is also asserted alone.
+        assert not DETECTOR_B_INAPPLICABLE - derived, (
+            f"declared without any of the three properties: "
+            f"{sorted(DETECTOR_B_INAPPLICABLE - derived)}"
+        )
+        assert not derived - DETECTOR_B_INAPPLICABLE, (
+            f"acquired a property without being declared: "
+            f"{sorted(derived - DETECTOR_B_INAPPLICABLE)}"
+        )
+
+    def test_the_two_derived_predicates_cover_different_frameworks(self) -> None:
+        """Neither predicate is doing the other's work.
+
+        The union would still equal the declared set if one predicate returned
+        everything and the other returned nothing, and the ratchet above cannot
+        see that. Attainable: any partition of the five declared members.
+        """
+        level = name_level_mismatch_frameworks()
+        kind = name_kind_mismatch_frameworks()
+        assert level == {"dsomm", "enisa", "etsi", "nist_ai_100_2"}
+        assert kind == {"nist_ssdf"}
+        # Disjoint today. Not a requirement, and stated so a later overlap is a
+        # deliberate reading rather than a surprise.
+        assert not (level & kind)
 
     def _real_ratios(self) -> dict[str, float]:
         grouped = _load_links(CURATED_LINKS_PATH)
@@ -992,6 +1042,501 @@ class TestDetectorBApplicability:
         assert report.by_id("enisa").by_id == 0
         assert report.by_id("enisa").wrong_anchor_risk == 0
         assert wrong_anchor_applicable(report)["enisa"] == 68
+
+
+class TestDetectorBKindMismatch:
+    """Ruling R19. The third derived predicate, on a mismatch of KIND.
+
+    R11 and R21 both read distinct(section_id) / distinct(section_name), so both
+    see GRANULARITY only. nist_ssdf sits at exactly 1.0 on that ratio, 44 ids
+    over 44 names, and is still a case detector B cannot judge: its section_name
+    is the task STATEMENT while the title its id reaches is the task IDENTIFIER,
+    so B held a 156-character sentence against "PO.1.1" and flagged 44 of 44.
+
+    asvs is the case that proves the rule. Its names run 158 folded characters
+    and its titles 157, so both sides are long and both sides are the same kind
+    of label. Any predicate that flags asvs is wrong whatever it does for
+    nist_ssdf, and the test below is the one that says so.
+    """
+
+    def _link(
+        self, framework_id: str, section_id: str, section_name: str,
+    ) -> dict[str, str]:
+        return {
+            "framework_id": framework_id,
+            "standard_name": "Demo",
+            "section_id": section_id,
+            "section_name": section_name,
+            "cre_id": "1-1",
+            "link_type": "LinkedTo",
+        }
+
+    def _links(self, tmp_path: Path, rows: list[dict[str, str]], name: str) -> Path:
+        path = tmp_path / f"{name}.jsonl"
+        path.write_text(
+            "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows),
+            encoding="utf-8",
+        )
+        return path
+
+    def _shaped_pair(
+        self, tmp_path: Path, name_chars: int, title_chars: int, label: str,
+    ) -> tuple[Path, Path]:
+        """A corpus and a link file whose two sides have exact folded lengths.
+
+        Both sides are built from a single repeated character, so the folded
+        length is the requested length and the ratio under test is exact rather
+        than approximate.
+        """
+        corpus = _corpus(tmp_path, [
+            {"control_id": "K-1", "title": "t" * title_chars,
+             "description": LONG + f" {label}."},
+        ], name=f"corpus_{label}")
+        links = self._links(
+            tmp_path, [self._link("shaped", "K-1", "n" * name_chars)], label,
+        )
+        return links, corpus
+
+    def _shaped(
+        self, tmp_path: Path, name_chars: int, title_chars: int, label: str,
+    ) -> frozenset[str]:
+        """The derived kind set for one shaped link."""
+        return name_kind_mismatch_frameworks(
+            *self._shaped_pair(tmp_path, name_chars, title_chars, label)
+        )
+
+    def test_the_shaped_fixture_has_the_lengths_it_claims(
+        self, tmp_path: Path,
+    ) -> None:
+        """The helper every boundary test below rests on, checked once.
+
+        Reads the lengths back out of the SAME builder those tests call, rather
+        than rebuilding the fixture inline. A meta-test that constructs its own
+        copy checks the copy and leaves the builder unguarded, so a builder that
+        quietly produced a 20-character title would make every boundary test
+        below assert something other than what it reads as.
+        """
+        links, corpus = self._shaped_pair(tmp_path, 70, 10, "check")
+        records = _load_records(corpus)
+        facts, _ = _control_facts(records)
+        index = ProseIndex(records)
+        canonical = canonical_framework("Demo")
+        hit = index.by_id(canonical, normalize_section_id("K-1"))
+        assert hit is not None
+        control = facts[(canonical, hit.text)]
+        assert len(_fold(control.title)) == 10
+        row = _load_links(links)["shaped"][0]
+        assert len(_fold(row["section_name"])) == 70
+
+    def test_the_ratio_decides_membership_at_its_boundary(
+        self, tmp_path: Path,
+    ) -> None:
+        """Exactly at the ratio is a member, just under it is not.
+
+        70/10 is 7.0 and 69/10 is 6.9, so the two differ by one character on one
+        side. Attainable: frozenset() or frozenset({"shaped"}) either way, so
+        both legs can fail. A `>` in place of `>=` fails the first leg and a
+        threshold nudged down fails the second.
+        """
+        assert self._shaped(tmp_path, 70, 10, "kind_at") == frozenset({"shaped"})
+        assert self._shaped(tmp_path, 69, 10, "kind_under") == frozenset()
+
+    def test_a_name_far_shorter_than_its_title_is_not_a_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """The predicate is ONE-SIDED, and this is the leg that says so.
+
+        10/70 is 0.1429, further from 1.0 in multiples than 7.0 is, and it must
+        not be a member. A symmetric implementation, `ratio >= R or ratio <=
+        1 / R`, passes every other test in this class and fails here.
+        """
+        assert self._shaped(tmp_path, 10, 70, "mirror") == frozenset()
+
+    def test_a_link_whose_name_restates_its_id_is_never_counted(
+        self, tmp_path: Path,
+    ) -> None:
+        """Detector B's own guard, repeated in the predicate.
+
+        The name is 70 characters against a 10-character title, which is 7.0 and
+        would be a member on length alone. It is not one, because the name IS
+        the id and B never compares a link like that. This is the property that
+        keeps wstg, nist_800_63 and owasp_proactive_controls out.
+        """
+        identifier = "n" * 70
+        corpus = _corpus(tmp_path, [
+            {"control_id": identifier, "title": "t" * 10,
+             "description": LONG + " Self."},
+        ], name="corpus_self")
+        links = self._links(
+            tmp_path, [self._link("shaped", identifier, identifier)], "self",
+        )
+        assert name_kind_mismatch_frameworks(links, corpus) == frozenset()
+
+    def test_the_ratio_is_a_median_so_a_few_outliers_cannot_carry_it(
+        self, tmp_path: Path,
+    ) -> None:
+        """Robustness is the reason the statistic is a median, so it is pinned.
+
+        Nine links at 10 characters against 10-character titles, and one at
+        1,000. The median name is 10 and the ratio is 1.0, well clear of the
+        threshold. The MEAN name is 109 and the ratio is 10.9, which is over it.
+        An implementation using the mean lets a single long section_name exempt a
+        framework whose other ninety per cent are a clean match, and nothing else
+        in this class separates the two statistics because every other fixture
+        here carries one link.
+        """
+        controls: list[dict[str, object]] = [
+            {"control_id": f"K-{i}", "title": "t" * 10,
+             "description": LONG + f" Row {i}."}
+            for i in range(10)
+        ]
+        rows = [
+            self._link("shaped", f"K-{i}", "n" * (1000 if i == 9 else 10))
+            for i in range(10)
+        ]
+        corpus = _corpus(tmp_path, controls, name="corpus_outlier")
+        links = self._links(tmp_path, rows, "outlier")
+        assert name_kind_mismatch_frameworks(links, corpus) == frozenset()
+
+    def test_a_framework_the_corpus_cannot_answer_is_not_a_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """No comparable link means B never runs, so there is nothing to declare.
+
+        Also the guard against an empty median. An implementation that took a
+        median of an empty list raises StatisticsError here instead of skipping.
+        """
+        corpus = _corpus(tmp_path, [
+            {"control_id": "K-1", "title": "t" * 10,
+             "description": LONG + " Present."},
+        ], name="corpus_absent")
+        links = self._links(
+            tmp_path, [self._link("shaped", "MISSING-9", "n" * 70)], "absent",
+        )
+        assert name_kind_mismatch_frameworks(links, corpus) == frozenset()
+
+    def test_the_ratio_normalises_whitespace_the_way_the_join_does(
+        self, tmp_path: Path,
+    ) -> None:
+        """The predicate must measure the string detector B compares.
+
+        The name below is 70 characters raw and 35 folded, because the run of 36
+        spaces in the middle collapses to one. Against a 10-character title the
+        raw reading is 7.0 and a member, the folded reading is 3.5 and is not.
+        An implementation measuring len(section_name) rather than
+        len(_fold(section_name)) declares an exemption on whitespace, which is
+        the defect already fixed once in _name_level_mismatch.
+        """
+        name = "n" * 17 + " " * 36 + "n" * 17
+        assert len(name) == 70
+        assert len(_fold(name)) == 35
+        corpus = _corpus(tmp_path, [
+            {"control_id": "K-1", "title": "t" * 10,
+             "description": LONG + " Folded."},
+        ], name="corpus_fold")
+        links = self._links(tmp_path, [self._link("shaped", "K-1", name)], "fold")
+        assert name_kind_mismatch_frameworks(links, corpus) == frozenset()
+
+    def test_the_id_equality_guard_folds_case(self, tmp_path: Path) -> None:
+        """ProseIndex keys titles case-insensitively, so the guard must too.
+
+        The name below differs from the id only in case, and normalize_section_id
+        does not lower-case, so _fold is what makes the two equal. Folded they
+        match, the link is one detector B never compares, and the framework is
+        not a member. A case-sensitive guard sees two different strings, counts
+        the link, reads 70/10 = 7.0 and declares an exemption on capitalisation.
+        """
+        identifier = "N" * 70
+        corpus = _corpus(tmp_path, [
+            {"control_id": identifier, "title": "t" * 10,
+             "description": LONG + " Cased."},
+        ], name="corpus_case")
+        links = self._links(
+            tmp_path, [self._link("shaped", identifier, "n" * 70)], "case",
+        )
+        assert _fold("n" * 70) == _fold(normalize_section_id(identifier))
+        assert "n" * 70 != normalize_section_id(identifier)
+        assert name_kind_mismatch_frameworks(links, corpus) == frozenset()
+
+    def _measured_ratios(self, corpus_path: Path) -> dict[str, float]:
+        """The real per-framework kind ratio, recomputed here rather than imported.
+
+        Deliberately a second implementation. Reading the number out of
+        tract.corpus_report and comparing it to a threshold from the same module
+        would assert that the module agrees with itself.
+        """
+        records = _load_records(corpus_path)
+        index = ProseIndex(records)
+        facts: dict[tuple[str, str], ControlFacts] = _control_facts(records)[0]
+        ratios: dict[str, float] = {}
+        for framework_id, links in _load_links(CURATED_LINKS_PATH).items():
+            canonical = canonical_framework(
+                str(links[0].get("standard_name") or "")
+            )
+            pairs: list[tuple[int, int]] = []
+            for link in links:
+                name = _fold(str(link.get("section_name") or ""))
+                identifier = normalize_section_id(link.get("section_id"))
+                if not name or not identifier or name == _fold(identifier):
+                    continue
+                hit = index.by_id(canonical, identifier)
+                if hit is None:
+                    continue
+                control = facts.get((canonical, hit.text))
+                title = _fold(control.title) if control is not None else ""
+                if not title:
+                    continue
+                pairs.append((len(name), len(title)))
+            if not pairs:
+                continue
+            ratios[framework_id] = (
+                statistics.median([n for n, _ in pairs])
+                / statistics.median([t for _, t in pairs])
+            )
+        return ratios
+
+    def test_the_real_link_file_splits_into_two_groups_on_kind(self) -> None:
+        """One framework above the threshold, and every other one well below.
+
+        Membership is named here, so a corpus or link-file change that moves a
+        framework across the threshold fails before it reaches the exemption set.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        ratios = self._measured_ratios(merged_corpus_path())
+        above = {k for k, v in ratios.items() if v >= NAME_KIND_RATIO}
+        assert above == {"nist_ssdf"}
+        assert ratios["nist_ssdf"] == pytest.approx(156.5 / 6.0)
+
+    def test_the_threshold_sits_in_a_gap_the_data_opens(self) -> None:
+        """Neither side of 7.0 is fitted to one framework's current shape.
+
+        The nearest measured value on each side, and the headroom between them.
+        This fails if the threshold moves toward the data and it fails if the
+        data moves toward the threshold, which is what makes 7.0 a measurement
+        rather than a preference.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        ratios = self._measured_ratios(merged_corpus_path())
+        below = sorted(v for v in ratios.values() if v < NAME_KIND_RATIO)
+        # nist_ai_100_2 at 20/11 is the top of the cluster, and nothing at all
+        # sits between it and nist_ssdf.
+        assert below[-1] == pytest.approx(20.0 / 11.0)
+        assert NAME_KIND_RATIO - below[-1] > 5.18
+        assert ratios["nist_ssdf"] - NAME_KIND_RATIO > 19.08
+        # Multiplicative headroom, which is the reading that matters for a
+        # ratio. Both sides clear 3.7x, so the threshold is near the geometric
+        # middle of the gap rather than parked against one edge.
+        assert NAME_KIND_RATIO / below[-1] > 3.7
+        assert ratios["nist_ssdf"] / NAME_KIND_RATIO > 3.7
+
+    def test_asvs_is_long_on_both_sides_and_stays_unflagged(self) -> None:
+        """The case that proves the rule.
+
+        asvs names run 158 folded characters, two more than nist_ssdf's 156.5,
+        so any predicate keyed on absolute name length flags both. Its titles run
+        157, so the two sides are the same KIND of label and detector B works on
+        all 277 links. This fails for an implementation that measures length
+        instead of mismatch.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        ratios = self._measured_ratios(merged_corpus_path())
+        assert ratios["asvs"] == pytest.approx(158.0 / 157.0)
+        assert "asvs" not in name_kind_mismatch_frameworks()
+        assert "asvs" not in DETECTOR_B_INAPPLICABLE
+        # The trap stated as an assertion: asvs's names are LONGER than
+        # nist_ssdf's, so name length alone orders them the wrong way round.
+        assert 158.0 > 156.5
+
+    def test_the_short_name_frameworks_have_no_comparable_links_at_all(
+        self,
+    ) -> None:
+        """Why the predicate is one-sided rather than symmetric.
+
+        wstg, nist_800_63 and owasp_proactive_controls sit at 0.32, 0.27 and
+        0.06 on the raw name-to-title reading and report zero wrong anchors. None
+        of them does so because of a shape property: their section_name IS their
+        section_id on every link, so detector B's own guard retires it before any
+        comparison. Measured over the population B compares they have no links at
+        all, which is why declaring them would buy nothing.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        ratios = self._measured_ratios(merged_corpus_path())
+        for framework_id in ("wstg", "nist_800_63", "owasp_proactive_controls"):
+            assert framework_id not in ratios, framework_id
+            assert framework_id not in DETECTOR_B_INAPPLICABLE, framework_id
+
+    def test_a_symmetric_threshold_would_retire_a_working_detector(self) -> None:
+        """biml is the reason the mirror stays uncovered.
+
+        It sits at 0.3816 over 20 comparable links, below wstg's raw 0.3243 by
+        less than 0.06, and reports 0 wrong anchors against a pre-registered
+        budget of 0. So detector B works there. A symmetric threshold low enough
+        to spare biml catches only frameworks B never runs on, and one high
+        enough to catch wstg switches off a detector that is doing its job.
+        """
+        if not merged_corpus_path().exists():
+            pytest.skip("no merged corpus in this checkout")
+        ratios = self._measured_ratios(merged_corpus_path())
+        assert ratios["biml"] == pytest.approx(14.5 / 38.0)
+        # The module's own predicate, not only the declared constant. A
+        # symmetric implementation with a mirror threshold anywhere at or above
+        # 1 / 2.62 pulls biml in, and this is the leg that sees it.
+        assert "biml" not in name_kind_mismatch_frameworks()
+        assert "biml" not in DETECTOR_B_INAPPLICABLE
+        assert JOIN_WRONG_ANCHOR_BUDGET["biml"] == 0
+
+    def test_the_overlay_frameworks_do_not_hold_the_kind_property(self) -> None:
+        """The named group a checkout without the licensed overlay cannot measure.
+
+        The kind predicate needs TITLES, and merge_all_controls.py reduces every
+        OVERLAY_FRAMEWORK_IDS member to identifiers in the tracked corpus, so
+        those four resolve nothing through the id channel there and contribute
+        nothing to the derived set. None of them holds the property when the
+        overlay IS present, which is what keeps the ratchet's two sides equal in
+        both checkouts, and this is where that is checked rather than assumed.
+        """
+        overlay = sorted(OVERLAY_FRAMEWORK_IDS)
+        assert overlay == ["csa_ccm", "dsomm", "etsi", "iso_27001"]
+        if not all(_corpus_carries_prose(f) for f in overlay):
+            pytest.skip(
+                "this checkout's corpus withholds prose for the overlay group "
+                f"{overlay}, so their titles cannot be reached through the id "
+                "channel and the kind ratio is not measurable for them here"
+            )
+        ratios = self._measured_ratios(merged_corpus_path())
+        for framework_id in overlay:
+            assert ratios[framework_id] < NAME_KIND_RATIO, framework_id
+        # The tracked corpus and the overlay must derive the SAME set, or the
+        # ratchet passes on one machine and fails on another.
+        assert name_kind_mismatch_frameworks(
+            corpus_path=TRACKED_CORPUS
+        ) == name_kind_mismatch_frameworks(corpus_path=merged_corpus_path())
+
+    def test_detector_a_and_c_still_run_for_a_kind_member(
+        self, tmp_path: Path,
+    ) -> None:
+        """Only B is switched off.
+
+        Identical link content under two framework_ids, one of them declared, so
+        the only variable is membership. An implementation that exempted the
+        member from the whole wrong-anchor column reads 0 on both legs.
+        """
+        shared = LONG + " Rolled-up task."
+        corpus = _corpus(tmp_path, [
+            {"control_id": "PO.1", "title": "Define requirements",
+             "description": shared},
+            {"control_id": "PO.1.1", "title": "Communicate requirements",
+             "description": shared},
+        ], name="corpus_ac")
+        links = self._links(tmp_path, [
+            self._link("nist_ssdf", "PO.1", "PO.1"),
+            self._link("nist_ssdf", "PO.1.1", "PO.1.1"),
+        ], "ac")
+        report = build_corpus_report(links, corpus)
+        # Detector C, the ancestor-id check B cannot make.
+        assert report.by_id("nist_ssdf").distinct_anchors == 1
+        assert report.by_id("nist_ssdf").wrong_anchor_risk == 2
+        assert wrong_anchor_applicable(report)["nist_ssdf"] == 2
+
+        corpus_a = _corpus(tmp_path, [
+            {"control_id": "PW.4.1", "title": "Reuse existing software",
+             "description": LONG + " Acquire."},
+            {"control_id": "PW.4.4", "title": "Verify acquired software",
+             "description": LONG + " Verify.",
+             "metadata": {"alt_titles": ["Reuse existing software"]}},
+        ], name="corpus_a")
+        links_a = self._links(tmp_path, [
+            self._link("nist_ssdf", "PW.4.4", "Reuse existing software"),
+        ], "a_only")
+        report_a = build_corpus_report(links_a, corpus_a)
+        # Detector A, the title-channel check.
+        assert report_a.by_id("nist_ssdf").by_title == 1
+        assert report_a.by_id("nist_ssdf").wrong_anchor_risk == 1
+        assert wrong_anchor_applicable(report_a)["nist_ssdf"] == 1
+
+    def test_detector_b_is_skipped_for_a_kind_member_and_not_for_anyone_else(
+        self, tmp_path: Path,
+    ) -> None:
+        """nist_ssdf's shape: a task statement against a title that is an id.
+
+        Identical link content under two framework_ids, one of them declared.
+        """
+        corpus = _corpus(tmp_path, [
+            {"control_id": "PO.1.1", "title": "PO.1.1",
+             "description": LONG + " Task statement."},
+        ], name="corpus_kind_b")
+        statement = (
+            "Define security requirements for software development and maintain "
+            "them over time, and communicate them to all affected parties."
+        )
+        links = self._links(tmp_path, [
+            self._link("nist_ssdf", "PO.1.1", statement),
+            self._link("demo", "PO.1.1", statement),
+        ], "kind_b")
+        report = build_corpus_report(links, corpus)
+        applicable = wrong_anchor_applicable(report)
+
+        assert report.by_id("demo").by_id == 1
+        assert report.by_id("demo").wrong_anchor_risk == 1
+        assert applicable["demo"] == 1
+
+        assert report.by_id("nist_ssdf").by_id == 1
+        assert report.by_id("nist_ssdf").wrong_anchor_risk == 0
+        # B was the only applicable check on this link, so the denominator goes
+        # with the detector. Counting it would report 0 of 1 as a pass.
+        assert applicable["nist_ssdf"] == 0
+
+    def test_the_real_nist_ssdf_row_reports_zero_over_zero_and_says_so(
+        self, tmp_path: Path,
+    ) -> None:
+        """0 of 0, down from 44 of 44, and the zero denominator is the point.
+
+        44 of 44 was a detector firing on every check it could make, which
+        certifies nothing. 0 of 0 is a detector with nothing to check, which
+        also certifies nothing, and the difference is that this one is legible:
+        wrong_anchor_applicable() reports the denominator so the 0 in the risk
+        column cannot be read as a pass.
+
+        Detectors A and C both still run. Neither reaches anything, and that is
+        a fact about nist_ssdf's link file rather than an exemption: the title
+        channel never answers, so A cannot enter its branch, and the 44
+        normalised ids are leaf tasks at one depth with no ancestor pair between
+        them, so C finds no candidate.
+        """
+        record = PROCESSED_FRAMEWORKS_DIR / "nist_ssdf.json"
+        if not record.exists():
+            pytest.skip("nist_ssdf has no processed artifact in this checkout")
+        corpus = tmp_path / "nist_ssdf.json"
+        corpus.write_text(
+            json.dumps(
+                {"frameworks": [json.loads(record.read_text(encoding="utf-8"))]},
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        report = build_corpus_report(corpus_path=corpus)
+        row = report.by_id("nist_ssdf")
+        assert row.by_id == 46
+        assert row.by_title == 0
+        assert row.wrong_anchor_risk == 0
+        assert wrong_anchor_applicable(report)["nist_ssdf"] == 0
+
+        # Detector C's reach, asserted directly rather than inferred from the
+        # zero above. Attainable [0, 44 * 43]. Reads 0, and a single roll-up id
+        # entering the link file makes it non-zero and the denominator live.
+        identifiers = sorted({
+            normalize_section_id(link.get("section_id"))
+            for link in _load_links(CURATED_LINKS_PATH)["nist_ssdf"]
+        })
+        assert len(identifiers) == 44
+        assert not [
+            (a, b) for a in identifiers for b in identifiers
+            if a != b and _is_ancestor_id(a, b)
+        ]
 
 
 class TestFloors:

@@ -59,6 +59,7 @@ from tract.config import (
     RESTRICTED_FRAMEWORK_IDS,
 )
 from tract.corpus_report import (
+    DETECTOR_B_INAPPLICABLE,
     FULL_CORPUS_FRAMEWORK_COUNT,
     JOIN_FLOORS,
     JOIN_WRONG_ANCHOR_BUDGET,
@@ -114,31 +115,28 @@ SYNTHETIC_ANCHOR_BUDGET: dict[str, int] = {
 }
 
 # Wrong-anchor flags outside JOIN_WRONG_ANCHOR_BUDGET on a framework this plan
-# gave a parser to. One entry, and it is an OPEN DEFECT recorded rather than
-# repaired, because repairing it means changing the instrument and Task 16 does
-# not own the instrument.
+# gave a parser to. EMPTY, and it is empty because the one entry it carried was
+# repaired rather than lowered, which is what the entry's own note required.
 #
-#   nist_ssdf  44 of 44 applicable checks flag. MEASURED CAUSE: parse_nist_ssdf
-#              titles each task by its own id, so every control's title reads
-#              "PO.1.1", while the curated link file's section_name holds the
-#              full task statement. Detector B asks whether the link's name
-#              appears in the resolved control's title, and an identifier can
-#              never contain a sentence, so B fires on every id-channel link it
-#              reaches. The anchors themselves are correct: all 46 resolved
-#              links reach a full_text task statement.
+# The entry was nist_ssdf at 44 of 44 applicable checks. MEASURED CAUSE:
+# parse_nist_ssdf titles each task by its own id, so every control's title reads
+# "PO.1.1", while the curated link file's section_name holds the full task
+# statement. Detector B asks whether the link's name appears in the resolved
+# control's title, and an identifier can never contain a sentence, so B fired on
+# every id-channel link it reached. The anchors themselves were always correct:
+# all 46 resolved links reach a full_text task statement.
 #
-#              This is R11 and R21's defect class in a third form. Those two
-#              cover a link file that NAMES a different level from the one it
-#              IDENTIFIES, measured as a ratio of distinct ids to distinct
-#              names, and nist_ssdf reads 1.0000 on that ratio, so the derived
-#              exemption cannot see it. The repair is a second derived property
-#              on DETECTOR_B_INAPPLICABLE covering a framework whose processed
-#              titles ARE its identifiers, and that belongs to whoever next
-#              owns tract/corpus_report.py.
+# Ruling R19 closed it in the instrument, where it belonged. R11 and R21 both
+# read distinct(section_id) / distinct(section_name), so both see GRANULARITY,
+# and nist_ssdf reads exactly 1.0000 there. R19 added a third derived predicate
+# on the KIND of label, median len(section_name) over median len(title), and
+# nist_ssdf reads 26.08 against a threshold of 7.0. The row now reads 0 of 0:
+# detectors A and C still run for it and neither has a candidate to reach.
 #
-# The value is asserted exactly, so it fails upward on new exposure and downward
-# on a repair. A repair must delete this entry rather than lower it.
-UNBUDGETED_WRONG_ANCHOR_EXPOSURE: dict[str, int] = {"nist_ssdf": 44}
+# The mapping stays as the registration point for the next exposure. A new
+# framework flagged outside the budget gets measured and recorded here with its
+# cause, not assumed away.
+UNBUDGETED_WRONG_ANCHOR_EXPOSURE: dict[str, int] = {}
 
 # Parsers inheriting BaseParser.min_prose_fraction = 0.0, which no output can
 # miss. A RATCHET at the count measured when this suite landed, so the number
@@ -549,11 +547,9 @@ class TestAnchorSeparation:
                 continue
             row = live.by_id(framework_id)
             expected = UNBUDGETED_WRONG_ANCHOR_EXPOSURE.get(framework_id, 0)
-            # Attainable [0, resolved], up to 213 on dsomm. Seven of the eight
-            # read 0 with no headroom. nist_ssdf reads 44 and is asserted
-            # exactly, so it fails upward on new exposure and downward on the
-            # instrument repair, which must delete the entry rather than lower
-            # it.
+            # Attainable [0, resolved], up to 213 on dsomm. All eight read 0
+            # with no headroom since ruling R19 took nist_ssdf's 44 to 0, so a
+            # single new flag anywhere fails this.
             assert row.wrong_anchor_risk == expected, (
                 f"{framework_id}: {row.wrong_anchor_risk} wrong anchors "
                 f"against {expected}. A framework outside "
@@ -562,15 +558,20 @@ class TestAnchorSeparation:
                 f"widening this gate."
             )
 
-    def test_the_nist_ssdf_exposure_still_has_the_cause_it_was_pinned_for(
+    def test_the_nist_ssdf_kind_exemption_still_has_the_cause_it_rests_on(
         self,
     ) -> None:
         """The exemption's stated cause is checked, not asserted once and left.
 
-        If parse_nist_ssdf ever gives its controls real titles, detector B stops
-        comparing a sentence against an identifier and the 44 above stops being
-        explained by the reason recorded for it.
+        Ruling R19 exempts nist_ssdf from detector B because its section_name is
+        a task statement and the title its id reaches is a task identifier. If
+        parse_nist_ssdf ever gives its controls real titles, B stops comparing a
+        sentence against an identifier, the kind ratio collapses toward 1.0, and
+        the declared exemption stops being explained by the reason recorded for
+        it. This is the assertion that catches that before the exemption goes on
+        silently suppressing a detector that would now work.
         """
+        assert "nist_ssdf" in DETECTOR_B_INAPPLICABLE
         controls = _controls("nist_ssdf")
         identifiers = sum(
             1
@@ -578,11 +579,11 @@ class TestAnchorSeparation:
             if control["title"].strip() == control["control_id"].strip()
         )
         # Attainable [0, 42]. Reads 42 of 42. Any real title lands here and
-        # forces the 44 to be re-derived instead of inherited.
+        # forces the exemption to be re-derived instead of inherited.
         assert identifiers == len(controls), (
             f"{identifiers} of {len(controls)} nist_ssdf controls are titled by "
-            f"their own id. The pinned wrong-anchor count above rests on all of "
-            f"them being so."
+            f"their own id. The R19 kind exemption above rests on all of them "
+            f"being so."
         )
 
     def test_the_untouched_frameworks_did_not_gain_wrong_anchor_exposure(
