@@ -2178,3 +2178,54 @@ owasp_proactive             2              32         0.1
 ```
 ASVS is what proves the rule: long names AND long titles are the same KIND. A threshold of 4.0
 selects exactly nist_ssdf with the next candidate at 1.2.
+
+### R23 landed. `a548e86`. The asymmetry is resolved and the symmetric treatment is an ablation arm.
+The agent rejected my proposed criterion for the reason I flagged and found a better one. Three
+measured gates: a token is framework-identity iff it is a component of a machine `framework_id`,
+is ALL-CAPS in a majority of occurrences over **markup-stripped** text, and appears nowhere in hub
+names, paths or descriptions. The casing band is EMPTY from 0.014 (`top`) to 0.690 (`mitre`), so
+0.5 sits in open space.
+
+**Markup stripping is load-bearing and I would not have caught it**: on the raw field `mitre` reads
+0.152, because `cwe.mitre.org` contributes spellings the encoder never sees.
+
+Rejected alternatives, each with its measurement: human-title keying admits `matrix`, `regulation`,
+`profile`, `landscape`; concentration-in-bearing-frameworks scores `ccm` 0.000 and `nist` 0.189
+against `cwe` 0.671, which is a FRESH asymmetry rather than a fix for one.
+
+Set of 18. `stopwords.json` 81 -> 80, removing `owasp` and nothing else, so the singling-out is gone.
+The symmetric filter is a **toggle defaulting to OFF** with its own arm and provenance digest, which
+is what CLAUDE.md requires: the trade is shown, not assumed. Corpus, corpus digest and default path
+all unmoved.
+
+**The survivor is the best part.** M1 widened gate 1 to human titles and passed EVERYTHING, because
+on this corpus every title-only word fails gate 2 anyway, so no output-level test could see the
+widening. Fixed by pinning the CANDIDATE UNIVERSE rather than the survivors. The agent then
+corrected its own module docstring, which claimed each gate was load-bearing for the OUTPUT: gate 1
+is load-bearing for the universe, holding out 1,137 capitalised non-hub tokens including `jwt`,
+`siem`, `cve` and `fips`.
+
+### Two published defects repaired. Content in `3846eef`, message in `83237d5`.
+**`nist_ai_rmf` was worse than I measured: ALL 72 controls were wrapped, not 67.** The five I called
+unsplit continue with `AI` and `(both`. The descriptions also swallowed page furniture (`GOVERN 1.4`
+carried four furniture blocks) and neighbouring category text (`MEASURE 2.13`). Prose fraction
+**0.7639 -> 1.0000**, floor 0.76 -> 1.00. Title is now the subcategory identifier, because the
+source's two-column table gives subcategories no title and any other choice is a truncation. 72
+audit records carry both halves and the result as text.
+
+**`aiuc_1`'s two tombstones were DROPPED rather than aliased, and the reasoning is better than my
+brief's.** They do name successors, but at CONTROL level (E004, E017) while the parser's unit is the
+ACTIVITY, and the source never says which of E004's two or E017's three activities absorbed them.
+An `alt_ids` entry would have asserted an equivalence the publisher never stated. R17's alias was
+right for WSTG and wrong here, and the agent said why instead of applying the precedent
+mechanically. 132 -> 130 controls, and no curated link targets either id.
+
+25 mutations, four first-pass survivors, each a real gap. The sharpest: an unterminated fixture
+ended on furniture lacking a period, so the block scan raised by running out of input and
+`BLOCK_STOP` was never exercised at all, while a real category cell ends WITH a period and would be
+silently absorbed into a grammatical two-column sentence.
+
+### Operational cost of parallel dispatch, now paid twice
+The git index is shared, so a `git commit` from one agent absorbs whatever another has staged. It
+happened to Task 16's ledger block and to these repairs. No content was lost either time and both
+were caught, but the commit messages no longer match their contents. **Serialising from here.**
