@@ -1079,7 +1079,13 @@ def format_table(report: CorpusReport) -> str:
 #   wstg         109/118  nine links name ids absent from the archive
 #   nist_800_63   78/79   one section_id is the fragment "are g"
 #   biml          21/21   with the two declared alternates
-#   enisa         68/68   with Table 3, Annex C and name repair
+#   enisa         68/68   with Table 5, Table 3 and name repair. An earlier
+#                         version of this line said "with Annex C". The VALUE
+#                         is unchanged and the RATIONALE was wrong: Annex C is
+#                         not read at all, and the two controls thought to be
+#                         Annex-C-only are printed in Table 5. See
+#                         parsers/parse_enisa.py, which states the same and
+#                         raises if either table yields the wrong unit count.
 #   etsi          36/36   every technique declared to its own clause
 #   csa_ccm       29/29   seven renamed ids resolve by title
 #   nist_ssdf     46/46   with the two declared alt_ids
