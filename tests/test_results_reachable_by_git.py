@@ -35,7 +35,21 @@ REPO_ROOT: Final[Path] = config.PROJECT_ROOT
 _DELIBERATELY_EXCLUDED: Final[dict[str, str]] = {
     "results/phase1c": "the directory defaults to excluded; calibration/ is carved back in",
     "results/phase1c/crosswalk.db": "a database, already covered by *.db",
-    "results/phase1c/deployment_model": "model weights",
+    # deployment_model/ is not a run output at all. On a machine that has run
+    # `tract assign`, every entry in it is a symlink into the HuggingFace cache
+    # snapshot of the published rockCO78/tract-cre-assignment model. These
+    # artifacts are distributed through HuggingFace and versioned by its
+    # revision pin, so git is the wrong home for them.
+    "results/phase1c/deployment_model": "published model weights, symlinked from the HF cache",
+    "results/phase1c/deployment_model/deployment_artifacts.npz": (
+        "packed deployment embeddings, shipped with the published model"
+    ),
+    "results/phase1c/deployment_model/calibration.json": (
+        "the published model's calibration parameters (t_deploy, thresholds, "
+        "conformal quantile); they describe one checkpoint and are meaningless "
+        "without it. The ECE gate VERDICT is separate and is tracked, at "
+        "results/phase1c/calibration/ece_gate.json"
+    ),
     "results/phase1c/similarities": "per-fold .npz similarity arrays",
 }
 
@@ -93,8 +107,17 @@ def _output_paths() -> dict[str, tuple[str, str]]:
     writes: results/<phase>/<config>/<fold>/fold_result.json. Probing the
     directory itself would miss the case that broke here, where the directory
     is re-included but its contents are not.
+
+    Deliberately does NOT call resolve() on the constant. The first version did,
+    and it dropped PHASE1D_ARTIFACTS_PATH on the author's machine while keeping
+    it in CI: results/phase1c/deployment_model/deployment_artifacts.npz is a
+    symlink into the HuggingFace cache there, so resolve() followed it out of
+    the repository and relative_to raised, which the loop swallowed as "not
+    under results/". git does not follow the link when deciding what to ignore,
+    so the declared path is the one that matters. A check that silently covers
+    less on the machine where it is run is worse than no check.
     """
-    results_root = (REPO_ROOT / "results").resolve()
+    results_root = REPO_ROOT / "results"
     found: dict[str, tuple[str, str]] = {}
     for name in dir(config):
         if not name.isupper():
@@ -103,7 +126,7 @@ def _output_paths() -> dict[str, tuple[str, str]]:
         if not isinstance(value, Path):
             continue
         try:
-            relative = value.resolve().relative_to(results_root)
+            relative = value.relative_to(results_root)
         except ValueError:
             continue
         # The results root itself carries no output of its own.
@@ -133,6 +156,30 @@ class TestEveryResultsDirectoryCanBeStaged:
         assert "PHASE1B_RESULTS_DIR" in paths, (
             "PHASE1B_RESULTS_DIR is the path runpod_parallel collects into "
             f"and it must be covered; found {sorted(paths)}"
+        )
+
+    def test_no_results_constant_is_silently_dropped(self) -> None:
+        """Counts by string prefix, which no symlink can bend.
+
+        _output_paths uses relative_to, and its first version resolved the
+        constant first, which silently dropped any path that happened to be a
+        symlink out of the repository. This counts the same constants a second
+        way, so a drop shows up as a mismatch rather than as coverage quietly
+        shrinking on whichever machine has the symlink.
+        """
+        prefix = f"{REPO_ROOT / 'results'}/"
+        expected = {
+            name
+            for name in dir(config)
+            if name.isupper()
+            and isinstance(getattr(config, name), Path)
+            and str(getattr(config, name)).startswith(prefix)
+        }
+        assert expected == set(_output_paths()), (
+            "constants under results/ counted by prefix do not match the ones "
+            "_output_paths derived. Dropped: "
+            f"{sorted(expected - set(_output_paths()))}. Extra: "
+            f"{sorted(set(_output_paths()) - expected)}."
         )
 
     @pytest.mark.parametrize(
