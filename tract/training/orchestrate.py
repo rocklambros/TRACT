@@ -49,12 +49,18 @@ from tract.training.evaluate import (
     fold_stratified_bootstrap_ci,
     paired_bootstrap_delta,
 )
-from tract.stopwords import load_stopwords
+from tract.framework_identity import (
+    assert_identity_symmetry,
+    filter_set,
+    load_framework_corpora,
+    load_hub_vocabulary,
+)
 from tract.text_selection import (
     ProseIndex,
     SelectionStats,
     TextSelection,
     apply_prose_to_corpus,
+    merged_corpus_path,
 )
 from tract.training.firewall import assert_firewall, build_all_hub_texts
 from tract.training.loop import save_checkpoint, train_model
@@ -86,6 +92,10 @@ def _free_gpu_memory() -> None:
 ARM_DEFINING_KEYS: tuple[str, ...] = (
     "use_prose",
     "use_stopword_filter",
+    # Whether the anchors still say "OWASP". A run that scrubbed framework
+    # acronyms and one that did not are answering different questions, and
+    # averaging them reports a number describing neither.
+    "use_framework_identity_filter",
     "use_description_only",
     # Not anchor arms, but they define a configuration just as completely. A
     # rebalanced run and an unbalanced one, or two different encoders, must
@@ -175,7 +185,21 @@ def run_single_fold(
     # matches control text against hub text by exact substring, so filtering one
     # and not the other would make a real leak unmatchable and the check would
     # pass on a breach.
-    stopwords = load_stopwords() if config.use_stopword_filter else None
+    stopwords = filter_set(
+        use_stopwords=config.use_stopword_filter,
+        use_framework_identity=config.use_framework_identity_filter,
+    )
+    # Checked against the corpus THIS fold reads, not the one the artifact was
+    # built from. A checkout holding the licensed overlay trains on frameworks
+    # the committed identity set never saw, and a set that scrubs "OWASP" while
+    # leaving "ETSI" is the original defect wearing a different name. Skipped
+    # when nothing is filtered, so the default path pays nothing.
+    if stopwords is not None:
+        assert_identity_symmetry(
+            stopwords,
+            load_framework_corpora(merged_corpus_path()),
+            load_hub_vocabulary(),
+        )
     prose_index = ProseIndex.load() if config.use_prose else None
 
     hub_texts = build_all_hub_texts(
@@ -340,7 +364,8 @@ def run_single_fold(
     # them with sha256sum.
     fold_record["inputs"] = fold_input_digests(
         with_prose=prose_index is not None,
-        with_stopwords=stopwords is not None,
+        with_stopwords=config.use_stopword_filter,
+        with_framework_identity=config.use_framework_identity_filter,
     )
     atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
 
@@ -736,7 +761,10 @@ def run_experiment(
     corpus = apply_prose_to_corpus(
         corpus,
         ProseIndex.load() if config.use_prose else None,
-        load_stopwords() if config.use_stopword_filter else None,
+        filter_set(
+            use_stopwords=config.use_stopword_filter,
+            use_framework_identity=config.use_framework_identity_filter,
+        ),
         description_only=config.use_description_only,
     )
 

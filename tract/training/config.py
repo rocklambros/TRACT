@@ -89,6 +89,15 @@ class TrainingConfig:
     # function words moves input off the distribution a contextual encoder was
     # pretrained on, so the trade has to be measured rather than assumed.
     use_stopword_filter: bool = False
+    # use_framework_identity_filter: strip the acronyms that name a framework
+    # ("OWASP", "CWE", "CAPEC", "CCM") from control AND hub text. Off by
+    # default for the same reason as the stop word arm: this changes what
+    # every anchor contains, so it is measured rather than assumed. Separate
+    # from use_stopword_filter because the two answer different questions.
+    # Boilerplate removal is about information density; this is about a
+    # learnable shortcut, and a bi-encoder that reads "OWASP" can answer from
+    # the publisher instead of the mapping.
+    use_framework_identity_filter: bool = False
     # use_description_only: cut each control at its first remediation heading.
     # The encoder's 512-token budget is an architectural ceiling on BGE-large
     # (BertModel, absolute position embeddings), so the only lever is which
@@ -151,6 +160,7 @@ class TrainingConfig:
             "hub_rep_format": self.hub_rep_format,
             "use_prose": self.use_prose,
             "use_stopword_filter": self.use_stopword_filter,
+            "use_framework_identity_filter": self.use_framework_identity_filter,
             "use_description_only": self.use_description_only,
             "data_hash": self.data_hash,
         }

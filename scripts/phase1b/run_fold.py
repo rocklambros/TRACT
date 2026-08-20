@@ -32,7 +32,7 @@ from tract.config import (
 )
 from tract.hierarchy import CREHierarchy
 from tract.io import load_json
-from tract.stopwords import load_stopwords
+from tract.framework_identity import filter_set
 from tract.text_selection import (
     ProseIndex,
     SelectionStats,
@@ -65,6 +65,8 @@ def _arm_label(config: TrainingConfig) -> str:
         parts.append("desconly")
     if config.use_stopword_filter:
         parts.append("stopwords")
+    if config.use_framework_identity_filter:
+        parts.append("fwid")
     return "-".join(parts)
 
 
@@ -117,6 +119,12 @@ def main() -> int:
     parser.add_argument("--stopwords", action="store_true",
                         help="Filter corpus-derived boilerplate from control and "
                              "hub text. Ablation arm.")
+    parser.add_argument("--framework-identity", action="store_true",
+                        help="Strip the acronyms that name a framework "
+                             "(OWASP, CWE, CAPEC, CCM) from control and hub "
+                             "text. Ablation arm: a bi-encoder that reads the "
+                             "publisher can answer from it instead of the "
+                             "mapping.")
     parser.add_argument("--description-only", action="store_true",
                         help="Cut each control at its first remediation heading. "
                              "The 512-token budget is fixed by the architecture; "
@@ -187,6 +195,7 @@ def main() -> int:
         name=args.config_name,
         use_prose=not args.no_prose,
         use_stopword_filter=args.stopwords,
+        use_framework_identity_filter=args.framework_identity,
         use_description_only=args.description_only,
         **({"base_model": args.base_model} if args.base_model else {}),
         **({"max_seq_length": args.max_seq_length} if args.max_seq_length else {}),
@@ -221,7 +230,10 @@ def main() -> int:
     corpus = apply_prose_to_corpus(
         corpus,
         ProseIndex.load() if config.use_prose else None,
-        load_stopwords() if config.use_stopword_filter else None,
+        filter_set(
+            use_stopwords=config.use_stopword_filter,
+            use_framework_identity=config.use_framework_identity_filter,
+        ),
         stats=selection_stats,
         description_only=config.use_description_only,
         max_chars=max_anchor_chars(config.max_seq_length),

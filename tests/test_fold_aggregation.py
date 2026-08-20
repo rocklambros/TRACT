@@ -286,23 +286,29 @@ class TestArmLabelling:
         for use_prose in (True, False):
             for stopwords in (True, False):
                 for desc_only in (True, False):
-                    config = TrainingConfig(
-                        name="t",
-                        use_prose=use_prose,
-                        use_stopword_filter=stopwords,
-                        use_description_only=desc_only,
-                    )
-                    before = _arm_label(config)
-                    after = _arm_from_config(config.to_dict())
-                    assert before == after, (use_prose, stopwords, desc_only)
-                    seen.add(before)
+                    for fwid in (True, False):
+                        config = TrainingConfig(
+                            name="t",
+                            use_prose=use_prose,
+                            use_stopword_filter=stopwords,
+                            use_description_only=desc_only,
+                            use_framework_identity_filter=fwid,
+                        )
+                        before = _arm_label(config)
+                        after = _arm_from_config(config.to_dict())
+                        assert before == after, (
+                            use_prose, stopwords, desc_only, fwid,
+                        )
+                        seen.add(before)
 
-        # The four arms of this campaign, plus the title-only baseline's
-        # collapse: with use_prose off the other flags do not apply.
+        # The arms of this campaign, plus the title-only baseline's collapse:
+        # with use_prose off the other flags do not apply.
         assert "title-only" in seen
         assert "prose" in seen
         assert "prose-stopwords" in seen
         assert "prose-desconly" in seen
+        assert "prose-fwid" in seen
+        assert "prose-stopwords-fwid" in seen
 
 
 class TestArmSeparation:

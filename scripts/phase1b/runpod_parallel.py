@@ -1213,6 +1213,8 @@ def _arm_from_config(config: dict[str, Any]) -> str:  # noqa: D401
         parts.append("desconly")
     if config.get("use_stopword_filter"):
         parts.append("stopwords")
+    if config.get("use_framework_identity_filter"):
+        parts.append("fwid")
     label = "-".join(parts)
     # Mirrors run_fold._campaign_label: the encoder and the branch balance
     # are part of a configuration's identity, not just its anchor arm.
@@ -1434,6 +1436,9 @@ def main() -> int:
                         help="Baseline arm: anchor on section titles")
     parser.add_argument("--stopwords", action="store_true",
                         help="Ablation arm: filter corpus-derived boilerplate")
+    parser.add_argument("--framework-identity", action="store_true",
+                        help="Ablation arm: strip the acronyms that name a "
+                             "framework (OWASP, CWE, CAPEC, CCM)")
     parser.add_argument("--description-only", action="store_true",
                         help="Ablation arm: cut each control at its first "
                              "remediation heading")
@@ -1473,6 +1478,7 @@ def main() -> int:
     arm_flags = tuple(
         flag for flag, on in (("--no-prose", args.no_prose),
                               ("--stopwords", args.stopwords),
+                              ("--framework-identity", args.framework_identity),
                               ("--description-only", args.description_only)) if on
     )
     # Valued flags, passed through with their argument.

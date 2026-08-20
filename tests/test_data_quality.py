@@ -539,16 +539,44 @@ class TestFoldProvenanceNamesTheCorpusTheRunRead:
             "tract.text_selection.merged_corpus_path", lambda: corpus,
         )
 
-        digests = fold_input_digests(with_prose=True, with_stopwords=False)
+        digests = fold_input_digests(
+            with_prose=True, with_stopwords=False,
+            with_framework_identity=False,
+        )
         assert digests["all_controls_sha256"] == hashlib.sha256(
             corpus.read_bytes()
         ).hexdigest()
         assert digests["stopwords_sha256"] is None
+        assert digests["framework_identity_sha256"] is None
 
     def test_an_arm_without_prose_records_no_corpus_digest(self) -> None:
-        digests = fold_input_digests(with_prose=False, with_stopwords=False)
+        digests = fold_input_digests(
+            with_prose=False, with_stopwords=False,
+            with_framework_identity=False,
+        )
         assert digests["all_controls_sha256"] is None
         assert digests["curated_links_sha256"] is not None
+
+    def test_each_filter_arm_records_only_the_file_it_read(self) -> None:
+        """Two arms, two artifacts, and neither may stand in for the other.
+
+        A run with only the framework-identity arm on still holds a non-empty
+        filter set, so a record keyed on "the set is non-empty" would name
+        stopwords.json for a run that never opened it.
+        """
+        identity_only = fold_input_digests(
+            with_prose=False, with_stopwords=False,
+            with_framework_identity=True,
+        )
+        assert identity_only["stopwords_sha256"] is None
+        assert identity_only["framework_identity_sha256"] is not None
+
+        stopwords_only = fold_input_digests(
+            with_prose=False, with_stopwords=True,
+            with_framework_identity=False,
+        )
+        assert stopwords_only["stopwords_sha256"] is not None
+        assert stopwords_only["framework_identity_sha256"] is None
 
 
 class TestTheAnchorGateReachesItsDerivedCount:

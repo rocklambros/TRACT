@@ -230,7 +230,7 @@ def _artifact_sha256(path: Path) -> str | None:
 
 
 def fold_input_digests(
-    *, with_prose: bool, with_stopwords: bool,
+    *, with_prose: bool, with_stopwords: bool, with_framework_identity: bool,
 ) -> dict[str, str | None]:
     """The digests that pin the data one fold read.
 
@@ -248,7 +248,13 @@ def fold_input_digests(
     It lives here rather than in tract.training.orchestrate because that module
     imports the training stack, `datasets` is not in requirements.txt, and a
     provenance rule no test can import is a rule that regresses unobserved.
+
+    The two filter flags are recorded separately because they select different
+    files. A run with only the framework-identity arm on still holds a
+    non-empty filter set, so keying either digest on "the set is non-empty"
+    would name stopwords.json in a record for a run that never opened it.
     """
+    from tract.framework_identity import FRAMEWORK_IDENTITY_PATH
     from tract.stopwords import STOPWORDS_PATH
 
     return {
@@ -256,6 +262,10 @@ def fold_input_digests(
         "all_controls_sha256": merged_corpus_sha256() if with_prose else None,
         "stopwords_sha256": (
             _artifact_sha256(STOPWORDS_PATH) if with_stopwords else None
+        ),
+        "framework_identity_sha256": (
+            _artifact_sha256(FRAMEWORK_IDENTITY_PATH)
+            if with_framework_identity else None
         ),
     }
 

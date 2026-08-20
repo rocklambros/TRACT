@@ -80,10 +80,17 @@ At training and evaluation, `tract/text_selection.py`:
   9. Markdown and site furniture removed by `strip_markup`, then a second NFC
      normalisation and null-byte strip in `prepare_anchor`.
  10. Stop words removed when the arm calls for it, by
-     `tract/stopwords.py::filter_stopwords` against the 81-word list at
+     `tract/stopwords.py::filter_stopwords` against the 80-word list at
      `data/processed/stopwords.json`. The list is generated from this corpus,
      not borrowed, and the filter deletes matched words in place so identifiers
      and thresholds survive. Text that would be emptied is returned unchanged.
+ 10a. Framework-identity acronyms removed when that arm calls for it, by the
+     same `filter_stopwords` against the 18-token set at
+     `data/processed/framework_identity_tokens.json`, derived by
+     `tract/framework_identity.py`. These are the acronyms that name a
+     publisher rather than describe a control ("OWASP", "CWE", "CAPEC",
+     "CCM"). A token that names or describes a CRE hub is never removed, so
+     "NIST", "AI", "LLM" and "ML" survive whatever the arm.
  11. Truncated again to `tract.config.MAX_ANCHOR_CHARS` (2150 characters), the
      encoder's 512-token budget. Truncation is counted and reported.
 
