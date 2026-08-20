@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from tract.training.checkpoint import assert_loadable_checkpoint
+
 logger = logging.getLogger(__name__)
 
 MERGE_VERIFICATION_TEXTS = [
@@ -92,6 +94,10 @@ def merge_lora_adapters(
         RuntimeError: If merge verification fails (cosine < threshold).
     """
     logger.info("Loading model from %s", model_dir)
+    # An adapter-only checkpoint with no base config raises a transformers error
+    # about an unrecognised model, which reads as a corrupt download rather than
+    # a checkpoint written by an older TRACT. Name the real problem first.
+    assert_loadable_checkpoint(model_dir)
     model = SentenceTransformer(str(model_dir))
 
     inner = model[0].auto_model

@@ -23,6 +23,10 @@ from sentence_transformers import (
 )
 
 from tract.encoders import resolve
+from tract.training.checkpoint import (
+    assert_loadable_checkpoint,
+    save_sentence_transformer,
+)
 from tract.training.config import TrainingConfig
 from tract.training.data import HubAwareTemperatureSampler
 from tract.training.st_compat import resolve_symbol
@@ -312,49 +316,6 @@ def train_model(
     return model
 
 
-def _reload_saved_model(
-    saved_dir: Path, reference_model: SentenceTransformer
-) -> SentenceTransformer:
-    """Load a saved checkpoint the way a consumer would.
-
-    A LoRA checkpoint is adapter-only. SentenceTransformer.save writes
-    adapter_config.json and adapter_model.safetensors but no base config and
-    no base weights, because the base is named inside adapter_config rather
-    than copied. SentenceTransformer(saved_dir) therefore fails with
-    "Unrecognized model ... should have a model_type key": it is asking a
-    directory of adapter weights to describe an architecture.
-
-    So reload the way the adapter itself says to -- base model first, then the
-    adapter on top. A full fine-tune has no adapter_config and loads directly.
-    """
-    adapter_config = saved_dir / "adapter_config.json"
-    if not adapter_config.is_file():
-        return SentenceTransformer(str(saved_dir))
-
-    with open(adapter_config, encoding="utf-8") as handle:
-        base_name = json.load(handle).get("base_model_name_or_path")
-    if not base_name:
-        raise RuntimeError(
-            f"{adapter_config} names no base_model_name_or_path, so the "
-            f"adapter cannot be reattached to anything and the checkpoint "
-            f"cannot be loaded."
-        )
-
-    reloaded = SentenceTransformer(base_name)
-    backbone = reloaded[0]
-    module = getattr(backbone, "auto_model", None) or backbone.model
-    from peft import PeftModel
-
-    # Shared with the publish path: sentence-transformers 5.7 made auto_model
-    # a read-only property, and a plain assignment is silently discarded.
-    from tract.publish.merge import _set_backbone
-
-    merged = PeftModel.from_pretrained(module, str(saved_dir)).merge_and_unload()
-    _set_backbone(backbone, merged)
-    reloaded.max_seq_length = reference_model.max_seq_length
-    return reloaded
-
-
 def verify_checkpoint_roundtrip(
     model: SentenceTransformer,
     saved_dir: Path,
@@ -367,12 +328,19 @@ def verify_checkpoint_roundtrip(
     never written to disk. That is exactly how a lost LoRA adapter stayed
     invisible. Reload what was just written and compare.
 
+    The reload is a plain ``SentenceTransformer(saved_dir)`` on purpose, because
+    that is what every consumer runs: ``load_fold_model``, ``merge_lora_adapters``
+    and anyone who downloads the artifact. An earlier version of this guard
+    reattached the adapter by hand, which meant it could pass on a directory no
+    consumer could open, and it did.
+
     Returns the minimum per-probe cosine. Raises RuntimeError below threshold.
     """
+    assert_loadable_checkpoint(saved_dir)
     reference = model.encode(
         CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
     )
-    reloaded = _reload_saved_model(saved_dir, model)
+    reloaded = SentenceTransformer(str(saved_dir))
     reloaded.max_seq_length = model.max_seq_length
     actual = reloaded.encode(
         CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
@@ -410,7 +378,7 @@ def save_checkpoint(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     model_dir = output_dir / "model"
-    model.save(str(model_dir))
+    save_sentence_transformer(model, model_dir)
 
     if verify_roundtrip:
         verify_checkpoint_roundtrip(model, model_dir)

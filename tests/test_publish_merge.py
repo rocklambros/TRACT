@@ -50,6 +50,21 @@ def _make_mock_model(fake_save_dir: Path | None = None) -> MagicMock:
     return mock_model
 
 
+def _create_checkpoint_dir(model_dir: Path) -> Path:
+    """Create the input side of a merge: an adapter beside its base config.
+
+    An empty directory is not a checkpoint. merge_lora_adapters refuses one
+    before it reaches sentence-transformers, so the fixture has to carry the two
+    files that make a directory loadable.
+    """
+    model_dir.mkdir(parents=True)
+    (model_dir / "config.json").write_text('{"model_type": "bert"}')
+    (model_dir / "adapter_config.json").write_text(
+        '{"base_model_name_or_path": "BAAI/bge-large-en-v1.5"}'
+    )
+    return model_dir
+
+
 class TestValidateMergedOutput:
 
     def test_rejects_leftover_adapter(self, tmp_path) -> None:
@@ -81,8 +96,7 @@ class TestMergeLoraAdapters:
     def test_calls_merge_and_unload(self, tmp_path) -> None:
         from tract.publish.merge import merge_lora_adapters
 
-        model_dir = tmp_path / "input"
-        model_dir.mkdir()
+        model_dir = _create_checkpoint_dir(tmp_path / "input")
         output_dir = tmp_path / "output"
 
         mock_model = _make_mock_model(fake_save_dir=output_dir)
@@ -95,8 +109,7 @@ class TestMergeLoraAdapters:
     def test_output_directory_created(self, tmp_path) -> None:
         from tract.publish.merge import merge_lora_adapters
 
-        model_dir = tmp_path / "input"
-        model_dir.mkdir()
+        model_dir = _create_checkpoint_dir(tmp_path / "input")
         output_dir = tmp_path / "output"
 
         mock_model = _make_mock_model(fake_save_dir=output_dir)
@@ -108,8 +121,7 @@ class TestMergeLoraAdapters:
     def test_fails_on_cosine_mismatch(self, tmp_path) -> None:
         from tract.publish.merge import merge_lora_adapters
 
-        model_dir = tmp_path / "input"
-        model_dir.mkdir()
+        model_dir = _create_checkpoint_dir(tmp_path / "input")
         output_dir = tmp_path / "output"
 
         mock_model = _make_mock_model(fake_save_dir=output_dir)
@@ -122,6 +134,23 @@ class TestMergeLoraAdapters:
         with patch("tract.publish.merge.SentenceTransformer", return_value=mock_model):
             with pytest.raises(RuntimeError, match="Merge verification failed"):
                 merge_lora_adapters(model_dir, output_dir)
+
+    def test_refuses_an_adapter_only_checkpoint(self, tmp_path) -> None:
+        """Checkpoints written before the config fix must be named, not decoded.
+
+        Publishing is where a months-old fold checkpoint gets picked up, so this
+        is the path most likely to meet one.
+        """
+        from tract.publish.merge import merge_lora_adapters
+
+        model_dir = tmp_path / "input"
+        model_dir.mkdir()
+        (model_dir / "adapter_config.json").write_text("{}")
+
+        mock_model = _make_mock_model(fake_save_dir=tmp_path / "output")
+        with patch("tract.publish.merge.SentenceTransformer", return_value=mock_model):
+            with pytest.raises(RuntimeError, match="adapter-only checkpoint"):
+                merge_lora_adapters(model_dir, tmp_path / "output")
 
 
 class TestMergeRealAdapter:
@@ -142,6 +171,8 @@ class TestMergeRealAdapter:
         from peft import LoraConfig, TaskType
         from sentence_transformers import SentenceTransformer
 
+        from tract.training.checkpoint import save_sentence_transformer
+
         torch.manual_seed(42)
         model = SentenceTransformer(self.SMALL_MODEL)
         model.max_seq_length = 64
@@ -157,7 +188,9 @@ class TestMergeRealAdapter:
             if "lora_B" in name:
                 with torch.no_grad():
                     param.copy_(torch.randn(param.shape, generator=generator) * 0.05)
-        model.save(str(path))
+        # The save path under test, not a bare model.save: a bare save omits
+        # config.json and the checkpoint cannot be reloaded at all.
+        save_sentence_transformer(model, path)
         return model
 
     @pytest.mark.slow

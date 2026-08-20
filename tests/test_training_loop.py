@@ -186,17 +186,49 @@ class TestLoRACheckpointPersistence:
         )
 
     @pytest.mark.slow
+    def test_checkpoint_directory_is_self_describing(self) -> None:
+        """The saved directory must name its own architecture.
+
+        transformers omits config.json for an adapter save, and
+        sentence-transformers 5.7 needs it to resolve a processor. Without it the
+        adapter weights are all correct and nothing can open the directory.
+        """
+        import json
+
+        from tract.training.checkpoint import save_sentence_transformer
+
+        model = self._adapted_model()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            saved = Path(tmpdir) / "model"
+            save_sentence_transformer(model, saved)
+
+            assert (saved / "adapter_config.json").is_file(), (
+                "the checkpoint stopped being adapter-only"
+            )
+            config_path = saved / "config.json"
+            assert config_path.is_file(), (
+                "no config.json beside the adapter, so SentenceTransformer will "
+                "raise 'Unrecognized model' on this directory"
+            )
+            assert json.loads(config_path.read_text(encoding="utf-8"))["model_type"] == "bert"
+
+    @pytest.mark.slow
     def test_adapter_survives_save_and_reload(self) -> None:
         import numpy as np
         from sentence_transformers import SentenceTransformer
+
+        from tract.training.checkpoint import save_sentence_transformer
 
         model = self._adapted_model()
         before = self._embed(model)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             saved = Path(tmpdir) / "model"
-            model.save(str(saved))
+            save_sentence_transformer(model, saved)
 
+            # Plain load, the way load_fold_model and every downstream consumer
+            # opens a checkpoint. Anything cleverer here would verify a path no
+            # consumer takes.
             reloaded = SentenceTransformer(str(saved))
             reloaded.max_seq_length = 64
             after = reloaded.encode(
@@ -219,6 +251,7 @@ class TestLoRACheckpointPersistence:
         """
         from sentence_transformers import SentenceTransformer
 
+        from tract.training.checkpoint import save_sentence_transformer
         from tract.training.loop import verify_checkpoint_roundtrip
 
         adapted = self._adapted_model()
@@ -227,20 +260,43 @@ class TestLoRACheckpointPersistence:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             saved = Path(tmpdir) / "base-model"
-            base.save(str(saved))
+            save_sentence_transformer(base, saved)
 
             with pytest.raises(RuntimeError, match="does not reproduce the in-memory model"):
                 verify_checkpoint_roundtrip(adapted, saved)
 
     @pytest.mark.slow
     def test_verify_checkpoint_roundtrip_passes_on_match(self) -> None:
+        from tract.training.checkpoint import save_sentence_transformer
+        from tract.training.loop import verify_checkpoint_roundtrip
+
+        model = self._adapted_model()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            saved = Path(tmpdir) / "model"
+            save_sentence_transformer(model, saved)
+            assert verify_checkpoint_roundtrip(model, saved) >= 0.999
+
+    @pytest.mark.slow
+    def test_verify_checkpoint_roundtrip_rejects_an_adapter_only_directory(self) -> None:
+        """A checkpoint written by a bare model.save must not pass verification.
+
+        This is the artifact the defect produced. The guard used to reattach the
+        adapter by hand and report a healthy cosine for a directory that no
+        consumer could open.
+        """
         from tract.training.loop import verify_checkpoint_roundtrip
 
         model = self._adapted_model()
         with tempfile.TemporaryDirectory() as tmpdir:
             saved = Path(tmpdir) / "model"
             model.save(str(saved))
-            assert verify_checkpoint_roundtrip(model, saved) >= 0.999
+            assert not (saved / "config.json").exists(), (
+                "sentence-transformers now writes a base config for an adapter "
+                "save, so this test no longer builds the artifact it describes"
+            )
+
+            with pytest.raises(RuntimeError, match="adapter-only checkpoint"):
+                verify_checkpoint_roundtrip(model, saved)
 
 
 class TestSaveCheckpoint:
