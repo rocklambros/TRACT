@@ -1719,3 +1719,41 @@ against. **The annotated study must never silently change.** A fresh draw is a N
 own name, not a redraw of the old one. Pin the sample to the tracked artifact, and make a
 disagreement between code and artifact fail loudly rather than resolve in favour of whichever ran
 last.
+
+### R22 LANDED. `83a608d`. 2,107 -> 2,161 passing. 26 mutations, 26 killed.
+
+**Correction to my own R22 entry: I conflated two different numbers, and the one that governs is
+worse.** Measured against the tracked corpus at `7a8465b` (seed 42, links `3d42cbd3`):
+```
+168 of 250 item POSITIONS carry a different control    <- this is the number that matters
+ 82 positions hold
+ 77 annotated CONTROLS are absent from the fresh sample altogether
+```
+I recorded 77. That is the control-absence figure. **Answers key on `item_index`, so the position
+figure governs: two thirds of the annotated study would have been silently redefined**, not a
+third. Measured both ways and overlay-independent.
+
+**Provenance fully recovered, and recovered the right way: by REPLAY, not inference.** The agent
+extracted the tree at `62afd39` and re-ran `build_ceiling_study()`, which returned 250 of 250
+pinned items in their pinned positions. So seed 42, corpus `ceef7fc6`, links `3d42cbd3`, code
+`62afd39`, recorded as `recovery: "reproduced"`. It was only recoverable because
+`merged_corpus_path()` and its gitignored overlay did not exist at that commit. The record refuses
+to let the string `"unrecoverable"` sit beside a digest, so a guess cannot masquerade as a fact.
+
+That is the standard I have failed three times this run by reasoning from static artifacts. Running
+it is what settles it.
+
+**No evidence file was modified**, verified by digest across all eight: `ceiling_items.json`,
+`answers_human_rock.json`, the answer key and five panel files. The only addition under that
+directory is the provenance record.
+
+**Thirteenth mutation finding, and a subtle one.** M8 survived first and exposed a real hole: the
+length test used a SHORTER draw, which a length-blind guard still catches as a moved position. Only
+a LONGER draw sharing the same prefix reaches that clause, and in that case no position moves, no
+anchor drops, both counts read zero, and **a 251-item draw could silently replace the 250-item
+study**. Closed with an explicit longer-draw test, and `describe()` now leads with the size when it
+differs.
+
+**Carried:** Task 15 moves the pool again, so the recorded divergence figure is keyed to its corpus
+digest and nothing recomputes it. A new study needs its own provenance record and only the CLI
+enforces that today.
