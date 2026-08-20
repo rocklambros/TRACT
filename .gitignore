@@ -148,4 +148,9 @@ opencre_export/
 
 # Claude-specific working documentation. Analyses, runbooks and summaries that
 # support the work without being part of it. Untracked on purpose.
-claudedocs/
+claudedocs/*
+# One exception. The Jetson drives the RunPod fleet and gets this repository by
+# cloning it, so a handoff written to an untracked directory is a handoff that
+# never arrives. Tracked deliberately and by name, which keeps the rest of
+# claudedocs/ the scratch space it was meant to be.
+!claudedocs/jetson-runpod-start.md
