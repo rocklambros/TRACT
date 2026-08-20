@@ -44,6 +44,11 @@ root:
 >    Do not reuse the A1 or A2 results already in the repository.
 > 5. After each `collect`, confirm `git status` shows the new fold results,
 >    run the licensed-text gate, commit, and push.
+> 6. After the test round only, run the agentic smoke test once on the winning
+>    arm, against the pass condition already committed in
+>    `data/eval/agentic_smoke_test.json`. It is six items. Report it in prose
+>    as "n of 6". Do not turn it into a metric and do not re-select an arm on
+>    it, whatever it says.
 >
 > Rules that hold the whole way: no `git push --force`, no `git add -f`, no
 > republishing to HuggingFace without asking me. Report what the numbers say
@@ -363,6 +368,56 @@ From the pre-registration, and not negotiable after the fact:
 4. **If no arm clears the gate, that is the result.** `prose 0.4354` was
    already a defensible no and this campaign is allowed to produce another one.
 
+### The agentic smoke test, and why it is not a sixth number
+
+`data/eval/agentic_smoke_test.json` holds six held-out items: the six OWASP
+Agentic Top 10 controls the owner hand-mapped to CRE hubs, derived from a
+39-row bridge CSV that fans each item out across several ATLAS techniques.
+Collapsed to distinct control-to-hub pairs it is six items, not thirty-nine.
+
+It is genuinely held out. `hub_links_curated.jsonl` carries **zero** links for
+`owasp_agentic_top10`, so no item here has ever been a training anchor. The
+four hubs do appear in training through 23 links from eight other frameworks,
+so this asks whether agentic control text routes to hubs the model already
+knows. That is a text generalisation test and not a hub generalisation test.
+
+**It is not a metric and it may not become one.** The arithmetic, which is also
+recorded inside the fixture:
+
+- Three of the six items answer hub `220-442`, so always guessing that one hub
+  scores 0.500.
+- Against that baseline only 6/6 clears p<0.05 by a one-sided binomial
+  (p=0.016). 5/6 gives p=0.109.
+- The Wilson 95% interval at 4/6 is [0.30, 0.90], a width of 0.60. The
+  campaign's own eval sets give 0.159 at 147 items and 0.055 at 1,265.
+- Two arms compared on six items produce 1.5 expected discordant pairs, so
+  McNemar cannot run at all.
+
+Six items detect a catastrophe and nothing smaller. That is the entire job.
+
+**Pre-declared pass condition.** Declared here and committed before any
+Campaign 2 arm runs, which is the only thing that stops it being rewritten
+around whatever result appears:
+
+| outcome | reading |
+|---|---|
+| 4, 5 or 6 of 6 correct at rank 1 | pass |
+| 2 or 3 correct | investigate, report as an open question |
+| 0 or 1 correct, or any top-1 in a different `branch_root_id` than its answer | fail |
+
+**On a fail, do not re-select the arm and do not discard the campaign result.**
+Record the failure beside the headline number and open it as its own question.
+Re-selecting on a six-item set is exactly the selection optimism the whole
+split design exists to prevent, and doing it here would undo the campaign's
+main methodological improvement over campaign 1.
+
+**How to run it.** Once, on the single winning arm, after the test round has
+already produced the headline. Never on all five arms, because comparing arms
+on six items is the thing the numbers above rule out. Report it in prose with
+the count stated as "n of 6" and never as `hit@1`. It does not enter
+`gate_decision`, it does not count toward `n_configurations`, and it is not
+quoted as a result.
+
 Campaign 1 context, so a new number is not mistaken for a regression: title-only
 scored 0.5306 and reproduces the published 0.531, but 79% of its lead is lexical
 echo. On the 115 non-echo items title and prose tie exactly at 0.4174, McNemar
@@ -475,6 +530,7 @@ Leaving a row blank is not an answer.
 | the campaign pre-registration | `results/phase1b/CAMPAIGN2.md` |
 | running off the Mac | `docs/RUNNING_ELSEWHERE.md` |
 | the orchestrator | `scripts/phase1b/runpod_parallel.py` |
+| the agentic smoke test | `data/eval/agentic_smoke_test.json` |
 | the last session's rulings | `.superpowers/autonomous-run/RUN-LEDGER.md` |
 | staleness report | `python -m tract.staleness` |
 | credentials | `pass`, never a file |
