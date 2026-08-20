@@ -112,6 +112,36 @@ would otherwise land after the fleet is already billing.
 The RunPod orchestrator has NOT been through its own premortem yet. Do not treat
 a green preflight as clearance for an unattended run.
 
+## Getting a run's output back into the repository
+
+`python -m scripts.phase1b.runpod_parallel collect` rsyncs each pod's output
+into `results/phase1b/<config_name>/`. Until 2026-08-20 every file it wrote
+there was gitignored: `results/*` excluded the directory, and the forty-five
+fold results already tracked kept `git status` looking clean, so a fleet could
+finish with its evidence on disk and nothing to push.
+
+What is stageable now, and what is not:
+
+| path | in git | why |
+|---|---|---|
+| `results/phase1b/**/*.json`, `*.md` | yes | fold results, metrics, predictions, aggregates |
+| `results/phase1b/**/checkpoint-*/` | no | optimizer state and adapter tensors |
+| `results/phase1b/**/model/` | no | saved backbones, 35 MB of tokenizers alone |
+| `results/bridge/` | yes | `bridge_report.json` |
+| `results/phase1c/calibration/` | yes | `ece_gate.json`, a gate verdict |
+| `results/phase1c/similarities/`, `deployment_model/`, `crosswalk.db` | no | arrays, weights, a database |
+
+The rule is an allowlist, so a new binary artifact type defaults to excluded
+rather than landing in git. `tests/test_results_reachable_by_git.py` derives the
+list from `tract.config` and fails if a directory a run writes to stops being
+stageable, or if one of the deliberate exclusions stops being excluded.
+
+After `collect`, `git status` should show the new fold results. If it shows
+nothing, that is the bug above returning, not a run that produced nothing.
+
+Weights stay on the pod. Pull a checkpoint down deliberately if you need one,
+and put it somewhere outside `results/`.
+
 ## Before quoting any recorded number
 
 ```bash
