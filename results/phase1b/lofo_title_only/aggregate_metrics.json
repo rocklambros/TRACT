@@ -17,11 +17,16 @@
   },
   "config_name": "lofo_title_only",
   "gate": {
+    "alpha_effective": 0.012741455098566168,
     "ci_high": 0.21768707482993196,
+    "ci_high_familywise": 0.23809523809523808,
     "ci_low": 0.04081632653061224,
+    "ci_low_familywise": 0.02040816326530612,
     "ci_low_pass": false,
+    "familywise_pass": false,
     "macro_delta": 0.1784606866002215,
     "micro_delta": 0.1292517006802721,
+    "n_configurations": 4,
     "n_total": 147,
     "negative_folds": [],
     "p_value": 0.0024,
@@ -59,10 +64,19 @@
       }
     },
     "point_estimate_pass": true,
+    "selection_optimistic": true,
     "threshold": 0.1,
     "verdicts_agree": false,
     "worst_fold": "MITRE ATLAS",
     "worst_fold_delta": 0.023255813953488358
+  },
+  "lexical_overlap": {
+    "echo_fraction": 0.21768707482993196,
+    "hit_at_1_echo": 0.9375,
+    "hit_at_1_non_echo": 0.41739130434782606,
+    "n_lexical_echo": 32,
+    "n_non_echo": 115,
+    "n_total": 147
   },
   "per_fold": {
     "MITRE ATLAS": {

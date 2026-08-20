@@ -17,11 +17,16 @@
   },
   "config_name": "lofo_prose_stopwords",
   "gate": {
+    "alpha_effective": 0.012741455098566168,
     "ci_high": 0.16326530612244897,
+    "ci_high_familywise": 0.1836734693877551,
     "ci_low": -0.006802721088435374,
+    "ci_low_familywise": -0.034013605442176874,
     "ci_low_pass": false,
+    "familywise_pass": false,
     "macro_delta": 0.08911037283130306,
     "micro_delta": 0.07482993197278912,
+    "n_configurations": 4,
     "n_total": 147,
     "negative_folds": [
       "MITRE ATLAS"
@@ -61,10 +66,19 @@
       }
     },
     "point_estimate_pass": false,
+    "selection_optimistic": true,
     "threshold": 0.1,
     "verdicts_agree": true,
     "worst_fold": "MITRE ATLAS",
     "worst_fold_delta": -0.046511627906976744
+  },
+  "lexical_overlap": {
+    "echo_fraction": 0.2585034013605442,
+    "hit_at_1_echo": 0.7105263157894737,
+    "hit_at_1_non_echo": 0.3577981651376147,
+    "n_lexical_echo": 38,
+    "n_non_echo": 109,
+    "n_total": 147
   },
   "per_fold": {
     "MITRE ATLAS": {
