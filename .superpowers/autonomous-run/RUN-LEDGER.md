@@ -1757,3 +1757,52 @@ differs.
 **Carried:** Task 15 moves the pool again, so the recorded divergence figure is keyed to its corpus
 digest and nothing recomputes it. A new study needs its own provenance record and only the CLI
 enforces that today.
+
+### Task 15: COMPLETE. `c668f4f` + `8d1ef86` + `93d4424`. 28 mutations, 28 killed.
+**CI IS GREEN IN A TRACKED-ONLY CHECKOUT: 2,134 passed, 0 failed.** The deliberately-red state R15
+created is closed. Local run 2,209 passed / 9 environmental.
+```
+unchanged 3,784 | changed 2 | added 969 | removed 436 | renamed 0
+removed lineage: 328 prefix_only, 89 id_reshaped, 19 gone
+```
+Rollback snapshot at `build/corpus_snapshots/dda6cb412b2aa7fd`, 36 files, manifest verified.
+**Tracked corpus carries zero overlay prose**: 224 csa_ccm and 194 dsomm statements withheld, etsi
+and iso_27001 dropped, asserted per control plus 15/15 on the licence gate with everything staged.
+
+**The stop rule caught a real escape, which is why it had to be an assertion.** Two NIST AI 100-2
+records changed, outside the eleven. Cause: `pdfplumber` was pinned but **`pdfminer.six` beneath it
+was not**. That is the same transitive-pin gap I found on pdfplumber itself, one layer deeper, and
+the framework's own pin did not cover it. Now pinned at `20260107`, both records regenerated, and
+declared as RECORDS rather than as a framework so the gate stays narrow.
+
+**Seven false brief claims**, including two that were mine to pass on: `removed` is **436, not
+~111**, and orphaned published rows are **341, not 63** (the brief's own snippet cannot produce 63
+on any corpus). Also Step 4 would have taken the baseline FROM the already-rebuilt corpus, making
+the gate a tautology.
+
+Two mutations survived first and were fixed rather than reported: one branch was unreachable, and
+one passed as `{} == {}` on any CI checkout.
+
+### Ruling R23 — `owasp` as a stopword is defensible; the ASYMMETRY is the finding
+The rebuild moved stopwords 78 -> 81 and added `owasp`. Measured before ruling:
+```
+owasp   1,235 corpus hits, 0 occurrences anywhere in hub data  -> IS a stopword now
+cwe     3,780 hits, 0 hub hits                                 -> NOT a stopword
+capec   1,162 hits, 0 hub hits                                 -> NOT
+biml 594, asvs 340, mitre 318, wstg 233, csa 75, enisa 25, all 0 hub hits -> NOT
+nist 1,157 hits, DOES appear in hub data                       -> NOT, correctly
+```
+Stripping `owasp` on its own terms is right: it names no hub, describes no hub, and carries only
+source identity, which is the same class as the 656 characters of ETSI document identifier Task 13
+removed as "a learnable framework shortcut".
+
+**But it crossed the document-frequency threshold only because OWASP spans ten frameworks while
+`cwe`'s larger raw count concentrates in one.** So OWASP controls lose their framework-identity
+token and thirteen other frameworks keep theirs. A model can still shortcut on "cwe" and no longer
+on "owasp", which is an inconsistency across LOFO folds rather than a stopword question.
+
+Ruling: do NOT unilaterally strip thirteen more tokens now. CLAUDE.md's own standing rule on
+stopwords is that the trade "has to be shown, not assumed", measured as an ablation arm. The
+symmetric option is a framework-identity set stripped regardless of frequency, the mirror of
+`PROTECTED_WORDS` protecting hub vocabulary. **This belongs in the diagnostics phase**, beside the
+anchor-composition question already carried from Task 6, and it gets measured rather than assumed.
