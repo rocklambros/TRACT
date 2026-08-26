@@ -31,6 +31,7 @@ the adapter already points at.
 """
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
@@ -108,6 +109,73 @@ def _write_base_config_if_missing(model: SentenceTransformer, output_dir: Path) 
     logger.info(
         "Wrote the base %s next to the adapter in %s", HF_CONFIG_NAME, output_dir,
     )
+
+
+def repair_adapter_only_checkpoint(
+    checkpoint_dir: Path, base_config_path: Path, base_model_id: str
+) -> bool:
+    """Write the missing base config into an adapter-only checkpoint.
+
+    The second half of ``assert_loadable_checkpoint``'s error message, made
+    executable. Deliberately a file copy and not a model round-trip: the 98
+    checkpoints this exists for hold correct weights, and re-serialising them
+    would rewrite artifacts to fix a directory listing. It also means the
+    repair runs on a machine that never allocates a model.
+
+    Args:
+        checkpoint_dir: An adapter-only checkpoint directory.
+        base_config_path: A ``config.json`` fetched for ``base_model_id``.
+        base_model_id: The repo id ``base_config_path`` was fetched for. This
+            is the identity the adapter is checked against, NOT
+            ``_name_or_path`` inside the config: that field records wherever
+            the config was last saved from, and BAAI published
+            ``bge-large-en-v1.5`` with a path on their own build machine in it.
+            Ninety-five of the 98 checkpoints are that backbone, so a guard
+            reading the config's own field refuses the whole real workload.
+
+    Returns:
+        True if a config was written, False if the checkpoint already had one.
+
+    Raises:
+        ValueError: If ``checkpoint_dir`` is not an adapter checkpoint, or if
+            the adapter names a backbone other than ``base_model_id``. A
+            checkpoint that opens with the wrong backbone's config is worse
+            than one that refuses to open, and 3 of the 98 are Qwen among 95
+            BGE.
+    """
+    adapter_path = checkpoint_dir / ADAPTER_CONFIG_NAME
+    if not adapter_path.is_file():
+        raise ValueError(
+            f"{checkpoint_dir} has no {ADAPTER_CONFIG_NAME}, so it is not an "
+            "adapter checkpoint and there is nothing here to repair."
+        )
+
+    adapter = json.loads(adapter_path.read_text(encoding="utf-8"))
+    declared_base = adapter.get("base_model_name_or_path")
+    if declared_base and declared_base != base_model_id:
+        raise ValueError(
+            f"{checkpoint_dir} names {declared_base} as its backbone but the "
+            f"config supplied was fetched for {base_model_id}. Writing it "
+            "would produce a checkpoint that loads and is wrong."
+        )
+
+    base_config = json.loads(base_config_path.read_text(encoding="utf-8"))
+
+    config_path = checkpoint_dir / HF_CONFIG_NAME
+    if config_path.is_file():
+        return False
+
+    # Atomic: a half-written config.json is a checkpoint that opens and then
+    # fails deep inside transformers, which is harder to diagnose than one
+    # that never opened.
+    tmp = config_path.with_suffix(".json.tmp")
+    tmp.write_text(
+        json.dumps(base_config, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    tmp.replace(config_path)
+    logger.info("Repaired %s with the base config from %s",
+                checkpoint_dir, base_config_path)
+    return True
 
 
 def assert_loadable_checkpoint(checkpoint_dir: Path) -> None:

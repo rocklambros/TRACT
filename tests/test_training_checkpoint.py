@@ -181,3 +181,124 @@ class TestAssertLoadableCheckpoint:
 
         with pytest.raises(RuntimeError, match="adapter-only checkpoint"):
             assert_loadable_checkpoint(tmp_path)
+
+
+class TestRepairAdapterOnlyCheckpoint:
+    """D2(b), answered 2026-08-26: make the 98 adapter-only checkpoints loadable.
+
+    They were written before save_sentence_transformer existed, so every one
+    carries correct weights that no consumer can open. The repair is the second
+    half of assert_loadable_checkpoint's own error message: copy the base
+    model's config.json in beside the adapter. It is a file operation, which
+    matters because it must run on a machine that never allocates a model.
+
+    The guard that earns its place here is the base-model match. These are 98
+    artifacts whose provenance nobody has audited, and 95 of them name
+    BAAI/bge-large-en-v1.5 while 3 name Qwen/Qwen3-Embedding-0.6B. Writing the
+    wrong backbone's config produces a checkpoint that opens and is wrong,
+    which is worse than one that refuses to open.
+
+    The match is against the repo id the caller fetched the config FOR, never
+    against `_name_or_path` inside the config. See the build-path test below:
+    that field records wherever the config was last saved from, which for a
+    published model is a path on the publisher's build machine.
+    """
+
+    BGE = "BAAI/bge-large-en-v1.5"
+    QWEN = "Qwen/Qwen3-Embedding-0.6B"
+
+    def _adapter_dir(self, tmp_path: Path, base_model: str) -> Path:
+        d = tmp_path / "checkpoint-1234"
+        d.mkdir()
+        (d / ADAPTER_CONFIG_NAME).write_text(
+            json.dumps({"base_model_name_or_path": base_model, "peft_type": "LORA"}),
+            encoding="utf-8",
+        )
+        return d
+
+    def _base_config(
+        self, tmp_path: Path, name_or_path: str, model_type: str = "bert"
+    ) -> Path:
+        p = tmp_path / "base_config.json"
+        p.write_text(
+            json.dumps({"_name_or_path": name_or_path, "model_type": model_type}),
+            encoding="utf-8",
+        )
+        return p
+
+    def test_the_repaired_checkpoint_becomes_loadable(self, tmp_path: Path) -> None:
+        from tract.training.checkpoint import repair_adapter_only_checkpoint
+
+        d = self._adapter_dir(tmp_path, self.BGE)
+        cfg = self._base_config(tmp_path, self.BGE)
+
+        with pytest.raises(RuntimeError):
+            assert_loadable_checkpoint(d)
+
+        assert repair_adapter_only_checkpoint(d, cfg, self.BGE) is True
+        assert_loadable_checkpoint(d)
+
+    def test_the_written_config_is_the_base_config(self, tmp_path: Path) -> None:
+        from tract.training.checkpoint import repair_adapter_only_checkpoint
+
+        d = self._adapter_dir(tmp_path, self.BGE)
+        cfg = self._base_config(tmp_path, self.BGE)
+
+        repair_adapter_only_checkpoint(d, cfg, self.BGE)
+
+        written = json.loads((d / HF_CONFIG_NAME).read_text(encoding="utf-8"))
+        assert written["model_type"] == "bert"
+
+    def test_a_publisher_build_path_is_not_treated_as_a_mismatch(
+        self, tmp_path: Path
+    ) -> None:
+        """BAAI shipped bge-large-en-v1.5 with a build-machine path in the config.
+
+        `_name_or_path` reads
+        `/root/.cache/torch/sentence_transformers/BAAI_bge-large-en/` in the
+        published file. Ninety-five of the 98 checkpoints are this backbone, so
+        a guard reading that field refuses the entire real workload.
+        """
+        from tract.training.checkpoint import repair_adapter_only_checkpoint
+
+        d = self._adapter_dir(tmp_path, self.BGE)
+        cfg = self._base_config(
+            tmp_path, "/root/.cache/torch/sentence_transformers/BAAI_bge-large-en/"
+        )
+
+        assert repair_adapter_only_checkpoint(d, cfg, self.BGE) is True
+        assert_loadable_checkpoint(d)
+
+    def test_a_mismatched_backbone_is_refused(self, tmp_path: Path) -> None:
+        """A Qwen checkpoint must not receive the config fetched for BGE."""
+        from tract.training.checkpoint import repair_adapter_only_checkpoint
+
+        d = self._adapter_dir(tmp_path, self.QWEN)
+        cfg = self._base_config(tmp_path, self.BGE)
+
+        with pytest.raises(ValueError, match="names Qwen/Qwen3-Embedding-0.6B"):
+            repair_adapter_only_checkpoint(d, cfg, self.BGE)
+
+        assert not (d / HF_CONFIG_NAME).exists()
+
+    def test_an_already_complete_checkpoint_is_left_alone(self, tmp_path: Path) -> None:
+        """Idempotent, and it must not rewrite a config transformers wrote."""
+        from tract.training.checkpoint import repair_adapter_only_checkpoint
+
+        d = self._adapter_dir(tmp_path, self.BGE)
+        original = json.dumps({"model_type": "bert", "written_by": "transformers"})
+        (d / HF_CONFIG_NAME).write_text(original, encoding="utf-8")
+        cfg = self._base_config(tmp_path, self.BGE)
+
+        assert repair_adapter_only_checkpoint(d, cfg, self.BGE) is False
+        assert (d / HF_CONFIG_NAME).read_text(encoding="utf-8") == original
+
+    def test_a_directory_that_is_not_a_checkpoint_raises(self, tmp_path: Path) -> None:
+        from tract.training.checkpoint import repair_adapter_only_checkpoint
+
+        d = tmp_path / "not-a-checkpoint"
+        d.mkdir()
+        cfg = self._base_config(tmp_path, self.BGE)
+
+        with pytest.raises(ValueError, match="no adapter_config.json"):
+            repair_adapter_only_checkpoint(d, cfg, self.BGE)
