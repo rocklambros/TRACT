@@ -57,7 +57,7 @@
 # transformers below 5.0.0, which is the ceiling that leaves the four
 # suppressed advisories open.
 torch==2.13.0
-transformers==4.57.6
+transformers==5.15.1
 sentence-transformers==3.2.0
 tokenizers==0.22.2
 
