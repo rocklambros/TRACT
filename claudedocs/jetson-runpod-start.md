@@ -138,6 +138,19 @@ pod before it trains. Until then the refusal was written, tested, and called
 from nothing — it was this checklist row and nothing else, which is a control
 that depends on a person reading a document.
 
+**So staging the licensed sources is now a hard prerequisite, not an
+optimisation. On a clone without the overlay you cannot provision at all.**
+Do `docs/RUNNING_ELSEWHERE.md` before anything else on this machine; a
+`CorpusMismatchError` at `provision` is the gate working, not a defect.
+
+**Do not "fix" that refusal by regenerating the sidecar.** Running
+`python -m scripts.build_training_links` on a machine without the overlay
+would record the 4,048-link corpus as the reference, which makes the gate pass
+and trains 7.8% short while reporting the same shape of output. The script
+refuses to do it and names staging instead, but the reasoning is worth
+carrying: there are two ways to satisfy this gate and only one of them is
+correct.
+
 You should still run it by hand first, because finding out here costs seconds
 and finding out from a refusal costs a provisioning round trip:
 
