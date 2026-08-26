@@ -55,7 +55,7 @@ phase0 = [
     "sentence-transformers>=3.0,<6",
     "anthropic>=0.99.0,<1",
     "numpy>=1.26,<3",
-    "scipy>=1.12,<2",
+    "scipy>=1.17.1,<2",
     "scikit-learn>=1.4,<2",
     # Widened from <4 to admit the 5.0.1 pin in requirements-train.txt, which
     # closes the PYSEC-2026-3716 path traversal. The pods install this extra
