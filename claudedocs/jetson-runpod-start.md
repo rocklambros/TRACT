@@ -1,17 +1,24 @@
 # Jetson session start: Campaign 2 on RunPod
 
-Written on the Mac, 2026-08-20, at branch `semantic-rebuild` / PR #62.
-Read this before provisioning anything.
+Written on the Mac, 2026-08-20. **Both pre-provisioning gates were closed on
+the Mac on 2026-08-26**, so this file now describes a run that is cleared to
+provision. Read it before provisioning anything.
 
-Two things happen before a pod exists, and both are further down the page than
-their order suggests:
+The two gates and their state:
 
-1. **Four owner decisions get answered and committed.** See "Owner decisions:
-   answer these before provisioning". Two of them change what the campaign
-   does, and one of them decides which branch the results land on.
-2. **P2 and P3 from the premortem get fixed.** Both are single-function
-   changes. P2 can abandon four healthy folds and leave five GPUs billing. P3
-   can destroy a paid-for result permanently.
+1. **Four owner decisions answered and committed.** DONE 2026-08-26. The
+   decision record at the end of "Owner decisions" has four filled rows.
+   **Do not re-ask them.** D3 was answered (a), so the corpus rebuild merged
+   and Campaign 2 runs from a fresh branch off `main`.
+2. **P2 and P3 from the premortem fixed.** DONE 2026-08-26 in commit
+   `90a5f15`, with tests in `tests/test_runpod_safety.py`. P2 could abandon
+   four healthy folds and leave five GPUs billing. P3 could destroy a
+   paid-for result permanently. Verify the tests pass on the Jetson rather
+   than trusting this line.
+
+What is still open, and neither blocks a pod: D1's implementation (the
+`csa_aicm` fingerprint question, see the note under the decision record) and
+D2's (re-saving 98 checkpoints).
 
 ## The prompt
 
@@ -25,17 +32,19 @@ root:
 >
 > Work in this order and do not skip ahead:
 >
-> 1. Get the four owner decisions answered. They are in the briefing under
->    "Owner decisions: answer these before provisioning". Ask me all four as
->    multiple choice in one message, write my answers into the decision record
->    at the bottom of that section, and commit. Do not create a pod until that
->    commit exists.
+> 1. Confirm the two pre-provisioning gates are closed rather than re-opening
+>    them. The four owner decisions were answered on 2026-08-26 and the
+>    decision record at the end of "Owner decisions" has four filled rows —
+>    read them, do not ask me again. P2 and P3 were fixed in commit `90a5f15`;
+>    run `pytest tests/test_runpod_safety.py -q` and confirm it passes here.
+>    Branch from `main` per D3, not from `semantic-rebuild`.
 > 2. Verify the environment against the "Before you provision" checklist.
 >    Report each item as pass or fail with the command output that settled it.
 >    Stop if any fails.
-> 3. Read "Adversarial premortem: the orchestrator". Confirm or refute P1
->    through P6 on this machine by running the code, not by reading it. Fix P2
->    and P3 before provisioning and apply the P1 and P5 mitigations. Then run
+> 3. Read "Adversarial premortem: the orchestrator". Confirm or refute P1, P5
+>    and P6 on this machine by running the code, not by reading it, and apply
+>    the P1 and P5 mitigations. P2, P3 and P4 are already fixed; re-verify
+>    them by running their tests rather than by reading the diff. Then run
 >    your own `/adversarial-premortem-complete` pass over
 >    `scripts/phase1b/runpod_parallel.py`, because mine was one reviewer and
 >    the skill uses six. Tell me what you fixed and what you parked.
@@ -173,7 +182,16 @@ by design. Mitigations, all of which you apply before provisioning:
 - Make `reap --confirm` the first command of any session that resumes after an
   unexplained gap. Run it before you read logs and before you form a theory.
 
-### P2. One `pass` timeout takes down four healthy folds
+### P2. One `pass` timeout takes down four healthy folds — FIXED 2026-08-26
+
+**Fixed in `90a5f15`.** Both halves, as prescribed below. `run_folds` reads the
+credential once on the main thread and hands the dict to the workers, so
+nothing is left to race, and the fold loop now catches. The same hoist covers
+the bootstrap loop, which raced the same five `pass` calls; catching there had
+only converted the race into "every pod failed to bootstrap". Guarded by
+`TestOneFoldFailureDoesNotAbortTheFleet` in `tests/test_runpod_safety.py`.
+The diagnosis below is kept because it explains what the tests are for.
+
 
 `_run_fold_on_pod` calls `_get_pod_env()` at line 911, one line **above** the
 `try` that starts at 912. `_get_pod_env` calls `_get_hf_read_token`, which
@@ -206,7 +224,15 @@ Warm the agent as well with `gpg-connect-agent 'keepalive' /bye` before the
 run. That is a mitigation and not the fix, because it narrows the window
 without closing it.
 
-### P3. A collected fold and an empty directory look the same
+### P3. A collected fold and an empty directory look the same — FIXED 2026-08-26
+
+**Fixed in `90a5f15`.** `collect` now verifies the payload: the fold record has
+to exist and parse as JSON before a role counts as collected, and a role that
+fails the check is logged with "do NOT tear this pod down". Guarded by
+`TestCollectVerifiesThePayload` in `tests/test_runpod_safety.py`, including the
+two cases that must NOT become failures: a clean fleet, and a genuine rsync
+error. The diagnosis below is kept because it explains what the tests are for.
+
 
 `collect` at lines 1094 to 1110 records a role as failed only when
 `_rsync_from` raises. An rsync against a directory that exists and holds no
@@ -223,12 +249,12 @@ Fix: after each rsync, assert that
 JSON, and append the role to `failed` when it does not. Verifying the payload
 rather than the transport is the whole point of the function.
 
-### P4. The docstring understates the budget by half
+### P4. The docstring understates the budget by half — FIXED 2026-08-26
 
-Line 20 tells the operator `TRACT_RUNPOD_BUDGET_USD (default 1000)`. Line 100
-reads `"2000"`. Anyone sizing a run against the documented figure is working
-with half the real ceiling. One-line fix, and set the variable explicitly for
-this campaign regardless.
+The docstring said `TRACT_RUNPOD_BUDGET_USD (default 1000)` while the code read
+`"2000"`, so anyone sizing a run against the documented figure had half the
+real ceiling. Corrected in `90a5f15`. **Set the variable explicitly for this
+campaign regardless**: the default is a backstop, not a plan.
 
 ### P5. A cap that permits ten times the expected spend is not a cap
 
@@ -280,13 +306,13 @@ Every item is a command with an answer, not a judgment call.
 
 | check | how |
 |---|---|
-| four decisions answered | the decision record has four filled rows, committed |
-| P2 and P3 fixed | the two code changes are committed and their tests pass |
+| four decisions answered | DONE. Read the four filled rows; do not re-ask |
+| P2 and P3 fixed | DONE in `90a5f15`. `pytest tests/test_runpod_safety.py -q` passes, 53 tests |
 | spend bounds set | `TRACT_RUNPOD_BUDGET_USD=200` and `TRACT_RUNPOD_MAX_ARMS=6` exported |
 | orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
 | independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
-| on the right branch | `git status` shows the branch D3 selected, clean tree |
+| on the right branch | D3 chose (a): a fresh branch off `main`, clean tree. NOT `semantic-rebuild` |
 | corpus is complete | the `assert_corpus_matches_training_links()` snippet above returns without raising |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
 | credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
@@ -431,10 +457,11 @@ itself a decision, taken by default and by nobody. Two of them change what the
 campaign does. Two do not, and they are here because carrying them costs more
 than closing them.
 
-**The gate: do not create a pod until all four are answered and the answers are
-committed to the decision record at the end of this section.** Ask all four in
-one message as multiple choice. Do not ask them one at a time across the run,
-and do not pick for the owner.
+**ANSWERED 2026-08-26 on the Mac. The record at the end of this section is
+filled and committed, and this gate is closed. Do not re-ask these.** The
+options are kept below because the record's answers are meaningless without
+them, and because D1's answer has an open implementation question that only
+makes sense against option (b) as written.
 
 Each option below carries a recommendation. A recommendation is not an answer.
 
@@ -512,15 +539,47 @@ toggle defaults off.
 
 ### Decision record
 
-Fill this in with the owner's answers, commit it, and only then provision.
-Leaving a row blank is not an answer.
+Answered by the owner on 2026-08-26 and committed. This gate is closed.
 
 | id | decision | answer | date | note |
 |---|---|---|---|---|
-| D1 | `csa_aicm` licensing | | | |
-| D2 | 98 unopenable checkpoints | | | |
-| D3 | PR #62 merge timing | | | |
-| D4 | publisher-acronym arm | | | |
+| D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | Rests on the owner's reading of the CSA membership terms. Implementation NOT done — see the note below |
+| D2 | 98 unopenable checkpoints | (b) re-save with the backbone config | 2026-08-26 | Against the recommendation, and the owner's call. Blocks nothing; implementation off the critical path |
+| D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | Campaign 2 runs from a fresh branch off `main`. Not `semantic-rebuild` |
+| D4 | publisher-acronym arm | (a) five arms as pre-registered | 2026-08-26 | No code change. `results/phase1b/CAMPAIGN2.md` already sets `n_configurations=5` |
+
+**D1's answer does not translate into a change yet, and the Jetson must not
+invent one.** Option (b) reads "add both to the fingerprint corpus and keep
+them tracked", and those two halves contradict each other against how the gate
+actually works. `fingerprinted_framework_ids()` returns
+`OVERLAY_FRAMEWORK_IDS - FINGERPRINT_EXCLUDED_FRAMEWORK_IDS`, and the gate
+fails when fingerprinted text appears in a tracked file. Measured on
+2026-08-26:
+
+```
+overlay              csa_ccm, dsomm, etsi, iso_27001
+csa_aicm in overlay  False   (its prose is tracked today)
+csa_ccm  in overlay  True    (its prose is withheld today)
+fingerprinted        dsomm, etsi, iso_27001
+```
+
+So fingerprinting `csa_aicm` while its prose stays tracked would fail the gate
+on its own tracked prose, and fingerprinting `csa_ccm` reds the six tracked
+AICM-derived artifacts that share CCM's bytes — which is exactly the deferral
+already recorded in `tract/licensing.py`.
+
+The coherent reading of "redistribution is permitted" is the opposite move:
+`csa_ccm` comes OUT of `CONDITIONAL_FRAMEWORK_IDS` so its prose is tracked
+too, `csa_aicm` stays tracked, both deferral entries in
+`FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` are deleted as dead rather than switched
+on, and the licence declaration is updated to record the owner's reading and
+its date. That is a licence-declaration change, not a gate change.
+
+Confirm which of those two the owner meant before touching
+`tract/licensing.py`. Getting it wrong in the permissive direction is the
+fifth escape in a sequence of four, so the default while it is unconfirmed is
+to change nothing. See `[[licensed-text-keeps-escaping]]` and
+`[[licence-tier-is-publication-state]]`.
 
 ## Where things are
 
