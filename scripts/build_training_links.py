@@ -56,6 +56,50 @@ EXIT_UNUSABLE: Final[int] = 2
 TRAINING_SET_FIELDS: Final[tuple[str, ...]] = ("n_links", "output_sha256")
 
 
+def refuse_reason(before: dict[str, Any], after: dict[str, Any]) -> str | None:
+    """Why this regeneration must not be written, or None if it may be.
+
+    There are two ways to satisfy the corpus refusal that gates provisioning.
+    Stage the licensed overlay, which is the corpus the campaign is measured
+    on. Or regenerate this sidecar against whatever the machine happens to
+    hold, which makes the check pass and trains on 4,048 of 4,389 links while
+    reporting the same shape of output.
+
+    This function exists so the script cannot offer the second. The two
+    signals that separate a legitimate regeneration from a short one are the
+    corpus PATH the sidecar records, and whether the training set shrinks. A
+    parser moving under the same corpus is legitimate and common; the corpus
+    changing identity underneath is not.
+
+    Returns:
+        A sentence naming the fix, or None when the write is safe.
+    """
+    if not before:
+        return None
+
+    recorded_path = before.get("corpus_path")
+    if recorded_path and recorded_path != after.get("corpus_path"):
+        return (
+            f"the sidecar records {recorded_path} and this machine is reading "
+            f"{after.get('corpus_path')}. Those are different corpora, so "
+            f"rewriting the sidecar would not fix a mismatch, it would record "
+            f"the smaller corpus as correct and train on it silently. Stage "
+            f"the licensed overlay instead: see docs/RUNNING_ELSEWHERE.md."
+        )
+
+    before_links = before.get("n_links")
+    after_links = after.get("n_links")
+    if isinstance(before_links, int) and isinstance(after_links, int):
+        if after_links < before_links:
+            return (
+                f"the training set would shrink from {before_links} to "
+                f"{after_links} links. Something upstream stopped resolving "
+                f"anchors it used to resolve. Find out what before recording "
+                f"the smaller set as the reference."
+            )
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true",
@@ -78,23 +122,38 @@ def main(argv: list[str] | None = None) -> int:
     )
     after: dict[str, Any]
 
-    if args.check:
-        # Recompute what save_training_links would record, without writing.
-        from tract.training.data_quality import compute_data_hash
+    # Always computed before anything is written, so the refusal below can run
+    # against what WOULD be recorded. Writing first and judging afterwards
+    # would mean the damage is on disk by the time the reason is printed.
+    from tract.training.data_quality import compute_data_hash
 
-        records: list[dict[str, Any]] = []
-        for tiered in links:
-            record = dict(tiered.link)
-            record["quality_tier"] = tiered.tier.value
-            records.append(record)
-        after = {
-            "corpus_path": repo_relative(corpus),
-            "corpus_sha256": corpus_sha,
-            "curated_links_sha256": raw_hash,
-            "n_links": len(records),
-            "output_sha256": compute_data_hash(records),
-        }
-    else:
+    records: list[dict[str, Any]] = []
+    for tiered in links:
+        record = dict(tiered.link)
+        record["quality_tier"] = tiered.tier.value
+        records.append(record)
+    after = {
+        "corpus_path": repo_relative(corpus),
+        "corpus_sha256": corpus_sha,
+        "curated_links_sha256": raw_hash,
+        "n_links": len(records),
+        "output_sha256": compute_data_hash(records),
+    }
+
+    refusal = refuse_reason(before, after)
+    if refusal is not None:
+        logger.error("REFUSING to rewrite %s: %s",
+                     repo_relative(TRAINING_META_PATH), refusal)
+        logger.error(
+            "There is no flag for this. If the project genuinely means to "
+            "change which corpus is the reference, delete %s and run again -- "
+            "that leaves a deleted tracked file in `git status` for a reviewer "
+            "to see, which a flag would not.",
+            repo_relative(TRAINING_META_PATH),
+        )
+        return EXIT_UNUSABLE
+
+    if not args.check:
         save_training_links(links, raw_hash, corpus_sha)
         after = json.loads(TRAINING_META_PATH.read_text(encoding="utf-8"))
 
