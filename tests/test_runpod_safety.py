@@ -762,10 +762,11 @@ class TestCorpusCompletenessIsEnforcedBeforeSpend:
     on any path that trains.
 
     What it guards is not cosmetic. A clone without the gitignored overlay
-    trains on 4,019 of the 4,389 links, because 370 belong to the four overlay
+    trains on 4,048 of the 4,389 links, because 341 belong to the three overlay
     frameworks whose prose is deliberately not in git (dsomm 213, iso_27001
-    92, etsi 36, csa_ccm 29). That is 8.4% of the training set, and the run
-    reports the same figures in the same shape. Nothing in the output says so.
+    92, etsi 36). That is 7.8% of the training set, and the run reports the
+    same figures in the same shape. Nothing in the output says so. csa_ccm's
+    29 links joined the tracked corpus on 2026-08-26.
 
     A checklist row is not a gate. This is the gate.
     """

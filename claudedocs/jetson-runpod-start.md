@@ -33,8 +33,13 @@ conclusion from one. The repaired `config.json` files sit inside gitignored
 `python -m scripts.repair_adapter_checkpoints` on the Jetson** if you need
 them there.
 
-One thing is still open, and it does not block a pod: D1's implementation, the
-`csa_aicm` fingerprint question. See the note under the decision record.
+D1 was implemented the same day (`1e8f64f`). The licensed-text gate now has no
+deferrals: `FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` is empty and every framework
+whose prose is withheld from git is fingerprinted. Details under the decision
+record.
+
+**All four decisions are answered AND implemented. Nothing is outstanding on
+the Mac side.**
 
 ## The prompt
 
@@ -117,10 +122,14 @@ of the authorized $2000 is already spent.
 These do not announce themselves. Each produces output the same shape as a
 correct run.
 
-**1. A fresh clone has no licensed prose, and trains on 4,019 links instead of
-4,389.** The four overlay frameworks (ETSI, ISO 27001, CSA CCM, DSOMM) keep
-their prose out of git by design, so 370 training links resolve to nothing and
-the run reports normally. `docs/RUNNING_ELSEWHERE.md` covers staging them.
+**1. A fresh clone has no licensed prose, and trains on 4,048 links instead of
+4,389.** The three overlay frameworks (ETSI, ISO 27001, DSOMM) keep their prose
+out of git by design, so 341 training links resolve to nothing and the run
+reports normally. `docs/RUNNING_ELSEWHERE.md` covers staging them.
+
+Three, not four, and 341, not 370, since 2026-08-26: CSA CCM left the overlay
+on owner decision D1(b), so its prose and its 29 links now ship in git. That is
+one fewer framework to stage on this machine.
 
 **This is now an enforced gate rather than your discipline.** As of
 2026-08-26 the check runs in three places: `provision` refuses before creating
@@ -504,7 +513,13 @@ makes sense against option (b) as written.
 
 Each option below carries a recommendation. A recommendation is not an answer.
 
-### D1. `csa_aicm` licensing. Blocks the fingerprint corpus, not the campaign
+### D1. `csa_aicm` licensing — ANSWERED (b), IMPLEMENTED 2026-08-26 as `1e8f64f`
+
+*The options below describe the state BEFORE the decision and are kept so the
+record's answer is readable. The line about neither framework being protected
+"today" was true on 2026-08-20 and is false now: see the implementation record
+after the table.*
+
 
 243 `csa_aicm` controls are tracked under a no-redistribution notice, and 138
 of them are byte-identical to a CSA CCM specification. The licensed-text gate
@@ -594,43 +609,47 @@ Answered by the owner on 2026-08-26 and committed. This gate is closed.
 
 | id | decision | answer | date | note |
 |---|---|---|---|---|
-| D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | Rests on the owner's reading of the CSA membership terms. Implementation NOT done — see the note below |
+| D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | DONE in `1e8f64f`. Gate hole closed: `FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` is empty and every withheld framework is fingerprinted. Basis recorded in NOTICE |
 | D2 | 98 unopenable checkpoints | (b) re-save with the backbone config | 2026-08-26 | DONE in `957d245`. 98 of 98 pass `assert_loadable_checkpoint`. Repaired configs are gitignored, so nothing entered the repository |
 | D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | DONE. Merged as `753f614` with a MERGE COMMIT, not a squash, because this file cites `90a5f15` and `957d245` by SHA. Campaign 2 runs on branch `campaign-2`, cut from `main` at `753f614` |
 | D4 | publisher-acronym arm | (a) five arms as pre-registered | 2026-08-26 | No code change. `results/phase1b/CAMPAIGN2.md` already sets `n_configurations=5` |
 
-**D1's answer does not translate into a change yet, and the Jetson must not
-invent one.** Option (b) reads "add both to the fingerprint corpus and keep
-them tracked", and those two halves contradict each other against how the gate
-actually works. `fingerprinted_framework_ids()` returns
-`OVERLAY_FRAMEWORK_IDS - FINGERPRINT_EXCLUDED_FRAMEWORK_IDS`, and the gate
-fails when fingerprinted text appears in a tracked file. Measured on
-2026-08-26:
+**D1 is implemented and the gate hole is closed** (`1e8f64f`). What changed and
+what did not:
 
 ```
-overlay              csa_ccm, dsomm, etsi, iso_27001
-csa_aicm in overlay  False   (its prose is tracked today)
-csa_ccm  in overlay  True    (its prose is withheld today)
-fingerprinted        dsomm, etsi, iso_27001
+before                              after
+overlay        csa_ccm dsomm etsi iso_27001    dsomm etsi iso_27001
+fingerprinted  dsomm etsi iso_27001            dsomm etsi iso_27001
+deferrals      csa_aicm csa_ccm                NONE
+hole           csa_ccm                         NONE
 ```
 
-So fingerprinting `csa_aicm` while its prose stays tracked would fail the gate
-on its own tracked prose, and fingerprinting `csa_ccm` reds the six tracked
-AICM-derived artifacts that share CCM's bytes — which is exactly the deferral
-already recorded in `tract/licensing.py`.
+The hole was one framework. `csa_ccm` sat in the overlay with its prose
+withheld and outside the fingerprint corpus, so nothing enforced the
+withholding. It could not simply be fingerprinted: 138 of `csa_aicm`'s 243
+TRACKED descriptions are byte-identical to a CCM specification with the same
+control id, so the gate would have failed the branch on tracked AICM text.
+The owner's ruling makes overlay membership a misclassification rather than a
+policy, so `csa_ccm` left the conditional tier, its prose is tracked, and both
+deferrals dissolved with the conflict.
 
-The coherent reading of "redistribution is permitted" is the opposite move:
-`csa_ccm` comes OUT of `CONDITIONAL_FRAMEWORK_IDS` so its prose is tracked
-too, `csa_aicm` stays tracked, both deferral entries in
-`FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` are deleted as dead rather than switched
-on, and the licence declaration is updated to record the owner's reading and
-its date. That is a licence-declaration change, not a gate change.
+**No fingerprint corpus was trimmed to achieve this.** The fixture diff is one
+field. Same 21,158 fingerprints, same three documents, at full coverage. A
+gate that passes because it stopped looking would have looked identical in the
+summary above and completely different in that diff.
 
-Confirm which of those two the owner meant before touching
-`tract/licensing.py`. Getting it wrong in the permissive direction is the
-fifth escape in a sequence of four, so the default while it is unconfirmed is
-to change nothing. See `[[licensed-text-keeps-escaping]]` and
-`[[licence-tier-is-publication-state]]`.
+NOTICE records the ruling, its date, and its basis — which the 2026-08-16
+ruling never had. It also says plainly that the basis is an entitlement held by
+this project's owner and that a fork does not inherit it.
+
+**One thing this did NOT fix, and it will recur.** The tier derivation in
+`tests/test_framework_licenses.py::_copyleft` selects on the substrings "GPL"
+and "CC-BY-SA", so a publisher who reserves rights outright matches neither and
+lands in no tier at all. That is how `csa_aicm` reached 243 tracked controls
+without anyone deciding it should. The ruling settles those 243 controls. The
+next reserve-all-rights framework added to this corpus will land in no tier for
+exactly the same reason.
 
 ## Where things are
 

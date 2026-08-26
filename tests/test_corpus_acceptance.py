@@ -314,8 +314,8 @@ class TestTheSuiteCanActuallyRun:
     def test_the_two_corpus_censuses_differ_by_the_restricted_tier(self) -> None:
         """The overlay decision has to be readable from the census alone.
 
-        Two of the four overlay frameworks are DROPPED from the tracked corpus
-        and two are kept with their prose withheld, so the census gap is the
+        Two of the three overlay frameworks are DROPPED from the tracked corpus
+        and one is kept with its prose withheld, so the census gap is the
         restricted tier rather than the overlay. A change to either tier that
         did not move these constants would make the fixture above unable to
         tell a licence from a missing parser.

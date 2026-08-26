@@ -765,9 +765,10 @@ class TestCorpusIdentityPreflight:
 
     `merged_corpus_path()` prefers the gitignored licensed overlay and falls
     back to the tracked corpus when it is absent. That is correct for a reader
-    and wrong for a trainer: 370 of the 4,389 training links belong to the four
+    and wrong for a trainer: 341 of the 4,389 training links belong to the three
     overlay frameworks, so without the overlay they resolve to nothing and the
-    run trains on 4,019 while reporting the same shape of output.
+    run trains on 4,048 while reporting the same shape of output. It was four
+    frameworks and 370 links until csa_ccm left the overlay on 2026-08-26.
 
     Existence cannot catch it, because both files exist. Only the digest can.
     """
