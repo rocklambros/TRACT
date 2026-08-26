@@ -38,6 +38,9 @@ from pathlib import Path
 from typing import Any, Final
 
 from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
+# Lightweight on purpose: data_quality pulls neither torch nor datasets, so the
+# operator's machine can enforce the corpus gate without a training stack.
+from tract.training.data_quality import assert_corpus_matches_training_links
 from tract.io import load_json
 from scripts.phase0.runpod_provision import (
     is_capacity_error,
@@ -722,10 +725,42 @@ def _preflight_training_stack() -> None:
     )
 
 
+def _preflight_corpus() -> str:
+    """Refuse to spend a GPU hour on a corpus the training links were not built from.
+
+    `assert_corpus_matches_training_links` was written as a refusal and called
+    from nothing. It lived in the Jetson briefing as a checklist row and in its
+    own tests, which meant the control existed and never fired. A checklist row
+    depends on a person; this does not.
+
+    Called from both `provision` and `run_folds` on purpose. provision is where
+    it saves money, and run_folds is where it holds for anyone driving the
+    subcommands by hand or resuming onto an existing fleet.
+
+    Returns:
+        The corpus digest this run reads.
+
+    Raises:
+        CorpusMismatchError: The corpus differs from the recorded one.
+        FileNotFoundError: The metadata sidecar is absent, so there is nothing
+            to check against. Not a pass.
+    """
+    digest = assert_corpus_matches_training_links()
+    logger.info("Corpus matches the training links it was built from (%s).",
+                digest[:12])
+    return digest
+
+
 def provision(
     folds: list[str] | None = None, split: str = "test",
 ) -> list[dict[str, Any]]:
-    # Ordered cheapest-check-first. Both run before anything is created.
+    # Ordered cheapest-check-first. All three run before anything is created.
+    #
+    # The corpus check is first because it is free and because failing it
+    # after provisioning means paying to discover that the run was going to be
+    # 8.4% short. A clone without the gitignored overlay trains on 4,019 of
+    # the 4,389 links and reports the same figures in the same shape.
+    _preflight_corpus()
     _preflight_training_stack()
     _preflight_tracking()
     configs = select_pod_configs(folds, split)
@@ -995,6 +1030,11 @@ def run_folds(
     five destroyed the pods and the failure surfaced later, at aggregation,
     with nothing left to retry on.
     """
+    # Before anything else, including before the pod roster is read. A fleet
+    # is already billing by the time this runs, so the cost of stopping here
+    # is minutes; the cost of not stopping is a full arm measured against 370
+    # missing links that reports normally.
+    _preflight_corpus()
     pods = _load_pod_state()
     # Refresh the window for this arm. The deadline was stamped once at
     # provision and never renewed, so a campaign of several arms tripped it

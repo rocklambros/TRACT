@@ -40,7 +40,10 @@ from tract.text_selection import (
     apply_prose_to_corpus,
 )
 from tract.training.config import TrainingConfig
-from tract.training.data_quality import load_and_filter_curated_links
+from tract.training.data_quality import (
+    assert_corpus_matches_training_links,
+    load_and_filter_curated_links,
+)
 from tract.training.orchestrate import run_single_fold
 from tract.training.tracking import (
     finish_run,
@@ -178,6 +181,19 @@ def main() -> int:
     parser.add_argument("--wandb-project", default=LOFO_WANDB_PROJECT,
                         help="WandB project for this campaign")
     args = parser.parse_args()
+
+    # Before the framework name is even validated, because this is the check
+    # that decides whether the run means anything. A clone without the
+    # gitignored overlay trains on 4,019 of the 4,389 links -- 370 belong to
+    # the four overlay frameworks -- and reports the same figures in the same
+    # shape. The refusal existed for eight days and nothing called it; it was
+    # a checklist row in the Jetson briefing and a set of its own tests.
+    #
+    # The orchestrator refuses earlier, in provision, which is where the money
+    # is saved. This is the half that holds for a fold launched by hand, by a
+    # resumed fleet, or by a caller that does not go through runpod_parallel.
+    corpus_digest = assert_corpus_matches_training_links()
+    logger.info("Corpus digest %s matches the training links.", corpus_digest[:12])
 
     # The eval population follows the split. A typo would otherwise hold out
     # nothing, train on everything and report an inflated score against an

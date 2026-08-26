@@ -115,7 +115,16 @@ correct run.
 4,389.** The four overlay frameworks (ETSI, ISO 27001, CSA CCM, DSOMM) keep
 their prose out of git by design, so 370 training links resolve to nothing and
 the run reports normally. `docs/RUNNING_ELSEWHERE.md` covers staging them.
-Before any training, run:
+
+**This is now an enforced gate rather than your discipline.** As of
+2026-08-26 the check runs in three places: `provision` refuses before creating
+a pod, `run_folds` refuses before launching, and `run_fold.py` refuses on the
+pod before it trains. Until then the refusal was written, tested, and called
+from nothing — it was this checklist row and nothing else, which is a control
+that depends on a person reading a document.
+
+You should still run it by hand first, because finding out here costs seconds
+and finding out from a refusal costs a provisioning round trip:
 
 ```bash
 PYTHONPATH=. python3 -c "
@@ -324,7 +333,7 @@ Every item is a command with an answer, not a judgment call.
 | independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
 | on the right branch | `git status` shows `campaign-2`, cut from `main` at `753f614`, clean tree. NOT `semantic-rebuild` |
-| corpus is complete | the `assert_corpus_matches_training_links()` snippet above returns without raising |
+| corpus is complete | the snippet above returns a digest. Also enforced in code now: `provision`, `run_folds` and `run_fold.py` each refuse on a mismatch |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
 | credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
 | HF token is read-scope | it fetches the base model and nothing else. A write token on a rented host is a published-model compromise |

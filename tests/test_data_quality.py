@@ -825,3 +825,45 @@ class TestCorpusIdentityPreflight:
 
         with pytest.raises(CorpusMismatchError, match="records no corpus_sha256"):
             assert_corpus_matches_training_links(self._meta(tmp_path, None))
+
+
+class TestRunFoldEnforcesTheCorpusGate:
+    """The pod-side half of the corpus gate.
+
+    The orchestrator refuses before it provisions, which is where the money is
+    saved. This is the half that holds when a fold is launched some other way:
+    by hand on a pod, by a resumed fleet, or by a future caller that does not
+    go through runpod_parallel. The control has to live where training starts,
+    not only where the convenient caller happens to be.
+    """
+
+    def test_a_partial_corpus_stops_the_fold_before_it_trains(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        pytest.importorskip("torch", reason="needs the phase0 extra")
+        pytest.importorskip("datasets", reason="needs the phase0 extra")
+
+        from scripts.phase1b import run_fold
+        from tract.training.data_quality import CorpusMismatchError
+
+        trained: list[str] = []
+        monkeypatch.setattr(
+            run_fold, "run_single_fold",
+            lambda *a, **k: trained.append("trained") or {},
+        )
+
+        def _mismatch() -> str:
+            raise CorpusMismatchError("corpus digest differs from the recorded one")
+
+        monkeypatch.setattr(
+            run_fold, "assert_corpus_matches_training_links", _mismatch,
+        )
+        monkeypatch.setattr(
+            "sys.argv",
+            ["run_fold.py", "--framework", "MITRE ATLAS", "--config-name", "cfg"],
+        )
+
+        with pytest.raises(CorpusMismatchError):
+            run_fold.main()
+
+        assert trained == []

@@ -743,3 +743,91 @@ class TestCollectVerifiesThePayload:
         monkeypatch.setattr(rpp, "_rsync_from", _rsync)
 
         assert sorted(rpp.collect("cfg")) == ["MITRE ATLAS", "NIST AI 100-2"]
+
+
+class TestCorpusCompletenessIsEnforcedBeforeSpend:
+    """The refusal that never fired.
+
+    `assert_corpus_matches_training_links` is written as a refusal -- its own
+    docstring opens "Refuse to train against a corpus the training links were
+    not built from" -- and until 2026-08-26 nothing called it. It appeared in
+    the Jetson briefing as a checklist row and in its own tests, and nowhere
+    on any path that trains.
+
+    What it guards is not cosmetic. A clone without the gitignored overlay
+    trains on 4,019 of the 4,389 links, because 370 belong to the four overlay
+    frameworks whose prose is deliberately not in git (dsomm 213, iso_27001
+    92, etsi 36, csa_ccm 29). That is 8.4% of the training set, and the run
+    reports the same figures in the same shape. Nothing in the output says so.
+
+    A checklist row is not a gate. This is the gate.
+    """
+
+    ROLES = ("MITRE ATLAS", "NIST AI 100-2")
+
+    def _fleet(self, monkeypatch, submitted):
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [{"role": r, "ip": "1.2.3.4", "port": 22, "pod_id": f"id-{r}"}
+                for r in self.ROLES]
+        monkeypatch.setattr(rpp, "_load_pod_state", lambda: pods)
+        monkeypatch.setattr(rpp, "_check_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "_extend_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "fold_roster", lambda split="test": list(self.ROLES))
+        monkeypatch.setattr(rpp, "_bootstrap_pod", lambda *a, **k: None)
+        monkeypatch.setattr(rpp, "_get_pod_env", lambda: {"HF_TOKEN": "t"})
+
+        def _run_fold(pod, config_name, arm_flags=(), split="test", env=None):
+            submitted.append(pod["role"])
+            return {"fold": pod["role"], "status": "ok", "elapsed_s": 1.0}
+
+        monkeypatch.setattr(rpp, "_run_fold_on_pod", _run_fold)
+        return rpp
+
+    def test_a_partial_corpus_stops_the_run_before_any_fold(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from tract.training.data_quality import CorpusMismatchError
+
+        submitted: list[str] = []
+        rpp = self._fleet(monkeypatch, submitted)
+
+        def _mismatch() -> str:
+            raise CorpusMismatchError("corpus digest differs from the recorded one")
+
+        monkeypatch.setattr(rpp, "assert_corpus_matches_training_links", _mismatch)
+
+        with pytest.raises(CorpusMismatchError):
+            rpp.run_folds("cfg")
+
+        # The whole point is that no GPU hour is spent discovering this.
+        assert submitted == []
+
+    def test_a_complete_corpus_runs_normally(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The gate must not stop a good run."""
+        submitted: list[str] = []
+        rpp = self._fleet(monkeypatch, submitted)
+        monkeypatch.setattr(
+            rpp, "assert_corpus_matches_training_links", lambda: "deadbeef",
+        )
+
+        assert rpp.run_folds("cfg") == []
+        assert sorted(submitted) == sorted(self.ROLES)
+
+    def test_a_missing_sidecar_also_stops_the_run(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No sidecar means nothing to check against, which is not a pass."""
+        submitted: list[str] = []
+        rpp = self._fleet(monkeypatch, submitted)
+
+        def _absent() -> str:
+            raise FileNotFoundError("hub_links_training.meta.json is absent")
+
+        monkeypatch.setattr(rpp, "assert_corpus_matches_training_links", _absent)
+
+        with pytest.raises(FileNotFoundError):
+            rpp.run_folds("cfg")
+        assert submitted == []
