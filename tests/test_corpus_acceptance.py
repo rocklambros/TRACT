@@ -385,7 +385,11 @@ class TestJoinFloors:
         # puts a message back.
         assert failures == [], failures
         # Positive control against a collapsed floor set. Attainable [0, 22].
-        assert len(floors) == (22 if overlay_present else 18), sorted(floors)
+        # Nineteen in a fresh clone since 2026-08-26, up from eighteen: csa_ccm
+        # left the overlay on owner decision D1(b), so its prose is tracked and
+        # it carries a floor CI can check. It clears that floor, which is the
+        # assertion above and the reason this one moved rather than broke.
+        assert len(floors) == (22 if overlay_present else 19), sorted(floors)
 
     def test_no_floor_leaves_more_than_one_percent_of_its_links_spendable(
         self, live: CorpusReport, overlay_present: bool
@@ -536,9 +540,10 @@ class TestAnchorSeparation:
                 f"{applicable[framework_id]} applicable checks"
             )
             checked += 1
-        # Attainable [0, 3]. Reads 3 locally and 1 in CI, where csa_ccm and
-        # etsi route to the overlay.
-        assert checked == (3 if overlay_present else 1), checked
+        # Attainable [0, 3]. Reads 3 locally and 2 in CI, where etsi is now the
+        # only one of the three that routes to the overlay. It was 1 until
+        # csa_ccm left the overlay on 2026-08-26, owner decision D1(b).
+        assert checked == (3 if overlay_present else 2), checked
 
     def test_the_unbudgeted_wrong_anchor_exposure_is_named_and_pinned(
         self, live: CorpusReport, overlay_present: bool
@@ -881,9 +886,10 @@ class TestCommittedAfterReport:
             assert current.fallback_anchors == row["fallback_anchors"], framework_id
             assert current.wrong_anchor_risk == row["wrong_anchor_risk"], framework_id
             compared += 1
-        # Attainable [0, 22]. Reads 22 locally and 18 in CI. A collapsed
-        # comparison is how this goes quiet.
-        assert compared == (22 if overlay_present else 18), (
+        # Attainable [0, 22]. Reads 22 locally and 19 in CI, one per framework
+        # less the three overlay members. It was 18 until csa_ccm left the
+        # overlay on 2026-08-26. A collapsed comparison is how this goes quiet.
+        assert compared == (22 if overlay_present else 19), (
             f"only {compared} rows cross-checked"
         )
 
