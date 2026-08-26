@@ -831,3 +831,91 @@ class TestCorpusCompletenessIsEnforcedBeforeSpend:
         with pytest.raises(FileNotFoundError):
             rpp.run_folds("cfg")
         assert submitted == []
+
+
+class TestStaleResultsCannotBecomeAHeadlineNumber:
+    """load_fold_results checks that folds agree with EACH OTHER, not with now.
+
+    It refuses a partial fold set, mixed arms, mixed input digests and mixed
+    git SHAs. Every one of those compares folds against their siblings. None
+    of them asks whether the corpus those digests describe is the corpus on
+    disk today.
+
+    So five folds that are uniformly stale pass every existing check and
+    aggregate into a number that reads as current. That is not hypothetical:
+    A1 and A2 sit in this repository right now with five validation folds
+    each, they look complete, and the corpus rebuild moved under them. The
+    briefing's rule is that a stale result may be compared against its own
+    recorded inputs and may not be quoted as a current measurement. This makes
+    the second half enforceable instead of advisory.
+    """
+
+    def _results_dir(self, tmp_path: Path, digests: list[dict[str, str]]) -> Path:
+        d = tmp_path / "cfg"
+        for i, inputs in enumerate(digests):
+            fold = d / f"fold_{i}"
+            fold.mkdir(parents=True)
+            (fold / "fold_result.json").write_text(
+                json.dumps({"held_out_framework": f"fw{i}", "inputs": inputs}),
+                encoding="utf-8",
+            )
+        return d
+
+    def _current(self) -> dict[str, str]:
+        """Digests that match the files on disk right now."""
+        import hashlib
+
+        from tract.staleness import TRACKED_INPUTS
+
+        out = {}
+        for field, path in TRACKED_INPUTS.items():
+            if path.exists():
+                out[field] = hashlib.sha256(path.read_bytes()).hexdigest()
+        return out
+
+    def test_a_stale_fold_refuses_to_aggregate(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        stale = dict(self._current())
+        stale["all_controls_sha256"] = "0" * 64
+        d = self._results_dir(tmp_path, [stale])
+
+        with pytest.raises(RuntimeError, match="stale"):
+            rpp._assert_results_are_current(d, allow_stale=False)
+
+    def test_current_folds_pass(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The gate must not stop a fresh run."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        d = self._results_dir(tmp_path, [self._current(), self._current()])
+
+        rpp._assert_results_are_current(d, allow_stale=False)
+
+    def test_allow_stale_is_an_explicit_opt_in(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Comparing a stale result against its own recorded inputs stays legal."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        stale = dict(self._current())
+        stale["all_controls_sha256"] = "0" * 64
+        d = self._results_dir(tmp_path, [stale])
+
+        rpp._assert_results_are_current(d, allow_stale=True)
+
+    def test_the_refusal_names_which_input_moved(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """"Stale" with no field name sends the reader to go looking."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        stale = dict(self._current())
+        stale["all_controls_sha256"] = "0" * 64
+        d = self._results_dir(tmp_path, [stale])
+
+        with pytest.raises(RuntimeError, match="all_controls_sha256"):
+            rpp._assert_results_are_current(d, allow_stale=False)

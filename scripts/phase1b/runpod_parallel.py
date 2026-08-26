@@ -1226,11 +1226,64 @@ def collect(config_name: str = "phase1b_primary") -> list[str]:
     return failed
 
 
+def _assert_results_are_current(local_results: Path, allow_stale: bool) -> None:
+    """Refuse to turn stale folds into a headline number.
+
+    `load_fold_results` already refuses a partial fold set, mixed arms, mixed
+    input digests and mixed git SHAs. Every one of those compares folds
+    against their siblings, and none asks whether the corpus those digests
+    describe is the corpus on disk. Five uniformly stale folds pass all of
+    them and aggregate into a number that reads as current -- which is the
+    state A1 and A2 are in right now.
+
+    `allow_stale` exists because the briefing's rule has two halves: a stale
+    result MAY be compared against its own recorded inputs, and MAY NOT be
+    quoted as a current measurement. The flag is the first half, and it has to
+    be typed on purpose.
+
+    Raises:
+        RuntimeError: A fold's recorded inputs no longer match the files.
+    """
+    from tract.staleness import check_result
+
+    statuses = [
+        check_result(p)
+        for p in sorted(local_results.glob(f"fold_*/{FOLD_RESULT_FILENAME}"))
+    ]
+    stale = [s for s in statuses if s.is_stale]
+    if not stale:
+        return
+
+    moved = sorted({si.field for s in stale for si in s.stale})
+    detail = "; ".join(
+        f"{s.result_path}: " + ", ".join(si.field for si in s.stale) for s in stale
+    )
+    if allow_stale:
+        logger.warning(
+            "AGGREGATING STALE FOLDS on purpose (--allow-stale). %d of %d fold(s) "
+            "were measured against different inputs (%s). This number describes "
+            "the corpus recorded in those folds, NOT the one on disk. Do not "
+            "quote it as a current measurement.",
+            len(stale), len(statuses), ", ".join(moved),
+        )
+        return
+
+    raise RuntimeError(
+        f"{len(stale)} of {len(statuses)} fold(s) under {local_results} were "
+        f"measured against inputs that have since changed ({', '.join(moved)}). "
+        f"They agree with each other, which is why every existing check passes, "
+        f"and they do not agree with the corpus on disk. Re-run the arm, or "
+        f"pass --allow-stale to compare it against its own recorded inputs and "
+        f"accept that the result cannot be quoted as current. Details: {detail}"
+    )
+
+
 def aggregate(
     config_name: str = "phase1b_primary",
     folds: list[str] | None = None,
     split: str = "test",
     n_configurations: int = 1,
+    allow_stale: bool = False,
 ) -> dict[str, Any]:
     """Micro-average the collected folds and write the experiment record.
 
@@ -1248,6 +1301,9 @@ def aggregate(
     )
 
     local_results = RESULTS_DIR / config_name
+    # Currency first. Everything below compares folds to their siblings; this
+    # is the only check that compares them to the corpus on disk.
+    _assert_results_are_current(local_results, allow_stale)
     # An explicitly scoped run declares its own fold set; anything else must
     # match the full LOFO set, so a partial cross-validation cannot be
     # aggregated into a headline number by omission.
@@ -1625,6 +1681,14 @@ def main() -> int:
                         help="Hub representation arm. PRD:372 requires "
                              "path+name+desc be measured and 32/32 folds have "
                              "used the default bare label.")
+    # Never set this on a campaign run. It exists so a stale result can be
+    # read against its own recorded inputs, which the briefing permits, and
+    # not so a refusal can be argued with.
+    parser.add_argument("--allow-stale", action="store_true",
+                        help="aggregate folds whose recorded inputs no longer "
+                             "match the corpus on disk. The number describes "
+                             "the recorded corpus and cannot be quoted as a "
+                             "current measurement.")
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Rebalance arm: temperature flattening the "
                              "CRE-branch distribution")
@@ -1685,7 +1749,8 @@ def main() -> int:
             )
             return 1
     elif args.action == "aggregate":
-        aggregate(args.config_name, folds, args.split, args.n_configurations)
+        aggregate(args.config_name, folds, args.split, args.n_configurations,
+                  allow_stale=args.allow_stale)
     elif args.action == "track":
         return track(args.config_name)
     elif args.action == "teardown":

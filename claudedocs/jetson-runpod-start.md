@@ -142,9 +142,22 @@ and existence cannot tell a complete corpus from a partial one.
 rebuild and the stopword regeneration both moved under them. `python -m
 tract.staleness` names all 27. A1 and A2 have five validation folds each and
 they look complete, but they were measured against a different corpus and are
-not comparable to anything a new arm produces. Re-run all five arms. A stale
-result may be kept and compared against its own recorded inputs. It may not be
-quoted as a current measurement.
+not comparable to anything a new arm produces. Re-run all five arms.
+
+**This is now enforced at `aggregate` too.** Worth understanding why it needed
+to be. `load_fold_results` already refuses a partial fold set, mixed arms,
+mixed input digests and mixed git SHAs — and every one of those compares folds
+to their siblings. None asks whether the corpus those digests describe is the
+corpus on disk. Five uniformly stale folds pass all of them and produce a
+number that reads as current, which is exactly the state A1 and A2 are in.
+Verified 2026-08-26: the gate refuses both, 5 of 5 folds, naming
+`all_controls_sha256` and `stopwords_sha256`.
+
+The briefing's rule has two halves and the code now carries both. A stale
+result MAY be compared against its own recorded inputs — pass `--allow-stale`,
+which logs loudly and says the number describes the recorded corpus. It MAY
+NOT be quoted as a current measurement, and without the flag it will not
+aggregate at all. Never pass `--allow-stale` on a campaign run.
 
 **3. Nothing stops a pod except a live orchestrator or a person.** A green
 `_preflight_training_stack()` is not clearance for an unattended run. It checks
