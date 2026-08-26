@@ -4,12 +4,15 @@ Written on the Mac, 2026-08-20. **Both pre-provisioning gates were closed on
 the Mac on 2026-08-26**, so this file now describes a run that is cleared to
 provision. Read it before provisioning anything.
 
+**Start here: `git checkout campaign-2`.** It is cut from `main` at `753f614`,
+which is the merge of PR #62. `semantic-rebuild` is merged and finished.
+
 The two gates and their state:
 
 1. **Four owner decisions answered and committed.** DONE 2026-08-26. The
    decision record at the end of "Owner decisions" has four filled rows.
-   **Do not re-ask them.** D3 was answered (a), so the corpus rebuild merged
-   and Campaign 2 runs from a fresh branch off `main`.
+   **Do not re-ask them.** D3 was answered (a), so the corpus rebuild is
+   merged and Campaign 2 runs on `campaign-2`.
 2. **P2 and P3 from the premortem fixed.** DONE 2026-08-26 in commit
    `90a5f15`, with tests in `tests/test_runpod_safety.py`. P2 could abandon
    four healthy folds and leave five GPUs billing. P3 could destroy a
@@ -44,7 +47,8 @@ root:
 >    decision record at the end of "Owner decisions" has four filled rows —
 >    read them, do not ask me again. P2 and P3 were fixed in commit `90a5f15`;
 >    run `pytest tests/test_runpod_safety.py -q` and confirm it passes here.
->    Branch from `main` per D3, not from `semantic-rebuild`.
+>    Work on `campaign-2`, already cut from `main` at `753f614`. Do not use
+>    `semantic-rebuild`; it is merged and finished.
 > 2. Verify the environment against the "Before you provision" checklist.
 >    Report each item as pass or fail with the command output that settled it.
 >    Stop if any fails.
@@ -319,7 +323,7 @@ Every item is a command with an answer, not a judgment call.
 | orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
 | independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
-| on the right branch | D3 chose (a): a fresh branch off `main`, clean tree. NOT `semantic-rebuild` |
+| on the right branch | `git status` shows `campaign-2`, cut from `main` at `753f614`, clean tree. NOT `semantic-rebuild` |
 | corpus is complete | the `assert_corpus_matches_training_links()` snippet above returns without raising |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
 | credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
@@ -519,7 +523,8 @@ makes that failure explicit rather than silent.
   permanently. Tempting, and irreversible, which is why it is not the
   recommendation while a campaign is about to produce replacements.
 
-### D3. PR #62. Changes where the Jetson pushes
+### D3. PR #62 — ANSWERED (a), MERGED 2026-08-26 as `753f614`
+
 
 The branch is 210-plus commits ahead of `main`, zero behind, with all eight CI
 jobs green. It is still a draft.
@@ -563,7 +568,7 @@ Answered by the owner on 2026-08-26 and committed. This gate is closed.
 |---|---|---|---|---|
 | D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | Rests on the owner's reading of the CSA membership terms. Implementation NOT done — see the note below |
 | D2 | 98 unopenable checkpoints | (b) re-save with the backbone config | 2026-08-26 | DONE in `957d245`. 98 of 98 pass `assert_loadable_checkpoint`. Repaired configs are gitignored, so nothing entered the repository |
-| D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | Campaign 2 runs from a fresh branch off `main`. Not `semantic-rebuild` |
+| D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | DONE. Merged as `753f614` with a MERGE COMMIT, not a squash, because this file cites `90a5f15` and `957d245` by SHA. Campaign 2 runs on branch `campaign-2`, cut from `main` at `753f614` |
 | D4 | publisher-acronym arm | (a) five arms as pre-registered | 2026-08-26 | No code change. `results/phase1b/CAMPAIGN2.md` already sets `n_configurations=5` |
 
 **D1's answer does not translate into a change yet, and the Jetson must not
