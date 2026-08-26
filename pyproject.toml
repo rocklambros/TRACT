@@ -30,7 +30,7 @@ dependencies = [
     # openpyxl's own DEFUSEDXML flag to True, so the workbook parses hardened.
     "openpyxl==3.1.5",
     "requests>=2.31",
-    "huggingface_hub>=0.24,<1",
+    "huggingface_hub>=1.28.0,<2",
     # tract/supply_chain.py evaluates Requires-Python specifiers with it. It
     # already arrived transitively through huggingface_hub; declared here
     # because the code imports it directly and a transitive is not a contract.

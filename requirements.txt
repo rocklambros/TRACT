@@ -31,7 +31,7 @@ anthropic==0.99.0
 
 # huggingface_hub is a core dependency in pyproject.toml but was never
 # mirrored here, so the CI test job could not import tract.model_resolver.
-huggingface_hub==0.36.2
+huggingface_hub==1.28.0
 
 # Imported directly by tract/supply_chain.py to evaluate Requires-Python
 # specifiers. It arrived transitively before, which meant the version that
