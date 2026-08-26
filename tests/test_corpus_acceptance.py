@@ -327,20 +327,26 @@ class TestTheSuiteCanActuallyRun:
             RESTRICTED_FRAMEWORK_IDS
         )
 
-    def test_the_assertable_set_is_eleven_locally_and_eight_in_ci(
+    def test_the_assertable_set_is_eleven_locally_and_nine_in_ci(
         self, overlay_present: bool
     ) -> None:
         """CI must still gate something real.
 
-        Three of the eleven route to the overlay, so eight assert in a fresh
-        clone. If a licence reclassification empties that set, this file
-        measures nothing in CI and TestCommittedAfterReport becomes the only
-        gate left.
+        Two of the eleven route to the overlay -- dsomm and etsi -- so nine
+        assert in a fresh clone. If a licence reclassification empties that
+        set, this file measures nothing in CI and TestCommittedAfterReport
+        becomes the only gate left.
+
+        Nine since 2026-08-26, up from eight. csa_ccm left the overlay on owner
+        decision D1(b), so its prose is tracked and CI can assert it like any
+        other framework. A reclassification moved this number in the widening
+        direction for once; the assertion is here so either direction has to be
+        re-derived rather than absorbed.
         """
         # Attainable [0, 11]. Fails downward when a framework joins the overlay
         # and upward when one leaves it, and both changes need this number
         # re-derived rather than the gate quietly widening or narrowing.
-        assert len(_assertable(overlay_present)) == (11 if overlay_present else 8)
+        assert len(_assertable(overlay_present)) == (11 if overlay_present else 9)
 
     def test_the_silent_group_is_exactly_the_frameworks_the_licence_breaks(
         self, live: CorpusReport, overlay_present: bool
