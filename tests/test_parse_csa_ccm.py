@@ -5,10 +5,13 @@ Measured on the pinned workbook: concatenating member specifications makes 8 of
 first member control. Concatenating member titles makes 0 of either, and runs
 163 to 596 characters.
 
-Every string in ROWS is invented. The CCM's notice reserves redistribution, so
-its control specifications may not enter a tracked file, and a fixture that
-quoted them would put the reserved text in git under this repository's CC0
-grant. The shape is the workbook's, the wording is nobody's.
+Every string in ROWS is invented, and stays invented. Owner decision D1(b) on
+2026-08-26 ruled CSA material redistributable for this project, so the reason
+has narrowed rather than disappeared: the corpus may carry CCM specifications,
+and a test fixture still has no business quoting a publisher's text to prove a
+parser splits columns. A fixture that quotes its source also cannot tell a
+parser bug from a source change, because both sides move together. The shape is
+the workbook's, the wording is nobody's.
 
 TestSyntheticWorkbook drives parse() and run() against a workbook this file
 builds, so the extraction path is covered in CI, where data/raw is absent.
@@ -582,8 +585,20 @@ class TestRealWorkbook:
             key: list(names) for key, names in OPENCRE_TITLE_VARIANTS.items()
         }
 
-    def test_the_written_artifact_is_not_tracked(self) -> None:
-        """csa_ccm is a CONDITIONAL framework: its prose stays out of git."""
+    def test_the_written_artifact_is_tracked(self) -> None:
+        """csa_ccm is tracked since 2026-08-26, owner decision D1(b).
+
+        Inverted rather than deleted. This assertion is the pair to the tier
+        membership in tract.config: OVERLAY_FRAMEWORK_IDS decides what the
+        merge withholds from the tracked corpus, and .gitignore decides what a
+        fresh clone receives, and the two disagreeing is a real failure mode
+        rather than a hypothetical. They did disagree for one commit, when the
+        tier changed and the ignore line did not, and a fresh clone got a
+        framework the corpus described and the tree could not produce.
+
+        So the direction flips with the ruling and the check stays. If CSA's
+        terms are ever re-read the other way, this fails and says so.
+        """
         import subprocess
 
         path = PROCESSED_FRAMEWORKS_DIR / "csa_ccm.json"
@@ -592,7 +607,9 @@ class TestRealWorkbook:
             capture_output=True,
             cwd=Path(__file__).resolve().parent.parent,
         )
-        assert result.returncode == 0, (
-            f"{path} is not gitignored. The CCM's notice reserves "
-            f"redistribution, so its specifications may not enter git."
+        assert result.returncode != 0, (
+            f"{path} is gitignored, but csa_ccm left OVERLAY_FRAMEWORK_IDS on "
+            f"owner decision D1(b). The tier and .gitignore have to agree, or "
+            f"a fresh clone gets a framework the corpus describes and the tree "
+            f"cannot produce."
         )

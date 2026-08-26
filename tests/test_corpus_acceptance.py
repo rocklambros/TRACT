@@ -954,8 +954,10 @@ class TestSpecAcceptance:
         # link rows rather than out of a source document.
         assert offenders == [], offenders
         assert set(absent) <= OVERLAY, sorted(set(absent) - OVERLAY)
-        # Attainable [0, 32]. Reads 32 locally and 28 in CI.
-        assert len(present) == (32 if not absent else 28), len(present)
+        # Attainable [0, 32]. Reads 32 locally and 29 in CI, one per framework
+        # less the three whose per-framework JSON is gitignored. It was 28
+        # until csa_ccm.json left .gitignore on 2026-08-26 with its tier.
+        assert len(present) == (32 if not absent else 29), len(present)
 
     def test_every_framework_meets_its_parsers_declared_prose_floor(self) -> None:
         """The gate with teeth, in place of a comparison against zero.
