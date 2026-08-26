@@ -7,6 +7,12 @@ provision. Read it before provisioning anything.
 **Start here: `git checkout campaign-2`.** It is cut from `main` at `753f614`,
 which is the merge of PR #62. `semantic-rebuild` is merged and finished.
 
+**PR #72 is open as a draft against `main` and exists so this branch gets CI.**
+The workflow triggers on `push: [main]` and on `pull_request`, so a plain
+branch push runs nothing. Without that PR every campaign commit would land
+unchecked. After each push, confirm all 8 jobs are green before you treat a
+result as banked.
+
 The two gates and their state:
 
 1. **Four owner decisions answered and committed.** DONE 2026-08-26. The
