@@ -16,9 +16,16 @@ The two gates and their state:
    paid-for result permanently. Verify the tests pass on the Jetson rather
    than trusting this line.
 
-What is still open, and neither blocks a pod: D1's implementation (the
-`csa_aicm` fingerprint question, see the note under the decision record) and
-D2's (re-saving 98 checkpoints).
+D2 was implemented on the Mac the same day (`957d245`): all 98 checkpoints now
+carry a base config and pass `assert_loadable_checkpoint`. They are still
+stale against the rebuilt corpus, so loadable is not useful — do not draw a
+conclusion from one. The repaired `config.json` files sit inside gitignored
+`checkpoint-*/` directories, so they do not travel with a clone. **Re-run
+`python -m scripts.repair_adapter_checkpoints` on the Jetson** if you need
+them there.
+
+One thing is still open, and it does not block a pod: D1's implementation, the
+`csa_aicm` fingerprint question. See the note under the decision record.
 
 ## The prompt
 
@@ -486,7 +493,18 @@ carry to the other.
 Only the owner can read the CSA membership agreement. If that reading does not
 happen, the answer is (a), because an unverified (b) is (c) wearing a hat.
 
-### D2. 98 unopenable checkpoints. Blocks nothing, costs 2.2 GB
+### D2. 98 unopenable checkpoints — ANSWERED (b), DONE 2026-08-26
+
+Repaired in `957d245` by `scripts/repair_adapter_checkpoints.py`, which copies
+the backbone's `config.json` in beside each adapter rather than re-serialising
+weights. Two things a reader should know before trusting it. The base-model
+guard matches on the repo id the config was fetched for, not on
+`_name_or_path` inside the config, because BAAI shipped `bge-large-en-v1.5`
+carrying a path from their own build machine and reading that field refused 95
+of the 98 on the first run. And passing `assert_loadable_checkpoint` proves the
+directory is self-describing, not that sentence-transformers opens it —
+proving that needs a model allocation, so it happens on a pod or not at all.
+
 
 Every checkpoint under `results/` is adapter-only with no `config.json`, so
 `load_fold_model` cannot open any of them. `assert_loadable_checkpoint` now
@@ -544,7 +562,7 @@ Answered by the owner on 2026-08-26 and committed. This gate is closed.
 | id | decision | answer | date | note |
 |---|---|---|---|---|
 | D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | Rests on the owner's reading of the CSA membership terms. Implementation NOT done — see the note below |
-| D2 | 98 unopenable checkpoints | (b) re-save with the backbone config | 2026-08-26 | Against the recommendation, and the owner's call. Blocks nothing; implementation off the critical path |
+| D2 | 98 unopenable checkpoints | (b) re-save with the backbone config | 2026-08-26 | DONE in `957d245`. 98 of 98 pass `assert_loadable_checkpoint`. Repaired configs are gitignored, so nothing entered the repository |
 | D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | Campaign 2 runs from a fresh branch off `main`. Not `semantic-rebuild` |
 | D4 | publisher-acronym arm | (a) five arms as pre-registered | 2026-08-26 | No code change. `results/phase1b/CAMPAIGN2.md` already sets `n_configurations=5` |
 
