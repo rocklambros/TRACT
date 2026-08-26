@@ -383,8 +383,15 @@ class TestProvisioningIsBlocked:
     def test_the_preflight_runs_ahead_of_the_tracking_preflight(
         self, tmp_path: Path,
     ) -> None:
-        """Ordering matters: the cheap deterministic check should not sit behind
-        a network call to WandB."""
+        """Ordering matters: the cheap deterministic checks should not sit behind
+        a network call to WandB.
+
+        There are two of them now. The corpus gate joined the sequence on
+        2026-08-26 and is deterministic and local, so it belongs on the same
+        side of the WandB call as the pin check. It has to be stubbed here or
+        the real check refuses on any fresh clone -- which is what CI is -- and
+        this test fails for a reason that has nothing to do with ordering.
+        """
         from scripts.phase1b import runpod_parallel as rp
 
         order: list[str] = []
@@ -392,12 +399,17 @@ class TestProvisioningIsBlocked:
         def _training(*args: Any, **kwargs: Any) -> None:
             order.append("training")
 
+        def _corpus(*args: Any, **kwargs: Any) -> str:
+            order.append("corpus")
+            return "d" * 64
+
         def _tracking(*args: Any, **kwargs: Any) -> None:
             order.append("tracking")
             raise RuntimeError("stop here")
 
         with patch.object(rp, "_preflight_training_stack", _training), \
+                patch.object(rp, "_preflight_corpus", _corpus), \
                 patch.object(rp, "_preflight_tracking", _tracking):
             with pytest.raises(RuntimeError, match="stop here"):
                 rp.provision()
-        assert order == ["training", "tracking"]
+        assert order == ["training", "corpus", "tracking"]
