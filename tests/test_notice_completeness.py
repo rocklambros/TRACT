@@ -147,11 +147,22 @@ class TestNoticeStatesTheCsaExposure:
     """Two CSA facts, stated and unresolved. Held stated by these tests.
 
     The set is deliberately explicit rather than derived. Deriving "reserves
-    redistribution" from the licence string means another substring heuristic,
-    and a substring heuristic over publisher prose is the exact structural
-    defect that left csa_aicm in no tier: `_copyleft` in
-    tests/test_framework_licenses.py matches "GPL" and "CC-BY-SA" and is blind
-    to a source that reserves rights outright.
+    redistribution" from the licence string means a substring heuristic over
+    publisher prose, which fails silently in the permissive direction: the
+    reader cannot tell "no match" from "no such source".
+
+    CORRECTED 2026-08-26. This docstring used to justify that by saying a
+    substring heuristic "is the exact structural defect that left csa_aicm in
+    no tier", naming `_copyleft` in tests/test_framework_licenses.py. Measured,
+    that was wrong, and the claim had already propagated into NOTICE before
+    anyone checked it. `_copyleft` derives no tier -- tiers are hand-curated
+    frozensets in tract/config.py, and `_copyleft` gates three share-alike
+    obligations. `etsi` and `iso_27001` reserve rights outright, fail that same
+    substring test, and are tiered anyway. csa_aicm was untiered because no
+    owner ruling had been made about it.
+
+    The preference for an explicit set stands on its own merits. The false
+    supporting anecdote is gone.
     """
 
     # Tracked in git, publisher reserves redistribution, member of no tier.

@@ -221,15 +221,39 @@ branch on tracked AICM text. Removing the misclassification dissolved that
 conflict. No fingerprint corpus was trimmed to achieve it; the three withheld
 frameworks are still fingerprinted at full coverage.
 
-The structural gap that produced the misclassification is worth recording
-because it will recur. The tier derivation in
-`tests/test_framework_licenses.py::_copyleft` selects on the substrings "GPL"
-and "CC-BY-SA", so a publisher that reserves rights outright matches neither
-and lands in no tier at all. The model detects share-alike and is blind to the
-stricter posture. `csa_aicm` reached 243 tracked controls that way, without
-anyone deciding it should be tracked. The ruling above settles those 243
-controls; it does not fix the derivation, and the next reserve-all-rights
-publisher added to this corpus will land in no tier for the same reason.
+CORRECTION, 2026-08-26. An earlier revision of this paragraph, drawn from a
+test docstring that said the same thing, called
+`tests/test_framework_licenses.py::_copyleft` a tier derivation and said a
+publisher reserving rights outright "lands in no tier at all" because that
+function matches only "GPL" and "CC-BY-SA". Measured, that is wrong on both
+counts, and it is corrected here rather than quietly dropped because it was
+published in a legal notice.
+
+`_copyleft` derives no tier. Tiers are the hand-curated frozensets
+RESTRICTED_FRAMEWORK_IDS and CONDITIONAL_FRAMEWORK_IDS in `tract/config.py`.
+`_copyleft` gates three SHARE-ALIKE obligations: a NOTICE row, a licence text
+shipped in `LICENSES/`, and coverage by the modification statement. Nor does
+failing to match it prevent tiering: `etsi` and `iso_27001` both reserve rights
+outright, both fail that substring test, and both are in the overlay.
+`csa_aicm` was untiered because no owner ruling had been made about it, not
+because a substring missed it.
+
+Widening `_copyleft` would also be the wrong repair. Its three obligations
+belong to share-alike terms. A source reserving rights outright has no SPDX
+identifier and no licence text that can be shipped, so the check would become
+unsatisfiable and would eventually be deleted for being unsatisfiable. The
+obligation such a source carries is not to redistribute, and that is enforced
+by overlay membership plus the fingerprint gate, which covers every withheld
+framework with no deferrals.
+
+The gap that WAS real, and is now closed: nothing forced a decision about a
+framework whose licence is stated in the publisher's prose rather than as an
+SPDX identifier. Nine of the 32 sources are in that position, four reserving
+redistribution and five permitting it. `REDISTRIBUTION_RESERVED_FRAMEWORK_IDS`
+and `PROSE_LICENCE_ADJUDICATED_PERMISSIVE` in `tract/config.py` name all nine
+explicitly, and `tests/test_framework_licenses.py` fails when a framework
+carries a prose licence that appears in neither. A new source cannot reach this
+corpus without somebody reading its notice and recording which one it is.
 
 
 Attribution
