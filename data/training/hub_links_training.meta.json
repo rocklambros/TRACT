@@ -1,6 +1,6 @@
 {
   "corpus_path": "data/processed/licensed/all_controls.json",
-  "corpus_sha256": "b251446957d468fc6b774885d4f5cabd950fdcbc180a9f4aef6fb627979033d6",
+  "corpus_sha256": "c69b06e14796f6a2b7b90c24e517311660cde42fec89d679d56f6c15a7b77852",
   "curated_links_sha256": "2154a831104e2f4c62cb2e9732e9fa6d76904ffe37c8e9149123ee2d8fb2e8ca",
   "n_links": 4389,
   "output_sha256": "d53e7783c75a9f78c3d4bb483ec1e196a5a74019efb7ea54a883ec5bde6f6534"

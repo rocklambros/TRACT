@@ -202,29 +202,6 @@ class TestNoticeStatesTheCsaExposure:
             f"remove the id from UNRESOLVED_EXPOSURE."
         )
 
-    def test_notice_records_that_the_ccm_ruling_basis_is_missing(self) -> None:
-        """Delete this test on the commit that records the basis.
-
-        NOTICE says the owner ruled csa_ccm redistributable and does not say on
-        what authority. "Written agreement", "membership" and "fair-use
-        judgment" have different scopes and different answers for anyone
-        forking this repository, so naming the three is the minimum that makes
-        the gap legible. A one-line "basis TBD" does not satisfy this.
-        """
-        section = _section(_OPEN_QUESTIONS_HEADING)
-        assert "not on record" in section, (
-            "NOTICE no longer states that the basis of the csa_ccm ruling is "
-            "unrecorded. If the basis was recorded, delete this test in the "
-            "same commit. If the paragraph was dropped, restore it."
-        )
-        for candidate in ("written agreement", "membership", "fair-use"):
-            assert candidate in section, (
-                f"NOTICE's csa_ccm paragraph does not name {candidate!r} as a "
-                f"candidate basis. The three differ in scope and in whether "
-                f"they transfer to a fork, which is why the gap matters."
-            )
-
-
 class TestNoticePointsAtTheLicenceTexts:
     def test_notice_names_the_licenses_directory(self) -> None:
         """NOTICE is the licence_link both published cards point at.

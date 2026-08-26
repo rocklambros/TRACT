@@ -80,7 +80,7 @@ At training and evaluation, `tract/text_selection.py`:
   9. Markdown and site furniture removed by `strip_markup`, then a second NFC
      normalisation and null-byte strip in `prepare_anchor`.
  10. Stop words removed when the arm calls for it, by
-     `tract/stopwords.py::filter_stopwords` against the 80-word list at
+     `tract/stopwords.py::filter_stopwords` against the 82-word list at
      `data/processed/stopwords.json`. The list is generated from this corpus,
      not borrowed, and the filter deletes matched words in place so identifiers
      and thresholds survive. Text that would be emptied is returned unchanged.
@@ -187,28 +187,49 @@ redistributable for this project's purposes, and CCM is therefore not in
 RESTRICTED_FRAMEWORK_IDS. AICM was already tracked under the same terms. Both
 are recorded here as the publisher states them.
 
-The BASIS of the CCM ruling is not on record, and it must be. What is recorded
-is that the owner ruled, not why. "We hold a written agreement with CSA",
-"redistribution is covered by CSA membership" and "this is a fair-use judgment
-about the quantity reproduced" are three materially different bases with three
-different scopes, three different transferability properties for anyone forking
-this repository, and three different answers to whether the same reasoning
-reaches AICM. Until the basis is written down here, a downstream reader cannot
-evaluate the ruling and cannot tell whether it applies to their use.
+RULING OF 2026-08-26 (owner decision D1, option b). The project owner
+re-affirmed that CSA material is redistributable for this project's purposes,
+this time on an explicit reading of the CSA membership terms the owner holds,
+rather than on the unrecorded basis the 2026-08-16 ruling carried. The decision
+is recorded with its date in the decision record at the end of the "Owner
+decisions" section of `claudedocs/jetson-runpod-start.md`.
 
-CSA's AI Controls Matrix (`csa_aicm`) is a live exposure, stated here without
-being resolved. Measured on 2026-08-19: 243 controls tracked in git at
-`data/processed/frameworks/csa_aicm.json`, description length 39 characters
-minimum, 176 median, 485 maximum, which is control prose and not titles. Its
-recorded notice is the same one CSA applies to CCM, reserving redistribution
-outright. It appears in no licence tier: not in RESTRICTED_FRAMEWORK_IDS, not
-in CONDITIONAL_FRAMEWORK_IDS, so not in OVERLAY_FRAMEWORK_IDS either. The
-structural reason is that the tier derivation in
+The BASIS as stated by the owner is the CSA membership terms. That is the
+scope a downstream reader should evaluate: it is an entitlement held by this
+project's owner, not a property of the documents. **A fork does not inherit
+it.** Anyone redistributing this repository's `csa_ccm` or `csa_aicm` control
+text is relying on their own relationship with CSA, not on this one, and CSA's
+published notice on both documents reserves redistribution outright. Read the
+notices recorded in the table above and reach your own conclusion.
+
+The consequence in code, applied 2026-08-26: `csa_ccm` left
+CONDITIONAL_FRAMEWORK_IDS, so its control text is now tracked rather than
+withheld to the gitignored overlay, and `csa_aicm` stays tracked as it already
+was. Both remain recorded above exactly as their publisher states them, because
+a ruling about what this project may redistribute does not change what the
+publisher's notice says.
+
+That change also closed the only hole in the licensed-text gate.
+FINGERPRINT_EXCLUDED_FRAMEWORK_IDS is now empty and
+`fingerprinted_framework_ids()` returns OVERLAY_FRAMEWORK_IDS exactly, so every
+framework whose text is withheld from git is covered by the gate that keeps it
+withheld, with no deferrals left to read. Previously `csa_ccm` sat in the
+overlay and outside the fingerprint corpus: it had to be deferred, because 138
+of AICM's 243 tracked descriptions are byte-identical to a CCM specification
+carrying the same control id, and fingerprinting CCM would have failed the
+branch on tracked AICM text. Removing the misclassification dissolved that
+conflict. No fingerprint corpus was trimmed to achieve it; the three withheld
+frameworks are still fingerprinted at full coverage.
+
+The structural gap that produced the misclassification is worth recording
+because it will recur. The tier derivation in
 `tests/test_framework_licenses.py::_copyleft` selects on the substrings "GPL"
 and "CC-BY-SA", so a publisher that reserves rights outright matches neither
-and produces no tier membership at all. The model detects share-alike and is
-blind to the stricter posture. This is a question for the project owner, and it
-is a larger exposure than the copyleft frameworks the tiers were built for.
+and lands in no tier at all. The model detects share-alike and is blind to the
+stricter posture. `csa_aicm` reached 243 tracked controls that way, without
+anyone deciding it should be tracked. The ruling above settles those 243
+controls; it does not fix the derivation, and the next reserve-all-rights
+publisher added to this corpus will land in no tier for the same reason.
 
 
 Attribution

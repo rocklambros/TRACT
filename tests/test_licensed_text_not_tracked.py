@@ -200,7 +200,16 @@ class TestTheFingerprintFileCarriesNoText:
         """The guard behind the tautology above, exercised where it lives.
 
         Reachable in both directions: the unmodified file loads, and the same
-        file with one id removed from `deferred_framework_ids` does not.
+        file with a deferral the code does not declare does not.
+
+        The mismatch is manufactured by ADDING an id, not by removing one.
+        Removing the first element was the original construction and it stopped
+        working on 2026-08-26, when owner decision D1(b) emptied
+        FINGERPRINT_EXCLUDED_FRAMEWORK_IDS: `sorted(frozenset())[1:]` is `[]`,
+        which equals the constant, so the loader was right to accept it and the
+        test failed for being unable to build a bad case. Adding always
+        disagrees, empty set or not, and empty is now the expected steady
+        state.
         """
         data = json.loads(FINGERPRINT_PATH.read_text(encoding="utf-8"))
         good = tmp_path / "good.json"
@@ -210,8 +219,8 @@ class TestTheFingerprintFileCarriesNoText:
         )
 
         data["deferred_framework_ids"] = sorted(
-            FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
-        )[1:]
+            set(FINGERPRINT_EXCLUDED_FRAMEWORK_IDS) | {"csa_ccm"}
+        )
         bad = tmp_path / "bad.json"
         bad.write_text(json.dumps(data), encoding="utf-8")
         with pytest.raises(ValueError, match="deferred_framework_ids"):

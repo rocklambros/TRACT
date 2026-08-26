@@ -1,8 +1,8 @@
 {
-  "count": 80,
+  "count": 82,
   "max_words": 300,
   "min_doc_freq": 0.05,
-  "n_documents": 5149,
+  "n_documents": 5147,
   "n_protected_hub_words": 938,
   "stopwords": [
     "able",
@@ -30,6 +30,7 @@
     "does",
     "due",
     "establish",
+    "evaluate",
     "following",
     "guidelines",
     "hardware",
@@ -72,6 +73,7 @@
     "this",
     "those",
     "under",
+    "upon",
     "used",
     "uses",
     "via",

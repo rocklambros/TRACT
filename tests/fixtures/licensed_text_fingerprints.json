@@ -1,9 +1,6 @@
 {
   "algorithm": "sha256",
-  "deferred_framework_ids": [
-    "csa_aicm",
-    "csa_ccm"
-  ],
+  "deferred_framework_ids": [],
   "documents": [
     {
       "filename": "dsomm_data.zip",

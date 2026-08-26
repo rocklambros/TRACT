@@ -365,37 +365,36 @@ FINGERPRINT_PATH: Final[Path] = (
 # KeyError that scripts/build_licensed_fingerprints.py raises for a framework
 # with no extractor. Neither outcome is silence.
 #
-# Two exclusions, both deferrals with a named trigger rather than exemptions.
+# CLOSED 2026-08-26. Both deferrals are gone and the set is empty, so
+# fingerprinted_framework_ids() now returns OVERLAY_FRAMEWORK_IDS exactly and
+# every framework whose prose is withheld from git is covered by the gate that
+# exists to keep it withheld.
 #
-#   csa_aicm  Its 243 control statements are deliberately TRACKED today, at a
-#             176-character median, pending an owner ruling on whether CSA's
-#             notice permits that. It sits outside OVERLAY_FRAMEWORK_IDS as of
-#             2026-08-19, so subtracting it changes nothing today. The entry is
-#             here so a ruling that moves it into the overlay does not switch
-#             this gate on as a side effect.
+# Owner decision D1(b) removed csa_ccm from CONDITIONAL_FRAMEWORK_IDS on an
+# explicit reading of the CSA membership terms. That dissolved both entries at
+# once, and it is worth being precise about why, because "the exclusions went
+# away" could describe a gate that stopped looking:
 #
-#   csa_ccm   Deferred on the AICM ruling above, because the two are not
-#             separable questions. MEASURED 2026-08-19: 138 of the 243 tracked
-#             AICM descriptions are byte-identical, after
-#             normalise_for_fingerprint, to a CCM control specification
-#             carrying the SAME control id. CSA built AICM on CCM's control set
-#             and reused CCM's wording for the domains that are not
-#             AI-specific. So fingerprinting csa_ccm reds six tracked
-#             AICM-derived artifacts and fails the branch on a question nobody
-#             has answered rather than on a defect.
+#   csa_ccm   No longer in the overlay, so there is nothing to defer. Its
+#             prose is tracked under the owner's ruling. The deferral existed
+#             because fingerprinting it would have red-flagged tracked
+#             csa_aicm text -- 138 of AICM's 243 descriptions are
+#             byte-identical to a CCM specification carrying the same control
+#             id -- and that conflict is gone because CCM is no longer a
+#             withheld framework.
 #
-#             The trigger is the AICM ruling, either way. If AICM prose leaves
-#             the tracked tree, csa_ccm gates cleanly and comes off this list.
-#             If AICM prose stays, this line records why csa_ccm cannot join.
+#   csa_aicm  Never was in the overlay, so subtracting it never subtracted
+#             anything. The entry existed to stop a future ruling from
+#             switching the gate on as a side effect. That ruling has now
+#             happened and went the other way, so the entry is dead.
 #
-#             What was explicitly NOT done: trimming the CCM fingerprint corpus
-#             to skip the shared 138. That produces a gate which passes because
-#             it stopped looking, and the CCM extractor is registered in
-#             scripts/build_licensed_fingerprints.py at full coverage, ready
-#             and measured, so flipping this is a one-line change.
-FINGERPRINT_EXCLUDED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
-    "csa_aicm", "csa_ccm",
-})
+# What was NOT done, then or now: trimming a fingerprint corpus to skip the
+# shared 138. That produces a gate which passes because it stopped looking.
+# The three withheld frameworks are fingerprinted at full coverage.
+#
+# If any framework is ever added to the overlay, it is fingerprinted. That is
+# now the whole rule, with no exceptions to read.
+FINGERPRINT_EXCLUDED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset()
 
 
 def fingerprinted_framework_ids() -> frozenset[str]:

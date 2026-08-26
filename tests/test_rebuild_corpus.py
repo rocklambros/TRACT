@@ -445,8 +445,14 @@ class TestTheSnapshotIsARollback:
             "etsi", "iso_27001", "csa_ccm", "dsomm", "capec",
         }
 
-    def test_the_tier_holds_the_four_members_the_rulings_left(self) -> None:
-        assert OVERLAY_FRAMEWORK_IDS == {"etsi", "iso_27001", "csa_ccm", "dsomm"}
+    def test_the_tier_holds_the_three_members_the_rulings_left(self) -> None:
+        """csa_ccm left on 2026-08-26, owner decision D1(b).
+
+        Pinned as an exact set on purpose: overlay membership decides whose
+        prose stays out of git, so a framework joining or leaving is a licence
+        ruling and should never be a silent diff.
+        """
+        assert OVERLAY_FRAMEWORK_IDS == {"etsi", "iso_27001", "dsomm"}
         present = {fid for fid in OVERLAY_FRAMEWORK_IDS
                    if (PROCESSED_FRAMEWORKS_DIR / f"{fid}.json").exists()}
         assert {path.stem for path in irrecoverable_members()

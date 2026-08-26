@@ -1394,13 +1394,17 @@ class TestDetectorBKindMismatch:
 
         The kind predicate needs TITLES, and merge_all_controls.py reduces every
         OVERLAY_FRAMEWORK_IDS member to identifiers in the tracked corpus, so
-        those four resolve nothing through the id channel there and contribute
+        those three resolve nothing through the id channel there and contribute
         nothing to the derived set. None of them holds the property when the
         overlay IS present, which is what keeps the ratchet's two sides equal in
         both checkouts, and this is where that is checked rather than assumed.
+
+        Three since 2026-08-26: csa_ccm left the overlay on owner decision
+        D1(b), so its prose is tracked and it is measurable in every checkout
+        like any other framework.
         """
         overlay = sorted(OVERLAY_FRAMEWORK_IDS)
-        assert overlay == ["csa_ccm", "dsomm", "etsi", "iso_27001"]
+        assert overlay == ["dsomm", "etsi", "iso_27001"]
         if not all(_corpus_carries_prose(f) for f in overlay):
             pytest.skip(
                 "this checkout's corpus withholds prose for the overlay group "
