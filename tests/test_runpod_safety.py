@@ -588,6 +588,13 @@ class TestOneFoldFailureDoesNotAbortTheFleet:
 
         monkeypatch.setattr(rpp, "_get_pod_env", _env)
         monkeypatch.setattr(rpp, "_run_fold_on_pod", run_fold)
+        # run_folds enforces the corpus gate before it reads the pod roster.
+        # These tests are about fold failure handling, and CI is a fresh clone
+        # with no overlay, so the real check would refuse here for an unrelated
+        # reason. TestCorpusCompletenessIsEnforcedBeforeSpend owns that gate.
+        monkeypatch.setattr(
+            rpp, "assert_corpus_matches_training_links", lambda: "d" * 64,
+        )
         return rpp
 
     def test_a_fold_that_raises_becomes_a_failed_fold(
@@ -919,3 +926,44 @@ class TestStaleResultsCannotBecomeAHeadlineNumber:
 
         with pytest.raises(RuntimeError, match="all_controls_sha256"):
             rpp._assert_results_are_current(d, allow_stale=False)
+
+
+class TestPreflightOrderIsPinned:
+    """Preflight order is a decision, so it gets a test rather than a comment.
+
+    The corpus gate was first on its first commit. On a developer machine with
+    the licensed overlay staged that looks fine, because the check passes and
+    the ordering never shows. On a fresh clone it raised before the
+    stack-pin preflight could, so an untested sentence-transformers pin
+    surfaced as a corpus error. CI caught it; a local run never could.
+
+    Order is stack, corpus, tracking: cheapest local check, then a
+    multi-megabyte hash, then a network round trip. All three run before
+    anything billable is created.
+    """
+
+    def test_provision_runs_the_preflights_in_order(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        calls: list[str] = []
+
+        def _stop(*args: object, **kwargs: object) -> object:
+            raise AssertionError("provision reached a billable step")
+
+        monkeypatch.setattr(rpp, "_preflight_training_stack",
+                            lambda: calls.append("stack"))
+        monkeypatch.setattr(rpp, "_preflight_corpus",
+                            lambda: calls.append("corpus"))
+        monkeypatch.setattr(rpp, "_preflight_tracking",
+                            lambda: calls.append("tracking"))
+        monkeypatch.setattr(rpp, "select_pod_configs", _stop)
+        monkeypatch.setattr(rpp, "rank_available_gpus", _stop)
+        monkeypatch.setattr(rpp, "create_pods_parallel", _stop)
+        monkeypatch.setattr(rpp, "_save_pod_state", _stop)
+
+        with pytest.raises(AssertionError, match="billable"):
+            rpp.provision()
+
+        assert calls == ["stack", "corpus", "tracking"]

@@ -754,14 +754,16 @@ def _preflight_corpus() -> str:
 def provision(
     folds: list[str] | None = None, split: str = "test",
 ) -> list[dict[str, Any]]:
-    # Ordered cheapest-check-first. All three run before anything is created.
+    # Ordered cheapest-check-first. All three run before anything is created,
+    # so none of them can cost a dollar to fail.
     #
-    # The corpus check is first because it is free and because failing it
-    # after provisioning means paying to discover that the run was going to be
-    # 8.4% short. A clone without the gitignored overlay trains on 4,019 of
-    # the 4,389 links and reports the same figures in the same shape.
-    _preflight_corpus()
+    # The corpus check sits between the other two deliberately. It hashes a
+    # multi-megabyte file, so it is not as cheap as resolving a version pin,
+    # and it is local, so it is far cheaper than the tracking check's network
+    # round trip. Putting it first also made a stack-pin failure surface as a
+    # corpus error on any fresh clone, which is how CI caught it.
     _preflight_training_stack()
+    _preflight_corpus()
     _preflight_tracking()
     configs = select_pod_configs(folds, split)
     logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",
