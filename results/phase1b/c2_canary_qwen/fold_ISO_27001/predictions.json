@@ -1,0 +1,1583 @@
+[
+  {
+    "control_text": "Use of cryptography",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "170-772",
+    "predicted_top10": [
+      "170-772",
+      "585-408",
+      "742-431",
+      "435-702",
+      "674-425",
+      "786-224",
+      "783-255",
+      "002-801",
+      "878-880",
+      "508-702"
+    ]
+  },
+  {
+    "control_text": "Privacy and protection of personal identifiable information (PII)",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "362-550",
+    "predicted_top10": [
+      "362-550",
+      "834-645",
+      "571-640",
+      "044-202",
+      "447-083",
+      "308-515",
+      "227-045",
+      "220-870",
+      "743-110",
+      "240-274"
+    ]
+  },
+  {
+    "control_text": "Secure development life cycle",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "616-305",
+    "predicted_top10": [
+      "616-305",
+      "433-442",
+      "636-660",
+      "635-851",
+      "261-010",
+      "473-177",
+      "148-853",
+      "745-356",
+      "233-748",
+      "732-148"
+    ]
+  },
+  {
+    "control_text": "Secure system architecture and engineering principles",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "616-305",
+      "636-660",
+      "261-010",
+      "708-355",
+      "326-704",
+      "148-853",
+      "155-155",
+      "344-611",
+      "787-638",
+      "626-250"
+    ]
+  },
+  {
+    "control_text": "Configuration management",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "486-813",
+      "233-748",
+      "080-466",
+      "124-564",
+      "613-286",
+      "112-648",
+      "424-242",
+      "347-352",
+      "223-780",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "Access to source code",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "080-466",
+    "predicted_top10": [
+      "342-781",
+      "182-732",
+      "077-772",
+      "141-385",
+      "774-888",
+      "832-555",
+      "173-554",
+      "068-102",
+      "838-636",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "Outsourced development",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "473-177",
+      "344-611",
+      "417-342",
+      "433-442",
+      "616-305",
+      "635-851",
+      "068-102",
+      "424-242",
+      "822-100",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "Information security in supplier relationships",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "510-324",
+      "883-173",
+      "852-770",
+      "636-660",
+      "847-247",
+      "004-517",
+      "646-285",
+      "423-055"
+    ]
+  },
+  {
+    "control_text": "Addressing information security within supplier agreements",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "510-324",
+      "646-285",
+      "847-247",
+      "074-873",
+      "766-162",
+      "004-517",
+      "881-234",
+      "567-755",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Information security for use of cloud services",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "440-372",
+      "074-873",
+      "768-532",
+      "275-483",
+      "613-285",
+      "883-173",
+      "715-644",
+      "267-468",
+      "650-560",
+      "224-321"
+    ]
+  },
+  {
+    "control_text": "Managing information security in the information and communication technology (ICT) supply chain",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "072-713",
+      "881-234",
+      "847-247",
+      "636-660",
+      "626-250",
+      "261-010",
+      "417-342",
+      "766-162",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "Monitoring, review and change management of supplier services",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "852-770",
+      "883-173",
+      "646-285",
+      "464-513",
+      "510-324",
+      "423-055",
+      "010-678",
+      "114-853"
+    ]
+  },
+  {
+    "control_text": "Security testing in development and acceptance",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "433-442",
+    "predicted_top10": [
+      "433-442",
+      "616-305",
+      "636-660",
+      "745-356",
+      "261-010",
+      "148-853",
+      "570-487",
+      "626-250",
+      "473-177",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "Test information",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "433-442",
+    "predicted_top10": [
+      "433-442",
+      "570-487",
+      "745-356",
+      "308-515",
+      "058-083",
+      "463-577",
+      "011-322",
+      "473-177",
+      "077-772",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Inventory of information and other associated assets",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "287-823",
+    "predicted_top10": [
+      "287-823",
+      "745-356",
+      "843-841",
+      "842-876",
+      "124-564",
+      "402-706",
+      "148-420",
+      "058-083",
+      "834-645",
+      "308-515"
+    ]
+  },
+  {
+    "control_text": "Secure coding",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "036-275",
+    "predicted_top10": [
+      "004-517",
+      "636-660",
+      "433-442",
+      "223-780",
+      "233-748",
+      "170-772",
+      "435-702",
+      "616-305",
+      "542-270",
+      "126-668"
+    ]
+  },
+  {
+    "control_text": "Protection of information systems during audit testing",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "217-168",
+    "predicted_top10": [
+      "217-168",
+      "745-356",
+      "464-513",
+      "148-420",
+      "433-442",
+      "842-876",
+      "843-841",
+      "862-452",
+      "570-487",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Independent review of information security",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "510-324",
+    "predicted_top10": [
+      "433-442",
+      "464-513",
+      "307-242",
+      "613-285",
+      "463-577",
+      "217-168",
+      "732-148",
+      "745-356",
+      "852-770",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Compliance with policies, rules and standards for information security",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "510-324",
+    "predicted_top10": [
+      "510-324",
+      "567-755",
+      "766-162",
+      "464-513",
+      "842-876",
+      "217-168",
+      "074-873",
+      "636-660",
+      "646-285",
+      "571-640"
+    ]
+  },
+  {
+    "control_text": "Contact with authorities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "510-324",
+    "predicted_top10": [
+      "510-324",
+      "887-750",
+      "463-577",
+      "308-515",
+      "217-168",
+      "833-030",
+      "843-841",
+      "834-645",
+      "362-550",
+      "668-364"
+    ]
+  },
+  {
+    "control_text": "Management of technical vulnerabilities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "732-148",
+    "predicted_top10": [
+      "732-148",
+      "613-286",
+      "433-442",
+      "635-851",
+      "007-274",
+      "058-083",
+      "010-678",
+      "148-227",
+      "112-648",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Information deletion",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "074-873",
+    "predicted_top10": [
+      "356-282",
+      "044-202",
+      "858-745",
+      "488-626",
+      "362-550",
+      "220-870",
+      "077-772",
+      "805-126",
+      "058-443",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Classification of information",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "765-788",
+    "predicted_top10": [
+      "887-750",
+      "463-577",
+      "058-083",
+      "732-148",
+      "433-442",
+      "044-202",
+      "613-286",
+      "843-841",
+      "818-434",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "Labelling of information",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "731-120",
+    "predicted_top10": [
+      "843-841",
+      "637-021",
+      "887-750",
+      "463-577",
+      "308-515",
+      "732-148",
+      "433-442",
+      "058-083",
+      "402-706",
+      "513-183"
+    ]
+  },
+  {
+    "control_text": "Intellectual property rights",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "637-021",
+      "818-434",
+      "267-786",
+      "724-770",
+      "342-781",
+      "141-385",
+      "170-772",
+      "538-770",
+      "270-568",
+      "634-733"
+    ]
+  },
+  {
+    "control_text": "Protection of records",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "130-550",
+      "148-420",
+      "440-372",
+      "858-745",
+      "758-262",
+      "217-168",
+      "362-550",
+      "842-876",
+      "614-353",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "Redundancy of information processing facilities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "708-355",
+      "862-452",
+      "850-376",
+      "326-704",
+      "601-182",
+      "341-076",
+      "522-616",
+      "623-550",
+      "473-177",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Information security during disruption",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "240-464",
+      "463-577",
+      "623-550",
+      "163-776",
+      "708-355",
+      "862-452",
+      "887-750",
+      "847-247",
+      "126-668",
+      "141-555"
+    ]
+  },
+  {
+    "control_text": "ICT readiness for business continuity",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "240-464",
+      "463-577",
+      "847-247",
+      "560-224",
+      "163-776",
+      "567-755",
+      "766-162",
+      "708-355",
+      "257-117",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Application security requirements",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "004-517",
+    "predicted_top10": [
+      "004-517",
+      "636-660",
+      "766-162",
+      "510-324",
+      "148-853",
+      "433-442",
+      "503-455",
+      "261-010",
+      "616-305",
+      "286-500"
+    ]
+  },
+  {
+    "control_text": "Information transfer",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "004-517",
+    "predicted_top10": [
+      "077-772",
+      "463-577",
+      "058-083",
+      "044-202",
+      "433-442",
+      "182-732",
+      "308-515",
+      "732-148",
+      "843-841",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "Legal, statutory, regulatory and contractual requirements",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "004-517",
+      "510-324",
+      "766-162",
+      "155-155",
+      "546-564",
+      "636-660",
+      "613-285",
+      "646-285",
+      "787-638",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "Threat intelligence",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "888-770",
+    "predicted_top10": [
+      "888-770",
+      "307-242",
+      "887-750",
+      "058-083",
+      "077-772",
+      "463-577",
+      "068-102",
+      "613-286",
+      "034-540",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Management responsibilities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "148-227",
+      "463-577",
+      "567-755",
+      "433-442",
+      "571-271",
+      "635-851",
+      "058-083",
+      "013-021",
+      "261-010",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Screening",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "433-442",
+      "887-750",
+      "058-083",
+      "732-148",
+      "463-577",
+      "613-286",
+      "307-242",
+      "546-564",
+      "852-770",
+      "004-517"
+    ]
+  },
+  {
+    "control_text": "Responsibilities after termination or change of employment",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "427-113",
+      "470-731",
+      "424-242",
+      "247-250",
+      "341-076",
+      "457-165",
+      "633-428",
+      "586-842",
+      "217-168"
+    ]
+  },
+  {
+    "control_text": "Return of assets",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "287-823",
+      "141-385",
+      "182-732",
+      "077-772",
+      "157-587",
+      "762-451",
+      "068-102",
+      "613-286",
+      "342-781",
+      "461-680"
+    ]
+  },
+  {
+    "control_text": "Confidentiality or non-disclosure agreements",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "510-324",
+      "818-434",
+      "362-550",
+      "724-770",
+      "571-640",
+      "247-250",
+      "044-202",
+      "805-126",
+      "220-870",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "Disciplinary process",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "887-750",
+      "463-577",
+      "433-442",
+      "862-452",
+      "843-841",
+      "635-851",
+      "745-356",
+      "118-775",
+      "177-260",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "Terms and conditions of employment",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "247-250",
+      "724-770",
+      "427-113",
+      "633-428",
+      "586-842",
+      "634-733",
+      "510-324",
+      "004-517",
+      "270-568"
+    ]
+  },
+  {
+    "control_text": "Information security roles and responsibilities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "013-021",
+    "predicted_top10": [
+      "013-021",
+      "567-755",
+      "862-452",
+      "636-660",
+      "261-010",
+      "571-271",
+      "148-227",
+      "724-770",
+      "247-250",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "Information security awareness, education and training",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "428-544",
+      "244-750",
+      "533-635",
+      "463-577",
+      "862-452",
+      "567-755",
+      "571-271",
+      "833-030",
+      "118-775",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "Capacity management",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "746-705",
+      "623-550",
+      "108-316",
+      "630-573",
+      "176-154",
+      "886-662",
+      "463-820",
+      "560-224",
+      "268-088",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "Policies for information security",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "567-755",
+      "766-162",
+      "571-271",
+      "247-250",
+      "842-876",
+      "135-200",
+      "510-324",
+      "636-660",
+      "464-513",
+      "261-010"
+    ]
+  },
+  {
+    "control_text": "Acceptable use of information and other associated assets",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "287-823",
+      "613-285",
+      "510-324",
+      "818-434",
+      "308-515",
+      "275-483",
+      "130-550",
+      "461-680",
+      "463-577",
+      "843-841"
+    ]
+  },
+  {
+    "control_text": "Information security in project management",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "261-010",
+      "636-660",
+      "616-305",
+      "567-755",
+      "766-162",
+      "464-513",
+      "571-271",
+      "307-242",
+      "745-356",
+      "613-285"
+    ]
+  },
+  {
+    "control_text": "Contact with special interest groups",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "833-030",
+    "predicted_top10": [
+      "833-030",
+      "546-564",
+      "118-775",
+      "463-577",
+      "251-446",
+      "887-750",
+      "068-102",
+      "820-878",
+      "843-841",
+      "028-728"
+    ]
+  },
+  {
+    "control_text": "Separation of development, test and production environments",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "473-177",
+      "148-853",
+      "616-305",
+      "433-442",
+      "708-355",
+      "636-660",
+      "515-021",
+      "344-611",
+      "862-452",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "Documented operating procedures",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "787-638",
+      "463-577",
+      "862-452",
+      "433-442",
+      "745-356",
+      "473-177",
+      "820-877",
+      "843-841",
+      "842-876",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Access control",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "724-770",
+      "538-770",
+      "128-128",
+      "123-124",
+      "715-644",
+      "247-250",
+      "586-842",
+      "177-260",
+      "220-442",
+      "633-428"
+    ]
+  },
+  {
+    "control_text": "Access rights",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "538-770",
+      "128-128",
+      "724-770",
+      "123-124",
+      "368-633",
+      "612-252",
+      "664-080",
+      "817-808",
+      "443-447",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Identity management",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "586-842",
+      "633-428",
+      "724-770",
+      "270-568",
+      "634-733",
+      "177-260",
+      "247-250",
+      "789-320",
+      "538-770",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "Segregation of duties",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "284-521",
+      "724-770",
+      "123-124",
+      "128-128",
+      "220-442",
+      "538-770",
+      "117-371",
+      "801-310",
+      "757-271",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "Information access restriction",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "044-202",
+      "308-515",
+      "440-372",
+      "128-128",
+      "538-770",
+      "463-577",
+      "768-532",
+      "510-324",
+      "077-772",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Assessment and decision on information security events",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "887-750",
+      "842-876",
+      "217-168",
+      "307-242",
+      "464-513",
+      "571-271",
+      "732-148",
+      "843-841",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "Information security incident management planning and preparation",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "571-271",
+      "567-755",
+      "240-464",
+      "560-224",
+      "464-513",
+      "563-088",
+      "307-242",
+      "862-452",
+      "766-162"
+    ]
+  },
+  {
+    "control_text": "Learning from information security incidents",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "887-750",
+      "732-148",
+      "888-770",
+      "307-242",
+      "842-876",
+      "217-168",
+      "464-513",
+      "058-083",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "Collection of evidence",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "433-442",
+      "745-356",
+      "463-577",
+      "077-772",
+      "068-102",
+      "843-841",
+      "058-083",
+      "613-286",
+      "308-515",
+      "141-385"
+    ]
+  },
+  {
+    "control_text": "Information security event reporting",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "842-876",
+      "217-168",
+      "464-513",
+      "843-841",
+      "510-324",
+      "887-750",
+      "402-706",
+      "148-420",
+      "307-242"
+    ]
+  },
+  {
+    "control_text": "Response to information security incidents",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "887-750",
+      "217-168",
+      "732-148",
+      "464-513",
+      "842-876",
+      "307-242",
+      "433-442",
+      "843-841",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "Monitoring activities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "058-083",
+    "predicted_top10": [
+      "058-083",
+      "732-148",
+      "433-442",
+      "745-356",
+      "464-513",
+      "703-813",
+      "463-577",
+      "148-227",
+      "217-168",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "Security of assets off-premises",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "157-587",
+    "predicted_top10": [
+      "862-452",
+      "234-282",
+      "850-376",
+      "400-007",
+      "228-551",
+      "467-784",
+      "126-668",
+      "758-262",
+      "683-036",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "Equipment siting and protection",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "157-587",
+    "predicted_top10": [
+      "850-376",
+      "234-282",
+      "862-452",
+      "522-616",
+      "157-587",
+      "155-155",
+      "683-036",
+      "118-775",
+      "473-177",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "Logging",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "843-841",
+      "402-706",
+      "026-280",
+      "148-420",
+      "058-083",
+      "745-356",
+      "842-876",
+      "260-200",
+      "308-515",
+      "668-364"
+    ]
+  },
+  {
+    "control_text": "Information backup",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "163-776",
+    "predicted_top10": [
+      "163-776",
+      "257-117",
+      "614-353",
+      "843-841",
+      "463-577",
+      "745-356",
+      "267-786",
+      "818-434",
+      "148-420",
+      "240-464"
+    ]
+  },
+  {
+    "control_text": "Clock synchronization",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "770-362",
+      "433-442",
+      "148-227",
+      "114-277",
+      "634-733",
+      "148-420",
+      "613-286",
+      "270-568",
+      "435-702",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "Remote working",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "341-076",
+      "433-442",
+      "862-452",
+      "473-177",
+      "208-830",
+      "708-355",
+      "114-853",
+      "435-702",
+      "148-227",
+      "228-551"
+    ]
+  },
+  {
+    "control_text": "User end point devices",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "473-177",
+      "433-442",
+      "860-084",
+      "814-322",
+      "613-286",
+      "570-487",
+      "615-744",
+      "515-021",
+      "257-668",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "Installation of software on operational systems",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "007-274",
+      "286-500",
+      "473-177",
+      "613-286",
+      "486-813",
+      "233-748",
+      "787-638",
+      "613-287",
+      "636-660",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Protection against malware",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "872-574",
+    "predicted_top10": [
+      "872-574",
+      "112-273",
+      "760-765",
+      "154-031",
+      "286-500",
+      "838-636",
+      "887-750",
+      "760-764",
+      "028-728",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "Equipment maintenance",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "114-853",
+      "433-442",
+      "157-587",
+      "010-678",
+      "613-285",
+      "163-776",
+      "007-274",
+      "473-177",
+      "613-286",
+      "732-148"
+    ]
+  },
+  {
+    "control_text": "Secure disposal or re-use of equipment",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "157-587",
+      "114-853",
+      "850-376",
+      "613-285",
+      "473-177",
+      "424-242",
+      "344-611",
+      "522-616",
+      "234-282",
+      "287-823"
+    ]
+  },
+  {
+    "control_text": "Storage media",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "758-262",
+      "208-830",
+      "163-776",
+      "223-780",
+      "614-353",
+      "130-550",
+      "522-616",
+      "126-668",
+      "257-117",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "Security of network services",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "467-784",
+    "predicted_top10": [
+      "467-784",
+      "278-646",
+      "683-036",
+      "634-733",
+      "558-807",
+      "341-076",
+      "862-452",
+      "273-600",
+      "228-551",
+      "270-568"
+    ]
+  },
+  {
+    "control_text": "Web filtering",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "467-784",
+    "predicted_top10": [
+      "028-728",
+      "814-322",
+      "760-765",
+      "764-765",
+      "887-750",
+      "872-574",
+      "657-084",
+      "341-076",
+      "545-243",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "Networks security",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "467-784",
+      "278-646",
+      "862-452",
+      "683-036",
+      "273-600",
+      "634-733",
+      "341-076",
+      "132-146",
+      "708-355",
+      "270-568"
+    ]
+  },
+  {
+    "control_text": "Segregation of networks",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "515-021",
+    "predicted_top10": [
+      "467-784",
+      "273-600",
+      "278-646",
+      "341-076",
+      "708-355",
+      "683-036",
+      "862-452",
+      "724-770",
+      "132-146",
+      "515-021"
+    ]
+  },
+  {
+    "control_text": "Physical security perimeters",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "862-452",
+      "234-282",
+      "724-770",
+      "850-376",
+      "636-660",
+      "155-155",
+      "708-355",
+      "433-442",
+      "148-227",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "Clear desk and clear screen",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "341-076",
+      "862-452",
+      "470-731",
+      "208-830",
+      "433-442",
+      "843-841",
+      "522-616",
+      "887-750",
+      "058-083",
+      "177-260"
+    ]
+  },
+  {
+    "control_text": "Supporting utilities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "613-286",
+      "473-177",
+      "344-611",
+      "860-084",
+      "433-442",
+      "068-102",
+      "787-638",
+      "843-841",
+      "863-521",
+      "515-021"
+    ]
+  },
+  {
+    "control_text": "Protecting against physical and environmental threats",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "463-577",
+      "862-452",
+      "760-764",
+      "887-750",
+      "546-564",
+      "155-155",
+      "307-242",
+      "623-550",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Working in secure areas",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "862-452",
+      "433-442",
+      "708-355",
+      "467-784",
+      "341-076",
+      "234-282",
+      "724-770",
+      "473-177",
+      "208-830",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Physical entry",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "433-442",
+      "724-770",
+      "128-128",
+      "633-428",
+      "586-842",
+      "862-452",
+      "634-733",
+      "789-320",
+      "270-568",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "Securing offices, rooms and facilities",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "850-376",
+      "234-282",
+      "862-452",
+      "155-155",
+      "157-587",
+      "522-616",
+      "467-784",
+      "208-830",
+      "758-262",
+      "163-776"
+    ]
+  },
+  {
+    "control_text": "Physical security monitoring",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "862-452",
+      "058-083",
+      "148-227",
+      "234-282",
+      "633-428",
+      "467-784",
+      "842-876",
+      "148-420",
+      "843-841",
+      "217-168"
+    ]
+  },
+  {
+    "control_text": "Cabling security",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "467-784",
+      "683-036",
+      "278-646",
+      "522-616",
+      "435-702",
+      "862-452",
+      "341-076",
+      "708-355",
+      "208-830",
+      "228-551"
+    ]
+  },
+  {
+    "control_text": "Change management",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "112-648",
+    "predicted_top10": [
+      "112-648",
+      "010-678",
+      "635-851",
+      "732-148",
+      "433-442",
+      "233-748",
+      "148-227",
+      "486-813",
+      "251-446",
+      "424-242"
+    ]
+  },
+  {
+    "control_text": "Data masking",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "854-643",
+    "predicted_top10": [
+      "488-626",
+      "440-372",
+      "768-532",
+      "058-443",
+      "563-186",
+      "474-203",
+      "447-083",
+      "805-126",
+      "858-745",
+      "567-025"
+    ]
+  },
+  {
+    "control_text": "Data leakage prevention",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "854-643",
+    "predicted_top10": [
+      "077-772",
+      "220-870",
+      "440-372",
+      "044-202",
+      "173-554",
+      "488-626",
+      "768-532",
+      "423-055",
+      "475-586",
+      "141-385"
+    ]
+  },
+  {
+    "control_text": "Authentication information",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "633-428",
+      "802-056",
+      "524-446",
+      "354-752",
+      "270-568",
+      "808-425",
+      "634-733",
+      "525-361",
+      "333-858",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "Secure authentication",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "634-733",
+      "228-551",
+      "270-568",
+      "435-702",
+      "633-428",
+      "558-807",
+      "586-842",
+      "745-045",
+      "278-646",
+      "170-772"
+    ]
+  },
+  {
+    "control_text": "Use of privileged utility programs",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "540-566",
+    "predicted_top10": [
+      "860-084",
+      "330-281",
+      "515-021",
+      "540-566",
+      "611-158",
+      "117-371",
+      "801-310",
+      "757-271",
+      "838-636",
+      "715-223"
+    ]
+  },
+  {
+    "control_text": "Privileged access rights",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "368-633",
+    "predicted_top10": [
+      "123-124",
+      "128-128",
+      "284-521",
+      "540-566",
+      "538-770",
+      "724-770",
+      "817-808",
+      "368-633",
+      "220-442",
+      "612-252"
+    ]
+  }
+]

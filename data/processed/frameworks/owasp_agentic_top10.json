@@ -75,6 +75,13 @@
   "framework_id": "owasp_agentic_top10",
   "framework_name": "OWASP Top 10 for Agentic Applications 2026",
   "mapping_unit_level": "risk",
+  "source_files": [
+    {
+      "bytes": 102305,
+      "path": "owasp_agentic_top10_2026.md",
+      "sha256": "d041c2f2ed2a9b19dfa4054a11c1908b5faed4c6f24ff292e5e3c4308e5a8b3a"
+    }
+  ],
   "source_url": "https://genai.owasp.org",
   "version": "2026"
 }

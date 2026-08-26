@@ -16,6 +16,7 @@ import pytest
 pytest.importorskip("torch", reason="needs the phase0 extra")
 pytest.importorskip("datasets", reason="needs the phase0 extra")
 
+import torch
 from datasets import Dataset
 
 from tract.training.data import (
@@ -393,3 +394,232 @@ def test_tier_priority_includes_al() -> None:
     from tract.training.data import TIER_PRIORITY
     assert "AL" in TIER_PRIORITY
     assert TIER_PRIORITY["AL"] == 3
+
+
+class TestSamplerAttributeContract:
+    """__iter__ seeds its RNG from self.generator and self.seed.
+
+    The trainer always supplies a generator, so the generator branch is the
+    production path and the bare-seed branch is the fallback taken only by
+    direct construction. Both attributes are asserted to exist AND to change
+    the emitted order, because an attribute that is present but ignored is the
+    same silent no-op as one that is missing.
+    """
+
+    def test_generator_and_seed_survive_construction(self) -> None:
+        generator = torch.Generator().manual_seed(11)
+        dataset = _make_sampler_dataset(20)
+        sampler = HubAwareTemperatureSampler(
+            dataset=dataset, batch_size=4, generator=generator, seed=7,
+        )
+        assert sampler.generator is generator
+        assert sampler.seed == 7
+        assert sampler.epoch == 0
+
+    def test_seed_selects_the_order_when_no_generator_is_given(self) -> None:
+        dataset = _make_sampler_dataset(60)
+        first = list(HubAwareTemperatureSampler(dataset=dataset, batch_size=6, seed=1))
+        second = list(HubAwareTemperatureSampler(dataset=dataset, batch_size=6, seed=2))
+        assert first != second
+
+    def test_generator_overrides_the_seed_when_given(self) -> None:
+        dataset = _make_sampler_dataset(60)
+        seeded = list(HubAwareTemperatureSampler(dataset=dataset, batch_size=6, seed=5))
+        generated = [
+            list(HubAwareTemperatureSampler(
+                dataset=dataset, batch_size=6, seed=5,
+                generator=torch.Generator().manual_seed(101),
+            ))
+            for _ in range(2)
+        ]
+        # Same generator seed reproduces, so the generator branch is
+        # deterministic rather than merely different.
+        assert generated[0] == generated[1]
+        # And it is the generator, not self.seed, that chose the order: both
+        # samplers carry seed=5 and disagree.
+        assert generated[0] != seeded
+
+
+def _dispatch_batch_sampler(
+    args: object, dataset: Dataset, batch_size: int = 8,
+) -> object:
+    """Run the library's real get_batch_sampler against a stub trainer.
+
+    get_batch_sampler reads only ``self.args``, so this drives the genuine
+    dispatch without constructing a trainer and therefore without loading a
+    model. Reimplementing the dispatch here instead would test this file
+    rather than sentence-transformers.
+    """
+    from sentence_transformers import SentenceTransformerTrainer
+
+    class _StubTrainer:
+        args: object
+
+    stub = _StubTrainer()
+    stub.args = args
+    return SentenceTransformerTrainer.get_batch_sampler(
+        stub,
+        dataset,
+        batch_size=batch_size,
+        drop_last=False,
+        valid_label_columns=None,
+        generator=torch.Generator().manual_seed(42),
+        seed=42,
+    )
+
+
+class TestTrainerReachesTheCustomSampler:
+    """The sampler is wired in by handing the CLASS to the training arguments.
+
+    sentence-transformers instantiates it inside get_batch_sampler
+    (``inspect.isclass(...) and issubclass(..., DefaultBatchSampler)``). If
+    either end of that contract breaks, training falls back to the library
+    default and hub-aware temperature sampling stops running while every run
+    record still reports sampling_temperature. Nothing raises. So these tests
+    observe HubAwareTemperatureSampler.__iter__ execute rather than checking
+    that a keyword argument was passed.
+    """
+
+    @pytest.fixture
+    def iter_calls(self, monkeypatch: pytest.MonkeyPatch) -> list[object]:
+        """Record every entry into the sampler's own __iter__, then delegate."""
+        calls: list[object] = []
+        original = HubAwareTemperatureSampler.__iter__
+
+        def recording_iter(sampler: HubAwareTemperatureSampler):  # type: ignore[no-untyped-def]
+            calls.append(sampler)
+            yield from original(sampler)
+
+        monkeypatch.setattr(HubAwareTemperatureSampler, "__iter__", recording_iter)
+        return calls
+
+    # 45 is not a multiple of the batch size of 8 on purpose, so the
+    # completeness assertion below covers the trailing partial batch. At 40 it
+    # did not, and a mutation deleting the final `yield batch` survived it.
+    N_EXAMPLES = 45
+
+    @pytest.fixture
+    def metadata_hub_ids(self) -> list[str]:
+        return [f"CRE-{i % 20}" for i in range(self.N_EXAMPLES)]
+
+    def test_library_dispatch_instantiates_and_iterates_the_class(
+        self, tmp_path: Path, iter_calls: list[object], metadata_hub_ids: list[str],
+    ) -> None:
+        from sentence_transformers import SentenceTransformerTrainingArguments
+
+        dataset = _make_sampler_dataset(
+            self.N_EXAMPLES, hub_ids=metadata_hub_ids,
+        ).remove_columns(["hub_id", "is_ai"])
+        HubAwareTemperatureSampler.set_metadata(
+            hub_ids=metadata_hub_ids, is_ai=[False] * self.N_EXAMPLES,
+        )
+        try:
+            args = SentenceTransformerTrainingArguments(
+                output_dir=str(tmp_path), report_to="none",
+                batch_sampler=HubAwareTemperatureSampler,
+            )
+            assert args.batch_sampler is HubAwareTemperatureSampler, (
+                "__post_init__ coerced the sampler class away, so the trainer "
+                "will never see it"
+            )
+
+            sampler = _dispatch_batch_sampler(args, dataset)
+            assert isinstance(sampler, HubAwareTemperatureSampler), (
+                f"get_batch_sampler returned {type(sampler).__name__}, so "
+                "hub-aware temperature sampling is not running"
+            )
+
+            batches = list(sampler)
+            assert iter_calls, (
+                "the sampler was constructed but its __iter__ never ran, so "
+                "the batches came from somewhere else"
+            )
+            assert sorted(i for batch in batches for i in batch) == list(
+                range(self.N_EXAMPLES)
+            )
+        finally:
+            HubAwareTemperatureSampler.clear_metadata()
+
+    def test_enum_batch_sampler_does_not_reach_the_custom_sampler(
+        self, tmp_path: Path, iter_calls: list[object],
+    ) -> None:
+        """Negative control: the default arm must not run the custom sampler.
+
+        Without this, a test asserting the custom sampler ran would pass even
+        if every configuration ran it.
+        """
+        from sentence_transformers import SentenceTransformerTrainingArguments
+
+        dataset = _make_sampler_dataset(
+            self.N_EXAMPLES,
+        ).remove_columns(["hub_id", "is_ai"])
+        args = SentenceTransformerTrainingArguments(
+            output_dir=str(tmp_path), report_to="none",
+            # The string form of BatchSamplers.BATCH_SAMPLER. Spelled as a
+            # string because the enum's import path moved in 5.7.
+            batch_sampler="batch_sampler",
+        )
+        sampler = _dispatch_batch_sampler(args, dataset)
+        assert not isinstance(sampler, HubAwareTemperatureSampler)
+        list(sampler)
+        assert iter_calls == []
+
+    def test_train_model_wires_the_class_into_the_training_arguments(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        iter_calls: list[object], metadata_hub_ids: list[str],
+    ) -> None:
+        """Guard the wiring in loop.py, not only the library's dispatch.
+
+        Runs the real train_model with the model, loss and trainer stubbed, so
+        the training arguments are built by production code. The stub trainer
+        then asks the library which sampler that configuration selects, which
+        is what the real trainer does when it builds its dataloader.
+        """
+        # tract.training.loop imports peft at module scope, which the other
+        # tests in this file do not need. Guard it here rather than at module
+        # scope so a missing peft costs one skip, not the whole file.
+        pytest.importorskip("peft", reason="needs the phase0 extra")
+        from tract.training import loop as loop_module
+        from tract.training.config import TrainingConfig
+
+        captured: dict[str, object] = {}
+
+        class _FakeTrainer:
+            def __init__(
+                self, model: object, args: object, train_dataset: Dataset,
+                eval_dataset: Dataset | None, loss: object,
+            ) -> None:
+                captured["args"] = args
+                captured["dataset"] = train_dataset
+
+            def train(self) -> None:
+                captured["sampler"] = _dispatch_batch_sampler(
+                    captured["args"], captured["dataset"],  # type: ignore[arg-type]
+                )
+                list(captured["sampler"])  # type: ignore[call-overload]
+
+        class _StubModel:
+            def named_parameters(self) -> object:
+                return iter(())
+
+        monkeypatch.setattr(
+            loop_module, "load_model_with_lora", lambda config: _StubModel(),
+        )
+        monkeypatch.setattr(
+            loop_module, "MultipleNegativesRankingLoss", lambda model: object(),
+        )
+        monkeypatch.setattr(loop_module, "SentenceTransformerTrainer", _FakeTrainer)
+
+        dataset = _make_sampler_dataset(self.N_EXAMPLES, hub_ids=metadata_hub_ids)
+        # lora_rank=0 is the full fine-tune arm, which has no adapter for
+        # _assert_adapter_learned to inspect on a stub model.
+        config = TrainingConfig(name="sampler-wiring-probe", lora_rank=0, max_epochs=1)
+
+        loop_module.train_model(config, dataset, tmp_path)
+
+        assert captured["args"].batch_sampler is HubAwareTemperatureSampler, (  # type: ignore[attr-defined]
+            "train_model did not put the sampler class in the training "
+            "arguments, so the trainer will use the library default"
+        )
+        assert isinstance(captured["sampler"], HubAwareTemperatureSampler)
+        assert iter_calls, "the wired sampler never iterated"

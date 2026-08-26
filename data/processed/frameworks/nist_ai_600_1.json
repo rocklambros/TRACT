@@ -93,6 +93,13 @@
   "framework_id": "nist_ai_600_1",
   "framework_name": "NIST AI 600-1 Generative AI Profile",
   "mapping_unit_level": "risk_category",
+  "source_files": [
+    {
+      "bytes": 189522,
+      "path": "nist_ai_600_1.md",
+      "sha256": "76b4c9eed585d4a629f2862aea4aecc736bc062a6f1e2ca01adc0a56ede28413"
+    }
+  ],
   "source_url": "https://doi.org/10.6028/NIST.AI.600-1",
   "version": "1.0"
 }

@@ -53,6 +53,7 @@ from tract.config import (
     PHASE3_DATASET_REPO_ID,
     PHASE3_DATASET_STAGING_DIR,
     PHASE3_REVIEW_OUTPUT_DIR,
+    PHASE5_OPENCRE_EXPORT_DIR,
     PROCESSED_DIR,
     TRACT_MODEL_PINNED_REVISION,
     TRAINING_DIR,
@@ -1058,7 +1059,7 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
     from tract.export.opencre_names import TRACT_TO_OPENCRE_NAME
     from tract.io import atomic_write_json
 
-    output_dir = Path(args.output_dir) if args.output_dir else Path("./opencre_export")
+    output_dir = Path(args.output_dir) if args.output_dir else PHASE5_OPENCRE_EXPORT_DIR
 
     confidence_floor = PHASE5_OPENCRE_EXPORT_CONFIDENCE_FLOOR
     confidence_overrides = dict(PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES)
@@ -1173,7 +1174,7 @@ def _cmd_export_opencre(args: argparse.Namespace) -> None:
 
 
 def _cmd_export_opencre_proposals(args: argparse.Namespace) -> None:
-    output_dir = Path(args.output_dir) if args.output_dir else Path("./opencre_export")
+    output_dir = Path(args.output_dir) if args.output_dir else PHASE5_OPENCRE_EXPORT_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
 
     from tract.io import load_json
@@ -1560,14 +1561,18 @@ def _load_fold_results(
             for fw, m in zs_data.get("per_framework", {}).items()
         }
     else:
-        zs_baselines = {
-            "MITRE ATLAS": 0.273,
-            "NIST AI 100-2": 0.107,
-            "OWASP AI Exchange": 0.619,
-            "OWASP Top10 for LLM": 0.333,
-            "OWASP Top10 for ML": 0.429,
-        }
-        logger.warning("Zero-shot baselines loaded from hardcoded fallback")
+        # These were five hardcoded constants behind a logger.warning, and the
+        # measured branch above was unreachable because _cmd_publish_hf calls
+        # this with two arguments. So the model card's entire Zero-shot and
+        # Delta columns were literals nobody measured in the run being
+        # published. Same contract as _measured() in model_card.py: a figure
+        # the artifacts do not contain is not published.
+        raise ValueError(
+            "No zero-shot baseline available: pass zero_shot_path pointing at "
+            "the paired per-fold baseline for THIS campaign. The card's "
+            "Zero-shot and Delta columns are computed from it, and a "
+            "hardcoded fallback publishes a comparison that was never run."
+        )
 
     fold_names = {
         "MITRE_ATLAS": "MITRE ATLAS",
@@ -1657,7 +1662,7 @@ def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
 
     summary = import_ground_truth(
         PHASE1C_CROSSWALK_DB_PATH,
-        TRAINING_DIR / "hub_links_by_framework.json",
+        TRAINING_DIR / "hub_links_by_framework_curated.json",
         dry_run=args.dry_run,
     )
     logger.info("Ground truth import: %s", summary)

@@ -11,20 +11,20 @@
         {
           "id": "AML.T0000",
           "name": "Search Open Technical Databases",
-          "description": "Adversaries may search publicly available research.",
+          "description": "Adversaries may search publicly available research and technical documentation to learn how and where AI is used within a victim organization.",
           "tactics": ["AML.TA0000"],
           "subtechniques": []
         },
         {
           "id": "AML.T0001",
           "name": "Acquire Infrastructure",
-          "description": "Adversaries may buy or compromise infrastructure.",
+          "description": "Adversaries may buy, lease, or rent infrastructure for use throughout their operation against AI-enabled systems.",
           "tactics": ["AML.TA0000"],
           "subtechniques": [
             {
               "id": "AML.T0001.001",
               "name": "ML Development Workspaces",
-              "description": "Acquire access to ML development workspaces."
+              "description": "Adversaries may acquire access to ML development workspaces that provide the compute and data needed to build an attack."
             }
           ]
         }
@@ -33,7 +33,7 @@
         {
           "id": "AML.M0000",
           "name": "Limit Adversary Knowledge",
-          "description": "Limit public exposure of technical details."
+          "description": "Limit the public release of technical information about the AI stack used in an organization's products or services."
         }
       ]
     }

@@ -3,8 +3,24 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
+from typing import ClassVar
 
 from parsers.parse_mitre_atlas import MitreAtlasParser
+
+
+class SampleMitreAtlasParser(MitreAtlasParser):
+    """The parser with the fixture's count rather than the full source's.
+
+    The fixture holds 4 of the 202 mapping units. run()'s count gate is real
+    and must stay real, so the test declares what this input contains.
+
+    min_prose_fraction is deliberately NOT overridden. ATLAS is wholly prose
+    and its floor is 1.0, so every one of the four fixture units has to carry a
+    full statement. A fixture trimmed to one-line stubs fails here, which is
+    the gate working rather than the gate being wrong.
+    """
+
+    expected_count: ClassVar[int] = 4
 
 
 def test_parses_sample_fixture(tmp_path: Path) -> None:
@@ -15,7 +31,7 @@ def test_parses_sample_fixture(tmp_path: Path) -> None:
     out_dir = tmp_path / "processed"
     out_dir.mkdir()
 
-    parser = MitreAtlasParser(raw_dir=raw_dir, output_dir=out_dir)
+    parser = SampleMitreAtlasParser(raw_dir=raw_dir, output_dir=out_dir)
     result = parser.run()
 
     assert result.framework_id == "mitre_atlas"

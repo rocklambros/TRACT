@@ -1,0 +1,83 @@
+# Pinned TRAINING and EVALUATION stack. Not the serving stack.
+#
+# WHY THIS IS SEPARATE FROM requirements-ml.txt
+# requirements-ml.txt is the *serving* pin: the environment validated to load
+# published revision 2d20955, pass TRACTPredictor's health check and return
+# sensible hubs. Moving it to the versions below would change what `tract
+# assign` users get, and by that file's own argument a change in the encoder
+# stack changes embeddings and therefore the confidences already published in
+# the crosswalk dataset. Training needs a newer stack than serving does; those
+# are two different questions and now two different files.
+#
+# WHERE THESE VERSIONS COME FROM
+# Selected 2026-08-13 and audited with pip-audit. torch 2.4.1 + transformers
+# 4.45.1 carried 51 findings; torch 2.8.0 + 4.49.0 carried 31; this stack
+# carries 5. It clears every torch finding, including PYSEC-2025-41 (RCE via
+# torch.load) and PYSEC-2026-2286, which are the two that map onto what TRACT
+# does: download an artifact and load it. The 5 residual findings are all
+# transformers, all in X-CLIP, MobileViT, MaskFormer and Trax checkpoint
+# conversion paths; grep of tract/ and scripts/ returns no reference to any.
+#
+# WHY NOT transformers 5.x, WHICH HAS ZERO FINDINGS
+# transformers 5.x requires huggingface-hub>=1.5.0, while TRACT declares
+# huggingface_hub>=0.24,<1 as a core dependency. The 4->5 boundary is exactly
+# the hf_hub 0.x->1.x boundary, and crossing it forces a migration of six call
+# sites including tract/model_resolver.py, the sha256-verified download path
+# behind `tract assign`. That is not a change to make in the same commit as a
+# metrics re-derivation.
+#
+# CUDA BOUNDARY
+# torch's cu12->cu13 split falls between 2.10.0 (last cu12) and 2.11.0. torch
+# 2.13.0 needs CUDA 13, so the old
+# runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 tag cannot run it.
+# The digest pinned in scripts/phase1b/runpod_parallel.py is the CUDA 13.0
+# image. The documented fallback is the CUDA 12.8.1 image with torch==2.10.0,
+# which costs two local-only torch findings.
+#
+# Install:  pip install -r requirements.txt -r requirements-train.txt
+-c requirements.txt
+
+# BUMPING sentence-transformers IS NOT A ONE-LINE CHANGE
+# 5.4.0 moved the training symbols into per-encoder subpackages and left
+# deprecation aliases behind for the old paths. The aliases still work on
+# 5.7.0, so the training code imports fine, but they are documented as
+# temporary. tract/training/st_compat.py resolves the canonical paths for every
+# version whose layout was read from its wheel, and lists them in
+# TESTED_VERSIONS. Changing the pin below to a version absent from that list
+# makes scripts/phase1b/runpod_parallel.py refuse to provision, on purpose:
+# an import that breaks on a pod breaks after the fleet is already billing.
+#
+# --- Encoder stack ---
+# tokenizers is pinned rather than left transitive because a patch release
+# changes tokenization, which changes embeddings, which changes hit@1.
+torch==2.13.0
+transformers==4.57.6
+sentence-transformers==5.7.0
+tokenizers==0.22.2
+
+# --- LoRA and data ---
+# sentence-transformers 5.7 made Transformer.auto_model a read-only property.
+# tract/training/loop.py uses model.add_adapter() rather than assigning to it;
+# see the save/reload regression test in tests/test_training_loop.py before
+# moving either pin.
+peft==0.20.0
+# 5.0.1 closes PYSEC-2026-3716, a path traversal in the folder-based dataset
+# builders. Only Dataset.from_list is used here, which is unchanged across the
+# 3.x -> 5.x boundary, and the pods prove the import in the training-stack job.
+# pyproject.toml's phase0 extra had to widen from `<4` to `<6` to admit it: the
+# pods install the extra first and this file second, so a cap below the pin
+# would have made the second install fight the first.
+datasets==5.0.1
+einops==0.8.2
+
+# --- Calibration ---
+# NOT 1.18.0, which declares `Requires-Python: >=3.12`. Two interpreters have
+# to accept this file. The pods run the Debian 3.12 in the digest-pinned
+# ubuntu2404 image, and pyproject.toml declares `requires-python = ">=3.11"`,
+# which requirements-ml.txt shares a scipy pin with. 1.17.1 is the last release
+# whose floor is >=3.11, so it is the one version that satisfies both.
+# scripts/phase1b/runpod_parallel.py:_preflight_training_stack now refuses to
+# provision when any pin here excludes the pod's interpreter, so the next
+# version of this mistake costs a preflight rather than a fleet.
+scipy==1.17.1
+scikit-learn==1.9.0

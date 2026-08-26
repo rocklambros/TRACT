@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 import re
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -23,14 +25,22 @@ CHAPTER_PREFIX: dict[str, str] = {
 
 class EuGpaiCopParser(BaseParser):
     framework_id = "eu_gpai_cop"
+    # The raw tree spells this one out in full.
+    raw_dir_name = "eu-gpai-code-of-practice"
     framework_name = "EU GPAI Code of Practice"
     version = "2025"
     source_url = "https://digital-strategy.ec.europa.eu/en/policies/ai-pact"
     mapping_unit_level = "measure"
     expected_count = 40
+    fetched_date: ClassVar[str] = "2026-04-28"
+    # All 40 measures carry a statement and none equals its title. The shortest
+    # is 157 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 39/40 (0.9750) if one measure decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
-        text = (self.raw_dir / "gpai_code_of_practice_combined.md").read_text(encoding="utf-8")
+        text = self.read_source("gpai_code_of_practice_combined.md")
         controls: list[Control] = []
 
         chapters = list(CHAPTER_RE.finditer(text))

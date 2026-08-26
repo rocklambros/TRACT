@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 import re
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -38,9 +40,15 @@ class NistAi600Parser(BaseParser):
     source_url = "https://doi.org/10.6028/NIST.AI.600-1"
     mapping_unit_level = "risk_category"
     expected_count = 12
+    fetched_date: ClassVar[str] = "2026-04-28"
+    # All 12 risk categories carry a statement and none equals its title. The
+    # shortest is 933 characters, so the attainable value is exactly 1.0 and the
+    # floor fires at 11/12 (0.9167) if one category decays to its heading.
+    # [measured 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
-        text = (self.raw_dir / "nist_ai_600_1.md").read_text(encoding="utf-8")
+        text = self.read_source("nist_ai_600_1.md")
         matches = list(RISK_SECTION_RE.finditer(text))
         controls: list[Control] = []
 

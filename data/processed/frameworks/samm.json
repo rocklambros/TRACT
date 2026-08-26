@@ -1,430 +1,356 @@
 {
   "controls": [
     {
-      "control_id": "samm:D-SA-A",
-      "description": "Architecture Design",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "D-SA-A",
+      "description": "The design of a software architecture can significantly impact the security posture of software, and the use of good security practices will improve the overall design. Teams are trained on the use of basic security principles during design. Establish common design patterns and security solutions for adoption. Reference architectures are utilized and continuously evaluated for adoption and appropriateness.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "D-SA-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "4753e55e943c4d418303bf90d599c6b1",
       "title": "Architecture Design"
     },
     {
-      "control_id": "samm:D-SA-B",
-      "description": "Technology Management",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "D-SA-B",
+      "description": "Technologies and frameworks are the cornerstones of any software solution. The security properties of these must be looked into to ensure an appropriate security level and to anticipate any potential issues herein. Elicit technologies, frameworks and integrations within the overall solution to identify risk. Standardize technologies and frameworks to be used throughout the different applications. Impose the use of standard technologies on all software development.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "D-SA-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "4753e55e943c4d418303bf90d599c6b1",
       "title": "Technology Management"
     },
     {
-      "control_id": "samm:D-SR-A",
-      "description": "Software Requirements",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "D-SR-A",
+      "description": "Software requirements specify objectives and expectations to protect the service and data at the core of the application. High-level application security objectives are mapped to functional requirements. Structured security requirements are available and utilized by developer teams. Build a requirements framework for product teams to utilize.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "D-SR-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "5702908efca4499e87a0239f32920d9b",
       "title": "Software Requirements"
     },
     {
-      "control_id": "samm:D-SR-B",
-      "description": "Supplier security",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "D-SR-B",
+      "description": "Supplier security deals with requirements that are relative to supplier organizations within the development context of the application, in particular for outsourced development. Evaluate the supplier based on organizational security requirements. Build security into supplier agreements in order to ensure compliance with organizational requirements. Ensure proper security coverage for external suppliers by providing clear objectives.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "D-SR-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Supplier security"
+      "parent_id": "5702908efca4499e87a0239f32920d9b",
+      "title": "Supplier Security"
     },
     {
-      "control_id": "samm:D-TA-A",
-      "description": "Application risk profile",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "D-TA-A",
+      "description": "An application risk profile helps to identify which applications can pose a serious threat to the organization if they were attacked or breached. A basic assessment of the application risk is performed to understand likelihood and impact of an attack. Understand the risk for all applications in the organization by centralizing the risk profile inventory for stakeholders. Periodically review application risk profiles at regular intervals to ensure accuracy and reflect current state.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "D-TA-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Application risk profile"
+      "parent_id": "f9269aebfe2c4d5b9293ba42a40a93ac",
+      "title": "Application Risk Profile"
     },
     {
-      "control_id": "samm:D-TA-B",
-      "description": "Threat modeling",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "D-TA-B",
+      "description": "Threat modeling is intended to help software development teams understand what risks exist in what is being built, what could go wrong, and how the risks can be mitigated or remediated. Perform best-effort, risk-based threat modeling using brainstorming and existing diagrams with simple threat checklists. Standardize threat modeling training, processes, and tools to scale across the organization. Continuous optimization and automation of your threat modeling methodology.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "D-TA-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Threat modeling"
+      "parent_id": "f9269aebfe2c4d5b9293ba42a40a93ac",
+      "title": "Threat Modeling"
     },
     {
-      "control_id": "samm:G-EG-A",
-      "description": "Training and Awareness",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "G-EG-A",
+      "description": "Training and awareness focuses on increasing the overall knowledge around software security among the different stakeholders within the organization. Provide security awareness training for all personnel involved in software development. Offer technology and role-specific guidance, including security nuances of each language and platform. Standardized in-house guidance around the organization's secure software development standards.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "G-EG-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "483a0a1b78264cafbc470ce72d557332",
       "title": "Training and Awareness"
     },
     {
-      "control_id": "samm:G-EG-B",
-      "description": "Organization and Culture",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "G-EG-B",
+      "description": "Organization and culture focuses on promoting the culture of application security within the organization as an important success factor of an SDLC project. Identify a \"Security Champion\" within each development team. Develop a secure software center of excellence promoting thought leadership among developers and architects. Build a secure software community including all organization people involved in software security.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "G-EG-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "483a0a1b78264cafbc470ce72d557332",
       "title": "Organization and Culture"
     },
     {
-      "control_id": "samm:G-PC-A",
-      "description": "Policy & Standards",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "G-PC-A",
+      "description": "This stream focuses on maintaining policies and standards and providing them to support integration into the SDLC. Determine a security baseline representing organization's policies and standards. Develop security requirements applicable to all applications. Measure and report on the status of individual application's adherence to policies and standards.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "G-PC-A",
-        "opencre_standard_name": "SAMM"
+        "alt_titles": [
+          "Policy & Standards"
+        ],
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Policy & Standards"
+      "parent_id": "be9e7ddb98b84abe8b9e185b979ccf60",
+      "title": "Policy and Standards"
     },
     {
-      "control_id": "samm:G-PC-B",
-      "description": "Compliance Management",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "G-PC-B",
+      "description": "This stream focuses on identifying and providing compliance requirements to support integration into the SDLC. Identify 3rd-party compliance drivers and requirements and map to existing policies and standards. Publish compliance-specific application requirements and test guidance. Measure and report on individual application's compliance with 3rd party requirements.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "G-PC-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "be9e7ddb98b84abe8b9e185b979ccf60",
       "title": "Compliance Management"
     },
     {
-      "control_id": "samm:G-SM-A",
-      "description": "Create and Promote",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "G-SM-A",
+      "description": "This stream is about creating and promoting an application security roadmap to set the objectives of the enterprise on this topic and increase alignment among stakeholders. Identify organization drivers as they relate to the organization's risk tolerance. Publish a unified strategy for application security. Align the application security program to support the organization's growth.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "G-SM-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "32b3bdd85d3a4d53827960004f9d1c7e",
       "title": "Create and Promote"
     },
     {
-      "control_id": "samm:G-SM-B",
-      "description": "Measure and Improve",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "G-SM-B",
+      "description": "This stream aims to drive the validity, relevance, and improvement of the application security roadmap through measurements of performance within the organization. Define metrics with insight into the effectiveness and efficiency of the Application Security Program. Set targets and KPI's for measuring the program effectiveness. Influence the strategy based on the metrics and organizational needs.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "G-SM-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "32b3bdd85d3a4d53827960004f9d1c7e",
       "title": "Measure and Improve"
     },
     {
-      "control_id": "samm:I-DM-A",
-      "description": "Defect Tracking",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "I-DM-A",
+      "description": "Defect tracking manages the collection and follow-up of all potential issues in a piece of software, from architectural flaws to coding issues and run-time vulnerabilities. Introduce a structured tracking of security defects and make knowledgeable decisions based on this information. Rate all security defects over the whole organization consistently and define SLAs for particular severity classes. Enforce the predefined SLAs and integrate your defect management system with other relevant tooling.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "I-DM-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "e17d573510904f65a1fe6040b56ad0b1",
       "title": "Defect Tracking"
     },
     {
-      "control_id": "samm:I-DM-B",
-      "description": "Metrics and Feedback",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "I-DM-B",
+      "description": "Defect tracking can drive the improvement of security activities within the organization through metrics and feedback. Regularly go over previously recorded security defects and derive quick wins from basic metrics. Collect standardized defect management metrics and use these also for prioritization of centrally driven initiatives. Continuously improve your security defect management metrics and correlate it with other sources.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "I-DM-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "e17d573510904f65a1fe6040b56ad0b1",
       "title": "Metrics and Feedback"
     },
     {
-      "control_id": "samm:I-SB-A",
-      "description": "Build Process",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "I-SB-A",
+      "description": "A consistent build process ensures the software you are deploying is predictable and directly linked to the source code. Furthermore, you can take advantage of the software build process for various security activities. Create a formal definition of the build process so that it becomes consistent and repeatable. Automate your build pipeline and secure the used tooling. Add security checks in the build pipeline. Define mandatory security checks in the build process and ensure that building non-compliant artifacts fails.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "I-SB-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "b2af112859d34cada6ce4cf44d393b94",
       "title": "Build Process"
     },
     {
-      "control_id": "samm:I-SB-B",
-      "description": "Software Dependencies",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "I-SB-B",
+      "description": "External libraries are a significant part of modern software. The activities in this stream help create a view of external libraries and ensure their security strength is adequate. Create records with Bill of Materials of your applications and opportunistically analyze these. Evaluate used dependencies and ensure timely reaction to situations posing risk to your applications. Analyze used dependencies for security issues in a comparable way to your own code.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "I-SB-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "b2af112859d34cada6ce4cf44d393b94",
       "title": "Software Dependencies"
     },
     {
-      "control_id": "samm:I-SD-A",
-      "description": "Deployment Process",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "I-SD-A",
+      "description": "A repeatable and consistent deployment process ensures you only deploy correct software artifacts to production. It also paves the way for representative test environments prior to production. Formalize the deployment process and secure the used tooling and processes. Automate the deployment process over all stages and introduce sensible security verification tests. Automatically verify the integrity of all deployed software, regardless of whether it's internally or externally developed.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "I-SD-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "40d7879025144dbbbf34ba8ea82f060d",
       "title": "Deployment Process"
     },
     {
-      "control_id": "samm:I-SD-B",
-      "description": "Secret Management",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "I-SD-B",
+      "description": "As the secure execution of any software system requires credentials, this stream ensures proper handling of these sensitive data elements within the organization's environment. Introduce basic protection measures to limit access to your production secrets. Inject secrets dynamically during the deployment process from hardened storage and audit all human access to them. Improve the lifecycle of application secrets by regularly generating them and by ensuring proper use.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "I-SD-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "40d7879025144dbbbf34ba8ea82f060d",
       "title": "Secret Management"
     },
     {
-      "control_id": "samm:O-EM-A",
-      "description": "Configuration Hardening",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "O-EM-A",
+      "description": "The activities in this stream focus on the organization's management of security-related configurations in all elements of the technology stack. The emphasis is on those elements (e.g., operating systems, containers, frameworks, services, appliances, and libraries) obtained from third parties, because their architecture and design are not under the organization's control. Perform best-effort hardening of configurations, based on readily available information. Perform consistent hardening of configurations, following established baselines and guidance. Actively monitor configurations for non-conformance to baselines, and handle detected occurrences as security defects.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "O-EM-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "53a9cd5c2d3643f3b71e4e9d92b811e2",
       "title": "Configuration Hardening"
     },
     {
-      "control_id": "samm:O-EM-B",
-      "description": "Patching and Updating",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "O-EM-B",
+      "description": "The activities in this stream focus on the organization's handling of patches and updates for all elements of the technology stack. For software developed by the organization, these activities are concerned with delivering patches and updates to customers, as well as applying them to organization-managed solutions (e.g., software as a service). For third-party elements, these activities are concerned with the organization's timely application of updates and patches received. Perform best-effort patching of system and application components. Perform regular patching of system and application components, across the full stack. Ensure timely delivery of patches to customers. Actively monitor update status and manage missing patches as security defects. Proactively obtain vulnerability and update information for components.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "O-EM-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "53a9cd5c2d3643f3b71e4e9d92b811e2",
       "title": "Patching and Updating"
     },
     {
-      "control_id": "samm:O-IM-A",
-      "description": "Incident Detection",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "O-IM-A",
+      "description": "Incident Detection refers to the process of determining whether an identified security-relevant event is, in fact, a security incident. The activities in this stream focus on the organization's ability to identify security incidents when they occur, and to initiate appropriate incident response activities. Use available log data to perform best-effort detection of possible security incidents. Follow an established, well-documented process for incident detection, with emphasis on automated log evaluation. Use a proactively managed process for detection of incidents.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "O-IM-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "c13aa12c13d04362a3ca3385a8c580ee",
       "title": "Incident Detection"
     },
     {
-      "control_id": "samm:O-IM-B",
-      "description": "Incident Response",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "O-IM-B",
+      "description": "Incident Response starts the moment you acknowledge and verify the existence of a security incident. Your goal is to act in a coordinated and efficient way so that further damage is limited as much as possible. The activities in this stream focus on the organization's ability to respond appropriately and effectively to reported security incidents. Identify roles and responsibilities for incident response. Establish a formal incident response process and ensure staff are properly trained in performing their roles. Employ a dedicated, well-trained incident response team.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "O-IM-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "c13aa12c13d04362a3ca3385a8c580ee",
       "title": "Incident Response"
     },
     {
-      "control_id": "samm:O-OM-A",
-      "description": "Data Protection",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "O-OM-A",
+      "description": "The activities in this stream focus on ensuring the organization properly protects data in all aspects of their creation, handling, storage, and processing. Implement basic data protection practices. Develop data catalog and establish data protection policy. Automate detection of policy non-compliance, and audit compliance periodically. Regularly review and update to data catalog and data protection policy.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "O-OM-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "8f07145b5ea74388b2217895d5e7b5c2",
       "title": "Data Protection"
     },
     {
-      "control_id": "samm:O-OM-B",
-      "description": "System Decommissioning / Legacy Management",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "O-OM-B",
+      "description": "From the perspective of the organization as a consumer of resources, the activities in this stream focus on the identification, management, and tracking of systems, applications, application dependencies, and services that are no longer used, have reached end of life, or are no longer actively developed or supported. Removal of unused systems and services improves manageability of the environment and reduces the organization's attack surface, while affording direct and indirect cost savings (e.g., reduced license count, reduced logging volume, or reduced analyst effort). Decommission unused applications and services as identified. Manage customer upgrades/migrations individually. Develop repeatable decommissioning processes for unused systems/services, and for migration from legacy dependencies. Manage legacy migration roadmaps for customers. Proactively manage migration roadmaps, for both unsupported end-of-life dependencies, and legacy versions of delivered software.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "O-OM-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "8f07145b5ea74388b2217895d5e7b5c2",
       "title": "System Decommissioning / Legacy Management"
     },
     {
-      "control_id": "samm:V-AA-A",
-      "description": "Achitecture validation",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "V-AA-A",
+      "description": "Architecture validation confirms the security of the software and supporting architecture by identifying application and infrastructure architecture components and verifying their provision of security objectives and requirements. Identify application and infrastructure architecture components and review for basic security provisioning. Validate the architecture security mechanisms. Review of the architecture components' effectiveness.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "V-AA-A",
-        "opencre_standard_name": "SAMM"
+        "alt_titles": [
+          "Achitecture validation"
+        ],
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Achitecture validation"
+      "parent_id": "53f2da68c37a4ced8d5e767298fba589",
+      "title": "Architecture Validation"
     },
     {
-      "control_id": "samm:V-AA-B",
-      "description": "Achitecture mitigation",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "V-AA-B",
+      "description": "Architecture mitigation focuses on ensuring that all threats identified during Threat Assessment are adequately mitigated, and existing reference architectures updated to address any unhandled threats. Ad-hoc review of the architecture for unmitigated security threats. Analyze the architecture for known threats. Feed the architecture review results back into the enterprise architecture, organization design principles and patterns, security solutions and reference architectures.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "V-AA-B",
-        "opencre_standard_name": "SAMM"
+        "alt_titles": [
+          "Achitecture mitigation"
+        ],
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Achitecture mitigation"
+      "parent_id": "53f2da68c37a4ced8d5e767298fba589",
+      "title": "Architecture Mitigation"
     },
     {
-      "control_id": "samm:V-RT-A",
-      "description": "Control verification",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "V-RT-A",
+      "description": "Control Verification validates that security controls and requirements are met through testing derived from requirements, and prevents the introduction of bugs into later releases through regression testing. Test for software security controls. Derive test cases from known security requirements. Perform regression testing (with security unit tests).",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "V-RT-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Control verification"
+      "parent_id": "66fb99798fe946e4979a2de98e9d6f8b",
+      "title": "Control Verification"
     },
     {
-      "control_id": "samm:V-RT-B",
-      "description": "Misuse/Abuse Testing",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "V-RT-B",
+      "description": "Misuse/Abuse Testing leverages fuzzing, misuse/abuse cases, and the identification of any functionality or resources in the software that can be abused in order to identify weaknesses in features to attack an application. Perform security fuzz testing. Create and test abuse cases and business logic flaw tests. Denial of service and security stress testing.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "V-RT-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "66fb99798fe946e4979a2de98e9d6f8b",
       "title": "Misuse/Abuse Testing"
     },
     {
-      "control_id": "samm:V-ST-A",
-      "description": "Scalable Baseline",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "V-ST-A",
+      "description": "Scalable baseline focuses on the use of application-specific automated testing tools that integrate security validation into the build and deploy process. The goal of this stream is to favor width (a broad spectrum of applications) over depth of testing. Utilize automated security testing tools. Employ application-specific security testing automation. Integrate automated security testing into the build and deploy process.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "V-ST-A",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "A",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
+      "parent_id": "bb5488860c124b6e8076b023485023e1",
       "title": "Scalable Baseline"
     },
     {
-      "control_id": "samm:V-ST-B",
-      "description": "Deep understanding",
-      "full_text": null,
-      "hierarchy_level": null,
+      "control_id": "V-ST-B",
+      "description": "Deep understanding focuses on performing manual security testing of high-risk components, using complex attack vectors with the goal of making advanced security testing an integral part of the development process. The goal of this stream is to favor testing depth (testing rigor) over testing width (the portfolio of applications). Perform manual security testing of high-risk components. Conduct manual penetration testing. Integrate security testing into development process.",
+      "hierarchy_level": "stream",
       "metadata": {
-        "link_type": "LinkedTo",
-        "opencre_section_id": "V-ST-B",
-        "opencre_standard_name": "SAMM"
+        "stream_letter": "B",
+        "text_origin": "synthetic"
       },
-      "parent_id": null,
-      "parent_name": null,
-      "title": "Deep understanding"
+      "parent_id": "bb5488860c124b6e8076b023485023e1",
+      "title": "Deep Understanding"
     }
   ],
-  "fetched_date": "2026-04-28T13:51:00.215896+00:00",
+  "fetched_date": "2026-08-15",
   "framework_id": "samm",
   "framework_name": "SAMM",
-  "mapping_unit_level": "section",
-  "source_url": "https://opencre.org",
-  "version": "opencre-2026-04-28"
+  "mapping_unit_level": "stream",
+  "source_files": [
+    {
+      "bytes": 306681,
+      "path": "samm_core.zip",
+      "sha256": "16eb608b70bad3039b14ca4e3f300893d29bbc4205c737ac07fcbdfb4f7493a6"
+    }
+  ],
+  "source_url": "https://owaspsamm.org/model/",
+  "version": "2.0"
 }

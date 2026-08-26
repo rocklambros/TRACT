@@ -1,0 +1,1945 @@
+{
+  "recalls": [
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 1,
+      "raw_recalled_hub_id": "028-727",
+      "recall": "confident",
+      "recalled_hub_id": "028-727"
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 2,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 3,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 4,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 5,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 6,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 7,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 8,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 9,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 10,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 11,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 12,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 13,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 14,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 15,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 16,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 17,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 18,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 19,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 20,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 21,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 22,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 23,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 24,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 25,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 26,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 27,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 28,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 29,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 30,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 31,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_llm_top10",
+      "item_index": 32,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 33,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 34,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 35,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 36,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 37,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 38,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 39,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 40,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 41,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 42,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 43,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 44,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 45,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 46,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 47,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 48,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 49,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 50,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 51,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 52,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 53,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 54,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 55,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_llm_top10",
+      "item_index": 56,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 57,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 58,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 59,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 60,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 61,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 62,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 63,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 64,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 65,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 66,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 67,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 68,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 69,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 70,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 71,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 72,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_llm_top10",
+      "item_index": 73,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 74,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 75,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 76,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 77,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_llm_top10",
+      "item_index": 78,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 79,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 80,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 81,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 82,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 83,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 84,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 85,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 86,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 87,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 88,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 89,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 90,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 91,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 92,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 93,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 94,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 95,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 96,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 97,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 98,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 99,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 100,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 101,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 102,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 103,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 104,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 105,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 106,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 107,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 108,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 109,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 110,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 111,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 112,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 113,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 114,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 115,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 116,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 117,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 118,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 119,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 120,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 121,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 122,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 123,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 124,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 125,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 126,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 127,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 128,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 129,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 130,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 131,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 132,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 133,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 134,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 135,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 136,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 137,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 138,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 139,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 140,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 141,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 142,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 143,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 144,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 145,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 146,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_llm_top10",
+      "item_index": 147,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 148,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 149,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 150,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 151,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 152,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 153,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 154,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 155,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 156,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 157,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 158,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 159,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 160,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 161,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 162,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 163,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 164,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 165,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 166,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 167,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 168,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 169,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 170,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 171,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 172,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 173,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 174,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 175,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 176,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 177,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 178,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 179,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 180,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 181,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 182,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 183,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 184,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 185,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 186,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 187,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 188,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 189,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 190,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 191,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 192,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 193,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 194,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 195,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 196,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 197,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 198,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 199,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 200,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 201,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 202,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 203,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 204,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 205,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 206,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 207,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 208,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 209,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 210,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 211,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 212,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 213,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 214,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 215,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 216,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 217,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 218,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 219,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 220,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 221,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 222,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 223,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 224,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 225,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 226,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 227,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 228,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 229,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 230,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 231,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 232,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_ai_100_2",
+      "item_index": 233,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 234,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 235,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 236,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 237,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 238,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_llm_top10",
+      "item_index": 239,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 240,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 241,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 242,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 243,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 244,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "cwe",
+      "item_index": 245,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 246,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "capec",
+      "item_index": 247,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "owasp_ai_exchange",
+      "item_index": 248,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "nist_800_53",
+      "item_index": 249,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    },
+    {
+      "framework_id": "mitre_atlas",
+      "item_index": 250,
+      "raw_recalled_hub_id": "",
+      "recall": "none",
+      "recalled_hub_id": ""
+    }
+  ],
+  "run": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "batch_size": 25,
+    "cost_usd": 0.1156,
+    "finished_at": "2026-08-19T05:15:49.439954+00:00",
+    "max_tokens": 16384,
+    "mode": "closed_book_recall",
+    "model_id": "x-ai/Grok-4.20",
+    "n_failed_attempts": 0,
+    "n_items": 250,
+    "parse_counters": {},
+    "pricing_usd_per_mtok": {
+      "input": 1.25,
+      "output": 2.5
+    },
+    "prompt_source": "claudedocs/ceiling-study-runbook.md",
+    "provider_pin": "xAI",
+    "reasoning_effort": "low",
+    "route": "openrouter",
+    "route_model_id": "x-ai/grok-4.20",
+    "served_model_snapshot": [
+      "x-ai/grok-4.20"
+    ],
+    "served_providers": [
+      "xAI"
+    ],
+    "started_at": "2026-08-19T05:13:29.735416+00:00",
+    "temperature": 0.0,
+    "usage": [
+      {
+        "attempt": 1,
+        "batch_index": 1,
+        "billed_cost_usd": 0.0117881,
+        "cached_tokens": 128,
+        "completion_tokens": 1739,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 24.77,
+        "ok": true,
+        "prompt_tokens": 6060,
+        "reasoning_tokens": 1057,
+        "response_id": "gen-1787116409-SFXLkbskNyli2MCwyTAe",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 2,
+        "billed_cost_usd": 0.01340185,
+        "cached_tokens": 128,
+        "completion_tokens": 1365,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 10.53,
+        "ok": true,
+        "prompt_tokens": 8099,
+        "reasoning_tokens": 688,
+        "response_id": "gen-1787116434-ik8aoLgeGjKhCXKgDICj",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 3,
+        "billed_cost_usd": 0.01153935,
+        "cached_tokens": 128,
+        "completion_tokens": 1361,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 13.0,
+        "ok": true,
+        "prompt_tokens": 6617,
+        "reasoning_tokens": 684,
+        "response_id": "gen-1787116445-fSf7uJvDyuUkHaKqhVq8",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 4,
+        "billed_cost_usd": 0.0113056,
+        "cached_tokens": 128,
+        "completion_tokens": 1399,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 14.37,
+        "ok": true,
+        "prompt_tokens": 6354,
+        "reasoning_tokens": 722,
+        "response_id": "gen-1787116458-LeG0qSypdO10iJMVFP6Z",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 5,
+        "billed_cost_usd": 0.0115406,
+        "cached_tokens": 128,
+        "completion_tokens": 1344,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 12.88,
+        "ok": true,
+        "prompt_tokens": 6652,
+        "reasoning_tokens": 667,
+        "response_id": "gen-1787116472-Mg6HtboZ5N0J5g7X0xpc",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 6,
+        "billed_cost_usd": 0.01069685,
+        "cached_tokens": 128,
+        "completion_tokens": 1390,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 12.23,
+        "ok": true,
+        "prompt_tokens": 5885,
+        "reasoning_tokens": 713,
+        "response_id": "gen-1787116485-BJr3uTqfScAV7Ydw0OYn",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 7,
+        "billed_cost_usd": 0.0109131,
+        "cached_tokens": 128,
+        "completion_tokens": 1372,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 11.86,
+        "ok": true,
+        "prompt_tokens": 6094,
+        "reasoning_tokens": 695,
+        "response_id": "gen-1787116497-N62IGL0Oxmum8y9tDtZ2",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 8,
+        "billed_cost_usd": 0.01133185,
+        "cached_tokens": 128,
+        "completion_tokens": 1351,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 11.83,
+        "ok": true,
+        "prompt_tokens": 6471,
+        "reasoning_tokens": 674,
+        "response_id": "gen-1787116509-6XHJ0q4YwSTo6gozOdlJ",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 9,
+        "billed_cost_usd": 0.01104435,
+        "cached_tokens": 128,
+        "completion_tokens": 1388,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 12.5,
+        "ok": true,
+        "prompt_tokens": 6167,
+        "reasoning_tokens": 711,
+        "response_id": "gen-1787116521-5OIAs97AfNg8hIxx41Tp",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 10,
+        "billed_cost_usd": 0.0120306,
+        "cached_tokens": 128,
+        "completion_tokens": 1632,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 15.71,
+        "ok": true,
+        "prompt_tokens": 6468,
+        "reasoning_tokens": 955,
+        "response_id": "gen-1787116533-Hfp7KFdRAagKOT9ytrJq",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      }
+    ]
+  }
+}

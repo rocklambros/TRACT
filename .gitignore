@@ -1,6 +1,59 @@
 data/raw/
 models/
-results/
+# `results/` alone excludes the directory, and git never descends into an
+# excluded directory, so no negation beneath it can rescue a file. `results/*`
+# excludes the contents instead, which lets the two negations below work.
+# Verified on git 2.50.1: under `results/` the negations stage nothing.
+results/*
+!results/corpus/
+!results/ceiling_study/
+# The LLM pre-pass is a proxy, not a ceiling. The runbook is explicit that "a
+# proxy labelled as a ceiling is the same category of error as the withdrawn
+# accuracy figure", and four files with LLM_PROXY in the name sitting beside the
+# real 250-item human study invite exactly that misreading. Committing them is a
+# decision to take deliberately, with a header saying what they are.
+results/ceiling_study/*LLM_PROXY*
+results/ceiling_study/answers_llm_proxy.json
+# `results/*` above also excluded results/phase1b, which is where the LOFO
+# orchestrator writes and where runpod_parallel's `collect` rsyncs a fleet's
+# output. Forty-five fold results were tracked before that rule landed, so the
+# breakage was invisible: `git status` stayed clean while every NEW fold result
+# a run produced was silently unstageable. A run on a rented fleet would have
+# reached the end with its evidence on disk and nothing to push.
+#
+# Allowlist rather than denylist. The directory holds 2.2 GB of optimizer state
+# and safetensors against a few MB of JSON, so naming what to keep is the safe
+# direction: a new binary artifact type defaults to excluded instead of landing
+# in git.
+!results/phase1b/
+results/phase1b/**
+!results/phase1b/**/
+!results/phase1b/**/*.json
+!results/phase1b/**/*.md
+# Weights last, so these win over the *.json line above. A saved model's
+# tokenizer.json and config.json tracked without the tensors they describe read
+# like a checkpoint that is present when it is not, and the tokenizers alone
+# account for 35 of the 39 MB this section would otherwise expose.
+results/phase1b/**/checkpoint-*/
+results/phase1b/**/model/
+# results/review is PHASE3_REVIEW_OUTPUT_DIR, and it carried the same defect in
+# a quieter form: four tracked files inside an ignored directory, so a re-export
+# under a new filename would have vanished while the existing four kept showing
+# as modified. Everything it holds is JSON and markdown, so the whole directory
+# is re-included rather than filtered.
+!results/review/
+# results/bridge holds bridge_report.json, the Phase 2B record of which bridge
+# candidates an expert accepted. `tract bridge` writes it and nothing was
+# reading it back out of git, because git could not see it.
+!results/bridge/
+# results/phase1c is excluded apart from one carve-out. crosswalk.db is covered
+# by *.db, deployment_model/ is weights, and similarities/ is .npz arrays, so
+# the directory defaults to excluded. calibration/ is the exception: ece_gate.json
+# is a gate verdict, and a gate whose result cannot be committed is a gate
+# nobody can check.
+!results/phase1c/
+results/phase1c/*
+!results/phase1c/calibration/
 *.db
 __pycache__/
 .env
@@ -13,6 +66,8 @@ build/
 .ruff_cache/
 scripts/phase0/.pod_ids
 scripts/phase0/.pod_state.json
+scripts/phase1b/.pod_state.json
+scripts/phase1b/.runpod_known_hosts
 scripts/phase0/.pod_state_0r.json
 .claude/
 wandb/
@@ -20,6 +75,82 @@ docs/session-prompts.md
 hub_proposals/
 .worktrees/
 notebooks/.ipynb_checkpoints/
-docs/superpowers/
+# The rule above only covered checkpoints under notebooks/, but the narrative
+# notebook lives at the repository root and Jupyter writes its checkpoints
+# beside it. That directory reached 8.1 MB of stale copies carrying the same
+# outputs as the tracked notebook, which is a second, unscanned path for any
+# text the licensed-text gate is meant to keep out of the tree.
+.ipynb_checkpoints/
+.DS_Store
+# Specs and plans are the design record for a research project whose deliverable
+# is reproducibility, and a criterion that lives in an untracked file can be
+# edited mid-run with no diff. Scratch under docs/superpowers/ stays ignored;
+# these two directories do not. Both are covered by the tree-wide licensed-text
+# gate, which scans every tracked .md, and both measure zero licensed n-grams.
+docs/superpowers/*
+!docs/superpowers/plans/
+!docs/superpowers/specs/
+# This one plan quotes two ISO 27001 Annex A statements verbatim. The tree-wide
+# gate caught it when the directory was first staged, which is the gate working.
+# It stays ignored rather than being redacted, because editing a superseded plan
+# to make it committable rewrites the record of what was actually planned.
+docs/superpowers/plans/2026-08-15-parser-contract-and-iso.md
 docs/phase0-results.md
 venv/
+# Licensed framework text. One line per member of
+# tract.config.RESTRICTED_FRAMEWORK_IDS, and
+# tests/test_licensed_text_not_tracked.py fails if a member is missing a line.
+# These publishers reserve reproduction and this repository is CC0, which is an
+# affirmative grant that the publisher holds the rights and waives them.
+# Committing the prose here would assert rights we do not hold, and `git push`
+# is the publication event regardless of what any publish-path filter does. The
+# parsers write here; the files never enter git. See NOTICE for the per-source
+# terms and tests/test_licensed_text_not_tracked.py for the enforcement.
+data/processed/frameworks/etsi.json
+data/processed/frameworks/iso_27001.json
+# One line per member of tract.config.CONDITIONAL_FRAMEWORK_IDS, and there are
+# two of them. Five CC BY-SA frameworks left this list once LICENSES/ shipped
+# the real texts and NOTICE gained the modification statement: twelve of the
+# corpus's thirteen copyleft sources are tracked, and holding five of them out
+# while seven sat in git was a distinction no reading supports. The tier
+# comment in tract/config.py carries the full reasoning.
+#
+# These two stay for reasons the five do not share. GPL-3.0's share-alike
+# attaches to the whole work rather than to the adapted part, and csa_ccm's
+# publisher reserves redistribution outright. Their assignments stay tracked
+# and published either way, because a mapping is a fact about two documents
+# rather than a reproduction of either.
+data/processed/frameworks/dsomm.json
+data/processed/frameworks/csa_ccm.json
+data/processed/licensed/
+# Repair audit records quote source text verbatim on both sides of a move, so
+# a restricted framework's audit file carries the same licensed prose the two
+# rules above keep out of git.
+data/processed/repair_audit/
+# `tract export-canonical` writes full control text for every framework it is
+# given, and its default output directory sits at the repository root, so
+# `tract export-canonical && git add -A` staged licensed prose. This line is
+# the smaller half of the fix. The command's stated destination is an OpenCRE
+# RFC, a third-party channel outside git that no .gitignore rule reaches, so
+# tract/export/canonical.py withholds the text itself. See
+# tests/test_canonical_export.py.
+canonical_export/
+# The same defect in the sibling path. `tract export --opencre` writes a
+# `<Standard>|description` column holding the publisher's own control statement,
+# and its default output directory is ./opencre_export at the repository root.
+# This line stops the NEXT run's output from being staged. It does not untrack
+# the seven files already in git: those were committed before the filter
+# existed, `git rm` on them would move published metrics and un-publish
+# nothing, and the framework they expose is an open owner question recorded in
+# NOTICE. tract/export/opencre_csv.py withholds the text itself, which is the
+# half of the fix that reaches OpenCRE's importer.
+opencre_export/
+
+# Claude-specific working documentation. Analyses, runbooks and summaries that
+# support the work without being part of it. Untracked on purpose.
+claudedocs/*
+# One exception. The Jetson drives the RunPod fleet and gets this repository by
+# cloning it, so a handoff written to an untracked directory is a handoff that
+# never arrives. Tracked deliberately and by name, which keeps the rest of
+# claudedocs/ the scratch space it was meant to be.
+!claudedocs/jetson-runpod-start.md

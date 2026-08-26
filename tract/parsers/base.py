@@ -1,4 +1,4 @@
-"""TRACT BaseParser — abstract base class for all framework parsers.
+"""TRACT BaseParser, the abstract base class for all framework parsers.
 
 Every parser (parsers/parse_*.py) subclasses BaseParser and implements
 parse() -> list[Control]. The concrete run() method handles sanitization,
@@ -7,27 +7,131 @@ validation, count-checking, and atomic output writing.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
+import os
+import tempfile
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import ClassVar
 
 from tract.config import (
+    CONTROL_DAMAGED_METADATA_KEY,
+    CONTROL_DAMAGED_METADATA_VALUE,
     COUNT_TOLERANCE,
     DESCRIPTION_MAX_LENGTH,
-    EXPECTED_COUNTS,
+    HONEST_PROSE_MIN_CHARS,
     PROCESSED_FRAMEWORKS_DIR,
+    PROCESSED_REPAIR_AUDIT_DIR,
     RAW_FRAMEWORKS_DIR,
 )
 from tract.io import atomic_write_json
 from tract.sanitize import sanitize_text
-from tract.schema import Control, FrameworkOutput
+from tract.schema import Control, FrameworkOutput, SourceFile
 
 logger = logging.getLogger(__name__)
 
 
-class BaseParser(ABC):
+class SourceReader:
+    """Reads one framework's raw inputs and records what it read.
+
+    Split out of BaseParser so an extractor that produces something other than
+    a list of Controls still reads through the recording readers. Appendix A
+    of the OWASP LLM Top 10 2026 is an expert crosswalk rather than control
+    text, so it goes to its own artifact, and it must still be able to state
+    which bytes produced it. Duplicating twenty lines to get that would have
+    put the two copies on separate drift paths.
+    """
+
+    framework_id: ClassVar[str]
+    # Set only when the raw directory is not the framework_id in either
+    # underscore or hyphen form. Kept explicit rather than guessed.
+    raw_dir_name: ClassVar[str | None] = None
+
+    def __init__(self, raw_dir: Path | None = None) -> None:
+        self._raw_dir: Path | None = raw_dir
+        # Populated by read_source*, drained into the artifact by the caller.
+        self._source_files: dict[str, SourceFile] = {}
+
+    @classmethod
+    def resolve_raw_dir(cls) -> Path:
+        """Locate this framework's raw directory.
+
+        framework_id uses underscores. The raw tree, which is copied from the
+        upstream project, uses hyphens. Eleven of the twelve parsers could not
+        find their own input after a restore because of that alone. Try the
+        declared name, then both separator conventions, and fail with the list
+        of what was tried rather than with a bare FileNotFoundError from
+        whichever read happens first inside parse().
+        """
+        candidates = []
+        if cls.raw_dir_name:
+            candidates.append(cls.raw_dir_name)
+        candidates += [cls.framework_id, cls.framework_id.replace("_", "-")]
+
+        seen: list[Path] = []
+        for name in candidates:
+            path = RAW_FRAMEWORKS_DIR / name
+            if path not in seen:
+                seen.append(path)
+            if path.is_dir():
+                return path
+
+        raise FileNotFoundError(
+            f"No raw directory for {cls.framework_id}. Tried: "
+            f"{[str(p) for p in seen]}. data/raw/ is gitignored, so a fresh "
+            f"checkout starts empty. Repopulate it from the source recorded in "
+            f"data/raw/PROVENANCE.txt."
+        )
+
+    @property
+    def raw_dir(self) -> Path:
+        """The framework's raw directory, resolved on first use.
+
+        Lazy on purpose. Constructing a parser must not require the raw tree to
+        be present, since data/raw/ is gitignored and plenty of callers only
+        want the class metadata.
+        """
+        if self._raw_dir is None:
+            self._raw_dir = self.resolve_raw_dir()
+        return self._raw_dir
+
+    def read_source_bytes(self, name: str) -> bytes:
+        """Read one raw input file and record its digest.
+
+        Parsers must read through this rather than opening files directly.
+        A file read outside it is invisible to the manifest, which defeats
+        the point of recording one.
+        """
+        path = self.raw_dir / name
+        payload = path.read_bytes()
+        self._source_files[name] = SourceFile(
+            path=name,
+            sha256=hashlib.sha256(payload).hexdigest(),
+            bytes=len(payload),
+        )
+        return payload
+
+    def read_source(self, name: str, encoding: str = "utf-8") -> str:
+        """Read one raw input file as text and record its digest."""
+        return self.read_source_bytes(name).decode(encoding)
+
+    def recorded_sources(self) -> list[SourceFile]:
+        """Everything read so far, in a stable order."""
+        return [self._source_files[k] for k in sorted(self._source_files)]
+
+    def recorded_sha256(self, name: str) -> str:
+        """The digest of one already-read input.
+
+        Raises:
+            KeyError: If the file was never read through this reader.
+        """
+        return self._source_files[name].sha256
+
+
+class BaseParser(SourceReader, ABC):
     """Abstract base for TRACT framework parsers.
 
     Subclasses must set the class-level attributes and implement parse().
@@ -41,40 +145,168 @@ class BaseParser(ABC):
         expected_count: Expected number of mapping units after parsing.
     """
 
-    framework_id: ClassVar[str]
     framework_name: ClassVar[str]
     version: ClassVar[str]
     source_url: ClassVar[str]
     mapping_unit_level: ClassVar[str]
     expected_count: ClassVar[int]
+    # True when expected_count is a lower bound rather than a target. A
+    # catalog parser emits every stable entry the source defines, which is
+    # more than the subset OpenCRE links to and grows with each upstream
+    # release. Under the two-sided band a parser working exactly as designed
+    # refused to write, so CAPEC at 558 against a declared floor of 500 was a
+    # gate failure rather than the intended behaviour. Opt-in: silence keeps
+    # the two-sided band, because most parsers do have an exact target.
+    expected_count_is_floor: ClassVar[bool] = False
+    # The date the raw bytes were fetched, not the date they were parsed.
+    # Declared rather than stamped: re-parsing the same input must produce the
+    # same output bytes, and a clock read makes that impossible.
+    fetched_date: ClassVar[str]
+    # Set to a written reason when a parser legitimately deviates from its
+    # expected count. Unset means a deviation is a bug and run() refuses to
+    # write. A warning that nobody reads is not a gate.
+    count_deviation_reason: ClassVar[str | None] = None
+    # The floor this parser's output must clear. Measured on stored text, not
+    # on the join-path prose_fraction telemetry, which records whether a
+    # lookup hit rather than whether the text is prose.
+    #
+    # 0.0 is the off position, and a parser that never overrides it has no
+    # prose gate at all. Nineteen parsers sat here while thirteen declared a
+    # floor, so the fleet was half-covered by omission rather than by decision.
+    # tests/test_prose_floor_declarations.py now refuses a parser that leaves
+    # this at the default.
+    #
+    # Convention: declare the measured fraction rounded DOWN to two decimal
+    # places, so the parser passes on today's source and fails on a regression.
+    # A wholly-prose source therefore declares 1.0 and stops on its first
+    # non-prose control. When that fires, run the parser, list the controls
+    # whose description is shorter than HONEST_PROSE_MIN_CHARS or byte-equal to
+    # their title, and decide which of two things happened. If the source
+    # genuinely added a terse control, lower the floor to the newly measured
+    # value in the same commit that moves version and fetched_date, so the
+    # artifact and its floor never disagree. If the parser lost text, fix the
+    # parser and leave the floor alone. Never relax a floor without naming the
+    # control that forced it.
+    min_prose_fraction: ClassVar[float] = 0.0
+    # Set to a written reason when a parser legitimately reads no raw file.
+    # Unset means an empty source manifest is a bug and run() refuses to
+    # write. The manifest replaced a hand-maintained file that had drifted to
+    # covering 7 of 19 frameworks, and then covered 1 of 20 because the
+    # mandate lived in a docstring instead of a gate.
+    manifest_exempt_reason: ClassVar[str | None] = None
+
+    @staticmethod
+    def is_damaged(control: Control) -> bool:
+        """Whether a parser marked this control's source text incomplete."""
+        if not control.metadata:
+            return False
+        return (
+            control.metadata.get(CONTROL_DAMAGED_METADATA_KEY)
+            == CONTROL_DAMAGED_METADATA_VALUE
+        )
+
+    @staticmethod
+    def honest_prose_fraction(controls: list[Control]) -> float:
+        """Fraction of controls whose description is more than their title.
+
+        Both conditions must hold. A byte-copy of the title is not prose no
+        matter how long the title is: nist_ssdf used to have a 156-character
+        median description and a 0% real-prose rate, because its 44 controls
+        were built from OpenCRE link rows whose section_name and section_id
+        both hold the task statement. parsers/parse_nist_ssdf.py reads the
+        source table instead and titles each task by its id.
+
+        Controls marked damaged are excluded from both sides of the ratio.
+        Counting one as prose lets a statement with a known hole in it clear
+        the floor, and counting it against the parser penalises the disclosure
+        rather than the damage.
+        """
+        measurable = [c for c in controls if not BaseParser.is_damaged(c)]
+        if not measurable:
+            return 0.0
+        honest = sum(
+            1 for c in measurable
+            if len(c.description.strip()) >= HONEST_PROSE_MIN_CHARS
+            and c.description.strip() != c.title.strip()
+        )
+        return honest / len(measurable)
 
     def __init__(
         self,
         raw_dir: Path | None = None,
         output_dir: Path | None = None,
+        audit_dir: Path | None = None,
     ) -> None:
         """Initialize the parser with input/output directories.
 
         Args:
             raw_dir: Directory containing raw framework files.
-                Defaults to DATA_DIR/raw/frameworks/<framework_id>.
+                Defaults to the resolved DATA_DIR/raw/frameworks/<framework>.
             output_dir: Directory for processed output.
                 Defaults to DATA_DIR/processed/frameworks.
+            audit_dir: Directory for repair audit files.
+                Defaults to DATA_DIR/processed/repair_audit, which is
+                gitignored because audit records quote source text verbatim.
         """
-        self.raw_dir = raw_dir or RAW_FRAMEWORKS_DIR / self.framework_id
+        super().__init__(raw_dir)
         self.output_dir = output_dir or PROCESSED_FRAMEWORKS_DIR
+        self.audit_dir = audit_dir or PROCESSED_REPAIR_AUDIT_DIR
 
     @abstractmethod
     def parse(self) -> list[Control]:
         """Parse raw framework data into a list of Control objects.
 
         Subclasses implement the framework-specific extraction logic here.
-        Do NOT sanitize text in parse() — run() handles that.
+        Do NOT sanitize text in parse(). run() handles that.
 
         Returns:
             List of Control objects with raw (unsanitized) text fields.
         """
         ...
+
+    def write_repair_audit(
+        self, records: Sequence[Mapping[str, object]],
+    ) -> Path:
+        """Persist before/after pairs for repairs that move text across ids.
+
+        A count says a repair fired. It does not say what moved, or where to,
+        and a fragment attributed to the wrong control is a wrong compliance
+        assertion carrying a plausible-looking provenance record. This is the
+        file a reviewer reads to check one.
+
+        Written unconditionally, empty list included, so a missing file means
+        the parser never ran rather than the repair never fired. Keys are
+        sorted and no clock is read, so re-parsing the same bytes produces the
+        same audit bytes and a diff shows real changes only.
+
+        Returns the path written.
+        """
+        path = self.audit_dir / f"{self.framework_id}.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = "".join(
+            json.dumps(dict(record), sort_keys=True, ensure_ascii=False) + "\n"
+            for record in records
+        )
+
+        # Same atomic pattern as tract.io.atomic_write_json. JSONL is not JSON,
+        # so it cannot go through that helper, and a half-written audit file is
+        # worse than none: it reads as a complete record of what moved.
+        fd, tmp_path = tempfile.mkstemp(
+            dir=path.parent, prefix=f".{path.name}.", suffix=".tmp",
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(payload)
+            os.replace(tmp_path, path)
+        except OSError:
+            Path(tmp_path).unlink(missing_ok=True)
+            raise
+
+        logger.info(
+            "%s: wrote %d repair audit record(s) to %s",
+            self.framework_id, len(records), path,
+        )
+        return path
 
     def run(self) -> FrameworkOutput:
         """Execute the full parser pipeline: parse -> sanitize -> validate -> write.
@@ -98,20 +330,37 @@ class BaseParser(ABC):
                 f"Parser {self.framework_id} produced zero controls"
             )
 
+        self._check_source_manifest()
+
         sanitized_controls = [
             self._sanitize_control(c) for c in raw_controls
         ]
 
         self._check_expected_count(len(sanitized_controls))
 
+        fraction = self.honest_prose_fraction(sanitized_controls)
+        if fraction < self.min_prose_fraction:
+            raise ValueError(
+                f"{self.framework_id}: honest prose fraction {fraction:.3f} is "
+                f"below the declared floor {self.min_prose_fraction:.3f}. The "
+                f"parser is emitting titles where control statements were "
+                f"expected. This is the check that would have caught the 568 "
+                f"title-only controls already in the corpus."
+            )
+        logger.info(
+            "%s: honest prose fraction %.3f (floor %.3f)",
+            self.framework_id, fraction, self.min_prose_fraction,
+        )
+
         output = FrameworkOutput(
             framework_id=self.framework_id,
             framework_name=self.framework_name,
             version=self.version,
             source_url=self.source_url,
-            fetched_date=self._today(),
+            fetched_date=self.fetched_date,
             mapping_unit_level=self.mapping_unit_level,
             controls=sanitized_controls,
+            source_files=self.recorded_sources(),
         )
 
         output_path = self.output_dir / f"{self.framework_id}.json"
@@ -170,48 +419,112 @@ class BaseParser(ABC):
             metadata=control.metadata,
         )
 
-    def _check_expected_count(self, actual: int) -> None:
-        """Log a warning if the parsed count deviates from expected.
+    def _check_source_manifest(self) -> None:
+        """Raise when parse() read its inputs outside the recording readers.
 
-        Uses COUNT_TOLERANCE (default 10%) to determine deviation threshold.
-        Falls back to the class attribute expected_count, then EXPECTED_COUNTS.
-
-        Args:
-            actual: Number of controls actually parsed.
+        Raises:
+            ValueError: If nothing was recorded and no exemption is declared.
         """
-        expected = getattr(self, "expected_count", None)
-        if expected is None:
-            expected = EXPECTED_COUNTS.get(self.framework_id)
+        if self._source_files:
+            return
 
-        if expected is None or expected == 0:
-            logger.debug(
-                "%s: no expected count configured, skipping count check",
-                self.framework_id,
+        if self.manifest_exempt_reason:
+            logger.info(
+                "%s: no source manifest. Permitted: %s",
+                self.framework_id, self.manifest_exempt_reason,
             )
             return
 
-        deviation = abs(actual - expected) / expected
-        if deviation > COUNT_TOLERANCE:
-            logger.warning(
-                "%s: parsed %d controls, expected %d (%.1f%% deviation)",
-                self.framework_id,
-                actual,
-                expected,
-                deviation * 100,
+        raise ValueError(
+            f"{self.framework_id}: parse() recorded no source files. Read raw "
+            f"inputs through read_source or read_source_bytes so the artifact "
+            f"states which bytes produced it. A file opened directly is "
+            f"invisible to the manifest, which is how 19 of 20 parsers came "
+            f"to write an empty source_files list. If this parser genuinely "
+            f"reads no file, set manifest_exempt_reason with the reason."
+        )
+
+    def _check_expected_count(self, actual: int) -> None:
+        """Raise if the parsed count deviates from what the parser declared.
+
+        Two modes. The default is a two-sided band of COUNT_TOLERANCE around
+        expected_count. With expected_count_is_floor set, only an undershoot
+        is a failure, because a catalog parser is meant to emit everything the
+        source defines and that number grows with each upstream release.
+
+        Args:
+            actual: Number of controls actually parsed.
+
+        Raises:
+            ValueError: If no count is declared, or the count is outside the
+                band and no count_deviation_reason is set.
+        """
+        expected = getattr(self, "expected_count", None)
+        if expected is None or expected == 0:
+            raise ValueError(
+                f"{self.framework_id}: no expected_count declared. A parser "
+                f"that says nothing used to clear this gate by omission, "
+                f"which is the cheapest possible way past the check that "
+                f"exists to catch a parser losing half its controls. Declare "
+                f"the exact count, or the lower bound with "
+                f"expected_count_is_floor = True."
             )
-        else:
+
+        if self.expected_count_is_floor:
+            self._check_count_floor(actual, expected)
+            return
+
+        deviation = abs(actual - expected) / expected
+        if deviation <= COUNT_TOLERANCE:
             logger.info(
                 "%s: parsed %d controls (expected %d, within tolerance)",
-                self.framework_id,
-                actual,
-                expected,
+                self.framework_id, actual, expected,
             )
+            return
 
-    @staticmethod
-    def _today() -> str:
-        """Return today's date as an ISO 8601 string (YYYY-MM-DD, UTC).
+        if self.count_deviation_reason:
+            logger.warning(
+                "%s: parsed %d controls, expected %d (%.1f%% deviation). "
+                "Permitted: %s",
+                self.framework_id, actual, expected, deviation * 100,
+                self.count_deviation_reason,
+            )
+            return
 
-        Returns:
-            Date string like "2026-04-27".
+        raise ValueError(
+            f"{self.framework_id}: parsed {actual} controls, expected "
+            f"{expected} ({deviation * 100:.1f}% deviation, tolerance "
+            f"{COUNT_TOLERANCE * 100:.0f}%). Either the source changed or the "
+            f"parser is wrong. If the deviation is correct, set "
+            f"count_deviation_reason on the parser with the reason."
+        )
+
+    def _check_count_floor(self, actual: int, expected: int) -> None:
+        """Raise only on an undershoot of a declared floor.
+
+        No tolerance on the downside. A floor states the minimum the source
+        is known to define, so anything under it means entries were dropped,
+        and a 10% cushion would let 130 CWE weaknesses disappear unnoticed.
         """
-        return datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+        if actual >= expected:
+            logger.info(
+                "%s: parsed %d controls (declared floor %d)",
+                self.framework_id, actual, expected,
+            )
+            return
+
+        if self.count_deviation_reason:
+            logger.warning(
+                "%s: parsed %d controls, below the declared floor of %d. "
+                "Permitted: %s",
+                self.framework_id, actual, expected, self.count_deviation_reason,
+            )
+            return
+
+        raise ValueError(
+            f"{self.framework_id}: parsed {actual} controls, below the "
+            f"declared floor of {expected}. Entries the source defines were "
+            f"dropped, or the source shrank. If the smaller catalog is "
+            f"correct, lower expected_count with the release that changed it, "
+            f"or set count_deviation_reason with the reason."
+        )

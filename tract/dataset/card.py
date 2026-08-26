@@ -8,13 +8,23 @@ from pathlib import Path
 from collections.abc import Mapping
 from typing import Any
 
+from tract.licensing import (
+    LICENSE_TEXTS_DIR,
+    NOTICE_FILENAME,
+    SOURCE_REPOSITORY_URL,
+    published_license_frontmatter,
+)
+
 
 logger = logging.getLogger(__name__)
 
-_YAML_FRONTMATTER = """\
+# The licence block is not written here. Both published cards read it from
+# tract.licensing so they cannot state different terms for the same work, which
+# is what `license: cc-by-sa-4.0` here and `license: mit` in the model card did.
+_YAML_FRONTMATTER = f"""\
 ---
 language: en
-license: cc-by-sa-4.0
+{published_license_frontmatter()}
 task_categories:
   - text-classification
   - zero-shot-classification
@@ -95,7 +105,7 @@ def generate_dataset_card(
 
 # TRACT Crosswalk Dataset
 
-A human-reviewed crosswalk mapping **{total_rows:,} security controls** from **{n_frameworks} frameworks** to **522 CRE hubs** — the first large-scale, multi-framework security taxonomy alignment dataset with expert review and calibrated quality metrics.
+A crosswalk mapping **{total_rows:,} control-to-hub assignments** across **{n_frameworks} frameworks** and **522 CRE hubs**. Most rows are links imported from OpenCRE; **{model_count:,}** are model predictions that a single reviewer assessed. The dataset as a whole is not human-reviewed, and no row here should be read as carrying that warrant. See "Review Methodology and Quality" for what was reviewed, by whom, and how well.
 
 ---
 
@@ -207,7 +217,9 @@ with open("crosswalk_v1.0.jsonl") as f:
 | `review_metrics.json` | Detailed review quality metrics (acceptance rates, calibration scores, per-framework breakdown) |
 | `bridge_report.json` | Bridge relationships connecting CRE subtrees (from Phase 2B analysis) |
 | `zenodo_metadata.json` | Metadata for Zenodo DOI registration |
-| `LICENSE` | CC-BY-SA-4.0 license text |
+| `LICENSE` | CC0 1.0 Universal, TRACT's own dedication, with its scope note |
+| `{NOTICE_FILENAME}` | Per-framework terms, the modification statement, and open questions |
+| `{LICENSE_TEXTS_DIR.name}/` | Full text of every SPDX licence named in `{NOTICE_FILENAME}` |
 | `README.md` | This file |
 
 ---
@@ -281,11 +293,11 @@ For 10 frameworks with no OpenCRE coverage (primarily newer AI security framewor
 Key model details:
 - Architecture: BGE-large-v1.5 with LoRA adapters, contrastive fine-tuning
 - Training data: OpenCRE ground truth links (leave-one-framework-out cross-validation)
-- Performance: hit@1 = 0.531 on held-out frameworks
+- Performance: see the [model card](https://huggingface.co/rockCO78/tract-cre-assignment) for measured hit@1 and its confidence interval
 - Confidence: Platt-scaled (temperature calibration) — NOT raw cosine similarity
 
 ### Stage 3: Expert Human Review
-A cybersecurity domain expert reviewed **all {total_reviewed:,} model predictions** (878 real predictions + 20 hidden calibration items). For each prediction, the reviewer:
+A **single** cybersecurity domain expert reviewed **all {total_reviewed:,} model predictions** (878 real predictions + 20 hidden calibration items). One reviewer means inter-rater reliability is unmeasured, and the calibration agreement rate below is the only evidence of review quality. This stage covers the model predictions only, not the imported OpenCRE links. For each prediction, the reviewer:
 1. Read the control's full text to understand its security intent
 2. Evaluated whether the model's suggested CRE hub was semantically appropriate
 3. Made one of three decisions: **accept** (correct hub), **reassign** (better hub exists), or **reject** (no hub fits)
@@ -424,14 +436,17 @@ print(ai_controls.groupby("framework_name")["hub_id"].nunique().sort_values(asce
 
 ## License
 
-This dataset is licensed under **[CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)**. You are free to:
+**No single license covers this dataset.** Read `{NOTICE_FILENAME}` before redistributing it.
 
-- **Share** — copy and redistribute the material in any medium or format
-- **Adapt** — remix, transform, and build upon the material for any purpose, including commercially
+TRACT's own contributions — the CRE hub assignments, the crosswalk mappings, the review decisions, and the schemas — are dedicated to the public domain under **CC0 1.0 Universal**, carried in `LICENSE`.
 
-Under the following terms:
-- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made
-- **ShareAlike** — If you remix or build upon the material, you must distribute your contributions under the same license
+Third-party framework content in this dataset stays under its own publisher's terms. Those terms are not TRACT's to grant and are not uniform: {n_frameworks} frameworks are represented, one under GPL-3.0, several under CC BY-SA, and some under notices that reserve redistribution outright. `{NOTICE_FILENAME}` lists every framework, its terms, and its upstream source. `{LICENSE_TEXTS_DIR.name}/` carries the full text of each SPDX-identified license named there.
+
+This dataset previously declared CC BY-SA 4.0 in its card metadata. That was withdrawn: a single share-alike grant over content drawn from 31 publishers purports to license other publishers' terms onto a downstream recipient, which TRACT has no standing to do. The metadata now reads `license: other` with a link to `{NOTICE_FILENAME}`.
+
+Framework text in this dataset has been modified. See the modification statement in `{NOTICE_FILENAME}` for the exact transforms. Anyone who needs a framework's published wording must read it from that framework's publisher.
+
+Full record and source code: [{SOURCE_REPOSITORY_URL}]({SOURCE_REPOSITORY_URL})
 
 ---
 

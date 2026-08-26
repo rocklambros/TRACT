@@ -5,7 +5,59 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from tract.licensing import (
+    LICENSE_TEXTS_DIR,
+    NOTICE_FILENAME,
+    published_license_frontmatter,
+)
+
 logger = logging.getLogger(__name__)
+
+
+def _measured(source: dict[str, Any], key: str, origin: str) -> Any:
+    """Read a measured value, refusing to substitute a plausible-looking default.
+
+    These reads used to be `source.get(key, <hardcoded number>)`. A missing
+    input therefore published a number that was never measured, and nothing in
+    the rendered card distinguished it from a real one. A card that will not
+    build is a better outcome than a card that quietly invents its evidence.
+    """
+    if key not in source:
+        raise ValueError(
+            f"Model card cannot be built: '{key}' is absent from {origin}. "
+            f"Every published figure must come from a measurement. Run the "
+            f"stage that produces {origin} rather than publishing a default."
+        )
+    return source[key]
+
+
+def _measured_ci(fold_results: list[dict[str, Any]]) -> dict[str, float]:
+    """Compute the aggregate hit@1 interval by fold-stratified bootstrap.
+
+    Previously the card rendered `[micro_hit1 - 0.075, micro_hit1 + 0.075]`
+    while asserting "10,000 resamples, 95% CI" in the same sentence. That
+    interval was arithmetic on the point estimate: fixed width, symmetric, and
+    invariant to sample size. The real implementation already existed in
+    tract.training.evaluate and was simply never called from here.
+
+    Requires per-fold hit@1 indicator arrays. The RunPod fold path currently
+    discards them, so this raises until that path persists them.
+    """
+    import numpy as np
+
+    from tract.training.evaluate import fold_stratified_bootstrap_ci
+
+    indicators = []
+    for fold in fold_results:
+        if "hit1_indicators" not in fold:
+            raise ValueError(
+                f"Model card cannot be built: fold '{fold.get('fold', '?')}' has "
+                "no 'hit1_indicators', so the aggregate hit@1 confidence "
+                "interval cannot be computed. Persist the per-item indicator "
+                "array from each fold; do not substitute a fixed-width band."
+            )
+        indicators.append(np.asarray(fold["hit1_indicators"], dtype=float))
+    return fold_stratified_bootstrap_ci(indicators)
 
 
 def generate_model_card(
@@ -42,22 +94,31 @@ def generate_model_card(
         f"| **{micro_delta:+.3f}** | {hit_any_str} | **{total_n}** |\n"
     )
 
-    t_val = calibration.get("t_deploy", 0.074)
-    ood_val = calibration.get("ood_threshold", 0.568)
-    conformal_val = calibration.get("conformal_quantile", 0.997)
-    ece_val = ece_data.get("ece", 0.079)
-    ece_ci = ece_data.get("ece_ci", {})
-    ece_low = ece_ci.get("ci_low", 0.049)
-    ece_high = ece_ci.get("ci_high", 0.111)
+    t_val = _measured(calibration, "t_deploy", "calibration.json")
+    ood_val = _measured(calibration, "ood_threshold", "calibration.json")
+    conformal_val = _measured(calibration, "conformal_quantile", "calibration.json")
+    ece_val = _measured(ece_data, "ece", "ECE results")
+    ece_ci = _measured(ece_data, "ece_ci", "ECE results")
+    ece_low = _measured(ece_ci, "ci_low", "ECE results ece_ci")
+    ece_high = _measured(ece_ci, "ci_high", "ECE results ece_ci")
+
+    # The aggregate hit@1 interval must come from the fold-stratified bootstrap
+    # in tract.training.evaluate, not from arithmetic on the point estimate.
+    hit1_ci = _measured_ci(fold_results)
 
     bridge_counts = bridge_summary.get("counts", {})
     n_accepted = bridge_counts.get("accepted", 0)
     n_rejected = bridge_counts.get("rejected", 0)
     n_total = bridge_counts.get("total", 0)
 
+    # The licence block comes from tract.licensing, not from a literal here.
+    # This card declared `mit` while the dataset card declared `cc-by-sa-4.0`
+    # for work drawn from the same 31 sources.
+    license_block = published_license_frontmatter()
+
     card = f"""---
 language: en
-license: mit
+{license_block}
 tags:
   - security
   - compliance
@@ -90,6 +151,25 @@ model-index:
 ---
 
 # TRACT: Translating Requirements Across CRE Trees
+
+## Erratum 2026-08-15
+
+**The previously published accuracy figures are withdrawn pending re-measurement.**
+
+The hit@1 figure and its confidence interval did not survive audit. The interval
+was arithmetic on the point estimate rather than the bootstrap it claimed to be.
+The per-fold deltas do not reproduce. On a larger held-out roster of 1,265
+controls, fine-tuning showed no improvement over the zero-shot base model: macro
+delta -0.0004 at p = 0.98.
+
+No replacement figure is quoted until a run clears a pre-registered gate.
+
+The assignment counts elsewhere in this card are inventory, not accuracy, and
+they are not a quality claim either. The large majority of published assignments
+are OpenCRE's own ground-truth links, imported rather than reviewed here. The
+reviewed portion is 878 model predictions judged by a single reviewer whose
+agreement against 20 hidden calibration items was 13 of 20. Inter-rater
+reliability is not measured.
 
 ## What Is This?
 
@@ -239,7 +319,7 @@ This simulates the real use case: mapping a **brand-new framework** the model ha
 
 ### Confidence Intervals
 
-All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{micro_hit1 - 0.075:.3f}, {micro_hit1 + 0.075:.3f}], reflecting the relatively small evaluation set ({total_n} controls across 5 AI frameworks).
+All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{hit1_ci['ci_low']:.3f}, {hit1_ci['ci_high']:.3f}], computed by fold-stratified bootstrap over the per-fold hit@1 indicators, reflecting the relatively small evaluation set ({total_n} controls across 5 AI frameworks).
 
 ---
 
@@ -502,9 +582,17 @@ for hub_id, hub in hierarchy["hubs"].items():
 
 ## License
 
-MIT License for model weights and code. The base model ([BAAI/bge-large-en-v1.5](https://huggingface.co/BAAI/bge-large-en-v1.5)) is also MIT licensed.
+**No single license covers this repository.** Read `{NOTICE_FILENAME}` before redistributing it.
 
-Bundled data files (CRE hierarchy, hub descriptions, bridge report) are sourced from publicly available security frameworks and [OpenCRE.org](https://opencre.org), provided under CC0 1.0 Universal.
+TRACT's own contributions — the training code, the schemas, the CRE hub assignments, and the bridge analysis — are dedicated to the public domain under **CC0 1.0 Universal**. The base model, [BAAI/bge-large-en-v1.5](https://huggingface.co/BAAI/bge-large-en-v1.5), is MIT licensed and its terms travel with the weights.
+
+The weights were fine-tuned on control statements from 31 security frameworks published under their own terms, including one under GPL-3.0, several under CC BY-SA, and some under notices that reserve redistribution. Those terms are not TRACT's to grant. `{NOTICE_FILENAME}` lists every framework and its terms; `{LICENSE_TEXTS_DIR.name}/` carries the full text of each SPDX-identified license named there.
+
+This card previously declared `license: mit`, which stated the base model's terms as though they covered the whole artifact. That was withdrawn. Whether model weights are a derivative work of their training data is unsettled, and this card does not assert an answer in either direction.
+
+Framework text was modified before training. See the modification statement in `{NOTICE_FILENAME}`.
+
+Bundled data files (CRE hierarchy, hub descriptions, bridge report) derive from [OpenCRE.org](https://opencre.org) and from the frameworks listed in `{NOTICE_FILENAME}`.
 """
 
     readme_path = staging_dir / "README.md"

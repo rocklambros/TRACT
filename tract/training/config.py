@@ -13,7 +13,6 @@ from tract.config import (
     PHASE1B_LORA_ALPHA,
     PHASE1B_LORA_DROPOUT,
     PHASE1B_LORA_RANK,
-    PHASE1B_LORA_TARGET_MODULES,
     PHASE1B_MAX_EPOCHS,
     PHASE1B_MAX_GRAD_NORM,
     PHASE1B_MAX_SEQ_LENGTH,
@@ -36,10 +35,18 @@ class TrainingConfig:
     lora_rank: int = PHASE1B_LORA_RANK
     lora_alpha: int = PHASE1B_LORA_ALPHA
     lora_dropout: float = PHASE1B_LORA_DROPOUT
-    lora_target_modules: list[str] = field(default_factory=lambda: list(PHASE1B_LORA_TARGET_MODULES))
+    # Empty means "ask the encoder registry". Hardcoding BERT's names matched
+    # neither ModernBERT (Wqkv/Wo) nor Qwen3 (q_proj/...), and PEFT only
+    # raises after the encoder has downloaded and the zero-shot pass has run.
+    lora_target_modules: list[str] = field(default_factory=list)
 
     sampling_temperature: float = PHASE1B_SAMPLING_TEMPERATURE
-    control_text_source: str = "section_name"
+    # control_text_source is NOT a field. It was a constant default that
+    # nothing ever assigned, so every prose run recorded
+    # "control_text_source": "section_name" beside "use_prose": true in the
+    # same object. to_dict() now derives it from use_prose. Keeping it as a
+    # field, even renamed, left `TrainingConfig(control_text_source=...)`
+    # looking like it worked while changing nothing.
 
     batch_size: int = PHASE1B_BATCH_SIZE
     learning_rate: float = PHASE1B_LEARNING_RATE
@@ -51,8 +58,79 @@ class TrainingConfig:
     hard_negatives: int = PHASE1B_HARD_NEGATIVES
     seed: int = PHASE1B_SEED
 
+    # Recompute activations in the backward pass instead of storing them.
+    # This does not change the loss, the batch composition, or the result --
+    # it trades roughly 30% throughput for a large drop in activation memory.
+    # Needed because the anchors changed: the batch size was tuned when a
+    # control was a 22-character title (~8 tokens) and the same batch of 32
+    # now carries paragraphs that fill the 512-token window, so peak
+    # activation memory grew with the sequence length and the worst-case
+    # batch OOMed an 80GB H100 partway through epoch 4.
+    #
+    # Reducing batch_size would have been the other lever and is the wrong
+    # one: MultipleNegativesRankingLoss draws its negatives from within the
+    # batch, so a smaller batch is a weaker training signal, and PRD 6.4
+    # pre-registers the configuration. Checkpointing changes the arithmetic
+    # not at all.
+    gradient_checkpointing: bool = True
+
     hub_rep_format: str = "path+name"
     data_hash: str = ""
+
+    # Text-selection arms. Both are recorded in to_dict(), so a run's anchors
+    # can be reconstructed from its checkpoint metadata rather than inferred.
+    #
+    # use_prose: take each control's full text instead of its section title.
+    # The pipeline read section_name unconditionally, training on three-word
+    # titles while production is handed paragraphs.
+    use_prose: bool = True
+    # use_stopword_filter: strip corpus-derived boilerplate from control AND
+    # hub text. Off by default and carried as an ablation arm: removing
+    # function words moves input off the distribution a contextual encoder was
+    # pretrained on, so the trade has to be measured rather than assumed.
+    use_stopword_filter: bool = False
+    # use_framework_identity_filter: strip the acronyms that name a framework
+    # ("OWASP", "CWE", "CAPEC", "CCM") from control AND hub text. Off by
+    # default for the same reason as the stop word arm: this changes what
+    # every anchor contains, so it is measured rather than assumed. Separate
+    # from use_stopword_filter because the two answer different questions.
+    # Boilerplate removal is about information density; this is about a
+    # learnable shortcut, and a bi-encoder that reads "OWASP" can answer from
+    # the publisher instead of the mapping.
+    use_framework_identity_filter: bool = False
+    # use_description_only: cut each control at its first remediation heading.
+    # The encoder's 512-token budget is an architectural ceiling on BGE-large
+    # (BertModel, absolute position embeddings), so the only lever is which
+    # tokens it spends. 175 controls carry such a heading and the median puts
+    # 47% of its body after it.
+    use_description_only: bool = False
+    # Temperature for flattening the CRE-branch distribution during batch
+    # ordering. 0 disables it, leaving the binary is_ai behaviour untouched;
+    # 1.0 is the natural distribution; larger flattens toward uniform.
+    #
+    # 72.1% of training links point at "Technical application security
+    # controls" and 3.3% at the "Cross-cutting concerns" threat branch, and
+    # none of CAPEC's 702 adversary-as-subject anchors point at a threat hub.
+    # The model learns "attack narrative -> the control that stops it", which
+    # is correct for CAPEC and wrong for MITRE ATLAS techniques: measured at
+    # -29.4 hit@1 points on that stratum, which is the entire negative ATLAS
+    # fold.
+    branch_balance_temperature: float = 0.0
+
+    def resolved_lora_targets(self) -> list[str]:
+        """Target modules for this encoder, explicit setting winning."""
+        if self.lora_target_modules:
+            return list(self.lora_target_modules)
+        from tract.encoders import resolve
+
+        return list(resolve(self.base_model).lora_target_modules)
+
+    @property
+    def base_model_revision(self) -> str:
+        """The pinned commit for base_model, so a run ties to weights."""
+        from tract.encoders import resolve
+
+        return resolve(self.base_model).revision
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize for WandB/JSON logging."""
@@ -64,9 +142,10 @@ class TrainingConfig:
             "lora_rank": self.lora_rank,
             "lora_alpha": self.lora_alpha,
             "lora_dropout": self.lora_dropout,
-            "lora_target_modules": self.lora_target_modules,
+            "lora_target_modules": self.resolved_lora_targets(),
+            "base_model_revision": self.base_model_revision,
             "sampling_temperature": self.sampling_temperature,
-            "control_text_source": self.control_text_source,
+            "control_text_source": ("full_prose" if self.use_prose else "section_name"),
             "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "warmup_ratio": self.warmup_ratio,
@@ -76,6 +155,12 @@ class TrainingConfig:
             "max_seq_length": self.max_seq_length,
             "hard_negatives": self.hard_negatives,
             "seed": self.seed,
+            "branch_balance_temperature": self.branch_balance_temperature,
+            "gradient_checkpointing": self.gradient_checkpointing,
             "hub_rep_format": self.hub_rep_format,
+            "use_prose": self.use_prose,
+            "use_stopword_filter": self.use_stopword_filter,
+            "use_framework_identity_filter": self.use_framework_identity_filter,
+            "use_description_only": self.use_description_only,
             "data_hash": self.data_hash,
         }

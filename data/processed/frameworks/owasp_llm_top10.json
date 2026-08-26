@@ -75,6 +75,13 @@
   "framework_id": "owasp_llm_top10",
   "framework_name": "OWASP Top 10 for LLM Applications 2025",
   "mapping_unit_level": "risk",
+  "source_files": [
+    {
+      "bytes": 93109,
+      "path": "owasp_llm_top_10_2025.md",
+      "sha256": "d914a6c2f5886b6e5f3b01616c8c31374af847b4d3dc6648667a6bf134a0be15"
+    }
+  ],
   "source_url": "https://genai.owasp.org",
   "version": "2025"
 }

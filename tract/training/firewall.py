@@ -28,6 +28,7 @@ def build_firewalled_hub_text(
     descriptions: dict[str, str] | None = None,
     include_standards: bool = False,
     standard_sections: dict[str, list[str]] | None = None,
+    stopwords: frozenset[str] | None = None,
 ) -> str:
     """Build a single hub's text representation with firewall.
 
@@ -36,6 +37,11 @@ def build_firewalled_hub_text(
     If include_description=True (ablation A6): appends description.
     If include_standards=True (ablation A3): appends standard names,
     excluding the held-out framework.
+
+    stopwords, when given, must be the same set applied to control text.
+    assert_firewall compares the two by exact substring, so filtering one side
+    only would make a genuine leak unmatchable and the check would pass on a
+    breach.
     """
     node = hierarchy.hubs[hub_id]
     text = f"{node.hierarchy_path} | {node.name}"
@@ -52,6 +58,11 @@ def build_firewalled_hub_text(
         if sections:
             text = f"{text}. Standards: {', '.join(sorted(sections))}"
 
+    if stopwords:
+        from tract.stopwords import filter_stopwords
+
+        text = filter_stopwords(text, stopwords)
+
     return text
 
 
@@ -62,6 +73,7 @@ def build_all_hub_texts(
     descriptions: dict[str, str] | None = None,
     include_standards: bool = False,
     standard_sections: dict[str, list[str]] | None = None,
+    stopwords: frozenset[str] | None = None,
 ) -> dict[str, str]:
     """Build text representations for all hubs with firewall applied."""
     texts: dict[str, str] = {}
@@ -74,6 +86,7 @@ def build_all_hub_texts(
             descriptions,
             include_standards,
             standard_sections,
+            stopwords,
         )
     return texts
 
@@ -83,6 +96,7 @@ def assert_firewall(
     eval_items: list[Any],
     held_out_framework: str,
     base_hub_texts: dict[str, str] | None = None,
+    hub_names: set[str] | None = None,
 ) -> None:
     """Assert no information leakage from held-out framework into hub representations.
 
@@ -90,46 +104,79 @@ def assert_firewall(
     safe by construction. When hub texts include additional content (descriptions,
     standards), we check only the appended portion by subtracting the base text.
 
-    If base_hub_texts is None, the hub texts are assumed to be base-format-only
-    and no check is needed beyond logging.
+    If base_hub_texts is None the hub texts are base-format only, so the whole
+    text is scanned rather than an appended slice. This function previously
+    returned here after logging a pass, which meant the default configuration
+    (hub_rep_format="path+name") asserted nothing at all: the firewall CLAUDE.md
+    calls non-negotiable could not fail on any code path. Scanning the full text
+    costs one substring test per (item, hub) pair and makes the base case a real
+    assertion.
     """
-    if base_hub_texts is None:
-        logger.info(
-            "Firewall assertion passed (base format only — CRE-native content): "
-            "%d items, %d hubs",
-            len(eval_items),
-            len(hub_texts),
-        )
-        return
+    scan_appended_only = base_hub_texts is not None
 
-    # Collect all hub names from base texts — these are CRE-native concepts.
-    # Descriptions legitimately reference hub names for disambiguation.
-    hub_names_lower: set[str] = set()
-    for base in base_hub_texts.values():
-        if " | " in base:
-            hub_names_lower.add(base.split(" | ", 1)[1].lower())
+    # CRE-native concept names, used to exempt controls that ARE the vocabulary.
+    #
+    # Recovering these by splitting hub text on " | " only works while the text
+    # still contains that separator. Stop word filtering rebuilds text from
+    # alphabetic tokens and drops all punctuation, so the separator vanished
+    # from 522 of 522 hub texts, this set came out empty, the exemption never
+    # fired, and the firewall raised a breach on a control that merely shares
+    # its name with a CRE hub. A control named "AI model performance
+    # validation" is not a leak; the check was reporting the absence of a
+    # separator as evidence of contamination.
+    #
+    # Callers pass the names from the hierarchy instead, filtered with the same
+    # stop words as everything else so both sides of the comparison match.
+    if hub_names is not None:
+        hub_names_lower = {name.strip().lower() for name in hub_names if name.strip()}
+    else:
+        hub_names_lower = set()
+        for base in (base_hub_texts or hub_texts).values():
+            if " | " in base:
+                hub_names_lower.add(base.split(" | ", 1)[1].lower())
+        if not hub_names_lower and hub_texts:
+            raise ValueError(
+                "Could not recover any hub names from the hub texts, so the "
+                "CRE-vocabulary exemption would be empty and every control "
+                "sharing a hub's name would raise a false breach. Pass "
+                "hub_names explicitly when the text has been transformed."
+            )
 
     for item in eval_items:
         control_text = item.control_text
         if len(control_text) < 5:
             continue
         control_lower = control_text.lower()
-        # Skip if control text overlaps with any CRE hub name
-        if any(
-            control_lower in name or name in control_lower
-            for name in hub_names_lower
-        ):
+        # A control that is itself CRE vocabulary is not a leak: "Adversarial
+        # training" measured against a hub named "Adversarial training" matches
+        # because CRE named the concept, not because the framework text reached
+        # the hub. Exempt controls that are a substring of some hub name.
+        #
+        # The converse test, `name in control_lower`, was also part of this
+        # condition and was far too broad. Real hub names include short generic
+        # nouns -- "Data", "Logging" -- so any control sentence that happened to
+        # mention one was skipped against EVERY hub, including a hub carrying a
+        # verbatim copy of that control. It exempted a whole sentence on the
+        # strength of a single shared word, which is most of what the firewall
+        # was supposed to catch.
+        if any(control_lower in name for name in hub_names_lower):
             continue
         for hub_id, text in hub_texts.items():
-            base = base_hub_texts.get(hub_id, "")
-            appended = text[len(base):]
-            if not appended:
+            if scan_appended_only:
+                assert base_hub_texts is not None
+                base = base_hub_texts.get(hub_id, "")
+                haystack = text[len(base):]
+                where = "appended text"
+            else:
+                haystack = text
+                where = "hub text"
+            if not haystack:
                 continue
-            if control_text in appended:
+            if control_text in haystack:
                 raise AssertionError(
                     f"Firewall breach: control '{control_text[:50]}' "
                     f"(framework={held_out_framework}) found in hub {hub_id} "
-                    f"appended text"
+                    f"{where}"
                 )
     logger.info(
         "Firewall assertion passed: %d items checked against %d hubs "

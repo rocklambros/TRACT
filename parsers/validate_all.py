@@ -5,7 +5,7 @@ import logging
 import sys
 from pathlib import Path
 
-from tract.config import EXPECTED_COUNTS, COUNT_TOLERANCE, PROCESSED_FRAMEWORKS_DIR
+from tract.config import PROCESSED_FRAMEWORKS_DIR
 from tract.io import load_json
 from tract.schema import FrameworkOutput
 
@@ -27,13 +27,12 @@ def validate_framework(path: Path) -> list[str]:
     if output.framework_id != fw_id:
         errors.append(f"{fw_id}: framework_id mismatch (file={fw_id}, data={output.framework_id})")
 
-    expected = EXPECTED_COUNTS.get(fw_id)
-    if expected is not None:
-        actual = len(output.controls)
-        low = int(expected * (1 - COUNT_TOLERANCE))
-        high = int(expected * (1 + COUNT_TOLERANCE))
-        if not (low <= actual <= high):
-            errors.append(f"{fw_id}: count {actual} outside expected {expected} (tolerance {low}-{high})")
+    # No count check here. It used to compare against a hand-maintained table
+    # in tract/config.py that drifted from the parsers' own declarations, so
+    # this script failed every run on owasp_ai_exchange while that parser was
+    # working correctly. BaseParser.run() now enforces the count at write
+    # time against the value the parser itself declares, which is the only
+    # place that value exists.
 
     seen_ids: set[str] = set()
     for ctrl in output.controls:

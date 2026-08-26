@@ -9,6 +9,21 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class SourceFile(BaseModel):
+    """One raw input file a parser read, hashed at read time.
+
+    Recorded so a processed artifact states which bytes produced it. The
+    hand-maintained framework_sources.json covered 7 of 19 parser-backed
+    frameworks because nothing generated it.
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    path: str = Field(..., min_length=1)
+    sha256: str = Field(..., min_length=64, max_length=64)
+    bytes: int = Field(..., ge=0)
+
+
 class Control(BaseModel):
     """A single security control / mapping unit from a framework."""
 
@@ -39,6 +54,7 @@ class FrameworkOutput(BaseModel):
     fetched_date: str = Field(..., min_length=1)
     mapping_unit_level: str = Field(..., min_length=1)
     controls: list[Control] = Field(..., min_length=1)
+    source_files: list[SourceFile] = Field(default_factory=list)
 
 
 class HubLink(BaseModel):

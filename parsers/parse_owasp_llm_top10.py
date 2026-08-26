@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 import re
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -33,9 +35,15 @@ class OwaspLlmTop10Parser(BaseParser):
     source_url = "https://genai.owasp.org"
     mapping_unit_level = "risk"
     expected_count = 10
+    fetched_date: ClassVar[str] = "2026-04-28"
+    # All 10 risks carry a statement and none equals its title. The shortest is
+    # 1,970 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 9/10 (0.9000) if one risk decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
-        text = (self.raw_dir / "owasp_llm_top_10_2025.md").read_text(encoding="utf-8")
+        text = self.read_source("owasp_llm_top_10_2025.md")
         desc_matches = list(DESCRIPTION_RE.finditer(text))
 
         if len(desc_matches) != 10:

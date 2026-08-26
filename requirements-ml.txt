@@ -1,0 +1,92 @@
+# Pinned model serving stack (the `phase0` extra, made exact).
+#
+# Why this file exists: torch, transformers, sentence-transformers, tokenizers,
+# scikit-learn, scipy, datasets, einops and peft were pinned nowhere. The
+# published model is fetched by revision with sha256 verification, so the
+# weights are reproducible, but the runtime interpreting them was whatever pip
+# resolved on the day. Two people could get different embeddings, and so a
+# different hit@1, from the same verified weights.
+#
+# WHERE THESE VERSIONS COME FROM, AND WHAT IS NOT CLAIMED
+# The encoder pins were the versions read out of the working editable install
+# and confirmed end to end on 2026-08-14. They are no longer that. On
+# 2026-08-19 the audit of this file returned 41 findings, 15 of them against
+# torch 2.4.1 and one of those PYSEC-2026-2286, an arbitrary-code-execution
+# flaw in torch.load's `weights_only` unpickler. That maps onto exactly what
+# TRACT does: download an artifact from the Hub and load it. Serving on a stack
+# with a live ACE in its load path is a worse outcome than serving on a stack
+# whose numerical equivalence is unproven, so the encoder pins moved.
+#
+# Measured after the move: 5 findings, all transformers, all held open with a
+# named argument and an expiry in tract/supply_chain.py:AUDIT_SUPPRESSIONS.
+# torch 2.13.0 is the lowest release that clears every torch finding; 2.10.0
+# leaves two and 2.12.1 leaves one.
+#
+# What was verified: the set below resolves and imports together in a clean
+# 3.12 virtualenv, and datasets.Dataset.from_list round-trips. What was NOT
+# verified: that it reproduces the embeddings of revision 2d20955. tokenizers
+# moved 0.20.0 -> 0.22.2 because transformers 4.57.6 requires
+# `tokenizers<=0.23.0,>=0.22.0`, and by this file's own argument a tokenizer
+# change can move embeddings and therefore the confidences already published in
+# the crosswalk dataset. Re-deriving hit@1 on this stack needs a GPU and has
+# not been done. Do not read a pin here as a reproduction claim.
+#
+# BUILD ENVIRONMENT IS NOT THE SERVING ENVIRONMENT
+# The published model records its own stack in
+# config_sentence_transformers.json:
+#
+#     sentence_transformers 5.3.0   (served here on 3.2.0)
+#     transformers          4.49.0  (served here on 4.57.6)
+#     pytorch               2.8.0a0+gitba56102   (served here on 2.13.0)
+#
+# That pytorch is a nightly built from git commit ba56102, not a PyPI release,
+# so the build environment cannot be reconstructed from a version string at
+# all — it would need the container image.
+#
+# Install:  pip install -r requirements.txt -r requirements-ml.txt
+# For CPU-only serving, take torch from the CPU index first to skip the CUDA
+# payload:  pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+-c requirements.txt
+
+# --- Encoder stack ---
+# tokenizers is pinned rather than left transitive because a patch release
+# changes tokenization, which changes embeddings.
+#
+# sentence-transformers stays at 3.2.0. It is what tract/training/st_compat.py
+# records as the serving row of its layout matrix, and its own metadata caps
+# transformers below 5.0.0, which is the ceiling that leaves the four
+# suppressed advisories open.
+torch==2.13.0
+transformers==4.57.6
+sentence-transformers==3.2.0
+tokenizers==0.22.2
+
+# --- Calibration and clustering ---
+# scikit-learn feeds hub-proposal clustering alongside hdbscan, so a bump here
+# can shift proposal output even though it never touches the encoder.
+#
+# These come from a full requirements.txt resolve, which is what CI installs,
+# not from the working editable install. That install carries scikit-learn
+# 1.5.2 and no hdbscan at all, and 1.5.2 cannot satisfy the hdbscan==0.8.42
+# already pinned in requirements.txt, which needs >=1.6. So hub-proposal
+# clustering has never been runnable in that environment, and its versions are
+# not a valid source for these two.
+#
+# scipy is held at 1.17.1, the last release whose `Requires-Python` is >=3.11.
+# 1.18.0 declares >=3.12, and pyproject.toml declares `requires-python =
+# ">=3.11"`, so pinning 1.18.0 here shipped a serving file that cannot install
+# on a Python the package claims to support.
+scipy==1.17.1
+scikit-learn==1.9.0
+
+# --- Training only; absent from the working install, so resolved 2026-08-14 ---
+# peft is imported by tract/training/loop.py and scripts/phase1b/alpha.py but
+# was declared in no dependency list at all, so a clean
+# `pip install -e '.[phase0]'` produced a training environment that failed on
+# import.
+peft==0.20.0
+# 5.0.1 closes PYSEC-2026-3716, a path traversal in the folder-based dataset
+# builders. TRACT only calls Dataset.from_list, so the builders are never
+# reached, but the fix is a free bump rather than an argument to maintain.
+datasets==5.0.1
+einops==0.8.2

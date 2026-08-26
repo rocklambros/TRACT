@@ -3,6 +3,19 @@
 Produces per-framework JSON snapshots and changesets for OpenCRE's
 incremental import RFC. The export_history table tracks prior exports
 for changeset generation.
+
+Licence filtering lives here, not only in .gitignore. `CanonicalControl`
+carries full control text for every framework, the default output directory is
+./canonical_export, and that directory was not gitignored, so
+`tract export-canonical && git add -A` staged ISO 27001 and ETSI statements
+into a CC0 repository. Gitignoring the directory closes that door and does
+nothing about the one the command exists to open: the stated destination is a
+third-party RFC, outside git entirely.
+
+So a framework in OVERLAY_FRAMEWORK_IDS exports its section identifiers, its
+titles and its CRE mappings, and exports a standing sentence in place of its
+control text. See tract.licensing.withheld_control_text for why that shape and
+not omission.
 """
 from __future__ import annotations
 
@@ -12,7 +25,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from tract.config import OVERLAY_FRAMEWORK_IDS
 from tract.crosswalk.schema import get_connection
+# Re-exported at this module's old import path on purpose. The implementation
+# moved to tract.licensing so `tract export --opencre` could share it instead
+# of growing a second copy that drifts.
+from tract.licensing import exportable_description
 from tract.export.canonical_schema import (
     CanonicalControl,
     Changeset,
@@ -108,19 +126,33 @@ def build_snapshot(
 
     seen_controls: dict[str, CanonicalControl] = {}
     control_mappings: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    withheld = 0
 
     for row in rows:
         cid = row["control_id"]
         if cid not in seen_controls:
+            description = exportable_description(
+                row["framework_id"], row["description"] or "",
+            )
+            if description != (row["description"] or ""):
+                withheld += 1
             seen_controls[cid] = CanonicalControl(
                 control_id=cid,
                 framework_id=row["framework_id"],
                 section_id=row["section_id"],
                 title=row["title"],
-                description=row["description"],
+                description=description,
                 hyperlink=hyperlink_fn(row["framework_id"], row["section_id"]),
             )
         control_mappings[cid].append(row)
+
+    if withheld:
+        logger.info(
+            "Withheld control text for %d of %s's controls: its licence does "
+            "not permit TRACT to redistribute the publisher's wording. "
+            "Identifiers, titles and CRE mappings are exported in full.",
+            withheld, framework_id,
+        )
 
     controls = sorted(seen_controls.values(), key=lambda c: c.control_id)
 
@@ -457,6 +489,12 @@ def export_canonical(
             "mappings": len(snapshot.mappings),
             "changeset_summary": changeset.summary.model_dump(),
             "impact_scope": changeset.impact.scope,
+            # Reported per framework so a dry run shows the withholding before
+            # anything is sent. Not part of the snapshot schema on purpose:
+            # compute_content_hash dumps every field, so a new one would make
+            # every snapshot already in export_history fail its integrity check
+            # on load.
+            "control_text_withheld": fw_id in OVERLAY_FRAMEWORK_IDS,
         }
 
         if dry_run:

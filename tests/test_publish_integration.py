@@ -92,8 +92,16 @@ class TestPublishDryRun:
 
         ws = _setup_publish_workspace(tmp_path)
 
+        # hit1_indicators is required, not decorative: the card computes the
+        # aggregate CI by bootstrapping these per-item values. It used to accept
+        # a fold without them and print a fixed-width band around the point
+        # estimate instead. Five hits in ten items matches hit1=0.5.
         fold_results = [
-            {"fold": "Test Fold", "hit1": 0.5, "zs_hit1": 0.3, "n": 10, "hit_any": 0.6},
+            {
+                "fold": "Test Fold", "hit1": 0.5, "zs_hit1": 0.3, "n": 10,
+                "hit_any": 0.6,
+                "hit1_indicators": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+            },
         ]
 
         with patch("tract.publish.merge.merge_lora_adapters", side_effect=_fake_merge):
@@ -118,6 +126,27 @@ class TestPublishDryRun:
         assert (ws["staging_dir"] / "train.py").exists()
         assert (ws["staging_dir"] / "hub_ids.json").exists()
         assert (ws["staging_dir"] / "calibration.json").exists()
+
+        # The licence record ships with the weights. The card's license_link is
+        # a relative reference to NOTICE, so a staging directory without it
+        # publishes a link to a file that is not there.
+        from tract.licensing import LICENSE_TEXTS_DIR, NOTICE_FILENAME
+
+        assert (ws["staging_dir"] / "LICENSE").is_file()
+        notice = ws["staging_dir"] / NOTICE_FILENAME
+        assert notice.is_file(), (
+            f"{NOTICE_FILENAME} is not in the model staging directory, so the "
+            f"published weights carry no per-framework terms and no "
+            f"modification statement."
+        )
+        assert "Modifications to framework text" in notice.read_text(
+            encoding="utf-8"
+        )
+        shipped_texts = ws["staging_dir"] / LICENSE_TEXTS_DIR.name
+        assert shipped_texts.is_dir()
+        assert {p.name for p in shipped_texts.iterdir()} == {
+            p.name for p in LICENSE_TEXTS_DIR.iterdir()
+        }
 
     def test_gate_blocks_without_report(self, tmp_path) -> None:
         from tract.publish import publish_to_huggingface

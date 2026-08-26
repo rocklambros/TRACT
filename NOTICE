@@ -1,0 +1,219 @@
+NOTICE
+======
+
+TRACT's own contributions are dedicated to the public domain under CC0 1.0
+Universal. See LICENSE. That covers the code, the schemas, the parsers, the
+CRE hub assignments TRACT derives, and the crosswalk mappings built from them.
+
+The CC0 dedication does not, and cannot, cover third-party framework content.
+Each security framework listed below is published by its own authors under its
+own terms, and those terms continue to apply to that framework's text wherever
+it appears in this repository or in artifacts built from it. Reusing this
+repository means honouring the CC0 grant on TRACT's contributions and each
+listed framework's terms on its own content.
+
+This file records terms. It does not interpret them and offers no legal advice.
+
+
+Licence texts
+-------------
+
+`LICENSES/` carries the full text of every SPDX-identified licence named in the
+table below, one file per identifier, fetched from the publisher's own
+canonical plain text and unmodified. GPL-3.0 section 4 requires that a
+recipient receive a copy of the licence alongside the covered work, and CC
+BY-SA 4.0 section 3(a)(1)(A) requires retaining the licence or a URI to it.
+Naming an identifier here does not deliver either; `LICENSES/` does.
+
+  LICENSES/Apache-2.0.txt     LICENSES/CC-BY-SA-3.0.txt
+  LICENSES/CC-BY-4.0.txt      LICENSES/CC-BY-SA-4.0.txt
+  LICENSES/CC0-1.0.txt        LICENSES/GPL-3.0-only.txt
+
+Seventeen sources in the table below carry no SPDX identifier, so no licence
+text exists to ship for them. Eight state no terms at all in the artifact this
+project downloaded and are recorded UNDETERMINED. Nine carry the publisher's
+own prose notice, quoted in the table. Nothing is invented for either group.
+`tests/test_license_texts_shipped.py` derives the required set from
+`tract.config.FRAMEWORK_LICENSES` and fails if a text is missing, if a text is
+shipped that no framework declares, or if a shipped text's bytes change.
+
+Thirteen of the frameworks below are copyleft: twelve under CC BY-SA and DSOMM
+under GPL-3.0-only. Twelve of the thirteen have their processed text tracked in
+this repository, and their share-alike obligations are discharged through this
+file and `LICENSES/` rather than by withholding the text: attribution and terms
+in the table above, the licence itself delivered under `LICENSES/`, and the
+modification statement below. `tests/test_framework_licenses.py` asserts all
+three for every copyleft source, so ingesting one without them fails on the
+commit that adds it. DSOMM is the exception and stays out of git, because
+GPL-3.0's share-alike attaches to the whole work rather than to the adapted
+part, which is a wider claim than CC BY-SA makes over the same corpus.
+
+
+Modifications to framework text
+-------------------------------
+
+TRACT does not store any framework's text as published. Every control statement
+that reaches `data/processed/` has passed through the transforms below, and the
+training and evaluation paths apply further transforms on top. GPL-3.0 section
+5(a) and CC BY-SA 4.0 section 3(a)(1)(B) both require a modified work to carry
+prominent notice that it was modified. This section is that notice.
+
+At storage, `tract/sanitize.py::sanitize_text`, applied to every control's
+title, description and full text by `sanitize_control`, in this fixed order:
+
+  1. Null bytes (U+0000) replaced with a space.
+  2. Unicode normalised to NFC.
+  3. Zero-width characters removed (U+200B, U+200C, U+200D, U+FEFF).
+  4. HTML entities unescaped, then HTML and XML tags removed.
+  5. PDF ligatures folded to ASCII: ff, fi, fl, ffi and ffl.
+  6. Hyphenation broken across a line rejoined, so "secu-\nrity" becomes
+     "security".
+  7. Runs of whitespace collapsed to one space, then leading and trailing
+     whitespace stripped.
+  8. Truncated on a word boundary. Descriptions at
+     `tract.config.DESCRIPTION_MAX_LENGTH` (2000 characters), titles at 500,
+     full text at 50,000. Where a description is truncated, the untruncated
+     sanitised string is preserved in the control's `full_text` field.
+
+At training and evaluation, `tract/text_selection.py`:
+
+  9. Markdown and site furniture removed by `strip_markup`, then a second NFC
+     normalisation and null-byte strip in `prepare_anchor`.
+ 10. Stop words removed when the arm calls for it, by
+     `tract/stopwords.py::filter_stopwords` against the 80-word list at
+     `data/processed/stopwords.json`. The list is generated from this corpus,
+     not borrowed, and the filter deletes matched words in place so identifiers
+     and thresholds survive. Text that would be emptied is returned unchanged.
+ 10a. Framework-identity acronyms removed when that arm calls for it, by the
+     same `filter_stopwords` against the 18-token set at
+     `data/processed/framework_identity_tokens.json`, derived by
+     `tract/framework_identity.py`. These are the acronyms that name a
+     publisher rather than describe a control ("OWASP", "CWE", "CAPEC",
+     "CCM"). A token that names or describes a CRE hub is never removed, so
+     "NIST", "AI", "LLM" and "ML" survive whatever the arm.
+ 11. Truncated again to `tract.config.MAX_ANCHOR_CHARS` (2150 characters), the
+     encoder's 512-token budget. Truncation is counted and reported.
+
+Where a source document is damaged and the parser can prove the damage but not
+repair it, `tract.config.CONTROL_ELISION_MARKER` ("[...]") is inserted at the
+point of loss and the control is flagged under the `damaged` metadata key.
+`parsers/parse_iso_27001.py` is the only parser that does this today. The
+marker is editorial on purpose: a reader must not be able to mistake a repaired
+statement for the standard's own wording.
+
+None of these transforms is reversible from the stored text alone. Anyone
+relying on a framework's exact published wording must read it from that
+framework's publisher, not from this repository.
+
+
+Restricted sources
+------------------
+
+Two publishers reserve reproduction outright, so their control text is not in
+this repository at all. Their parsed output is written to gitignored paths and
+merged only into a local, untracked overlay
+(`data/processed/licensed/all_controls.json`). The list lives in
+`tract.config.RESTRICTED_FRAMEWORK_IDS` and is enforced by
+`tests/test_licensed_text_not_tracked.py`.
+
+  etsi        ETSI GR SAI 005 v1.1.1
+  iso_27001   ISO/IEC 27001:2022 Annex A
+
+
+Frameworks
+----------
+
+Licence read from each framework's own staged artifact. SPDX identifiers where
+one applies, a short statement of the source's own notice where none does, and
+UNDETERMINED where the artifact states no terms and none were inferred. The
+machine-readable copy is `tract.config.FRAMEWORK_LICENSES`, and a test fails if
+the two disagree or if a framework appears in either without the other.
+
+| framework_id | licence | upstream source |
+|---|---|---|
+| aiuc_1 | UNDETERMINED | https://www.aiuc-1.com |
+| asvs | CC-BY-SA-4.0 | https://github.com/OWASP/ASVS |
+| biml | CC-BY-SA-3.0 AND CC-BY-SA-4.0 | https://berryvilleiml.com/results/ |
+| capec | UNDETERMINED | https://capec.mitre.org |
+| cosai | CC-BY-4.0 | https://github.com/cosai-oasis |
+| csa_aicm | Proprietary. (c) Cloud Security Alliance, all rights reserved. Personal non-commercial use, no redistribution, fair-use quotation with attribution. | https://cloudsecurityalliance.org/artifacts/ai-controls-matrix |
+| csa_ccm | Proprietary. (c) Cloud Security Alliance, all rights reserved. Personal non-commercial use, no redistribution, fair-use quotation with attribution. | https://cloudsecurityalliance.org/artifacts/cloud-controls-matrix-v4 |
+| cwe | UNDETERMINED | https://cwe.mitre.org |
+| dsomm | GPL-3.0-only | https://github.com/devsecopsmaturitymodel/DevSecOps-MaturityModel-data |
+| enisa | (c) ENISA 2021. Reproduction authorised provided the source is acknowledged. | https://www.enisa.europa.eu/publications/securing-machine-learning-algorithms |
+| etsi | (c) ETSI 2021, all rights reserved. Reproduction only by written permission of ETSI. | https://www.etsi.org/deliver/etsi_gr/SAI/001_099/005/01.01.01_60/gr_SAI005v010101p.pdf |
+| eu_ai_act | (c) European Union. Reuse permitted with attribution per Commission Decision 2011/833/EU. | https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689 |
+| eu_gpai_cop | (c) European Commission. Published for public use. | https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai |
+| iso_27001 | Proprietary. (c) ISO/IEC 2022, all rights reserved. Single-user store licence, no reproduction without prior written permission. | https://www.iso.org/standard/27001 |
+| mitre_atlas | Apache-2.0 | https://github.com/mitre-atlas/atlas-data |
+| nist_800_53 | UNDETERMINED | https://github.com/usnistgov/oscal-content |
+| nist_800_63 | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://pages.nist.gov/800-63-3/sp800-63b.html |
+| nist_ai_100_2 | UNDETERMINED | https://doi.org/10.6028/NIST.AI.100-2e2023 |
+| nist_ai_600_1 | UNDETERMINED | https://doi.org/10.6028/NIST.AI.600-1 |
+| nist_ai_rmf | UNDETERMINED | https://doi.org/10.6028/NIST.AI.100-1 |
+| nist_ssdf | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218.pdf |
+| owasp_agentic_top10 | CC-BY-SA-4.0 | https://genai.owasp.org |
+| owasp_ai_exchange | UNDETERMINED | https://owaspai.org |
+| owasp_cheat_sheets | CC-BY-SA-4.0 | https://github.com/OWASP/CheatSheetSeries |
+| owasp_dsgai | CC-BY-SA-4.0 | https://genai.owasp.org |
+| owasp_llm_top10 | CC-BY-SA-4.0 | https://genai.owasp.org |
+| owasp_llm_top10_2026 | CC-BY-SA-4.0 | https://genai.owasp.org |
+| owasp_ml_top10 | CC-BY-SA-4.0 | https://github.com/OWASP/www-project-machine-learning-security-top-10 |
+| owasp_proactive_controls | CC-BY-SA-4.0 | https://github.com/OWASP/www-project-proactive-controls |
+| owasp_top10_2021 | CC-BY-SA-4.0 | https://github.com/OWASP/Top10 |
+| samm | CC-BY-SA-4.0 | https://github.com/owaspsamm/core |
+| wstg | CC-BY-SA-4.0 | https://github.com/OWASP/wstg |
+
+
+Open questions
+--------------
+
+UNDETERMINED means the staged artifact carries no licence statement and none
+was assumed. MITRE's CAPEC and CWE XML, the NIST OSCAL 800-53 catalog, the NIST
+AI 100-2 and AI 600-1 PDFs, the NIST AI RMF, the AIUC-1 standard, and the OWASP
+AI Exchange markdown all fall into this group. Each publisher states terms
+somewhere outside the artifact this project downloaded. Resolving them means
+recording the terms from the publisher's own page, not inferring them.
+
+The OWASP Top 10 for LLM Applications 2026 is pre-release. Its own revision
+history still reads "[2026 release date]", so the artifact built from it pins
+its version to the source sha256 rather than to a release date the publisher
+has not set. Its licence block states CC BY-SA 4.0 and is recorded above as
+such.
+
+CSA's Cloud Controls Matrix and AI Controls Matrix both carry a notice
+reserving redistribution. The project owner ruled on 2026-08-16 that CCM is
+redistributable for this project's purposes, and CCM is therefore not in
+RESTRICTED_FRAMEWORK_IDS. AICM was already tracked under the same terms. Both
+are recorded here as the publisher states them.
+
+The BASIS of the CCM ruling is not on record, and it must be. What is recorded
+is that the owner ruled, not why. "We hold a written agreement with CSA",
+"redistribution is covered by CSA membership" and "this is a fair-use judgment
+about the quantity reproduced" are three materially different bases with three
+different scopes, three different transferability properties for anyone forking
+this repository, and three different answers to whether the same reasoning
+reaches AICM. Until the basis is written down here, a downstream reader cannot
+evaluate the ruling and cannot tell whether it applies to their use.
+
+CSA's AI Controls Matrix (`csa_aicm`) is a live exposure, stated here without
+being resolved. Measured on 2026-08-19: 243 controls tracked in git at
+`data/processed/frameworks/csa_aicm.json`, description length 39 characters
+minimum, 176 median, 485 maximum, which is control prose and not titles. Its
+recorded notice is the same one CSA applies to CCM, reserving redistribution
+outright. It appears in no licence tier: not in RESTRICTED_FRAMEWORK_IDS, not
+in CONDITIONAL_FRAMEWORK_IDS, so not in OVERLAY_FRAMEWORK_IDS either. The
+structural reason is that the tier derivation in
+`tests/test_framework_licenses.py::_copyleft` selects on the substrings "GPL"
+and "CC-BY-SA", so a publisher that reserves rights outright matches neither
+and produces no tier membership at all. The model detects share-alike and is
+blind to the stricter posture. This is a question for the project owner, and it
+is a larger exposure than the copyleft frameworks the tiers were built for.
+
+
+Attribution
+-----------
+
+Anyone redistributing this repository, a fork, or a derived dataset carries
+this file with it. Attribution for a framework's content belongs to that
+framework's authors under the terms listed above.

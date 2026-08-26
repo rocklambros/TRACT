@@ -1,0 +1,104 @@
+[
+  {
+    "control_text": "Data poisoning occurs when pre-training, fine-tuning, or embedding data is manipulated to introduce vulnerabilities, backdoors, or biases. This manipulation can compromise model security, performance, or ethical behavior, leading to harmful outputs or impaired capabilities. Common risks include degraded model performance, biased or toxic content, and exploitation of downstream systems. Data poisoning can target different stages of the LLM lifecycle, including pre-training (learning from general data), fine-tuning (adapting models to specific tasks), and embedding (converting text into numerical vectors). Understanding these stages helps identify where vulnerabilities may originate. Data poisoning is considered an integrity attack since tampering with training data impacts the model's ability to make accurate predictions. The risks are particularly high with external data sources, which may contain unverified or malicious content. Moreover, models distributed through shared repositories or open-source platforms can carry risks beyond data poisoning, such as malware embedded through techniques like malicious pickling, which can execute harmful code when the model is loaded. Also, consider that poisoning may allow for the implementation of a backdoor. Such backdoors may leave the model's behavior untouched until a certain trigger causes it to change. This may make such changes hard to test for and detect, in effect creating the opportunity for a model to become a sleeper agent. Common Examples of Vulnerability 1. Malicious actors introduce harmful data during training, leading to biased outputs. Techniques like \"Split-View Data Poisoning\" or \"Frontrunning Poisoning\" exploit model training dynamics to achieve this. (Ref. link: Split-View Data Poisoning)]( 2. Attackers can inject harmful content directly into the training process, compromising the model’s output quality. 3. Users unknowingly inject sensitive or proprietary information during interactions, which could be",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "867-642",
+      "481-710",
+      "555-083",
+      "020-540",
+      "217-163",
+      "567-025",
+      "041-188",
+      "738-144",
+      "088-316"
+    ]
+  },
+  {
+    "control_text": "LLM supply chains are susceptible to various vulnerabilities, which can affect the integrity of training data, models, and deployment platforms. These risks can result in biased outputs, security breaches, or system failures. While traditional software vulnerabilities focus on issues like code flaws and dependencies, in ML the risks also extend to third-party pre-trained models and data. These external elements can be manipulated through tampering or poisoning attacks. Creating LLMs is a specialized task that often depends on third-party models. The rise of openaccess LLMs and new fine-tuning methods like \"LoRA\" (Low-Rank Adaptation) and \"PEFT\" (Parameter-Efficient Fine-Tuning), especially on platforms like Hugging Face, introduce new supply-chain risks. Finally, the emergence of on-device LLMs increase the attack surface and supply-chain risks for LLM applications. Some of the risks discussed here are also discussed in \"LLM04 Data and Model Poisoning.\" This entry focuses on the supply-chain aspect of the risks. A simple threat model can be found here.]( 2. Licensing Risks AI development often involves diverse software and dataset licenses, creating risks if not properly managed. Different open-source and proprietary licenses impose varying legal requirements. Dataset licenses may restrict usage, distribution, or commercialization. 3. Outdated or Deprecated Models Using outdated or deprecated models that are no longer maintained leads to security issues. genai.owasp.org hosted in shared environments can be exploited to introduce vulnerabilities in shared models. Model merging is is very popular on Hugging Face with model-merged models topping the OpenLLM leaderboard and can be exploited to bypass reviews. Similarly, services such as conversation bot have been proved to be vulnerable to maniputalion and introduce malicious code in models. 8. LLM Model on Device supply-chain vulnerabilities LLM models on device increase the supply attack surface with compromised manuf",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "883-173",
+      "852-770",
+      "701-654",
+      "881-234",
+      "423-055",
+      "777-470",
+      "661-440",
+      "342-781",
+      "182-732",
+      "173-554"
+    ]
+  },
+  {
+    "control_text": "Sensitive information can affect both the LLM and its application context. This includes personal identifiable information (PII), financial details, health records, confidential business data, security credentials, and legal documents. Proprietary models may also have unique training methods and source code considered sensitive, especially in closed or foundation models. LLMs, especially when embedded in applications, risk exposing sensitive data, proprietary algorithms, or confidential details through their output. This can result in unauthorized data access, privacy violations, and intellectual property breaches. Consumers should be aware of how to interact safely with LLMs. They need to understand the risks of unintentionally providing sensitive data, which may later be disclosed in the model's output. To reduce this risk, LLM applications should perform adequate data sanitization to prevent user data from entering the training model. Application owners should also provide clear Terms of Use policies, allowing users to opt out of having their data included in the training model. Adding restrictions within the system prompt about data types that the LLM should return can provide mitigation against sensitive information disclosure. However, such restrictions may not always be honored and could be bypassed via prompt injection or other methods. Common Examples of Vulnerability 1. PII Leakage Personal identifiable information (PII) may be disclosed during interactions with the LLM. 2. Proprietary Algorithm Exposure Poorly configured model outputs can reveal proprietary algorithms or data. Revealing training data can expose models to inversion attacks, where attackers extract sensitive information or reconstruct inputs. For instance, as demonstrated in the 'Proof Pudding' attack (CVE-201920634), disclosed training data facilitated model extraction and inversion, allowing attackers to circumvent security controls in machine learning algorithms and bypass email filters.",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "768-532",
+      "220-870",
+      "044-202",
+      "440-372",
+      "475-586",
+      "488-626",
+      "805-126",
+      "077-772",
+      "267-786",
+      "447-083"
+    ]
+  },
+  {
+    "control_text": "Improper Output Handling refers specifically to insufficient validation, sanitization, and handling of the outputs generated by large language models before they are passed downstream to other components and systems. Since LLM-generated content can be controlled by prompt input, this behavior is similar to providing users indirect access to additional functionality. Improper Output Handling differs from Overreliance in that it deals with LLM-generated outputs before they are passed downstream whereas Overreliance focuses on broader concerns around overdependence on the accuracy and appropriateness of LLM outputs. Successful exploitation of an Improper Output Handling vulnerability can result in XSS and CSRF in web browsers as well as SSRF, privilege escalation, or remote code execution on backend systems. The following conditions can increase the impact of this vulnerability: - The application grants the LLM privileges beyond what is intended for end users, enabling escalation of privileges or remote code execution. - The application is vulnerable to indirect prompt injection attacks, which could allow an attacker to gain privileged access to a target user's environment. - 3rd party extensions do not adequately validate inputs. - Lack of proper output encoding for different contexts (e.g., HTML, JavaScript, SQL) - Insufficient monitoring and logging of LLM outputs - Absence of rate limiting or anomaly detection for LLM usage Common Examples of Vulnerability 1. LLM output is entered directly into a system shell or similar function such as exec or eval, resulting in remote code execution. 2. JavaScript or Markdown is generated by the LLM and returned to a user. The code is then interpreted by the browser, resulting in XSS. 3. LLM-generated SQL queries are executed without proper parameterization, leading to SQL injection. 4. LLM output is used to construct file paths without proper sanitization, potentially resulting in path traversal vulnerabilities. 5. LLM-generated",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "780-757",
+    "predicted_top10": [
+      "620-101",
+      "161-451",
+      "764-765",
+      "607-671",
+      "533-516",
+      "503-455",
+      "857-718",
+      "657-084",
+      "064-808",
+      "881-434"
+    ]
+  },
+  {
+    "control_text": "A Prompt Injection Vulnerability occurs when user prompts alter the LLM’s behavior or output in unintended ways. These inputs can affect the model even if they are imperceptible to humans, therefore prompt injections do not need to be human-visible/readable, as long as the content is parsed by the model. Prompt Injection vulnerabilities exist in how models process prompts, and how input may force the model to incorrectly pass prompt data to other parts of the model, potentially causing them to violate guidelines, generate harmful content, enable unauthorized access, or influence critical decisions. While techniques like Retrieval Augmented Generation (RAG) and fine-tuning aim to make LLM outputs more relevant and accurate, research shows that they do not fully mitigate prompt injection vulnerabilities. While prompt injection and jailbreaking are related concepts in LLM security, they are often used interchangeably. Prompt injection involves manipulating model responses through specific inputs to alter its behavior, which can include bypassing safety measures. Jailbreaking is a form of prompt injection where the attacker provides inputs that cause the model to disregard its safety protocols entirely. Developers can build safeguards into system prompts and input handling to help mitigate prompt injection attacks, but effective prevention of jailbreaking requires ongoing updates to the model's training and safety mechanisms. Types of Prompt Injection Vulnerabilities Direct Prompt Injections Direct prompt injections occur when a user's prompt input directly alters the behavior of the model in unintended or unexpected ways. The input can be either intentional (i.e., a malicious actor deliberately crafting a prompt to exploit the model) or unintentional (i.e., a user inadvertently providing input that triggers unexpected behavior). Indirect Prompt Injections Indirect prompt injections occur when an LLM accepts input from external sources, such as websites or files. The co",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "843-475",
+      "686-110",
+      "106-447",
+      "536-158",
+      "012-625",
+      "483-253",
+      "860-723",
+      "764-765",
+      "761-417",
+      "780-757"
+    ]
+  },
+  {
+    "control_text": "Unbounded Consumption refers to the process where a Large Language Model (LLM) generates outputs based on input queries or prompts. Inference is a critical function of LLMs, involving the application of learned patterns and knowledge to produce relevant responses or predictions. Attacks designed to disrupt service, deplete the target's financial resources, or even steal intellectual property by cloning a model’s behavior all depend on a common class of security vulnerability in order to succeed. Unbounded Consumption occurs when a Large Language Model (LLM) application allows users to conduct excessive and uncontrolled inferences, leading to risks such as denial of service (DoS), economic losses, model theft, and service degradation. The high computational demands of LLMs, especially in cloud environments, make them vulnerable to resource exploitation and unauthorized usage. Common Examples of Vulnerability 1. Variable-Length Input Flood Attackers can overload the LLM with numerous inputs of varying lengths, exploiting processing inefficiencies. This can deplete resources and potentially render the system unresponsive, significantly impacting service availability. 2. Denial of Wallet (DoW) By initiating a high volume of operations, attackers exploit the cost-per-use model of cloudbased AI services, leading to unsustainable financial burdens on the provider and risking financial ruin. 3. Continuous Input Overflow Continuously sending inputs that exceed the LLM's context window can lead to excessive computational resource use, resulting in service degradation and operational disruptions. 4. Resource-Intensive Queries Submitting unusually demanding queries involving complex sequences or intricate language patterns can drain system resources, leading to prolonged processing times and potential system failures. 5. Model Extraction via API Attackers may query the model API using carefully crafted inputs and prompt injection genai.owasp.org and the principle of least privi",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "886-662",
+      "746-705",
+      "630-573",
+      "230-318",
+      "463-820",
+      "187-083",
+      "268-088",
+      "660-052",
+      "176-154",
+      "108-316"
+    ]
+  }
+]

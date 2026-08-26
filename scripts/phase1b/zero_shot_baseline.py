@@ -8,6 +8,7 @@ gate comparison.
 from __future__ import annotations
 
 import logging
+from typing import Any
 import time
 
 import numpy as np
@@ -40,7 +41,7 @@ def main() -> None:
     links = load_curated_links()
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {})
 
-    eval_by_fw: dict[str, list] = {}
+    eval_by_fw: dict[str, list[Any]] = {}
     for item in corpus:
         eval_by_fw.setdefault(item.framework_name, []).append(item)
 
@@ -50,7 +51,7 @@ def main() -> None:
     output_dir = PHASE1B_RESULTS_DIR / "zero_shot_firewalled_baseline"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    fold_results: list[dict] = []
+    fold_results: list[dict[str, Any]] = []
     for fw_name in sorted(AI_FRAMEWORK_NAMES):
         fw_items = eval_by_fw.get(fw_name, [])
         if not fw_items:

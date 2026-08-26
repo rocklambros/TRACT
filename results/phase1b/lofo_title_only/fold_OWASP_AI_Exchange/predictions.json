@@ -1,0 +1,1073 @@
+[
+  {
+    "control_text": "AI model performance validation",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "547-824",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "860-723",
+      "146-871",
+      "433-442",
+      "663-200",
+      "532-102",
+      "041-173",
+      "582-035",
+      "430-722"
+    ]
+  },
+  {
+    "control_text": "Rate limit",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "187-083",
+    "predicted_top10": [
+      "463-820",
+      "746-705",
+      "630-573",
+      "268-088",
+      "886-662",
+      "187-083",
+      "176-154",
+      "660-052",
+      "660-867",
+      "560-224"
+    ]
+  },
+  {
+    "control_text": "Model access control",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "715-644",
+    "predicted_top10": [
+      "247-250",
+      "715-644",
+      "724-770",
+      "220-442",
+      "123-124",
+      "128-128",
+      "633-428",
+      "586-842",
+      "443-447",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "Monitor use",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "703-813",
+    "predicted_top10": [
+      "703-813",
+      "058-083",
+      "356-282",
+      "854-643",
+      "683-036",
+      "010-108",
+      "636-660",
+      "805-126",
+      "842-876",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "Anomalous input handling",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "342-641",
+      "843-475",
+      "653-242",
+      "743-237",
+      "641-760",
+      "782-234",
+      "538-446",
+      "010-308",
+      "881-434",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "Unwanted input series handling",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "576-262",
+    "predicted_top10": [
+      "576-262",
+      "843-475",
+      "342-641",
+      "743-237",
+      "538-446",
+      "881-434",
+      "660-052",
+      "542-445",
+      "641-760",
+      "232-217"
+    ]
+  },
+  {
+    "control_text": "Evasion input handling",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "370-877",
+      "761-417",
+      "342-641",
+      "106-447",
+      "843-475",
+      "641-760",
+      "576-262",
+      "780-757",
+      "989-492",
+      "881-434"
+    ]
+  },
+  {
+    "control_text": "Prompt injection I/O handling",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "843-475",
+      "782-234",
+      "686-110",
+      "012-625",
+      "106-447",
+      "653-242",
+      "314-131",
+      "483-253",
+      "536-158",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "Sensitive output handling",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "204-272",
+    "predicted_top10": [
+      "204-272",
+      "161-451",
+      "010-108",
+      "503-455",
+      "044-202",
+      "430-722",
+      "780-757",
+      "440-372",
+      "854-643",
+      "764-765"
+    ]
+  },
+  {
+    "control_text": "DOS input validation",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "108-316",
+    "predicted_top10": [
+      "010-308",
+      "653-242",
+      "611-051",
+      "146-706",
+      "533-516",
+      "031-447",
+      "857-718",
+      "743-237",
+      "732-873",
+      "881-434"
+    ]
+  },
+  {
+    "control_text": "Input segregation",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "106-447",
+    "predicted_top10": [
+      "843-475",
+      "780-757",
+      "641-760",
+      "782-234",
+      "314-131",
+      "106-447",
+      "467-215",
+      "653-242",
+      "831-570",
+      "515-021"
+    ]
+  },
+  {
+    "control_text": "Obscuring confidence in output",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "010-108",
+    "predicted_top10": [
+      "010-108",
+      "637-021",
+      "488-626",
+      "474-203",
+      "430-722",
+      "204-272",
+      "440-372",
+      "805-126",
+      "768-532",
+      "567-025"
+    ]
+  },
+  {
+    "control_text": "Ensemble models",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "146-871",
+    "predicted_top10": [
+      "146-871",
+      "860-723",
+      "547-824",
+      "364-516",
+      "852-770",
+      "532-102",
+      "467-215",
+      "661-440",
+      "058-443",
+      "408-838"
+    ]
+  },
+  {
+    "control_text": "Input distortion",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "641-760",
+    "predicted_top10": [
+      "641-760",
+      "843-475",
+      "780-757",
+      "761-417",
+      "342-641",
+      "467-215",
+      "058-443",
+      "217-163",
+      "567-025",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "Limit resources",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "886-662",
+    "predicted_top10": [
+      "886-662",
+      "187-083",
+      "746-705",
+      "463-820",
+      "630-573",
+      "230-318",
+      "660-867",
+      "660-052",
+      "560-224",
+      "268-088"
+    ]
+  },
+  {
+    "control_text": "Supply chain management",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "852-770",
+      "701-654",
+      "883-173",
+      "423-055",
+      "613-286",
+      "862-452",
+      "433-442",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "Model input leak",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "077-235",
+    "predicted_top10": [
+      "077-235",
+      "430-722",
+      "843-475",
+      "173-554",
+      "780-757",
+      "768-532",
+      "204-272",
+      "474-203",
+      "488-626",
+      "761-417"
+    ]
+  },
+  {
+    "control_text": "Evasion robust model",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "384-015",
+    "predicted_top10": [
+      "370-877",
+      "467-215",
+      "547-824",
+      "860-723",
+      "333-480",
+      "532-102",
+      "011-322",
+      "474-203",
+      "384-015",
+      "364-516"
+    ]
+  },
+  {
+    "control_text": "Adversarial robust distillation",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "467-215",
+    "predicted_top10": [
+      "467-215",
+      "488-626",
+      "860-723",
+      "034-540",
+      "370-877",
+      "843-475",
+      "408-838",
+      "641-760",
+      "532-102",
+      "474-203"
+    ]
+  },
+  {
+    "control_text": "Adversarial training",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "408-838",
+    "predicted_top10": [
+      "408-838",
+      "533-635",
+      "467-215",
+      "989-492",
+      "860-723",
+      "244-750",
+      "384-015",
+      "428-544",
+      "382-481",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "Data quality control",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "041-188",
+    "predicted_top10": [
+      "041-188",
+      "088-316",
+      "563-186",
+      "567-025",
+      "764-765",
+      "626-250",
+      "058-443",
+      "854-643",
+      "745-356",
+      "852-770"
+    ]
+  },
+  {
+    "control_text": "Model alignment",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "860-723",
+      "547-824",
+      "532-102",
+      "467-215",
+      "474-203",
+      "364-516",
+      "370-877",
+      "146-871",
+      "641-760",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "Model watermarking",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "637-021",
+    "predicted_top10": [
+      "637-021",
+      "474-203",
+      "141-385",
+      "805-126",
+      "267-786",
+      "182-732",
+      "663-550",
+      "768-532",
+      "488-626",
+      "010-108"
+    ]
+  },
+  {
+    "control_text": "Data poisoning",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "307-507",
+      "217-163",
+      "504-340",
+      "483-883",
+      "426-842",
+      "567-025",
+      "456-636",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "Supply-chain model poisoning",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "701-654",
+      "883-173",
+      "881-234",
+      "852-770",
+      "423-055",
+      "615-663",
+      "481-710",
+      "867-642",
+      "613-285",
+      "738-144"
+    ]
+  },
+  {
+    "control_text": "Disclosure of sensitive data in model output",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "044-202",
+      "220-870",
+      "077-772",
+      "440-372",
+      "805-126",
+      "173-554",
+      "768-532",
+      "474-203",
+      "488-626",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Model exfiltration",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "141-385",
+      "474-203",
+      "267-786",
+      "182-732",
+      "805-126",
+      "342-781",
+      "663-550",
+      "034-540",
+      "637-021",
+      "220-870"
+    ]
+  },
+  {
+    "control_text": "Train data distortion",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "567-025",
+    "predicted_top10": [
+      "567-025",
+      "088-316",
+      "217-163",
+      "615-663",
+      "041-188",
+      "058-443",
+      "467-215",
+      "276-748",
+      "077-235",
+      "641-760"
+    ]
+  },
+  {
+    "control_text": "More train data",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "444-058",
+    "predicted_top10": [
+      "444-058",
+      "173-554",
+      "886-662",
+      "423-055",
+      "058-443",
+      "567-025",
+      "630-573",
+      "852-770",
+      "746-705",
+      "563-186"
+    ]
+  },
+  {
+    "control_text": "Small model",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "788-323",
+    "predicted_top10": [
+      "547-824",
+      "860-723",
+      "788-323",
+      "532-102",
+      "058-443",
+      "852-770",
+      "146-871",
+      "883-173",
+      "663-550",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "Poison robust model",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "854-183",
+    "predicted_top10": [
+      "481-710",
+      "867-642",
+      "547-824",
+      "555-083",
+      "467-215",
+      "364-516",
+      "020-540",
+      "663-200",
+      "803-457",
+      "615-663"
+    ]
+  },
+  {
+    "control_text": "Discrete on AI tech",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "818-434",
+    "predicted_top10": [
+      "041-173",
+      "663-200",
+      "582-035",
+      "382-481",
+      "364-516",
+      "854-643",
+      "755-340",
+      "533-635",
+      "225-553",
+      "881-234"
+    ]
+  },
+  {
+    "control_text": "Data Minimize",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "058-443",
+    "predicted_top10": [
+      "058-443",
+      "563-186",
+      "788-323",
+      "854-643",
+      "088-316",
+      "663-200",
+      "567-025",
+      "854-183",
+      "488-626",
+      "436-325"
+    ]
+  },
+  {
+    "control_text": "Short retain",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "858-745",
+    "predicted_top10": [
+      "715-681",
+      "027-555",
+      "227-045",
+      "802-056",
+      "553-413",
+      "333-858",
+      "525-361",
+      "524-446",
+      "338-370",
+      "743-110"
+    ]
+  },
+  {
+    "control_text": "Obfuscate training data",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "488-626",
+    "predicted_top10": [
+      "488-626",
+      "440-372",
+      "474-203",
+      "220-870",
+      "768-532",
+      "567-025",
+      "044-202",
+      "173-554",
+      "805-126",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Federated learning",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "661-440",
+    "predicted_top10": [
+      "661-440",
+      "860-723",
+      "881-234",
+      "883-173",
+      "852-770",
+      "423-055",
+      "646-285",
+      "467-215",
+      "364-516",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "Least model privilege",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "220-442",
+      "715-644",
+      "182-732",
+      "540-566",
+      "342-781",
+      "267-786",
+      "141-385",
+      "123-124",
+      "637-021",
+      "474-203"
+    ]
+  },
+  {
+    "control_text": "Oversight",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "205-522",
+    "predicted_top10": [
+      "567-755",
+      "766-162",
+      "510-324",
+      "464-513",
+      "261-010",
+      "217-168",
+      "571-271",
+      "205-522",
+      "854-643",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "AI transparency",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "810-884",
+    "predicted_top10": [
+      "364-516",
+      "646-285",
+      "818-434",
+      "663-200",
+      "430-722",
+      "382-481",
+      "041-173",
+      "768-532",
+      "474-203",
+      "225-553"
+    ]
+  },
+  {
+    "control_text": "Runtime model integrity",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "276-748",
+    "predicted_top10": [
+      "276-748",
+      "130-171",
+      "474-203",
+      "061-753",
+      "307-507",
+      "663-550",
+      "481-710",
+      "637-021",
+      "467-215",
+      "088-316"
+    ]
+  },
+  {
+    "control_text": "Runtime model io integrity",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "130-171",
+    "predicted_top10": [
+      "276-748",
+      "130-171",
+      "474-203",
+      "307-507",
+      "637-021",
+      "182-732",
+      "061-753",
+      "342-781",
+      "663-550",
+      "347-352"
+    ]
+  },
+  {
+    "control_text": "Runtime model confidentiality",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "805-126",
+    "predicted_top10": [
+      "805-126",
+      "474-203",
+      "267-786",
+      "182-732",
+      "141-385",
+      "342-781",
+      "220-870",
+      "768-532",
+      "818-434",
+      "663-550"
+    ]
+  },
+  {
+    "control_text": "Model obfuscation",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "474-203",
+    "predicted_top10": [
+      "474-203",
+      "488-626",
+      "805-126",
+      "430-722",
+      "768-532",
+      "663-550",
+      "010-108",
+      "440-372",
+      "141-385",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "Model input confidentiality",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "768-532",
+    "predicted_top10": [
+      "768-532",
+      "474-203",
+      "805-126",
+      "440-372",
+      "220-870",
+      "488-626",
+      "044-202",
+      "430-722",
+      "475-586",
+      "077-235"
+    ]
+  },
+  {
+    "control_text": "Encode model output",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "430-722",
+    "predicted_top10": [
+      "430-722",
+      "474-203",
+      "488-626",
+      "780-757",
+      "768-532",
+      "805-126",
+      "010-108",
+      "467-215",
+      "204-272",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "Model output contains conventional injection",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "780-757",
+    "predicted_top10": [
+      "780-757",
+      "467-215",
+      "430-722",
+      "547-283",
+      "020-540",
+      "843-475",
+      "483-253",
+      "532-102",
+      "641-760",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Augmentation data confidentiality",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "440-372",
+    "predicted_top10": [
+      "220-870",
+      "440-372",
+      "044-202",
+      "173-554",
+      "077-772",
+      "768-532",
+      "805-126",
+      "488-626",
+      "447-083",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Augmentation data leak",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "173-554",
+    "predicted_top10": [
+      "173-554",
+      "077-235",
+      "356-282",
+      "077-772",
+      "440-372",
+      "044-202",
+      "768-532",
+      "488-626",
+      "805-126",
+      "220-870"
+    ]
+  },
+  {
+    "control_text": "Augmentation data integrity",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "088-316",
+    "predicted_top10": [
+      "088-316",
+      "307-507",
+      "567-025",
+      "217-163",
+      "615-663",
+      "488-626",
+      "041-188",
+      "440-372",
+      "456-636",
+      "504-340"
+    ]
+  },
+  {
+    "control_text": "Augmentation data manipulation",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "217-163",
+    "predicted_top10": [
+      "217-163",
+      "567-025",
+      "058-443",
+      "088-316",
+      "780-757",
+      "563-186",
+      "843-475",
+      "467-215",
+      "615-663",
+      "641-760"
+    ]
+  },
+  {
+    "control_text": "AI Program",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "755-340",
+    "predicted_top10": [
+      "755-340",
+      "364-516",
+      "663-200",
+      "041-173",
+      "533-635",
+      "547-824",
+      "860-723",
+      "225-553",
+      "205-522",
+      "382-481"
+    ]
+  },
+  {
+    "control_text": "Check AI compliance",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "646-285",
+    "predicted_top10": [
+      "646-285",
+      "364-516",
+      "547-824",
+      "663-200",
+      "881-234",
+      "852-770",
+      "582-035",
+      "041-173",
+      "510-324",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "AI security education",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "533-635",
+    "predicted_top10": [
+      "533-635",
+      "408-838",
+      "364-516",
+      "663-200",
+      "244-750",
+      "384-015",
+      "041-173",
+      "428-544",
+      "547-824",
+      "755-340"
+    ]
+  },
+  {
+    "control_text": "Direct runtime model poisoning",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "020-540",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "020-540",
+      "307-507",
+      "867-642",
+      "838-636",
+      "217-163",
+      "276-748",
+      "467-215",
+      "555-083"
+    ]
+  },
+  {
+    "control_text": "Direct runtime model leak",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "182-732",
+    "predicted_top10": [
+      "182-732",
+      "342-781",
+      "474-203",
+      "141-385",
+      "805-126",
+      "077-235",
+      "077-772",
+      "818-434",
+      "173-554",
+      "267-786"
+    ]
+  },
+  {
+    "control_text": "Direct prompt injection",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "686-110",
+      "012-625",
+      "536-158",
+      "483-253",
+      "843-475",
+      "106-447",
+      "780-757",
+      "020-540",
+      "187-083",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "Indirect prompt injection",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "012-625",
+    "predicted_top10": [
+      "012-625",
+      "686-110",
+      "483-253",
+      "536-158",
+      "843-475",
+      "106-447",
+      "780-757",
+      "187-083",
+      "860-723",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "Evasion (e.g. adversarial examples)",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "370-877",
+      "467-215",
+      "384-015",
+      "408-838",
+      "011-322",
+      "989-492",
+      "342-641",
+      "576-262",
+      "333-480",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Direct development-time model poisoning",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "867-642",
+    "predicted_top10": [
+      "481-710",
+      "867-642",
+      "020-540",
+      "615-663",
+      "555-083",
+      "276-748",
+      "838-636",
+      "234-123",
+      "854-183",
+      "130-171"
+    ]
+  },
+  {
+    "control_text": "Model inversion / Membership inference",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "532-102",
+      "141-385",
+      "663-550",
+      "011-087",
+      "474-203",
+      "227-045",
+      "743-110",
+      "713-683",
+      "475-586"
+    ]
+  },
+  {
+    "control_text": "Development-time data leak",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "077-772",
+    "predicted_top10": [
+      "173-554",
+      "356-282",
+      "077-235",
+      "077-772",
+      "440-372",
+      "854-643",
+      "044-202",
+      "818-434",
+      "220-870",
+      "040-843"
+    ]
+  },
+  {
+    "control_text": "Direct development-time model leak",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "342-781",
+    "predicted_top10": [
+      "342-781",
+      "182-732",
+      "077-235",
+      "433-442",
+      "818-434",
+      "745-356",
+      "474-203",
+      "805-126",
+      "173-554",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "AI resource exhaustion attack",
+    "framework": "OWASP AI Exchange",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "230-318",
+      "108-316",
+      "886-662",
+      "630-573",
+      "746-705",
+      "463-820",
+      "176-154",
+      "268-088",
+      "660-052",
+      "187-083"
+    ]
+  }
+]

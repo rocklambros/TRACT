@@ -28,6 +28,34 @@ class TestScanForSecrets:
         findings = scan_for_secrets(tmp_path)
         assert len(findings) > 0
 
+    @pytest.mark.parametrize("leaked", [
+        "/home/rock/models/tract",
+        "/Users/rock/github_projects/TRACT",
+        "/Users/someoneelse/github_projects/TRACT",
+        "/home/anotheruser/data/training",
+        str(Path.home() / "github_projects" / "TRACT"),
+    ])
+    def test_detects_any_home_path_not_just_the_original_ones(
+        self, tmp_path, leaked: str
+    ) -> None:
+        """The pattern was pinned to two usernames from the Jetson era.
+
+        This repo has since moved to a different account, so a leaked local path
+        would have passed the pre-publication scan. The check has to match the
+        shape of a home path, not an enumerated list of them.
+        """
+        from tract.publish.security import scan_for_secrets
+        (tmp_path / "script.py").write_text(f'MODEL_PATH = "{leaked}"')
+        assert scan_for_secrets(tmp_path), f"{leaked} was not flagged"
+
+    def test_tilde_paths_are_not_flagged(self, tmp_path) -> None:
+        """~ is the portable form and carries no account name, so it is fine."""
+        from tract.publish.security import scan_for_secrets
+        (tmp_path / "PROVENANCE.txt").write_text(
+            "copied from ~/github_projects/ai-security-framework-crosswalk/"
+        )
+        assert not scan_for_secrets(tmp_path)
+
     def test_detects_email(self, tmp_path) -> None:
         from tract.publish.security import scan_for_secrets
         (tmp_path / "README.md").write_text("Contact: user@example.com")

@@ -13,6 +13,13 @@ SAMPLE_FOLD_RESULTS = [
     {"fold": "OWASP Top10 for ML", "hit1": 0.714, "zs_hit1": 0.429, "n": 7, "hit_any": 0.86},
 ]
 
+# The card computes the aggregate hit@1 interval by fold-stratified bootstrap,
+# so each fold must carry its per-item indicators. Derived from the fold's own
+# hit1 and n to keep the fixture self-consistent.
+for _f in SAMPLE_FOLD_RESULTS:
+    _hits = round(_f["hit1"] * _f["n"])
+    _f["hit1_indicators"] = [1.0] * _hits + [0.0] * (_f["n"] - _hits)
+
 SAMPLE_CALIBRATION = {
     "t_deploy": 0.074,
     "ood_threshold": 0.568,
@@ -84,6 +91,21 @@ class TestGenerateModelCard:
         assert "limitation" in content.lower()
 
     def test_contains_license(self, tmp_path) -> None:
+        """The front matter declares `other`, and the body says why.
+
+        This card declared `license: mit` while the dataset card built from the
+        same 31 sources declared `cc-by-sa-4.0`. `mit` stated the base model's
+        terms as though they covered the fine-tuned weights, the bundled
+        hierarchy and the hub descriptions.
+
+        The MIT reference survives in the body because the base model really is
+        MIT and its terms travel with the weights. What must not survive is the
+        front-matter declaration, so this asserts on both directions.
+        """
+        from tract.licensing import (
+            NOTICE_FILENAME,
+            published_license_frontmatter,
+        )
         from tract.publish.model_card import generate_model_card
         generate_model_card(
             tmp_path, fold_results=SAMPLE_FOLD_RESULTS,
@@ -91,7 +113,53 @@ class TestGenerateModelCard:
             bridge_summary=SAMPLE_BRIDGE, gpu_hours=2.5,
         )
         content = (tmp_path / "README.md").read_text()
+        front_matter = content.split("---", 2)[1]
+
+        assert published_license_frontmatter() in front_matter
+        assert "license: mit" not in front_matter, (
+            "the withdrawn MIT declaration is back in the model card's YAML"
+        )
+        assert NOTICE_FILENAME in content, (
+            "the card does not point a reader at the per-framework terms"
+        )
         assert "MIT" in content
+
+    def test_both_published_cards_declare_the_same_licence(
+        self, tmp_path,
+    ) -> None:
+        """Four declarations across three artifacts stated three answers.
+
+        Rendering both cards and comparing their licence blocks is what makes
+        that class of drift impossible to reintroduce by editing one file.
+        """
+        from tract.dataset.card import generate_dataset_card
+        from tract.licensing import published_license_frontmatter
+        from tract.publish.model_card import generate_model_card
+
+        model_dir = tmp_path / "model"
+        model_dir.mkdir()
+        generate_model_card(
+            model_dir, fold_results=SAMPLE_FOLD_RESULTS,
+            calibration=SAMPLE_CALIBRATION, ece_data=SAMPLE_ECE,
+            bridge_summary=SAMPLE_BRIDGE, gpu_hours=2.5,
+        )
+
+        dataset_dir = tmp_path / "dataset"
+        dataset_dir.mkdir()
+        generate_dataset_card(
+            dataset_dir,
+            framework_metadata=[],
+            review_metrics={},
+            bundle_stats={"total_rows": 0, "frameworks": 0},
+        )
+
+        block = published_license_frontmatter()
+        for card in (model_dir / "README.md", dataset_dir / "README.md"):
+            assert block in card.read_text(encoding="utf-8"), (
+                f"{card.parent.name} card does not carry the shared licence "
+                f"block. The two published cards must not state different "
+                f"terms for work drawn from the same sources."
+            )
 
     def test_contains_bridge_summary(self, tmp_path) -> None:
         from tract.publish.model_card import generate_model_card
@@ -115,3 +183,51 @@ class TestGenerateModelCard:
         assert "/home/rock" not in content
         assert "sk-" not in content
         assert "hf_" not in content
+
+
+class TestErratumSurvivesRegeneration:
+    """README.md links to #erratum-2026-08-15 on the published model card.
+
+    The erratum lived only in the uploaded artifact, not in this generator, so
+    the next publish would have dropped the section and left the repository
+    pointing at an anchor that no longer resolved. These tests pin the erratum
+    to the generator and pin the heading text that produces the anchor.
+    """
+
+    def _card(self, tmp_path) -> str:
+        from tract.publish.model_card import generate_model_card
+        generate_model_card(
+            tmp_path,
+            fold_results=SAMPLE_FOLD_RESULTS,
+            calibration=SAMPLE_CALIBRATION,
+            ece_data=SAMPLE_ECE,
+            bridge_summary=SAMPLE_BRIDGE,
+            gpu_hours=2.5,
+        )
+        return (tmp_path / "README.md").read_text(encoding="utf-8")
+
+    def test_heading_produces_the_anchor_the_readme_links_to(self, tmp_path) -> None:
+        # GitHub and HuggingFace slugify "## Erratum 2026-08-15" to
+        # "#erratum-2026-08-15". Changing this heading breaks README.md:48.
+        assert "## Erratum 2026-08-15" in self._card(tmp_path)
+
+    def test_states_the_figures_are_withdrawn(self, tmp_path) -> None:
+        card = self._card(tmp_path).lower()
+        assert "withdrawn" in card
+        assert "pre-registered gate" in card
+
+    def test_names_the_specific_audit_failures(self, tmp_path) -> None:
+        card = self._card(tmp_path)
+        assert "arithmetic on the point estimate" in card
+        assert "-0.0004" in card
+        assert "1,265" in card
+
+    def test_scopes_the_review_claim(self, tmp_path) -> None:
+        # The card is hard-wrapped, so claims span newlines. Collapse whitespace
+        # before matching or the assertion depends on where the wrap happens to
+        # fall, which is not what is being tested.
+        card = " ".join(self._card(tmp_path).split())
+        assert "single reviewer" in card
+        assert "13 of 20" in card
+        assert "Inter-rater reliability is not measured" in card
+        assert "imported rather than reviewed here" in card

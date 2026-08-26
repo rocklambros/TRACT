@@ -1,0 +1,56 @@
+{
+  "aggregate_hit1": {
+    "ci_high": 0.4838709677419355,
+    "ci_low": 0.2903225806451613,
+    "fold_sizes": {
+      "ISO 27001": 93
+    },
+    "macro_mean": 0.3870967741935484,
+    "mean": 0.3870967741935484,
+    "n_folds": 1,
+    "n_resamples": 10000,
+    "n_total": 93
+  },
+  "config_name": "c2_canary_qwen",
+  "gate": {
+    "alpha_effective": 0.010206218313011495,
+    "ci_high": 0.3333333333333333,
+    "ci_high_familywise": 0.3655913978494624,
+    "ci_low": 0.11827956989247312,
+    "ci_low_familywise": 0.08602150537634409,
+    "ci_low_pass": true,
+    "familywise_pass": false,
+    "macro_delta": 0.22580645161290322,
+    "micro_delta": 0.22580645161290322,
+    "n_configurations": 5,
+    "n_total": 93,
+    "negative_folds": [],
+    "p_value": 0.0,
+    "paired": true,
+    "per_fold": {
+      "ISO 27001": {
+        "delta": 0.22580645161290322,
+        "n_eval_items": 93,
+        "trained_hit1": 0.3870967741935484,
+        "zero_shot_hit1": 0.16129032258064516
+      }
+    },
+    "point_estimate_pass": true,
+    "selection_optimistic": true,
+    "threshold": 0.1,
+    "verdicts_agree": true,
+    "worst_fold": "ISO 27001",
+    "worst_fold_delta": 0.22580645161290322
+  },
+  "per_fold": {
+    "ISO 27001": {
+      "hit_at_1": 0.3870967741935484,
+      "hit_at_5": 0.5376344086021505,
+      "mrr": 0.46106672884435207,
+      "ndcg_at_10": 0.4978498112111764
+    }
+  },
+  "scoped_to_folds": [
+    "ISO 27001"
+  ]
+}

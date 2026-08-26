@@ -18,7 +18,7 @@ import os
 import subprocess
 import time
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from scripts.phase0.runpod_provision import (
     create_pod,
@@ -32,10 +32,19 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase1c"
 POD_STATE_FILE: Final[Path] = PROJECT_ROOT / "scripts" / "phase1c" / ".pod_state_retrain.json"
+KNOWN_HOSTS_FILE: Final[Path] = (
+    PROJECT_ROOT / "scripts" / "phase1c" / ".runpod_known_hosts"
+)
 
-SSH_KEY: Final[str] = os.path.expanduser("~/.ssh/id_ed25519")
+# The run-scoped key, not the operator's general-purpose identity. This
+# module used ~/.ssh/id_ed25519, so a compromised pod got the key that opens
+# everything else the operator can reach.
+SSH_KEY: Final[str] = os.path.expanduser("~/.ssh/tract_runpod")
 SSH_OPTS: Final[str] = (
-    f"-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
+    # accept-new with a recorded known_hosts, not "no" with /dev/null: the
+    # latter trusts whatever answers on every reconnect, for the whole run.
+    f"-o StrictHostKeyChecking=accept-new "
+    f"-o UserKnownHostsFile={KNOWN_HOSTS_FILE} "
     f"-o LogLevel=ERROR -o ServerAliveInterval=60 -o ServerAliveCountMax=10 "
     f"-i {SSH_KEY}"
 )
@@ -55,7 +64,12 @@ def _get_credential(name: str) -> str:
 
 def _get_pod_env() -> dict[str, str]:
     env: dict[str, str] = {}
-    for cred, var in [("wandb/api-key", "WANDB_API_KEY"), ("huggingface/token", "HF_TOKEN")]:
+    # A READ-ONLY HuggingFace token and nothing else. This shipped
+    # `pass huggingface/token` -- fine-grained with repo.write to the
+    # published model and dataset -- plus the account-wide WandB key, to five
+    # rented hosts, to download a public model. runpod_parallel refuses that
+    # trade in a nine-line docstring; this module made it anyway.
+    for cred, var in [("huggingface/read-token", "HF_TOKEN")]:
         try:
             env[var] = _get_credential(cred)
         except Exception as e:
@@ -68,7 +82,7 @@ def _ssh(
     check: bool = True,
     env: dict[str, str] | None = None,
     timeout: int = 7200,
-) -> subprocess.CompletedProcess:
+) -> subprocess.CompletedProcess[str]:
     env_lines = ""
     if env:
         env_lines = "\n".join(f'export {k}="{v}"' for k, v in env.items()) + "\n"
@@ -96,9 +110,13 @@ def _ssh(
 
 def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
     cmd = (
+        # Mirrors runpod_parallel's list. This one omitted .env, *.db,
+        # data/raw and .claude, so crosswalk.db shipped to every pod.
         f"rsync -rltz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
         f"--exclude='.mypy_cache' --exclude='models' "
-        f"--exclude='wandb' --exclude='.wandb' "
+        f"--exclude='wandb' --exclude='.wandb' --exclude='.env' "
+        f"--exclude='*.db' --exclude='data/raw' --exclude='.claude' "
+        f"--exclude='venv' --exclude='.venv' --exclude='.pod_state*' "
         f"--exclude='results/phase0' --exclude='results/phase1b' "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
@@ -112,19 +130,20 @@ def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
     subprocess.run(cmd, shell=True, check=True, timeout=600)
 
 
-def _save_pod_state(pod: dict) -> None:
+def _save_pod_state(pod: dict[str, Any]) -> None:
     POD_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     POD_STATE_FILE.write_text(json.dumps(pod, indent=2, sort_keys=True))
     logger.info("Pod state saved to %s", POD_STATE_FILE)
 
 
-def _load_pod_state() -> dict:
+def _load_pod_state() -> dict[str, Any]:
     if not POD_STATE_FILE.exists():
         raise FileNotFoundError(f"No pod state file at {POD_STATE_FILE} — run 'provision' first")
-    return json.loads(POD_STATE_FILE.read_text())
+    state: dict[str, Any] = json.loads(POD_STATE_FILE.read_text())
+    return state
 
 
-def provision() -> dict:
+def provision() -> dict[str, Any]:
     logger.info("Finding fastest available GPU (>= 48GB VRAM)...")
     gpu_type = find_fastest_available(min_vram_gb=48)
     logger.info("Selected GPU: %s", gpu_type)
@@ -139,7 +158,7 @@ def provision() -> dict:
     return pod
 
 
-def _bootstrap(pod: dict) -> None:
+def _bootstrap(pod: dict[str, Any]) -> None:
     ip, port = pod["ip"], pod["port"]
     logger.info("Bootstrapping pod %s:%d...", ip, port)
 
@@ -209,7 +228,7 @@ def collect(round_num: int) -> None:
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    for subdir in ["calibration", "deployment_model", "holdout", "similarities", f"round_1"]:
+    for subdir in ["calibration", "deployment_model", "holdout", "similarities", "round_1"]:
         local = RESULTS_DIR / subdir
         local.mkdir(parents=True, exist_ok=True)
         try:

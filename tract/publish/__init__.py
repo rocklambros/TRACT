@@ -85,6 +85,7 @@ def publish_to_huggingface(
     """
     import shutil
 
+    from tract.licensing import copy_licensing_files
     from tract.publish.bundle import bundle_inference_data
     from tract.publish.merge import merge_lora_adapters
     from tract.publish.model_card import generate_model_card
@@ -128,6 +129,12 @@ def publish_to_huggingface(
     logger.info("Step 4/7: Writing standalone scripts...")
     write_predict_script(staging_dir)
     write_train_script(staging_dir)
+
+    # The licence record travels with the weights. The card's license_link
+    # points at NOTICE inside this directory, so a consumer who downloads the
+    # model and never visits the source repository can still read the terms of
+    # every framework the weights were trained on.
+    copy_licensing_files(staging_dir)
 
     logger.info("Step 5/7: AIBOM validation...")
     _validate_aibom(staging_dir)

@@ -27,6 +27,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -60,6 +62,19 @@ ROMAN_NUMERALS: dict[str, int] = {
 }
 
 
+def _attr(tag: Tag, name: str) -> str:
+    """Return a single-valued attribute as a string.
+
+    bs4 types every attribute as ``str | list[str]`` because HTML permits
+    multi-valued attributes such as class. The ids read here are
+    single-valued, so collapse rather than widening every caller.
+    """
+    value = tag.get(name, "")
+    if isinstance(value, list):
+        return " ".join(value)
+    return value
+
+
 def _clean_text(tag: Tag) -> str:
     """Return all text from *tag*, collapsing whitespace runs to single spaces.
 
@@ -86,7 +101,7 @@ def _extract_article(div: Tag) -> tuple[int, str, str] | None:
     Raises:
         ValueError: If the article number cannot be parsed from the element.
     """
-    m = ART_DIV_ID_RE.match(div.get("id", ""))
+    m = ART_DIV_ID_RE.match(_attr(div, "id"))
     if m is None:
         return None
 
@@ -100,7 +115,11 @@ def _extract_article(div: Tag) -> tuple[int, str, str] | None:
 
     # Article subtitle: first <p class="oj-sti-art"> in eli-title
     sti_tag = div.find("p", class_="oj-sti-art")
-    title_text = _clean_text(sti_tag) if sti_tag else f"Article {art_num}"
+    title_text = (
+        _clean_text(sti_tag)
+        if isinstance(sti_tag, Tag)
+        else f"Article {art_num}"
+    )
     # Strip stray backtick from Article 1 subtitle in source HTML
     title_text = title_text.rstrip("`").strip()
 
@@ -139,7 +158,7 @@ def _extract_annex(div: Tag) -> tuple[str, str, str] | None:
         A 3-tuple ``(roman_numeral, subtitle, body_text)`` on success, or
         ``None`` if the element does not look like an annex.
     """
-    m = ANX_DIV_ID_RE.match(div.get("id", ""))
+    m = ANX_DIV_ID_RE.match(_attr(div, "id"))
     if m is None:
         return None
 
@@ -198,6 +217,12 @@ class EuAiActParser(BaseParser):
     )
     mapping_unit_level = "article"
     expected_count = 126  # 113 articles + 13 annexes
+    fetched_date: ClassVar[str] = "2026-08-14"
+    # All 126 units carry a statement and none equals its title. The shortest is
+    # 149 characters, so the attainable value is exactly 1.0 and the floor fires
+    # at 125/126 (0.9921) if one article or annex decays to its heading.
+    # [measured 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         """Parse Articles 1-113 and Annexes I-XIII from the EUR-Lex HTML.
@@ -216,7 +241,7 @@ class EuAiActParser(BaseParser):
             )
 
         logger.info("Loading HTML from %s", html_path)
-        html_text = html_path.read_text(encoding="utf-8")
+        html_text = self.read_source("eu_ai_act_2024_1689.html")
 
         soup = BeautifulSoup(html_text, "html.parser")
         controls: list[Control] = []
@@ -261,10 +286,10 @@ class EuAiActParser(BaseParser):
         logger.info("Found %d annex container elements", len(annex_divs))
 
         for div in annex_divs:
-            result = _extract_annex(div)
-            if result is None:
+            annex = _extract_annex(div)
+            if annex is None:
                 continue
-            roman, subtitle, body = result
+            roman, subtitle, body = annex
             control_id = f"AIA-Annex{roman}"
             if control_id in seen_ids:
                 logger.debug("Duplicate annex %s — skipping", control_id)

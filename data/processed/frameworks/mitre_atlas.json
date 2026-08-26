@@ -1733,6 +1733,13 @@
   "framework_id": "mitre_atlas",
   "framework_name": "MITRE ATLAS",
   "mapping_unit_level": "technique",
+  "source_files": [
+    {
+      "bytes": 494103,
+      "path": "ATLAS_compiled.json",
+      "sha256": "e723156f820d69d9d7ac2058401e9b8b6a227ca663a11d25fba9002c3d1dba85"
+    }
+  ],
   "source_url": "https://atlas.mitre.org",
   "version": "4.6.1"
 }

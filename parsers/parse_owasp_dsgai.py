@@ -13,6 +13,7 @@ import json
 import logging
 import re
 from pathlib import Path
+from typing import Any, ClassVar
 
 from tract.parsers.base import BaseParser
 from tract.schema import Control
@@ -50,6 +51,12 @@ class OwaspDsgaiParser(BaseParser):
     source_url = "https://genai.owasp.org/"
     mapping_unit_level = "risk"
     expected_count = 21
+    fetched_date: ClassVar[str] = "2026-08-14"
+    # All 21 risks carry a statement and none equals its title. The shortest is
+    # 1,941 characters, so the attainable value is exactly 1.0 and the floor
+    # fires at 20/21 (0.9524) if one risk decays to its heading. [measured
+    # 2026-08-19]
+    min_prose_fraction: ClassVar[float] = 1.0
 
     def parse(self) -> list[Control]:
         """Parse DSGAI sections from the pdftotext output.
@@ -66,8 +73,7 @@ class OwaspDsgaiParser(BaseParser):
         if not manifest_path.exists():
             raise FileNotFoundError(f"MANIFEST.json not found at {manifest_path}")
 
-        with manifest_path.open(encoding="utf-8") as fh:
-            manifest: dict = json.load(fh)
+        manifest: dict[str, Any] = json.loads(self.read_source("MANIFEST.json"))
 
         source_file: str = manifest.get("source_file", "")
         if not source_file:
@@ -77,7 +83,7 @@ class OwaspDsgaiParser(BaseParser):
         if not txt_path.exists():
             raise FileNotFoundError(f"Source text file not found: {txt_path}")
 
-        text = txt_path.read_text(encoding="utf-8")
+        text = self.read_source(source_file)
         logger.debug("Read %d characters from %s", len(text), txt_path)
 
         return self._extract_controls(text)
@@ -107,7 +113,7 @@ class OwaspDsgaiParser(BaseParser):
 
         # Deduplicate: first occurrence of each ID is the real section.
         seen_ids: set[str] = set()
-        unique_matches: list[re.Match] = []
+        unique_matches: list[re.Match[str]] = []
         for m in matches:
             cid = m.group(1)
             if cid not in seen_ids:

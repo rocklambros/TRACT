@@ -10,24 +10,46 @@ import logging
 import os
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import numpy as np
 import torch
 from datasets import Dataset
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, TaskType
 from sentence_transformers import (
     SentenceTransformer,
     SentenceTransformerTrainer,
     SentenceTransformerTrainingArguments,
 )
-from sentence_transformers.losses import MultipleNegativesRankingLoss
-from sentence_transformers.training_args import BatchSamplers
 
+from tract.encoders import resolve
+from tract.training.checkpoint import (
+    assert_loadable_checkpoint,
+    save_sentence_transformer,
+)
 from tract.training.config import TrainingConfig
 from tract.training.data import HubAwareTemperatureSampler
+from tract.training.st_compat import resolve_symbol
 
 logger = logging.getLogger(__name__)
+
+# Both symbols moved into per-encoder subpackages in sentence-transformers 5.4.
+# The training pin is 5.7.0 and the serving pin is 3.2.0, so no single literal
+# import path works in both environments. See tract/training/st_compat.py for
+# the verified matrix.
+MultipleNegativesRankingLoss = resolve_symbol("MultipleNegativesRankingLoss")
+BatchSamplers = resolve_symbol("BatchSamplers")
+
+# Probes for the save/reload check in save_checkpoint. Mirrors the pattern in
+# tract/publish/merge.py. Content is arbitrary; only the embeddings matter.
+CHECKPOINT_PROBE_TEXTS = [
+    "Implement access controls for AI model training pipelines",
+    "Data encryption at rest using AES-256",
+    "Regularly audit AI system outputs for bias and fairness",
+]
+# Same bar the merge path uses for "these are the same model". Float32 reload
+# noise sits many orders of magnitude below this; a lost adapter lands near 0.4.
+CHECKPOINT_COSINE_THRESHOLD = 0.999
 
 
 def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
@@ -35,7 +57,9 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
 
     If config.lora_rank == 0, returns the base model for full fine-tuning.
     """
-    model = SentenceTransformer(config.base_model)
+    model = SentenceTransformer(
+        config.base_model, revision=config.base_model_revision,
+    )
     model.max_seq_length = config.max_seq_length
 
     if config.lora_rank > 0:
@@ -43,19 +67,136 @@ def load_model_with_lora(config: TrainingConfig) -> SentenceTransformer:
             r=config.lora_rank,
             lora_alpha=config.lora_alpha,
             lora_dropout=config.lora_dropout,
-            target_modules=config.lora_target_modules,
+            target_modules=config.resolved_lora_targets(),
             task_type=TaskType.FEATURE_EXTRACTION,
         )
-        model[0].auto_model = get_peft_model(model[0].auto_model, lora_config)
+        # Do NOT assign to model[0].auto_model. sentence-transformers 5.7 made
+        # auto_model a read-only property aliasing `.model`, and
+        # nn.Module.__setattr__ accepts an assignment to a property name without
+        # raising -- it files the value into _modules, which property reads never
+        # consult. Training still worked (get_peft_model mutates the module tree
+        # in place) but save_pretrained ran against the unwrapped backbone and
+        # wrote peft-mangled keys with no adapter_config.json, so the checkpoint
+        # reloaded with randomly initialised q/k/v. Measured cosine on reload was
+        # 0.38. add_adapter is the supported surface and exists on
+        # PeftAdapterMixin in every sentence-transformers version we pin.
+        model.add_adapter(lora_config)
 
         trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
         total = sum(p.numel() for p in model.parameters())
+        # A silent no-op here is the exact failure this migration fixes, so make
+        # "no adapter attached" and "base model not frozen" both loud.
+        if trainable == 0:
+            raise RuntimeError(
+                "LoRA adapter did not attach: no trainable parameters after "
+                f"add_adapter with target_modules={config.resolved_lora_targets()}. "
+                "Check that the target module names match this architecture."
+            )
+        if trainable >= total:
+            raise RuntimeError(
+                f"LoRA adapter attached but the base model was not frozen: "
+                f"{trainable:,} trainable of {total:,} total. This would train "
+                "every weight rather than the adapter."
+            )
         logger.info("LoRA applied: %s trainable / %s total (%.2f%%)",
                     f"{trainable:,}", f"{total:,}", 100 * trainable / total)
     else:
         logger.info("Full fine-tuning (no LoRA)")
 
     return model
+
+
+# Measured on an H100 80GB: batch 32 x 512 tokens with gradient checkpointing
+# peaked at 13.6GB, so roughly 0.83MB per token-slot including optimizer state
+# and the MNRL similarity matrix. The ceiling below leaves ~40% headroom for
+# the longest batch rather than the average one.
+TOKEN_SLOTS_PER_GB: Final[float] = 16384 / 13.6
+SAFE_TOKEN_SLOTS: Final[int] = int(48 * TOKEN_SLOTS_PER_GB)
+
+
+def _assert_memory_budget(config: TrainingConfig) -> None:
+    """Refuse a configuration that will OOM, before it costs GPU hours.
+
+    batch_size x max_seq_length is the quantity that drives peak activation
+    memory, and both became experiment variables. batch 32 at 8192 tokens is
+    16x the measured-safe workload; on an XLM-R-large encoder in eager
+    attention a single layer's score tensor alone is ~69GB. The failure
+    arrives partway through an epoch on an unattended fleet, which is the
+    worst place to discover it.
+
+    Raises with the batch size that would fit, so the fix is mechanical.
+    """
+    # Scale the BGE-calibrated ceiling by this encoder's width x depth.
+    # Qwen3-Embedding-4B is 2560 wide and 36 deep, 3.75x BGE's activation
+    # cost per token-slot, so a guard tuned on BGE alone would wave through a
+    # configuration that OOMs immediately.
+    spec = resolve(config.base_model)
+    budget = int(SAFE_TOKEN_SLOTS / spec.activation_cost_ratio)
+    slots = config.batch_size * config.max_seq_length
+    if slots <= budget:
+        return
+    fits = max(1, budget // config.max_seq_length)
+    raise ValueError(
+        f"batch_size={config.batch_size} x max_seq_length="
+        f"{config.max_seq_length} = {slots:,} token-slots exceeds the "
+        f"{budget:,} safe for {config.base_model} on an 80GB card with "
+        f"gradient checkpointing ({SAFE_TOKEN_SLOTS:,} measured on BGE-large, "
+        f"scaled by this encoder's {spec.activation_cost_ratio:.2f}x "
+        f"activation cost). Use --batch-size {fits} or lower the token "
+        f"budget. "
+        f"Note that changing batch_size changes the in-batch negatives "
+        f"MultipleNegativesRankingLoss draws on, so an arm at a different "
+        f"batch size is not comparable to one at 32."
+    )
+
+
+def _assert_adapter_learned(model: Any, config: TrainingConfig) -> None:
+    """Fail if training ran but the adapter never moved.
+
+    PEFT initialises every lora_B to zeros, so the adapter is the identity
+    until a gradient reaches it. If lora_B is still all zeros after training,
+    the run produced the base model wearing an adapter that does nothing,
+    and every downstream metric would describe the base model while the
+    record claimed a fine-tune. Loss going down does not rule this out --
+    with a frozen backbone and no gradient path there would be no loss curve
+    at all, but a partially connected graph can still produce one.
+
+    This matters most with gradient checkpointing: a frozen backbone plus the
+    default reentrant implementation means the checkpointed segment sees no
+    input requiring grad, and torch drops the gradient silently rather than
+    raising. use_reentrant=False avoids that; this asserts it worked.
+    """
+    import torch
+
+    lora_b = [
+        (name, param) for name, param in model.named_parameters()
+        if "lora_B" in name
+    ]
+    if not lora_b:
+        if config.lora_rank == 0:
+            return          # full fine-tune arm has no adapter to check
+        raise RuntimeError(
+            "No lora_B parameters found after training, so the adapter is not "
+            "attached to the model that was trained."
+        )
+
+    moved = [name for name, param in lora_b if torch.any(param != 0).item()]
+    if not moved:
+        raise RuntimeError(
+            f"All {len(lora_b)} lora_B tensors are still zero after training. "
+            f"PEFT initialises them to zero, so the adapter is the identity "
+            f"and this run produced the base model. No gradient reached the "
+            f"adapter"
+            + (
+                "; gradient_checkpointing is on, which drops gradients "
+                "silently when the checkpointed segment has no input "
+                "requiring grad."
+                if config.gradient_checkpointing else "."
+            )
+        )
+    logger.info(
+        "Adapter learned: %d/%d lora_B tensors are non-zero", len(moved), len(lora_b),
+    )
 
 
 def train_model(
@@ -93,11 +234,21 @@ def train_model(
             hub_ids=list(train_dataset["hub_id"]),
             is_ai=list(train_dataset["is_ai"]),
             anchor_keys=anchor_keys,
+            strata=(
+                list(train_dataset["branch"])
+                if "branch" in train_dataset.column_names else None
+            ),
+            temperature=config.sampling_temperature,
+            strata_temperature=config.branch_balance_temperature,
         )
-        meta_cols = [c for c in ["hub_id", "is_ai", "anchor_key"]
+        meta_cols = [c for c in ["hub_id", "is_ai", "anchor_key", "branch"]
                      if c in train_dataset.column_names]
         train_dataset = train_dataset.remove_columns(meta_cols)
 
+    # set_metadata was called before this block while the finally that clears
+    # it opened after, so an exception building the arguments left one fold's
+    # hub and branch labels on the class for the next fold in the same
+    # process -- which then batches against another fold's labels.
     training_args = SentenceTransformerTrainingArguments(
         output_dir=str(output_dir),
         num_train_epochs=config.max_epochs,
@@ -107,6 +258,13 @@ def train_model(
         weight_decay=config.weight_decay,
         max_grad_norm=config.max_grad_norm,
         fp16=torch.cuda.is_available(),
+        gradient_checkpointing=config.gradient_checkpointing,
+        # LoRA freezes the backbone, so with the default reentrant
+        # implementation the checkpointed segments see no input requiring
+        # grad and torch silently produces no gradients for the adapter.
+        gradient_checkpointing_kwargs=(
+            {"use_reentrant": False} if config.gradient_checkpointing else None
+        ),
         seed=config.seed,
         logging_steps=10,
         save_strategy="epoch",
@@ -116,8 +274,26 @@ def train_model(
         metric_for_best_model="eval_loss" if eval_dataset is not None else None,
         greater_is_better=False if eval_dataset is not None else None,
         report_to="none",
-        batch_sampler=HubAwareTemperatureSampler if use_custom_sampler else BatchSamplers.BATCH_SAMPLER,
+        # Passing the CLASS is the supported surface, not a mistake. From
+        # sentence-transformers 5.3 the field is typed
+        # `BatchSamplers | str | DefaultBatchSampler | Callable[..., DefaultBatchSampler]`,
+        # __post_init__ coerces only `str`, and
+        # SentenceTransformerTrainer.get_batch_sampler runs
+        # `if inspect.isclass(...) and issubclass(..., DefaultBatchSampler)`
+        # then instantiates it with the dataset (trainer.py:673 in 5.3.0,
+        # base/trainer.py:748 in 5.7.0). Verified by driving that dispatch:
+        # see TestTrainerReachesTheCustomSampler in tests/test_training_data.py.
+        # The 3.2 serving pin, which is what mypy resolves on a machine that
+        # installed the ML stack, still types the field `BatchSamplers | str`;
+        # `unused-ignore` covers the lint environment, where the whole class
+        # is Any and no arg-type error is raised at all.
+        batch_sampler=(
+            HubAwareTemperatureSampler if use_custom_sampler  # type: ignore[arg-type, unused-ignore]
+            else BatchSamplers.BATCH_SAMPLER
+        ),
     )
+
+    _assert_memory_budget(config)
 
     try:
         trainer = SentenceTransformerTrainer(
@@ -132,11 +308,56 @@ def train_model(
                     len(train_dataset), config.max_epochs, config.batch_size, config.learning_rate)
         trainer.train()
         logger.info("Training complete")
+        _assert_adapter_learned(model, config)
     finally:
         if use_custom_sampler:
             HubAwareTemperatureSampler.clear_metadata()
 
     return model
+
+
+def verify_checkpoint_roundtrip(
+    model: SentenceTransformer,
+    saved_dir: Path,
+    threshold: float = CHECKPOINT_COSINE_THRESHOLD,
+) -> float:
+    """Prove the saved directory reproduces the in-memory model's embeddings.
+
+    Folds evaluate the live model and then save it, so an artifact that does not
+    match the evaluated model reports a healthy score for something that was
+    never written to disk. That is exactly how a lost LoRA adapter stayed
+    invisible. Reload what was just written and compare.
+
+    The reload is a plain ``SentenceTransformer(saved_dir)`` on purpose, because
+    that is what every consumer runs: ``load_fold_model``, ``merge_lora_adapters``
+    and anyone who downloads the artifact. An earlier version of this guard
+    reattached the adapter by hand, which meant it could pass on a directory no
+    consumer could open, and it did.
+
+    Returns the minimum per-probe cosine. Raises RuntimeError below threshold.
+    """
+    assert_loadable_checkpoint(saved_dir)
+    reference = model.encode(
+        CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
+    )
+    reloaded = SentenceTransformer(str(saved_dir))
+    reloaded.max_seq_length = model.max_seq_length
+    actual = reloaded.encode(
+        CHECKPOINT_PROBE_TEXTS, normalize_embeddings=True, show_progress_bar=False,
+    )
+
+    cosines = np.sum(reference * actual, axis=1)
+    min_cosine = float(np.min(cosines))
+    if min_cosine < threshold:
+        raise RuntimeError(
+            f"Checkpoint at {saved_dir} does not reproduce the in-memory model: "
+            f"min cosine {min_cosine:.6f} < {threshold}. Per-probe cosines: "
+            f"{cosines.tolist()}. The evaluated model and the saved artifact are "
+            "not the same model, so any metric measured against the live model "
+            "does not describe this checkpoint."
+        )
+    logger.info("Checkpoint round-trip verified: min cosine = %.6f", min_cosine)
+    return min_cosine
 
 
 def save_checkpoint(
@@ -145,11 +366,22 @@ def save_checkpoint(
     metrics: dict[str, Any],
     output_dir: Path,
     git_sha: str = "unknown",
+    verify_roundtrip: bool = True,
 ) -> Path:
-    """Save model checkpoint with full metadata for reproducibility."""
+    """Save model checkpoint with full metadata for reproducibility.
+
+    Args:
+        verify_roundtrip: Reload the saved model and assert it reproduces the
+            in-memory embeddings. Costs one model load. Leave enabled for any
+            run whose metrics will be reported.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    model.save(str(output_dir / "model"))
+    model_dir = output_dir / "model"
+    save_sentence_transformer(model, model_dir)
+
+    if verify_roundtrip:
+        verify_checkpoint_roundtrip(model, model_dir)
 
     metadata = {
         "config": config.to_dict(),

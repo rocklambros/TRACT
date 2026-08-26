@@ -39,16 +39,33 @@ flowchart LR
 
 ## Key Results
 
+> **Model accuracy figures are withdrawn pending re-measurement (2026-08-15).**
+> The previously published hit@1 and its interval did not survive audit: the
+> interval was arithmetic on the point estimate rather than the bootstrap it
+> claimed, the per-fold deltas do not reproduce, and on a larger held-out
+> roster of 1,265 controls fine-tuning showed no improvement over the zero-shot
+> base model (macro delta -0.0004, p = 0.98). See the
+> [erratum on the model card](https://huggingface.co/rockCO78/tract-cre-assignment#erratum-2026-08-15).
+> No replacement figure is quoted until a run clears a pre-registered gate.
+
 | Metric | Value |
 |--------|-------|
-| **Assignment accuracy (hit@1)** | 0.537 [0.463, 0.612] |
-| **Improvement over zero-shot** | +0.139 (baseline: 0.399) |
+| **Assignment accuracy (hit@1)** | withdrawn, see above |
+| **Improvement over zero-shot** | withdrawn, see above |
 | **Crosswalk assignments** | 5,238 across 31 frameworks |
 | **Assignment breakdown** | 4,390 ground truth · 528 expert-reviewed · 320 model predictions |
 | **AI↔traditional bridges** | 46 accepted (of 63 candidates) |
 | **Evaluation** | LOFO cross-validation with hub firewall |
 
-All metrics use 95% bootstrap confidence intervals (10,000 resamples). Full experiment narrative in [`tract_experimental_narrative.ipynb`](tract_experimental_narrative.ipynb).
+The counts above are inventory, not model accuracy. **They are not a quality
+claim either:** the large majority of published assignments are OpenCRE's own
+ground-truth links, imported rather than reviewed here, and the reviewed portion
+is the 878 model predictions judged by a single reviewer whose agreement against
+20 hidden calibration items was 13/20. Inter-rater reliability is not measured.
+An earlier version of this paragraph, written the same day as the withdrawal
+above, claimed every assignment was expert-reviewed. That was wrong and is
+withdrawn. Full experiment narrative in
+[`tract_experimental_narrative.ipynb`](tract_experimental_narrative.ipynb).
 
 ## Quick Start
 
@@ -244,4 +261,10 @@ See [`docs/cli-reference.md`](docs/cli-reference.md) for full options.
 
 ## License
 
-[CC0 1.0 Universal](LICENSE) — dedicated to the public domain.
+[CC0 1.0 Universal](LICENSE) — dedicated to the public domain. That covers
+TRACT's own code, schemas, parsers and derived mappings.
+
+Third-party framework content keeps its publisher's terms. [`NOTICE`](NOTICE)
+lists every framework with its licence and upstream source, names the two
+sources whose text is not redistributed here at all, and records the ones whose
+terms are still undetermined.

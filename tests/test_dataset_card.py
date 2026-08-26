@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from tract.dataset.card import generate_dataset_card
+from tract.licensing import NOTICE_FILENAME, published_license_frontmatter
 
 SAMPLE_FRAMEWORK_METADATA: list[dict] = [
     {
@@ -77,8 +78,31 @@ class TestYAMLFrontmatter:
         assert "language: en" in content
 
     def test_has_license_field(self, card_path: Path) -> None:
+        """The card declares `other` with a name and a link, not one identifier.
+
+        It used to declare `cc-by-sa-4.0` over content drawn from 31
+        publishers, one of them GPL-3.0 and two of whom reserve
+        redistribution. Read from tract.licensing so this test and the model
+        card's cannot pin two different answers.
+        """
         content = card_path.read_text(encoding="utf-8")
-        assert "license: cc-by-sa-4.0" in content
+        assert published_license_frontmatter() in content
+        assert "license: cc-by-sa-4.0" not in content, (
+            "the withdrawn CC BY-SA 4.0 grant is back in the dataset card"
+        )
+
+    def test_the_license_link_names_a_file_the_bundle_ships(self) -> None:
+        """A link is only useful if it resolves inside the published artifact.
+
+        `license_link: NOTICE` is a relative reference. The dataset bundle
+        copies NOTICE into the staging directory, and
+        tests/test_dataset_bundle.py asserts it lands there. This test holds
+        the two ends of that agreement together: pointing the card at a
+        filename the bundler does not write turns it red.
+        """
+        from tract.licensing import PUBLISHED_LICENSE_LINK
+
+        assert PUBLISHED_LICENSE_LINK == NOTICE_FILENAME
 
     def test_has_task_categories(self, card_path: Path) -> None:
         content = card_path.read_text(encoding="utf-8")
@@ -191,3 +215,42 @@ class TestOutputFile:
         )
         assert isinstance(result, Path)
         assert result == tmp_path / "README.md"
+
+
+class TestNoUnwarrantedReviewClaim:
+    """The dataset is not human-reviewed as a whole, and the card must not say it is.
+
+    An earlier card claimed every assignment was expert-reviewed. That was false:
+    most rows are links imported from OpenCRE, and the reviewed subset is the
+    model predictions only, assessed by one reviewer. The claim was corrected in
+    the published artifact, but the generator kept producing the original wording,
+    so the next publish would have silently restored it. These tests pin the
+    correction to the generator rather than to the artifact it emits.
+    """
+
+    def test_headline_does_not_call_the_whole_dataset_human_reviewed(
+        self, card_path: Path
+    ) -> None:
+        headline = card_path.read_text(encoding="utf-8").split("---")[2]
+        lowered = headline.lower()
+        assert "human-reviewed crosswalk" not in lowered
+        assert "not human-reviewed" in lowered
+
+    def test_review_stage_states_a_single_reviewer(self, card_path: Path) -> None:
+        text = card_path.read_text(encoding="utf-8")
+        assert "**single** cybersecurity domain expert" in text
+        assert "inter-rater reliability is unmeasured" in text.lower()
+
+    def test_review_stage_scopes_itself_to_model_predictions(
+        self, card_path: Path
+    ) -> None:
+        text = card_path.read_text(encoding="utf-8")
+        assert "not the imported OpenCRE links" in text
+
+    def test_limitations_still_disclose_the_single_reviewer(
+        self, card_path: Path
+    ) -> None:
+        # Defence in depth: the headline and the methodology section can both be
+        # rewritten without touching Limitations, so assert it independently.
+        text = card_path.read_text(encoding="utf-8").lower()
+        assert "single reviewer" in text

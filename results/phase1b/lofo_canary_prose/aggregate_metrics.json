@@ -1,0 +1,50 @@
+{
+  "aggregate_hit1": {
+    "ci_high": 0.6666666666666666,
+    "ci_low": 0.0,
+    "fold_sizes": {
+      "OWASP Top10 for LLM": 6
+    },
+    "macro_mean": 0.3333333333333333,
+    "mean": 0.3333333333333333,
+    "n_folds": 1,
+    "n_resamples": 10000,
+    "n_total": 6
+  },
+  "config_name": "lofo_canary_prose",
+  "gate": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_low_pass": false,
+    "macro_delta": 0.0,
+    "micro_delta": 0.0,
+    "n_total": 6,
+    "negative_folds": [],
+    "p_value": 1.0,
+    "paired": true,
+    "per_fold": {
+      "OWASP Top10 for LLM": {
+        "delta": 0.0,
+        "n_eval_items": 6,
+        "trained_hit1": 0.3333333333333333,
+        "zero_shot_hit1": 0.3333333333333333
+      }
+    },
+    "point_estimate_pass": false,
+    "threshold": 0.1,
+    "verdicts_agree": true,
+    "worst_fold": "OWASP Top10 for LLM",
+    "worst_fold_delta": 0.0
+  },
+  "per_fold": {
+    "OWASP Top10 for LLM": {
+      "hit_at_1": 0.3333333333333333,
+      "hit_at_5": 0.8333333333333334,
+      "mrr": 0.49027777777777776,
+      "ndcg_at_10": 0.5717794263455654
+    }
+  },
+  "scoped_to_folds": [
+    "OWASP Top10 for LLM"
+  ]
+}

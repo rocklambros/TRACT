@@ -1,0 +1,117 @@
+{
+  "held_out_property": "hub_links_curated.jsonl carries zero links for owasp_agentic_top10, so no item here has ever been a training anchor. The four hubs DO appear in training via 23 links from eight other frameworks, so this tests whether agentic control text routes to known hubs. It is a text generalisation test, not a hub generalisation test.",
+  "hub_distribution": {
+    "020-540": 1,
+    "202-604": 1,
+    "220-442": 3,
+    "881-234": 1
+  },
+  "is_a_metric": false,
+  "items": [
+    {
+      "atlas_cross_refs": [
+        "AML.M0026",
+        "AML.M0027",
+        "AML.M0028",
+        "AML.M0030",
+        "AML.T0008.005",
+        "AML.T0053",
+        "AML.T0085.001",
+        "AML.T0101",
+        "AML.T0103",
+        "AML.T0108",
+        "AML.T0112.000"
+      ],
+      "control_id": "ASI01",
+      "framework_id": "owasp_agentic_top10",
+      "hub_id": "220-442",
+      "hub_name": "Model action privilege minimization"
+    },
+    {
+      "atlas_cross_refs": [
+        "AML.M0026",
+        "AML.M0027",
+        "AML.M0028",
+        "AML.M0030",
+        "AML.T0008.005",
+        "AML.T0053",
+        "AML.T0085.001",
+        "AML.T0101",
+        "AML.T0103",
+        "AML.T0108",
+        "AML.T0112.000"
+      ],
+      "control_id": "ASI02",
+      "framework_id": "owasp_agentic_top10",
+      "hub_id": "220-442",
+      "hub_name": "Model action privilege minimization"
+    },
+    {
+      "atlas_cross_refs": [
+        "AML.T0010",
+        "AML.T0109",
+        "AML.T0111"
+      ],
+      "control_id": "ASI04",
+      "framework_id": "owasp_agentic_top10",
+      "hub_id": "881-234",
+      "hub_name": "AI supply chain management"
+    },
+    {
+      "atlas_cross_refs": [
+        "AML.T0080",
+        "AML.T0080.001"
+      ],
+      "control_id": "ASI06",
+      "framework_id": "owasp_agentic_top10",
+      "hub_id": "020-540",
+      "hub_name": "Direct runtime model poisoning"
+    },
+    {
+      "atlas_cross_refs": [
+        "AML.M0029"
+      ],
+      "control_id": "ASI09",
+      "framework_id": "owasp_agentic_top10",
+      "hub_id": "202-604",
+      "hub_name": "Human AI oversight"
+    },
+    {
+      "atlas_cross_refs": [
+        "AML.M0026",
+        "AML.M0027",
+        "AML.M0028",
+        "AML.M0030",
+        "AML.T0008.005",
+        "AML.T0053",
+        "AML.T0085.001",
+        "AML.T0101",
+        "AML.T0103",
+        "AML.T0108",
+        "AML.T0112.000"
+      ],
+      "control_id": "ASI10",
+      "framework_id": "owasp_agentic_top10",
+      "hub_id": "220-442",
+      "hub_name": "Model action privilege minimization"
+    }
+  ],
+  "name": "agentic_smoke_test",
+  "owner": "TRACT",
+  "pre_declared_pass_condition": {
+    "declared_before_any_campaign_2_arm_ran": true,
+    "fail": "0 or 1 correct, or any item whose top-1 sits in a different branch_root_id than its answer",
+    "investigate": "2 or 3 correct",
+    "on_fail": "Do not discard the campaign result and do not re-select the arm. Record the failure beside the headline number and open it as its own question. Re-selecting an arm on a 6-item set is the selection optimism the campaign design exists to prevent.",
+    "pass": "at least 4 of 6 correct hub at rank 1"
+  },
+  "provenance": {
+    "curated_by": "repository owner, by hand",
+    "note": "The source CSV carries 39 rows, which fan out one ASI item across several ATLAS techniques. Collapsed to distinct (control, hub) pairs it is six items. The ATLAS ids are kept per item as cross-references and are not part of the answer.",
+    "source_file": "OWASP_Agentic_x_MITRE_ATLAS_bridge.csv",
+    "source_rows": 39,
+    "source_sha256": "533adfbafdf2f80188f754241d1085f11037b4ee317438918aa8104b7fd234b1"
+  },
+  "schema_version": 1,
+  "why_not_a_metric": "Six items over four hubs, and three of the six answer hub 220-442. Always guessing that one hub scores 0.500. Against that baseline only 6/6 clears p<0.05 (binomial one-sided, p=0.016); 5/6 gives p=0.109. The Wilson 95% interval at 4/6 is [0.30, 0.90]. Two arms compared here produce 1.5 expected discordant pairs, so McNemar cannot run. This set detects a catastrophe and nothing smaller. It may never be reported as hit@1, entered into gate_decision, counted in n_configurations, or quoted as a result."
+}

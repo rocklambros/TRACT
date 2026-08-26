@@ -1,0 +1,121 @@
+[
+  {
+    "control_text": "Description Data poisoning attacks occur when an manipulates the training data to the model to behave in an undesirable . to Prevent Data validation and verification: Ensure that the training data is thoroughly validated and verified before it is to train the model. can be done by implementing data validation checks and employing data labelers to validate the accuracy of the data labeling. Secure data storage: Store the training data in a secure manner, such as using encryption, secure data transfer protocols, and firewalls. Data separation: Separate the training data from the production data to reduce the risk of compromising the training data. Access control: Implement access controls to limit can access the training data and when they can access it. Monitoring and auditing: Regularly monitor the training data for any anomalies and conduct audits to detect any data tampering. Model validation: Validate the model using a separate validation set that not during training. can help to detect any data poisoning attacks that may affected the training data. Model ensembles: Train models using subsets of the training data and use an ensemble of models to make predictions. can reduce the impact of data poisoning attacks as the would to compromise models to achieve their goals. Anomaly detection: Use anomaly detection techniques to detect any abnormal in the training data, such as sudden in the data distribution or data labeling. techniques can be to detect data poisoning attacks early on. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: | | Exploitability: 3 (Moderate) _ML",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "567-025",
+      "488-626",
+      "867-642",
+      "555-083",
+      "041-188",
+      "020-540",
+      "444-058",
+      "701-654"
+    ]
+  },
+  {
+    "control_text": "Description In ML Supply Chain Attacks threat actors the supply chain of ML models. is broad and important, as software supply chain in Machine Learning even more elements than in the case of classic software. It consists of specific elements such as MLOps platforms, data management platforms, model management software, model hubs and other specialized types of software that enable ML engineers to effectively test and deploy software. to Prevent Verify packages integrity: Before using any packages in your or application dependencies, verify the authenticity of the package by checking the digital signature of the package. Keep packages versions up-to-date: Constantly monitor the latest versions of the packages in your software supply chain and update your dependencies if you are using outdated software. Use tools such as OWASP Dependency Check. Refer to for more details Install packages from secure sources: Use secure software repositiories, such as Anaconda or pip, that enforce strict security and a vetting process for packages. Deploy ML securely: Follow the vendor's deployment recommendations for MLOps platforms in your stack, limit the access to the web UIs from the Internet, monitor the traffic in the for the anomalies and possible attacks. If the is deployed in the , ensure to leverage the provider's security features such as Virtual Private Clouds (VPCs), security groups, and identity and access management (IAM) roles to restrict and control access. Implement strict access control . Ensure that only authorized personnel access to the MLOps platforms. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | :-----------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------: | :--------------------------------------------------------------------------------: | | Exploitability: 4 (Easy) _ML Application Specific: 5_ _ML Operations Specifi",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "852-770",
+      "881-234",
+      "883-173",
+      "701-654",
+      "423-055",
+      "613-285",
+      "863-521",
+      "613-286",
+      "777-470",
+      "342-781"
+    ]
+  },
+  {
+    "control_text": "Description Model theft attacks occur when an gains access to the model's parameters. to Prevent Encryption: Encrypting the model's code, training data, and other sensitive information can prevent from to access and steal the model. Access Control: Implementing strict access control , such as two-factor authentication, can prevent unauthorized individuals from accessing and stealing the model. Regular backups: Regularly backing up the model's code, training data, and other sensitive information can ensure that it can be recovered in the event of a theft. Model Obfuscation: Obfuscating the model's code and making it difficult to reverse engineer can prevent from to steal the model. Watermarking: Adding a watermark to the model's code and training data can make it possible to trace the source of a theft and hold the accountable. Legal protection: Securing legal protection for the model, such as patents or trade secrets, can make it more difficult for an to steal the model and can provide a basis for legal action in the event of a theft. Monitoring and auditing: Regularly monitoring and auditing the model's use can help detect and prevent theft by detecting when an is attempting to access or steal the model. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | :-------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------: | | Exploitability: 4 (Moderate) _ML Application Specific: 4_ _ML Operations Specific: 3_ | Detectability: 3 (Moderate) | Technical: 4 (Moderate) | | Threat Agent: refers to the entity that carries out the attack, in case, it is an wants to steal the",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "342-781",
+      "663-550",
+      "182-732",
+      "141-385",
+      "267-786",
+      "077-235",
+      "805-126",
+      "474-203",
+      "818-434",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "Description Model poisoning attacks occur when an manipulates the model\\'s parameters to it to behave in an undesirable . to Prevent Regularisation: Adding regularisation techniques L1 or L2 regularization to the loss function helps to prevent overfitting and reduce the chance of model poisoning attacks. Robust Model Design: Designing models with robust architectures and activation functions can help reduce the chances of successful model poisoning attacks. Cryptographic Techniques: Cryptographic techniques can be to secure the parameters and weights of the model, and prevent unauthorized access or manipulation of parameters. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | | Exploitability: 5 (Easy) _ML Application Specific: 4_ _ML Operations Specific: 4_ | Detectability: 3 (Moderate) | Technical: 3 (Moderate) | | Threat Actor: Malicious individuals or with knowledge and resources to manipulate deep learning models. Malicious insiders the developing the deep learning model. | Insufficient access controls to the model's code and parameters. Lack of proper secure coding . Inadequate monitoring and logging of model's activity. | Model's predictions can be manipulated to achieve desired . Confidential information the model can be extracted. Decisions based on the model's predictio",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "481-710",
+      "867-642",
+      "020-540",
+      "615-663",
+      "555-083",
+      "701-654",
+      "854-183",
+      "474-203",
+      "234-123",
+      "146-871"
+    ]
+  },
+  {
+    "control_text": "Description Input Manipulation Attacks is an umbrella term, Adversarial Attacks, a type of attack in an deliberately alters input data to mislead the model. to Prevent Adversarial training: approach to defending against input manipulation attack is to train the model on adversarial examples. can help the model become more robust to attacks and reduce susceptibility to misled. Robust models: approach is to use models that are designed to be robust against manipulative attacks, such as adversarial training or models that incorporate defense mechanisms. Input validation: Input validation is important defense mechanism that can be to detect and prevent input manipulation attacks. involves checking the input data for anomalies, such as unexpected values or patterns, and rejecting inputs that are likely to be malicious. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | | Exploitability: 5 (Easy) _ML Application Specific: 4_ _ML Operations Specific: 3_ | Detectability: 3 (Moderate) _The manipulated image may not be noticeable to the naked eye, making it difficult to detect the attack._ | Technical: 5 (Difficult) _The attack requires technical knowledge of deep learning and image processing techniques._ | | Threat Agent: with knowledge of deep learning and image processing techniques. Attack Vector: Deliberately crafted manipulated image that is similar to a legitimate image. | Vulnerability in the deep learning model's ability to classify images accurately. | Misclassification of the image,",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "342-641",
+      "641-760",
+      "761-417",
+      "010-308",
+      "989-492",
+      "802-101",
+      "108-316",
+      "408-838",
+      "576-262",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Description Model inversion attacks occur when an reverse-engineers the model to extract information from it. to Prevent Access control: Limiting access to the model or predictions can prevent from obtaining the information needed to invert the model. can be done by requiring authentication, encryption, or other forms of security when accessing the model or predictions. Input validation: Validating the inputs to the model can prevent from providing malicious data that can be to invert the model. can be done by checking the format, range, and consistency of the inputs before they are processed by the model. Model transparency: Making the model and predictions transparent can help to detect and prevent model inversion attacks. can be done by logging all inputs and , providing explanations for the model's predictions, or allowing users to inspect the model's internal representations. Regular monitoring: Monitoring the model's predictions for anomalies can help to detect and prevent model inversion attacks. can be done by tracking the distribution of inputs and , comparing the model's predictions to ground truth data, or monitoring the model's performance over time. Model retraining: Regularly retraining the model can help to prevent the information leaked by model inversion attacks from becoming outdated. can be done by incorporating new data and correcting any inaccuracies in the model's predictions. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: | :---------------------------------------------------------------: | | Exploitability: 4 (Moderate) _ML Application Specific: 5_ _ML Operations Specific: 3_ | Detectability: 2 (Difficult) | Technical: 4 (Moderate) | | Threat Agents: access to the model a",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "532-102",
+      "474-203",
+      "860-723",
+      "802-101",
+      "430-722",
+      "663-550",
+      "547-824",
+      "768-532",
+      "034-540",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "Description Membership inference attacks occur when an manipulates the model's training data in order to it to behave in a that exposes sensitive information. to Prevent Model training on randomized or shuffled data: Training machine learning models on randomized or shuffled data can make it more difficult for an to a particular was included in the training dataset. Model Obfuscation: Obfuscating the model's predictions by adding random noise or using differential techniques can help prevent membership inference attacks by making it harder for an to the model's training data. Regularisation: Regularisation techniques such as L1 or L2 regularization can help prevent overfitting of the model to the training data, can reduce the model's ability to accurately a particular was included in the training dataset. Reducing the training data: Reducing the size of the training dataset or removing redundant or highly correlated features can help reduce the information an can gain from a membership inference attack. Testing and monitoring: Regularly testing and monitoring the model's for anomalies can help detect and prevent membership inference attacks by detecting when an is attempting to gain access to sensitive information. Risk Factors | Threat Agents/Attack Vectors | Security Weakness | Impact | | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | | Exploita",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "488-626",
+      "475-586",
+      "408-838",
+      "802-101",
+      "384-015",
+      "073-507",
+      "989-492",
+      "474-203"
+    ]
+  }
+]

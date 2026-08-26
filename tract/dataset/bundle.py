@@ -10,6 +10,12 @@ import tempfile
 from pathlib import Path
 
 from tract.crosswalk.schema import get_connection
+from tract.licensing import (
+    PUBLISHED_LICENSE_ID,
+    PUBLISHED_LICENSE_LINK,
+    PUBLISHED_LICENSE_NAME,
+    copy_licensing_files,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,21 +51,11 @@ ORDER BY a.control_id, a.hub_id,
 
 _GT_PROVENANCES = frozenset({"opencre_ground_truth", "ground_truth_T1-AI"})
 
-_LICENSE_TEXT = """\
-Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-
-You are free to:
-  Share — copy and redistribute the material in any medium or format
-  Adapt — remix, transform, and build upon the material for any purpose
-
-Under the following terms:
-  Attribution — You must give appropriate credit, provide a link to the
-  license, and indicate if changes were made.
-  ShareAlike — If you remix, transform, or build upon the material, you
-  must distribute your contributions under the same license.
-
-Full text: https://creativecommons.org/licenses/by-sa/4.0/legalcode
-"""
+# The bundle's LICENSE and NOTICE are copied from the repository by
+# tract.licensing.copy_licensing_files rather than written here. The previous
+# _LICENSE_TEXT was a hand-typed summary of the CC BY-SA 4.0 deed, so the
+# artifact carried a paraphrase of a licence it had no standing to grant in the
+# first place. Copying the real files removes both problems at once.
 
 
 def _derive_assignment_type(row: dict[str, Any]) -> str:
@@ -210,15 +206,28 @@ def _build_framework_metadata(db_path: Path, output_path: Path) -> list[dict[str
 
 
 def _build_zenodo_metadata(output_path: Path) -> None:
-    """Generate zenodo_metadata.json for manual Zenodo upload."""
+    """Generate zenodo_metadata.json for manual Zenodo upload.
+
+    The licence fields mirror the two published cards, from the same constants.
+    This file used to assert CC-BY-SA-4.0 over content drawn from 31
+    publishers, which is a grant TRACT has no standing to make. A human pastes
+    this into Zenodo's form and resolves the `other` value there; a wrong
+    single identifier would have been pasted without a second thought.
+    """
     zenodo = {
         "title": "TRACT Crosswalk Dataset v1.0",
         "description": (
-            "Human-reviewed security framework crosswalk mapping "
-            "31 frameworks to 522 CRE hubs"
+            "Security framework crosswalk mapping 31 frameworks to 522 CRE "
+            "hubs. Most rows are links imported from OpenCRE; 878 are model "
+            "predictions assessed by a single reviewer. The dataset as a "
+            "whole is not human-reviewed. No single licence covers it: TRACT's "
+            "own contributions are CC0 1.0 Universal and each framework's "
+            "content stays under its publisher's terms. See NOTICE."
         ),
         "creators": [{"name": "Lambros, Rock", "orcid": ""}],
-        "license": "CC-BY-SA-4.0",
+        "license": PUBLISHED_LICENSE_ID,
+        "license_name": PUBLISHED_LICENSE_NAME,
+        "license_link": PUBLISHED_LICENSE_LINK,
         "keywords": [
             "security",
             "crosswalk",
@@ -266,7 +275,8 @@ def bundle_dataset(
 
     Creates: crosswalk_v1.0.jsonl, framework_metadata.json,
     cre_hierarchy_v1.1.json, hub_descriptions_v1.0.json,
-    bridge_report.json, review_metrics.json, LICENSE, zenodo_metadata.json
+    bridge_report.json, review_metrics.json, LICENSE, NOTICE, LICENSES/,
+    zenodo_metadata.json
 
     Returns bundle stats dict with total_rows, frameworks count, and file list.
     """
@@ -287,8 +297,7 @@ def bundle_dataset(
     shutil.copy2(bridge_report_path, staging_dir / "bridge_report.json")
     shutil.copy2(review_metrics_path, staging_dir / "review_metrics.json")
 
-    license_path = staging_dir / "LICENSE"
-    license_path.write_text(_LICENSE_TEXT, encoding="utf-8")
+    copy_licensing_files(staging_dir)
 
     files = sorted(p.name for p in staging_dir.iterdir() if p.is_file())
 

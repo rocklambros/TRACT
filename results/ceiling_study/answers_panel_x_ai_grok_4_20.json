@@ -1,0 +1,2551 @@
+{
+  "items": [
+    {
+      "acceptable_hub_ids": [
+        "172-101"
+      ],
+      "confidence": "high",
+      "item_index": 1,
+      "notes": "",
+      "primary_hub_id": "172-101"
+    },
+    {
+      "acceptable_hub_ids": [
+        "755-340",
+        "571-271"
+      ],
+      "confidence": "high",
+      "item_index": 2,
+      "notes": "",
+      "primary_hub_id": "755-340"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "613-287"
+      ],
+      "confidence": "high",
+      "item_index": 3,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "623-550"
+      ],
+      "confidence": "medium",
+      "item_index": 4,
+      "notes": "Primarily evasion of network filters but can enable resource exhaustion",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434",
+        "400-007"
+      ],
+      "confidence": "high",
+      "item_index": 5,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-308",
+        "547-283"
+      ],
+      "confidence": "high",
+      "item_index": 6,
+      "notes": "",
+      "primary_hub_id": "010-308"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781"
+      ],
+      "confidence": "high",
+      "item_index": 7,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "527-034",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 8,
+      "notes": "",
+      "primary_hub_id": "527-034"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 9,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "467-784"
+      ],
+      "confidence": "medium",
+      "item_index": 10,
+      "notes": "Reconnaissance via network scanning for RPC services",
+      "primary_hub_id": "467-784"
+    },
+    {
+      "acceptable_hub_ids": [
+        "536-158",
+        "011-322"
+      ],
+      "confidence": "high",
+      "item_index": 11,
+      "notes": "",
+      "primary_hub_id": "536-158"
+    },
+    {
+      "acceptable_hub_ids": [
+        "547-283",
+        "010-308"
+      ],
+      "confidence": "high",
+      "item_index": 12,
+      "notes": "",
+      "primary_hub_id": "547-283"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527",
+        "467-784"
+      ],
+      "confidence": "medium",
+      "item_index": 13,
+      "notes": "Pharming via DNS/routing manipulation",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "high",
+      "item_index": 14,
+      "notes": "",
+      "primary_hub_id": "146-871"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-308"
+      ],
+      "confidence": "high",
+      "item_index": 15,
+      "notes": "",
+      "primary_hub_id": "010-308"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 16,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838",
+        "384-015"
+      ],
+      "confidence": "high",
+      "item_index": 17,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "872-574",
+        "265-800"
+      ],
+      "confidence": "high",
+      "item_index": 18,
+      "notes": "",
+      "primary_hub_id": "872-574"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 19,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "576-262",
+        "703-813"
+      ],
+      "confidence": "high",
+      "item_index": 20,
+      "notes": "",
+      "primary_hub_id": "576-262"
+    },
+    {
+      "acceptable_hub_ids": [
+        "435-702",
+        "234-282"
+      ],
+      "confidence": "medium",
+      "item_index": 21,
+      "notes": "Includes physical proximity eavesdropping",
+      "primary_hub_id": "435-702"
+    },
+    {
+      "acceptable_hub_ids": [
+        "474-203"
+      ],
+      "confidence": "high",
+      "item_index": 22,
+      "notes": "",
+      "primary_hub_id": "474-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "641-760"
+      ],
+      "confidence": "high",
+      "item_index": 23,
+      "notes": "",
+      "primary_hub_id": "641-760"
+    },
+    {
+      "acceptable_hub_ids": [
+        "824-732"
+      ],
+      "confidence": "high",
+      "item_index": 24,
+      "notes": "",
+      "primary_hub_id": "824-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "item_index": 25,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "273-600"
+      ],
+      "confidence": "medium",
+      "item_index": 26,
+      "notes": "Network-based reconnaissance to map firewall rules fits defense-in-depth for network attacks",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "715-223"
+      ],
+      "confidence": "high",
+      "item_index": 27,
+      "notes": "",
+      "primary_hub_id": "715-223"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 28,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "157-430",
+        "846-302",
+        "617-524"
+      ],
+      "confidence": "medium",
+      "item_index": 29,
+      "notes": "Lifting sensitive data from cache matches protections for cached data across client/server components",
+      "primary_hub_id": "157-430"
+    },
+    {
+      "acceptable_hub_ids": [
+        "547-824"
+      ],
+      "confidence": "high",
+      "item_index": 30,
+      "notes": "",
+      "primary_hub_id": "547-824"
+    },
+    {
+      "acceptable_hub_ids": [
+        "004-517",
+        "135-200"
+      ],
+      "confidence": "medium",
+      "item_index": 31,
+      "notes": "Policy development, dissemination, and review for physical/environmental protection",
+      "primary_hub_id": "004-517"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 32,
+      "notes": "Covers both direct and indirect prompt injection threats",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "742-431",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 33,
+      "notes": "",
+      "primary_hub_id": "742-431"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385",
+        "034-540",
+        "182-732"
+      ],
+      "confidence": "high",
+      "item_index": 34,
+      "notes": "Exfiltration via inference API covers both model extraction and training data inference attacks",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 35,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 36,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570"
+      ],
+      "confidence": "medium",
+      "item_index": 37,
+      "notes": "Buffer overflow via unsafe parameter handling prevented by memory-safe functions",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-108"
+      ],
+      "confidence": "high",
+      "item_index": 38,
+      "notes": "",
+      "primary_hub_id": "010-108"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "527-034"
+      ],
+      "confidence": "medium",
+      "item_index": 39,
+      "notes": "Harvesting via API/event monitoring is information disclosure; secure comms is related alternative",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 40,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-235"
+      ],
+      "confidence": "high",
+      "item_index": 41,
+      "notes": "",
+      "primary_hub_id": "077-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 42,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 43,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "428-544"
+      ],
+      "confidence": "medium",
+      "item_index": 44,
+      "notes": "Contingency-specific training fits general security awareness training",
+      "primary_hub_id": "428-544"
+    },
+    {
+      "acceptable_hub_ids": [
+        "860-723"
+      ],
+      "confidence": "high",
+      "item_index": 45,
+      "notes": "",
+      "primary_hub_id": "860-723"
+    },
+    {
+      "acceptable_hub_ids": [
+        "571-640"
+      ],
+      "confidence": "high",
+      "item_index": 46,
+      "notes": "",
+      "primary_hub_id": "571-640"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 47,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 48,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 49,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "187-083",
+        "886-662",
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 50,
+      "notes": "",
+      "primary_hub_id": "187-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "810-884"
+      ],
+      "confidence": "high",
+      "item_index": 51,
+      "notes": "",
+      "primary_hub_id": "810-884"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527",
+        "623-550"
+      ],
+      "confidence": "medium",
+      "item_index": 52,
+      "notes": "Specific to DNS availability but could also fit general DoS protection",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "114-853"
+      ],
+      "confidence": "high",
+      "item_index": 53,
+      "notes": "",
+      "primary_hub_id": "114-853"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-108",
+        "430-722"
+      ],
+      "confidence": "medium",
+      "item_index": 54,
+      "notes": "Output obfuscation to prevent model extraction fits obscuring confidence or general output encoding",
+      "primary_hub_id": "010-108"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-744"
+      ],
+      "confidence": "high",
+      "item_index": 55,
+      "notes": "",
+      "primary_hub_id": "615-744"
+    },
+    {
+      "acceptable_hub_ids": [
+        "886-662",
+        "187-083",
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 56,
+      "notes": "",
+      "primary_hub_id": "886-662"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 57,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "805-126",
+        "182-732"
+      ],
+      "confidence": "high",
+      "item_index": 58,
+      "notes": "",
+      "primary_hub_id": "805-126"
+    },
+    {
+      "acceptable_hub_ids": [
+        "637-021"
+      ],
+      "confidence": "high",
+      "item_index": 59,
+      "notes": "",
+      "primary_hub_id": "637-021"
+    },
+    {
+      "acceptable_hub_ids": [
+        "228-551",
+        "760-765"
+      ],
+      "confidence": "medium",
+      "item_index": 60,
+      "notes": "MITM to bypass SOP and enable script execution; TLS prevents the MITM but result is XSS-like",
+      "primary_hub_id": "228-551"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "high",
+      "item_index": 61,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "048-612"
+      ],
+      "confidence": "high",
+      "item_index": 62,
+      "notes": "",
+      "primary_hub_id": "048-612"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-527"
+      ],
+      "confidence": "medium",
+      "item_index": 63,
+      "notes": "Network reconnaissance via ICMP; fits network defense-in-depth or name resolution but is not DNS-specific",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385"
+      ],
+      "confidence": "high",
+      "item_index": 64,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036"
+      ],
+      "confidence": "high",
+      "item_index": 65,
+      "notes": "",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "020-540"
+      ],
+      "confidence": "high",
+      "item_index": 66,
+      "notes": "",
+      "primary_hub_id": "020-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 67,
+      "notes": "",
+      "primary_hub_id": "170-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "173-554"
+      ],
+      "confidence": "high",
+      "item_index": 68,
+      "notes": "",
+      "primary_hub_id": "173-554"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "760-765"
+      ],
+      "confidence": "medium",
+      "item_index": 69,
+      "notes": "Buffer overflow in MIME parsing fits memory safety but could overlap with injection",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "041-188"
+      ],
+      "confidence": "high",
+      "item_index": 70,
+      "notes": "",
+      "primary_hub_id": "041-188"
+    },
+    {
+      "acceptable_hub_ids": [
+        "364-516",
+        "555-083"
+      ],
+      "confidence": "high",
+      "item_index": 71,
+      "notes": "",
+      "primary_hub_id": "364-516"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 72,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "780-757"
+      ],
+      "confidence": "high",
+      "item_index": 73,
+      "notes": "",
+      "primary_hub_id": "780-757"
+    },
+    {
+      "acceptable_hub_ids": [
+        "020-540"
+      ],
+      "confidence": "high",
+      "item_index": 74,
+      "notes": "",
+      "primary_hub_id": "020-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "201-246"
+      ],
+      "confidence": "high",
+      "item_index": 75,
+      "notes": "",
+      "primary_hub_id": "201-246"
+    },
+    {
+      "acceptable_hub_ids": [
+        "467-215"
+      ],
+      "confidence": "high",
+      "item_index": 76,
+      "notes": "",
+      "primary_hub_id": "467-215"
+    },
+    {
+      "acceptable_hub_ids": [
+        "074-873",
+        "268-272",
+        "510-324"
+      ],
+      "confidence": "medium",
+      "item_index": 77,
+      "notes": "General retention per laws/regulations maps closest to data classification/handling for retention",
+      "primary_hub_id": "074-873"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202",
+        "780-757"
+      ],
+      "confidence": "high",
+      "item_index": 78,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "173-554"
+      ],
+      "confidence": "high",
+      "item_index": 79,
+      "notes": "",
+      "primary_hub_id": "173-554"
+    },
+    {
+      "acceptable_hub_ids": [
+        "848-711",
+        "031-447",
+        "653-242"
+      ],
+      "confidence": "medium",
+      "item_index": 80,
+      "notes": "General parameter handling weakness maps to input validation on trusted layer",
+      "primary_hub_id": "848-711"
+    },
+    {
+      "acceptable_hub_ids": [
+        "761-417"
+      ],
+      "confidence": "high",
+      "item_index": 81,
+      "notes": "",
+      "primary_hub_id": "761-417"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "764-507"
+      ],
+      "confidence": "medium",
+      "item_index": 82,
+      "notes": "Resource exhaustion via data expansion; could also map to XML parsing restrictions",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "175-235"
+      ],
+      "confidence": "high",
+      "item_index": 83,
+      "notes": "",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 84,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 85,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "777-470",
+        "175-235",
+        "545-243"
+      ],
+      "confidence": "medium",
+      "item_index": 86,
+      "notes": "Malicious file content triggering execution or exploits in parsers",
+      "primary_hub_id": "777-470"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 87,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "482-771"
+      ],
+      "confidence": "high",
+      "item_index": 88,
+      "notes": "",
+      "primary_hub_id": "482-771"
+    },
+    {
+      "acceptable_hub_ids": [
+        "064-808",
+        "620-101"
+      ],
+      "confidence": "high",
+      "item_index": 89,
+      "notes": "",
+      "primary_hub_id": "064-808"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527",
+        "486-813"
+      ],
+      "confidence": "medium",
+      "item_index": 90,
+      "notes": "CAPEC general for caches but hub explicitly calls out cache poisoning prevention",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "232-217"
+      ],
+      "confidence": "high",
+      "item_index": 91,
+      "notes": "",
+      "primary_hub_id": "232-217"
+    },
+    {
+      "acceptable_hub_ids": [
+        "703-813",
+        "058-083"
+      ],
+      "confidence": "high",
+      "item_index": 92,
+      "notes": "",
+      "primary_hub_id": "703-813"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036"
+      ],
+      "confidence": "high",
+      "item_index": 93,
+      "notes": "",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 94,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 95,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877",
+        "761-417"
+      ],
+      "confidence": "high",
+      "item_index": 96,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "743-110"
+      ],
+      "confidence": "high",
+      "item_index": 97,
+      "notes": "",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 98,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "medium",
+      "item_index": 99,
+      "notes": "Physical/environmental controls (temp, power, tampering) mitigate hardware fault injection",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 100,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "item_index": 101,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "660-867",
+        "418-853"
+      ],
+      "confidence": "medium",
+      "item_index": 102,
+      "notes": "business logic limit to enforce single action",
+      "primary_hub_id": "660-867"
+    },
+    {
+      "acceptable_hub_ids": [
+        "380-540",
+        "134-412"
+      ],
+      "confidence": "high",
+      "item_index": 103,
+      "notes": "",
+      "primary_hub_id": "380-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385",
+        "342-781",
+        "182-732"
+      ],
+      "confidence": "medium",
+      "item_index": 104,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "265-800"
+      ],
+      "confidence": "high",
+      "item_index": 105,
+      "notes": "",
+      "primary_hub_id": "265-800"
+    },
+    {
+      "acceptable_hub_ids": [
+        "701-654"
+      ],
+      "confidence": "high",
+      "item_index": 106,
+      "notes": "",
+      "primary_hub_id": "701-654"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 107,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-744"
+      ],
+      "confidence": "high",
+      "item_index": 108,
+      "notes": "",
+      "primary_hub_id": "615-744"
+    },
+    {
+      "acceptable_hub_ids": [
+        "622-203"
+      ],
+      "confidence": "high",
+      "item_index": 109,
+      "notes": "",
+      "primary_hub_id": "622-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "268-272",
+        "858-745"
+      ],
+      "confidence": "high",
+      "item_index": 110,
+      "notes": "",
+      "primary_hub_id": "268-272"
+    },
+    {
+      "acceptable_hub_ids": [
+        "011-322"
+      ],
+      "confidence": "medium",
+      "item_index": 111,
+      "notes": "formal verification for adversarial robustness is testing against evasion",
+      "primary_hub_id": "011-322"
+    },
+    {
+      "acceptable_hub_ids": [
+        "204-272"
+      ],
+      "confidence": "high",
+      "item_index": 112,
+      "notes": "",
+      "primary_hub_id": "204-272"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 113,
+      "notes": "network reconnaissance via traceroute",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 114,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285",
+        "715-223"
+      ],
+      "confidence": "medium",
+      "item_index": 115,
+      "notes": "custom development for critical components is supply chain risk management",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "488-626"
+      ],
+      "confidence": "high",
+      "item_index": 116,
+      "notes": "",
+      "primary_hub_id": "488-626"
+    },
+    {
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "high",
+      "item_index": 117,
+      "notes": "",
+      "primary_hub_id": "146-871"
+    },
+    {
+      "acceptable_hub_ids": [
+        "232-325",
+        "170-772"
+      ],
+      "confidence": "medium",
+      "item_index": 118,
+      "notes": "sharing of device unlock credentials makes them insecure like client secrets",
+      "primary_hub_id": "232-325"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 119,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 120,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "item_index": 121,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-308",
+        "482-771"
+      ],
+      "confidence": "medium",
+      "item_index": 122,
+      "notes": "validation of index/offset is input validation, or boundary check for memory",
+      "primary_hub_id": "010-308"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-254",
+        "307-507"
+      ],
+      "confidence": "high",
+      "item_index": 123,
+      "notes": "",
+      "primary_hub_id": "028-254"
+    },
+    {
+      "acceptable_hub_ids": [],
+      "confidence": "",
+      "item_index": 124,
+      "notes": "",
+      "primary_hub_id": ""
+    },
+    {
+      "acceptable_hub_ids": [],
+      "confidence": "",
+      "item_index": 125,
+      "notes": "",
+      "primary_hub_id": ""
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625",
+        "061-753",
+        "370-877"
+      ],
+      "confidence": "medium",
+      "item_index": 126,
+      "notes": "Fundamentally about indirect prompt injection attacks that manipulate model outputs for incorrect or untrustworthy results (integrity violations), fitting the indirect prompt injection hub under AI model behaviour integrity threats.",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "653-242",
+        "010-308"
+      ],
+      "confidence": "high",
+      "item_index": 127,
+      "notes": "",
+      "primary_hub_id": "653-242"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202",
+        "077-772"
+      ],
+      "confidence": "high",
+      "item_index": 128,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 129,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-772"
+      ],
+      "confidence": "high",
+      "item_index": 130,
+      "notes": "",
+      "primary_hub_id": "077-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "761-417",
+        "342-641"
+      ],
+      "confidence": "high",
+      "item_index": 131,
+      "notes": "",
+      "primary_hub_id": "761-417"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-527"
+      ],
+      "confidence": "medium",
+      "item_index": 132,
+      "notes": "Network reconnaissance via ICMP to gather configuration; fits network-based attack protection via defense-in-depth.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "881-234",
+        "613-287"
+      ],
+      "confidence": "high",
+      "item_index": 133,
+      "notes": "",
+      "primary_hub_id": "881-234"
+    },
+    {
+      "acceptable_hub_ids": [
+        "042-550"
+      ],
+      "confidence": "high",
+      "item_index": 134,
+      "notes": "",
+      "primary_hub_id": "042-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "medium",
+      "item_index": 135,
+      "notes": "ICMP-based network reconnaissance for configuration info; fits under network defense-in-depth for protection against network-based attacks.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "187-083"
+      ],
+      "confidence": "high",
+      "item_index": 136,
+      "notes": "",
+      "primary_hub_id": "187-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "821-541"
+      ],
+      "confidence": "high",
+      "item_index": 137,
+      "notes": "",
+      "primary_hub_id": "821-541"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 138,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "843-475"
+      ],
+      "confidence": "high",
+      "item_index": 139,
+      "notes": "",
+      "primary_hub_id": "843-475"
+    },
+    {
+      "acceptable_hub_ids": [
+        "743-110"
+      ],
+      "confidence": "high",
+      "item_index": 140,
+      "notes": "",
+      "primary_hub_id": "743-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "380-540"
+      ],
+      "confidence": "high",
+      "item_index": 141,
+      "notes": "",
+      "primary_hub_id": "380-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "768-532"
+      ],
+      "confidence": "high",
+      "item_index": 142,
+      "notes": "",
+      "primary_hub_id": "768-532"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385",
+        "663-550"
+      ],
+      "confidence": "high",
+      "item_index": 143,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "836-068",
+        "623-550"
+      ],
+      "confidence": "medium",
+      "item_index": 144,
+      "notes": "Nested payloads in serialized data to exhaust parser resources; fits deserialization prevention or DoS.",
+      "primary_hub_id": "836-068"
+    },
+    {
+      "acceptable_hub_ids": [
+        "533-635"
+      ],
+      "confidence": "high",
+      "item_index": 145,
+      "notes": "",
+      "primary_hub_id": "533-635"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "836-068"
+      ],
+      "confidence": "high",
+      "item_index": 146,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 147,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "634-733",
+        "155-155"
+      ],
+      "confidence": "medium",
+      "item_index": 148,
+      "notes": "Exploiting implicit trust in client for server communication; fits communication authentication or architecture.",
+      "primary_hub_id": "634-733"
+    },
+    {
+      "acceptable_hub_ids": [
+        "661-440"
+      ],
+      "confidence": "high",
+      "item_index": 149,
+      "notes": "",
+      "primary_hub_id": "661-440"
+    },
+    {
+      "acceptable_hub_ids": [
+        "743-110",
+        "217-168"
+      ],
+      "confidence": "medium",
+      "item_index": 150,
+      "notes": "Account footprinting for reconnaissance and enumeration; fits prevent security disclosure or audit/accountability.",
+      "primary_hub_id": "743-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "384-015",
+        "011-322"
+      ],
+      "confidence": "high",
+      "item_index": 151,
+      "notes": "",
+      "primary_hub_id": "384-015"
+    },
+    {
+      "acceptable_hub_ids": [
+        "480-071"
+      ],
+      "confidence": "high",
+      "item_index": 152,
+      "notes": "",
+      "primary_hub_id": "480-071"
+    },
+    {
+      "acceptable_hub_ids": [
+        "533-635"
+      ],
+      "confidence": "high",
+      "item_index": 153,
+      "notes": "",
+      "primary_hub_id": "533-635"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "medium",
+      "item_index": 154,
+      "notes": "Network-based reconnaissance and detection",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "843-475",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 155,
+      "notes": "",
+      "primary_hub_id": "843-475"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 156,
+      "notes": "",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "384-015"
+      ],
+      "confidence": "high",
+      "item_index": 157,
+      "notes": "",
+      "primary_hub_id": "384-015"
+    },
+    {
+      "acceptable_hub_ids": [
+        "368-633",
+        "128-128"
+      ],
+      "confidence": "high",
+      "item_index": 158,
+      "notes": "",
+      "primary_hub_id": "368-633"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 159,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 160,
+      "notes": "",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "788-323",
+        "818-434",
+        "034-540"
+      ],
+      "confidence": "medium",
+      "item_index": 161,
+      "notes": "Model size reduction prevents memorization leading to training data leakage",
+      "primary_hub_id": "788-323"
+    },
+    {
+      "acceptable_hub_ids": [
+        "368-633"
+      ],
+      "confidence": "high",
+      "item_index": 162,
+      "notes": "",
+      "primary_hub_id": "368-633"
+    },
+    {
+      "acceptable_hub_ids": [
+        "130-171",
+        "276-748"
+      ],
+      "confidence": "medium",
+      "item_index": 163,
+      "notes": "Multi-modal sensors protect input integrity against physical attacks",
+      "primary_hub_id": "130-171"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-254",
+        "307-507"
+      ],
+      "confidence": "high",
+      "item_index": 164,
+      "notes": "",
+      "primary_hub_id": "028-254"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285",
+        "613-286"
+      ],
+      "confidence": "high",
+      "item_index": 165,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "medium",
+      "item_index": 166,
+      "notes": "Active fingerprinting is a network-based reconnaissance technique",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "384-015"
+      ],
+      "confidence": "high",
+      "item_index": 167,
+      "notes": "",
+      "primary_hub_id": "384-015"
+    },
+    {
+      "acceptable_hub_ids": [
+        "622-203"
+      ],
+      "confidence": "high",
+      "item_index": 168,
+      "notes": "",
+      "primary_hub_id": "622-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "737-086"
+      ],
+      "confidence": "medium",
+      "item_index": 169,
+      "notes": "Symbolic link processing without bounds checking leads to buffer issues",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "701-654"
+      ],
+      "confidence": "high",
+      "item_index": 170,
+      "notes": "",
+      "primary_hub_id": "701-654"
+    },
+    {
+      "acceptable_hub_ids": [
+        "175-235",
+        "112-273"
+      ],
+      "confidence": "medium",
+      "item_index": 171,
+      "notes": "Forcing use of corrupted files requires validation before processing",
+      "primary_hub_id": "175-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "860-723",
+        "106-447"
+      ],
+      "confidence": "high",
+      "item_index": 172,
+      "notes": "",
+      "primary_hub_id": "860-723"
+    },
+    {
+      "acceptable_hub_ids": [
+        "128-128",
+        "368-633"
+      ],
+      "confidence": "high",
+      "item_index": 173,
+      "notes": "",
+      "primary_hub_id": "128-128"
+    },
+    {
+      "acceptable_hub_ids": [
+        "780-757"
+      ],
+      "confidence": "high",
+      "item_index": 174,
+      "notes": "",
+      "primary_hub_id": "780-757"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625",
+        "843-475"
+      ],
+      "confidence": "high",
+      "item_index": 175,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 176,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "202-604"
+      ],
+      "confidence": "high",
+      "item_index": 177,
+      "notes": "",
+      "primary_hub_id": "202-604"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 178,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "423-055"
+      ],
+      "confidence": "high",
+      "item_index": 179,
+      "notes": "",
+      "primary_hub_id": "423-055"
+    },
+    {
+      "acceptable_hub_ids": [
+        "802-056"
+      ],
+      "confidence": "high",
+      "item_index": 180,
+      "notes": "",
+      "primary_hub_id": "802-056"
+    },
+    {
+      "acceptable_hub_ids": [
+        "860-723"
+      ],
+      "confidence": "high",
+      "item_index": 181,
+      "notes": "",
+      "primary_hub_id": "860-723"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 182,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "287-823"
+      ],
+      "confidence": "medium",
+      "item_index": 183,
+      "notes": "Asset management for inventory; configuration management is close but this is fundamentally about component accountability",
+      "primary_hub_id": "287-823"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 184,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 185,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "886-662",
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 186,
+      "notes": "",
+      "primary_hub_id": "886-662"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "743-110"
+      ],
+      "confidence": "medium",
+      "item_index": 187,
+      "notes": "Preventing technical information disclosure via client-side probing",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "646-285"
+      ],
+      "confidence": "high",
+      "item_index": 188,
+      "notes": "",
+      "primary_hub_id": "646-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "high",
+      "item_index": 189,
+      "notes": "",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 190,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "314-131"
+      ],
+      "confidence": "high",
+      "item_index": 191,
+      "notes": "",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "867-642"
+      ],
+      "confidence": "high",
+      "item_index": 192,
+      "notes": "",
+      "primary_hub_id": "867-642"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 193,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "high",
+      "item_index": 194,
+      "notes": "",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "286-500",
+        "314-131"
+      ],
+      "confidence": "high",
+      "item_index": 195,
+      "notes": "",
+      "primary_hub_id": "286-500"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 196,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 197,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 198,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-308"
+      ],
+      "confidence": "high",
+      "item_index": 199,
+      "notes": "",
+      "primary_hub_id": "010-308"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-308"
+      ],
+      "confidence": "high",
+      "item_index": 200,
+      "notes": "",
+      "primary_hub_id": "010-308"
+    },
+    {
+      "acceptable_hub_ids": [
+        "217-163"
+      ],
+      "confidence": "high",
+      "item_index": 201,
+      "notes": "",
+      "primary_hub_id": "217-163"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-727"
+      ],
+      "confidence": "high",
+      "item_index": 202,
+      "notes": "",
+      "primary_hub_id": "028-727"
+    },
+    {
+      "acceptable_hub_ids": [
+        "617-524"
+      ],
+      "confidence": "high",
+      "item_index": 203,
+      "notes": "",
+      "primary_hub_id": "617-524"
+    },
+    {
+      "acceptable_hub_ids": [
+        "488-626"
+      ],
+      "confidence": "high",
+      "item_index": 204,
+      "notes": "",
+      "primary_hub_id": "488-626"
+    },
+    {
+      "acceptable_hub_ids": [
+        "065-782",
+        "286-500"
+      ],
+      "confidence": "high",
+      "item_index": 205,
+      "notes": "",
+      "primary_hub_id": "065-782"
+    },
+    {
+      "acceptable_hub_ids": [
+        "715-644"
+      ],
+      "confidence": "high",
+      "item_index": 206,
+      "notes": "",
+      "primary_hub_id": "715-644"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 207,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "114-277",
+        "333-858"
+      ],
+      "confidence": "medium",
+      "item_index": 208,
+      "notes": "Session hijacking protection aligns with session integrity or resisting stolen credentials",
+      "primary_hub_id": "114-277"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "743-110"
+      ],
+      "confidence": "medium",
+      "item_index": 209,
+      "notes": "Process footprinting is technical information disclosure",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "041-188"
+      ],
+      "confidence": "high",
+      "item_index": 210,
+      "notes": "",
+      "primary_hub_id": "041-188"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 211,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-772"
+      ],
+      "confidence": "high",
+      "item_index": 212,
+      "notes": "",
+      "primary_hub_id": "077-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "286-500"
+      ],
+      "confidence": "high",
+      "item_index": 213,
+      "notes": "",
+      "primary_hub_id": "286-500"
+    },
+    {
+      "acceptable_hub_ids": [
+        "488-626"
+      ],
+      "confidence": "high",
+      "item_index": 214,
+      "notes": "",
+      "primary_hub_id": "488-626"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202"
+      ],
+      "confidence": "high",
+      "item_index": 215,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "474-203"
+      ],
+      "confidence": "medium",
+      "item_index": 216,
+      "notes": "White-box reverse engineering protection via model obfuscation",
+      "primary_hub_id": "474-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710",
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 217,
+      "notes": "",
+      "primary_hub_id": "481-710"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "high",
+      "item_index": 218,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "173-554",
+        "077-772"
+      ],
+      "confidence": "medium",
+      "item_index": 219,
+      "notes": "Data from information repositories aligns with augmentation data leak or training data leak",
+      "primary_hub_id": "173-554"
+    },
+    {
+      "acceptable_hub_ids": [
+        "424-242"
+      ],
+      "confidence": "high",
+      "item_index": 220,
+      "notes": "",
+      "primary_hub_id": "424-242"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 221,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "424-242"
+      ],
+      "confidence": "high",
+      "item_index": 222,
+      "notes": "",
+      "primary_hub_id": "424-242"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 223,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "380-540"
+      ],
+      "confidence": "high",
+      "item_index": 224,
+      "notes": "",
+      "primary_hub_id": "380-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "316-272",
+        "028-727"
+      ],
+      "confidence": "medium",
+      "item_index": 225,
+      "notes": "Cross-site identification relates to CORS whitelisting or CSRF protection",
+      "primary_hub_id": "316-272"
+    },
+    {
+      "acceptable_hub_ids": [
+        "843-475",
+        "204-272",
+        "342-641"
+      ],
+      "confidence": "medium",
+      "item_index": 226,
+      "notes": "Generative AI guardrails for undesired inputs/outputs best match prompt injection I/O handling; also touches sensitive output and anomalous input",
+      "primary_hub_id": "843-475"
+    },
+    {
+      "acceptable_hub_ids": [
+        "774-888"
+      ],
+      "confidence": "high",
+      "item_index": 227,
+      "notes": "",
+      "primary_hub_id": "774-888"
+    },
+    {
+      "acceptable_hub_ids": [
+        "276-748"
+      ],
+      "confidence": "high",
+      "item_index": 228,
+      "notes": "",
+      "primary_hub_id": "276-748"
+    },
+    {
+      "acceptable_hub_ids": [
+        "157-430",
+        "308-515"
+      ],
+      "confidence": "medium",
+      "item_index": 229,
+      "notes": "Probing iOS screenshots for sensitive info aligns with protecting/clearing cached or temporary sensitive data",
+      "primary_hub_id": "157-430"
+    },
+    {
+      "acceptable_hub_ids": [
+        "108-316"
+      ],
+      "confidence": "high",
+      "item_index": 230,
+      "notes": "",
+      "primary_hub_id": "108-316"
+    },
+    {
+      "acceptable_hub_ids": [
+        "852-770",
+        "423-055"
+      ],
+      "confidence": "high",
+      "item_index": 231,
+      "notes": "",
+      "primary_hub_id": "852-770"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "medium",
+      "item_index": 232,
+      "notes": "Supply chain risk management plan fits under supply chain management in development processes",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "843-475"
+      ],
+      "confidence": "high",
+      "item_index": 233,
+      "notes": "",
+      "primary_hub_id": "843-475"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "item_index": 234,
+      "notes": "",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-641"
+      ],
+      "confidence": "high",
+      "item_index": 235,
+      "notes": "",
+      "primary_hub_id": "342-641"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 236,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "473-758"
+      ],
+      "confidence": "high",
+      "item_index": 237,
+      "notes": "",
+      "primary_hub_id": "473-758"
+    },
+    {
+      "acceptable_hub_ids": [
+        "088-316"
+      ],
+      "confidence": "high",
+      "item_index": 238,
+      "notes": "",
+      "primary_hub_id": "088-316"
+    },
+    {
+      "acceptable_hub_ids": [
+        "852-770"
+      ],
+      "confidence": "high",
+      "item_index": 239,
+      "notes": "",
+      "primary_hub_id": "852-770"
+    },
+    {
+      "acceptable_hub_ids": [
+        "042-550",
+        "743-237"
+      ],
+      "confidence": "high",
+      "item_index": 240,
+      "notes": "",
+      "primary_hub_id": "042-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-443"
+      ],
+      "confidence": "high",
+      "item_index": 241,
+      "notes": "",
+      "primary_hub_id": "058-443"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155",
+        "286-500"
+      ],
+      "confidence": "low",
+      "item_index": 242,
+      "notes": "Exploiting hardware debug components is an architectural trust boundary or OS security issue",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "113-133"
+      ],
+      "confidence": "medium",
+      "item_index": 243,
+      "notes": "Identifier management and preventing reuse aligns with centralized authentication",
+      "primary_hub_id": "113-133"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "item_index": 244,
+      "notes": "",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "480-071"
+      ],
+      "confidence": "high",
+      "item_index": 245,
+      "notes": "",
+      "primary_hub_id": "480-071"
+    },
+    {
+      "acceptable_hub_ids": [
+        "703-813",
+        "184-284"
+      ],
+      "confidence": "high",
+      "item_index": 246,
+      "notes": "AI telemetry logging of inputs/outputs/intermediate steps fits monitor inference or logging security events",
+      "primary_hub_id": "703-813"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764",
+        "031-447"
+      ],
+      "confidence": "high",
+      "item_index": 247,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "106-447"
+      ],
+      "confidence": "high",
+      "item_index": 248,
+      "notes": "",
+      "primary_hub_id": "106-447"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "high",
+      "item_index": 249,
+      "notes": "",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710",
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 250,
+      "notes": "",
+      "primary_hub_id": "481-710"
+    }
+  ],
+  "run": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "batch_size": 25,
+    "cost_usd": 0.7819,
+    "finished_at": "2026-08-19T04:54:03.433143+00:00",
+    "max_tokens": 16384,
+    "mode": "open_book_annotation",
+    "model_id": "x-ai/Grok-4.20",
+    "n_failed_attempts": 0,
+    "n_items": 250,
+    "parse_counters": {
+      "invented_primary": 0,
+      "missing": 2,
+      "truncated_acceptable": 0
+    },
+    "pricing_usd_per_mtok": {
+      "input": 1.25,
+      "output": 2.5
+    },
+    "prompt_source": "claudedocs/ceiling-study-runbook.md",
+    "provider_pin": "xAI",
+    "reasoning_effort": "low",
+    "route": "openrouter",
+    "route_model_id": "x-ai/grok-4.20",
+    "served_model_snapshot": [
+      "x-ai/grok-4.20"
+    ],
+    "served_providers": [
+      "xAI"
+    ],
+    "started_at": "2026-08-19T04:40:01.727128+00:00",
+    "temperature": 0.0,
+    "usage": [
+      {
+        "attempt": 1,
+        "batch_index": 1,
+        "billed_cost_usd": 0.03383565,
+        "cached_tokens": 75072,
+        "completion_tokens": 7514,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 101.75,
+        "ok": true,
+        "prompt_tokens": 75101,
+        "reasoning_tokens": 6257,
+        "response_id": "gen-1787114401-svkAEERRgdR50TrvXBqx",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 2,
+        "billed_cost_usd": 0.0478653,
+        "cached_tokens": 65664,
+        "completion_tokens": 8155,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 87.9,
+        "ok": true,
+        "prompt_tokens": 77140,
+        "reasoning_tokens": 6834,
+        "response_id": "gen-1787114503-22xgsY7yJllLMW7AOzgd",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 3,
+        "billed_cost_usd": 0.1174456,
+        "cached_tokens": 128,
+        "completion_tokens": 9203,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 82.12,
+        "ok": true,
+        "prompt_tokens": 75658,
+        "reasoning_tokens": 7923,
+        "response_id": "gen-1787114591-KnhC81U1CuDIKPMLjOuD",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 4,
+        "billed_cost_usd": 0.11532435,
+        "cached_tokens": 128,
+        "completion_tokens": 8486,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 84.31,
+        "ok": true,
+        "prompt_tokens": 75395,
+        "reasoning_tokens": 7181,
+        "response_id": "gen-1787114673-SfhCXhXgBD1DKhCa4WWo",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 5,
+        "billed_cost_usd": 0.11366185,
+        "cached_tokens": 128,
+        "completion_tokens": 7672,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 76.71,
+        "ok": true,
+        "prompt_tokens": 75693,
+        "reasoning_tokens": 6505,
+        "response_id": "gen-1787114757-xMKyOxXP33szfVkIhCyy",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 6,
+        "billed_cost_usd": 0.1071656,
+        "cached_tokens": 128,
+        "completion_tokens": 5457,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 68.16,
+        "ok": true,
+        "prompt_tokens": 74926,
+        "reasoning_tokens": 4112,
+        "response_id": "gen-1787114834-uUNX4rKCMXWOMEGzVvke",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 7,
+        "billed_cost_usd": 0.11090685,
+        "cached_tokens": 128,
+        "completion_tokens": 6849,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 75.71,
+        "ok": true,
+        "prompt_tokens": 75135,
+        "reasoning_tokens": 5557,
+        "response_id": "gen-1787114902-JCxQlqJYhNaTO49qVFSo",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 8,
+        "billed_cost_usd": 0.0398128,
+        "cached_tokens": 65664,
+        "completion_tokens": 5748,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 63.68,
+        "ok": true,
+        "prompt_tokens": 75512,
+        "reasoning_tokens": 4549,
+        "response_id": "gen-1787114978-xOcIrb4CxSDdl4iueL2T",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 9,
+        "billed_cost_usd": 0.0526178,
+        "cached_tokens": 65664,
+        "completion_tokens": 11022,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 115.48,
+        "ok": true,
+        "prompt_tokens": 75208,
+        "reasoning_tokens": 9781,
+        "response_id": "gen-1787115042-NSK0vQnHPvSoJzacmK11",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 10,
+        "billed_cost_usd": 0.04330625,
+        "cached_tokens": 68800,
+        "completion_tokens": 8464,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 85.83,
+        "ok": true,
+        "prompt_tokens": 75509,
+        "reasoning_tokens": 7163,
+        "response_id": "gen-1787115157-W46J5VUhwMHoBU6PtEfT",
+        "served_model": "x-ai/grok-4.20",
+        "served_provider": "xAI"
+      }
+    ]
+  }
+}

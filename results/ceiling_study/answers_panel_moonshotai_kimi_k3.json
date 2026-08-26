@@ -1,0 +1,2764 @@
+{
+  "items": [
+    {
+      "acceptable_hub_ids": [
+        "172-101"
+      ],
+      "confidence": "high",
+      "item_index": 1,
+      "notes": "Developer screening is personnel vetting; the text itself points to PS-3 territory.",
+      "primary_hub_id": "172-101"
+    },
+    {
+      "acceptable_hub_ids": [
+        "755-340",
+        "225-503"
+      ],
+      "confidence": "medium",
+      "item_index": 2,
+      "notes": "Broad AI governance program (inventory, risk, compliance, literacy) best fits the AI management system hub; parent organizational AI controls is also defensible.",
+      "primary_hub_id": "755-340"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "701-654"
+      ],
+      "confidence": "medium",
+      "item_index": 3,
+      "notes": "Attack poisons training datasets via expiring URLs in the supply chain; fundamentally dataset poisoning, though supply-chain model poisoning is a near miss.",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "623-550"
+      ],
+      "confidence": "low",
+      "item_index": 4,
+      "notes": "Primarily evasion of network filtering controls; DoS is a secondary effect, so network defense-in-depth fits better than DoS protection, but neither is clean.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "400-007",
+        "818-434"
+      ],
+      "confidence": "medium",
+      "item_index": 5,
+      "notes": "Encrypting AI models at rest is fundamentally data-at-rest encryption; protection of technical AI information is a reasonable alternative.",
+      "primary_hub_id": "400-007"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 6,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-781"
+      ],
+      "confidence": "high",
+      "item_index": 7,
+      "notes": "",
+      "primary_hub_id": "342-781"
+    },
+    {
+      "acceptable_hub_ids": [
+        "636-854",
+        "527-034"
+      ],
+      "confidence": "medium",
+      "item_index": 8,
+      "notes": "Attack exploits cleartext traffic after SSL termination between edge and backend; end-to-end encryption of all communications is the counter, with inter-component protection close behind.",
+      "primary_hub_id": "636-854"
+    },
+    {
+      "acceptable_hub_ids": [
+        "073-507",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "item_index": 9,
+      "notes": "Technique covers both direct and indirect prompt injection, so the inference-threats parent is the honest fit; either child is defensible.",
+      "primary_hub_id": "073-507"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 10,
+      "notes": "Reconnaissance scanning has no dedicated hub; network defense-in-depth detection is the nearest home.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "843-475",
+        "860-723",
+        "106-447"
+      ],
+      "confidence": "low",
+      "item_index": 11,
+      "notes": "Spans alignment training, prompt formatting/segregation, and I/O detection filters for prompt injection; I/O handling is the closest single hub.",
+      "primary_hub_id": "843-475"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764",
+        "031-447"
+      ],
+      "confidence": "medium",
+      "item_index": 12,
+      "notes": "Encoding tricks to bypass URL validation are input-validation bypass/injection; whitelist input validation is also defensible.",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "336-512",
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 13,
+      "notes": "Routing/DNS manipulation (pharming) maps loosely to DNS integrity; broader than that hub but no better fit exists.",
+      "primary_hub_id": "336-512"
+    },
+    {
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "high",
+      "item_index": 14,
+      "notes": "",
+      "primary_hub_id": "146-871"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764",
+        "031-447"
+      ],
+      "confidence": "medium",
+      "item_index": 15,
+      "notes": "Unicode smuggling past filters is canonical injection-protection territory.",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 16,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838",
+        "467-215"
+      ],
+      "confidence": "high",
+      "item_index": 17,
+      "notes": "Adversarial training and robust distillation are named; adversarial training is the primary technique.",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "872-574"
+      ],
+      "confidence": "low",
+      "item_index": 18,
+      "notes": "Rootkit installation is malware; only endpoint malware protection hub approximates it.",
+      "primary_hub_id": "872-574"
+    },
+    {
+      "acceptable_hub_ids": [
+        "134-207",
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 19,
+      "notes": "",
+      "primary_hub_id": "134-207"
+    },
+    {
+      "acceptable_hub_ids": [
+        "576-262"
+      ],
+      "confidence": "high",
+      "item_index": 20,
+      "notes": "",
+      "primary_hub_id": "576-262"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "low",
+      "item_index": 21,
+      "notes": "Non-network audio eavesdropping has no real hub; physical protection is the least-bad fit.",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "474-203"
+      ],
+      "confidence": "high",
+      "item_index": 22,
+      "notes": "",
+      "primary_hub_id": "474-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "761-417",
+        "641-760"
+      ],
+      "confidence": "medium",
+      "item_index": 23,
+      "notes": "Input restoration is explicitly named under evasion attack input handling; AI input distortion also covers restoration-style transforms.",
+      "primary_hub_id": "761-417"
+    },
+    {
+      "acceptable_hub_ids": [
+        "824-732"
+      ],
+      "confidence": "high",
+      "item_index": 24,
+      "notes": "",
+      "primary_hub_id": "824-732"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "item_index": 25,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "low",
+      "item_index": 26,
+      "notes": "Attack pattern (firewall reconnaissance via ACK scan) has no direct hub; nearest is network-based attack detection/protection.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "336-512",
+        "715-223"
+      ],
+      "confidence": "low",
+      "item_index": 27,
+      "notes": "Rogue location resembling a legitimate resource is closest to domain/DNS integrity (typosquatting-like); no exact hub exists.",
+      "primary_hub_id": "336-512"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 28,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "157-430",
+        "846-302",
+        "617-524"
+      ],
+      "confidence": "medium",
+      "item_index": 29,
+      "notes": "Attack exploits unprotected cached sensitive data; defense maps to protect-and-clear cached sensitive data.",
+      "primary_hub_id": "157-430"
+    },
+    {
+      "acceptable_hub_ids": [
+        "547-824"
+      ],
+      "confidence": "high",
+      "item_index": 30,
+      "notes": "",
+      "primary_hub_id": "547-824"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "item_index": 31,
+      "notes": "",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "073-507",
+        "686-110",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "item_index": 32,
+      "notes": "Control covers both direct and indirect prompt injection, so the common parent fits better than either leaf.",
+      "primary_hub_id": "073-507"
+    },
+    {
+      "acceptable_hub_ids": [
+        "742-431",
+        "441-132",
+        "170-772"
+      ],
+      "confidence": "high",
+      "item_index": 33,
+      "notes": "",
+      "primary_hub_id": "742-431"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540",
+        "141-385",
+        "182-732"
+      ],
+      "confidence": "medium",
+      "item_index": 34,
+      "notes": "Covers both training-data privacy inference and model extraction via the inference API; no single leaf covers both.",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 35,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 36,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "482-771"
+      ],
+      "confidence": "medium",
+      "item_index": 37,
+      "notes": "Buffer overflow from expanded input; memory-safe functions hub is the closest preventive home.",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-108"
+      ],
+      "confidence": "high",
+      "item_index": 38,
+      "notes": "",
+      "primary_hub_id": "010-108"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "630-573"
+      ],
+      "confidence": "low",
+      "item_index": 39,
+      "notes": "Harvesting data leaked through application events; nearest concept is preventing security disclosure, but fit is weak.",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710"
+      ],
+      "confidence": "high",
+      "item_index": 40,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-235"
+      ],
+      "confidence": "high",
+      "item_index": 41,
+      "notes": "",
+      "primary_hub_id": "077-235"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "low",
+      "item_index": 42,
+      "notes": "OS fingerprinting probe; no reconnaissance hub, nearest is network attack detection/protection.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 43,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "240-464",
+        "428-544"
+      ],
+      "confidence": "medium",
+      "item_index": 44,
+      "notes": "Contingency-specific role training; contingency planning hub covers the domain, awareness training is the alternative.",
+      "primary_hub_id": "240-464"
+    },
+    {
+      "acceptable_hub_ids": [
+        "860-723"
+      ],
+      "confidence": "high",
+      "item_index": 45,
+      "notes": "",
+      "primary_hub_id": "860-723"
+    },
+    {
+      "acceptable_hub_ids": [
+        "571-640",
+        "362-550"
+      ],
+      "confidence": "high",
+      "item_index": 46,
+      "notes": "PII quality operations fall under personal data handling management per its description.",
+      "primary_hub_id": "571-640"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 47,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "low",
+      "item_index": 48,
+      "notes": "Port scanning attack pattern; no dedicated reconnaissance hub.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "low",
+      "item_index": 49,
+      "notes": "SYN scan reconnaissance; same reasoning as other scan items.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "187-083"
+      ],
+      "confidence": "high",
+      "item_index": 50,
+      "notes": "",
+      "primary_hub_id": "187-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "810-884"
+      ],
+      "confidence": "high",
+      "item_index": 51,
+      "notes": "",
+      "primary_hub_id": "810-884"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527",
+        "623-550",
+        "336-512"
+      ],
+      "confidence": "medium",
+      "item_index": 52,
+      "notes": "Attack denies availability of name resolution by dropping DNS requests; sits between DNS service protection and DoS protection.",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "114-853"
+      ],
+      "confidence": "high",
+      "item_index": 53,
+      "notes": "",
+      "primary_hub_id": "114-853"
+    },
+    {
+      "acceptable_hub_ids": [
+        "010-108",
+        "430-722"
+      ],
+      "confidence": "high",
+      "item_index": 54,
+      "notes": "Reducing output fidelity to hinder model extraction matches obscuring confidence/output information in AI responses.",
+      "primary_hub_id": "010-108"
+    },
+    {
+      "acceptable_hub_ids": [
+        "640-364",
+        "368-633"
+      ],
+      "confidence": "medium",
+      "item_index": 55,
+      "notes": "Attack exploits missing access control on sensitive files; fundamentally an authorization enforcement failure.",
+      "primary_hub_id": "640-364"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "886-662",
+        "187-083"
+      ],
+      "confidence": "high",
+      "item_index": 56,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 57,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "805-126"
+      ],
+      "confidence": "high",
+      "item_index": 58,
+      "notes": "",
+      "primary_hub_id": "805-126"
+    },
+    {
+      "acceptable_hub_ids": [
+        "637-021"
+      ],
+      "confidence": "high",
+      "item_index": 59,
+      "notes": "",
+      "primary_hub_id": "637-021"
+    },
+    {
+      "acceptable_hub_ids": [
+        "636-854",
+        "683-036"
+      ],
+      "confidence": "medium",
+      "item_index": 60,
+      "notes": "AitM attack succeeds because traffic is not TLS-protected; core countermeasure is encrypting all communications, with public WiFi as the typical vector.",
+      "primary_hub_id": "636-854"
+    },
+    {
+      "acceptable_hub_ids": [
+        "881-234",
+        "852-770",
+        "423-055"
+      ],
+      "confidence": "medium",
+      "item_index": 61,
+      "notes": "Text spans software, data, and model supply chains for AI; parent hub fits better than any single leaf.",
+      "primary_hub_id": "881-234"
+    },
+    {
+      "acceptable_hub_ids": [
+        "048-612",
+        "821-541"
+      ],
+      "confidence": "high",
+      "item_index": 62,
+      "notes": "",
+      "primary_hub_id": "048-612"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 63,
+      "notes": "OS fingerprinting via ICMP error quoting has no precise hub; nearest is layered network defense limiting such responses.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385",
+        "663-550"
+      ],
+      "confidence": "high",
+      "item_index": 64,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036"
+      ],
+      "confidence": "high",
+      "item_index": 65,
+      "notes": "",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "020-540"
+      ],
+      "confidence": "high",
+      "item_index": 66,
+      "notes": "",
+      "primary_hub_id": "020-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "742-431",
+        "674-425"
+      ],
+      "confidence": "high",
+      "item_index": 67,
+      "notes": "",
+      "primary_hub_id": "742-431"
+    },
+    {
+      "acceptable_hub_ids": [
+        "173-554"
+      ],
+      "confidence": "high",
+      "item_index": 68,
+      "notes": "",
+      "primary_hub_id": "173-554"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570"
+      ],
+      "confidence": "medium",
+      "item_index": 69,
+      "notes": "Buffer overflow in MIME conversion routines; prevention is memory-safe functions, though the mail-parsing context is incidental.",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "041-188"
+      ],
+      "confidence": "high",
+      "item_index": 70,
+      "notes": "",
+      "primary_hub_id": "041-188"
+    },
+    {
+      "acceptable_hub_ids": [
+        "364-516",
+        "555-083",
+        "547-824"
+      ],
+      "confidence": "medium",
+      "item_index": 71,
+      "notes": "Covers backdoor testing, leakage testing, adversarial influence, and drift monitoring; spans several leaf hubs so the assurance parent fits best.",
+      "primary_hub_id": "364-516"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 72,
+      "notes": "Host discovery reconnaissance has no dedicated hub; closest is network defense-in-depth detection.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "780-757"
+      ],
+      "confidence": "high",
+      "item_index": 73,
+      "notes": "",
+      "primary_hub_id": "780-757"
+    },
+    {
+      "acceptable_hub_ids": [
+        "547-283",
+        "777-470"
+      ],
+      "confidence": "medium",
+      "item_index": 74,
+      "notes": "Code inclusion via local/remote file references aligns with LFI/RFI protection; blocking execution of untrusted logic is a defensible alternative.",
+      "primary_hub_id": "547-283"
+    },
+    {
+      "acceptable_hub_ids": [
+        "176-154",
+        "630-573",
+        "802-056"
+      ],
+      "confidence": "medium",
+      "item_index": 75,
+      "notes": "General interaction-frequency limiting; authentication-specific cases would fall under restrict excessive authentication.",
+      "primary_hub_id": "176-154"
+    },
+    {
+      "acceptable_hub_ids": [
+        "467-215"
+      ],
+      "confidence": "high",
+      "item_index": 76,
+      "notes": "",
+      "primary_hub_id": "467-215"
+    },
+    {
+      "acceptable_hub_ids": [
+        "074-873",
+        "268-272"
+      ],
+      "confidence": "medium",
+      "item_index": 77,
+      "notes": "General information/records retention across the lifecycle; 268-272 is limited to personal data retention/deletion, so the broader data classification and handling parent is the better home.",
+      "primary_hub_id": "074-873"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202",
+        "034-540",
+        "204-272"
+      ],
+      "confidence": "high",
+      "item_index": 78,
+      "notes": "Threat of LLMs disclosing sensitive data (PII, training data, proprietary info) through model output; inversion is mentioned only as a secondary consequence.",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "440-372"
+      ],
+      "confidence": "high",
+      "item_index": 79,
+      "notes": "",
+      "primary_hub_id": "440-372"
+    },
+    {
+      "acceptable_hub_ids": [
+        "031-447",
+        "848-711",
+        "010-308"
+      ],
+      "confidence": "medium",
+      "item_index": 80,
+      "notes": "Improper handling of missing/undefined parameters is fundamentally an input validation weakness; whitelist validation of external HTTP input is the closest leaf.",
+      "primary_hub_id": "031-447"
+    },
+    {
+      "acceptable_hub_ids": [
+        "761-417"
+      ],
+      "confidence": "high",
+      "item_index": 81,
+      "notes": "",
+      "primary_hub_id": "761-417"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "163-518"
+      ],
+      "confidence": "medium",
+      "item_index": 82,
+      "notes": "Exponential data expansion is resource-exhaustion DoS; 163-518 covers only archive decompression bombs, a narrower special case.",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "866-553"
+      ],
+      "confidence": "medium",
+      "item_index": 83,
+      "notes": "Buffer overflow via binary resources; the memory-safe functions leaf is the preventive hub for this weakness class.",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "217-163"
+      ],
+      "confidence": "high",
+      "item_index": 84,
+      "notes": "Primarily training data poisoning; augmentation data manipulation is mentioned as a variant, hence secondary.",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 85,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "112-273",
+        "175-235",
+        "384-344"
+      ],
+      "confidence": "low",
+      "item_index": 86,
+      "notes": "Malicious payloads delivered in files via standard channels; malware scanning of untrusted files is the closest defensive hub, though the attack also spans file type validation and safe serving.",
+      "primary_hub_id": "112-273"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 87,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "482-771"
+      ],
+      "confidence": "high",
+      "item_index": 88,
+      "notes": "",
+      "primary_hub_id": "482-771"
+    },
+    {
+      "acceptable_hub_ids": [
+        "430-722"
+      ],
+      "confidence": "high",
+      "item_index": 89,
+      "notes": "",
+      "primary_hub_id": "430-722"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-527",
+        "336-512"
+      ],
+      "confidence": "medium",
+      "item_index": 90,
+      "notes": "Cache poisoning spans DNS/ARP and application caches; the name resolution hub explicitly covers cache poisoning prevention, though the pattern is broader than DNS.",
+      "primary_hub_id": "058-527"
+    },
+    {
+      "acceptable_hub_ids": [
+        "232-217"
+      ],
+      "confidence": "high",
+      "item_index": 91,
+      "notes": "",
+      "primary_hub_id": "232-217"
+    },
+    {
+      "acceptable_hub_ids": [
+        "703-813"
+      ],
+      "confidence": "high",
+      "item_index": 92,
+      "notes": "",
+      "primary_hub_id": "703-813"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036"
+      ],
+      "confidence": "high",
+      "item_index": 93,
+      "notes": "Rogue access point / Wi-Fi interception is squarely wireless link protection.",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 94,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 95,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 96,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "743-110"
+      ],
+      "confidence": "low",
+      "item_index": 97,
+      "notes": "Exposure of sensitive info via derived metadata/search indices; no leaf fits well, so the Prevent security disclosure parent is the least-bad home.",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 98,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282",
+        "170-772"
+      ],
+      "confidence": "low",
+      "item_index": 99,
+      "notes": "Hardware fault injection is a physical/environmental attack on devices; no dedicated hub exists, physical & environment protection is closest though aimed at facilities.",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 100,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "item_index": 101,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "660-867",
+        "534-605"
+      ],
+      "confidence": "medium",
+      "item_index": 102,
+      "notes": "Single-use action enforcement (vote once) is a business logic constraint; no hub covers uniqueness directly, so business logic limits is the closest fit, with sequence enforcement as a secondary candidate.",
+      "primary_hub_id": "660-867"
+    },
+    {
+      "acceptable_hub_ids": [
+        "380-540",
+        "134-412"
+      ],
+      "confidence": "high",
+      "item_index": 103,
+      "notes": "",
+      "primary_hub_id": "380-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "267-786",
+        "342-781",
+        "141-385",
+        "182-732"
+      ],
+      "confidence": "low",
+      "item_index": 104,
+      "notes": "Threat technique covering collection of models, datasets, and telemetry; spans development-time leak, runtime leak, and exfiltration, so the parent model confidentiality hub is the safest home.",
+      "primary_hub_id": "267-786"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-083",
+        "286-500"
+      ],
+      "confidence": "low",
+      "item_index": 105,
+      "notes": "Attack pattern that disables security tooling to evade detection; taxonomy has no hub for protecting detective controls themselves, so Monitoring is the nearest concept.",
+      "primary_hub_id": "058-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "701-654"
+      ],
+      "confidence": "high",
+      "item_index": 106,
+      "notes": "",
+      "primary_hub_id": "701-654"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 107,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-744"
+      ],
+      "confidence": "high",
+      "item_index": 108,
+      "notes": "",
+      "primary_hub_id": "615-744"
+    },
+    {
+      "acceptable_hub_ids": [
+        "622-203",
+        "082-530"
+      ],
+      "confidence": "high",
+      "item_index": 109,
+      "notes": "Rainbow tables are defeated by salted hashing; the salted-and-hashed hub is the direct countermeasure home.",
+      "primary_hub_id": "622-203"
+    },
+    {
+      "acceptable_hub_ids": [
+        "858-745",
+        "058-443",
+        "268-272"
+      ],
+      "confidence": "medium",
+      "item_index": 110,
+      "notes": "Time-based removal of data no longer needed matches training data retention management in the AI context; data minimization and personal-data retention classification are defensible alternatives.",
+      "primary_hub_id": "858-745"
+    },
+    {
+      "acceptable_hub_ids": [
+        "011-322"
+      ],
+      "confidence": "medium",
+      "item_index": 111,
+      "notes": "Formal verification of adversarial robustness is a verification method against evasion attacks, fitting the testing-against-evasion hub despite its formal-methods flavor.",
+      "primary_hub_id": "011-322"
+    },
+    {
+      "acceptable_hub_ids": [
+        "205-522",
+        "204-272",
+        "780-757"
+      ],
+      "confidence": "medium",
+      "item_index": 112,
+      "notes": "Validating generative output against security/content/privacy policy is broader than sensitive-output filtering; automated oversight with output filtering is the best fit.",
+      "primary_hub_id": "205-522"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 113,
+      "notes": "OS fingerprinting probe via IP DF bit; no hub addresses reconnaissance or protocol-level information leakage, so network defense-in-depth is a weak nearest home.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 114,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "low",
+      "item_index": 115,
+      "notes": "Custom reimplementation of untrusted critical components is an architectural trust decision; no hub covers high-assurance custom development directly.",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "488-626"
+      ],
+      "confidence": "high",
+      "item_index": 116,
+      "notes": "",
+      "primary_hub_id": "488-626"
+    },
+    {
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "high",
+      "item_index": 117,
+      "notes": "",
+      "primary_hub_id": "146-871"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-347",
+        "881-321"
+      ],
+      "confidence": "medium",
+      "item_index": 118,
+      "notes": "Weakness is sharing of high-privilege device unlock credentials across parties; shared privileged accounts hub fits best though the context is hardware credentials.",
+      "primary_hub_id": "623-347"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 119,
+      "notes": "Network reconnaissance via traceroute; no dedicated hub, nearest is network defense-in-depth.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 120,
+      "notes": "",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "818-434"
+      ],
+      "confidence": "high",
+      "item_index": 121,
+      "notes": "",
+      "primary_hub_id": "818-434"
+    },
+    {
+      "acceptable_hub_ids": [
+        "031-447",
+        "482-771"
+      ],
+      "confidence": "medium",
+      "item_index": 122,
+      "notes": "Validating index/offset input is fundamentally input validation; integer-overflow boundary checking is a partial near-miss since offsets feed buffer arithmetic.",
+      "primary_hub_id": "031-447"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385"
+      ],
+      "confidence": "high",
+      "item_index": 123,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "171-222",
+        "347-352"
+      ],
+      "confidence": "low",
+      "item_index": 124,
+      "notes": "Hardware attestation/measurement register tampering has no real home; binary integrity verification is the closest integrity-check concept.",
+      "primary_hub_id": "171-222"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-254"
+      ],
+      "confidence": "high",
+      "item_index": 125,
+      "notes": "",
+      "primary_hub_id": "028-254"
+    },
+    {
+      "acceptable_hub_ids": [
+        "073-507",
+        "012-625"
+      ],
+      "confidence": "medium",
+      "item_index": 126,
+      "notes": "Manipulation of the model's primary task via prompts at inference; text explicitly distinguishes it from indirect prompt injection, so the broader inference-time behavior-integrity hub fits best.",
+      "primary_hub_id": "073-507"
+    },
+    {
+      "acceptable_hub_ids": [
+        "653-242",
+        "031-447",
+        "010-308"
+      ],
+      "confidence": "medium",
+      "item_index": 127,
+      "notes": "Cross-field consistency validation of structured input maps best to schema enforcement on structured data; general HTTP input whitelisting is a defensible alternative.",
+      "primary_hub_id": "653-242"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202"
+      ],
+      "confidence": "high",
+      "item_index": 128,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 129,
+      "notes": "Memory exhaustion of the web service via oversized array declaration is a resource-exhaustion DoS attack.",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "077-772"
+      ],
+      "confidence": "high",
+      "item_index": 130,
+      "notes": "",
+      "primary_hub_id": "077-772"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-641",
+        "761-417"
+      ],
+      "confidence": "high",
+      "item_index": 131,
+      "notes": "",
+      "primary_hub_id": "342-641"
+    },
+    {
+      "acceptable_hub_ids": [
+        "664-571",
+        "542-488"
+      ],
+      "confidence": "low",
+      "item_index": 132,
+      "notes": "Reconnaissance against time-based security algorithms (RNG seeding, time-based auth); nearest hub is proper secure-random generation, but the taxonomy has no clean home for this recon pattern.",
+      "primary_hub_id": "664-571"
+    },
+    {
+      "acceptable_hub_ids": [
+        "852-770",
+        "423-055"
+      ],
+      "confidence": "high",
+      "item_index": 133,
+      "notes": "Covers both model artifact integrity (safe formats, scanning) and training-data download verification; model supply chain is primary, data supply chain acceptable.",
+      "primary_hub_id": "852-770"
+    },
+    {
+      "acceptable_hub_ids": [
+        "042-550"
+      ],
+      "confidence": "high",
+      "item_index": 134,
+      "notes": "",
+      "primary_hub_id": "042-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 135,
+      "notes": "ICMP-based network reconnaissance; only the network defense-in-depth hub plausibly covers detection/blocking of such probes, but fit is loose.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "187-083"
+      ],
+      "confidence": "high",
+      "item_index": 136,
+      "notes": "",
+      "primary_hub_id": "187-083"
+    },
+    {
+      "acceptable_hub_ids": [
+        "713-683",
+        "821-541",
+        "148-420"
+      ],
+      "confidence": "medium",
+      "item_index": 137,
+      "notes": "Root cause cited is insufficient access controls on log files enabling injection/forgery/deletion; log access protection is primary, log injection protection acceptable.",
+      "primary_hub_id": "713-683"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318",
+        "108-316"
+      ],
+      "confidence": "high",
+      "item_index": 138,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "843-475"
+      ],
+      "confidence": "high",
+      "item_index": 139,
+      "notes": "",
+      "primary_hub_id": "843-475"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515",
+        "208-805"
+      ],
+      "confidence": "low",
+      "item_index": 140,
+      "notes": "Core dump exposure to unauthorized actors is sensitive diagnostic-data disclosure; no leaf hub directly covers dump files, so the disclosure-prevention parent is the safest home.",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "380-540",
+        "134-412"
+      ],
+      "confidence": "high",
+      "item_index": 141,
+      "notes": "",
+      "primary_hub_id": "380-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "768-532"
+      ],
+      "confidence": "high",
+      "item_index": 142,
+      "notes": "",
+      "primary_hub_id": "768-532"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-385"
+      ],
+      "confidence": "high",
+      "item_index": 143,
+      "notes": "",
+      "primary_hub_id": "141-385"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764",
+        "061-186"
+      ],
+      "confidence": "medium",
+      "item_index": 144,
+      "notes": "URL encoding abuse to bypass filters and subvert parameter meaning is fundamentally an injection/interpretation attack; uniform encoder/parser enforcement is the preventive-control alternative.",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "533-635"
+      ],
+      "confidence": "high",
+      "item_index": 145,
+      "notes": "",
+      "primary_hub_id": "533-635"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550",
+        "836-068"
+      ],
+      "confidence": "medium",
+      "item_index": 146,
+      "notes": "Nested-payload parser attacks aim at memory/CPU exhaustion (DoS); deserialization-prevention hubs address object instantiation rather than parser resource exhaustion.",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663",
+        "481-710",
+        "701-654"
+      ],
+      "confidence": "high",
+      "item_index": 147,
+      "notes": "Core content is manipulation of pre-training/fine-tuning/embedding data; model artifacts via shared repositories are secondary, making supply-chain poisoning acceptable.",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "605-735",
+        "530-671"
+      ],
+      "confidence": "medium",
+      "item_index": 148,
+      "notes": "Attack exploits missing client authentication in the channel; authenticating all external connections is the countermeasure hub.",
+      "primary_hub_id": "605-735"
+    },
+    {
+      "acceptable_hub_ids": [
+        "661-440"
+      ],
+      "confidence": "high",
+      "item_index": 149,
+      "notes": "",
+      "primary_hub_id": "661-440"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515"
+      ],
+      "confidence": "low",
+      "item_index": 150,
+      "notes": "Account enumeration via legitimate OS query functionality; taxonomy lacks a reconnaissance/account-enumeration hub, so general disclosure prevention is the least-bad fit.",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "384-015",
+        "408-838"
+      ],
+      "confidence": "medium",
+      "item_index": 151,
+      "notes": "Broad evasion-robustness training control spanning adversarial training, noise injection, and gradient masking; parent hub fits better than the adversarial-training-specific leaf.",
+      "primary_hub_id": "384-015"
+    },
+    {
+      "acceptable_hub_ids": [
+        "480-071"
+      ],
+      "confidence": "high",
+      "item_index": 152,
+      "notes": "",
+      "primary_hub_id": "480-071"
+    },
+    {
+      "acceptable_hub_ids": [
+        "533-635"
+      ],
+      "confidence": "high",
+      "item_index": 153,
+      "notes": "",
+      "primary_hub_id": "533-635"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "low",
+      "item_index": 154,
+      "notes": "Network reconnaissance attack pattern; no reconnaissance hub exists, so the layered network defense/detection hub is the nearest home.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 155,
+      "notes": "Control restricts tool/action privileges when untrusted data enters context, matching model action privilege minimization; indirect prompt injection is the threat addressed.",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036",
+        "441-132"
+      ],
+      "confidence": "medium",
+      "item_index": 156,
+      "notes": "Cryptanalysis of cellular encryption is a wireless-link confidentiality threat; weak-crypto hub is about sanctioned legacy use, not this attack surface.",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "641-760"
+      ],
+      "confidence": "high",
+      "item_index": 157,
+      "notes": "Randomized smoothing is explicitly named in the AI Input distortion hub description.",
+      "primary_hub_id": "641-760"
+    },
+    {
+      "acceptable_hub_ids": [
+        "368-633",
+        "128-128"
+      ],
+      "confidence": "medium",
+      "item_index": 158,
+      "notes": "Improper privilege management maps to least-privilege enforcement; broad CWE could also sit under strong authorization checking.",
+      "primary_hub_id": "368-633"
+    },
+    {
+      "acceptable_hub_ids": [
+        "370-877"
+      ],
+      "confidence": "high",
+      "item_index": 159,
+      "notes": "",
+      "primary_hub_id": "370-877"
+    },
+    {
+      "acceptable_hub_ids": [
+        "683-036"
+      ],
+      "confidence": "high",
+      "item_index": 160,
+      "notes": "Bluetooth key negotiation attack is squarely a wireless link protection concern.",
+      "primary_hub_id": "683-036"
+    },
+    {
+      "acceptable_hub_ids": [
+        "788-323"
+      ],
+      "confidence": "low",
+      "item_index": 161,
+      "notes": "Model size reduction hub is scoped to backdoor mitigation, but this control uses small models to prevent memorization of training samples (privacy); no better hub exists.",
+      "primary_hub_id": "788-323"
+    },
+    {
+      "acceptable_hub_ids": [
+        "368-633",
+        "152-725"
+      ],
+      "confidence": "medium",
+      "item_index": 162,
+      "notes": "Abuse of privileged features exposed to lower-privilege accounts reflects failure of least privilege; admin-functionality restriction is a plausible alternative.",
+      "primary_hub_id": "368-633"
+    },
+    {
+      "acceptable_hub_ids": [
+        "146-871"
+      ],
+      "confidence": "medium",
+      "item_index": 163,
+      "notes": "Multi-modal sensor fusion is an ensemble-style architectural defense against single-point adversarial/physical attack.",
+      "primary_hub_id": "146-871"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-254"
+      ],
+      "confidence": "high",
+      "item_index": 164,
+      "notes": "",
+      "primary_hub_id": "028-254"
+    },
+    {
+      "acceptable_hub_ids": [
+        "881-234"
+      ],
+      "confidence": "high",
+      "item_index": 165,
+      "notes": "",
+      "primary_hub_id": "881-234"
+    },
+    {
+      "acceptable_hub_ids": [
+        "743-110",
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 166,
+      "notes": "OS fingerprinting is reconnaissance via information disclosure; the HTTP header hub explicitly names fingerprinting but is HTTP-scoped, so fit is imperfect.",
+      "primary_hub_id": "743-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "567-025"
+      ],
+      "confidence": "high",
+      "item_index": 167,
+      "notes": "",
+      "primary_hub_id": "567-025"
+    },
+    {
+      "acceptable_hub_ids": [
+        "082-530",
+        "622-203"
+      ],
+      "confidence": "high",
+      "item_index": 168,
+      "notes": "Missing salt is the core weakness; the salted-and-hashed hub is also defensible.",
+      "primary_hub_id": "082-530"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570"
+      ],
+      "confidence": "medium",
+      "item_index": 169,
+      "notes": "Buffer overflow via symlink contents is fundamentally a memory-safety/bounds-checking failure.",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "701-654"
+      ],
+      "confidence": "high",
+      "item_index": 170,
+      "notes": "",
+      "primary_hub_id": "701-654"
+    },
+    {
+      "acceptable_hub_ids": [
+        "141-555",
+        "307-507"
+      ],
+      "confidence": "low",
+      "item_index": 171,
+      "notes": "Attack hinges on applications failing unsafely on corrupted input; integrity verification of files is a plausible alternative but no hub covers corrupted-file handling directly.",
+      "primary_hub_id": "141-555"
+    },
+    {
+      "acceptable_hub_ids": [
+        "860-723",
+        "106-447"
+      ],
+      "confidence": "medium",
+      "item_index": 172,
+      "notes": "System-prompt guidelines steering model behavior toward safe outputs align with GenAI alignment; prompt segregation is a near-miss focused on input structure.",
+      "primary_hub_id": "860-723"
+    },
+    {
+      "acceptable_hub_ids": [
+        "128-128",
+        "368-633"
+      ],
+      "confidence": "medium",
+      "item_index": 173,
+      "notes": "Broad improper access control weakness fits the strong authorization checking branch; least privilege is a defensible narrower leaf.",
+      "primary_hub_id": "128-128"
+    },
+    {
+      "acceptable_hub_ids": [
+        "780-757"
+      ],
+      "confidence": "high",
+      "item_index": 174,
+      "notes": "",
+      "primary_hub_id": "780-757"
+    },
+    {
+      "acceptable_hub_ids": [
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 175,
+      "notes": "",
+      "primary_hub_id": "012-625"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765",
+        "366-835"
+      ],
+      "confidence": "high",
+      "item_index": 176,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "202-604"
+      ],
+      "confidence": "high",
+      "item_index": 177,
+      "notes": "",
+      "primary_hub_id": "202-604"
+    },
+    {
+      "acceptable_hub_ids": [
+        "623-550"
+      ],
+      "confidence": "high",
+      "item_index": 178,
+      "notes": "",
+      "primary_hub_id": "623-550"
+    },
+    {
+      "acceptable_hub_ids": [
+        "423-055"
+      ],
+      "confidence": "high",
+      "item_index": 179,
+      "notes": "Dataset provenance tracking is squarely data supply chain management.",
+      "primary_hub_id": "423-055"
+    },
+    {
+      "acceptable_hub_ids": [
+        "802-056",
+        "333-858"
+      ],
+      "confidence": "medium",
+      "item_index": 180,
+      "notes": "Attack pattern; the corresponding defensive concept is throttling/blocking brute-force authentication attempts.",
+      "primary_hub_id": "802-056"
+    },
+    {
+      "acceptable_hub_ids": [
+        "860-723"
+      ],
+      "confidence": "high",
+      "item_index": 181,
+      "notes": "",
+      "primary_hub_id": "860-723"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146",
+        "058-083"
+      ],
+      "confidence": "low",
+      "item_index": 182,
+      "notes": "Network reconnaissance/host discovery has no dedicated hub; nearest is network defense-in-depth including detection of network-based probing.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "287-823"
+      ],
+      "confidence": "medium",
+      "item_index": 183,
+      "notes": "Component inventory is asset management; the only inventory leaf (863-521) is scoped to third-party software components and excludes hardware/firmware.",
+      "primary_hub_id": "287-823"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540"
+      ],
+      "confidence": "high",
+      "item_index": 184,
+      "notes": "",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 185,
+      "notes": "Port/OS scanning technique; no reconnaissance hub exists, closest is layered network defense/detection.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540",
+        "475-586"
+      ],
+      "confidence": "high",
+      "item_index": 186,
+      "notes": "Data reconstruction via model inversion/membership inference on training data.",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "630-573",
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 187,
+      "notes": "Ajax-based enumeration/footprinting; defensible as automation abuse detection or generic network defense, no true recon hub.",
+      "primary_hub_id": "630-573"
+    },
+    {
+      "acceptable_hub_ids": [
+        "886-662"
+      ],
+      "confidence": "high",
+      "item_index": 188,
+      "notes": "",
+      "primary_hub_id": "886-662"
+    },
+    {
+      "acceptable_hub_ids": [
+        "132-146"
+      ],
+      "confidence": "low",
+      "item_index": 189,
+      "notes": "Stealth port scanning; mapped to network defense-in-depth for lack of a reconnaissance hub.",
+      "primary_hub_id": "132-146"
+    },
+    {
+      "acceptable_hub_ids": [
+        "646-285",
+        "510-324"
+      ],
+      "confidence": "high",
+      "item_index": 190,
+      "notes": "",
+      "primary_hub_id": "646-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "743-110",
+        "132-146"
+      ],
+      "confidence": "medium",
+      "item_index": 191,
+      "notes": "Fingerprinting defense maps best to preventing disclosure of technical information (versions, banners) in responses.",
+      "primary_hub_id": "743-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "867-642"
+      ],
+      "confidence": "high",
+      "item_index": 192,
+      "notes": "",
+      "primary_hub_id": "867-642"
+    },
+    {
+      "acceptable_hub_ids": [
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 193,
+      "notes": "",
+      "primary_hub_id": "230-318"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155"
+      ],
+      "confidence": "medium",
+      "item_index": 194,
+      "notes": "Economy of mechanism is a design-level architectural security principle; no dedicated hub exists.",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "831-570",
+        "482-771"
+      ],
+      "confidence": "medium",
+      "item_index": 195,
+      "notes": "Buffer overflow via oversized formatted strings; defense is memory-safe functions/boundary checking.",
+      "primary_hub_id": "831-570"
+    },
+    {
+      "acceptable_hub_ids": [
+        "852-770",
+        "307-507"
+      ],
+      "confidence": "medium",
+      "item_index": 196,
+      "notes": "Checksum verification of AI artifacts fits model supply chain integrity; generic trusted-source integrity checks also defensible.",
+      "primary_hub_id": "852-770"
+    },
+    {
+      "acceptable_hub_ids": [
+        "286-500",
+        "486-813"
+      ],
+      "confidence": "medium",
+      "item_index": 197,
+      "notes": "CPU W^X configuration is platform/OS-level hardening; closest hub is OS security despite hardware angle.",
+      "primary_hub_id": "286-500"
+    },
+    {
+      "acceptable_hub_ids": [
+        "686-110"
+      ],
+      "confidence": "high",
+      "item_index": 198,
+      "notes": "",
+      "primary_hub_id": "686-110"
+    },
+    {
+      "acceptable_hub_ids": [
+        "408-838"
+      ],
+      "confidence": "high",
+      "item_index": 199,
+      "notes": "",
+      "primary_hub_id": "408-838"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764",
+        "031-447"
+      ],
+      "confidence": "medium",
+      "item_index": 200,
+      "notes": "Manipulating input format/encoding to subvert processing; fits injection protection's input-handling scope, with HTTP input whitelisting as an alternative.",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "217-163",
+        "012-625"
+      ],
+      "confidence": "high",
+      "item_index": 201,
+      "notes": "Poisoning RAG-indexed content is manipulation of augmentation data; the embedded prompt-injection payload makes indirect prompt injection a defensible secondary.",
+      "primary_hub_id": "217-163"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-727"
+      ],
+      "confidence": "high",
+      "item_index": 202,
+      "notes": "",
+      "primary_hub_id": "028-727"
+    },
+    {
+      "acceptable_hub_ids": [
+        "617-524",
+        "157-430"
+      ],
+      "confidence": "medium",
+      "item_index": 203,
+      "notes": "Persistent cookies holding sensitive data is sensitive data stored in browser-accessible client storage; protect-and-clear-cached-data is a plausible alternative reading.",
+      "primary_hub_id": "617-524"
+    },
+    {
+      "acceptable_hub_ids": [
+        "488-626",
+        "058-443"
+      ],
+      "confidence": "high",
+      "item_index": 204,
+      "notes": "Differential privacy applied to training data is explicitly named under training data obfuscation.",
+      "primary_hub_id": "488-626"
+    },
+    {
+      "acceptable_hub_ids": [
+        "065-782",
+        "286-500"
+      ],
+      "confidence": "medium",
+      "item_index": 205,
+      "notes": "Device lock after inactivity is functionally a hard session timeout; OS security is a defensible alternative given OS-level implementation.",
+      "primary_hub_id": "065-782"
+    },
+    {
+      "acceptable_hub_ids": [
+        "715-644",
+        "703-813"
+      ],
+      "confidence": "high",
+      "item_index": 206,
+      "notes": "",
+      "primary_hub_id": "715-644"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 207,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "114-277",
+        "704-530",
+        "727-043"
+      ],
+      "confidence": "medium",
+      "item_index": 208,
+      "notes": "Session hijacking is fundamentally about session integrity; token entropy/algorithm hubs address only the prediction vector.",
+      "primary_hub_id": "114-277"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515"
+      ],
+      "confidence": "low",
+      "item_index": 209,
+      "notes": "Reconnaissance via process enumeration is information disclosure, but the taxonomy's disclosure hubs are HTTP/debug oriented; no clean leaf home.",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "041-188"
+      ],
+      "confidence": "high",
+      "item_index": 210,
+      "notes": "",
+      "primary_hub_id": "041-188"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764",
+        "538-446",
+        "031-447"
+      ],
+      "confidence": "medium",
+      "item_index": 211,
+      "notes": "Encoding-bypass of validation is an injection-enabler; unstructured-data sanitization explicitly mentions encoding bypass and is a reasonable alternative.",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "356-282",
+        "400-007"
+      ],
+      "confidence": "low",
+      "item_index": 212,
+      "notes": "Attack technique for finding sensitive local data; nearest defensive concept is minimizing sensitive data scattering, with encryption at rest as a mitigation alternative.",
+      "primary_hub_id": "356-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "286-500",
+        "112-648"
+      ],
+      "confidence": "low",
+      "item_index": 213,
+      "notes": "Modifying OS services maps loosely to OS security configuration; change management is a plausible process-side reading.",
+      "primary_hub_id": "286-500"
+    },
+    {
+      "acceptable_hub_ids": [
+        "034-540",
+        "141-385",
+        "044-202",
+        "475-586"
+      ],
+      "confidence": "medium",
+      "item_index": 214,
+      "notes": "Section spans reconstruction, membership inference, and model extraction; inversion/membership inference is the core, with model exfiltration also covered.",
+      "primary_hub_id": "034-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "044-202",
+        "204-272"
+      ],
+      "confidence": "high",
+      "item_index": 215,
+      "notes": "",
+      "primary_hub_id": "044-202"
+    },
+    {
+      "acceptable_hub_ids": [
+        "308-515"
+      ],
+      "confidence": "low",
+      "item_index": 216,
+      "notes": "White-box reverse engineering of software has no dedicated hub; nearest concept is preventing disclosure of implementation detail.",
+      "primary_hub_id": "308-515"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710",
+        "867-642",
+        "701-654",
+        "020-540"
+      ],
+      "confidence": "medium",
+      "item_index": 217,
+      "notes": "Covers direct modification, federated update poisoning, and supply-chain poisoning; parent hub best captures the breadth.",
+      "primary_hub_id": "481-710"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285",
+        "135-200",
+        "510-324"
+      ],
+      "confidence": "medium",
+      "item_index": 218,
+      "notes": "Supply chain risk management policy/procedures sits under supply chain management; policy review and compliance are weaker alternatives.",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "538-770",
+        "117-371",
+        "015-063"
+      ],
+      "confidence": "low",
+      "item_index": 219,
+      "notes": "Mining information repositories is fundamentally a data access control failure; no leaf hub directly addresses repository data mining.",
+      "primary_hub_id": "538-770"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-765"
+      ],
+      "confidence": "high",
+      "item_index": 220,
+      "notes": "",
+      "primary_hub_id": "760-765"
+    },
+    {
+      "acceptable_hub_ids": [
+        "220-442"
+      ],
+      "confidence": "high",
+      "item_index": 221,
+      "notes": "",
+      "primary_hub_id": "220-442"
+    },
+    {
+      "acceptable_hub_ids": [
+        "356-282",
+        "424-242"
+      ],
+      "confidence": "medium",
+      "item_index": 222,
+      "notes": "Incomplete deletion leaving data for new tenants is a data retention/remnant problem; decommissioning sanitization is a defensible alternative.",
+      "primary_hub_id": "356-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "615-663"
+      ],
+      "confidence": "high",
+      "item_index": 223,
+      "notes": "Availability-oriented poisoning of training data, including label flipping, is squarely data poisoning of training data.",
+      "primary_hub_id": "615-663"
+    },
+    {
+      "acceptable_hub_ids": [
+        "380-540",
+        "134-412",
+        "670-660"
+      ],
+      "confidence": "high",
+      "item_index": 224,
+      "notes": "",
+      "primary_hub_id": "380-540"
+    },
+    {
+      "acceptable_hub_ids": [
+        "028-727"
+      ],
+      "confidence": "medium",
+      "item_index": 225,
+      "notes": "Described by CAPEC itself as a CSRF variant riding the victim's session, differing mainly in harvesting data rather than performing an action.",
+      "primary_hub_id": "028-727"
+    },
+    {
+      "acceptable_hub_ids": [
+        "205-522",
+        "843-475",
+        "204-272"
+      ],
+      "confidence": "high",
+      "item_index": 226,
+      "notes": "Guardrails/moderator systems filtering model I/O map directly to Automated AI oversight, which explicitly names guardrails and output filtering.",
+      "primary_hub_id": "205-522"
+    },
+    {
+      "acceptable_hub_ids": [
+        "774-888"
+      ],
+      "confidence": "high",
+      "item_index": 227,
+      "notes": "",
+      "primary_hub_id": "774-888"
+    },
+    {
+      "acceptable_hub_ids": [
+        "276-748"
+      ],
+      "confidence": "high",
+      "item_index": 228,
+      "notes": "",
+      "primary_hub_id": "276-748"
+    },
+    {
+      "acceptable_hub_ids": [
+        "157-430",
+        "356-282"
+      ],
+      "confidence": "medium",
+      "item_index": 229,
+      "notes": "Attack on OS-generated transient screenshots of sensitive data; nearest concept is protecting/clearing cached sensitive data, though the taxonomy has no exact home for OS-level screen capture leakage.",
+      "primary_hub_id": "157-430"
+    },
+    {
+      "acceptable_hub_ids": [
+        "108-316",
+        "230-318"
+      ],
+      "confidence": "high",
+      "item_index": 230,
+      "notes": "Input validation to reject oversized/malicious content causing AI resource exhaustion.",
+      "primary_hub_id": "108-316"
+    },
+    {
+      "acceptable_hub_ids": [
+        "863-521",
+        "852-770",
+        "423-055"
+      ],
+      "confidence": "medium",
+      "item_index": 231,
+      "notes": "AI BOM is fundamentally a component/artifact inventory (SBOM analogue); AI-specific supply chain hubs are defensible alternatives.",
+      "primary_hub_id": "863-521"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "medium",
+      "item_index": 232,
+      "notes": "Governance-level SCRM plan; Supply chain management is the only fitting branch though it lacks a leaf for SCRM planning.",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "205-522",
+        "843-475"
+      ],
+      "confidence": "medium",
+      "item_index": 233,
+      "notes": "Section covers indirect prompt injection mitigations, but the titled control (LLM moderator, output filtering, RLHF-based detection) matches automated oversight's moderator/guardrail systems.",
+      "primary_hub_id": "205-522"
+    },
+    {
+      "acceptable_hub_ids": [
+        "234-282"
+      ],
+      "confidence": "high",
+      "item_index": 234,
+      "notes": "",
+      "primary_hub_id": "234-282"
+    },
+    {
+      "acceptable_hub_ids": [
+        "342-641"
+      ],
+      "confidence": "high",
+      "item_index": 235,
+      "notes": "",
+      "primary_hub_id": "342-641"
+    },
+    {
+      "acceptable_hub_ids": [
+        "760-764"
+      ],
+      "confidence": "high",
+      "item_index": 236,
+      "notes": "",
+      "primary_hub_id": "760-764"
+    },
+    {
+      "acceptable_hub_ids": [
+        "473-758"
+      ],
+      "confidence": "high",
+      "item_index": 237,
+      "notes": "",
+      "primary_hub_id": "473-758"
+    },
+    {
+      "acceptable_hub_ids": [
+        "088-316"
+      ],
+      "confidence": "high",
+      "item_index": 238,
+      "notes": "",
+      "primary_hub_id": "088-316"
+    },
+    {
+      "acceptable_hub_ids": [
+        "852-770",
+        "423-055",
+        "701-654"
+      ],
+      "confidence": "medium",
+      "item_index": 239,
+      "notes": "Risk entry spanning third-party models, data, and deployment platforms; model supply chain management is the best control-side home, with data supply chain and supply-chain poisoning threat hub defensible.",
+      "primary_hub_id": "852-770"
+    },
+    {
+      "acceptable_hub_ids": [
+        "743-237"
+      ],
+      "confidence": "high",
+      "item_index": 240,
+      "notes": "",
+      "primary_hub_id": "743-237"
+    },
+    {
+      "acceptable_hub_ids": [
+        "058-443"
+      ],
+      "confidence": "high",
+      "item_index": 241,
+      "notes": "",
+      "primary_hub_id": "058-443"
+    },
+    {
+      "acceptable_hub_ids": [
+        "155-155",
+        "166-151"
+      ],
+      "confidence": "low",
+      "item_index": 242,
+      "notes": "Hardware debug interface chaining flaw; taxonomy has no hardware/debug hub, so design-level architecture is the least-bad fit.",
+      "primary_hub_id": "155-155"
+    },
+    {
+      "acceptable_hub_ids": [
+        "641-760"
+      ],
+      "confidence": "high",
+      "item_index": 243,
+      "notes": "",
+      "primary_hub_id": "641-760"
+    },
+    {
+      "acceptable_hub_ids": [
+        "586-842"
+      ],
+      "confidence": "low",
+      "item_index": 244,
+      "notes": "Identifier lifecycle management (assignment, uniqueness, reuse prevention) has no precise hub; secure user management is the closest branch.",
+      "primary_hub_id": "586-842"
+    },
+    {
+      "acceptable_hub_ids": [
+        "480-071"
+      ],
+      "confidence": "high",
+      "item_index": 245,
+      "notes": "",
+      "primary_hub_id": "480-071"
+    },
+    {
+      "acceptable_hub_ids": [
+        "703-813",
+        "184-284"
+      ],
+      "confidence": "high",
+      "item_index": 246,
+      "notes": "Logging/monitoring of AI model inputs, outputs, and agent behavior at runtime is inference monitoring.",
+      "primary_hub_id": "703-813"
+    },
+    {
+      "acceptable_hub_ids": [
+        "061-186",
+        "760-764"
+      ],
+      "confidence": "medium",
+      "item_index": 247,
+      "notes": "Alternate-encoding bypass of validation is fundamentally an encoding/parsing consistency problem; general injection protection is a defensible alternative.",
+      "primary_hub_id": "061-186"
+    },
+    {
+      "acceptable_hub_ids": [
+        "106-447"
+      ],
+      "confidence": "high",
+      "item_index": 248,
+      "notes": "",
+      "primary_hub_id": "106-447"
+    },
+    {
+      "acceptable_hub_ids": [
+        "613-285"
+      ],
+      "confidence": "medium",
+      "item_index": 249,
+      "notes": "Organizational supply chain processes and controls; fits the Supply chain management branch though it is an intermediate hub.",
+      "primary_hub_id": "613-285"
+    },
+    {
+      "acceptable_hub_ids": [
+        "481-710",
+        "867-642",
+        "615-663"
+      ],
+      "confidence": "medium",
+      "item_index": 250,
+      "notes": "Technique spans weight manipulation, poisoned data, and fine-tuning interference, so the AI model poisoning parent fits better than any single child.",
+      "primary_hub_id": "481-710"
+    }
+  ],
+  "run": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "batch_size": 25,
+    "cost_usd": 1.3131,
+    "finished_at": "2026-08-19T05:19:14.760614+00:00",
+    "max_tokens": 16384,
+    "mode": "open_book_annotation",
+    "model_id": "moonshotai/Kimi-K3",
+    "n_failed_attempts": 10,
+    "n_items": 250,
+    "parse_counters": {
+      "invented_primary": 0,
+      "missing": 0,
+      "truncated_acceptable": 0
+    },
+    "pricing_usd_per_mtok": {
+      "input": 2.85,
+      "output": 14.25
+    },
+    "prompt_source": "claudedocs/ceiling-study-runbook.md",
+    "provider_pin": "baseten/fp8",
+    "reasoning_effort": "low",
+    "route": "openrouter",
+    "route_model_id": "moonshotai/kimi-k3",
+    "served_model_snapshot": [
+      "moonshotai/kimi-k3"
+    ],
+    "served_providers": [
+      "BaseTen"
+    ],
+    "started_at": "2026-08-19T05:05:30.960492+00:00",
+    "temperature": 0.0,
+    "usage": [
+      {
+        "attempt": 1,
+        "batch_index": 1,
+        "billed_cost_usd": 0.272775,
+        "cached_tokens": 60,
+        "completion_tokens": 2999,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 26.91,
+        "ok": true,
+        "prompt_tokens": 75984,
+        "reasoning_tokens": 1391,
+        "response_id": "gen-1787115931-973XTaeV04enAMe0IkuQ",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 5,
+        "batch_index": 2,
+        "billed_cost_usd": 0.2705904,
+        "cached_tokens": 28,
+        "completion_tokens": 2433,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 38.65,
+        "ok": true,
+        "prompt_tokens": 78057,
+        "reasoning_tokens": 1128,
+        "response_id": "gen-1787116259-6W4KIEUR2q3qW6Y7EYmz",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 3,
+        "billed_cost_usd": 0.0970566,
+        "cached_tokens": 65532,
+        "completion_tokens": 2951,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 38.24,
+        "ok": true,
+        "prompt_tokens": 76576,
+        "reasoning_tokens": 1463,
+        "response_id": "gen-1787116298-2gNulkvkO1T70BdNom55",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 2,
+        "batch_index": 4,
+        "billed_cost_usd": 0.0911316,
+        "cached_tokens": 65532,
+        "completion_tokens": 2610,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 32.4,
+        "ok": true,
+        "prompt_tokens": 76306,
+        "reasoning_tokens": 1265,
+        "response_id": "gen-1787116356-oM5adSjRQPS97HpO1FuW",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 2,
+        "batch_index": 5,
+        "billed_cost_usd": 0.1018476,
+        "cached_tokens": 65532,
+        "completion_tokens": 3262,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 46.1,
+        "ok": true,
+        "prompt_tokens": 76618,
+        "reasoning_tokens": 1665,
+        "response_id": "gen-1787116409-gxJU68eq9qi8b9poeRCe",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 2,
+        "batch_index": 6,
+        "billed_cost_usd": 0.0969516,
+        "cached_tokens": 65532,
+        "completion_tokens": 3096,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 46.17,
+        "ok": true,
+        "prompt_tokens": 75816,
+        "reasoning_tokens": 1477,
+        "response_id": "gen-1787116476-qGmuvckLrBvuUnAeJMJp",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 7,
+        "billed_cost_usd": 0.0985566,
+        "cached_tokens": 65532,
+        "completion_tokens": 3155,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 44.8,
+        "ok": true,
+        "prompt_tokens": 76056,
+        "reasoning_tokens": 1557,
+        "response_id": "gen-1787116522-h5xSujAHk7f0Sh0YU3CH",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 2,
+        "batch_index": 8,
+        "billed_cost_usd": 0.0834546,
+        "cached_tokens": 65532,
+        "completion_tokens": 2077,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 28.08,
+        "ok": true,
+        "prompt_tokens": 76412,
+        "reasoning_tokens": 756,
+        "response_id": "gen-1787116587-lGfKlzXcFSoKuutmyUgU",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 2,
+        "batch_index": 9,
+        "billed_cost_usd": 0.1003086,
+        "cached_tokens": 65532,
+        "completion_tokens": 3268,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 48.69,
+        "ok": true,
+        "prompt_tokens": 76075,
+        "reasoning_tokens": 1579,
+        "response_id": "gen-1787116636-luUztwLno4LiJf0ce7Qq",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 2,
+        "batch_index": 10,
+        "billed_cost_usd": 0.1004286,
+        "cached_tokens": 65532,
+        "completion_tokens": 3210,
+        "error": "",
+        "finish_reason": "stop",
+        "latency_s": 49.79,
+        "ok": true,
+        "prompt_tokens": 76405,
+        "reasoning_tokens": 1640,
+        "response_id": "gen-1787116705-V8Uz6UcylICEnW5vceT9",
+        "served_model": "moonshotai/kimi-k3",
+        "served_provider": "BaseTen"
+      },
+      {
+        "attempt": 1,
+        "batch_index": 2,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.22,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 2,
+        "batch_index": 2,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.42,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 3,
+        "batch_index": 2,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.54,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 4,
+        "batch_index": 2,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.4,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 1,
+        "batch_index": 4,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.21,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 1,
+        "batch_index": 5,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.92,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 1,
+        "batch_index": 6,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.26,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 1,
+        "batch_index": 8,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.28,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 1,
+        "batch_index": 9,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.23,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      },
+      {
+        "attempt": 1,
+        "batch_index": 10,
+        "billed_cost_usd": 0.0,
+        "cached_tokens": 0,
+        "completion_tokens": 0,
+        "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"moonshotai/kimi-k3 is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"BaseTen\",\"is_byok\":false,\"limit",
+        "finish_reason": "",
+        "latency_s": 0.36,
+        "ok": false,
+        "prompt_tokens": 0,
+        "reasoning_tokens": 0,
+        "response_id": "",
+        "served_model": "",
+        "served_provider": ""
+      }
+    ]
+  }
+}

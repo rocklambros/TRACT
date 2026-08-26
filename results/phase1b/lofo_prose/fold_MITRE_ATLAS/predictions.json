@@ -1,0 +1,733 @@
+[
+  {
+    "control_text": "Validate that AI models perform as intended by testing for backdoor triggers, potential for data leakage, or adversarial influence. Monitor AI model for concept drift and training data drift, which may indicate data tampering and poisoning.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "547-824",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "803-457",
+      "663-200",
+      "205-522",
+      "582-035",
+      "073-507",
+      "382-481",
+      "802-101",
+      "041-173"
+    ]
+  },
+  {
+    "control_text": "Limit the total number and rate of queries a user can perform.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "187-083",
+    "predicted_top10": [
+      "187-083",
+      "886-662",
+      "746-705",
+      "660-867",
+      "463-820",
+      "268-088",
+      "630-573",
+      "230-318",
+      "725-682",
+      "217-112"
+    ]
+  },
+  {
+    "control_text": "Require users to verify their identities before accessing a production model. Require authentication for API endpoints and monitor production model queries to ensure compliance with usage policies and to prevent model misuse.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "715-644",
+    "predicted_top10": [
+      "267-786",
+      "808-425",
+      "551-400",
+      "805-126",
+      "342-781",
+      "663-550",
+      "141-385",
+      "582-541",
+      "182-732",
+      "474-203"
+    ]
+  },
+  {
+    "control_text": "Implement logging of inputs and outputs of deployed AI models. When deploying AI agents, implement logging of the intermediate steps of agentic actions and decisions, data access and tool use, installation commands, and identity of the agent. Monitoring logs can help to detect security threats and mitigate impacts. Additionally, having logging enabled can discourage adversaries who want to remain undetected from utilizing AI resources.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "703-813",
+    "predicted_top10": [
+      "663-200",
+      "041-173",
+      "818-434",
+      "843-841",
+      "582-035",
+      "382-481",
+      "805-126",
+      "547-824",
+      "842-876",
+      "703-813"
+    ]
+  },
+  {
+    "control_text": "Detect and block adversarial inputs or atypical queries that deviate from known benign behavior, exhibit behavior patterns observed in previous attacks or that come from potentially malicious IPs. Incorporate adversarial detection algorithms into the AI system prior to the AI model.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "370-877",
+      "761-417",
+      "802-101",
+      "342-641",
+      "576-262",
+      "989-492",
+      "073-507",
+      "205-522",
+      "408-838",
+      "333-480"
+    ]
+  },
+  {
+    "control_text": "Preprocess all inference data to nullify or reverse potential adversarial perturbations.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "802-101",
+      "073-507",
+      "989-492",
+      "761-417",
+      "382-481",
+      "532-102",
+      "342-641",
+      "034-540",
+      "011-087",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Incorporate multiple sensors to integrate varying perspectives and modalities to avoid a single point of failure susceptible to physical attacks.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "234-282",
+      "887-750",
+      "862-452",
+      "708-355",
+      "757-271",
+      "801-310",
+      "626-250",
+      "117-371",
+      "240-464",
+      "703-813"
+    ]
+  },
+  {
+    "control_text": "Guardrails are safety controls that are placed between a generative AI model and the output shared with the user to prevent undesired inputs and outputs. Guardrails can take the form of validators such as filters, rule-based logic, or regular expressions, as well as AI-based approaches, such as classifiers and utilizing LLMs, or named entity recognition (NER) to evaluate the safety of the prompt or response. Domain specific methods can be employed to reduce risks in a variety of areas such as etiquette, brand damage, jailbreaking, false information, code exploits, SQL injections, and data leakage.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "205-522",
+    "predicted_top10": [
+      "582-035",
+      "205-522",
+      "333-480",
+      "663-200",
+      "860-723",
+      "041-173",
+      "436-325",
+      "810-884",
+      "803-457",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "Decreasing the fidelity of model outputs provided to the end user can reduce an adversary's ability to extract information about the model and optimize attacks for the model.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "010-108",
+    "predicted_top10": [
+      "430-722",
+      "805-126",
+      "768-532",
+      "547-824",
+      "582-035",
+      "010-108",
+      "818-434",
+      "532-102",
+      "563-186",
+      "474-203"
+    ]
+  },
+  {
+    "control_text": "Use an ensemble of models for inference to increase robustness to adversarial inputs. Some attacks may effectively evade one model or model family but be ineffective against others.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "146-871",
+    "predicted_top10": [
+      "146-871",
+      "989-492",
+      "663-550",
+      "802-101",
+      "547-824",
+      "382-481",
+      "532-102",
+      "034-540",
+      "073-507",
+      "011-087"
+    ]
+  },
+  {
+    "control_text": "Verify the cryptographic checksum of all AI artifacts to verify that the file was not modified by an attacker.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "742-431",
+      "002-801",
+      "841-757",
+      "504-340",
+      "674-425",
+      "786-224",
+      "441-132",
+      "542-488",
+      "664-571",
+      "767-701"
+    ]
+  },
+  {
+    "control_text": "An AI Bill of Materials (AI BOM) contains a full listing of artifacts and resources that were used in building the AI. The AI BOM can help mitigate supply chain risks and enable rapid response to reported vulnerabilities. This can include maintaining dataset provenance, i.e. a detailed history of datasets used for AI applications. The history can include information about the dataset source as well as well as a complete record of any modifications.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "852-770",
+      "881-234",
+      "423-055",
+      "883-173",
+      "041-173",
+      "863-521",
+      "818-434",
+      "036-275",
+      "701-654",
+      "663-200"
+    ]
+  },
+  {
+    "control_text": "Maintain a detailed history of datasets used for AI applications. The history should include information about the dataset's source as well as a complete record of any modifications.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "423-055",
+    "predicted_top10": [
+      "818-434",
+      "738-144",
+      "547-824",
+      "041-173",
+      "563-186",
+      "041-188",
+      "663-200",
+      "146-871",
+      "173-554",
+      "803-457"
+    ]
+  },
+  {
+    "control_text": "Adversaries may search local system sources, such as file systems and configuration files or local databases, to find files of interest and sensitive data prior to Exfiltration. This can include basic fingerprinting information and sensitive data such as ssh keys.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "077-772",
+    "predicted_top10": [
+      "762-451",
+      "715-304",
+      "307-111",
+      "846-302",
+      "314-701",
+      "614-353",
+      "112-273",
+      "545-243",
+      "275-483",
+      "175-235"
+    ]
+  },
+  {
+    "control_text": "Use techniques to make AI models robust to adversarial inputs such as adversarial training or network distillation.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "384-015",
+    "predicted_top10": [
+      "467-215",
+      "408-838",
+      "370-877",
+      "547-824",
+      "854-643",
+      "364-516",
+      "989-492",
+      "802-101",
+      "761-417",
+      "582-035"
+    ]
+  },
+  {
+    "control_text": "Detect and remove or remediate poisoned training data. Training data should be sanitized prior to model training and recurrently for an active learning model. Implement a filter to limit ingested training data. Establish a content policy that would remove unwanted content such as certain explicit or offensive language from being used.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "041-188",
+    "predicted_top10": [
+      "615-663",
+      "567-025",
+      "563-186",
+      "041-188",
+      "058-443",
+      "088-316",
+      "488-626",
+      "481-710",
+      "738-144",
+      "467-215"
+    ]
+  },
+  {
+    "control_text": "Guidelines are safety controls that are placed between user-provided input and a generative AI model to help direct the model to produce desired outputs and prevent undesired outputs. Guidelines can be implemented as instructions appended to all user prompts or as part of the instructions in the system prompt. They can define the goal(s), role, and voice of the system, as well as outline safety and security parameters.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "755-340",
+    "predicted_top10": [
+      "205-522",
+      "333-480",
+      "582-035",
+      "860-723",
+      "663-200",
+      "843-475",
+      "041-173",
+      "106-447",
+      "802-101",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "When training or fine-tuning a generative AI model it is important to utilize techniques that improve model alignment with safety, security, and content policies. The fine-tuning process can potentially remove built-in safety mechanisms in a generative AI model, but utilizing techniques such as Supervised Fine-Tuning, Reinforcement Learning from Human Feedback or AI Feedback, and Targeted Safety Context Distillation can improve the safety and alignment of the model.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "860-723",
+      "854-183",
+      "547-824",
+      "205-522",
+      "041-173",
+      "582-035",
+      "663-200",
+      "843-475",
+      "333-480",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "Adversaries may attempt to poison datasets used by an AI model by modifying the underlying data or its labels. This allows the adversary to embed vulnerabilities in AI models trained on the data that may not be easily detectable. Data poisoning attacks may or may not require modifying the labels. The embedded vulnerability is activated at a later time by data samples with an Insert Backdoor Trigger Poisoned data can be introduced via AI Supply Chain Compromise or the data may be poisoned after the adversary gains Initial Access to the system.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "738-144",
+      "217-163",
+      "567-025",
+      "803-457",
+      "440-372",
+      "555-083",
+      "768-532",
+      "061-753"
+    ]
+  },
+  {
+    "control_text": "AI-enabled systems often rely on open sourced models in various ways. Most commonly, the victim organization may be using these models for fine tuning. These models will be downloaded from an external source and then used as the base for the model as it is tuned on a smaller, private dataset. Loading models often requires executing some saved code in the form of a saved model file. These can be compromised with traditional malware, or through some adversarial AI techniques.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "582-035",
+      "883-173",
+      "663-200",
+      "852-770",
+      "342-781",
+      "041-173",
+      "276-748",
+      "141-385",
+      "860-723",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Adversaries may craft prompts that induce the LLM to leak sensitive information. This can include private user data or proprietary information. The leaked information may come from proprietary training data, data sources the LLM is connected to, or information from other users of the LLM.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "077-772",
+      "220-870",
+      "475-586",
+      "044-202",
+      "308-515",
+      "267-786",
+      "818-434",
+      "173-554",
+      "077-235",
+      "043-703"
+    ]
+  },
+  {
+    "control_text": "Adversaries may extract a functional copy of a private model. By repeatedly querying the victim's AI Model Inference API Access, the adversary can collect the target model's inferences into a dataset. The inferences are used as labels for training a separate model offline that will mimic the behavior and performance of the target model. Adversaries may extract the model to avoid paying per query in an artificial-intelligence-as-a-service (AIaaS) setting. Model extraction is used for AI Intellectual Property Theft.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "663-550",
+      "141-385",
+      "474-203",
+      "182-732",
+      "342-781",
+      "267-786",
+      "805-126",
+      "043-703",
+      "077-235",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Limit the public release of technical information about the AI stack used in an organization's products or services. Technical knowledge of how AI is used can be leveraged by adversaries to perform targeting and tailor attacks to the target system. Additionally, consider limiting the release of organizational information - including physical locations, researcher names, and department structures - from which technical details such as AI techniques, model architectures, or datasets may be inferred.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "818-434",
+    "predicted_top10": [
+      "818-434",
+      "308-515",
+      "077-772",
+      "044-202",
+      "805-126",
+      "208-805",
+      "267-786",
+      "182-732",
+      "220-870",
+      "646-285"
+    ]
+  },
+  {
+    "control_text": "Limit public release of technical project details including data, algorithms, model architectures, and model checkpoints that are used in production, or that are representative of those used in production.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "818-434",
+    "predicted_top10": [
+      "818-434",
+      "077-772",
+      "308-515",
+      "342-781",
+      "182-732",
+      "461-680",
+      "044-202",
+      "208-805",
+      "820-878",
+      "820-877"
+    ]
+  },
+  {
+    "control_text": "When deploying tools that will be shared across multiple AI agents, it is important to implement robust policies and controls on permissions for the tools. These controls include applying the principle of least privilege along with delegated access, where the tools receive the permissions, identities, and restrictions of the AI agent calling them. These configurations may be implemented either in MCP servers which connect the agents to the tools calling them or, in more complex cases, directly in the configuration files of the tool.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "715-644",
+      "220-442",
+      "540-566",
+      "368-633",
+      "123-124",
+      "128-128",
+      "817-808",
+      "612-252",
+      "664-080",
+      "443-447"
+    ]
+  },
+  {
+    "control_text": "AI agents may be granted elevated privileges above that of a normal user to enable desired workflows. When deploying a privileged AI agent, or an agent that interacts with multiple users, it is important to implement robust policies and controls on permissions of the privileged agent. These controls include Role-Based Access Controls (RBAC), Attribute-Based Access Controls (ABAC), and the principle of least privilege so that the agent is only granted the necessary permissions to access tools and resources required to accomplish its designated task(s).",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "715-644",
+      "220-442",
+      "123-124",
+      "128-128",
+      "540-566",
+      "368-633",
+      "817-808",
+      "284-521",
+      "524-603",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "When deploying an AI agent that acts as a representative of a user and performs actions on their behalf, it is important to implement robust policies and controls on permissions and lifecycle management of the agent. Lifecycle management involves establishing identity, protocols for access management, and decommissioning of the agent when its role is no longer needed. Controls should also include the principle of least privilege and delegated access from the user account. When acting as a representative of a user, the AI agent should not be granted permissions that the user would not be granted within the system or organization.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "715-644",
+      "128-128",
+      "123-124",
+      "225-553",
+      "663-200",
+      "247-250",
+      "724-770",
+      "041-173",
+      "220-442",
+      "755-340"
+    ]
+  },
+  {
+    "control_text": "Encrypt sensitive data such as AI models to protect against adversaries attempting to access sensitive data.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "768-532",
+    "predicted_top10": [
+      "482-866",
+      "224-321",
+      "267-468",
+      "400-007",
+      "786-224",
+      "440-372",
+      "674-425",
+      "878-880",
+      "542-270",
+      "542-488"
+    ]
+  },
+  {
+    "control_text": "An adversary may craft malicious prompts as inputs to an LLM that cause the LLM to act in unintended ways. These \"prompt injections\" are often designed to cause the model to ignore aspects of its original instructions and follow the adversary's instructions instead. Prompt Injections can be an initial access vector to the LLM that provides the adversary with a foothold to carry out other steps in their operation. They may be designed to bypass defenses in the LLM, or allow the adversary to issue privileged commands. The effects of a prompt injection can persist throughout an interactive session with an LLM. Malicious prompts may be injected directly by the adversary (Direct) either to leverage the LLM to generate harmful content or to gain a foothold on the system and lead to further effects. Prompts may also be injected indirectly when as part of its normal operation the LLM ingests the malicious prompt from another data source (Indirect). This type of injection can be used by the adversary to a foothold on the system or to target the user of the LLM. Malicious prompts may also be Triggered user actions or system events.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "536-158",
+      "843-475",
+      "012-625",
+      "483-253",
+      "686-110",
+      "106-447",
+      "860-723",
+      "764-765",
+      "344-611",
+      "822-100"
+    ]
+  },
+  {
+    "control_text": "Adversaries may leverage information repositories to mine valuable information. Information repositories are tools that allow for storage of information, typically to facilitate collaboration or information sharing between users, and can store a wide variety of data that may aid adversaries in further objectives, or direct access to the target information. Information stored in a repository may vary based on the specific instance or environment. Specific common information repositories include SharePoint, Confluence, and enterprise databases such as SQL Server.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "173-554",
+    "predicted_top10": [
+      "275-483",
+      "848-711",
+      "814-322",
+      "660-052",
+      "736-554",
+      "423-055",
+      "175-235",
+      "482-866",
+      "267-468",
+      "224-321"
+    ]
+  },
+  {
+    "control_text": "Adversaries may inject malicious content into data indexed by a retrieval augmented generation (RAG) system to contaminate a future thread through RAG-based search results. This may be accomplished by placing manipulated documents in a location the RAG indexes (see Gather RAG-Indexed Targets). The content may be targeted such that it would always surface as a search result for a specific user query. The adversary's content may include false or misleading information. It may also include prompt injections with malicious instructions, or false RAG entries.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "217-163",
+    "predicted_top10": [
+      "738-144",
+      "538-446",
+      "542-445",
+      "764-507",
+      "366-835",
+      "232-217",
+      "806-367",
+      "881-434",
+      "646-462",
+      "780-757"
+    ]
+  },
+  {
+    "control_text": "Untrusted data can contain prompt injections that invoke an AI agent's tools, potentially causing confidentiality, integrity or availability violations. It is recommended that tool invocation be restricted or limited when untrusted data enters the LLM's context. The degree to which tool invocation is restricted may depend on the potential consequences of the action. Consider blocking the automatic invocation of tools or requiring user confirmation once untrusted data enters the LLM's context. For high consequence actions, consider always requiring user confirmation.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "536-158",
+      "483-253",
+      "012-625",
+      "843-475",
+      "205-522",
+      "686-110",
+      "646-462",
+      "106-447",
+      "817-808",
+      "061-753"
+    ]
+  },
+  {
+    "control_text": "Systems should require the user or another human stakeholder to approve AI agent actions before the agent takes them. The human approver may be technical staff or business unit SMEs depending on the use case. Separate tools, such as dedicated audit agents, may assist human approval, but final adjudication should be conducted by a human decision-maker. The security benefits from Human In-the-Loop policies may be at odds with operational overhead costs of additional approvals. To ease this, Human In-the-Loop policies should follow the degree of consequence of the task at hand. Minor, repetitive tasks performed by agents accessing basic tools may only require minimal human oversight, while agents employed in systems with significant consequences may necessitate approval from multiple stakeholders diversified across multiple organizations.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "202-604",
+    "predicted_top10": [
+      "202-604",
+      "225-553",
+      "041-173",
+      "663-200",
+      "205-522",
+      "755-340",
+      "582-035",
+      "715-644",
+      "646-285",
+      "660-867"
+    ]
+  },
+  {
+    "control_text": "Educate AI model developers to on AI supply chain risks and potentially malicious AI artifacts. Educate users on how to identify deepfakes and phishing attempts.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "533-635",
+    "predicted_top10": [
+      "533-635",
+      "852-770",
+      "881-234",
+      "883-173",
+      "041-173",
+      "663-200",
+      "364-516",
+      "803-457",
+      "423-055",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Adversaries may manipulate an AI model's weights to change it's behavior or performance, resulting in a poisoned model. Adversaries may poison a model by directly manipulating its weights, training the model on poisoned data, further fine-tuning the model, or otherwise interfering with its training process. The change in behavior of poisoned models may be limited to targeted categories in predictive AI models, or targeted topics, concepts, or facts in generative AI models, or aim for a general performance degradation.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "020-540",
+    "predicted_top10": [
+      "481-710",
+      "615-663",
+      "205-522",
+      "854-183",
+      "061-753",
+      "333-480",
+      "234-123",
+      "582-035",
+      "547-824",
+      "532-102"
+    ]
+  },
+  {
+    "control_text": "Adversaries may exfiltrate private information via AI Model Inference API Access. AI Models have been shown leak private information about their training data (e.g. Infer Training Data Membership, Invert AI Model). The model itself may also be extracted (Extract AI Model) for the purposes of AI Intellectual Property Theft. Exfiltration of information relating to private training data raises privacy concerns. Private training data may include personally identifiable information, or other protected data.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-870",
+    "predicted_top10": [
+      "077-772",
+      "220-870",
+      "044-202",
+      "475-586",
+      "043-703",
+      "267-786",
+      "440-372",
+      "474-203",
+      "182-732",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Adversaries may collect AI artifacts for Exfiltration or for use in AI Attack Staging. AI artifacts include models and datasets as well as other telemetry data produced when interacting with a model.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "267-786",
+    "predicted_top10": [
+      "043-703",
+      "173-554",
+      "663-550",
+      "818-434",
+      "738-144",
+      "204-272",
+      "762-451",
+      "582-035",
+      "563-186",
+      "637-021"
+    ]
+  },
+  {
+    "control_text": "An adversary may inject prompts directly as a user of the LLM. This type of injection may be used by the adversary to gain a foothold in the system or to misuse the LLM itself, as for example to generate harmful content.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "012-625",
+      "536-158",
+      "686-110",
+      "106-447",
+      "817-808",
+      "483-253",
+      "542-445",
+      "646-462",
+      "736-237",
+      "268-100"
+    ]
+  },
+  {
+    "control_text": "An adversary may inject prompts indirectly via separate data channel ingested by the LLM such as include text or multimedia pulled from databases or websites. These malicious prompts may be hidden or obfuscated from the user. This type of injection may be used by the adversary to gain a foothold in the system or to target an unwitting user of the system.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "012-625",
+    "predicted_top10": [
+      "106-447",
+      "012-625",
+      "686-110",
+      "536-158",
+      "822-100",
+      "843-475",
+      "736-237",
+      "806-367",
+      "764-765",
+      "483-253"
+    ]
+  },
+  {
+    "control_text": "Adversaries can Craft Adversarial Data that prevents an AI model from correctly identifying the contents of the data or Generate Deepfakes that fools an AI model expecting authentic data. This technique can be used to evade a downstream task where AI is utilized. The adversary may evade AI-based virus/malware detection or network scanning towards the goal of a traditional cyber attack. AI model evasion through deepfake generation may also provide initial access to systems that use AI-based biometric authentication.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "637-021",
+      "768-532",
+      "430-722",
+      "010-108",
+      "483-883",
+      "582-035",
+      "738-144",
+      "370-877",
+      "440-372",
+      "426-842"
+    ]
+  },
+  {
+    "control_text": "AI models' training data could be reconstructed by exploiting the confidence scores that are available via an inference API. By querying the inference API strategically, adversaries can back out potentially private information embedded within the training data. This could lead to privacy violations if the attacker can reconstruct the data of sensitive features used in the algorithm.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "043-703",
+      "010-108",
+      "440-372",
+      "475-586",
+      "663-550",
+      "220-870",
+      "563-186",
+      "488-626",
+      "768-532",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Adversaries may infer the membership of a data sample or global characteristics of the data in its training set, which raises privacy concerns. Some strategies make use of a shadow model that could be obtained via Train Proxy via Replication, others use statistics of model prediction scores. This can cause the victim model to leak private information, such as PII of those in the training set or other forms of protected IP.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "663-550",
+      "043-703",
+      "220-870",
+      "440-372",
+      "227-045",
+      "077-772",
+      "713-683",
+      "475-586",
+      "488-626",
+      "834-645"
+    ]
+  },
+  {
+    "control_text": "Adversaries may target AI-enabled systems with a flood of requests for the purpose of degrading or shutting down the service. Since many AI systems require significant amounts of specialized compute, they are often expensive bottlenecks that can become overloaded. Adversaries can intentionally craft inputs that require heavy amounts of useless compute from the AI system.",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "630-573",
+      "746-705",
+      "660-052",
+      "463-820",
+      "886-662",
+      "725-682",
+      "230-318",
+      "176-154",
+      "268-088",
+      "670-660"
+    ]
+  }
+]

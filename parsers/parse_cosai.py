@@ -5,6 +5,8 @@ import logging
 
 import yaml
 
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -28,12 +30,26 @@ class CosaiParser(BaseParser):
     source_url = "https://cosai.dev"
     mapping_unit_level = "control"
     expected_count = 55
+    fetched_date: ClassVar[str] = "2026-04-28"
+    # 53 of 55 controls clear HONEST_PROSE_MIN_CHARS, giving 0.9636, and the
+    # floor fires at 52/55 (0.9455), so its margin is one control. [measured
+    # 2026-08-19] The two misses are one-line source statements of 51 and 52
+    # characters (controlInputValidationAndSanitization and
+    # controlIncidentResponseManagement), not truncation.
+    min_prose_fraction: ClassVar[float] = 0.96
 
     def parse(self) -> list[Control]:
         controls: list[Control] = []
 
-        with open(self.raw_dir / "controls.yaml", encoding="utf-8") as f:
-            ctrl_data = yaml.safe_load(f)
+        # The CoSAI checkout keeps its taxonomy under risk-map/, matching the
+        # upstream repo layout recorded in SOURCE_MANIFEST.md. Reading from the
+        # framework root found nothing, so this parser could not run against a
+        # faithful copy of its own source.
+        risk_map = "risk-map"
+
+        ctrl_data = yaml.safe_load(
+            self.read_source(f"{risk_map}/controls.yaml")
+        )
         for ctrl in ctrl_data.get("controls", []):
             description = _flatten_yaml_text(ctrl.get("description", ""))
             controls.append(Control(
@@ -48,8 +64,7 @@ class CosaiParser(BaseParser):
                 },
             ))
 
-        with open(self.raw_dir / "risks.yaml", encoding="utf-8") as f:
-            risk_data = yaml.safe_load(f)
+        risk_data = yaml.safe_load(self.read_source(f"{risk_map}/risks.yaml"))
         for risk in risk_data.get("risks", []):
             description = _flatten_yaml_text(risk.get("shortDescription", ""))
             long_desc = _flatten_yaml_text(risk.get("longDescription", ""))

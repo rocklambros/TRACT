@@ -959,6 +959,18 @@
   "framework_id": "cosai",
   "framework_name": "CoSAI Landscape of AI Security Risk Map",
   "mapping_unit_level": "control",
+  "source_files": [
+    {
+      "bytes": 21577,
+      "path": "risk-map/controls.yaml",
+      "sha256": "c34737fc16674765d5efd9173456fe537dd91606f9a5c6ca102df80693ef293f"
+    },
+    {
+      "bytes": 94724,
+      "path": "risk-map/risks.yaml",
+      "sha256": "893fa15367f807d51d20537ed7e9a15fd55b3cda74679c52d37c5b6ec4503424"
+    }
+  ],
   "source_url": "https://cosai.dev",
   "version": "1.0"
 }

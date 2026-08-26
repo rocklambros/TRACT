@@ -1,9 +1,11 @@
 """Parser for CSA AI Controls Matrix (AICM) — Tier 1 structured JSON."""
 from __future__ import annotations
 
+import json
 import logging
 
-from tract.io import load_json
+from typing import ClassVar
+
 from tract.parsers.base import BaseParser
 from tract.schema import Control
 
@@ -18,6 +20,16 @@ class CsaAicmParser(BaseParser):
     source_url = "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
     mapping_unit_level = "control"
     expected_count = 243
+    fetched_date: ClassVar[str] = "2026-04-28"
+    # 237 of 243 controls clear HONEST_PROSE_MIN_CHARS, giving 0.9753.
+    # [measured 2026-08-19] The six misses are one-line specifications of 39 to
+    # 58 characters: AIS-11, DSP-04, IAM-07, I&S-05, I&S-08 and STA-06.
+    #
+    # Rounding down to two places buys two controls of slack, so the floor fires
+    # at 235/243 (0.9671). It is independent of the open licensing question on
+    # this source, which decides whether the text may ship rather than whether
+    # the parser is reading it.
+    min_prose_fraction: ClassVar[float] = 0.97
 
     @staticmethod
     def _flatten_guidelines(field: str | dict[str, str] | None) -> str:
@@ -28,7 +40,7 @@ class CsaAicmParser(BaseParser):
         return "\n".join(f"{k}: {v}" for k, v in field.items() if v)
 
     def parse(self) -> list[Control]:
-        data = load_json(self.raw_dir / "csa_aicm.json")
+        data = json.loads(self.read_source("csa_aicm.json"))
         controls: list[Control] = []
 
         for raw_ctrl in data["controls"]:
