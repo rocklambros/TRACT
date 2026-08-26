@@ -27,6 +27,7 @@ from scripts.phase0.common import (
     load_curated_links,
 )
 from tract.config import (
+    FOLD_RESULT_FILENAME,
     max_anchor_chars,
     MAX_ANCHOR_CHARS,
     PHASE1B_GATE_HIT1_DELTA,
@@ -68,9 +69,10 @@ from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
 
-# Written per fold, and the only artifact carrying the per-item hit@1
-# indicators needed to micro-average across folds.
-FOLD_RESULT_FILENAME = "fold_result.json"
+# FOLD_RESULT_FILENAME moved to tract.config; this module imports it above and
+# uses it below. Import it FROM tract.config, not from here -- mypy --strict
+# rejects the implicit re-export, and the RunPod orchestrator needs the name
+# without paying for this module's torch and datasets imports.
 
 
 def _free_gpu_memory() -> None:

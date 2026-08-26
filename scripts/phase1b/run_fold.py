@@ -23,6 +23,7 @@ from scripts.phase0.common import (
     load_curated_links,
 )
 from tract.config import (
+    FOLD_RESULT_FILENAME,
     PHASE1B_BASE_MODEL,
     PHASE1B_MAX_SEQ_LENGTH,
     max_anchor_chars,
@@ -40,7 +41,7 @@ from tract.text_selection import (
 )
 from tract.training.config import TrainingConfig
 from tract.training.data_quality import load_and_filter_curated_links
-from tract.training.orchestrate import FOLD_RESULT_FILENAME, run_single_fold
+from tract.training.orchestrate import run_single_fold
 from tract.training.tracking import (
     finish_run,
     init_run,

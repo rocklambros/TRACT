@@ -21,8 +21,8 @@ pytest.importorskip("numpy")
 pytest.importorskip("torch", reason="needs the phase0 extra")
 pytest.importorskip("datasets", reason="needs the phase0 extra")
 
+from tract.config import FOLD_RESULT_FILENAME
 from tract.training.orchestrate import (
-    FOLD_RESULT_FILENAME,
     aggregate_fold_results,
     load_fold_results,
 )

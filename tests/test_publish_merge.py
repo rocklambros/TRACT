@@ -1,6 +1,7 @@
 """Tests for tract.publish.merge — LoRA adapter merge into base model."""
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -153,6 +154,15 @@ class TestMergeLoraAdapters:
                 merge_lora_adapters(model_dir, tmp_path / "output")
 
 
+# The rest of this file runs on mocks. This class alone builds a real adapter,
+# which needs `peft` on top of the phase0 extra and downloads a small model.
+# Without the guard the whole local suite fails here on a machine that
+# deliberately has no training stack, which is every developer machine under
+# the standing rule that inference and training run on RunPod.
+@pytest.mark.skipif(
+    importlib.util.find_spec("peft") is None,
+    reason="needs the phase0 extra: peft",
+)
 class TestMergeRealAdapter:
     """End-to-end merge against a real adapter-only checkpoint.
 

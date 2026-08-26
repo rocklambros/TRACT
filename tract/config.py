@@ -993,3 +993,11 @@ PANEL_PRICING_USD_PER_MTOK: Final[dict[str, dict[str, tuple[float, float]]]] = {
 # The probe framework for contamination. Published after every panel
 # member's training cutoff, so memorised OpenCRE mappings cannot cover it.
 PANEL_CONTAMINATION_PROBE_FRAMEWORK: Final[str] = "owasp_llm_top10"
+
+# Written per fold, and the only artifact carrying the per-item hit@1
+# indicators needed to micro-average across folds. It lives here rather than
+# in tract.training.orchestrate because the RunPod orchestrator has to name
+# this file to verify a collection, and it runs on a machine that has no
+# training stack installed. Importing orchestrate there pulls torch and
+# datasets into a path that must work without them.
+FOLD_RESULT_FILENAME: Final[str] = "fold_result.json"

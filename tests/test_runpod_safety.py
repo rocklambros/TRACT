@@ -545,3 +545,201 @@ class TestHungSshIsRetried:
         bootstrap = source.split("def _bootstrap_pod")[1].split("\ndef ")[0]
         # Every SSH call in bootstrap carries the bounded timeout.
         assert bootstrap.count("SSH_BOOTSTRAP_TIMEOUT_S") == bootstrap.count("_ssh(")
+
+
+class TestOneFoldFailureDoesNotAbortTheFleet:
+    """P2. A credential read that raised became a failed fleet, not a failed fold.
+
+    `_run_fold_on_pod` called `_get_pod_env()` one line above its own `try`,
+    and `run_folds` called `f.result()` with no guard. `_get_pod_env` shells
+    out to `pass`, which raises RuntimeError on any failure.
+
+    The trigger is not exotic. Five worker threads invoke `pass` at the same
+    instant when the folds launch. The GPG agent serialises decryption and
+    cannot run pinentry from a non-tty worker thread, so an expired agent
+    cache races all five against the same ten-second timeout. One raise ends
+    the `as_completed` loop, discards the other four futures' results, and
+    reaches full_pipeline's `finally` with results_are_safe still False: five
+    GPUs keep billing and four folds that were about to succeed are abandoned.
+
+    The bootstrap loop twenty lines above already caught for exactly this
+    reason. The fold loop did not get the same treatment -- and the bootstrap
+    loop still raced the same five `pass` calls, so catching there only
+    converted the race into "every pod failed to bootstrap".
+    """
+
+    ROLES = ("MITRE ATLAS", "NIST AI 100-2", "OWASP AI Exchange")
+
+    def _fleet(self, monkeypatch, run_fold, env_calls=None):
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [{"role": r, "ip": "1.2.3.4", "port": 22, "pod_id": f"id-{r}"}
+                for r in self.ROLES]
+        monkeypatch.setattr(rpp, "_load_pod_state", lambda: pods)
+        monkeypatch.setattr(rpp, "_check_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "_extend_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "fold_roster", lambda split="test": list(self.ROLES))
+        monkeypatch.setattr(rpp, "_bootstrap_pod", lambda *a, **k: None)
+
+        def _env() -> dict[str, str]:
+            if env_calls is not None:
+                env_calls.append(1)
+            return {"HF_TOKEN": "hf_read_only"}
+
+        monkeypatch.setattr(rpp, "_get_pod_env", _env)
+        monkeypatch.setattr(rpp, "_run_fold_on_pod", run_fold)
+        return rpp
+
+    def test_a_fold_that_raises_becomes_a_failed_fold(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        def _run_fold(pod, config_name, arm_flags=(), split="test", env=None):
+            if pod["role"] == "NIST AI 100-2":
+                raise RuntimeError("pass: gpg-agent decryption timed out")
+            return {"fold": pod["role"], "status": "ok", "elapsed_s": 1.0}
+
+        rpp = self._fleet(monkeypatch, _run_fold)
+
+        failed = rpp.run_folds("cfg")
+
+        assert failed == ["NIST AI 100-2"]
+
+    def test_the_other_folds_still_report_their_results(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The four survivors are the whole point of catching."""
+        def _run_fold(pod, config_name, arm_flags=(), split="test", env=None):
+            if pod["role"] == "MITRE ATLAS":
+                raise RuntimeError("pass: gpg-agent decryption timed out")
+            return {"fold": pod["role"], "status": "ok", "elapsed_s": 1.0}
+
+        rpp = self._fleet(monkeypatch, _run_fold)
+
+        failed = rpp.run_folds("cfg")
+
+        assert sorted(failed) == ["MITRE ATLAS"]
+
+    def test_the_credential_is_read_once_on_the_main_thread(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """One `pass` invocation instead of five concurrent ones removes the race."""
+        env_calls: list[int] = []
+
+        def _run_fold(pod, config_name, arm_flags=(), split="test", env=None):
+            return {"fold": pod["role"], "status": "ok", "elapsed_s": 1.0}
+
+        rpp = self._fleet(monkeypatch, _run_fold, env_calls=env_calls)
+
+        rpp.run_folds("cfg")
+
+        assert len(env_calls) == 1
+
+    def test_every_fold_receives_the_hoisted_environment(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Hoisting must hand the env down, not silently drop the token."""
+        seen: list[dict[str, str] | None] = []
+
+        def _run_fold(pod, config_name, arm_flags=(), split="test", env=None):
+            seen.append(env)
+            return {"fold": pod["role"], "status": "ok", "elapsed_s": 1.0}
+
+        rpp = self._fleet(monkeypatch, _run_fold)
+
+        rpp.run_folds("cfg")
+
+        assert len(seen) == len(self.ROLES)
+        assert all(e == {"HF_TOKEN": "hf_read_only"} for e in seen)
+
+
+class TestCollectVerifiesThePayload:
+    """P3. A collected fold and an empty directory looked the same.
+
+    `collect` recorded a role as failed only when `_rsync_from` raised. An
+    rsync against a directory that exists and holds no fold record exits 0,
+    so it was counted as collected.
+
+    The path to unrecoverable loss: a fold exits 0 without writing
+    fold_result.json, so failed_folds is empty and uncollected is empty,
+    full_pipeline sets results_are_safe = True, teardown() runs, and the pods
+    are destroyed. `aggregate` then fails with nothing left to re-run and the
+    GPU hours already spent.
+
+    Verifying the payload rather than the transport is the whole point of the
+    function.
+    """
+
+    def _collect(self, monkeypatch, tmp_path, roles, payload):
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [{"role": r, "ip": "1.2.3.4", "port": 22} for r in roles]
+        monkeypatch.setattr(rpp, "_load_pod_state", lambda: pods)
+        monkeypatch.setattr(rpp, "RESULTS_DIR", tmp_path)
+
+        def _rsync(ip: str, port: int, remote: str, local: str) -> None:
+            # rsync exits 0 whether or not the remote directory held anything.
+            for role, body in payload.items():
+                if body is None:
+                    continue
+                d = Path(local) / f"fold_{role.replace(' ', '_')}"
+                d.mkdir(parents=True, exist_ok=True)
+                (d / "fold_result.json").write_text(body, encoding="utf-8")
+
+        monkeypatch.setattr(rpp, "_rsync_from", _rsync)
+        return rpp
+
+    def test_an_rsync_that_moved_nothing_is_not_a_collected_fold(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        roles = ["MITRE ATLAS", "NIST AI 100-2"]
+        rpp = self._collect(monkeypatch, tmp_path, roles, {
+            "MITRE ATLAS": json.dumps({"framework": "MITRE ATLAS"}),
+            "NIST AI 100-2": None,
+        })
+
+        failed = rpp.collect("cfg")
+
+        assert failed == ["NIST AI 100-2"]
+
+    def test_a_fold_result_that_does_not_parse_is_not_collected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A truncated transfer leaves a file that exists and is not JSON."""
+        roles = ["MITRE ATLAS", "NIST AI 100-2"]
+        rpp = self._collect(monkeypatch, tmp_path, roles, {
+            "MITRE ATLAS": json.dumps({"framework": "MITRE ATLAS"}),
+            "NIST AI 100-2": '{"framework": "NIST AI 100-2", "hit',
+        })
+
+        failed = rpp.collect("cfg")
+
+        assert failed == ["NIST AI 100-2"]
+
+    def test_a_complete_fleet_collects_cleanly(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The check must not invent failures on a good run."""
+        roles = ["MITRE ATLAS", "NIST 800-53 v5"]
+        rpp = self._collect(monkeypatch, tmp_path, roles, {
+            r: json.dumps({"framework": r}) for r in roles
+        })
+
+        assert rpp.collect("cfg") == []
+
+    def test_a_transport_failure_is_still_a_failure(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The payload check adds to the rsync check, it does not replace it."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [{"role": r, "ip": "1.2.3.4", "port": 22}
+                for r in ("MITRE ATLAS", "NIST AI 100-2")]
+        monkeypatch.setattr(rpp, "_load_pod_state", lambda: pods)
+        monkeypatch.setattr(rpp, "RESULTS_DIR", tmp_path)
+
+        def _rsync(ip: str, port: int, remote: str, local: str) -> None:
+            raise RuntimeError("rsync: connection unexpectedly closed")
+
+        monkeypatch.setattr(rpp, "_rsync_from", _rsync)
+
+        assert sorted(rpp.collect("cfg")) == ["MITRE ATLAS", "NIST AI 100-2"]

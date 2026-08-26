@@ -17,9 +17,10 @@ Before the first run:
     ssh-keygen -t ed25519 -f ~/.ssh/tract_runpod -N ''
 and register ~/.ssh/tract_runpod.pub with the RunPod account.
 
-Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 1000),
+Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 2000),
 TRACT_RUNPOD_MAX_HOURLY (12), TRACT_RUNPOD_MAX_HOURS (6),
-TRACT_RUNPOD_SSH_KEY.
+TRACT_RUNPOD_SSH_KEY. Set the budget explicitly for any real campaign; the
+default is a backstop, not a plan.
 """
 from __future__ import annotations
 
@@ -36,7 +37,7 @@ import time
 from pathlib import Path
 from typing import Any, Final
 
-from tract.config import PHASE1B_BASE_MODEL, PROCESSED_DIR
+from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
 from tract.io import load_json
 from scripts.phase0.runpod_provision import (
     is_capacity_error,
@@ -806,8 +807,13 @@ def provision(
 
 def _bootstrap_pod(
     pod: dict[str, Any], base_model: str = PHASE1B_BASE_MODEL,
+    env: dict[str, str] | None = None,
 ) -> None:
     ip, port, role = pod["ip"], pod["port"], pod["role"]
+    # The caller passes the env so the credential is read once on the main
+    # thread. Falling back to _get_pod_env() here keeps a direct call working,
+    # but the fleet path must not take that branch: see run_folds.
+    pod_env = _get_pod_env() if env is None else env
     logger.info("Bootstrapping pod for fold '%s' (%s:%d)...", role, ip, port)
 
     _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1",
@@ -848,7 +854,7 @@ def _bootstrap_pod(
         "name = os.environ[\"TRACT_BASE_MODEL\"]; s = resolve(name); "
         "p = snapshot_download(name, revision=s.revision); "
         "print(f\"cached {name} at {s.revision[:12]} -> {p}\")'"
-    ), env={**_get_pod_env(), "TRACT_BASE_MODEL": base_model},
+    ), env={**pod_env, "TRACT_BASE_MODEL": base_model},
        timeout=SSH_BOOTSTRAP_TIMEOUT_S)
 
     # Fatal, not advisory. This probe used to run with check=False while
@@ -871,7 +877,7 @@ def _bootstrap_pod(
 
 def _run_fold_on_pod(
     pod: dict[str, Any], config_name: str, arm_flags: tuple[str, ...] = (),
-    split: str = "test",
+    split: str = "test", env: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     ip, port = pod["ip"], pod["port"]
     framework = pod["role"]
@@ -908,9 +914,13 @@ def _run_fold_on_pod(
 
     logger.info("[%s] Launching fold (detached)...", framework)
     start = time.time()
-    env = _get_pod_env()
+    # Read on the caller's thread, not here. This line used to sit above the
+    # try below, so a `pass` timeout raised out of this function instead of
+    # returning a status dict, and run_folds had no guard: one credential
+    # hiccup ended the fleet. See run_folds for the other half of the fix.
+    pod_env = _get_pod_env() if env is None else env
     try:
-        _ssh(ip, port, launch, env=env, timeout=SSH_DEFAULT_TIMEOUT_S)
+        _ssh(ip, port, launch, env=pod_env, timeout=SSH_DEFAULT_TIMEOUT_S)
     except Exception as e:
         elapsed = time.time() - start
         logger.error("[%s] LAUNCH FAILED after %.1fm: %s", framework, elapsed / 60, e)
@@ -1005,6 +1015,13 @@ def run_folds(
         )
     _extend_deadline()
 
+    # Read the credential once, here, on the main thread. It used to be read
+    # inside each worker: five threads shelled out to `pass` at the same
+    # instant, the GPG agent serialised decryption and could not run pinentry
+    # from a non-tty thread, so an expired agent cache raced all five against
+    # the same ten-second timeout. One `pass` invocation cannot race itself.
+    pod_env = _get_pod_env()
+
     logger.info("Bootstrapping %d pods in parallel...", len(pods))
     # Isolate failures. list(ex.map(...)) re-raises the first exception and
     # abandons the rest, so one bad pod aborted the whole fleet while the other
@@ -1020,7 +1037,8 @@ def run_folds(
             if flag == "--base-model" and i + 1 < len(arm_flags):
                 arm_model = arm_flags[i + 1]
         bootstrap_futures = {
-            ex.submit(_bootstrap_pod, pod, arm_model): pod["role"] for pod in pods
+            ex.submit(_bootstrap_pod, pod, arm_model, pod_env): pod["role"]
+            for pod in pods
         }
         for future in concurrent.futures.as_completed(bootstrap_futures):
             role = bootstrap_futures[future]
@@ -1050,12 +1068,26 @@ def run_folds(
     fold_results: list[dict[str, Any]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(pods)) as ex:
         fold_futures = {
-            ex.submit(_run_fold_on_pod, pod, config_name, arm_flags, split): pod["role"]
+            ex.submit(
+                _run_fold_on_pod, pod, config_name, arm_flags, split, pod_env,
+            ): pod["role"]
             for pod in pods
         }
         for f in concurrent.futures.as_completed(fold_futures):
             role = fold_futures[f]
-            result = f.result()
+            # Same treatment the bootstrap loop above already had. Without it,
+            # one raise ended the as_completed loop, discarded the other
+            # futures' results, and left full_pipeline's finally with
+            # results_are_safe False -- five GPUs billing and four folds that
+            # were about to succeed abandoned.
+            try:
+                result = f.result()
+            except Exception as exc:  # noqa: BLE001 - one fold, not the fleet
+                logger.error("[%s] FOLD RAISED: %s", role, exc)
+                result = {
+                    "fold": role, "status": "failed",
+                    "error": f"raised: {exc}", "elapsed_s": 0.0,
+                }
             fold_results.append(result)
             logger.info("  [%s] %s (%.1fm)", role, result["status"], result["elapsed_s"] / 60)
             # The deadline was checked once, before the first fold started,
@@ -1080,6 +1112,34 @@ def run_folds(
     return failed_roles
 
 
+def _fold_result_landed(local_results: Path, role: str) -> bool:
+    """Did this role's fold record arrive, and does it parse?
+
+    Two slug conventions are live in this codebase: run_fold.py builds the
+    directory with `role.replace(' ', '_')` while this module's log and exit
+    paths use `re.sub(r"[^A-Za-z0-9]+", "_", role)`. They agree on 'MITRE
+    ATLAS' and disagree on 'NIST 800-53 v5'. Accept either, because a false
+    "not collected" here tears down nothing but does block a fleet that
+    actually succeeded.
+    """
+    candidates = {
+        role.replace(" ", "_"),
+        re.sub(r"[^A-Za-z0-9]+", "_", role),
+    }
+    for slug in candidates:
+        path = local_results / f"fold_{slug}" / FOLD_RESULT_FILENAME
+        if not path.is_file():
+            continue
+        try:
+            json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            # A truncated transfer leaves a file that exists and is not JSON.
+            logger.error("%s exists but does not parse: %s", path, exc)
+            continue
+        return True
+    return False
+
+
 def collect(config_name: str = "phase1b_primary") -> list[str]:
     """Retrieve every fold's results. Returns the roles that failed to collect.
 
@@ -1102,6 +1162,22 @@ def collect(config_name: str = "phase1b_primary") -> list[str]:
             )
         except Exception as e:
             logger.error("Collection from %s FAILED: %s", pod["role"], e)
+            failed.append(pod["role"])
+            continue
+
+        # Verify the payload, not the transport. rsync against a directory
+        # that exists and holds no fold record exits 0, so a fold that died
+        # without writing its result was counted as collected: failed_folds
+        # empty, uncollected empty, results_are_safe True, teardown destroys
+        # the pods, and aggregate then fails with nothing left to re-run and
+        # the GPU hours already spent.
+        if not _fold_result_landed(local_results, pod["role"]):
+            logger.error(
+                "Collection from %s moved no usable %s. The rsync succeeded, "
+                "so the fold ran and wrote nothing readable. Do NOT tear this "
+                "pod down: its logs are the only record of why.",
+                pod["role"], FOLD_RESULT_FILENAME,
+            )
             failed.append(pod["role"])
 
     logger.info("Results collected to %s", local_results)
@@ -1199,7 +1275,6 @@ def track(config_name: str = "phase1b_primary") -> int:
     """
     from tract.config import LOFO_WANDB_ENTITY, LOFO_WANDB_PROJECT
     from tract.io import load_json
-    from tract.training.orchestrate import FOLD_RESULT_FILENAME
     from tract.training.tracking import (
         finish_run,
         init_run,
