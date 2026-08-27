@@ -639,3 +639,98 @@ class TestRearmInterval:
         assert rg.REARM == "2h"
         assert rg.REARM_SECONDS == 7200
         assert rg.QUIET_STREAK_TTL_S > rg.REARM_SECONDS
+
+
+class TestTheGuardWillNotKillLiveTraining:
+    """A dead orchestrator does not mean idle pods.
+
+    Folds run under `setsid nohup` so training outlives the SSH session that
+    started it. "No orchestrator, pods up" is therefore the exact shape of a
+    fleet mid-training with its driver crashed, and reaping on those two facts
+    alone destroys the paid-for work the detachment exists to protect.
+    """
+
+    @staticmethod
+    def _pod(name: str) -> dict[str, object]:
+        return {
+            "id": f"id-{name}",
+            "name": name,
+            "runtime": {"ports": [{"ip": "1.2.3.4", "publicPort": 2222, "privatePort": 22}]},
+        }
+
+    def test_a_busy_pod_stops_the_reap(self, monkeypatch) -> None:
+        from scripts.phase1b import reaper_guard as g
+
+        monkeypatch.setattr(g, "expected_pod_names", lambda: {"tract-p1b-val-fold0"})
+        monkeypatch.setattr(
+            "scripts.phase0.runpod_provision.get_running_pods",
+            lambda: [self._pod("tract-p1b-val-fold0")],
+        )
+        monkeypatch.setattr(g, "pod_training_state", lambda pod: "BUSY")
+        idle, reason = g.fleet_is_idle()
+        assert idle is False
+        assert "still training" in reason
+
+    def test_an_unreachable_pod_stops_the_reap(self, monkeypatch) -> None:
+        """Unreachable counts as busy: killing training cannot be undone."""
+        from scripts.phase1b import reaper_guard as g
+
+        monkeypatch.setattr(g, "expected_pod_names", lambda: {"tract-p1b-val-fold0"})
+        monkeypatch.setattr(
+            "scripts.phase0.runpod_provision.get_running_pods",
+            lambda: [self._pod("tract-p1b-val-fold0")],
+        )
+        monkeypatch.setattr(g, "pod_training_state", lambda pod: "UNREACHABLE")
+        idle, reason = g.fleet_is_idle()
+        assert idle is False
+        assert "cannot tell" in reason
+
+    def test_one_busy_pod_protects_the_whole_fleet(self, monkeypatch) -> None:
+        from scripts.phase1b import reaper_guard as g
+
+        names = {f"tract-p1b-val-fold{i}" for i in range(5)}
+        monkeypatch.setattr(g, "expected_pod_names", lambda: names)
+        monkeypatch.setattr(
+            "scripts.phase0.runpod_provision.get_running_pods",
+            lambda: [self._pod(n) for n in sorted(names)],
+        )
+        monkeypatch.setattr(
+            g, "pod_training_state",
+            lambda pod: "BUSY" if pod["name"].endswith("3") else "IDLE",
+        )
+        idle, reason = g.fleet_is_idle()
+        assert idle is False, "one training pod must protect the whole fleet"
+        assert "fold3" in reason
+
+    def test_an_all_idle_fleet_may_be_reaped(self, monkeypatch) -> None:
+        from scripts.phase1b import reaper_guard as g
+
+        names = {f"tract-p1b-val-fold{i}" for i in range(3)}
+        monkeypatch.setattr(g, "expected_pod_names", lambda: names)
+        monkeypatch.setattr(
+            "scripts.phase0.runpod_provision.get_running_pods",
+            lambda: [self._pod(n) for n in sorted(names)],
+        )
+        monkeypatch.setattr(g, "pod_training_state", lambda pod: "IDLE")
+        idle, reason = g.fleet_is_idle()
+        assert idle is True
+        assert "idle" in reason
+
+    def test_an_unreadable_api_is_not_evidence_of_idleness(self, monkeypatch) -> None:
+        from scripts.phase1b import reaper_guard as g
+
+        def boom() -> list[dict[str, object]]:
+            raise RuntimeError("HTTP 502")
+
+        monkeypatch.setattr(g, "expected_pod_names", lambda: {"tract-p1b-val-fold0"})
+        monkeypatch.setattr("scripts.phase0.runpod_provision.get_running_pods", boom)
+        idle, reason = g.fleet_is_idle()
+        assert idle is False
+        assert "could not list pods" in reason
+
+    def test_a_pod_with_no_ssh_endpoint_is_unreachable_not_idle(self) -> None:
+        """A pod in its first minute has no published port. Not finished."""
+        from scripts.phase1b import reaper_guard as g
+
+        assert g.pod_training_state({"name": "x", "runtime": {"ports": []}}) == "UNREACHABLE"
+        assert g.pod_training_state({"name": "x"}) == "UNREACHABLE"

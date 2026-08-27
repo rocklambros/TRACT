@@ -364,6 +364,105 @@ def running_pod_count() -> int:
     return sum(1 for pod in get_running_pods() if pod.get("name") in expected)
 
 
+# What `pgrep -f` looks for on the pod. The fold is launched as a detached
+# `python -m scripts.phase1b.run_fold ...` under setsid, so its own name is what
+# survives in the pod's process table.
+FOLD_PROCESS_PATTERN: Final[str] = "run_fold"
+
+# How long to wait for a pod to answer. Generous: a box saturated by training is
+# slow to accept an SSH connection, and reading slowness as death is the exact
+# mistake this function exists to avoid.
+POD_PROBE_TIMEOUT_S: Final[int] = 45
+
+
+def pod_training_state(pod: dict[str, object]) -> Literal["BUSY", "IDLE", "UNREACHABLE"]:
+    """Whether this pod is actually running a fold right now.
+
+    THE REASON THIS EXISTS. A fold is launched with `setsid nohup`, deliberately,
+    so that training outlives the SSH session that started it -- a laptop
+    sleeping or a wifi change used to kill an hour of paid GPU time. The
+    consequence is that a pod can be training happily while the orchestrator on
+    the Jetson is dead. Until 2026-08-27 this guard asked only two questions --
+    is the orchestrator alive, are pods up -- and would therefore have answered
+    "no orchestrator, pods running, reap" about a fleet in the middle of
+    training, destroying exactly the paid-for work the detachment was added to
+    protect.
+
+    UNREACHABLE IS TREATED AS BUSY BY THE CALLER, and that is a deliberate
+    trade. A pod that will not answer might be wedged and billing for nothing,
+    which argues for reaping; or it might be a network blip in front of a
+    healthy trainer, which argues for leaving it. Killing live training is
+    unrecoverable and a wasted hour of billing is not, so the tie goes to not
+    reaping -- loudly, so a human can settle it.
+    """
+    from scripts.phase1b.runpod_parallel import SSH_KEY
+
+    runtime = pod.get("runtime") or {}
+    ports = runtime.get("ports") or [] if isinstance(runtime, dict) else []
+    endpoint = next(
+        (p for p in ports if isinstance(p, dict) and p.get("privatePort") == 22), None
+    )
+    if not endpoint or not endpoint.get("ip") or not endpoint.get("publicPort"):
+        # No SSH endpoint published yet. That is the state a pod sits in for the
+        # first minute or two of its life, when it is certainly not finished.
+        return "UNREACHABLE"
+
+    try:
+        result = subprocess.run(
+            ["ssh", "-o", "StrictHostKeyChecking=accept-new",
+             "-o", f"UserKnownHostsFile={PROJECT_ROOT}/scripts/phase1b/.runpod_known_hosts",
+             "-o", "IdentitiesOnly=yes", "-o", "BatchMode=yes",
+             "-o", f"ConnectTimeout={POD_PROBE_TIMEOUT_S}",
+             "-i", str(SSH_KEY),
+             "-p", str(endpoint["publicPort"]), f"root@{endpoint['ip']}",
+             f"pgrep -f {FOLD_PROCESS_PATTERN} >/dev/null && echo BUSY || echo IDLE"],
+            capture_output=True, text=True, timeout=POD_PROBE_TIMEOUT_S + 15, check=False,
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        logger.warning("  probe %s: unreachable (%s)", pod.get("name"), exc)
+        return "UNREACHABLE"
+
+    answer = (result.stdout or "").strip().splitlines()
+    if result.returncode != 0 or not answer:
+        logger.warning("  probe %s: unreachable (rc=%d %s)", pod.get("name"),
+                       result.returncode, (result.stderr or "").strip()[:80])
+        return "UNREACHABLE"
+    return "BUSY" if answer[-1] == "BUSY" else "IDLE"
+
+
+def fleet_is_idle() -> tuple[bool, str]:
+    """True only when every one of this run's pods is provably not training.
+
+    Anything else -- one busy pod, one that will not answer, or an API that will
+    not respond -- means do not reap. Returns the reason so the caller can say
+    it out loud rather than standing down silently.
+    """
+    from scripts.phase0.runpod_provision import get_running_pods
+
+    expected = expected_pod_names()
+    try:
+        mine = [p for p in get_running_pods() if p.get("name") in expected]
+    except Exception as exc:  # noqa: BLE001 - an unreadable API is not evidence of idleness
+        return False, f"could not list pods ({exc})"
+
+    if not mine:
+        return True, "no pods running"
+
+    states = {str(p.get("name")): pod_training_state(p) for p in mine}
+    for name, state in sorted(states.items()):
+        logger.info("  %s: %s", name, state)
+
+    busy = [n for n, s in states.items() if s == "BUSY"]
+    unknown = [n for n, s in states.items() if s == "UNREACHABLE"]
+    if busy:
+        return False, f"still training: {', '.join(sorted(busy))}"
+    if unknown:
+        return False, (f"cannot tell (no answer from {', '.join(sorted(unknown))}). "
+                       f"Refusing to reap on a guess -- killing live training is "
+                       f"unrecoverable, an idle pod billing is not. Check by hand.")
+    return True, f"all {len(states)} pod(s) idle"
+
+
 def _state_dir() -> Path:
     """Where the quiet-streak counter and the sentinel live.
 
@@ -568,9 +667,36 @@ def main(argv: list[str] | None = None) -> int:
 
     logger.warning(
         "No orchestrator process, but %d pod(s) from this run are still "
-        "RUNNING and billing. This is the orphaned-fleet case the schedule "
-        "exists for.", count,
+        "RUNNING and billing. Checking whether they are actually idle before "
+        "touching anything.", count,
     )
+
+    # THE THIRD QUESTION, and the one that protects paid-for work.
+    #
+    # A dead orchestrator does NOT mean idle pods. Folds are launched under
+    # `setsid nohup` precisely so training survives the session that started it,
+    # so "no orchestrator, pods up" is the exact shape of a fleet in the middle
+    # of training with its driver crashed. Reaping on those two facts alone
+    # would destroy hours of GPU time whose per-item indicators exist only on
+    # those pods -- the work the detachment was added to protect.
+    #
+    # So each pod is asked directly whether a fold process is alive. Reap only
+    # when every one of them says no. A pod that will not answer counts as busy:
+    # killing live training cannot be undone, an idle pod billing for another
+    # two hours can.
+    idle, reason = fleet_is_idle()
+    if not idle:
+        logger.warning(
+            "NOT REAPING -- %s. Re-arming; the fleet keeps running.", reason,
+        )
+        _write_quiet_streak(0)
+        if args.confirm:
+            rearm()
+        return EXIT_OK
+
+    logger.warning("Every pod is idle (%s) and no orchestrator is driving them. "
+                   "This is the orphaned-fleet case the schedule exists for.",
+                   reason)
     if not args.confirm:
         logger.warning("Dry run. Re-run with --confirm to reap.")
         return EXIT_OK
