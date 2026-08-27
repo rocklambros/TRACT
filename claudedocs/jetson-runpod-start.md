@@ -9,7 +9,7 @@ provision. Read it before provisioning anything.
 briefing describes. `semantic-rebuild` and `campaign-2` are both merged and
 finished; do not use either.
 
-**A draft PR is open for this branch and exists so it gets CI.** The workflow
+**PR #73 is open as a draft for this branch and exists so it gets CI.** The workflow
 triggers on `push: [main]` and on `pull_request`, so a plain branch push runs
 NOTHING. Without that PR every campaign commit would land unchecked. After
 each push, confirm all 8 jobs are green before you treat a result as banked.
