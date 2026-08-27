@@ -11,7 +11,15 @@ from tract.config import RAW_FRAMEWORKS_DIR
 
 def test_parses_real_data() -> None:
     raw_dir = RAW_FRAMEWORKS_DIR / "cosai"
-    if not (raw_dir / "controls.yaml").exists():
+    # Guard on the path the parser actually reads. Until 2026-08-26 this checked
+    # `controls.yaml` at the framework root -- the layout parse_cosai used before
+    # 731b167 moved it under risk-map/ to match the upstream CoSAI checkout. The
+    # test file was never updated with the parser, so on a faithful risk-map/
+    # tree the guard was False and this test SKIPPED SILENTLY, while on a
+    # flattened copy it passed the guard and then died in the parser on the
+    # nested path. It had real coverage on neither layout. A guard that names a
+    # path the code under test never opens can only report on the wrong thing.
+    if not (raw_dir / "risk-map" / "controls.yaml").exists():
         pytest.skip("Raw data not available")
 
     from parsers.parse_cosai import CosaiParser

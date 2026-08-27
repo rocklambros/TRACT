@@ -193,6 +193,18 @@ jobs:
               print(f"  {symbol} <- {source}")
           PY
 
+      # test_training_data.py and test_branch_balancing.py were added on
+      # 2026-08-26 to close a hole, not to broaden coverage. They ran in ZERO
+      # jobs. Both open with `pytest.importorskip("torch")` and
+      # `importorskip("datasets")`, and requirements.txt pins neither torch nor
+      # sentence-transformers, so they skipped at import in the `test` job --
+      # invisibly, as 2 of its 115 skips. This job is the only one that installs
+      # the pinned stack, and it names its files explicitly, so a module absent
+      # from this list is a module CI never executes. Between the two, 26 tests
+      # covering HubAwareTemperatureSampler, build_training_pairs,
+      # mine_hard_negatives and stratified branch ordering had no CI at all --
+      # the code arms A2 and A4 exercise at branch_balance 3.0. Eight green
+      # checks said nothing about any of it.
       - name: Run the training regression tests
         env:
           USE_TF: "0"
@@ -202,4 +214,5 @@ jobs:
             tests/test_firewall.py \
             tests/test_fold_aggregation.py tests/test_gate_decision.py \
             tests/test_runpod_safety.py tests/test_publish_merge.py \
+            tests/test_training_data.py tests/test_branch_balancing.py \
             -q --timeout=900 -m "not integration"
