@@ -17,7 +17,7 @@ Before the first run:
     ssh-keygen -t ed25519 -f ~/.ssh/tract_runpod -N ''
 and register ~/.ssh/tract_runpod.pub with the RunPod account.
 
-Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 2000),
+Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 1000),
 TRACT_RUNPOD_MAX_HOURLY (12), TRACT_RUNPOD_MAX_HOURS (6),
 TRACT_RUNPOD_SSH_KEY. Set the budget explicitly for any real campaign; the
 default is a backstop, not a plan.
@@ -101,7 +101,11 @@ DOCKER_IMAGE: Final[str] = (
 POD_PYTHON_VERSION: Final[str] = "3.12"
 
 # Budget controls. The $1000 ceiling was prose; these make it a gate.
-BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "2000"))
+# Owner-set authorization ceiling, lowered from 2000 to 1000 on 2026-08-26.
+# This is the BACKSTOP, not the plan: it bounds what the code permits when
+# nobody exported anything. Campaign 2 exports 200, which is the tight
+# per-run bound P5 asks for, and an export always wins over this default.
+BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "1000"))
 # Refuse a part whose rate would burn the budget faster than the run can finish.
 MAX_USD_PER_HOUR_PER_POD: Final[float] = float(
     os.environ.get("TRACT_RUNPOD_MAX_HOURLY", "12")

@@ -115,7 +115,8 @@ that matter are `--config-name`, `--split`, `--stopwords`, `--no-prose`,
 `--base-model`, `--branch-balance` and `--n-configurations`.
 
 Budget: 30 folds, roughly 3.5 hours and $90 at five parallel pods. Around $80
-of the authorized $2000 is already spent.
+of the authorized $1000 is already spent. The ceiling was lowered from $2000
+to $1000 by the owner on 2026-08-26.
 
 ## Three things that will go wrong quietly
 
@@ -314,8 +315,12 @@ rather than the transport is the whole point of the function.
 
 The docstring said `TRACT_RUNPOD_BUDGET_USD (default 1000)` while the code read
 `"2000"`, so anyone sizing a run against the documented figure had half the
-real ceiling. Corrected in `90a5f15`. **Set the variable explicitly for this
-campaign regardless**: the default is a backstop, not a plan.
+real ceiling. Corrected in `90a5f15`.
+
+The owner then lowered the ceiling itself to **1000** on 2026-08-26, so the
+docstring and the code now agree on that figure. **Set the variable explicitly
+for this campaign regardless**: 1000 is the backstop that applies when nobody
+exported anything, and this campaign costs $90. Export 200.
 
 ### P5. A cap that permits ten times the expected spend is not a cap
 
