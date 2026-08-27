@@ -1,0 +1,70 @@
+{
+  "aggregate_hit1": {
+    "ci_high": 0.43147208121827413,
+    "ci_low": 0.29949238578680204,
+    "mean": 0.36548223350253806,
+    "n_resamples": 10000,
+    "n_total": 197
+  },
+  "config": {
+    "base_model": "BAAI/bge-large-en-v1.5",
+    "batch_size": 64,
+    "checkpoint_path": null,
+    "control_text_source": "section_name",
+    "data_hash": "",
+    "hard_negatives": 3,
+    "hub_rep_format": "path+name+desc",
+    "learning_rate": 0.0005,
+    "lora_alpha": 32,
+    "lora_dropout": 0.1,
+    "lora_rank": 16,
+    "lora_target_modules": [
+      "query",
+      "key",
+      "value"
+    ],
+    "max_epochs": 20,
+    "max_grad_norm": 1.0,
+    "max_seq_length": 512,
+    "name": "ablation_a6_descriptions",
+    "sampling_temperature": 2.0,
+    "seed": 42,
+    "training_data": "joint-tempscaled",
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01
+  },
+  "per_fold": {
+    "MITRE ATLAS": {
+      "hit_at_1": 0.23076923076923078,
+      "hit_at_5": 0.6615384615384615,
+      "mrr": 0.44298604390864393,
+      "ndcg_at_10": 0.5172775249210058
+    },
+    "NIST AI 100-2": {
+      "hit_at_1": 0.3333333333333333,
+      "hit_at_5": 0.6444444444444445,
+      "mrr": 0.46741654793163195,
+      "ndcg_at_10": 0.529497074850642
+    },
+    "OWASP AI Exchange": {
+      "hit_at_1": 0.53125,
+      "hit_at_5": 0.78125,
+      "mrr": 0.6385254215470597,
+      "ndcg_at_10": 0.6777998915799966
+    },
+    "OWASP Top10 for LLM": {
+      "hit_at_1": 0.15384615384615385,
+      "hit_at_5": 0.6153846153846154,
+      "mrr": 0.38461538461538464,
+      "ndcg_at_10": 0.4491679916208892
+    },
+    "OWASP Top10 for ML": {
+      "hit_at_1": 0.6,
+      "hit_at_5": 0.7,
+      "mrr": 0.6587239583333333,
+      "ndcg_at_10": 0.7143090932289436
+    }
+  },
+  "raw_hash": "2154a831104e2f4c62cb2e9732e9fa6d76904ffe37c8e9149123ee2d8fb2e8ca",
+  "total_folds": 5
+}

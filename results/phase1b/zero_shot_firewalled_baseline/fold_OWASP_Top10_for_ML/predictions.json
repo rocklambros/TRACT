@@ -1,0 +1,121 @@
+[
+  {
+    "control_text": "Data Poisoning Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "020-540",
+      "481-710",
+      "034-540",
+      "867-642",
+      "555-083",
+      "077-235",
+      "217-163",
+      "567-025",
+      "173-554"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain Attacks",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "701-654",
+      "230-318",
+      "881-234",
+      "077-235",
+      "267-786",
+      "738-144",
+      "481-710",
+      "423-055",
+      "073-507",
+      "020-540"
+    ]
+  },
+  {
+    "control_text": "Model Theft",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "663-550",
+      "141-385",
+      "034-540",
+      "182-732",
+      "267-786",
+      "637-021",
+      "044-202",
+      "481-710",
+      "342-781",
+      "077-235"
+    ]
+  },
+  {
+    "control_text": "Model Poisoning",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "020-540",
+      "481-710",
+      "615-663",
+      "867-642",
+      "701-654",
+      "182-732",
+      "034-540",
+      "077-235",
+      "780-757",
+      "044-202"
+    ]
+  },
+  {
+    "control_text": "Input Manipulation Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "042-550",
+      "010-308",
+      "342-641",
+      "576-262",
+      "989-492",
+      "857-718",
+      "217-163",
+      "641-760",
+      "161-451",
+      "836-068"
+    ]
+  },
+  {
+    "control_text": "Model Inversion Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "532-102",
+      "663-550",
+      "044-202",
+      "077-235",
+      "788-323",
+      "141-385",
+      "182-732",
+      "780-757",
+      "267-786"
+    ]
+  },
+  {
+    "control_text": "Membership Inference Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "044-202",
+      "475-586",
+      "073-507",
+      "663-550",
+      "012-625",
+      "043-703",
+      "686-110",
+      "141-385"
+    ]
+  }
+]
