@@ -269,9 +269,15 @@ by design. Mitigations, all of which you apply before provisioning:
   you launch, not before:
 
   ```bash
+  # --working-directory is NOT optional. systemd-run starts the unit in the
+  # user's home, where `-m scripts.phase1b.reaper_guard` raises
+  # ModuleNotFoundError in ~59ms -- while `list-timers` still shows it ARMED,
+  # so the checklist row that verifies the bound passes on a unit that reaps
+  # nothing. Verified 2026-08-26.
   systemd-run --user --on-active=8h --unit=tract-reaper \
+      --working-directory="$PWD" --setenv=USE_TF=0 \
       "$(command -v python3)" -m scripts.phase1b.reaper_guard --confirm
-  systemctl --user list-timers tract-reaper      # confirm it is armed
+  systemctl --user list-timers 'tract-reaper*'    # confirm it is armed
   ```
 
   `at` is not installed on the Jetson and cron cannot express a one-shot
@@ -460,8 +466,8 @@ Every item is a command with an answer, not a judgment call.
 | on the right branch | `git status` shows `campaign-2-results`, cut from `main` at `f0a6968`, clean tree. NOT `semantic-rebuild` or `campaign-2` |
 | corpus is complete | the snippet above returns a digest. Also enforced in code now: `provision`, `run_folds` and `run_fold.py` each refuse on a mismatch |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
-| credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
-| HF token is read-scope | it fetches the base model and nothing else. A write token on a rented host is a published-model compromise |
+| credentials load | `pass runpod/api-key`, **`pass huggingface/read-token`**, `pass wandb/api-key` each return a value. NOT `huggingface/token` -- this row named the wrong entry until 2026-08-26. `_get_pod_env` reads `HF_READ_TOKEN_ENTRY = "huggingface/read-token"` (runpod_parallel.py:217) and the code refuses the write entry by name. The read entry did not exist; the fleet would have raised at `run_folds:1069`, AFTER five pods were billing |
+| HF token is read-scope | Create it read-only, then `pass insert -f -e huggingface/read-token`. `huggingface/token` carries repo.write to the live model and dataset repos and MUST NOT be used -- the orchestrator enforces this by reading a different entry, so the guarantee is structural rather than a promise |
 | SSH key registered | `~/.ssh/tract_runpod` exists and its `.pub` is on the RunPod account |
 | price sanity | `python -m scripts.phase1b.runpod_parallel price` creates nothing and prints the estimate |
 | suite is green | `pytest tests/ -q -m "not integration"` |

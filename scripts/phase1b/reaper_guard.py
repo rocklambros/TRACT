@@ -1,12 +1,16 @@
 """A reaper that will not kill a campaign that is still running.
 
-    # arm it when you launch the campaign, not before:
+    # arm it when you launch the campaign, not before.
+    # --working-directory is NOT optional: systemd-run starts the unit in the
+    # user's home, where `-m scripts.phase1b.reaper_guard` raises
+    # ModuleNotFoundError while list-timers still reports it ARMED.
     systemd-run --user --on-active=8h --unit=tract-reaper \
-        /home/rock/anaconda3/bin/python3 -m scripts.phase1b.reaper_guard --confirm
+        --working-directory="$PWD" --setenv=USE_TF=0 \
+        "$(command -v python3)" -m scripts.phase1b.reaper_guard --confirm
 
-    # see it, or cancel it:
-    systemctl --user list-timers tract-reaper
-    systemctl --user stop tract-reaper.timer
+    # see them (re-arms carry a generation suffix), or cancel:
+    systemctl --user list-timers 'tract-reaper*'
+    systemctl --user stop 'tract-reaper*.timer'
 
 WHY THIS EXISTS. The runbook says to schedule `reap --confirm` at T+8h, and the
 reasoning behind it is sound: `create_pod` sends no TTL, no auto-stop and no idle
@@ -50,7 +54,13 @@ import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 from typing import Final
+
+# Same derivation runpod_parallel.py uses. Needed because systemd-run starts a
+# unit in the user's home unless told otherwise, and `-m scripts.phase1b...`
+# only resolves from the repository root.
+PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -179,6 +189,13 @@ def rearm() -> None:
         subprocess.run(
             ["systemd-run", "--user", "--collect", f"--on-active={REARM}",
              f"--unit={unit}",
+             # systemd-run does NOT inherit the caller's cwd. Without this the
+             # re-armed unit starts in the user's home and dies in ~59ms with
+             # "No module named 'scripts'" -- while `systemctl list-timers`
+             # still shows it ARMED, so the checklist row that verifies the
+             # bound passes on a unit that reaps nothing. Verified 2026-08-26.
+             f"--working-directory={PROJECT_ROOT}",
+             "--setenv=USE_TF=0",
              sys.executable, "-m", "scripts.phase1b.reaper_guard", "--confirm"],
             check=True, capture_output=True, timeout=30,
         )
