@@ -136,14 +136,14 @@ claude-mem records observations as you work. These are valuable for continuity:
 
 - **Data Preparation:** COMPLETE
 - **Phase 0 (Zero-Shot Baselines):** COMPLETE — Gates A+B passed
-- **Phase 1A–1D:** COMPLETE — model trained (hit@1=0.531), 11 CLI subcommands, hub proposals
+- **Phase 1A–1D:** COMPLETE — model trained, 11 CLI subcommands, hub proposals. **The Gate 1 headline is WITHDRAWN (2026-08-15)** — the hit@1 figure that stood here passed on the point estimate only, mixed two runs, and did not generalize. Do not quote a Phase 1 accuracy number from memory; PRD.md §6.4 carries the withdrawal.
 - **Phase 2B (Bridge + HF Publication):** COMPLETE — 46/63 bridges accepted, model published to huggingface.co/rockCO78/tract-cre-assignment
 - **Phase 3 (Crosswalk Dataset):** COMPLETE — 5,238 assignments across 31 frameworks, expert-reviewed, published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
 - **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
 - **Lazy Model Auto-Download:** COMPLETE — `tract assign` downloads the pinned model from HuggingFace on first use (sha256-verified, sentinel-gated), tolerates the published flat layout, and adds `tract --version`. Forces the PyTorch backend (`USE_TF=0` at import) to avoid a TensorFlow import deadlock in `sentence-transformers`. `assign --file` preserves input order and carries an `input_index`. Distinct exit codes: 2 user error, 3 offline, 4 integrity, 5 missing runtime.
-- **920 tests**, 20 CLI subcommands
+- **2,722 tests** (`pytest tests/ -q --collect-only`, 2026-08-27 — this line said 920 long after the suite had tripled, so re-derive it rather than trust it), 20 CLI subcommands
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands
