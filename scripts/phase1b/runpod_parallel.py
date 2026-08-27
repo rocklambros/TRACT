@@ -1661,9 +1661,28 @@ def reap(confirm: bool = False) -> None:
     # exactly when reap is reached for. Terminating an empty list and reporting
     # "reaped cleanly" would hand back a false all-clear in the one case this
     # command exists for. Fall back to matching the account's running pods by
-    # the deterministic names in POD_CONFIGS.
+    # the deterministic names both splits can produce.
+    #
+    # BOTH splits, and that is not a detail. This matched POD_CONFIGS until
+    # 2026-08-27, and POD_CONFIGS is built from FOLD_FRAMEWORKS -- the TEST
+    # roster -- so it holds tract-p1b-fold0..4 only. select_pod_configs names
+    # validation pods tract-p1b-val-fold0..4 under a different prefix, and the
+    # two sets are disjoint. The sweep was therefore blind to every validation
+    # pod, which is four of Campaign 2's rounds.
+    #
+    # It cost a manual recovery within minutes of the first provision. A
+    # capacity error killed fold0 while four validation pods came up billing;
+    # the operator interrupted inside the pods=[] window this comment describes,
+    # so teardown reported "nothing scoped to terminate" and this fallback --
+    # the one path built for exactly that window -- would have swept past all
+    # four because their names were not in POD_CONFIGS. They had to be
+    # terminated by hand.
     known_ids = {p["pod_id"] for p in pods if p.get("pod_id")}
-    expected_names = {c["name"] for c in POD_CONFIGS}
+    expected_names = {
+        config["name"]
+        for split in ("test", "validation")
+        for config in select_pod_configs(None, split)
+    }
     orphans = [
         p for p in get_running_pods()
         if p.get("name") in expected_names and p.get("id") not in known_ids

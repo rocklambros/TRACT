@@ -1433,3 +1433,44 @@ class TestKnownHostsIsFreshEveryRound:
             rpp.provision()
 
         assert order == ["known_hosts_gone"]
+
+
+class TestReapSweepCoversBothSplits:
+    """reap's name fallback was blind to every validation pod.
+
+    The sweep exists for the window where .pod_state.json records pods=[] --
+    between "intent to provision" and "all pods up" -- which is exactly where a
+    crash during provisioning lands. It matched POD_CONFIGS, built from the TEST
+    roster, so it saw tract-p1b-fold0..4 and never tract-p1b-val-fold0..4.
+
+    Found the hard way on 2026-08-27: a capacity error killed fold0 while four
+    validation pods billed, the operator interrupted inside that window, and
+    teardown said "nothing scoped to terminate" while the fallback swept past
+    all four. They were terminated by hand.
+    """
+
+    def test_the_sweep_names_cover_every_pod_either_split_can_create(self) -> None:
+        from scripts.phase1b.runpod_parallel import select_pod_configs
+
+        swept = {
+            config["name"]
+            for split in ("test", "validation")
+            for config in select_pod_configs(None, split)
+        }
+        for split in ("test", "validation"):
+            for config in select_pod_configs(None, split):
+                assert config["name"] in swept, (
+                    f"{config['name']} ({split}) is creatable but unreachable "
+                    f"by reap's name fallback"
+                )
+
+    def test_pod_configs_alone_would_still_miss_the_validation_fleet(self) -> None:
+        """The regression itself, asserted so it cannot quietly return."""
+        from scripts.phase1b.runpod_parallel import POD_CONFIGS, select_pod_configs
+
+        test_only = {c["name"] for c in POD_CONFIGS}
+        validation = {c["name"] for c in select_pod_configs(None, "validation")}
+        assert validation, "validation split creates no pods -- test is vacuous"
+        assert not (validation & test_only), (
+            "the two splits now share names; this test's premise is stale"
+        )
