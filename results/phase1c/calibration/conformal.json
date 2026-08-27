@@ -1,0 +1,9 @@
+{
+  "alpha": 0.1,
+  "coverage": 0.9023809523809524,
+  "coverage_gate": 0.9,
+  "mean_set_size": 38.21666666666667,
+  "n_items": 420,
+  "passed": true,
+  "quantile": 0.9971044558854331
+}

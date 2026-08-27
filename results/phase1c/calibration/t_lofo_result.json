@@ -1,0 +1,20 @@
+{
+  "fold_weights": {
+    "MITRE ATLAS": 0.263547429060188,
+    "NIST AI 100-2": 0.21266869780923062,
+    "OWASP AI Exchange": 0.3190030467138459,
+    "OWASP Top10 for LLM": 0.09844647751212023,
+    "OWASP Top10 for ML": 0.10633434890461531
+  },
+  "grid_max_t": 5.0,
+  "grid_min_t": 0.01,
+  "nll": 2.3327196207673206,
+  "per_fold_nll": {
+    "MITRE ATLAS": 3.1266934871673584,
+    "NIST AI 100-2": 2.836639165878296,
+    "OWASP AI Exchange": 1.2848632335662842,
+    "OWASP Top10 for LLM": 2.9076144695281982,
+    "OWASP Top10 for ML": 1.9683517217636108
+  },
+  "temperature": 0.055711709336826704
+}

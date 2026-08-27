@@ -1,0 +1,1167 @@
+{
+  "candidates": [
+    {
+      "ai_hub_id": "011-322",
+      "ai_hub_name": "Testing against evasion",
+      "cosine_similarity": 0.555137,
+      "description": "Both hubs represent **adversarial validation methodologies** where security professionals simulate malicious actors to identify vulnerabilities that automated tools might miss. \"Testing against evasion\" involves crafting adversarial inputs to fool AI models (like manipulated images or prompt injections), while \"Manual penetration testing\" involves human testers creatively exploiting system weaknesses through techniques that bypass standard defenses. The conceptual bridge lies in their shared",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "570-487",
+      "trad_hub_name": "Manual penetration testing"
+    },
+    {
+      "ai_hub_id": "011-322",
+      "ai_hub_name": "Testing against evasion",
+      "cosine_similarity": 0.546643,
+      "description": "Both hubs represent **adaptive adversarial testing methodologies** that simulate real-world attack scenarios during the verification phase of secure development. \"Testing against evasion\" specifically validates AI model robustness against adversarial inputs designed to fool or manipulate the system, while \"Automated dynamic security testing\" validates application security by simulating attacks against running systems to discover runtime vulnerabilities. The conceptual bridge lies in their",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "088-377",
+      "trad_hub_name": "Automated dynamic security testing"
+    },
+    {
+      "ai_hub_id": "011-322",
+      "ai_hub_name": "Testing against evasion",
+      "cosine_similarity": 0.498694,
+      "description": "Both hubs fundamentally address the critical security principle of validating that systems behave correctly under adversarial conditions, though they operate at different levels of abstraction. The Traditional Security \"Verification\" hub encompasses broad validation practices to ensure systems meet security requirements and resist various attack vectors, while the AI Security \"Testing against evasion\" hub represents a specialized application of these same verification principles to counter",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 66
+      },
+      "status": "accepted",
+      "trad_hub_id": "433-442",
+      "trad_hub_name": "Verification"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "ai_hub_name": "Model input leak",
+      "cosine_similarity": 0.540408,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **input validation and data boundary protection**, where both address the fundamental security principle of controlling what data enters a system and preventing unauthorized exposure of processed information. While \"Input and output protection\" establishes traditional controls for validating, sanitizing, and securing data flows in conventional applications, \"Model input leak\" extends these same protective concepts to",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "503-455",
+      "trad_hub_name": "Input and output protection"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "ai_hub_name": "Model input leak",
+      "cosine_similarity": 0.539456,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **controlling and sanitizing data at system entry points** to prevent malicious exploitation. Both \"Model input leak\" and \"Input validation\" address the fundamental security principle that untrusted input represents a primary attack vector - whether it's malicious prompts designed to extract training data from AI models or crafted inputs intended to exploit traditional application vulnerabilities. The key shared concept is",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "010-308",
+      "trad_hub_name": "Input validation"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "ai_hub_name": "Model input leak",
+      "cosine_similarity": 0.402959,
+      "description": "Both hubs address the fundamental security principle of **data boundary protection** - preventing untrusted or malicious data from being processed in ways that compromise system integrity. The AI Security Hub's \"Model input leak\" focuses on protecting AI models from adversarial inputs that could extract sensitive training data or internal model information, while the Traditional Security Hub's \"Output encoding and injection prevention\" protects applications from malicious inputs that could be",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "rejected",
+      "trad_hub_id": "161-451",
+      "trad_hub_name": "Output encoding and injection prevention"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "ai_hub_name": "Prompt input segregation",
+      "cosine_similarity": 0.488468,
+      "description": "Both hubs address the fundamental security principle of **input validation and segregation to prevent injection attacks**. Prompt input segregation protects AI systems from prompt injection by isolating user inputs from system instructions, while credentials directives ensure authentication inputs are properly validated and separated from application logic to prevent credential-based attacks. The conceptual bridge lies in their shared focus on **maintaining clear boundaries between trusted",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 4
+      },
+      "status": "accepted",
+      "trad_hub_id": "455-885",
+      "trad_hub_name": "Credentials directives"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "ai_hub_name": "Prompt input segregation",
+      "cosine_similarity": 0.476138,
+      "description": "Both hubs address the fundamental security principle of **input validation and sanitization** to prevent malicious data from compromising system integrity, with prompt input segregation being the AI-specific evolution of traditional input protection controls. The conceptual bridge lies in their shared focus on **boundary enforcement** - traditional input/output protection guards against injection attacks and malformed data at application interfaces, while prompt input segregation applies the",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "503-455",
+      "trad_hub_name": "Input and output protection"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "ai_hub_name": "Prompt input segregation",
+      "cosine_similarity": 0.451178,
+      "description": "Both hubs address the fundamental security principle of **input validation and injection attack prevention**, where untrusted user input could be interpreted as executable commands rather than safe data. In prompt input segregation, malicious prompts could manipulate AI models to execute unintended operations or bypass safety controls, while OS command injection involves crafting input that gets executed as system commands - both represent scenarios where attackers exploit insufficient",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 12
+      },
+      "status": "accepted",
+      "trad_hub_id": "857-718",
+      "trad_hub_name": "Protect against OS command injection attack"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "ai_hub_name": "AI resource exhaustion input handling",
+      "cosine_similarity": 0.617596,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **input validation and resource protection**, where both address how malicious or malformed inputs can compromise system availability and integrity. While traditional \"Input and output protection\" establishes foundational controls against injection attacks, buffer overflows, and data corruption through input sanitization, \"AI resource exhaustion input handling\" extends these same principles to the AI domain by specifically",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "503-455",
+      "trad_hub_name": "Input and output protection"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "ai_hub_name": "AI resource exhaustion input handling",
+      "cosine_similarity": 0.60152,
+      "description": "Both hubs address the fundamental security principle of **untrusted input sanitization**, where malicious actors attempt to exploit application vulnerabilities through crafted inputs that bypass expected processing boundaries. The AI resource exhaustion hub represents a domain-specific evolution of traditional input validation, where adversarial inputs (like prompt injection or model poisoning attempts) can trigger excessive computational resource consumption rather than traditional buffer",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "010-308",
+      "trad_hub_name": "Input validation"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "ai_hub_name": "AI resource exhaustion input handling",
+      "cosine_similarity": 0.50327,
+      "description": "Both hubs address the fundamental security concern of **resource-based denial of service attacks**, where malicious actors exploit automated or crafted inputs to overwhelm system resources and degrade service availability. The AI Security Hub focuses specifically on inputs designed to trigger computationally expensive AI operations (such as adversarial prompts that cause excessive token generation or complex model computations), while the Traditional Security Hub addresses broader automation",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 25
+      },
+      "status": "accepted",
+      "trad_hub_id": "630-573",
+      "trad_hub_name": "Detect and protect against automation abuse"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "ai_hub_name": "Runtime model io integrity controls",
+      "cosine_similarity": 0.605452,
+      "description": "Both hubs address the fundamental security principle of **input validation and source verification** to prevent tampering and ensure system integrity, but apply it to different computational contexts. The traditional security hub focuses on protecting software build and deployment pipelines by validating code and resource integrity, while the AI security hub extends this same concept to protect machine learning models by validating the integrity of data inputs and model outputs during runtime",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 11
+      },
+      "status": "accepted",
+      "trad_hub_id": "307-507",
+      "trad_hub_name": "Allow only trusted sources both build time and runtime; therefore perform integrity checks on all resources and code"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "ai_hub_name": "Runtime model io integrity controls",
+      "cosine_similarity": 0.505904,
+      "description": "These two CRE hubs represent complementary perspectives on the same fundamental security challenge: ensuring AI model outputs remain trustworthy and uncompromised during operation. The AI Security Hub focuses on the **technical implementation** of protective controls that monitor and validate model inputs/outputs at runtime, while the Traditional Security Hub addresses the **threat landscape** of inference-time attacks that can manipulate model behavior to produce incorrect or malicious",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "ai_hub_name": "Runtime model io integrity controls",
+      "cosine_similarity": 0.494234,
+      "description": "Both hubs address the fundamental security principle of **data integrity protection**, but apply it to different stages of the data lifecycle and computational contexts. The traditional security hub focuses on protecting static data integrity through cryptographic controls during storage, while the AI security hub extends this concept to protect the integrity of dynamic data flows (inputs and outputs) during AI model execution at runtime. The conceptual bridge lies in their shared concern for",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 12
+      },
+      "status": "accepted",
+      "trad_hub_id": "504-340",
+      "trad_hub_name": "Encrypt sensitive data with algorithms that provide both confidentiality and integrity"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "ai_hub_name": "Augmentation data leak",
+      "cosine_similarity": 0.504868,
+      "description": "Both hubs address the fundamental security principle of **data subject control and containment**, where organizations must prevent unauthorized exposure of user-controlled information and provide mechanisms for users to manage their data lifecycle. The AI Security Hub's \"Augmentation data leak\" concern directly relates to protecting user data that enhances or personalizes AI systems (such as training data, user preferences, or behavioral patterns), while the Traditional Security Hub ensures",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 8
+      },
+      "status": "accepted",
+      "trad_hub_id": "762-451",
+      "trad_hub_name": "Ensure users can remove or export their data"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "ai_hub_name": "Augmentation data leak",
+      "cosine_similarity": 0.493372,
+      "description": "Both hubs address the fundamental security principle of **data integrity and confidentiality throughout the system lifecycle**, though applied to different domains. The \"Augmentation data leak\" hub focuses on protecting sensitive training data, model parameters, and AI-specific artifacts from unauthorized disclosure, while \"Securely archive builds and build information\" ensures the integrity and controlled access of software artifacts, source code, and build metadata. The conceptual bridge lies",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "461-680",
+      "trad_hub_name": "Securely archive builds and build information"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "ai_hub_name": "Augmentation data leak",
+      "cosine_similarity": 0.488364,
+      "description": "Both hubs address the fundamental security principle of **data confidentiality during storage and handling of sensitive information**. An \"augmentation data leak\" in AI systems and insecure backup storage both represent scenarios where valuable organizational data becomes exposed to unauthorized parties through inadequate protection of data at rest. The conceptual bridge lies in their shared focus on **preventing unauthorized access to stored data assets** - whether that's AI training data,",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 3
+      },
+      "status": "accepted",
+      "trad_hub_id": "614-353",
+      "trad_hub_name": "Store backups securely"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "ai_hub_name": "Human AI oversight",
+      "cosine_similarity": 0.773608,
+      "description": "Both hubs fundamentally address the critical security principle that **human judgment and accountability must remain central to security decision-making**, whether in AI systems or traditional organizational contexts. The AI Security Hub ensures humans maintain oversight over automated model decisions to prevent harmful outcomes, while the Traditional Security Hub establishes governance frameworks that define human roles, responsibilities, and decision-making authority in security processes.",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 5,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "427-113",
+      "trad_hub_name": "Security governance regarding people"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "ai_hub_name": "Human AI oversight",
+      "cosine_similarity": 0.652833,
+      "description": "The conceptual bridge between these hubs lies in their shared emphasis on **human accountability and control mechanisms** within security frameworks. Both \"Human AI oversight\" and \"Roles and responsibilities\" fundamentally address the critical need to ensure that human decision-makers maintain ultimate authority and accountability\u2014whether over AI system behaviors or traditional security processes\u2014through clearly defined governance structures and oversight protocols. The key shared concept is",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 5,
+        "trad_controls_linked": 5
+      },
+      "status": "accepted",
+      "trad_hub_id": "013-021",
+      "trad_hub_name": "Roles and responsibilities"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "ai_hub_name": "Human AI oversight",
+      "cosine_similarity": 0.512517,
+      "description": "Both hubs address the fundamental security principle of **human-in-the-loop verification** to mitigate risks from automated systems that could make critical errors or be compromised. The AI Security Hub requires human oversight to catch and correct unwanted AI model behaviors, while the Traditional Security Hub mandates that biometric authentication (which can be spoofed or fail) must always be supplemented by human-controllable secondary factors. The conceptual bridge lies in their shared",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 5,
+        "trad_controls_linked": 17
+      },
+      "status": "accepted",
+      "trad_hub_id": "076-470",
+      "trad_hub_name": "Biometric authenticators only as secondary factors"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "ai_hub_name": "Automated AI oversight",
+      "cosine_similarity": 0.483916,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **accountability and control mechanisms** for managing security risks through systematic oversight. Both address the fundamental security principle that critical systems require defined oversight structures - whether through automated monitoring of AI model behavior or through clearly assigned human roles and responsibilities for security governance. The connection becomes evident when considering that automated AI oversight",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 5
+      },
+      "status": "accepted",
+      "trad_hub_id": "013-021",
+      "trad_hub_name": "Roles and responsibilities"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "ai_hub_name": "Automated AI oversight",
+      "cosine_similarity": 0.473003,
+      "description": "These two CRE hubs form a complementary security relationship where **automated AI oversight** serves as the proactive defense mechanism against the threats identified in **AI model behaviour integrity threats through inference**. The AI Security Hub focuses on implementing technical controls that can automatically detect and mitigate unwanted model behaviors in real-time, while the Traditional Security Hub categorizes the specific attack vectors (like adversarial inputs, model extraction, or",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "ai_hub_name": "Automated AI oversight",
+      "cosine_similarity": 0.428511,
+      "description": "Both hubs address the fundamental security challenge of **human oversight and accountability in automated systems**. While the AI Security Hub focuses on technical mechanisms to automatically monitor and constrain AI model behavior, the Traditional Security Hub establishes governance frameworks for human responsibility and decision-making authority - both are essential for ensuring that autonomous systems remain under appropriate control and aligned with organizational security objectives. The",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "rejected",
+      "trad_hub_id": "427-113",
+      "trad_hub_name": "Security governance regarding people"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "ai_hub_name": "Augmentation data manipulation",
+      "cosine_similarity": 0.458284,
+      "description": "Both hubs address the fundamental security principle of **data integrity protection** against tampering, but apply it to different attack surfaces within the data processing pipeline. The AI Security Hub focuses on protecting augmentation data (training data, prompts, or model inputs) from manipulation that could compromise AI system behavior, while the Traditional Security Hub protects SOAP message payloads from modification during API communication. The conceptual bridge lies in their shared",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 24
+      },
+      "status": "accepted",
+      "trad_hub_id": "456-636",
+      "trad_hub_name": "Add integrity check to SOAP payload"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "ai_hub_name": "Augmentation data manipulation",
+      "cosine_similarity": 0.434167,
+      "description": "Both hubs fundamentally address **data integrity and supply chain trust** as core security principles. The AI Security Hub focuses on protecting augmentation data (training data, model updates, or input enhancements) from manipulation that could compromise AI system behavior, while the Traditional Security Hub ensures that only verified, untampered code and resources are used during software development and deployment. The conceptual bridge lies in their shared emphasis on **provenance",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 11
+      },
+      "status": "rejected",
+      "trad_hub_id": "307-507",
+      "trad_hub_name": "Allow only trusted sources both build time and runtime; therefore perform integrity checks on all resources and code"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "ai_hub_name": "Augmentation data manipulation",
+      "cosine_similarity": 0.43348,
+      "description": "Both hubs address the fundamental security principle of **data lifecycle protection**, specifically focusing on preventing unauthorized access to sensitive information through memory-based attack vectors. The AI Security Hub's \"Augmentation data manipulation\" protects against adversaries who might exploit AI training data, prompts, or model outputs stored in memory to poison or extract sensitive information, while the Traditional Security Hub's \"Zeroize sensitive information\" prevents attackers",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 4
+      },
+      "status": "rejected",
+      "trad_hub_id": "715-304",
+      "trad_hub_name": "Zeroize sensitive information in memory after use"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "ai_hub_name": "Impact limitation of unwanted model behaviour",
+      "cosine_similarity": 0.669336,
+      "description": "These two CRE hubs form a complementary defense-in-depth relationship where one focuses on threat identification and the other on impact mitigation for the same fundamental security concern: maintaining AI model behavioral integrity. The \"AI model behaviour integrity threats through inference\" hub addresses the detection and understanding of attacks that manipulate model outputs during the inference phase (such as adversarial inputs, prompt injection, or model extraction), while the \"Impact",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "ai_hub_name": "Impact limitation of unwanted model behaviour",
+      "cosine_similarity": 0.541412,
+      "description": "Both hubs address the fundamental security principle of **behavioral boundary enforcement** - ensuring systems operate within intended parameters and fail safely when they don't. The AI Security Hub focuses on containing the blast radius when machine learning models exhibit unexpected or adversarial behaviors, while the Traditional Security Hub ensures application logic validates inputs, enforces business rules, and prevents exploitation through logical flaws. The conceptual bridge lies in",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "854-643",
+      "trad_hub_name": "Robust business logic"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "ai_hub_name": "Impact limitation of unwanted model behaviour",
+      "cosine_similarity": 0.515383,
+      "description": "Both hubs fundamentally address **risk containment through proactive boundary setting** - the AI hub focuses on constraining model outputs to prevent harmful behaviors, while the traditional hub establishes business rule boundaries to prevent abuse of application logic. The conceptual bridge lies in their shared approach of **implementing preventive controls that limit system behavior to acceptable parameters** when anomalous or potentially damaging activity is detected. The key connection is",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "660-867",
+      "trad_hub_name": "Implement business logic limits against identified business risks"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "ai_hub_name": "Training data confidentiality threats through inference",
+      "cosine_similarity": 0.514579,
+      "description": "Both hubs address the fundamental security principle of **proactive threat awareness and mitigation**, but apply it to different attack vectors within the broader information security landscape. The AI Security Hub focuses on a specific emerging threat where adversaries use inference techniques to extract sensitive training data from deployed models, while the Traditional Security Hub establishes the foundational process of maintaining current threat intelligence to identify and prepare for",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 3
+      },
+      "status": "accepted",
+      "trad_hub_id": "888-770",
+      "trad_hub_name": "Threat intelligence - stay up to date with new threats and consider them"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "ai_hub_name": "Training data confidentiality threats through inference",
+      "cosine_similarity": 0.512898,
+      "description": "Both hubs address **inference-based attacks** that exploit the observable outputs of AI systems to extract sensitive information, representing two sides of the same fundamental vulnerability in machine learning systems. While the AI Security Hub focuses on attackers using model inferences to reconstruct or deduce confidential training data (such as membership inference or model inversion attacks), the Traditional Security Hub addresses how inference patterns can be manipulated to compromise the",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "ai_hub_name": "Training data confidentiality threats through inference",
+      "cosine_similarity": 0.418848,
+      "description": "Both hubs address the fundamental security principle that **human knowledge and behavior represent critical attack vectors** that require proactive mitigation through education and awareness. The AI Security Hub focuses on training technical personnel to recognize and prevent inference attacks that could expose sensitive training data, while the Traditional Security Hub emphasizes broader organizational security awareness to prevent human-factor vulnerabilities. The conceptual bridge lies in",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 6
+      },
+      "status": "rejected",
+      "trad_hub_id": "428-544",
+      "trad_hub_name": "Security awareness training"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "ai_hub_name": "Testing against indirect prompt injection",
+      "cosine_similarity": 0.543695,
+      "description": "Both hubs represent **dynamic, runtime security validation** where systems are tested against malicious inputs during execution rather than through static analysis. The conceptual bridge lies in their shared approach of **automated adversarial testing** - traditional dynamic testing injects malicious payloads to exploit application vulnerabilities, while indirect prompt injection testing feeds malicious prompts through external data sources to manipulate AI behavior. The fundamental security",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "088-377",
+      "trad_hub_name": "Automated dynamic security testing"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "ai_hub_name": "Testing against indirect prompt injection",
+      "cosine_similarity": 0.530356,
+      "description": "Both hubs represent **manual adversarial testing methodologies** where security professionals simulate real-world attack scenarios to identify vulnerabilities that automated tools might miss. Testing against indirect prompt injection involves crafting malicious inputs through third-party data sources (like documents or web content) to manipulate AI model behavior, while manual penetration testing involves human testers creatively exploiting system weaknesses through techniques like social",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "570-487",
+      "trad_hub_name": "Manual penetration testing"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "ai_hub_name": "Testing against indirect prompt injection",
+      "cosine_similarity": 0.468179,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **systematic validation of system behavior against malicious inputs**, where both domains require rigorous testing methodologies to ensure systems respond appropriately to adversarial scenarios. Traditional verification encompasses testing applications against various attack vectors (SQL injection, XSS, buffer overflows), while AI-specific verification extends this principle to test against prompt manipulation attacks that",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 66
+      },
+      "status": "accepted",
+      "trad_hub_id": "433-442",
+      "trad_hub_name": "Verification"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "ai_hub_name": "Testing against direct prompt injection",
+      "cosine_similarity": 0.538998,
+      "description": "Both hubs represent **adversarial testing methodologies** where security professionals deliberately attempt to exploit system vulnerabilities through crafted inputs - prompt injections in AI systems mirror the same attack vector concept as malicious payloads in traditional penetration testing. The conceptual bridge lies in their shared focus on **human-driven validation** that goes beyond automated testing, requiring security experts to think creatively about how an attacker might manipulate",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "570-487",
+      "trad_hub_name": "Manual penetration testing"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "ai_hub_name": "Testing against direct prompt injection",
+      "cosine_similarity": 0.516247,
+      "description": "Both hubs represent **automated adversarial testing methodologies** that probe systems for vulnerabilities through dynamic input manipulation during the verification phase of development. The conceptual bridge lies in their shared approach of systematically injecting malicious or unexpected inputs\u2014whether prompt injections targeting AI models or various attack vectors against traditional applications\u2014to validate security controls under real-world attack conditions. The fundamental security",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "088-377",
+      "trad_hub_name": "Automated dynamic security testing"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "ai_hub_name": "Testing against direct prompt injection",
+      "cosine_similarity": 0.44837,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **validation through adversarial testing** - both involve systematically attempting to bypass security controls to verify system resilience. Traditional verification encompasses testing applications against malicious inputs, boundary conditions, and attack vectors to ensure secure behavior, while AI prompt injection testing applies this same adversarial validation principle specifically to language models by attempting to",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 2,
+        "trad_controls_linked": 66
+      },
+      "status": "rejected",
+      "trad_hub_id": "433-442",
+      "trad_hub_name": "Verification"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "ai_hub_name": "Testing against backdoor poisoning",
+      "cosine_similarity": 0.648685,
+      "description": "The conceptual bridge between these CRE hubs lies in their complementary approach to defending against **data poisoning attacks** that embed malicious triggers in AI models. While \"Testing against backdoor poisoning\" focuses on the **verification and detection** of backdoors through systematic testing methodologies during development, \"Weakening training set backdoors\" addresses the **preventive engineering controls** that reduce backdoor effectiveness through techniques like data augmentation,",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "234-123",
+      "trad_hub_name": "Weakening training set backdoors"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "ai_hub_name": "Testing against backdoor poisoning",
+      "cosine_similarity": 0.642133,
+      "description": "Both hubs address the fundamental security concern of **malicious code injection that compromises system integrity through hidden, unauthorized functionality**. The conceptual bridge lies in their shared focus on detecting and preventing backdoors\u2014whether introduced through poisoned AI training data/models (AI domain) or through compromised source code and third-party dependencies (traditional software domain). The core similarity is that both represent **supply chain security vulnerabilities**",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 5
+      },
+      "status": "accepted",
+      "trad_hub_id": "838-636",
+      "trad_hub_name": "Check source code and third party libraries to not contain backdoors"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "ai_hub_name": "Testing against backdoor poisoning",
+      "cosine_similarity": 0.532094,
+      "description": "Both hubs address the fundamental security principle of **trust degradation through intentional weakening mechanisms**. Testing against backdoor poisoning validates that AI models haven't been deliberately compromised with hidden vulnerabilities, while restricting weak cryptography prevents the intentional introduction of cryptographic backdoors that could be exploited later. The conceptual bridge lies in their shared focus on **detecting and preventing covert compromise vectors** - whether",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 8
+      },
+      "status": "accepted",
+      "trad_hub_id": "441-132",
+      "trad_hub_name": "Use weak crypto only for backwards compatibility"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "ai_hub_name": "Testing against model theft by inference",
+      "cosine_similarity": 0.605008,
+      "description": "These two CRE hubs address complementary aspects of the same fundamental vulnerability: adversaries exploiting inference mechanisms to compromise AI model integrity and intellectual property. The AI Security Hub focuses on proactive testing methodologies to detect when attackers can reconstruct or steal model parameters through repeated queries, while the Traditional Security Hub addresses the broader threat landscape of inference-based attacks that can manipulate model behavior or extract",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "ai_hub_name": "Testing against model theft by inference",
+      "cosine_similarity": 0.530481,
+      "description": "Both hubs address the fundamental security principle of **protecting valuable secrets from unauthorized extraction through systematic probing attacks**. Model theft by inference involves adversaries making repeated queries to extract proprietary AI model parameters, while weak MFA secrets are vulnerable to brute-force attacks that systematically guess authentication tokens - both scenarios require sufficient entropy and rate limiting to prevent attackers from reconstructing or guessing",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "Specious connection through abstract entropy/unpredictability analogy. AI behavioral constraints and model IP protection are fundamentally different security domains from cryptographic randomness for MFA token generation.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 12
+      },
+      "status": "rejected",
+      "trad_hub_id": "346-640",
+      "trad_hub_name": "Generate multi-factor lookup secrets with sufficient entropy"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "ai_hub_name": "Testing against model theft by inference",
+      "cosine_similarity": 0.520688,
+      "description": "Both hubs address **information leakage through predictable patterns** - the AI security hub focuses on preventing attackers from reconstructing proprietary models by analyzing predictable inference responses, while the traditional security hub prevents authentication bypass through predictable token generation. The conceptual bridge lies in **entropy and unpredictability as defensive mechanisms**: just as weak randomness in OTP generation creates exploitable patterns that compromise",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Specious connection through abstract entropy/unpredictability analogy. AI behavioral constraints and model IP protection are fundamentally different security domains from cryptographic randomness for MFA token generation.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 13
+      },
+      "status": "rejected",
+      "trad_hub_id": "206-254",
+      "trad_hub_name": "Use secure random to generate initial authentication codes"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "ai_hub_name": "AI management system",
+      "cosine_similarity": 0.447004,
+      "description": "The conceptual bridge between these CRE hubs lies in their shared focus on **AI system trustworthiness and behavioral predictability**. While the AI Security Hub establishes the governance framework needed to systematically manage AI security risks throughout the system lifecycle, the Traditional Security Hub addresses specific technical threats that can compromise the integrity of AI model outputs during inference operations. Both hubs fundamentally address the same core concern: ensuring that",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "rejected",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "ai_hub_name": "AI management system",
+      "cosine_similarity": 0.443798,
+      "description": "The conceptual bridge between these CRE hubs lies in their shared focus on **AI supply chain integrity** and **systematic risk mitigation**. While the AI management system provides the governance framework to establish policies, oversight, and accountability for AI security throughout the development lifecycle, weakening training set backdoors represents a specific technical implementation of those governance principles\u2014ensuring data integrity and preventing malicious manipulation during the",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 2
+      },
+      "status": "rejected",
+      "trad_hub_id": "234-123",
+      "trad_hub_name": "Weakening training set backdoors"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "ai_hub_name": "AI management system",
+      "cosine_similarity": 0.441579,
+      "description": "Both hubs address the fundamental challenge of establishing **governance frameworks for managing complex, evolving technical systems** that require specialized security expertise and cross-functional coordination. The AI management system hub focuses on governing AI/ML development and deployment lifecycles, while the secure software development community hub manages traditional software engineering processes - but both require similar organizational structures for risk assessment, stakeholder",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 8
+      },
+      "status": "rejected",
+      "trad_hub_id": "118-775",
+      "trad_hub_name": "Manage an internal secure software development community"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "ai_hub_name": "Model output contains conventional injection",
+      "cosine_similarity": 0.593786,
+      "description": "These two CRE hubs address the same fundamental vulnerability pattern\u2014injection attacks\u2014but from different technological contexts. The AI Security Hub focuses on preventing conventional injection attacks (like SQL injection, XSS, or command injection) that can occur when AI model outputs are used directly in downstream systems without proper sanitization, while the Traditional Security Hub addresses the classic need to encode outputs and prevent injections in conventional web applications and",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "161-451",
+      "trad_hub_name": "Output encoding and injection prevention"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "ai_hub_name": "Model output contains conventional injection",
+      "cosine_similarity": 0.438695,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **injection attack prevention**, where both address the fundamental security principle that untrusted data must be properly validated and sanitized before being processed or output. While the Traditional Security Hub focuses on protecting applications from malicious input through conventional validation techniques, the AI Security Hub extends this same principle to AI model outputs, recognizing that AI-generated content can",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 1
+      },
+      "status": "rejected",
+      "trad_hub_id": "503-455",
+      "trad_hub_name": "Input and output protection"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "ai_hub_name": "Model output contains conventional injection",
+      "cosine_similarity": 0.374821,
+      "description": "Both hubs address the fundamental security principle of **input/output validation and sanitization**, but from complementary perspectives within the data flow pipeline. The AI Security Hub focuses on preventing conventional injection attacks (SQL injection, XSS, command injection) that can be embedded within AI model outputs before they reach downstream systems, while the Traditional Security Hub establishes the governance framework that defines what constitutes safe, policy-compliant",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 3,
+        "trad_controls_linked": 51
+      },
+      "status": "rejected",
+      "trad_hub_id": "782-234",
+      "trad_hub_name": "Clear policy compliant I/O requirements"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "ai_hub_name": "AI user transparency",
+      "cosine_similarity": 0.487302,
+      "description": "Both hubs address the fundamental security principle of **visibility and accountability in system behavior**, though applied to different domains. AI user transparency ensures stakeholders can understand and verify how AI models make decisions and impact users, while documenting trust boundaries and data flows provides visibility into how traditional systems handle and protect information as it moves between different security contexts. The conceptual bridge lies in their shared focus on",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 10
+      },
+      "status": "accepted",
+      "trad_hub_id": "820-878",
+      "trad_hub_name": "Document all trust boundaries and significant data flows"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "ai_hub_name": "AI user transparency",
+      "cosine_similarity": 0.41486,
+      "description": "Both hubs fundamentally address **principle of least privilege through user-centric access control**, where system capabilities are deliberately limited based on user context and needs. The AI transparency hub ensures users understand what AI functionality they're interacting with and its limitations, while the traditional hub restricts feature access based on validated user requirements - both preventing unauthorized or unintended system behaviors. The conceptual bridge lies in **contextual",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 5
+      },
+      "status": "rejected",
+      "trad_hub_id": "822-100",
+      "trad_hub_name": "Constrain functional features based on user stories"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "ai_hub_name": "AI user transparency",
+      "cosine_similarity": 0.413596,
+      "description": "Both hubs address the fundamental security principle of **transparency and accountability** through documentation, where AI user transparency serves as the AI-specific implementation of the broader technical system documentation requirement. While traditional technical documentation focuses on system architecture, configurations, and operational procedures to enable security oversight and incident response, AI user transparency extends this concept to address the unique opacity challenges of",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "Below 99th percentile threshold (p99=0.448) of full AI-only x traditional-only similarity matrix.",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 4
+      },
+      "status": "rejected",
+      "trad_hub_id": "820-877",
+      "trad_hub_name": "Technical system documentation"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "ai_hub_name": "Training data retention management",
+      "cosine_similarity": 0.695868,
+      "description": "Both hubs address the fundamental security principle of **data minimization** to reduce attack surface and limit exposure of sensitive information. The AI Security Hub focuses on managing the retention of training datasets that may contain sensitive or personal information used to build AI models, while the Traditional Security Hub addresses the broader challenge of preventing sensitive data from being unnecessarily stored or distributed across business systems. The conceptual bridge lies in",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 1
+      },
+      "status": "accepted",
+      "trad_hub_id": "356-282",
+      "trad_hub_name": "Minimize sensitive data scattering and retention"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "ai_hub_name": "Training data retention management",
+      "cosine_similarity": 0.497196,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **data lifecycle governance and risk-based information management**. Both address the fundamental security principle that different types of data require different handling, retention, and protection measures based on their sensitivity, value, and potential impact if compromised. Training data retention management applies traditional data classification principles to AI-specific contexts, where the sensitivity and retention",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 6
+      },
+      "status": "accepted",
+      "trad_hub_id": "074-873",
+      "trad_hub_name": "Data classification and handling"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "ai_hub_name": "Training data retention management",
+      "cosine_similarity": 0.492062,
+      "description": "Both hubs address the fundamental security principle of **data minimization and lifecycle management** to reduce attack surface and limit exposure of sensitive information. The conceptual bridge lies in their shared focus on **proactive data purging strategies** - training data retention management prevents AI models from indefinitely retaining potentially sensitive training datasets, while clearing authentication data from client storage prevents credentials from persisting beyond their",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 4
+      },
+      "status": "accepted",
+      "trad_hub_id": "046-257",
+      "trad_hub_name": "Clear authentication data from client storage"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "ai_hub_name": "GenAI model alignment",
+      "cosine_similarity": 0.537112,
+      "description": "Both hubs fundamentally address **entropy and unpredictability as security foundations**, though applied to different attack vectors. GenAI model alignment ensures models produce outputs that align with intended behaviors rather than being manipulated toward malicious or unintended responses, while multi-factor lookup secrets require sufficient randomness to prevent brute-force attacks against authentication systems. The conceptual bridge lies in **preventing adversarial exploitation through",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "Specious connection through abstract entropy/unpredictability analogy. AI behavioral constraints and model IP protection are fundamentally different security domains from cryptographic randomness for MFA token generation.",
+      "seed_evidence": {
+        "ai_controls_linked": 4,
+        "trad_controls_linked": 12
+      },
+      "status": "rejected",
+      "trad_hub_id": "346-640",
+      "trad_hub_name": "Generate multi-factor lookup secrets with sufficient entropy"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "ai_hub_name": "GenAI model alignment",
+      "cosine_similarity": 0.516618,
+      "description": "Both hubs fundamentally address **predictability as a security vulnerability** - GenAI model alignment prevents models from generating harmful or unexpected outputs that deviate from intended behavior, while secure random generation prevents attackers from predicting authentication codes through pattern analysis or weak entropy. The conceptual bridge lies in **controlling non-deterministic systems**: AI models must be constrained to produce safe, aligned responses despite their generative",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "Specious connection through abstract entropy/unpredictability analogy. AI behavioral constraints and model IP protection are fundamentally different security domains from cryptographic randomness for MFA token generation.",
+      "seed_evidence": {
+        "ai_controls_linked": 4,
+        "trad_controls_linked": 13
+      },
+      "status": "rejected",
+      "trad_hub_id": "206-254",
+      "trad_hub_name": "Use secure random to generate initial authentication codes"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "ai_hub_name": "GenAI model alignment",
+      "cosine_similarity": 0.515406,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **model behavioral predictability and trustworthiness**. GenAI model alignment ensures AI systems behave according to intended values and objectives during operation, while AI model behavior integrity threats through inference address adversarial attempts to manipulate or exploit model responses to cause unintended behaviors. Both hubs fundamentally address the same core security concern: **preventing AI models from",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 4,
+        "trad_controls_linked": 2
+      },
+      "status": "accepted",
+      "trad_hub_id": "073-507",
+      "trad_hub_name": "AI model behaviour integrity threats through inference"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "ai_hub_name": "Limit inference resources",
+      "cosine_similarity": 0.675369,
+      "description": "Both hubs address **resource exhaustion attacks** where adversaries exploit computational processes to overwhelm systems, though through different attack vectors. The AI security control focuses on preventing adversaries from consuming excessive GPU/CPU resources during model inference (such as through adversarial inputs that trigger expensive computations), while the traditional security control targets automated scripts that flood APIs or web services to exhaust bandwidth, memory, or",
+      "rank_for_ai_hub": 1,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 25
+      },
+      "status": "accepted",
+      "trad_hub_id": "630-573",
+      "trad_hub_name": "Detect and protect against automation abuse"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "ai_hub_name": "Limit inference resources",
+      "cosine_similarity": 0.663538,
+      "description": "Both hubs address the fundamental security principle of **resource constraint and allocation control** as a defense mechanism against abuse and operational risks. The AI Security hub's \"Limit inference resources\" prevents adversaries from overwhelming AI systems through resource exhaustion attacks or costly inference operations, while the Traditional Security hub's \"Planning and resource management\" establishes governance frameworks to prevent resource misallocation and ensure adequate security",
+      "rank_for_ai_hub": 2,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 8
+      },
+      "status": "accepted",
+      "trad_hub_id": "560-224",
+      "trad_hub_name": "Planning and resource management"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "ai_hub_name": "Limit inference resources",
+      "cosine_similarity": 0.645735,
+      "description": "Both hubs implement **resource consumption controls** to prevent denial-of-service attacks and system overload, representing the same fundamental security principle applied to different attack vectors. The traditional file upload limits prevent attackers from exhausting storage, memory, or processing resources through oversized or numerous file uploads, while AI inference limits prevent resource exhaustion through computationally expensive model queries or inference bombing attacks. The",
+      "rank_for_ai_hub": 3,
+      "reviewer_notes": "",
+      "seed_evidence": {
+        "ai_controls_linked": 1,
+        "trad_controls_linked": 24
+      },
+      "status": "accepted",
+      "trad_hub_id": "463-820",
+      "trad_hub_name": "Limit size and number of uploaded files"
+    }
+  ],
+  "generated_at": "2026-05-02T21:14:23.887922+00:00",
+  "method": "top_k_per_ai_hub",
+  "negative_controls": [
+    {
+      "ai_hub_id": "011-322",
+      "ai_hub_name": "Testing against evasion",
+      "cosine_similarity": -0.068961,
+      "description": "Both hubs address the fundamental security principle of **detection and accountability for unauthorized access attempts**, though they operate at different layers of the security stack. AI evasion testing proactively identifies how adversaries might manipulate inputs to bypass AI-based security controls (like authentication systems, content filters, or anomaly detectors), while access control logging reactively captures evidence when traditional authorization mechanisms are challenged or",
+      "is_negative": true,
+      "trad_hub_id": "443-447",
+      "trad_hub_name": "Log access control decisions"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "ai_hub_name": "Model input leak",
+      "cosine_similarity": -0.13817,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **access control as a defense against unauthorized data exposure**. Model input leaks in AI systems fundamentally represent a failure of proper authorization controls\u2014where sensitive data used to train or query models becomes accessible to unauthorized parties, similar to how traditional applications require strong authorization and segregation of duties to prevent unauthorized access to sensitive business data. Both hubs",
+      "is_negative": true,
+      "trad_hub_id": "284-521",
+      "trad_hub_name": "Enforce additional authorization and segregation of duties"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "ai_hub_name": "Prompt input segregation",
+      "cosine_similarity": -0.065464,
+      "description": "Both hubs implement **input validation through allowlisting** as a fundamental security control, where only explicitly permitted inputs are accepted while all others are rejected by default. In the AI domain, prompt input segregation validates and isolates different types of prompt components (user input, system instructions, context) to prevent prompt injection attacks, while HTTP method whitelisting validates that only approved HTTP verbs (GET, POST, etc.) are processed to prevent",
+      "is_negative": true,
+      "trad_hub_id": "483-715",
+      "trad_hub_name": "White-list HTTP methods"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "ai_hub_name": "AI resource exhaustion input handling",
+      "cosine_similarity": -0.071711,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **controlled resource management and attack surface reduction through systematic oversight**. Both address the fundamental security principle that uncontrolled or malicious inputs can compromise system integrity - whether through adversarial inputs that exhaust AI computational resources or through unauthorized code changes that introduce vulnerabilities into the development pipeline. The connection deepens through their",
+      "is_negative": true,
+      "trad_hub_id": "757-271",
+      "trad_hub_name": "Use source code control system with change traceability and access control"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "ai_hub_name": "Runtime model io integrity controls",
+      "cosine_similarity": -0.089387,
+      "description": "Both hubs fundamentally address **identity verification and accountability** in their respective domains. Runtime model I/O integrity controls ensure that AI model inputs and outputs can be traced, validated, and attributed to specific sources or processes, while disallowing shared high-privileged accounts ensures that system actions can be traced back to individual users rather than anonymous shared identities. The conceptual bridge lies in **non-repudiation and audit trail integrity** - both",
+      "is_negative": true,
+      "trad_hub_id": "623-347",
+      "trad_hub_name": "Disallow shared high privileged accounts"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "ai_hub_name": "Augmentation data leak",
+      "cosine_similarity": -0.086835,
+      "description": "Both hubs address the fundamental security principle of **data integrity and controlled execution boundaries**, where untrusted or auxiliary data could be exploited to compromise system behavior. The AI Security Hub focuses on preventing leakage of augmentation data (such as prompts, context, or training modifications) that could expose sensitive information or manipulation techniques, while the Traditional Security Hub prevents malicious code execution through file metadata exploitation. The",
+      "is_negative": true,
+      "trad_hub_id": "683-722",
+      "trad_hub_name": "Block direct execution of file metadata from untrusted origin"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "ai_hub_name": "Human AI oversight",
+      "cosine_similarity": -0.085827,
+      "description": "Both hubs fundamentally address the critical security principle of **centralized control and oversight** to prevent unauthorized or harmful actions within a system. Human AI oversight serves as a centralized decision-making mechanism that monitors and intervenes when AI models exhibit unwanted behaviors, while centralized access control mechanisms serve as gatekeepers that monitor and restrict unauthorized data access attempts. The conceptual bridge lies in their shared implementation of",
+      "is_negative": true,
+      "trad_hub_id": "117-371",
+      "trad_hub_name": "Use a centralized access control mechanism"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "ai_hub_name": "Automated AI oversight",
+      "cosine_similarity": -0.065092,
+      "description": "Both hubs address the fundamental security principle of **preventing unauthorized access to sensitive information**, though they operate at different layers of the technology stack. Communication encryption protects data confidentiality during transmission by ensuring only authorized parties can decrypt and access the information, while automated AI oversight protects against unauthorized or unintended disclosure of sensitive data through AI model outputs by monitoring and controlling what",
+      "is_negative": true,
+      "trad_hub_id": "435-702",
+      "trad_hub_name": "Communication encryption"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "ai_hub_name": "Augmentation data manipulation",
+      "cosine_similarity": -0.06808,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **human vulnerability as an attack vector**. Augmentation data manipulation often succeeds because users lack awareness of how AI systems can be compromised through poisoned training data, adversarial inputs, or manipulated feedback loops, while security awareness training addresses the fundamental human element that makes such attacks possible in the first place. Both hubs recognize that technical controls alone are",
+      "is_negative": true,
+      "trad_hub_id": "428-544",
+      "trad_hub_name": "Security awareness training"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "ai_hub_name": "Impact limitation of unwanted model behaviour",
+      "cosine_similarity": -0.076309,
+      "description": "Both hubs fundamentally address **output control and content integrity** - they establish boundaries around what systems can deliver to users or downstream processes. The AI security hub controls unwanted model outputs (preventing harmful, biased, or incorrect responses), while the HTTP header hub controls content type interpretation (preventing browsers from misinterpreting responses that could lead to XSS or content sniffing attacks). The conceptual bridge lies in **defensive output",
+      "is_negative": true,
+      "trad_hub_id": "036-725",
+      "trad_hub_name": "Set content HTTP response type"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "ai_hub_name": "Training data confidentiality threats through inference",
+      "cosine_similarity": -0.149294,
+      "description": "Both hubs address **information leakage through indirect channels** where attackers can extract sensitive data without direct access to the protected resource. In AI systems, inference attacks allow adversaries to deduce training data characteristics by analyzing model outputs, while DNS manipulation enables attackers to redirect traffic and potentially intercept or infer communication patterns and organizational relationships. The conceptual bridge lies in **protecting against reconnaissance",
+      "is_negative": true,
+      "trad_hub_id": "336-512",
+      "trad_hub_name": "Ensure integrity of DNS entries and domains"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "ai_hub_name": "Testing against indirect prompt injection",
+      "cosine_similarity": -0.028689,
+      "description": "Both hubs address the fundamental security principle of **granular access control and input validation** to prevent unauthorized data exposure through sophisticated attack vectors. The AI security hub focuses on preventing malicious actors from bypassing intended AI system boundaries through crafted indirect prompts that could extract sensitive information, while the traditional security hub implements fine-grained authorization controls to ensure users only access data they're explicitly",
+      "is_negative": true,
+      "trad_hub_id": "801-310",
+      "trad_hub_name": "Use ABAC/FBAC on data/feature level, even when using RBAC for permissions"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "ai_hub_name": "Testing against direct prompt injection",
+      "cosine_similarity": -0.044905,
+      "description": "Both hubs address **input validation and access boundary enforcement**, though at different system layers. Direct prompt injection testing validates that AI systems properly handle malicious inputs that attempt to bypass intended behavioral boundaries, while ABAC/FBAC ensures that data access is controlled based on contextual attributes rather than just role-based permissions. The conceptual bridge lies in **context-aware security controls** - prompt injection attacks often succeed by",
+      "is_negative": true,
+      "trad_hub_id": "801-310",
+      "trad_hub_name": "Use ABAC/FBAC on data/feature level, even when using RBAC for permissions"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "ai_hub_name": "Testing against backdoor poisoning",
+      "cosine_similarity": -0.093288,
+      "description": "Both hubs address the fundamental security principle of **preventing unauthorized privilege escalation through hidden or bypassed access mechanisms**. Backdoor poisoning in AI systems creates covert pathways that allow attackers to manipulate model behavior and gain unauthorized access to system functions, while inadequate authorization controls in traditional applications create overt pathways for privilege abuse through insufficient access validation. The conceptual bridge lies in their",
+      "is_negative": true,
+      "trad_hub_id": "284-521",
+      "trad_hub_name": "Enforce additional authorization and segregation of duties"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "ai_hub_name": "Testing against model theft by inference",
+      "cosine_similarity": -0.104023,
+      "description": "Both hubs fundamentally address **attack surface reduction** through the principle of **minimizing exposure to sensitive assets**. The AI security hub focuses on limiting an attacker's ability to extract valuable model information through inference attacks, while the traditional security hub restricts system-level access to reduce potential compromise vectors - both implementing defensive strategies that constrain what adversaries can access or infer. The conceptual bridge lies in their shared",
+      "is_negative": true,
+      "trad_hub_id": "330-281",
+      "trad_hub_name": "Use least privilege OS accounts for system (components)"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "ai_hub_name": "AI management system",
+      "cosine_similarity": -0.113591,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **data governance and access control for sensitive information systems**. AI management systems must implement robust logging mechanisms to track model behavior, training data usage, and decision-making processes, while simultaneously requiring the same stringent log protection measures that traditional systems demand to prevent tampering with audit trails and sensitive operational data. Both hubs fundamentally address the",
+      "is_negative": true,
+      "trad_hub_id": "713-683",
+      "trad_hub_name": "Protect logs against unauthorized access"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "ai_hub_name": "Model output contains conventional injection",
+      "cosine_similarity": -0.098997,
+      "description": "Both hubs address **output validation and user input security** as fundamental attack vectors, though manifested in different technological contexts. The AI Security Hub focuses on preventing malicious content injection through model outputs that could compromise downstream systems or user interfaces, while the Traditional Security Hub addresses secure credential management where password change functionality must validate inputs and outputs to prevent injection attacks or credential",
+      "is_negative": true,
+      "trad_hub_id": "751-176",
+      "trad_hub_name": "Offer password changing functionality"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "ai_hub_name": "AI user transparency",
+      "cosine_similarity": -0.086494,
+      "description": "Both hubs address the fundamental security principle of **input validation and transparency** to prevent malicious exploitation through opaque or uncontrolled data processing. The traditional security hub focuses on sanitizing file metadata to prevent attackers from injecting malicious content through filename manipulation, while the AI security hub ensures users understand how AI models process and respond to inputs to prevent manipulation through prompt injection or adversarial inputs. The",
+      "is_negative": true,
+      "trad_hub_id": "675-168",
+      "trad_hub_name": "Sanitize filename metadata from untrusted origin if processing is required"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "ai_hub_name": "Training data retention management",
+      "cosine_similarity": -0.098753,
+      "description": "Both hubs address **data contamination and integrity risks** through different attack vectors - training data retention management prevents adversarial actors from poisoning AI models through persistent malicious data in training sets, while JS/JSON injection protection prevents attackers from contaminating application outputs through malicious code injection. The conceptual bridge lies in their shared focus on **input sanitization and data lifecycle security**: both require careful validation",
+      "is_negative": true,
+      "trad_hub_id": "607-671",
+      "trad_hub_name": "Protect against JS or JSON injection attacks"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "ai_hub_name": "GenAI model alignment",
+      "cosine_similarity": -0.060314,
+      "description": "The conceptual bridge between these hubs lies in their shared focus on **controlling system behavior through input validation and boundary enforcement**. GenAI model alignment ensures AI systems respond appropriately to inputs and don't produce harmful outputs by establishing behavioral boundaries, while memory/string/unmanaged code controls prevent systems from executing unintended operations when processing malformed inputs that could corrupt memory or bypass security controls. Both domains",
+      "is_negative": true,
+      "trad_hub_id": "866-553",
+      "trad_hub_name": "Memory, String, and Unmanaged Code"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "ai_hub_name": "Limit inference resources",
+      "cosine_similarity": -0.076297,
+      "description": "Both hubs address the fundamental security principle of **controlled resource allocation and configuration integrity** to prevent system abuse and ensure predictable security posture. The AI security hub's resource limiting prevents adversaries from exploiting inference endpoints through resource exhaustion attacks or extracting sensitive training data via repeated queries, while the traditional security hub ensures that security controls are properly configured and tamper-proof during",
+      "is_negative": true,
+      "trad_hub_id": "347-352",
+      "trad_hub_name": "Set and confirm integrity of security deployment configuration"
+    }
+  ],
+  "similarity_stats": {
+    "matrix_shape": [
+      21,
+      382
+    ],
+    "max": 0.774,
+    "mean": 0.162,
+    "min": -0.149,
+    "percentiles": {
+      "25": 0.089,
+      "50": 0.156,
+      "75": 0.227,
+      "90": 0.296,
+      "95": 0.341,
+      "99": 0.448
+    },
+    "std": 0.106
+  },
+  "top_k": 3,
+  "unclassified_leaf_hubs": [
+    "028-727",
+    "125-010",
+    "135-200",
+    "760-765"
+  ]
+}
