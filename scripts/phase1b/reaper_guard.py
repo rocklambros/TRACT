@@ -49,6 +49,7 @@ import logging
 import os
 import subprocess
 import sys
+import time
 from typing import Final
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -63,11 +64,28 @@ EXIT_ERROR: Final[int] = 1
 REARM: Final[str] = "2h"
 UNIT: Final[str] = "tract-reaper"
 
-# Matched against the full command line. `price` and `reap` are excluded on
-# purpose: both are short-lived read-only commands, and treating one as a live
-# orchestrator would make the guard refuse to fire while a fleet burned.
-ORCHESTRATOR_ACTIONS: Final[frozenset[str]] = frozenset(
-    {"run", "provision", "full", "collect"}
+# runpod_parallel's argparse `action` positional, and its default.
+ALL_ACTIONS: Final[frozenset[str]] = frozenset(
+    {"full", "provision", "run", "collect", "aggregate",
+     "track", "teardown", "reap", "price"}
+)
+DEFAULT_ACTION: Final[str] = "full"
+
+# Actions that do NOT drive a fleet: local computation or short read-only
+# queries. Everything else -- including anything unrecognised -- counts as an
+# orchestrator, which is the fail-SAFE direction: mistaking a dead process for
+# a live one costs a delayed reap, while mistaking a live one for dead
+# terminates a training fleet.
+#
+# This list is an allowlist for exactly that reason. The first version of this
+# file used the opposite shape, an allowlist of orchestrator actions
+# {run, provision, full, collect}, and it had a hole big enough to lose a
+# campaign: `action` is `nargs="?"` with `default="full"`, so a bare
+# `python -m scripts.phase1b.runpod_parallel` runs the WHOLE pipeline while the
+# word "full" never appears in /proc/<pid>/cmdline. The guard saw no action
+# word, matched nothing, and classified the busiest possible process as dead.
+NON_FLEET_ACTIONS: Final[frozenset[str]] = frozenset(
+    {"aggregate", "track", "price", "reap"}
 )
 
 
@@ -97,34 +115,81 @@ def orchestrator_pids() -> list[int]:
             continue
         if "reaper_guard" in " ".join(argv):
             continue
-        if ORCHESTRATOR_ACTIONS.intersection(argv):
+        # Absent an explicit action word, argparse supplies "full" -- so the
+        # absence of a word means the whole pipeline, not nothing.
+        action = next((arg for arg in argv if arg in ALL_ACTIONS), DEFAULT_ACTION)
+        if action not in NON_FLEET_ACTIONS:
             found.append(pid)
     return found
+
+
+def expected_pod_names() -> set[str]:
+    """Every pod name this campaign can create, across BOTH splits.
+
+    Derived from select_pod_configs rather than from POD_CONFIGS, and that
+    distinction is the whole point. POD_CONFIGS holds the TEST fleet only --
+    tract-p1b-fold0..4 -- while the validation split provisions
+    tract-p1b-val-fold0..4 under a different prefix (select_pod_configs sets
+    `prefix = "tract-p1b" if split == "test" else "tract-p1b-val"`).
+
+    Campaign 2 runs five validation rounds and one test round. A guard matching
+    POD_CONFIGS would see zero pods for five of the six, conclude there was
+    nothing to reap, and DISARM ITSELF while five GPUs billed. The first version
+    of this file did exactly that.
+
+    `reap`'s own orphan sweep still matches POD_CONFIGS, so its name-based
+    fallback is blind to validation pods too. That only bites when the state
+    file is missing or stale -- which is the situation the fallback exists for.
+    Fixing it belongs in runpod_parallel.py and is not this file's call to make;
+    calling reap() here is still correct because reap reads the state file
+    first, and this guard only calls it once pods are confirmed running.
+    """
+    from scripts.phase1b.runpod_parallel import select_pod_configs
+
+    return {
+        config["name"]
+        for split in ("test", "validation")
+        for config in select_pod_configs(None, split)
+    }
 
 
 def running_pod_count() -> int:
     """How many of this run's pods are up. Raises on an unusable API."""
     from scripts.phase0.runpod_provision import get_running_pods
-    from scripts.phase1b.runpod_parallel import POD_CONFIGS
 
-    expected = {config["name"] for config in POD_CONFIGS}
+    expected = expected_pod_names()
     return sum(1 for pod in get_running_pods() if pod.get("name") in expected)
 
 
 def rearm() -> None:
-    """Schedule the next look. A guard that gives up is not a bound."""
+    """Schedule the next look. A guard that gives up is not a bound.
+
+    The unit name carries a per-generation suffix. A fixed name cannot work:
+    the re-arm runs from INSIDE the current tract-reaper unit, which is still
+    active, and systemd refuses with "Unit tract-reaper.timer already exists."
+    Verified 2026-08-26 -- systemd-run exits non-zero and check=True lands in
+    the error branch below, so the first version of this file announced the
+    fleet was unbounded every single time it tried to re-arm.
+
+    The shared `tract-reaper` prefix is what keeps them discoverable:
+        systemctl --user list-timers 'tract-reaper*'
+    """
+    unit = f"{UNIT}-{int(time.time())}"
     try:
         subprocess.run(
-            ["systemd-run", "--user", f"--on-active={REARM}", f"--unit={UNIT}",
+            ["systemd-run", "--user", "--collect", f"--on-active={REARM}",
+             f"--unit={unit}",
              sys.executable, "-m", "scripts.phase1b.reaper_guard", "--confirm"],
             check=True, capture_output=True, timeout=30,
         )
-        logger.info("Re-armed for %s.", REARM)
+        logger.info("Re-armed for %s as %s.", REARM, unit)
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as exc:
         # Loud, because a failed re-arm silently removes the only bound on spend.
+        detail = getattr(exc, "stderr", b"") or b""
         logger.error(
-            "COULD NOT RE-ARM (%s). The fleet is now unbounded if the "
-            "orchestrator dies. Re-arm by hand or watch it yourself.", exc,
+            "COULD NOT RE-ARM (%s: %s). The fleet is now unbounded if the "
+            "orchestrator dies. Re-arm by hand or watch it yourself.",
+            exc, detail.decode("utf-8", "replace").strip(),
         )
 
 
