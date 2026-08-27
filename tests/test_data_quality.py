@@ -765,9 +765,10 @@ class TestCorpusIdentityPreflight:
 
     `merged_corpus_path()` prefers the gitignored licensed overlay and falls
     back to the tracked corpus when it is absent. That is correct for a reader
-    and wrong for a trainer: 370 of the 4,389 training links belong to the four
+    and wrong for a trainer: 341 of the 4,389 training links belong to the three
     overlay frameworks, so without the overlay they resolve to nothing and the
-    run trains on 4,019 while reporting the same shape of output.
+    run trains on 4,048 while reporting the same shape of output. It was four
+    frameworks and 370 links until csa_ccm left the overlay on 2026-08-26.
 
     Existence cannot catch it, because both files exist. Only the digest can.
     """
@@ -825,3 +826,45 @@ class TestCorpusIdentityPreflight:
 
         with pytest.raises(CorpusMismatchError, match="records no corpus_sha256"):
             assert_corpus_matches_training_links(self._meta(tmp_path, None))
+
+
+class TestRunFoldEnforcesTheCorpusGate:
+    """The pod-side half of the corpus gate.
+
+    The orchestrator refuses before it provisions, which is where the money is
+    saved. This is the half that holds when a fold is launched some other way:
+    by hand on a pod, by a resumed fleet, or by a future caller that does not
+    go through runpod_parallel. The control has to live where training starts,
+    not only where the convenient caller happens to be.
+    """
+
+    def test_a_partial_corpus_stops_the_fold_before_it_trains(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        pytest.importorskip("torch", reason="needs the phase0 extra")
+        pytest.importorskip("datasets", reason="needs the phase0 extra")
+
+        from scripts.phase1b import run_fold
+        from tract.training.data_quality import CorpusMismatchError
+
+        trained: list[str] = []
+        monkeypatch.setattr(
+            run_fold, "run_single_fold",
+            lambda *a, **k: trained.append("trained") or {},
+        )
+
+        def _mismatch() -> str:
+            raise CorpusMismatchError("corpus digest differs from the recorded one")
+
+        monkeypatch.setattr(
+            run_fold, "assert_corpus_matches_training_links", _mismatch,
+        )
+        monkeypatch.setattr(
+            "sys.argv",
+            ["run_fold.py", "--framework", "MITRE ATLAS", "--config-name", "cfg"],
+        )
+
+        with pytest.raises(CorpusMismatchError):
+            run_fold.main()
+
+        assert trained == []

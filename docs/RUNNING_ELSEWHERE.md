@@ -5,7 +5,7 @@ repo from GitHub and drives a RunPod fleet, while the licensed sources stay off
 GitHub entirely.
 
 Read this before the first training run. The failure it prevents is silent, not
-loud: a fresh clone trains on **4,019** of the 4,389 links and produces output
+loud: a fresh clone trains on **4,048** of the 4,389 links and produces output
 the same shape as a complete run.
 
 ## What a fresh clone has
@@ -18,33 +18,40 @@ Everything the pipeline needs except the licensed prose:
 | `data/training/hub_links_training.jsonl` | yes | 4,389 filtered links, identity only, no anchor text |
 | `data/training/hub_links_training.meta.json` | yes | records the corpus digest the links were built from |
 | `data/processed/all_controls.json` | yes | **29** frameworks, overlay prose withheld |
-| `data/processed/frameworks/*.json` | 28 of 32 | four are gitignored, see below |
+| `data/processed/frameworks/*.json` | 29 of 32 | three are gitignored, see below |
 | `data/processed/stopwords.json` | yes | derived from the corpus, versioned on purpose |
 | `data/processed/hub_descriptions.json` | yes | |
 | `results/corpus/*.json` | yes | the join evidence |
 | `data/raw/` | **no** | every publisher's source bytes |
 | `data/processed/licensed/all_controls.json` | **no** | the 31-framework overlay |
 
-## Why four frameworks are missing, and what it costs
+## Why three frameworks are missing, and what it costs
 
-`tract.config.OVERLAY_FRAMEWORK_IDS` holds four:
+`tract.config.OVERLAY_FRAMEWORK_IDS` holds three:
 
 | framework | terms | training links |
 |---|---|---|
 | `etsi` | reproduction only by written permission | 36 |
 | `iso_27001` | single-user store licence, no reproduction | 92 |
-| `csa_ccm` | all rights reserved, no redistribution | 29 |
 | `dsomm` | GPL-3.0-only | 213 |
-| | | **370** |
+| | | **341** |
 
 Their prose is written to `data/processed/licensed/` and never enters git.
 `parsers/merge_all_controls.py` withholds it from the tracked corpus while
-keeping titles and identifiers, so the tracked corpus indexes **4,135** controls
-against the overlay's **4,667**.
+keeping titles and identifiers, so the tracked corpus indexes **4,625** controls
+against the overlay's **4,743**.
 
-So a clone without the overlay resolves 370 fewer training links: **8.4% of the
+So a clone without the overlay resolves 341 fewer training links: **7.8% of the
 training set**, weighted toward DSOMM, which is the plan's single largest anchor
 gain.
+
+**`csa_ccm` left this table on 2026-08-26**, owner decision D1(b): the owner
+ruled CSA material redistributable for this project on a reading of the CSA
+membership terms, so its prose and its 29 links are tracked and it needs no
+staging. That ruling is an entitlement held by this project's owner and a fork
+does not inherit it; see NOTICE. Closing that misclassification also closed the
+last hole in the licensed-text gate, which now covers every framework in this
+table with no deferrals.
 
 ## The guard
 
@@ -55,8 +62,11 @@ the digest of the corpus this run reads against the one recorded in
 It checks the DIGEST rather than file existence, because both files exist on a
 fresh clone and existence cannot tell a complete corpus from a partial one.
 
-Call it before training. It is cheap and it is the difference between a run that
-is 8.4% short and a run that says so.
+It is no longer only your discipline: as of 2026-08-26 `provision`, `run_folds`
+and `run_fold.py` each call it and refuse on a mismatch. Call it by hand first
+anyway, because finding out here costs seconds and finding out from a refusal
+costs a provisioning round trip. It is the difference between a run that is
+7.8% short and a run that says so.
 
 ## Staging the licensed sources
 
@@ -80,7 +90,7 @@ digest verifiable end to end. `data/raw/` is immutable; parsers read it and neve
 write it.
 
 **Option B, transfer the overlay directly.** Copy
-`data/processed/licensed/all_controls.json` and the four gitignored
+`data/processed/licensed/all_controls.json` and the three gitignored
 `data/processed/frameworks/*.json`. Faster, and it skips the parse, so the
 digest is only as trustworthy as the transfer.
 
@@ -89,7 +99,7 @@ git on the receiving machine too. Both are already in `.gitignore`; do not force
 them in. A tree-wide fingerprint gate carries 21,158 n-grams from ETSI, ISO 27001
 and DSOMM and fails any tracked file reproducing twelve consecutive words.
 
-**Option C, accept the shortfall.** Train on 4,019 links deliberately. Legitimate
+**Option C, accept the shortfall.** Train on 4,048 links deliberately. Legitimate
 for a smoke test, and it is not comparable to any figure measured on 4,389. Say
 so wherever the result is quoted, and record the corpus digest with it.
 
@@ -109,8 +119,12 @@ absent from `TESTED_VERSIONS`. That check exists because the training modules
 import three submodules the library reorganised in 5.7.0, and a failure there
 would otherwise land after the fleet is already billing.
 
-The RunPod orchestrator has NOT been through its own premortem yet. Do not treat
-a green preflight as clearance for an unattended run.
+The orchestrator went through an adversarial premortem on 2026-08-20; P2, P3 and
+P4 were fixed on 2026-08-26 and are guarded by `tests/test_runpod_safety.py`.
+P1, P5 and P6 remain open BY DESIGN and are handled by mitigations rather than
+code: there is no server-side stop on a pod, so a dead orchestrator bills until
+a person or a scheduled reaper intervenes. Do not treat a green preflight as
+clearance for an unattended run. See `claudedocs/jetson-runpod-start.md`.
 
 ## Getting a run's output back into the repository
 

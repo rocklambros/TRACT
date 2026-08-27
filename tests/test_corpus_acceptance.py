@@ -314,8 +314,8 @@ class TestTheSuiteCanActuallyRun:
     def test_the_two_corpus_censuses_differ_by_the_restricted_tier(self) -> None:
         """The overlay decision has to be readable from the census alone.
 
-        Two of the four overlay frameworks are DROPPED from the tracked corpus
-        and two are kept with their prose withheld, so the census gap is the
+        Two of the three overlay frameworks are DROPPED from the tracked corpus
+        and one is kept with its prose withheld, so the census gap is the
         restricted tier rather than the overlay. A change to either tier that
         did not move these constants would make the fixture above unable to
         tell a licence from a missing parser.
@@ -327,20 +327,26 @@ class TestTheSuiteCanActuallyRun:
             RESTRICTED_FRAMEWORK_IDS
         )
 
-    def test_the_assertable_set_is_eleven_locally_and_eight_in_ci(
+    def test_the_assertable_set_is_eleven_locally_and_nine_in_ci(
         self, overlay_present: bool
     ) -> None:
         """CI must still gate something real.
 
-        Three of the eleven route to the overlay, so eight assert in a fresh
-        clone. If a licence reclassification empties that set, this file
-        measures nothing in CI and TestCommittedAfterReport becomes the only
-        gate left.
+        Two of the eleven route to the overlay -- dsomm and etsi -- so nine
+        assert in a fresh clone. If a licence reclassification empties that
+        set, this file measures nothing in CI and TestCommittedAfterReport
+        becomes the only gate left.
+
+        Nine since 2026-08-26, up from eight. csa_ccm left the overlay on owner
+        decision D1(b), so its prose is tracked and CI can assert it like any
+        other framework. A reclassification moved this number in the widening
+        direction for once; the assertion is here so either direction has to be
+        re-derived rather than absorbed.
         """
         # Attainable [0, 11]. Fails downward when a framework joins the overlay
         # and upward when one leaves it, and both changes need this number
         # re-derived rather than the gate quietly widening or narrowing.
-        assert len(_assertable(overlay_present)) == (11 if overlay_present else 8)
+        assert len(_assertable(overlay_present)) == (11 if overlay_present else 9)
 
     def test_the_silent_group_is_exactly_the_frameworks_the_licence_breaks(
         self, live: CorpusReport, overlay_present: bool
@@ -379,7 +385,11 @@ class TestJoinFloors:
         # puts a message back.
         assert failures == [], failures
         # Positive control against a collapsed floor set. Attainable [0, 22].
-        assert len(floors) == (22 if overlay_present else 18), sorted(floors)
+        # Nineteen in a fresh clone since 2026-08-26, up from eighteen: csa_ccm
+        # left the overlay on owner decision D1(b), so its prose is tracked and
+        # it carries a floor CI can check. It clears that floor, which is the
+        # assertion above and the reason this one moved rather than broke.
+        assert len(floors) == (22 if overlay_present else 19), sorted(floors)
 
     def test_no_floor_leaves_more_than_one_percent_of_its_links_spendable(
         self, live: CorpusReport, overlay_present: bool
@@ -530,9 +540,10 @@ class TestAnchorSeparation:
                 f"{applicable[framework_id]} applicable checks"
             )
             checked += 1
-        # Attainable [0, 3]. Reads 3 locally and 1 in CI, where csa_ccm and
-        # etsi route to the overlay.
-        assert checked == (3 if overlay_present else 1), checked
+        # Attainable [0, 3]. Reads 3 locally and 2 in CI, where etsi is now the
+        # only one of the three that routes to the overlay. It was 1 until
+        # csa_ccm left the overlay on 2026-08-26, owner decision D1(b).
+        assert checked == (3 if overlay_present else 2), checked
 
     def test_the_unbudgeted_wrong_anchor_exposure_is_named_and_pinned(
         self, live: CorpusReport, overlay_present: bool
@@ -875,9 +886,10 @@ class TestCommittedAfterReport:
             assert current.fallback_anchors == row["fallback_anchors"], framework_id
             assert current.wrong_anchor_risk == row["wrong_anchor_risk"], framework_id
             compared += 1
-        # Attainable [0, 22]. Reads 22 locally and 18 in CI. A collapsed
-        # comparison is how this goes quiet.
-        assert compared == (22 if overlay_present else 18), (
+        # Attainable [0, 22]. Reads 22 locally and 19 in CI, one per framework
+        # less the three overlay members. It was 18 until csa_ccm left the
+        # overlay on 2026-08-26. A collapsed comparison is how this goes quiet.
+        assert compared == (22 if overlay_present else 19), (
             f"only {compared} rows cross-checked"
         )
 
@@ -942,8 +954,10 @@ class TestSpecAcceptance:
         # link rows rather than out of a source document.
         assert offenders == [], offenders
         assert set(absent) <= OVERLAY, sorted(set(absent) - OVERLAY)
-        # Attainable [0, 32]. Reads 32 locally and 28 in CI.
-        assert len(present) == (32 if not absent else 28), len(present)
+        # Attainable [0, 32]. Reads 32 locally and 29 in CI, one per framework
+        # less the three whose per-framework JSON is gitignored. It was 28
+        # until csa_ccm.json left .gitignore on 2026-08-26 with its tier.
+        assert len(present) == (32 if not absent else 29), len(present)
 
     def test_every_framework_meets_its_parsers_declared_prose_floor(self) -> None:
         """The gate with teeth, in place of a comparison against zero.

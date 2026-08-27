@@ -123,18 +123,34 @@ RESTRICTED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({"etsi", "iso_27001"
 #              one-way, and training reads the overlay, so the anchor cost is
 #              zero.
 #
-#   csa_ccm    NOT a reversal of the owner's 2026-08-16 ruling that CCM is
-#              redistributable, and this line is the whole reason it is not.
-#              The merge now WITHHOLDS PROSE rather than dropping frameworks,
-#              so overlay membership means "titles and identifiers tracked,
-#              prose withheld", which is strictly narrower than the ruling and
-#              reverses none of it. NOTICE already records that the ruling's
-#              basis is unrecorded. CSA's notice reserves redistribution
-#              outright; a scope note can label that accurately and cannot
-#              grant around it.
+# What LEFT on 2026-08-26, and why:
+#
+#   csa_ccm    Removed on owner decision D1(b), 2026-08-26, recorded in
+#              claudedocs/jetson-runpod-start.md and in NOTICE. The owner
+#              re-affirmed the 2026-08-16 ruling that CSA material is
+#              redistributable for this project, this time on an explicit
+#              reading of the CSA membership terms rather than on an
+#              unrecorded basis.
+#
+#              This is a CLASSIFICATION fix, not a gate change, and the
+#              distinction is the whole point. Conditional membership meant
+#              "prose withheld from git". Holding csa_ccm there while the
+#              ruling said redistributable put an overlay framework outside
+#              the fingerprint corpus -- see FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
+#              in tract/licensing.py, which had to defer it because 138 of the
+#              243 TRACKED csa_aicm descriptions are byte-identical to a CCM
+#              specification and fingerprinting CCM would have failed the
+#              branch on tracked AICM text. One framework in the overlay with
+#              no gate coverage was the only real hole in that gate, and
+#              removing the misclassification closes it without weakening
+#              anything: the corpus it covers is now exactly the corpus it is
+#              supposed to cover, with no deferrals left.
+#
+#              What this does NOT do: it does not move dsomm, etsi or
+#              iso_27001, and it does not trim any fingerprint corpus. Those
+#              three are still withheld and still fingerprinted in full.
 CONDITIONAL_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
     "dsomm",                     # GPL-3.0-only
-    "csa_ccm",                   # all rights reserved, no redistribution
 })
 
 # What routes to the overlay. RESTRICTED_FRAMEWORK_IDS keeps its narrower
@@ -143,6 +159,58 @@ CONDITIONAL_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
 OVERLAY_FRAMEWORK_IDS: Final[frozenset[str]] = (
     RESTRICTED_FRAMEWORK_IDS | CONDITIONAL_FRAMEWORK_IDS
 )
+
+# ── Prose licences, adjudicated ───────────────────────────────────────────
+# Nine of the 32 sources state their terms in the publisher's own sentence
+# rather than as an SPDX identifier. An identifier is a structured token this
+# repository can act on: it names shippable terms, and both `_copyleft` and the
+# LICENSES/ checks work off it. A sentence is not. "Reproduction authorised
+# provided the source is acknowledged" and "Reproduction only by written
+# permission" are the same shape to every automated check here and opposite in
+# effect, and no substring test separates them reliably -- a heuristic over
+# publisher prose fails silently in the PERMISSIVE direction, because a reader
+# cannot tell "no match" from "no such source".
+#
+# So these two sets do not derive anything. They record what a human decided
+# after reading the notice, and tests/test_framework_licenses.py refuses to let
+# a prose-licenced framework exist in neither. That refusal is the check that
+# was missing when csa_aicm reached 243 tracked control statements with no
+# owner ruling: nothing failed, and nothing could have.
+#
+# The full notice for each is in FRAMEWORK_LICENSES above and in NOTICE. Only
+# the deciding clause is summarised here, and ETSI's is paraphrased rather than
+# quoted because the fingerprint gate covers its notice page.
+
+# Redistribution is reserved by the publisher. Each must be withheld from git
+# (overlay) or carry a recorded owner ruling. Enforced, not advisory.
+REDISTRIBUTION_RESERVED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
+    "csa_aicm",    # all rights reserved, no redistribution
+    "csa_ccm",     # all rights reserved, no redistribution
+    "etsi",        # reproduction only by written permission (paraphrased)
+    "iso_27001",   # all rights reserved, single-user store licence
+})
+
+# Redistribution is permitted by the publisher's own words. Recorded so the
+# check above can tell "adjudicated permissive" from "nobody has looked".
+PROSE_LICENCE_ADJUDICATED_PERMISSIVE: Final[frozenset[str]] = frozenset({
+    "enisa",        # "Reproduction authorised provided the source is acknowledged"
+    "eu_ai_act",    # reuse permitted with attribution, per Commission Decision
+    "eu_gpai_cop",  # "Published for public use"
+    "nist_800_63",  # US Government work, not subject to domestic copyright
+    "nist_ssdf",    # US Government work, not subject to domestic copyright
+})
+
+# Reserved by the publisher AND ruled redistributable for this project by the
+# owner. The ruling is an entitlement the owner holds, NOT a property of the
+# document, so a fork does not inherit it. See NOTICE for the basis and date.
+#
+#   csa_aicm, csa_ccm   Owner decision D1(b), 2026-08-26, on a reading of the
+#                       CSA membership terms. Recorded in NOTICE and in
+#                       claudedocs/jetson-runpod-start.md.
+OWNER_RULED_REDISTRIBUTABLE: Final[frozenset[str]] = frozenset({
+    "csa_aicm",
+    "csa_ccm",
+})
 
 # ── Pretraining-contamination holdout ─────────────────────────────────────
 # Frameworks parsed into data/processed/frameworks/ that must never reach a

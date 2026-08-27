@@ -147,11 +147,22 @@ class TestNoticeStatesTheCsaExposure:
     """Two CSA facts, stated and unresolved. Held stated by these tests.
 
     The set is deliberately explicit rather than derived. Deriving "reserves
-    redistribution" from the licence string means another substring heuristic,
-    and a substring heuristic over publisher prose is the exact structural
-    defect that left csa_aicm in no tier: `_copyleft` in
-    tests/test_framework_licenses.py matches "GPL" and "CC-BY-SA" and is blind
-    to a source that reserves rights outright.
+    redistribution" from the licence string means a substring heuristic over
+    publisher prose, which fails silently in the permissive direction: the
+    reader cannot tell "no match" from "no such source".
+
+    CORRECTED 2026-08-26. This docstring used to justify that by saying a
+    substring heuristic "is the exact structural defect that left csa_aicm in
+    no tier", naming `_copyleft` in tests/test_framework_licenses.py. Measured,
+    that was wrong, and the claim had already propagated into NOTICE before
+    anyone checked it. `_copyleft` derives no tier -- tiers are hand-curated
+    frozensets in tract/config.py, and `_copyleft` gates three share-alike
+    obligations. `etsi` and `iso_27001` reserve rights outright, fail that same
+    substring test, and are tiered anyway. csa_aicm was untiered because no
+    owner ruling had been made about it.
+
+    The preference for an explicit set stands on its own merits. The false
+    supporting anecdote is gone.
     """
 
     # Tracked in git, publisher reserves redistribution, member of no tier.
@@ -201,29 +212,6 @@ class TestNoticeStatesTheCsaExposure:
             f"tracked artifact. If the text left git, say so in NOTICE and "
             f"remove the id from UNRESOLVED_EXPOSURE."
         )
-
-    def test_notice_records_that_the_ccm_ruling_basis_is_missing(self) -> None:
-        """Delete this test on the commit that records the basis.
-
-        NOTICE says the owner ruled csa_ccm redistributable and does not say on
-        what authority. "Written agreement", "membership" and "fair-use
-        judgment" have different scopes and different answers for anyone
-        forking this repository, so naming the three is the minimum that makes
-        the gap legible. A one-line "basis TBD" does not satisfy this.
-        """
-        section = _section(_OPEN_QUESTIONS_HEADING)
-        assert "not on record" in section, (
-            "NOTICE no longer states that the basis of the csa_ccm ruling is "
-            "unrecorded. If the basis was recorded, delete this test in the "
-            "same commit. If the paragraph was dropped, restore it."
-        )
-        for candidate in ("written agreement", "membership", "fair-use"):
-            assert candidate in section, (
-                f"NOTICE's csa_ccm paragraph does not name {candidate!r} as a "
-                f"candidate basis. The three differ in scope and in whether "
-                f"they transfer to a fork, which is why the gap matters."
-            )
-
 
 class TestNoticePointsAtTheLicenceTexts:
     def test_notice_names_the_licenses_directory(self) -> None:

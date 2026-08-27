@@ -30,7 +30,10 @@ from tract.config import (
     CONDITIONAL_FRAMEWORK_IDS,
     FRAMEWORK_LICENSES,
     OVERLAY_FRAMEWORK_IDS,
+    OWNER_RULED_REDISTRIBUTABLE,
     PROCESSED_FRAMEWORKS_DIR,
+    PROSE_LICENCE_ADJUDICATED_PERMISSIVE,
+    REDISTRIBUTION_RESERVED_FRAMEWORK_IDS,
     RESTRICTED_FRAMEWORK_IDS,
     UNDETERMINED_LICENSE,
 )
@@ -519,3 +522,141 @@ class TestNoticeStaysInStepWithTheRegistry:
                 f"NOTICE does not name {framework_id} as a restricted source, "
                 f"so a reader cannot tell why its text is absent."
             )
+
+
+def _prose_licenced() -> set[str]:
+    """Frameworks whose licence is the publisher's sentence, not an identifier.
+
+    An SPDX identifier is a structured token this repository can reason about:
+    it names shippable terms, and `_copyleft` and the LICENSES/ checks both
+    work off it. A prose notice is not. "Reproduction authorised provided the
+    source is acknowledged" and "all rights reserved, no redistribution" are
+    the same shape to every automated check in this tree and opposite in
+    effect, and no substring test separates them reliably -- a heuristic over
+    publisher prose fails silently in the permissive direction, because the
+    reader cannot tell "no match" from "no such source".
+
+    So this function does not classify. It identifies which frameworks a HUMAN
+    must have classified, and the tests below assert that each one was.
+    """
+    return {
+        framework_id
+        for framework_id, licence in FRAMEWORK_LICENSES.items()
+        if licence != UNDETERMINED_LICENSE and not spdx_identifiers(licence)
+    }
+
+
+class TestEveryProseLicenceWasAdjudicated:
+    """A framework cannot arrive without somebody reading its notice.
+
+    csa_aicm reached 243 tracked control statements without an owner ruling,
+    and the thing that eventually caught it was a person reading NOTICE, which
+    is the control-that-depends-on-a-person shape this repository keeps being
+    burned by. Nothing failed. Nothing could have.
+
+    These tests are the check that was missing. They do not decide anything:
+    they refuse to let a prose-licenced framework exist un-decided.
+    """
+
+    def test_every_prose_licence_is_declared_one_way_or_the_other(self) -> None:
+        declared = (
+            REDISTRIBUTION_RESERVED_FRAMEWORK_IDS | PROSE_LICENCE_ADJUDICATED_PERMISSIVE
+        )
+        # Attainable [0, 32]. Reads 0 today. Anything else is a framework whose
+        # publisher wrote its terms in a sentence that nobody has read.
+        undecided = sorted(_prose_licenced() - declared)
+        assert not undecided, (
+            f"{undecided} carry a licence stated in the publisher's prose and "
+            f"appear in neither REDISTRIBUTION_RESERVED_FRAMEWORK_IDS nor "
+            f"PROSE_LICENCE_ADJUDICATED_PERMISSIVE. Read the notice, decide "
+            f"which it is, and record it with the sentence that decided it. "
+            f"Do not guess from the string: 'Reproduction authorised' and "
+            f"'Reproduction only by written permission' differ by two words "
+            f"and by everything."
+        )
+
+    def test_neither_set_names_a_framework_with_an_spdx_licence(self) -> None:
+        """Both sets are for prose. An identifier belongs to the SPDX path."""
+        declared = (
+            REDISTRIBUTION_RESERVED_FRAMEWORK_IDS | PROSE_LICENCE_ADJUDICATED_PERMISSIVE
+        )
+        # Attainable [0, 32]. A framework here that HAS an identifier is either
+        # a stale entry or a licence field that was tightened without the sets
+        # being revisited.
+        misplaced = sorted(declared - _prose_licenced())
+        assert not misplaced, (
+            f"{misplaced} are declared as prose-licenced but their recorded "
+            f"licence yields an SPDX identifier or reads UNDETERMINED. The "
+            f"declaration is stale."
+        )
+
+    def test_the_two_sets_are_disjoint(self) -> None:
+        """A source cannot both reserve redistribution and permit it."""
+        both = sorted(
+            REDISTRIBUTION_RESERVED_FRAMEWORK_IDS & PROSE_LICENCE_ADJUDICATED_PERMISSIVE
+        )
+        assert not both, f"{both} are declared as reserving AND permitting"
+
+    def test_an_undeclared_prose_licence_is_rejected(self) -> None:
+        """The positive control. A check that cannot fail measures nothing.
+
+        Constructed rather than measured, so it exercises the failing branch
+        without waiting for a real framework to arrive un-adjudicated.
+        """
+        invented = dict(FRAMEWORK_LICENSES)
+        invented["fictional_standard"] = (
+            "(c) 2026 Some Publisher. All rights reserved, no redistribution."
+        )
+        declared = (
+            REDISTRIBUTION_RESERVED_FRAMEWORK_IDS | PROSE_LICENCE_ADJUDICATED_PERMISSIVE
+        )
+        prose = {
+            framework_id
+            for framework_id, licence in invented.items()
+            if licence != UNDETERMINED_LICENSE and not spdx_identifiers(licence)
+        }
+        assert sorted(prose - declared) == ["fictional_standard"]
+
+
+class TestEveryReservedSourceIsWithheldOrRuledOn:
+    """Reserving redistribution has exactly two legal resolutions here.
+
+    Either the prose stays out of git -- overlay membership, enforced by the
+    fingerprint gate -- or the owner has ruled that this project may
+    redistribute it and the ruling is recorded. There is no third state, and
+    csa_aicm sat in that non-existent third state for weeks.
+    """
+
+    def test_every_reserved_framework_is_withheld_or_ruled_on(self) -> None:
+        unresolved = sorted(
+            REDISTRIBUTION_RESERVED_FRAMEWORK_IDS
+            - OVERLAY_FRAMEWORK_IDS
+            - OWNER_RULED_REDISTRIBUTABLE
+        )
+        # Attainable [0, 4]. Reads 0. Read 1 before 2026-08-26: csa_aicm was
+        # tracked, reserved, and neither withheld nor ruled on.
+        assert not unresolved, (
+            f"{unresolved} reserve redistribution, are not in the overlay, and "
+            f"carry no recorded owner ruling. Their prose is in git under this "
+            f"repository's CC0 grant on nobody's authority. Withhold them or "
+            f"record a ruling."
+        )
+
+    def test_an_owner_ruling_names_a_framework_that_needed_one(self) -> None:
+        """A ruling about a permissively-licenced source is noise, not a ruling."""
+        pointless = sorted(
+            OWNER_RULED_REDISTRIBUTABLE - REDISTRIBUTION_RESERVED_FRAMEWORK_IDS
+        )
+        assert not pointless, (
+            f"{pointless} carry an owner ruling permitting redistribution and "
+            f"do not reserve it in the first place."
+        )
+
+    def test_notice_names_every_reserved_source(self) -> None:
+        """A reader must be able to see the terms without reading the code."""
+        rows = _notice_rows()
+        missing = sorted(REDISTRIBUTION_RESERVED_FRAMEWORK_IDS - set(rows))
+        assert not missing, (
+            f"NOTICE has no row for {missing}, which reserve redistribution. "
+            f"A downstream reader cannot evaluate what they are receiving."
+        )

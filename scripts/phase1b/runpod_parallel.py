@@ -17,7 +17,7 @@ Before the first run:
     ssh-keygen -t ed25519 -f ~/.ssh/tract_runpod -N ''
 and register ~/.ssh/tract_runpod.pub with the RunPod account.
 
-Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 2000),
+Environment overrides: TRACT_RUNPOD_BUDGET_USD (default 1000),
 TRACT_RUNPOD_MAX_HOURLY (12), TRACT_RUNPOD_MAX_HOURS (6),
 TRACT_RUNPOD_SSH_KEY. Set the budget explicitly for any real campaign; the
 default is a backstop, not a plan.
@@ -38,6 +38,9 @@ from pathlib import Path
 from typing import Any, Final
 
 from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
+# Lightweight on purpose: data_quality pulls neither torch nor datasets, so the
+# operator's machine can enforce the corpus gate without a training stack.
+from tract.training.data_quality import assert_corpus_matches_training_links
 from tract.io import load_json
 from scripts.phase0.runpod_provision import (
     is_capacity_error,
@@ -98,7 +101,11 @@ DOCKER_IMAGE: Final[str] = (
 POD_PYTHON_VERSION: Final[str] = "3.12"
 
 # Budget controls. The $1000 ceiling was prose; these make it a gate.
-BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "2000"))
+# Owner-set authorization ceiling, lowered from 2000 to 1000 on 2026-08-26.
+# This is the BACKSTOP, not the plan: it bounds what the code permits when
+# nobody exported anything. Campaign 2 exports 200, which is the tight
+# per-run bound P5 asks for, and an export always wins over this default.
+BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "1000"))
 # Refuse a part whose rate would burn the budget faster than the run can finish.
 MAX_USD_PER_HOUR_PER_POD: Final[float] = float(
     os.environ.get("TRACT_RUNPOD_MAX_HOURLY", "12")
@@ -722,11 +729,45 @@ def _preflight_training_stack() -> None:
     )
 
 
+def _preflight_corpus() -> str:
+    """Refuse to spend a GPU hour on a corpus the training links were not built from.
+
+    `assert_corpus_matches_training_links` was written as a refusal and called
+    from nothing. It lived in the Jetson briefing as a checklist row and in its
+    own tests, which meant the control existed and never fired. A checklist row
+    depends on a person; this does not.
+
+    Called from both `provision` and `run_folds` on purpose. provision is where
+    it saves money, and run_folds is where it holds for anyone driving the
+    subcommands by hand or resuming onto an existing fleet.
+
+    Returns:
+        The corpus digest this run reads.
+
+    Raises:
+        CorpusMismatchError: The corpus differs from the recorded one.
+        FileNotFoundError: The metadata sidecar is absent, so there is nothing
+            to check against. Not a pass.
+    """
+    digest = assert_corpus_matches_training_links()
+    logger.info("Corpus matches the training links it was built from (%s).",
+                digest[:12])
+    return digest
+
+
 def provision(
     folds: list[str] | None = None, split: str = "test",
 ) -> list[dict[str, Any]]:
-    # Ordered cheapest-check-first. Both run before anything is created.
+    # Ordered cheapest-check-first. All three run before anything is created,
+    # so none of them can cost a dollar to fail.
+    #
+    # The corpus check sits between the other two deliberately. It hashes a
+    # multi-megabyte file, so it is not as cheap as resolving a version pin,
+    # and it is local, so it is far cheaper than the tracking check's network
+    # round trip. Putting it first also made a stack-pin failure surface as a
+    # corpus error on any fresh clone, which is how CI caught it.
     _preflight_training_stack()
+    _preflight_corpus()
     _preflight_tracking()
     configs = select_pod_configs(folds, split)
     logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",
@@ -995,6 +1036,11 @@ def run_folds(
     five destroyed the pods and the failure surfaced later, at aggregation,
     with nothing left to retry on.
     """
+    # Before anything else, including before the pod roster is read. A fleet
+    # is already billing by the time this runs, so the cost of stopping here
+    # is minutes; the cost of not stopping is a full arm measured against 370
+    # missing links that reports normally.
+    _preflight_corpus()
     pods = _load_pod_state()
     # Refresh the window for this arm. The deadline was stamped once at
     # provision and never renewed, so a campaign of several arms tripped it
@@ -1186,11 +1232,64 @@ def collect(config_name: str = "phase1b_primary") -> list[str]:
     return failed
 
 
+def _assert_results_are_current(local_results: Path, allow_stale: bool) -> None:
+    """Refuse to turn stale folds into a headline number.
+
+    `load_fold_results` already refuses a partial fold set, mixed arms, mixed
+    input digests and mixed git SHAs. Every one of those compares folds
+    against their siblings, and none asks whether the corpus those digests
+    describe is the corpus on disk. Five uniformly stale folds pass all of
+    them and aggregate into a number that reads as current -- which is the
+    state A1 and A2 are in right now.
+
+    `allow_stale` exists because the briefing's rule has two halves: a stale
+    result MAY be compared against its own recorded inputs, and MAY NOT be
+    quoted as a current measurement. The flag is the first half, and it has to
+    be typed on purpose.
+
+    Raises:
+        RuntimeError: A fold's recorded inputs no longer match the files.
+    """
+    from tract.staleness import check_result
+
+    statuses = [
+        check_result(p)
+        for p in sorted(local_results.glob(f"fold_*/{FOLD_RESULT_FILENAME}"))
+    ]
+    stale = [s for s in statuses if s.is_stale]
+    if not stale:
+        return
+
+    moved = sorted({si.field for s in stale for si in s.stale})
+    detail = "; ".join(
+        f"{s.result_path}: " + ", ".join(si.field for si in s.stale) for s in stale
+    )
+    if allow_stale:
+        logger.warning(
+            "AGGREGATING STALE FOLDS on purpose (--allow-stale). %d of %d fold(s) "
+            "were measured against different inputs (%s). This number describes "
+            "the corpus recorded in those folds, NOT the one on disk. Do not "
+            "quote it as a current measurement.",
+            len(stale), len(statuses), ", ".join(moved),
+        )
+        return
+
+    raise RuntimeError(
+        f"{len(stale)} of {len(statuses)} fold(s) under {local_results} were "
+        f"measured against inputs that have since changed ({', '.join(moved)}). "
+        f"They agree with each other, which is why every existing check passes, "
+        f"and they do not agree with the corpus on disk. Re-run the arm, or "
+        f"pass --allow-stale to compare it against its own recorded inputs and "
+        f"accept that the result cannot be quoted as current. Details: {detail}"
+    )
+
+
 def aggregate(
     config_name: str = "phase1b_primary",
     folds: list[str] | None = None,
     split: str = "test",
     n_configurations: int = 1,
+    allow_stale: bool = False,
 ) -> dict[str, Any]:
     """Micro-average the collected folds and write the experiment record.
 
@@ -1208,6 +1307,9 @@ def aggregate(
     )
 
     local_results = RESULTS_DIR / config_name
+    # Currency first. Everything below compares folds to their siblings; this
+    # is the only check that compares them to the corpus on disk.
+    _assert_results_are_current(local_results, allow_stale)
     # An explicitly scoped run declares its own fold set; anything else must
     # match the full LOFO set, so a partial cross-validation cannot be
     # aggregated into a headline number by omission.
@@ -1585,6 +1687,14 @@ def main() -> int:
                         help="Hub representation arm. PRD:372 requires "
                              "path+name+desc be measured and 32/32 folds have "
                              "used the default bare label.")
+    # Never set this on a campaign run. It exists so a stale result can be
+    # read against its own recorded inputs, which the briefing permits, and
+    # not so a refusal can be argued with.
+    parser.add_argument("--allow-stale", action="store_true",
+                        help="aggregate folds whose recorded inputs no longer "
+                             "match the corpus on disk. The number describes "
+                             "the recorded corpus and cannot be quoted as a "
+                             "current measurement.")
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Rebalance arm: temperature flattening the "
                              "CRE-branch distribution")
@@ -1645,7 +1755,8 @@ def main() -> int:
             )
             return 1
     elif args.action == "aggregate":
-        aggregate(args.config_name, folds, args.split, args.n_configurations)
+        aggregate(args.config_name, folds, args.split, args.n_configurations,
+                  allow_stale=args.allow_stale)
     elif args.action == "track":
         return track(args.config_name)
     elif args.action == "teardown":

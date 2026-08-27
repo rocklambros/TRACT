@@ -4,12 +4,21 @@ Written on the Mac, 2026-08-20. **Both pre-provisioning gates were closed on
 the Mac on 2026-08-26**, so this file now describes a run that is cleared to
 provision. Read it before provisioning anything.
 
+**Start here: `git checkout campaign-2`.** It is cut from `main` at `753f614`,
+which is the merge of PR #62. `semantic-rebuild` is merged and finished.
+
+**PR #72 is open as a draft against `main` and exists so this branch gets CI.**
+The workflow triggers on `push: [main]` and on `pull_request`, so a plain
+branch push runs nothing. Without that PR every campaign commit would land
+unchecked. After each push, confirm all 8 jobs are green before you treat a
+result as banked.
+
 The two gates and their state:
 
 1. **Four owner decisions answered and committed.** DONE 2026-08-26. The
    decision record at the end of "Owner decisions" has four filled rows.
-   **Do not re-ask them.** D3 was answered (a), so the corpus rebuild merged
-   and Campaign 2 runs from a fresh branch off `main`.
+   **Do not re-ask them.** D3 was answered (a), so the corpus rebuild is
+   merged and Campaign 2 runs on `campaign-2`.
 2. **P2 and P3 from the premortem fixed.** DONE 2026-08-26 in commit
    `90a5f15`, with tests in `tests/test_runpod_safety.py`. P2 could abandon
    four healthy folds and leave five GPUs billing. P3 could destroy a
@@ -24,8 +33,13 @@ conclusion from one. The repaired `config.json` files sit inside gitignored
 `python -m scripts.repair_adapter_checkpoints` on the Jetson** if you need
 them there.
 
-One thing is still open, and it does not block a pod: D1's implementation, the
-`csa_aicm` fingerprint question. See the note under the decision record.
+D1 was implemented the same day (`1e8f64f`). The licensed-text gate now has no
+deferrals: `FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` is empty and every framework
+whose prose is withheld from git is fingerprinted. Details under the decision
+record.
+
+**All four decisions are answered AND implemented. Nothing is outstanding on
+the Mac side.**
 
 ## The prompt
 
@@ -44,7 +58,8 @@ root:
 >    decision record at the end of "Owner decisions" has four filled rows —
 >    read them, do not ask me again. P2 and P3 were fixed in commit `90a5f15`;
 >    run `pytest tests/test_runpod_safety.py -q` and confirm it passes here.
->    Branch from `main` per D3, not from `semantic-rebuild`.
+>    Work on `campaign-2`, already cut from `main` at `753f614`. Do not use
+>    `semantic-rebuild`; it is merged and finished.
 > 2. Verify the environment against the "Before you provision" checklist.
 >    Report each item as pass or fail with the command output that settled it.
 >    Stop if any fails.
@@ -100,18 +115,45 @@ that matter are `--config-name`, `--split`, `--stopwords`, `--no-prose`,
 `--base-model`, `--branch-balance` and `--n-configurations`.
 
 Budget: 30 folds, roughly 3.5 hours and $90 at five parallel pods. Around $80
-of the authorized $2000 is already spent.
+of the authorized $1000 is already spent. The ceiling was lowered from $2000
+to $1000 by the owner on 2026-08-26.
 
 ## Three things that will go wrong quietly
 
 These do not announce themselves. Each produces output the same shape as a
 correct run.
 
-**1. A fresh clone has no licensed prose, and trains on 4,019 links instead of
-4,389.** The four overlay frameworks (ETSI, ISO 27001, CSA CCM, DSOMM) keep
-their prose out of git by design, so 370 training links resolve to nothing and
-the run reports normally. `docs/RUNNING_ELSEWHERE.md` covers staging them.
-Before any training, run:
+**1. A fresh clone has no licensed prose, and trains on 4,048 links instead of
+4,389.** The three overlay frameworks (ETSI, ISO 27001, DSOMM) keep their prose
+out of git by design, so 341 training links resolve to nothing and the run
+reports normally. `docs/RUNNING_ELSEWHERE.md` covers staging them.
+
+Three, not four, and 341, not 370, since 2026-08-26: CSA CCM left the overlay
+on owner decision D1(b), so its prose and its 29 links now ship in git. That is
+one fewer framework to stage on this machine.
+
+**This is now an enforced gate rather than your discipline.** As of
+2026-08-26 the check runs in three places: `provision` refuses before creating
+a pod, `run_folds` refuses before launching, and `run_fold.py` refuses on the
+pod before it trains. Until then the refusal was written, tested, and called
+from nothing — it was this checklist row and nothing else, which is a control
+that depends on a person reading a document.
+
+**So staging the licensed sources is now a hard prerequisite, not an
+optimisation. On a clone without the overlay you cannot provision at all.**
+Do `docs/RUNNING_ELSEWHERE.md` before anything else on this machine; a
+`CorpusMismatchError` at `provision` is the gate working, not a defect.
+
+**Do not "fix" that refusal by regenerating the sidecar.** Running
+`python -m scripts.build_training_links` on a machine without the overlay
+would record the 4,048-link corpus as the reference, which makes the gate pass
+and trains 7.8% short while reporting the same shape of output. The script
+refuses to do it and names staging instead, but the reasoning is worth
+carrying: there are two ways to satisfy this gate and only one of them is
+correct.
+
+You should still run it by hand first, because finding out here costs seconds
+and finding out from a refusal costs a provisioning round trip:
 
 ```bash
 PYTHONPATH=. python3 -c "
@@ -129,9 +171,22 @@ and existence cannot tell a complete corpus from a partial one.
 rebuild and the stopword regeneration both moved under them. `python -m
 tract.staleness` names all 27. A1 and A2 have five validation folds each and
 they look complete, but they were measured against a different corpus and are
-not comparable to anything a new arm produces. Re-run all five arms. A stale
-result may be kept and compared against its own recorded inputs. It may not be
-quoted as a current measurement.
+not comparable to anything a new arm produces. Re-run all five arms.
+
+**This is now enforced at `aggregate` too.** Worth understanding why it needed
+to be. `load_fold_results` already refuses a partial fold set, mixed arms,
+mixed input digests and mixed git SHAs — and every one of those compares folds
+to their siblings. None asks whether the corpus those digests describe is the
+corpus on disk. Five uniformly stale folds pass all of them and produce a
+number that reads as current, which is exactly the state A1 and A2 are in.
+Verified 2026-08-26: the gate refuses both, 5 of 5 folds, naming
+`all_controls_sha256` and `stopwords_sha256`.
+
+The briefing's rule has two halves and the code now carries both. A stale
+result MAY be compared against its own recorded inputs — pass `--allow-stale`,
+which logs loudly and says the number describes the recorded corpus. It MAY
+NOT be quoted as a current measurement, and without the flag it will not
+aggregate at all. Never pass `--allow-stale` on a campaign run.
 
 **3. Nothing stops a pod except a live orchestrator or a person.** A green
 `_preflight_training_stack()` is not clearance for an unattended run. It checks
@@ -260,8 +315,12 @@ rather than the transport is the whole point of the function.
 
 The docstring said `TRACT_RUNPOD_BUDGET_USD (default 1000)` while the code read
 `"2000"`, so anyone sizing a run against the documented figure had half the
-real ceiling. Corrected in `90a5f15`. **Set the variable explicitly for this
-campaign regardless**: the default is a backstop, not a plan.
+real ceiling. Corrected in `90a5f15`.
+
+The owner then lowered the ceiling itself to **1000** on 2026-08-26, so the
+docstring and the code now agree on that figure. **Set the variable explicitly
+for this campaign regardless**: 1000 is the backstop that applies when nobody
+exported anything, and this campaign costs $90. Export 200.
 
 ### P5. A cap that permits ten times the expected spend is not a cap
 
@@ -319,8 +378,8 @@ Every item is a command with an answer, not a judgment call.
 | orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
 | independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
-| on the right branch | D3 chose (a): a fresh branch off `main`, clean tree. NOT `semantic-rebuild` |
-| corpus is complete | the `assert_corpus_matches_training_links()` snippet above returns without raising |
+| on the right branch | `git status` shows `campaign-2`, cut from `main` at `753f614`, clean tree. NOT `semantic-rebuild` |
+| corpus is complete | the snippet above returns a digest. Also enforced in code now: `provision`, `run_folds` and `run_fold.py` each refuse on a mismatch |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
 | credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
 | HF token is read-scope | it fetches the base model and nothing else. A write token on a rented host is a published-model compromise |
@@ -472,7 +531,13 @@ makes sense against option (b) as written.
 
 Each option below carries a recommendation. A recommendation is not an answer.
 
-### D1. `csa_aicm` licensing. Blocks the fingerprint corpus, not the campaign
+### D1. `csa_aicm` licensing — ANSWERED (b), IMPLEMENTED 2026-08-26 as `1e8f64f`
+
+*The options below describe the state BEFORE the decision and are kept so the
+record's answer is readable. The line about neither framework being protected
+"today" was true on 2026-08-20 and is false now: see the implementation record
+after the table.*
+
 
 243 `csa_aicm` controls are tracked under a no-redistribution notice, and 138
 of them are byte-identical to a CSA CCM specification. The licensed-text gate
@@ -519,7 +584,8 @@ makes that failure explicit rather than silent.
   permanently. Tempting, and irreversible, which is why it is not the
   recommendation while a campaign is about to produce replacements.
 
-### D3. PR #62. Changes where the Jetson pushes
+### D3. PR #62 — ANSWERED (a), MERGED 2026-08-26 as `753f614`
+
 
 The branch is 210-plus commits ahead of `main`, zero behind, with all eight CI
 jobs green. It is still a draft.
@@ -561,43 +627,47 @@ Answered by the owner on 2026-08-26 and committed. This gate is closed.
 
 | id | decision | answer | date | note |
 |---|---|---|---|---|
-| D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | Rests on the owner's reading of the CSA membership terms. Implementation NOT done — see the note below |
+| D1 | `csa_aicm` licensing | (b) redistribution permitted, keep tracked | 2026-08-26 | DONE in `1e8f64f`. Gate hole closed: `FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` is empty and every withheld framework is fingerprinted. Basis recorded in NOTICE |
 | D2 | 98 unopenable checkpoints | (b) re-save with the backbone config | 2026-08-26 | DONE in `957d245`. 98 of 98 pass `assert_loadable_checkpoint`. Repaired configs are gitignored, so nothing entered the repository |
-| D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | Campaign 2 runs from a fresh branch off `main`. Not `semantic-rebuild` |
+| D3 | PR #62 merge timing | (a) merge now, branch from `main` | 2026-08-26 | DONE. Merged as `753f614` with a MERGE COMMIT, not a squash, because this file cites `90a5f15` and `957d245` by SHA. Campaign 2 runs on branch `campaign-2`, cut from `main` at `753f614` |
 | D4 | publisher-acronym arm | (a) five arms as pre-registered | 2026-08-26 | No code change. `results/phase1b/CAMPAIGN2.md` already sets `n_configurations=5` |
 
-**D1's answer does not translate into a change yet, and the Jetson must not
-invent one.** Option (b) reads "add both to the fingerprint corpus and keep
-them tracked", and those two halves contradict each other against how the gate
-actually works. `fingerprinted_framework_ids()` returns
-`OVERLAY_FRAMEWORK_IDS - FINGERPRINT_EXCLUDED_FRAMEWORK_IDS`, and the gate
-fails when fingerprinted text appears in a tracked file. Measured on
-2026-08-26:
+**D1 is implemented and the gate hole is closed** (`1e8f64f`). What changed and
+what did not:
 
 ```
-overlay              csa_ccm, dsomm, etsi, iso_27001
-csa_aicm in overlay  False   (its prose is tracked today)
-csa_ccm  in overlay  True    (its prose is withheld today)
-fingerprinted        dsomm, etsi, iso_27001
+before                              after
+overlay        csa_ccm dsomm etsi iso_27001    dsomm etsi iso_27001
+fingerprinted  dsomm etsi iso_27001            dsomm etsi iso_27001
+deferrals      csa_aicm csa_ccm                NONE
+hole           csa_ccm                         NONE
 ```
 
-So fingerprinting `csa_aicm` while its prose stays tracked would fail the gate
-on its own tracked prose, and fingerprinting `csa_ccm` reds the six tracked
-AICM-derived artifacts that share CCM's bytes — which is exactly the deferral
-already recorded in `tract/licensing.py`.
+The hole was one framework. `csa_ccm` sat in the overlay with its prose
+withheld and outside the fingerprint corpus, so nothing enforced the
+withholding. It could not simply be fingerprinted: 138 of `csa_aicm`'s 243
+TRACKED descriptions are byte-identical to a CCM specification with the same
+control id, so the gate would have failed the branch on tracked AICM text.
+The owner's ruling makes overlay membership a misclassification rather than a
+policy, so `csa_ccm` left the conditional tier, its prose is tracked, and both
+deferrals dissolved with the conflict.
 
-The coherent reading of "redistribution is permitted" is the opposite move:
-`csa_ccm` comes OUT of `CONDITIONAL_FRAMEWORK_IDS` so its prose is tracked
-too, `csa_aicm` stays tracked, both deferral entries in
-`FINGERPRINT_EXCLUDED_FRAMEWORK_IDS` are deleted as dead rather than switched
-on, and the licence declaration is updated to record the owner's reading and
-its date. That is a licence-declaration change, not a gate change.
+**No fingerprint corpus was trimmed to achieve this.** The fixture diff is one
+field. Same 21,158 fingerprints, same three documents, at full coverage. A
+gate that passes because it stopped looking would have looked identical in the
+summary above and completely different in that diff.
 
-Confirm which of those two the owner meant before touching
-`tract/licensing.py`. Getting it wrong in the permissive direction is the
-fifth escape in a sequence of four, so the default while it is unconfirmed is
-to change nothing. See `[[licensed-text-keeps-escaping]]` and
-`[[licence-tier-is-publication-state]]`.
+NOTICE records the ruling, its date, and its basis — which the 2026-08-16
+ruling never had. It also says plainly that the basis is an entitlement held by
+this project's owner and that a fork does not inherit it.
+
+**One thing this did NOT fix, and it will recur.** The tier derivation in
+`tests/test_framework_licenses.py::_copyleft` selects on the substrings "GPL"
+and "CC-BY-SA", so a publisher who reserves rights outright matches neither and
+lands in no tier at all. That is how `csa_aicm` reached 243 tracked controls
+without anyone deciding it should. The ruling settles those 243 controls. The
+next reserve-all-rights framework added to this corpus will land in no tier for
+exactly the same reason.
 
 ## Where things are
 

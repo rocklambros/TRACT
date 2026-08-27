@@ -588,6 +588,13 @@ class TestOneFoldFailureDoesNotAbortTheFleet:
 
         monkeypatch.setattr(rpp, "_get_pod_env", _env)
         monkeypatch.setattr(rpp, "_run_fold_on_pod", run_fold)
+        # run_folds enforces the corpus gate before it reads the pod roster.
+        # These tests are about fold failure handling, and CI is a fresh clone
+        # with no overlay, so the real check would refuse here for an unrelated
+        # reason. TestCorpusCompletenessIsEnforcedBeforeSpend owns that gate.
+        monkeypatch.setattr(
+            rpp, "assert_corpus_matches_training_links", lambda: "d" * 64,
+        )
         return rpp
 
     def test_a_fold_that_raises_becomes_a_failed_fold(
@@ -743,3 +750,221 @@ class TestCollectVerifiesThePayload:
         monkeypatch.setattr(rpp, "_rsync_from", _rsync)
 
         assert sorted(rpp.collect("cfg")) == ["MITRE ATLAS", "NIST AI 100-2"]
+
+
+class TestCorpusCompletenessIsEnforcedBeforeSpend:
+    """The refusal that never fired.
+
+    `assert_corpus_matches_training_links` is written as a refusal -- its own
+    docstring opens "Refuse to train against a corpus the training links were
+    not built from" -- and until 2026-08-26 nothing called it. It appeared in
+    the Jetson briefing as a checklist row and in its own tests, and nowhere
+    on any path that trains.
+
+    What it guards is not cosmetic. A clone without the gitignored overlay
+    trains on 4,048 of the 4,389 links, because 341 belong to the three overlay
+    frameworks whose prose is deliberately not in git (dsomm 213, iso_27001
+    92, etsi 36). That is 7.8% of the training set, and the run reports the
+    same figures in the same shape. Nothing in the output says so. csa_ccm's
+    29 links joined the tracked corpus on 2026-08-26.
+
+    A checklist row is not a gate. This is the gate.
+    """
+
+    ROLES = ("MITRE ATLAS", "NIST AI 100-2")
+
+    def _fleet(self, monkeypatch, submitted):
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [{"role": r, "ip": "1.2.3.4", "port": 22, "pod_id": f"id-{r}"}
+                for r in self.ROLES]
+        monkeypatch.setattr(rpp, "_load_pod_state", lambda: pods)
+        monkeypatch.setattr(rpp, "_check_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "_extend_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "fold_roster", lambda split="test": list(self.ROLES))
+        monkeypatch.setattr(rpp, "_bootstrap_pod", lambda *a, **k: None)
+        monkeypatch.setattr(rpp, "_get_pod_env", lambda: {"HF_TOKEN": "t"})
+
+        def _run_fold(pod, config_name, arm_flags=(), split="test", env=None):
+            submitted.append(pod["role"])
+            return {"fold": pod["role"], "status": "ok", "elapsed_s": 1.0}
+
+        monkeypatch.setattr(rpp, "_run_fold_on_pod", _run_fold)
+        return rpp
+
+    def test_a_partial_corpus_stops_the_run_before_any_fold(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from tract.training.data_quality import CorpusMismatchError
+
+        submitted: list[str] = []
+        rpp = self._fleet(monkeypatch, submitted)
+
+        def _mismatch() -> str:
+            raise CorpusMismatchError("corpus digest differs from the recorded one")
+
+        monkeypatch.setattr(rpp, "assert_corpus_matches_training_links", _mismatch)
+
+        with pytest.raises(CorpusMismatchError):
+            rpp.run_folds("cfg")
+
+        # The whole point is that no GPU hour is spent discovering this.
+        assert submitted == []
+
+    def test_a_complete_corpus_runs_normally(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The gate must not stop a good run."""
+        submitted: list[str] = []
+        rpp = self._fleet(monkeypatch, submitted)
+        monkeypatch.setattr(
+            rpp, "assert_corpus_matches_training_links", lambda: "deadbeef",
+        )
+
+        assert rpp.run_folds("cfg") == []
+        assert sorted(submitted) == sorted(self.ROLES)
+
+    def test_a_missing_sidecar_also_stops_the_run(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No sidecar means nothing to check against, which is not a pass."""
+        submitted: list[str] = []
+        rpp = self._fleet(monkeypatch, submitted)
+
+        def _absent() -> str:
+            raise FileNotFoundError("hub_links_training.meta.json is absent")
+
+        monkeypatch.setattr(rpp, "assert_corpus_matches_training_links", _absent)
+
+        with pytest.raises(FileNotFoundError):
+            rpp.run_folds("cfg")
+        assert submitted == []
+
+
+class TestStaleResultsCannotBecomeAHeadlineNumber:
+    """load_fold_results checks that folds agree with EACH OTHER, not with now.
+
+    It refuses a partial fold set, mixed arms, mixed input digests and mixed
+    git SHAs. Every one of those compares folds against their siblings. None
+    of them asks whether the corpus those digests describe is the corpus on
+    disk today.
+
+    So five folds that are uniformly stale pass every existing check and
+    aggregate into a number that reads as current. That is not hypothetical:
+    A1 and A2 sit in this repository right now with five validation folds
+    each, they look complete, and the corpus rebuild moved under them. The
+    briefing's rule is that a stale result may be compared against its own
+    recorded inputs and may not be quoted as a current measurement. This makes
+    the second half enforceable instead of advisory.
+    """
+
+    def _results_dir(self, tmp_path: Path, digests: list[dict[str, str]]) -> Path:
+        d = tmp_path / "cfg"
+        for i, inputs in enumerate(digests):
+            fold = d / f"fold_{i}"
+            fold.mkdir(parents=True)
+            (fold / "fold_result.json").write_text(
+                json.dumps({"held_out_framework": f"fw{i}", "inputs": inputs}),
+                encoding="utf-8",
+            )
+        return d
+
+    def _current(self) -> dict[str, str]:
+        """Digests that match the files on disk right now."""
+        import hashlib
+
+        from tract.staleness import TRACKED_INPUTS
+
+        out = {}
+        for field, path in TRACKED_INPUTS.items():
+            if path.exists():
+                out[field] = hashlib.sha256(path.read_bytes()).hexdigest()
+        return out
+
+    def test_a_stale_fold_refuses_to_aggregate(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        stale = dict(self._current())
+        stale["all_controls_sha256"] = "0" * 64
+        d = self._results_dir(tmp_path, [stale])
+
+        with pytest.raises(RuntimeError, match="stale"):
+            rpp._assert_results_are_current(d, allow_stale=False)
+
+    def test_current_folds_pass(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The gate must not stop a fresh run."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        d = self._results_dir(tmp_path, [self._current(), self._current()])
+
+        rpp._assert_results_are_current(d, allow_stale=False)
+
+    def test_allow_stale_is_an_explicit_opt_in(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Comparing a stale result against its own recorded inputs stays legal."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        stale = dict(self._current())
+        stale["all_controls_sha256"] = "0" * 64
+        d = self._results_dir(tmp_path, [stale])
+
+        rpp._assert_results_are_current(d, allow_stale=True)
+
+    def test_the_refusal_names_which_input_moved(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """"Stale" with no field name sends the reader to go looking."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        stale = dict(self._current())
+        stale["all_controls_sha256"] = "0" * 64
+        d = self._results_dir(tmp_path, [stale])
+
+        with pytest.raises(RuntimeError, match="all_controls_sha256"):
+            rpp._assert_results_are_current(d, allow_stale=False)
+
+
+class TestPreflightOrderIsPinned:
+    """Preflight order is a decision, so it gets a test rather than a comment.
+
+    The corpus gate was first on its first commit. On a developer machine with
+    the licensed overlay staged that looks fine, because the check passes and
+    the ordering never shows. On a fresh clone it raised before the
+    stack-pin preflight could, so an untested sentence-transformers pin
+    surfaced as a corpus error. CI caught it; a local run never could.
+
+    Order is stack, corpus, tracking: cheapest local check, then a
+    multi-megabyte hash, then a network round trip. All three run before
+    anything billable is created.
+    """
+
+    def test_provision_runs_the_preflights_in_order(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        calls: list[str] = []
+
+        def _stop(*args: object, **kwargs: object) -> object:
+            raise AssertionError("provision reached a billable step")
+
+        monkeypatch.setattr(rpp, "_preflight_training_stack",
+                            lambda: calls.append("stack"))
+        monkeypatch.setattr(rpp, "_preflight_corpus",
+                            lambda: calls.append("corpus"))
+        monkeypatch.setattr(rpp, "_preflight_tracking",
+                            lambda: calls.append("tracking"))
+        monkeypatch.setattr(rpp, "select_pod_configs", _stop)
+        monkeypatch.setattr(rpp, "rank_available_gpus", _stop)
+        monkeypatch.setattr(rpp, "create_pods_parallel", _stop)
+        monkeypatch.setattr(rpp, "_save_pod_state", _stop)
+
+        with pytest.raises(AssertionError, match="billable"):
+            rpp.provision()
+
+        assert calls == ["stack", "corpus", "tracking"]

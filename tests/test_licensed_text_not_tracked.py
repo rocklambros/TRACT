@@ -34,24 +34,25 @@ sources under a "Verbatim sample" heading, a channel nobody had checked because
 the gate that cleared them only knew two frameworks.
 
 Scope is now `tract.licensing.fingerprinted_framework_ids()`: OVERLAY_FRAMEWORK_IDS
-less FINGERPRINT_EXCLUDED_FRAMEWORK_IDS. Two frameworks are deferred, and both
-are deferrals with a named trigger rather than exemptions:
+less FINGERPRINT_EXCLUDED_FRAMEWORK_IDS.
 
-  csa_aicm  Its 243 control statements are deliberately tracked pending an owner
-            ruling on whether CSA's notice permits that. It is outside the
-            overlay tier today, so the entry only stops a future ruling from
-            switching this gate on as a side effect.
-  csa_ccm   Deferred on the same ruling, because the two are one question.
-            MEASURED: 138 of the 243 tracked AICM descriptions are
-            byte-identical, after normalise_for_fingerprint, to a CCM control
-            specification under the SAME control id. Gating csa_ccm therefore
-            reds six tracked AICM-derived artifacts and fails the branch on an
-            unanswered question rather than on a defect.
+As of 2026-08-26 that subtraction removes nothing. FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
+is EMPTY and the scope is OVERLAY_FRAMEWORK_IDS exactly, so every framework whose
+prose is withheld from git is covered here with no deferrals to read.
 
-Trimming the CCM corpus to skip the shared 138 was considered and rejected: it
-produces a gate that passes because it stopped looking. csa_ccm's extractor is
-registered and measured at full coverage, so reversing the deferral is a
-one-line change to a frozenset rather than new code.
+It held two until then, csa_aicm and csa_ccm, and the way they left is worth
+keeping. csa_ccm was in the overlay and outside this corpus, which is the only
+real hole this gate has ever had. It could not simply be added: 138 of csa_aicm's
+243 TRACKED descriptions are byte-identical, after normalise_for_fingerprint, to
+a CCM control specification under the SAME control id, so gating csa_ccm would
+have failed the branch on tracked AICM text rather than on a defect. Owner
+decision D1(b) ruled CSA material redistributable for this project, which made
+csa_ccm's overlay membership a misclassification; it left the tier, its prose is
+tracked, and the conflict went with it.
+
+Trimming the CCM corpus to skip the shared 138 was considered and rejected, then
+and now: it produces a gate that passes because it stopped looking. Nothing here
+was trimmed. The three withheld frameworks are fingerprinted at full coverage.
 """
 from __future__ import annotations
 
@@ -200,7 +201,16 @@ class TestTheFingerprintFileCarriesNoText:
         """The guard behind the tautology above, exercised where it lives.
 
         Reachable in both directions: the unmodified file loads, and the same
-        file with one id removed from `deferred_framework_ids` does not.
+        file with a deferral the code does not declare does not.
+
+        The mismatch is manufactured by ADDING an id, not by removing one.
+        Removing the first element was the original construction and it stopped
+        working on 2026-08-26, when owner decision D1(b) emptied
+        FINGERPRINT_EXCLUDED_FRAMEWORK_IDS: `sorted(frozenset())[1:]` is `[]`,
+        which equals the constant, so the loader was right to accept it and the
+        test failed for being unable to build a bad case. Adding always
+        disagrees, empty set or not, and empty is now the expected steady
+        state.
         """
         data = json.loads(FINGERPRINT_PATH.read_text(encoding="utf-8"))
         good = tmp_path / "good.json"
@@ -210,8 +220,8 @@ class TestTheFingerprintFileCarriesNoText:
         )
 
         data["deferred_framework_ids"] = sorted(
-            FINGERPRINT_EXCLUDED_FRAMEWORK_IDS
-        )[1:]
+            set(FINGERPRINT_EXCLUDED_FRAMEWORK_IDS) | {"csa_ccm"}
+        )
         bad = tmp_path / "bad.json"
         bad.write_text(json.dumps(data), encoding="utf-8")
         with pytest.raises(ValueError, match="deferred_framework_ids"):
@@ -425,10 +435,9 @@ def test_overlay_framework_files_are_not_tracked() -> None:
     """The per-framework JSON for an overlay source must be gitignored.
 
     Widened from RESTRICTED_FRAMEWORK_IDS to OVERLAY_FRAMEWORK_IDS. The narrow
-    form checked two of the four frameworks that route to the gitignored
-    overlay, so dsomm's GPL-3.0 text and csa_ccm's reserved text could have been
-    committed with nothing watching. All four pass today; the point is that the
-    fifth cannot arrive unchecked.
+    form checked two of the frameworks that route to the gitignored overlay, so
+    dsomm's GPL-3.0 text could have been committed with nothing watching. All
+    three pass today; the point is that the fourth cannot arrive unchecked.
     """
     tracked = _tracked_files()
     for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):

@@ -115,13 +115,19 @@ data/processed/frameworks/iso_27001.json
 # while seven sat in git was a distinction no reading supports. The tier
 # comment in tract/config.py carries the full reasoning.
 #
-# These two stay for reasons the five do not share. GPL-3.0's share-alike
-# attaches to the whole work rather than to the adapted part, and csa_ccm's
-# publisher reserves redistribution outright. Their assignments stay tracked
-# and published either way, because a mapping is a fact about two documents
-# rather than a reproduction of either.
+# dsomm stays for a reason the five do not share: GPL-3.0's share-alike
+# attaches to the whole work rather than to the adapted part. Its assignments
+# stay tracked and published either way, because a mapping is a fact about two
+# documents rather than a reproduction of either.
+#
+# csa_ccm.json LEFT this list on 2026-08-26, owner decision D1(b). It had to
+# leave with the tier: OVERLAY_FRAMEWORK_IDS decides what merge_all_controls
+# withholds from the tracked corpus, and this list decides what a fresh clone
+# receives, and the two have to agree. They did not for one commit -- csa_ccm's
+# prose was tracked inside all_controls.json while its per-framework JSON was
+# still ignored, so CI had a framework the corpus described and the tree could
+# not produce. tests/test_corpus_acceptance.py::TestSpecAcceptance caught it.
 data/processed/frameworks/dsomm.json
-data/processed/frameworks/csa_ccm.json
 data/processed/licensed/
 # Repair audit records quote source text verbatim on both sides of a move, so
 # a restricted framework's audit file carries the same licensed prose the two
