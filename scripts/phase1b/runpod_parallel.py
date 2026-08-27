@@ -41,8 +41,9 @@ from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
 # Lightweight on purpose: data_quality pulls neither torch nor datasets, so the
 # operator's machine can enforce the corpus gate without a training stack.
 from tract.training.data_quality import assert_corpus_matches_training_links
-from tract.io import load_json
+from tract.io import atomic_write_json, load_json
 from scripts.phase0.runpod_provision import (
+    PRICE_CLOUD_TYPE,
     is_capacity_error,
     rank_available_gpus,
     create_pods_parallel,
@@ -59,6 +60,13 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase1b"
 POD_STATE_FILE: Final[Path] = PROJECT_ROOT / "scripts" / "phase1b" / ".pod_state.json"
+# Owner-only. The file holds every pod's live IP and SSH port, so a mode any
+# wider hands the fleet's address list to every account on this machine.
+POD_STATE_MODE: Final[int] = 0o600
+# Where the bytes go when the state file will not parse. reap unlinks the state
+# file when it finishes, and the unreadable bytes may still be the only record
+# of a pod its name sweep cannot see.
+POD_STATE_CORRUPT_SUFFIX: Final[str] = ".corrupt"
 
 # A run-scoped key, not the operator's general-purpose identity. The default
 # used to be ~/.ssh/id_ed25519, offered on every handshake to a host whose key
@@ -420,10 +428,16 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
     # sharpest omission was .pod_state.json: it is chmod 600 locally precisely
     # because it holds every pod's live IP and SSH port, and it was being copied
     # to all of them, so owning one pod disclosed the address of the rest.
+    # '*.tmp' and '.pod_state.json.*' close the same hole for the two files that
+    # can now sit BESIDE it and hold the same addresses: the atomic write leaves
+    # '..pod_state.json.<rand>.tmp' if the orchestrator is killed mid-write, and
+    # reap parks unparseable bytes at '.pod_state.json.corrupt'. Neither name is
+    # matched by the exclude that exists for the file they are copies of.
     excludes = " ".join(f"--exclude={pat!r}" for pat in (
         "__pycache__", "*.pyc", ".git", "results", ".mypy_cache", "models",
         "wandb", ".wandb", ".env", "*.db", "data/raw", ".claude", "venv",
-        ".venv", ".pod_state.json", ".runpod_known_hosts", "build",
+        ".venv", ".pod_state.json", ".pod_state.json.*", "*.tmp",
+        ".runpod_known_hosts", "build",
         ".ipynb_checkpoints", ".pytest_cache", ".ruff_cache", "*.egg-info",
         ".DS_Store",
     ))
@@ -485,24 +499,58 @@ def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
     )
 
 
+def _assert_pod_state_is_private(path: Path) -> None:
+    """Refuse to leave the pod roster readable by other local accounts.
+
+    Split out from the write so it can be exercised directly: the mode is the
+    kind of property that is correct until some future change to the write path
+    quietly widens it, and nothing else here would notice a world-readable list
+    of live pod addresses and SSH ports.
+    """
+    mode = path.stat().st_mode & 0o777
+    if mode != POD_STATE_MODE:
+        raise RuntimeError(
+            f"{path} is mode {mode:#o}, not {POD_STATE_MODE:#o}. It holds every "
+            f"pod's live IP and SSH port, so it must not be readable by other "
+            f"accounts on this machine."
+        )
+
+
 def _save_pod_state(
     pods: list[dict[str, Any]], meta: dict[str, Any] | None = None,
 ) -> None:
     POD_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {"pods": pods, "meta": meta or {}}
-    POD_STATE_FILE.write_text(json.dumps(payload, indent=2, sort_keys=True))
-    # Contains live pod IPs and SSH ports. .gitignore covers it; chmod keeps it
-    # off other local accounts too.
-    POD_STATE_FILE.chmod(0o600)
+    # Atomic, because this file is the ONLY local record of which pods are
+    # billing. write_text truncates in place, so a crash, a full disk or a
+    # killed orchestrator part-way through left a file that exists and does not
+    # parse -- and every reader of it then dies on a JSONDecodeError: teardown,
+    # reap, and the scheduled reaper guard that is the last bound on spend once
+    # the orchestrator is gone. A temp file and os.replace() means a reader
+    # sees the previous roster or the new one, never half of either.
+    atomic_write_json(payload, POD_STATE_FILE)
+    # .gitignore covers this path; the mode keeps it off other local accounts.
+    # mkstemp creates the temp at 0600 and os.replace carries that mode across
+    # rather than the target's, so this restates the intent instead of closing
+    # a window -- and the check below is what actually holds it.
+    POD_STATE_FILE.chmod(POD_STATE_MODE)
+    _assert_pod_state_is_private(POD_STATE_FILE)
     logger.info("Pod state saved to %s (%d pods)", POD_STATE_FILE, len(pods))
 
 
 def _read_pod_state() -> dict[str, Any]:
+    """The recorded roster, or raise.
+
+    Deliberately fatal on a file that will not parse. Callers that terminate
+    pods BY ID cannot do anything sensible without the ids, and guessing there
+    would be a silent partial teardown. `reap` is the one caller that can work
+    without them -- it sweeps by name -- and it is the one that catches.
+    """
     if not POD_STATE_FILE.exists():
         raise FileNotFoundError(
             f"No pod state file at {POD_STATE_FILE} — run 'provision' first"
         )
-    raw: Any = json.loads(POD_STATE_FILE.read_text())
+    raw: Any = json.loads(POD_STATE_FILE.read_text(encoding="utf-8"))
     # Tolerate the previous bare-list format so a state file written by an
     # older run can still be read to tear its pods down.
     if isinstance(raw, list):
@@ -514,6 +562,38 @@ def _read_pod_state() -> dict[str, Any]:
         )
     state: dict[str, Any] = raw
     return state
+
+
+def _preserve_corrupt_pod_state() -> None:
+    """Move an unparseable state file aside instead of letting reap delete it.
+
+    reap unlinks the state file on its way out, which is right when the file
+    was understood and its pods dealt with. It is wrong for bytes nothing could
+    read: a truncated record can still name a pod the name sweep cannot see --
+    validation pods carry the `tract-p1b-val` prefix and reap's orphan sweep
+    matches POD_CONFIGS, which holds the test names only -- and those bytes are
+    then the last evidence that pod ever existed.
+
+    A failure to move them is logged and not raised. This runs inside the
+    recovery command, and refusing to reap a billing fleet because a rename
+    failed would be the wrong trade.
+    """
+    destination = POD_STATE_FILE.with_name(
+        POD_STATE_FILE.name + POD_STATE_CORRUPT_SUFFIX
+    )
+    try:
+        size = POD_STATE_FILE.stat().st_size
+        POD_STATE_FILE.replace(destination)
+    except OSError as exc:
+        logger.error(
+            "Could not move the unreadable %s aside (%s). reap will unlink it, "
+            "so copy it now if you want the bytes.", POD_STATE_FILE, exc,
+        )
+        return
+    logger.warning(
+        "Kept the %d unreadable byte(s) at %s. They may still name a pod the "
+        "name sweep cannot match.", size, destination,
+    )
 
 
 def _load_pod_state() -> list[dict[str, Any]]:
@@ -769,6 +849,31 @@ def provision(
     _preflight_training_stack()
     _preflight_corpus()
     _preflight_tracking()
+
+    # Start every round with no recorded host keys. The file only ever
+    # accumulates, and across a campaign's thirty pod-runs drawn from RunPod's
+    # IP and port pool an endpoint eventually comes back attached to a
+    # different machine. ssh then answers "Host key verification failed", which
+    # _is_transient_ssh_failure refuses to retry -- correctly, because a changed
+    # key normally IS a configuration error rather than a blip. Here it is a
+    # false positive that hard-aborts the bootstrap of a fleet that is already
+    # billing.
+    #
+    # Keeping the file across rounds buys no security to weigh against that.
+    # Every pod is created fresh minutes ago, so there is no legitimate earlier
+    # key for a new one to be compared against: an entry from a previous round
+    # describes a host that no longer exists. Within a round the file still
+    # does its job -- accept-new records each pod's key on first contact, and a
+    # key that changes mid-run is still a hard failure, which is the case this
+    # file was introduced for.
+    if KNOWN_HOSTS_FILE.exists():
+        logger.info(
+            "Discarding %s before this round. Its entries describe pods that "
+            "no longer exist, and a reused IP and port would read as a host-key "
+            "failure -- which is not retried.", KNOWN_HOSTS_FILE,
+        )
+    KNOWN_HOSTS_FILE.unlink(missing_ok=True)
+
     configs = select_pod_configs(folds, split)
     logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
@@ -842,6 +947,22 @@ def provision(
         "state": "running",
         "deadline": time.time() + MAX_RUN_HOURS * 3600,
     })
+    # create_pod carries the tier each pod landed on into the state file, so
+    # the record now says WHERE every fold ran and not merely that it did.
+    # Called out here as well because the fallback is silent per pod and the
+    # thing that follows provisioning is _rsync_to, which ships the working
+    # tree -- data/processed/licensed included -- to whichever hosts answered.
+    elsewhere = sorted(
+        p["role"] for p in pods if p.get("cloud_type") != PRICE_CLOUD_TYPE
+    )
+    if elsewhere:
+        logger.warning(
+            "%d of %d fold(s) are on a cloud tier other than %s (or recorded "
+            "none): %s. The licensed corpus is rsynced to those hosts, and the "
+            "budget was priced on %s.",
+            len(elsewhere), len(pods), PRICE_CLOUD_TYPE, elsewhere,
+            PRICE_CLOUD_TYPE,
+        )
     logger.info("All %d pods provisioned and SSH-ready.", len(pods))
     return pods
 
@@ -1497,6 +1618,17 @@ def reap(confirm: bool = False) -> None:
     # killed orchestrator -- is the one where this file is gone or stale.
     # Returning early here made the single recovery command report all-clear
     # on a fleet that was still billing.
+    #
+    # A file that exists and does not parse is that same situation wearing a
+    # different exception, and only FileNotFoundError was caught: a truncated
+    # state file therefore raised JSONDecodeError out of the ONE command that
+    # recovers a fleet -- and out of reaper_guard, which calls reap(confirm=True)
+    # and is the only automatic bound on spend once the orchestrator has died.
+    # ValueError is the right net: json.JSONDecodeError and UnicodeDecodeError
+    # both derive from it, as does _read_pod_state's own refusal of a payload
+    # that is neither a list nor an object. All three mean the same thing here
+    # -- there are no pod ids to work from -- and the name sweep below is what
+    # this command does when there are none.
     try:
         state = _read_pod_state()
     except FileNotFoundError:
@@ -1504,6 +1636,16 @@ def reap(confirm: bool = False) -> None:
             "No state file. Sweeping the account for pods matching this "
             "run's names instead."
         )
+        state = {"pods": [], "meta": {}}
+    except ValueError as exc:
+        logger.error(
+            "%s exists but did not parse: %s. Treating it as absent and "
+            "sweeping the account for pods matching this run's names. That "
+            "sweep is blind to any pod whose name is not in POD_CONFIGS, so "
+            "check the RunPod console before calling this fleet dead.",
+            POD_STATE_FILE, exc,
+        )
+        _preserve_corrupt_pod_state()
         state = {"pods": [], "meta": {}}
 
     pods = state["pods"]
@@ -1674,9 +1816,19 @@ def main() -> int:
                         default="test",
                         help="validation selects arms on 1,265 non-AI items; "
                              "test reports on the pre-registered 147")
-    parser.add_argument("--n-configurations", type=int, default=1,
-                        help="How many arms competed. Sidak-corrects the gate "
-                             "so a winner is not mistaken for a result.")
+    # No default, deliberately. This used to default to 1, and a forgotten flag
+    # then produced an UNCORRECTED nominal interval that is indistinguishable
+    # from a correct one -- no error, no warning, just a gate that priced a
+    # three-arm raffle as though one arm had run. Campaign 2 needs 3 on the
+    # validation aggregates where selection happens and 1 on the single
+    # uncontaminated test round, so neither value is safe as a silent default.
+    # Forcing the operator to state it converts a silent wrong number into a
+    # loud missing argument. See results/phase1b/CAMPAIGN2.md reporting rule 2.
+    parser.add_argument("--n-configurations", type=int, default=None,
+                        help="REQUIRED for `aggregate`. How many arms competed. "
+                             "Sidak-corrects the gate so a winner is not "
+                             "mistaken for a result. Campaign 2: 3 on "
+                             "validation, 1 on the test round.")
     parser.add_argument("--base-model", type=str, default=None,
                         help="Encoder arm: fine-tune this model instead of "
                              "the pinned BGE-large")
@@ -1726,6 +1878,22 @@ def main() -> int:
         raise SystemExit(
             f"Refusing to run arm {arm_flags} into the default results "
             f"directory. Pass a distinct --config-name."
+        )
+
+    # Checked here rather than by argparse's `required=`, because the flag is
+    # only meaningful for the two actions that reach gate_decision. Making it
+    # globally required would force a meaningless number onto `price`, `reap`
+    # and `teardown`, which is how required flags get reflexively set to 1.
+    if args.action in ("full", "aggregate") and args.n_configurations is None:
+        raise SystemExit(
+            "--n-configurations is required for "
+            f"`{args.action}` and has no default. It Sidak-corrects the gate "
+            "for the number of arms that competed, and a wrong value produces "
+            "an interval that looks correct. Campaign 2 pre-registers 3 for "
+            "the validation aggregates where arm selection happens, and 1 for "
+            "the single test round, because selection already happened on a "
+            "disjoint split. See results/phase1b/CAMPAIGN2.md, reporting "
+            "rule 2."
         )
 
     if args.action == "full":

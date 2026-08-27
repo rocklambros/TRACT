@@ -944,7 +944,7 @@ class TestPreflightOrderIsPinned:
     """
 
     def test_provision_runs_the_preflights_in_order(
-        self, monkeypatch: pytest.MonkeyPatch
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         from scripts.phase1b import runpod_parallel as rpp
 
@@ -959,6 +959,10 @@ class TestPreflightOrderIsPinned:
                             lambda: calls.append("corpus"))
         monkeypatch.setattr(rpp, "_preflight_tracking",
                             lambda: calls.append("tracking"))
+        # provision prunes the known-hosts file between the preflights and the
+        # first billable call; point it at a scratch path so a unit test never
+        # deletes the operator's real one.
+        monkeypatch.setattr(rpp, "KNOWN_HOSTS_FILE", tmp_path / "kh")
         monkeypatch.setattr(rpp, "select_pod_configs", _stop)
         monkeypatch.setattr(rpp, "rank_available_gpus", _stop)
         monkeypatch.setattr(rpp, "create_pods_parallel", _stop)
@@ -968,3 +972,464 @@ class TestPreflightOrderIsPinned:
             rpp.provision()
 
         assert calls == ["stack", "corpus", "tracking"]
+
+
+class TestPodStateIsWrittenAtomically:
+    """The state file is the only local record of which pods are billing.
+
+    `write_text` truncates in place, so a crash, a full disk or a killed
+    orchestrator mid-write leaves a file that exists and does not parse. Every
+    reader of it dies on that JSONDecodeError: teardown, reap, and the
+    scheduled reaper guard that is the last bound on spend once the
+    orchestrator is gone. The moment the record is most needed is precisely the
+    moment it can be half-written.
+    """
+
+    def _saved(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+    ) -> tuple[object, Path]:
+        from scripts.phase1b import runpod_parallel as rp
+
+        state_file = tmp_path / ".pod_state.json"
+        monkeypatch.setattr(rp, "POD_STATE_FILE", state_file)
+        return rp, state_file
+
+    def test_the_write_goes_through_the_atomic_helper(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from tract.io import atomic_write_json
+
+        rp, state_file = self._saved(monkeypatch, tmp_path)
+        seen: list[tuple[object, Path]] = []
+
+        def _spy(data: object, path: object) -> None:
+            seen.append((data, Path(str(path))))
+            atomic_write_json(data, Path(str(path)))
+
+        monkeypatch.setattr(rp, "atomic_write_json", _spy)
+        rp._save_pod_state([{"pod_id": "p1"}], meta={"state": "running"})
+
+        assert len(seen) == 1
+        payload, path = seen[0]
+        assert path == state_file
+        assert payload == {"pods": [{"pod_id": "p1"}], "meta": {"state": "running"}}
+
+    def test_a_failed_write_leaves_the_previous_record_intact(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A full disk must not cost the list of pods that are billing."""
+        import tract.io as tio
+
+        rp, state_file = self._saved(monkeypatch, tmp_path)
+        rp._save_pod_state(
+            [{"pod_id": "p1", "name": "tract-p1b-fold0"}], meta={"state": "running"},
+        )
+
+        def _no_space(*args: object, **kwargs: object) -> None:
+            raise OSError(28, "No space left on device")
+
+        monkeypatch.setattr(tio.json, "dump", _no_space)
+        with pytest.raises(OSError):
+            rp._save_pod_state([{"pod_id": "p2"}], meta={"state": "running"})
+
+        kept = json.loads(state_file.read_text(encoding="utf-8"))
+        assert [p["pod_id"] for p in kept["pods"]] == ["p1"]
+        assert [p.name for p in tmp_path.iterdir()] == [".pod_state.json"], (
+            "a partial write must not be left lying beside the record"
+        )
+
+    def test_the_record_is_not_readable_by_other_local_accounts(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """It holds every pod's live IP and SSH port."""
+        rp, state_file = self._saved(monkeypatch, tmp_path)
+        rp._save_pod_state([{"pod_id": "p1", "ip": "203.0.113.7", "port": 22041}])
+
+        assert state_file.stat().st_mode & 0o777 == 0o600
+
+    def test_a_rewrite_does_not_widen_the_mode(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """os.replace() carries the temp file's mode across, not the target's."""
+        rp, state_file = self._saved(monkeypatch, tmp_path)
+        rp._save_pod_state([{"pod_id": "p1"}])
+        rp._save_pod_state([{"pod_id": "p1"}, {"pod_id": "p2"}])
+
+        assert state_file.stat().st_mode & 0o777 == 0o600
+        assert len(json.loads(state_file.read_text(encoding="utf-8"))["pods"]) == 2
+
+    def test_a_world_readable_state_file_is_refused(self, tmp_path: Path) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        state_file = tmp_path / ".pod_state.json"
+        state_file.write_text("{}", encoding="utf-8")
+        state_file.chmod(0o644)
+
+        with pytest.raises(RuntimeError, match="0o644"):
+            rp._assert_pod_state_is_private(state_file)
+
+    def test_the_atomic_temp_file_is_never_shipped_to_a_pod(self) -> None:
+        """`.pod_state.json` is excluded because it names every pod's address.
+
+        atomic_write_json writes `..pod_state.json.<rand>.tmp` beside it, which
+        the existing exclude does not match, and a killed orchestrator leaves
+        that temp behind. The corrupt sidecar reap keeps is the same class.
+        """
+        source = Path("scripts/phase1b/runpod_parallel.py").read_text(
+            encoding="utf-8"
+        )
+        excludes = source.split("excludes = ")[1].split("))")[0]
+        assert '"*.tmp"' in excludes
+        assert '".pod_state.json.*"' in excludes
+
+
+class TestReapSurvivesACorruptStateFile:
+    """`reap` is the one recovery command, and a truncated file killed it.
+
+    reap catches FileNotFoundError to reach its name sweep -- the sweep exists
+    because the situation that strands pods is exactly the one where the state
+    file is gone or stale. A file that exists and does not parse is the same
+    situation wearing a different exception, and it went straight through the
+    handler as a JSONDecodeError. The reaper guard calls reap(confirm=True),
+    so that traceback also removes the only automatic bound on a fleet whose
+    orchestrator has died.
+    """
+
+    def _reap(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+        body: str | None,
+        running: tuple[dict[str, str], ...] = (),
+    ) -> tuple[object, Path, list[list[str]]]:
+        from scripts.phase1b import runpod_parallel as rp
+
+        state_file = tmp_path / ".pod_state.json"
+        if body is not None:
+            state_file.write_text(body, encoding="utf-8")
+        monkeypatch.setattr(rp, "POD_STATE_FILE", state_file)
+        monkeypatch.setattr(rp, "get_running_pods", lambda: list(running))
+        killed: list[list[str]] = []
+        monkeypatch.setattr(
+            rp, "terminate_pods", lambda ids: killed.append(sorted(ids)) or [],
+        )
+        return rp, state_file, killed
+
+    TRUNCATED = '{"pods": [{"pod_id": "p1", "ip": "203.0.113.7", "por'
+    ORPHAN = ({"id": "orphan-1", "name": "tract-p1b-fold0"},)
+
+    def test_a_truncated_state_file_still_sweeps_by_name(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        rp, _, killed = self._reap(
+            monkeypatch, tmp_path, self.TRUNCATED, self.ORPHAN,
+        )
+
+        rp.reap(confirm=True)
+
+        assert killed == [["orphan-1"]]
+
+    def test_a_state_file_of_the_wrong_shape_also_sweeps(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Valid JSON that is not a pod-state object is equally unusable."""
+        rp, _, killed = self._reap(
+            monkeypatch, tmp_path, '"provisioning"', self.ORPHAN,
+        )
+
+        rp.reap(confirm=True)
+
+        assert killed == [["orphan-1"]]
+
+    def test_the_corrupt_case_is_logged_distinctly_from_the_missing_one(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        rp, state_file, _ = self._reap(
+            monkeypatch, tmp_path, self.TRUNCATED, self.ORPHAN,
+        )
+
+        with caplog.at_level("ERROR"):
+            rp.reap(confirm=True)
+
+        assert "did not parse" in caplog.text
+        assert str(state_file) in caplog.text
+
+    def test_the_missing_case_still_says_so(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        rp, _, killed = self._reap(monkeypatch, tmp_path, None, self.ORPHAN)
+
+        with caplog.at_level("WARNING"):
+            rp.reap(confirm=True)
+
+        assert "No state file" in caplog.text
+        assert "did not parse" not in caplog.text
+        assert killed == [["orphan-1"]]
+
+    def test_the_corrupt_bytes_are_kept_for_inspection(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """reap unlinks the state file when it finishes.
+
+        The corrupt bytes may still name a pod the name sweep cannot see, so
+        deleting them would destroy the only remaining record of it.
+        """
+        rp, state_file, _ = self._reap(
+            monkeypatch, tmp_path, self.TRUNCATED, self.ORPHAN,
+        )
+
+        rp.reap(confirm=True)
+
+        kept = state_file.with_name(state_file.name + ".corrupt")
+        assert kept.read_text(encoding="utf-8") == self.TRUNCATED
+        assert not state_file.exists()
+
+    def test_a_corrupt_file_with_nothing_running_reaps_nothing(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Degrading must not invent targets, only survive the parse."""
+        rp, _, killed = self._reap(monkeypatch, tmp_path, self.TRUNCATED, ())
+
+        rp.reap(confirm=True)
+
+        assert killed == []
+
+    def test_teardown_still_refuses_a_corrupt_state_file(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The widening is scoped to the recovery command.
+
+        teardown terminates pods by id, and the ids are what the corrupt file
+        lost. Guessing there would be a silent partial teardown; reap is the
+        command that knows how to work without them.
+        """
+        rp, _, _ = self._reap(monkeypatch, tmp_path, self.TRUNCATED)
+
+        with pytest.raises(json.JSONDecodeError):
+            rp.teardown()
+
+
+class TestBudgetPricesTheTierTheFleetLandsOn:
+    """The budget priced the cheapest tier; provisioning prefers the dearest.
+
+    get_gpu_price asked for the cross-cloud lowest price while create_pod asks
+    for SECURE first. Measured live on 2026-08-26: $2.69/hr unfiltered against
+    $3.29/hr with secureCloud:true, so every budget number understated the
+    fleet by 22.3%.
+    """
+
+    def _captured_input(self, monkeypatch: pytest.MonkeyPatch) -> dict[str, object]:
+        from scripts.phase0 import runpod_provision as rpp
+
+        seen: dict[str, object] = {}
+
+        def _gql(query: str, variables: dict[str, object] | None = None) -> dict:
+            seen.update(variables or {})
+            return {"gpuTypes": [{"lowestPrice": {"uninterruptablePrice": 3.29}}]}
+
+        monkeypatch.setattr(rpp, "_gql", _gql)
+        assert rpp.get_gpu_price("NVIDIA H100 80GB HBM3", gpu_count=2) == 3.29
+        gpu_input = seen["input"]
+        assert isinstance(gpu_input, dict)
+        return gpu_input
+
+    def test_the_price_query_asks_for_the_secure_tier(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        assert self._captured_input(monkeypatch)["secureCloud"] is True
+
+    def test_the_gpu_count_still_reaches_the_query(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The tier filter is added to the input, not swapped in for it."""
+        assert self._captured_input(monkeypatch)["gpuCount"] == 2
+
+    def test_the_priced_tier_is_the_tier_create_pod_prefers(self) -> None:
+        """One constant drives both, so they cannot drift apart again."""
+        from scripts.phase0 import runpod_provision as rpp
+
+        assert rpp.CLOUD_TYPE_PREFERENCE[0] == rpp.CLOUD_TYPE_SECURE
+        assert rpp.PRICE_CLOUD_TYPE == rpp.CLOUD_TYPE_PREFERENCE[0]
+
+
+class TestTheRecordShowsWhereEachFoldRan:
+    """create_pod falls back SECURE -> COMMUNITY without saying so.
+
+    _rsync_to ships data/processed/licensed to whichever host answered, so the
+    tier a fold landed on is a fact about where licensed corpus went, not a
+    curiosity.
+    """
+
+    def _api(
+        self, monkeypatch: pytest.MonkeyPatch, accepts: str,
+    ) -> list[str]:
+        from scripts.phase0 import runpod_provision as rpp
+
+        asked: list[str] = []
+
+        class _Resp:
+            def __init__(self, payload: object) -> None:
+                self._payload = payload
+
+            def json(self) -> object:
+                return self._payload
+
+        def _post(
+            url: str, headers: object = None, json: dict | None = None,
+            timeout: int = 0,
+        ) -> _Resp:
+            cloud = (json or {})["cloudType"]
+            asked.append(cloud)
+            if cloud != accepts:
+                return _Resp({"error": "no instances currently available"})
+            return _Resp({"id": "pod-1"})
+
+        # _headers() shells out to `pass`; nothing here may touch the store.
+        monkeypatch.setattr(rpp, "_headers", lambda: {})
+        monkeypatch.setattr(rpp.requests, "post", _post)
+        monkeypatch.setattr(
+            rpp, "_wait_for_ssh",
+            lambda pod_id: {"ip": "203.0.113.7", "port": 22041},
+        )
+        return asked
+
+    def test_a_pod_on_the_preferred_tier_records_it(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_provision as rpp
+
+        asked = self._api(monkeypatch, accepts="SECURE")
+        pod = rpp.create_pod("NVIDIA H100 80GB HBM3", name="tract-p1b-fold0")
+
+        assert asked == ["SECURE"]
+        assert pod["cloud_type"] == "SECURE"
+
+    def test_a_silent_fallback_to_community_is_recorded(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_provision as rpp
+
+        asked = self._api(monkeypatch, accepts="COMMUNITY")
+        pod = rpp.create_pod("NVIDIA H100 80GB HBM3", name="tract-p1b-fold0")
+
+        assert asked == ["SECURE", "COMMUNITY"]
+        assert pod["cloud_type"] == "COMMUNITY"
+
+    def test_the_tier_is_persisted_and_a_fallback_is_called_out(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [
+            {"pod_id": "a", "role": "MITRE ATLAS", "ip": "203.0.113.7",
+             "port": 22041, "cloud_type": "SECURE"},
+            {"pod_id": "b", "role": "NIST AI 100-2", "ip": "203.0.113.8",
+             "port": 22042, "cloud_type": "COMMUNITY"},
+        ]
+        saved: list[list[dict[str, object]]] = []
+
+        monkeypatch.setattr(rpp, "_preflight_training_stack", lambda: None)
+        monkeypatch.setattr(rpp, "_preflight_corpus", lambda: "d" * 64)
+        monkeypatch.setattr(rpp, "_preflight_tracking", lambda: None)
+        monkeypatch.setattr(rpp, "KNOWN_HOSTS_FILE", tmp_path / "kh")
+        monkeypatch.setattr(
+            rpp, "rank_available_gpus",
+            lambda **kwargs: [("NVIDIA H100 80GB HBM3", 3.29)],
+        )
+        monkeypatch.setattr(rpp, "get_gpu_price", lambda *a, **k: 3.29)
+        monkeypatch.setattr(rpp, "create_pods_parallel", lambda *a, **k: pods)
+        monkeypatch.setattr(
+            rpp, "_save_pod_state",
+            lambda p, meta=None: saved.append(p),
+        )
+
+        with caplog.at_level("WARNING"):
+            got = rpp.provision(folds=["MITRE ATLAS", "NIST AI 100-2"])
+
+        assert [p["cloud_type"] for p in got] == ["SECURE", "COMMUNITY"]
+        # provision records intent first, then the fleet it actually created.
+        assert saved[-1] == pods
+        assert "NIST AI 100-2" in caplog.text
+        assert "licensed" in caplog.text
+
+
+class TestKnownHostsIsFreshEveryRound:
+    """A stale host key is a hard bootstrap abort on a billing fleet.
+
+    The file accumulates across rounds and nothing prunes it. Thirty pod-runs
+    drawn from one IP and port pool eventually reuse an endpoint whose key has
+    changed, ssh answers "Host key verification failed", and
+    _is_transient_ssh_failure refuses to retry that on purpose -- correctly,
+    because it is a configuration error rather than a blip. On a fresh fleet it
+    is a false positive with no legitimate prior key behind it.
+    """
+
+    def _provision_up_to_the_first_billable_step(
+        self, monkeypatch: pytest.MonkeyPatch, known_hosts: Path
+    ) -> object:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        def _stop(*args: object, **kwargs: object) -> object:
+            raise AssertionError("provision reached a billable step")
+
+        monkeypatch.setattr(rpp, "_preflight_training_stack", lambda: None)
+        monkeypatch.setattr(rpp, "_preflight_corpus", lambda: "d" * 64)
+        monkeypatch.setattr(rpp, "_preflight_tracking", lambda: None)
+        monkeypatch.setattr(rpp, "KNOWN_HOSTS_FILE", known_hosts)
+        monkeypatch.setattr(rpp, "select_pod_configs", _stop)
+        return rpp
+
+    def test_provision_prunes_the_accumulated_host_keys(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        known_hosts = tmp_path / ".runpod_known_hosts"
+        known_hosts.write_text(
+            "[203.0.113.7]:22041 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI\n",
+            encoding="utf-8",
+        )
+        rpp = self._provision_up_to_the_first_billable_step(monkeypatch, known_hosts)
+
+        with pytest.raises(AssertionError, match="billable"):
+            rpp.provision()
+
+        assert not known_hosts.exists()
+
+    def test_a_first_run_with_no_host_keys_is_not_an_error(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        known_hosts = tmp_path / ".runpod_known_hosts"
+        rpp = self._provision_up_to_the_first_billable_step(monkeypatch, known_hosts)
+
+        with pytest.raises(AssertionError, match="billable"):
+            rpp.provision()
+
+        assert not known_hosts.exists()
+
+    def test_the_pruning_happens_before_any_pod_exists(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Pruning after the fleet is up would delete the keys just accepted."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        known_hosts = tmp_path / ".runpod_known_hosts"
+        known_hosts.write_text("stale\n", encoding="utf-8")
+        order: list[str] = []
+
+        monkeypatch.setattr(rpp, "_preflight_training_stack", lambda: None)
+        monkeypatch.setattr(rpp, "_preflight_corpus", lambda: "d" * 64)
+        monkeypatch.setattr(rpp, "_preflight_tracking", lambda: None)
+        monkeypatch.setattr(rpp, "KNOWN_HOSTS_FILE", known_hosts)
+
+        def _configs(*args: object, **kwargs: object) -> list[dict[str, str]]:
+            order.append("known_hosts_gone" if not known_hosts.exists() else "stale")
+            raise AssertionError("provision reached a billable step")
+
+        monkeypatch.setattr(rpp, "select_pod_configs", _configs)
+
+        with pytest.raises(AssertionError, match="billable"):
+            rpp.provision()
+
+        assert order == ["known_hosts_gone"]
