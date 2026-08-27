@@ -129,6 +129,14 @@ data/processed/frameworks/iso_27001.json
 # not produce. tests/test_corpus_acceptance.py::TestSpecAcceptance caught it.
 data/processed/frameworks/dsomm.json
 data/processed/licensed/
+
+# An overlay transfer archive carries ETSI, ISO 27001 and DSOMM prose.
+# scripts/stage_licensed_overlay.py refuses to write one inside the tree, but a
+# plain `tar czf` does not, and the whole point of these lines is that the
+# escape happens through the channel nobody predicted. Belt and braces.
+*.tar.gz
+*.tgz
+*.tar
 # Repair audit records quote source text verbatim on both sides of a move, so
 # a restricted framework's audit file carries the same licensed prose the two
 # rules above keep out of git.

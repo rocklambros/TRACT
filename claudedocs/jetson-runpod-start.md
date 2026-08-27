@@ -63,22 +63,32 @@ root:
 >    Work on `campaign-2-results`, already cut from `main` at `f0a6968`. Do
 >    not use `semantic-rebuild` or `campaign-2`; both are merged and
 >    finished.
-> 2. Verify the environment against the "Before you provision" checklist.
+> 2. Stage the licensed overlay FIRST; nothing else can proceed without it.
+>    It is not in GitHub and cannot be: ETSI, ISO 27001 and DSOMM reserve or
+>    condition redistribution. ISO 27001 is one of the five VALIDATION folds,
+>    so without it that fold has no controls and arm selection is impossible.
+>    Run `python -m scripts.stage_licensed_overlay --verify`. If it reports
+>    missing, STOP and tell me: I have to pack it on the Mac with
+>    `--pack` and send you a 2.7 MB archive. Do not work around this, and in
+>    particular do not regenerate the training-links sidecar to make the gate
+>    pass -- that records the short corpus as correct and trains 7.8% under
+>    while reporting normally.
+> 3. Verify the environment against the "Before you provision" checklist.
 >    Report each item as pass or fail with the command output that settled it.
 >    Stop if any fails.
-> 3. Read "Adversarial premortem: the orchestrator". Confirm or refute P1, P5
+> 4. Read "Adversarial premortem: the orchestrator". Confirm or refute P1, P5
 >    and P6 on this machine by running the code, not by reading it, and apply
 >    the P1 and P5 mitigations. P2, P3 and P4 are already fixed; re-verify
 >    them by running their tests rather than by reading the diff. Then run
 >    your own `/adversarial-premortem-complete` pass over
 >    `scripts/phase1b/runpod_parallel.py`, because mine was one reviewer and
 >    the skill uses six. Tell me what you fixed and what you parked.
-> 4. Run the campaign per `results/phase1b/CAMPAIGN2.md`. Five arms on
+> 5. Run the campaign per `results/phase1b/CAMPAIGN2.md`. Five arms on
 >    validation, then the test set once with the winner. All five arms re-run.
 >    Do not reuse the A1 or A2 results already in the repository.
-> 5. After each `collect`, confirm `git status` shows the new fold results,
+> 6. After each `collect`, confirm `git status` shows the new fold results,
 >    run the licensed-text gate, commit, and push.
-> 6. After the test round only, run the agentic smoke test once on the winning
+> 7. After the test round only, run the agentic smoke test once on the winning
 >    arm, against the pass condition already committed in
 >    `data/eval/agentic_smoke_test.json`. It is six items. Report it in prose
 >    as "n of 6". Do not turn it into a metric and do not re-select an arm on

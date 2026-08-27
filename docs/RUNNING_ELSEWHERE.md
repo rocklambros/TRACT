@@ -70,7 +70,42 @@ costs a provisioning round trip. It is the difference between a run that is
 
 ## Staging the licensed sources
 
-Two options. Neither goes through GitHub.
+**This is not optional and there is no way to make GitHub carry it.** ETSI's
+notice requires written permission to reproduce, ISO/IEC 27001's is a
+single-user store licence, and DSOMM is GPL-3.0 whose share-alike a CC0 grant
+cannot carry. Those bytes cannot enter this repository, which is the whole
+reason the overlay and the fingerprint gate exist.
+
+**ISO 27001 IS ONE OF THE FIVE VALIDATION FOLDS.** A machine without the
+overlay does not run a slightly worse campaign: that fold has no controls at
+all, and arm selection happens on validation. Since 2026-08-26 `provision`
+refuses rather than letting it start.
+
+### The short way: pack and copy, about 2.7 MB
+
+On a machine that HAS the sources:
+
+```bash
+python -m scripts.stage_licensed_overlay --pack ~/tract-overlay.tar.gz
+```
+
+Copy that one file across by whatever channel you already trust (`scp`, a USB
+stick, AirDrop). It is not going through GitHub and must not. Then:
+
+```bash
+python -m scripts.stage_licensed_overlay --unpack ~/tract-overlay.tar.gz
+python -m scripts.stage_licensed_overlay --verify
+rm ~/tract-overlay.tar.gz          # it carries licensed text
+```
+
+`--verify` prints the corpus digest, which must match `corpus_sha256` in
+`data/training/hub_links_training.meta.json`. `--pack` refuses to write inside
+the working tree, because an archive of licensed prose sitting there is one
+`git add -A` from being the escape this apparatus exists to prevent.
+
+### The two longer options
+
+Both predate the script and still work.
 
 **Option A, transfer the raw sources and re-parse.** Copy `data/raw/` from a
 machine that has it, then:
@@ -99,9 +134,19 @@ git on the receiving machine too. Both are already in `.gitignore`; do not force
 them in. A tree-wide fingerprint gate carries 21,158 n-grams from ETSI, ISO 27001
 and DSOMM and fails any tracked file reproducing twelve consecutive words.
 
-**Option C, accept the shortfall.** Train on 4,048 links deliberately. Legitimate
-for a smoke test, and it is not comparable to any figure measured on 4,389. Say
-so wherever the result is quoted, and record the corpus digest with it.
+**Option C, accept the shortfall. WITHDRAWN 2026-08-26, and it was worse than
+this entry admitted.** It used to read: train on 4,048 links deliberately,
+legitimate for a smoke test, not comparable to any figure measured on 4,389.
+
+Two things are wrong with that. `provision` now refuses on a corpus mismatch,
+so it is not reachable. And the cost was never just 341 training links: **ISO
+27001 is one of the five VALIDATION folds** and is absent from the tracked
+corpus entirely, so a validation campaign without the overlay produces no
+number at all for a fifth of the split. Arm selection happens on validation.
+
+If you genuinely want a machinery smoke test on an unstaged clone, run a
+single TEST-split fold, whose five frameworks are all tracked, and say plainly
+that it exercised the pipeline and measured nothing about anchors.
 
 ## Credentials
 
