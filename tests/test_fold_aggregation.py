@@ -9,6 +9,7 @@ indicators from every fold.
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -21,7 +22,7 @@ pytest.importorskip("numpy")
 pytest.importorskip("torch", reason="needs the phase0 extra")
 pytest.importorskip("datasets", reason="needs the phase0 extra")
 
-from tract.config import FOLD_RESULT_FILENAME
+from tract.config import FOLD_RESULT_FILENAME, PROJECT_ROOT
 from tract.training.orchestrate import (
     aggregate_fold_results,
     load_fold_results,
@@ -31,17 +32,28 @@ from tract.training.orchestrate import (
 def _write_fold(
     root: Path,
     framework: str,
-    indicators: list[int],
+    indicators: list[float],
     git_sha: str = "abc1234",
-    zero_shot: list[int] | None = None,
+    zero_shot: list[float] | None = None,
     inputs: dict[str, str | None] | None = None,
     config: dict[str, object] | None = None,
+    metrics: dict[str, float] | None = None,
+    zero_shot_metrics: dict[str, float] | None = None,
 ) -> None:
+    """Write one fold_result.json.
+
+    metrics defaults to the summary the indicators actually imply, which is
+    what a real producer writes. Passing it explicitly is how a test states
+    the case where a record's two accounts of its own hit@1 disagree.
+    """
     fold_dir = root / f"fold_{framework.replace(' ', '_')}"
     fold_dir.mkdir(parents=True, exist_ok=True)
     record = {
         "held_out_framework": framework,
-        "metrics": {"hit_at_1": sum(indicators) / len(indicators)},
+        "metrics": (
+            {"hit_at_1": sum(indicators) / len(indicators)}
+            if metrics is None else metrics
+        ),
         "hit1_indicators": indicators,
         "n_eval_items": len(indicators),
         "n_training_pairs": 100,
@@ -53,7 +65,10 @@ def _write_fold(
     if inputs is not None:
         record["inputs"] = inputs
     if zero_shot is not None:
-        record["zero_shot"] = {"hit1_indicators": zero_shot}
+        block: dict[str, object] = {"hit1_indicators": zero_shot}
+        if zero_shot_metrics is not None:
+            block["metrics"] = zero_shot_metrics
+        record["zero_shot"] = block
     (fold_dir / FOLD_RESULT_FILENAME).write_text(json.dumps(record), encoding="utf-8")
 
 
@@ -439,3 +454,364 @@ class TestConfigurationSeparation:
             branch_balance_temperature=3.0, max_seq_length=8192))
         assert len(load_fold_results(
             tmp_path, expected_frameworks=self._FRAMEWORKS)) == 2
+
+
+class TestIndicatorDomain:
+    """Every guard above this class checks SHAPE. None of them checked VALUE.
+
+    A red-team pass wrote five fold_result.json files whose hit1_indicators
+    were all 7.0, ran them through the real load_fold_results ->
+    aggregate_fold_results -> gate_decision path, and got "AGGREGATE hit@1
+    (micro): 7.0000" with point_estimate_pass, ci_low_pass and verdicts_agree
+    all true. Presence, length, pairing, arm, inputs and git SHA were every
+    one of them satisfied: nothing between the file and the headline number
+    ever asked what the numbers meant.
+    """
+
+    # The five folds of the Campaign 2 arms, so the replay is the attack as it
+    # was actually run rather than a two-fold miniature of it.
+    _CAMPAIGN_FOLDS = ("ASVS", "CAPEC", "CWE", "ISO_27001", "NIST_800-53_v5")
+
+    def test_the_fabricated_seven_campaign_is_refused(self, tmp_path: Path) -> None:
+        for framework in self._CAMPAIGN_FOLDS:
+            _write_fold(tmp_path, framework, [7] * 4, zero_shot=[1, 0, 0, 0])
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(
+                tmp_path, expected_frameworks=set(self._CAMPAIGN_FOLDS),
+            )
+
+        message = str(excinfo.value)
+        # The file, so the reader knows which fold to go and look at.
+        assert "fold_ASVS" in message
+        assert FOLD_RESULT_FILENAME in message
+        # The field and the value, so the reader knows what they are looking at.
+        assert "hit1_indicators" in message
+        assert "7" in message
+
+    def test_the_fabricated_campaign_never_reaches_an_aggregate(
+        self, tmp_path: Path
+    ) -> None:
+        """The attack's payoff was a number, so assert the number never exists."""
+        for framework in self._CAMPAIGN_FOLDS:
+            _write_fold(tmp_path, framework, [7] * 4, zero_shot=[1, 0, 0, 0])
+
+        with pytest.raises(ValueError):
+            aggregate_fold_results(load_fold_results(
+                tmp_path, expected_frameworks=set(self._CAMPAIGN_FOLDS),
+            ))
+
+    def test_a_probability_is_not_an_indicator(self, tmp_path: Path) -> None:
+        """The producer-side version of the same defect.
+
+        hit1_indicators and the raw cosine similarities are both per-item float
+        arrays of the same length. Writing the wrong one is a one-line mistake
+        that every shape check in this file passes.
+        """
+        _write_fold(tmp_path, "A", [1, 0, 0.5, 1])
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        assert "0.5" in str(excinfo.value)
+
+    def test_the_zero_shot_baseline_is_held_to_the_same_domain(
+        self, tmp_path: Path
+    ) -> None:
+        """The delta is trained minus baseline, so a poisoned baseline is a
+        poisoned gate."""
+        _write_fold(tmp_path, "A", [1, 0, 1], zero_shot=[1, 0, 7])
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        message = str(excinfo.value)
+        assert "zero_shot" in message
+        assert "7" in message
+
+    def test_the_error_quotes_the_bad_values_without_dumping_the_array(
+        self, tmp_path: Path
+    ) -> None:
+        """A 1,400-item fold must not print 1,400 numbers into a CI log."""
+        _write_fold(tmp_path, "A", list(range(2, 40)))
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        message = str(excinfo.value)
+        assert "2, 3, 4, 5, 6, 7, 8, 9" in message
+        assert "and 30 more distinct values" in message
+
+    def test_a_non_numeric_entry_is_named_rather_than_crashing(
+        self, tmp_path: Path
+    ) -> None:
+        """A truncated or hand-edited record can hold a string or a null.
+
+        The check must report those as offending values, not raise TypeError
+        from inside a comparison and leave the reader with a stack trace.
+        """
+        _write_fold(tmp_path, "A", [1, 0], metrics={"hit_at_1": 0.5})
+        path = tmp_path / "fold_A" / FOLD_RESULT_FILENAME
+        record = json.loads(path.read_text(encoding="utf-8"))
+        record["hit1_indicators"] = [1, None, "1"]
+        record["n_eval_items"] = 3
+        path.write_text(json.dumps(record), encoding="utf-8")
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        message = str(excinfo.value)
+        assert "None" in message
+        assert "'1'" in message
+
+    def test_legitimate_indicators_still_load(self, tmp_path: Path) -> None:
+        """Ints and floats both, because two producers write each.
+
+        run_single_fold casts to int; rescore_predictions.py writes
+        hit1.tolist() off a float array. Both are legitimate and both must pass.
+        """
+        _write_fold(tmp_path, "A", [1, 0, 1])
+        _write_fold(tmp_path, "B", [1.0, 0.0], zero_shot=[0.0, 0.0])
+
+        records = load_fold_results(tmp_path, expected_frameworks={"A", "B"})
+
+        assert [r["held_out_framework"] for r in records] == ["A", "B"]
+        assert records[1]["hit1_indicators"] == [1.0, 0.0]
+
+
+class TestSummaryAgreesWithIndicators:
+    """A fold record states its hit@1 twice and nothing made them agree.
+
+    metrics.hit_at_1 is what a human reads; hit1_indicators is what the micro
+    average, the bootstrap CI and the gate are computed from. The domain check
+    above catches an array that was never indicators. This catches the subtler
+    producer-side case: a well-formed array that no longer describes the
+    summary sitting beside it in the same file.
+    """
+
+    def test_a_summary_that_disagrees_with_its_own_indicators_is_refused(
+        self, tmp_path: Path
+    ) -> None:
+        _write_fold(tmp_path, "A", [1, 0, 1, 0], metrics={"hit_at_1": 0.9})
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        message = str(excinfo.value)
+        assert "fold_A" in message
+        # Both numbers, because the reader cannot tell which one moved.
+        assert "0.9" in message
+        assert "0.5" in message
+
+    def test_one_flipped_indicator_in_a_large_fold_is_caught(
+        self, tmp_path: Path
+    ) -> None:
+        """The tolerance must not be wide enough to hide a real edit.
+
+        1,000 items, one indicator changed after the summary was written: the
+        two accounts differ by 0.001, six orders of magnitude above the
+        float-noise tolerance.
+        """
+        indicators = [1] * 500 + [0] * 500
+        _write_fold(tmp_path, "A", indicators, metrics={"hit_at_1": 0.501})
+
+        with pytest.raises(ValueError, match="disagree"):
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+    def test_float_noise_does_not_trip_it(self, tmp_path: Path) -> None:
+        """The two numbers are computed in two modules, so allow the last bit.
+
+        A fold that is genuinely one-third correct must load whether its
+        summary was written by sum/n or by np.mean.
+        """
+        _write_fold(tmp_path, "A", [1, 0, 0], metrics={"hit_at_1": 1 / 3 + 1e-12})
+
+        records = load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        assert len(records) == 1
+        assert records[0]["metrics"]["hit_at_1"] == pytest.approx(1 / 3, abs=1e-9)
+
+    def test_a_record_with_no_hit_at_1_is_refused(self, tmp_path: Path) -> None:
+        """Skipping the check when the field is absent is how guards die.
+
+        Every producer of this file writes metrics.hit_at_1; all 32 committed
+        records carry it. A record without it was assembled somewhere else,
+        which is exactly the case this check exists for.
+        """
+        _write_fold(tmp_path, "A", [1, 0], metrics={})
+
+        with pytest.raises(ValueError, match="hit_at_1"):
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+    def test_a_non_numeric_summary_is_refused(self, tmp_path: Path) -> None:
+        _write_fold(tmp_path, "A", [1, 0])
+        path = tmp_path / "fold_A" / FOLD_RESULT_FILENAME
+        record = json.loads(path.read_text(encoding="utf-8"))
+        record["metrics"]["hit_at_1"] = "0.5"
+        path.write_text(json.dumps(record), encoding="utf-8")
+
+        with pytest.raises(ValueError, match="hit_at_1"):
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+    def test_the_zero_shot_summary_is_cross_checked_when_present(
+        self, tmp_path: Path
+    ) -> None:
+        _write_fold(
+            tmp_path, "A", [1, 0], zero_shot=[0, 0],
+            zero_shot_metrics={"hit_at_1": 0.25},
+        )
+
+        with pytest.raises(ValueError) as excinfo:
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+        message = str(excinfo.value)
+        assert "zero_shot" in message
+        assert "0.25" in message
+
+    def test_a_zero_shot_block_of_indicators_alone_still_loads(
+        self, tmp_path: Path
+    ) -> None:
+        """The block is legitimately allowed to carry indicators and nothing
+        else; the pairing check is what makes it useful, not the summary."""
+        _write_fold(tmp_path, "A", [1, 0], zero_shot=[0, 0])
+
+        assert len(load_fold_results(tmp_path, expected_frameworks={"A"})) == 1
+
+    def test_a_fold_with_no_eval_items_is_refused(self, tmp_path: Path) -> None:
+        """Zero items passes the length check (0 == 0) and divides by zero here."""
+        fold_dir = tmp_path / "fold_A"
+        fold_dir.mkdir(parents=True)
+        (fold_dir / FOLD_RESULT_FILENAME).write_text(
+            json.dumps({
+                "held_out_framework": "A",
+                "metrics": {"hit_at_1": 0.0},
+                "hit1_indicators": [],
+                "n_eval_items": 0,
+            }),
+            encoding="utf-8",
+        )
+
+        with pytest.raises(ValueError, match="empty"):
+            load_fold_results(tmp_path, expected_frameworks={"A"})
+
+
+class TestAggregateRangeGuard:
+    """The loader is not on every path into the aggregate.
+
+    run_experiment hands aggregate_fold_results the in-memory dicts
+    run_single_fold returned; they never touch a file and never meet the
+    domain check. One guard is not enough, which is the entire lesson of the
+    7.0 replay above.
+    """
+
+    def test_a_micro_mean_outside_zero_one_is_refused(self) -> None:
+        with pytest.raises(ValueError, match="outside"):
+            aggregate_fold_results([
+                {"held_out_framework": "A", "hit1_indicators": [7, 7],
+                 "n_eval_items": 2},
+            ])
+
+    def test_the_macro_figure_is_checked_independently_of_the_micro(self) -> None:
+        """A large clean fold can drag the micro back into range on its own.
+
+        100 zeros pooled with a single 3.0 gives a micro of 0.0297, which no
+        range check on the micro alone would ever flag. The macro average of
+        the same two folds is 1.5.
+        """
+        folds = [
+            {"held_out_framework": "Big", "hit1_indicators": [0] * 100,
+             "n_eval_items": 100},
+            {"held_out_framework": "Tiny", "hit1_indicators": [3],
+             "n_eval_items": 1},
+        ]
+
+        with pytest.raises(ValueError, match="macro"):
+            aggregate_fold_results(folds)
+
+    def test_a_perfect_fold_is_not_a_false_positive(self) -> None:
+        """1.0 is a legitimate hit rate and sits exactly on the bound."""
+        result = aggregate_fold_results([
+            {"held_out_framework": "A", "hit1_indicators": [1, 1, 1],
+             "n_eval_items": 3},
+            {"held_out_framework": "B", "hit1_indicators": [1, 1],
+             "n_eval_items": 2},
+        ])
+
+        assert result["mean"] == pytest.approx(1.0)
+        assert result["macro_mean"] == pytest.approx(1.0)
+
+    def test_a_shut_out_fold_is_not_a_false_positive(self) -> None:
+        """And so is 0.0, on the other bound."""
+        result = aggregate_fold_results([
+            {"held_out_framework": "A", "hit1_indicators": [0, 0],
+             "n_eval_items": 2},
+        ])
+
+        assert result["mean"] == pytest.approx(0.0)
+        assert result["macro_mean"] == pytest.approx(0.0)
+
+
+class TestTheGuardsAcceptRealResults:
+    """A false positive here destroys a paid run's output.
+
+    These assertions sit on the path that reads the campaign's real results,
+    so they are held to the committed evidence: every fold_result.json git
+    knows about under results/phase1b must still load, and must still load
+    for the reasons the guards state rather than by accident. If a real
+    record ever fails one of them, the record is the finding -- the assertion
+    does not get loosened to make the suite green.
+    """
+
+    def _committed_records(self) -> dict[Path, list[Path]]:
+        """Committed fold records, grouped by experiment directory.
+
+        git rather than a glob: a developer's uncommitted scratch run under
+        results/phase1b is not evidence anyone published, and sweeping it in
+        would fail this test for a reason that has nothing to do with the
+        guards.
+        """
+        proc = subprocess.run(
+            ["git", "ls-files", "results/phase1b/*/fold_*/" + FOLD_RESULT_FILENAME],
+            cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=30,
+        )
+        assert proc.returncode == 0, proc.stderr
+        by_experiment: dict[Path, list[Path]] = {}
+        for line in proc.stdout.splitlines():
+            path = PROJECT_ROOT / line.strip()
+            by_experiment.setdefault(path.parent.parent, []).append(path)
+        return by_experiment
+
+    def test_every_committed_fold_record_still_loads(self) -> None:
+        by_experiment = self._committed_records()
+
+        # The published LOFO arms and the Campaign 2 arm the remaining
+        # configurations are built from. Naming them means a checkout that
+        # lost the results fails here instead of passing over an empty set.
+        names = {d.name for d in by_experiment}
+        assert {"c2_A1_prose_sw_bge", "lofo_prose", "lofo_title_only"} <= names
+
+        checked = 0
+        for experiment, paths in sorted(by_experiment.items()):
+            expected = {
+                json.loads(p.read_text(encoding="utf-8"))["held_out_framework"]
+                for p in paths
+            }
+            records = load_fold_results(experiment, expected_frameworks=expected)
+            assert len(records) == len(paths), experiment
+            checked += len(records)
+
+        assert checked >= 30, f"only {checked} committed fold records were checked"
+
+    def test_every_committed_record_is_genuinely_in_domain(self) -> None:
+        """Stated here too, so the evidence survives a change to the loader."""
+        for paths in self._committed_records().values():
+            for path in paths:
+                record = json.loads(path.read_text(encoding="utf-8"))
+                indicators = record["hit1_indicators"]
+                assert set(indicators) <= {0, 1}, path
+                assert record["metrics"]["hit_at_1"] == pytest.approx(
+                    sum(indicators) / len(indicators), abs=1e-9,
+                ), path
+                zero_shot = record.get("zero_shot") or {}
+                if "hit1_indicators" in zero_shot:
+                    assert set(zero_shot["hit1_indicators"]) <= {0, 1}, path
