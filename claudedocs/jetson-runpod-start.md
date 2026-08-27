@@ -4,21 +4,23 @@ Written on the Mac, 2026-08-20. **Both pre-provisioning gates were closed on
 the Mac on 2026-08-26**, so this file now describes a run that is cleared to
 provision. Read it before provisioning anything.
 
-**Start here: `git checkout campaign-2`.** It is cut from `main` at `753f614`,
-which is the merge of PR #62. `semantic-rebuild` is merged and finished.
+**Start here: `git checkout campaign-2-results`.** It is cut from `main` at
+`f0a6968`, the merge of PR #72, which carries every Mac-side change this
+briefing describes. `semantic-rebuild` and `campaign-2` are both merged and
+finished; do not use either.
 
-**PR #72 is open as a draft against `main` and exists so this branch gets CI.**
-The workflow triggers on `push: [main]` and on `pull_request`, so a plain
-branch push runs nothing. Without that PR every campaign commit would land
-unchecked. After each push, confirm all 8 jobs are green before you treat a
-result as banked.
+**A draft PR is open for this branch and exists so it gets CI.** The workflow
+triggers on `push: [main]` and on `pull_request`, so a plain branch push runs
+NOTHING. Without that PR every campaign commit would land unchecked. After
+each push, confirm all 8 jobs are green before you treat a result as banked.
+If you ever cut another branch, open a draft PR for it the same day.
 
 The two gates and their state:
 
 1. **Four owner decisions answered and committed.** DONE 2026-08-26. The
    decision record at the end of "Owner decisions" has four filled rows.
    **Do not re-ask them.** D3 was answered (a), so the corpus rebuild is
-   merged and Campaign 2 runs on `campaign-2`.
+   merged and Campaign 2 runs on `campaign-2-results`.
 2. **P2 and P3 from the premortem fixed.** DONE 2026-08-26 in commit
    `90a5f15`, with tests in `tests/test_runpod_safety.py`. P2 could abandon
    four healthy folds and leave five GPUs billing. P3 could destroy a
@@ -58,8 +60,9 @@ root:
 >    decision record at the end of "Owner decisions" has four filled rows —
 >    read them, do not ask me again. P2 and P3 were fixed in commit `90a5f15`;
 >    run `pytest tests/test_runpod_safety.py -q` and confirm it passes here.
->    Work on `campaign-2`, already cut from `main` at `753f614`. Do not use
->    `semantic-rebuild`; it is merged and finished.
+>    Work on `campaign-2-results`, already cut from `main` at `f0a6968`. Do
+>    not use `semantic-rebuild` or `campaign-2`; both are merged and
+>    finished.
 > 2. Verify the environment against the "Before you provision" checklist.
 >    Report each item as pass or fail with the command output that settled it.
 >    Stop if any fails.
@@ -378,7 +381,7 @@ Every item is a command with an answer, not a judgment call.
 | orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
 | independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
-| on the right branch | `git status` shows `campaign-2`, cut from `main` at `753f614`, clean tree. NOT `semantic-rebuild` |
+| on the right branch | `git status` shows `campaign-2-results`, cut from `main` at `f0a6968`, clean tree. NOT `semantic-rebuild` or `campaign-2` |
 | corpus is complete | the snippet above returns a digest. Also enforced in code now: `provision`, `run_folds` and `run_fold.py` each refuse on a mismatch |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
 | credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
