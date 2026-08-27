@@ -280,6 +280,19 @@ by design. Mitigations, all of which you apply before provisioning:
   systemctl --user list-timers 'tract-reaper*'    # confirm it is armed
   ```
 
+  **And when the campaign is over, tell the guard so.** It re-arms after a quiet
+  check now rather than standing down, because the quiet state between two arms
+  is byte-for-byte what a finished campaign looks like from outside -- the
+  earlier version disarmed in the first inter-arm gap and left every arm after
+  it unbounded. A streak counter eventually decides quiet means finished, but
+  the sentinel says it immediately:
+
+  ```bash
+  mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper"
+  touch "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/campaign-complete"
+  systemctl --user stop 'tract-reaper*.timer'
+  ```
+
   `at` is not installed on the Jetson and cron cannot express a one-shot
   relative delay; the user manager is running with `Linger=yes`, so a transient
   systemd timer survives logout. It does not survive a reboot -- re-arm after one.
