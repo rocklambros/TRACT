@@ -250,10 +250,33 @@ by design. Mitigations, all of which you apply before provisioning:
 - Run the orchestrator under `tmux` or `nohup` so a dropped SSH session to the
   Jetson does not kill it. A killed orchestrator is the exact scenario with no
   bound.
-- Schedule an independent reaper. A cron or `at` job at T+8h that runs
-  `python -m scripts.phase1b.runpod_parallel reap --confirm` costs nothing when
-  the run finished cleanly, because `reap` finds no targets and exits. It is
-  the only bound that survives the orchestrator dying.
+- Schedule an independent reaper. It is the only bound that survives the
+  orchestrator dying. **Schedule `scripts/phase1b/reaper_guard.py`, NOT bare
+  `reap --confirm`** -- the bare form was what this bullet used to say and it is
+  a loaded gun. `reap` has no liveness guard: it terminates every pod matching
+  this run's names, and sweeps the account by name when the state file is stale,
+  without ever asking whether folds are still training. Fired at T+8h against a
+  campaign that legitimately ran long it destroys paid-for GPU hours whose
+  per-item indicators exist only on those pods -- and it is aimed straight at the
+  recovery window `full_pipeline` deliberately creates by leaving pods up on
+  failure so a fold can be retried on a warm pod.
+
+  The guard asks two questions first: is an orchestrator process alive, and are
+  any of this run's pods actually running. It reaps only when the orchestrator is
+  gone AND pods are still billing, which is exactly the P1 case and nothing else.
+  If the orchestrator is alive it re-arms rather than giving up, because a guard
+  that stands down once has only moved the unbounded window later. Arm it when
+  you launch, not before:
+
+  ```bash
+  systemd-run --user --on-active=8h --unit=tract-reaper \
+      "$(command -v python3)" -m scripts.phase1b.reaper_guard --confirm
+  systemctl --user list-timers tract-reaper      # confirm it is armed
+  ```
+
+  `at` is not installed on the Jetson and cron cannot express a one-shot
+  relative delay; the user manager is running with `Linger=yes`, so a transient
+  systemd timer survives logout. It does not survive a reboot -- re-arm after one.
 - Make `reap --confirm` the first command of any session that resumes after an
   unexplained gap. Run it before you read logs and before you form a theory.
 
@@ -333,7 +356,35 @@ real ceiling. Corrected in `90a5f15`.
 The owner then lowered the ceiling itself to **1000** on 2026-08-26, so the
 docstring and the code now agree on that figure. **Set the variable explicitly
 for this campaign regardless**: 1000 is the backstop that applies when nobody
-exported anything, and this campaign costs $90. Export 200.
+exported anything, and this campaign costs $90.
+
+**CORRECTED 2026-08-26 evening: export 600, not 200. 200 refuses to provision.**
+This paragraph used to say 200 and the reasoning was wrong in a specific,
+instructive way. It sized the variable against expected spend at the price
+`runpod_parallel price` reports -- but `price` and the real gate do not price
+the same GPU. `price` calls `find_fastest_available` (the HEAD of the preference
+order), while `provision` calls `_check_budget` on
+`max(candidates, key=lambda c: c[1])` -- the most expensive part that could
+actually be used as a fallback. The comment at the call site says why: so the
+check "cannot be passed by a cheap first choice and then silently exceeded by
+the fallback."
+
+Measured against the live catalogue on 2026-08-26: HEAD is H100 80GB at
+$2.69/hr, so `price` prints $174.85. MAX is B300 SXM6 AC at $6.94/hr, so the
+real gate computes **$451.10**. Executed both, read-only:
+
+    budget=200  price-command view   -> ADMITS   ($174.85)
+    budget=200  REAL provision gate  -> REFUSES  (5 x B300 at $6.94/hr -> $451.10)
+    budget=600  REAL provision gate  -> ADMITS   ($451.10)
+
+So the dry run certifies a gate that is not the one that runs. **Never size this
+variable from `price`.** Re-derive it on the day against
+`max(rank_available_gpus(48, 12.0))`, because that list is a live market reading
+and moves without any code change.
+
+600 admits today's $451.10 with margin, tolerates a max-candidate spike to
+$9.23/hr, and still fires below the $780 structural ceiling that the $12/hr part
+filter imposes at five pods -- so unlike the 1000 default it remains reachable.
 
 ### P5. A cap that permits ten times the expected spend is not a cap
 
@@ -342,16 +393,31 @@ defaults to 6. That is 72 hours of fleet time before the extension refusal
 fires. At five pods and roughly $2.70 an hour, about $970. Campaign 2 needs
 $90.
 
-Set both for this campaign before you provision:
+Set this for this campaign before you provision:
 
 ```bash
-export TRACT_RUNPOD_BUDGET_USD=200
-export TRACT_RUNPOD_MAX_ARMS=6
+export TRACT_RUNPOD_BUDGET_USD=600
 ```
 
-Six arms covers five validation arms plus the single test round, which is
-exactly what the pre-registration calls for. Anything beyond that is a signal
-to stop and think rather than a window to extend into.
+**`TRACT_RUNPOD_MAX_ARMS=6` was here and has been REMOVED, because it does
+nothing.** The name is a misnomer: it does not cap arms, pods or folds. It sets
+`MAX_DEADLINE_EXTENSIONS`, which caps how many times `run_folds` may be
+re-invoked against ONE persisted fleet. Under this campaign's shape it can never
+fire -- `CAMPAIGN2.md` puts one 5-pod fleet per arm, and `provision`'s final
+`_save_pod_state` rewrites `meta` wholesale without a `deadline_extensions` key,
+so every provision resets the counter to zero and it reaches 1. Setting it to 6
+bought nothing the default did not, and if arms ever DID share a fleet it would
+leave no headroom for the retry that `full_pipeline` itself recommends on a fold
+failure. Counting it as a spend control was the error; leave it unset.
+
+One fact worth stating plainly, because it changes what this variable is for.
+There is no cumulative spend ledger anywhere in the module -- the budget is a
+per-provision admission test with no memory of prior rounds, so a campaign of N
+rounds permits N x BUDGET. To bound the $920 remaining across six rounds you
+would need 920/6 = $153; to admit even one round today you need more than $451.
+**No value satisfies both.** This variable cannot enforce the authorization. It
+is a per-round sanity check, and the thing that actually bounds a live fleet is
+the scheduled reaper in P1.
 
 ### P6. The mid-run deadline reports, it does not enforce
 
@@ -387,9 +453,9 @@ Every item is a command with an answer, not a judgment call.
 |---|---|
 | four decisions answered | DONE. Read the four filled rows; do not re-ask |
 | P2 and P3 fixed | DONE in `90a5f15`. `pytest tests/test_runpod_safety.py -q` passes, 53 tests |
-| spend bounds set | `TRACT_RUNPOD_BUDGET_USD=200` and `TRACT_RUNPOD_MAX_ARMS=6` exported |
-| orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
-| independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
+| spend bounds set | `TRACT_RUNPOD_BUDGET_USD=600` exported. NOT 200 -- that refuses to provision. `TRACT_RUNPOD_MAX_ARMS` is inert, leave it unset. See P4 |
+| orchestrator survives a dropped session | launched in a named `tmux` session, not `nohup` and not a bare SSH foreground. `tmux` lets you reattach and watch a 3.5h run; `nohup` only leaves a log |
+| independent reaper scheduled | `systemctl --user list-timers tract-reaper` shows it armed, running `scripts.phase1b.reaper_guard` -- NOT bare `reap --confirm`. See P1 |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
 | on the right branch | `git status` shows `campaign-2-results`, cut from `main` at `f0a6968`, clean tree. NOT `semantic-rebuild` or `campaign-2` |
 | corpus is complete | the snippet above returns a digest. Also enforced in code now: `provision`, `run_folds` and `run_fold.py` each refuse on a mismatch |
