@@ -108,6 +108,23 @@ venv/
 # terms and tests/test_licensed_text_not_tracked.py for the enforcement.
 data/processed/frameworks/etsi.json
 data/processed/frameworks/iso_27001.json
+
+# A fold's predictions.json quotes the held-out framework's control text
+# verbatim -- that is what a prediction record IS. When the held-out framework
+# is a restricted source, that file is the licensed prose itself.
+#
+# Found 2026-08-28 the hard way: arm A1's ISO 27001 fold was committed and
+# PUSHED carrying "rules for the effective use of cryptography including
+# cryptographic key management shall" -- Annex A, verbatim. The tree-wide
+# fingerprint gate caught it, which is the gate working; the failure was that
+# the gate ran after the push rather than before it.
+#
+# ISO 27001 is in the VALIDATION roster, so every validation arm reproduces
+# this. One line per member of tract.config.RESTRICTED_FRAMEWORK_IDS, and
+# tests/test_licensed_text_not_tracked.py fails if a member is missing a line.
+# fold_result.json is unaffected: it carries indicators and metrics, not prose.
+results/phase1b/**/fold_ISO_27001/predictions.json
+results/phase1b/**/fold_ETSI/predictions.json
 # One line per member of tract.config.CONDITIONAL_FRAMEWORK_IDS, and there are
 # two of them. Five CC BY-SA frameworks left this list once LICENSES/ shipped
 # the real texts and NOTICE gained the modification statement: twelve of the
