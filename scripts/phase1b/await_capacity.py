@@ -55,14 +55,22 @@ from scripts.phase1b.runpod_parallel import (
 LOG_DIR: Final[Path] = Path.home() / "tract-campaign2-logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler(LOG_DIR / "await_capacity.log", encoding="utf-8"),
-    ],
-)
+# Attached to the root logger explicitly rather than through basicConfig.
+# basicConfig is a NO-OP when the root logger already has handlers, and
+# runpod_parallel.py calls it at import -- which this module does at line 45,
+# before reaching here. The first run therefore logged to the terminal and
+# wrote a ZERO-BYTE file, so the only record of a three-attempt provisioning
+# session was tmux scrollback, which is finite and scrolls away.
+_root = logging.getLogger()
+_root.setLevel(logging.INFO)
+_file_handler = logging.FileHandler(LOG_DIR / "await_capacity.log", encoding="utf-8")
+_file_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+_root.addHandler(_file_handler)
+if not any(isinstance(h, logging.StreamHandler) and not isinstance(h, logging.FileHandler)
+           for h in _root.handlers):
+    _stream = logging.StreamHandler(sys.stdout)
+    _stream.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+    _root.addHandler(_stream)
 logger = logging.getLogger(__name__)
 
 EXIT_OK: Final[int] = 0
@@ -99,6 +107,12 @@ MAX_WALL_SECONDS: Final[int] = 12 * 60 * 60
 # normal. Three failed attempts means the signal is not predicting anything and
 # a human should look.
 MAX_PROVISION_ATTEMPTS: Final[int] = 3
+
+# How long a freshly created pod may sit without a published SSH endpoint before
+# that counts as broken rather than pending. Measured on 2026-08-27: pods sat at
+# ip=pending for 156s and were still healthy, so a minute is far too short.
+ENDPOINT_WAIT_S: Final[int] = 6 * 60
+ENDPOINT_POLL_S: Final[int] = 15
 
 
 @dataclass(frozen=True)
@@ -248,10 +262,31 @@ def gate_b_ssh_actually_authenticates() -> bool:
     pods = (json.loads(state_path.read_text(encoding="utf-8")).get("pods") or [])
     if not pods:
         return False
+    # WAIT for the endpoint rather than failing on its absence.
+    #
+    # This cost a fleet. On 2026-08-27 at 16:50 all five pods created cleanly on
+    # A100-SXM4-80GB, Gate A passed, and this check ran the instant provision
+    # returned -- while RunPod had not yet published an IP. It read "no ip/port
+    # recorded" as a failed handshake and tore down five good pods during the
+    # only capacity window of the afternoon. A pod sits at ip=pending for a
+    # minute or two after creation; that is normal, not broken. Absence of an
+    # endpoint is "not yet", and only its continued absence is a failure.
+    deadline = time.monotonic() + ENDPOINT_WAIT_S
     pod = pods[0]
-    ip, port = pod.get("ip"), pod.get("ssh_port")
+    ip = pod.get("ip")
+    port = pod.get("port")
+    while (not ip or not port) and time.monotonic() < deadline:
+        waited = int(ENDPOINT_WAIT_S - (deadline - time.monotonic()))
+        logger.info("  Gate B: %s has no endpoint yet (%ds); waiting.",
+                    pod.get("name"), waited)
+        time.sleep(ENDPOINT_POLL_S)
+        pods = (json.loads(state_path.read_text(encoding="utf-8")).get("pods") or [])
+        pod = next((p for p in pods if p.get("name") == pod.get("name")), pod)
+        ip, port = pod.get("ip"), pod.get("port")
     if not ip or not port:
-        logger.error("Gate B: pod %s has no ip/port recorded.", pod.get("name"))
+        logger.error("Gate B: pod %s still has no ip/port after %ds. That is no "
+                     "longer 'not yet'. Recorded keys on that pod: %s",
+                     pod.get("name"), ENDPOINT_WAIT_S, sorted(pod))
         return False
     result = subprocess.run(
         ["ssh", "-o", "StrictHostKeyChecking=accept-new",

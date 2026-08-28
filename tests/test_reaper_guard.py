@@ -734,3 +734,48 @@ class TestTheGuardWillNotKillLiveTraining:
 
         assert g.pod_training_state({"name": "x", "runtime": {"ports": []}}) == "UNREACHABLE"
         assert g.pod_training_state({"name": "x"}) == "UNREACHABLE"
+
+
+class TestTheBusyProbeCannotMatchItself:
+    """`pgrep -f run_fold` matches the shell running the pgrep.
+
+    Verified on a live pod 2026-08-27: the only process matching was
+    `bash -c ... pgrep -af run_fold`; the only real python was supervisord. So
+    every pod reported BUSY unconditionally, including one that had never
+    received the repository. A probe that always says BUSY means the guard
+    never reaps -- the protection against killing live work would have
+    protected a dead fleet forever.
+    """
+
+    def test_the_probe_command_excludes_the_probing_shell(self) -> None:
+        from scripts.phase1b import reaper_guard as g
+        import inspect
+
+        src = inspect.getsource(g.pod_training_state)
+        assert '"$$"' in src or "'$$'" in src or '$$' in src, (
+            "the probe must exclude its own pid; without it the shell running "
+            "the check matches the pattern and every pod reads BUSY"
+        )
+
+    def test_the_probe_does_not_use_a_bare_pattern_match(self) -> None:
+        """The regression itself. A bare `pgrep -f <pattern>` is the defect."""
+        from scripts.phase1b import reaper_guard as g
+        import inspect, re
+
+        src = inspect.getsource(g.pod_training_state)
+        bare = re.search(r"pgrep\s+-[a-z]*f[a-z]*\s+\{?FOLD_PROCESS_PATTERN", src)
+        assert bare is None, (
+            "bare `pgrep -f FOLD_PROCESS_PATTERN` reintroduces the self-match: "
+            "the probing shell's own cmdline contains the pattern"
+        )
+
+    def test_the_probe_requires_a_python_process(self) -> None:
+        """A shell mentioning the module is not a trainer running it."""
+        from scripts.phase1b import reaper_guard as g
+        import inspect
+
+        src = inspect.getsource(g.pod_training_state)
+        assert "python" in src, (
+            "the probe must require a python interpreter, not any process whose "
+            "command line happens to contain the module path"
+        )

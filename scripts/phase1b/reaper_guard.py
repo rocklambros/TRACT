@@ -415,7 +415,29 @@ def pod_training_state(pod: dict[str, object]) -> Literal["BUSY", "IDLE", "UNREA
              "-o", f"ConnectTimeout={POD_PROBE_TIMEOUT_S}",
              "-i", str(SSH_KEY),
              "-p", str(endpoint["publicPort"]), f"root@{endpoint['ip']}",
-             f"pgrep -f {FOLD_PROCESS_PATTERN} >/dev/null && echo BUSY || echo IDLE"],
+             # `pgrep -f run_fold` matches the shell running the pgrep, because
+             # that shell's own command line contains the pattern. Verified on a
+             # live pod: the only match was `bash -c ... pgrep -af run_fold`,
+             # while the only real python process was supervisord. Every pod
+             # therefore reported BUSY unconditionally -- including one that had
+             # never received the repository and could not possibly train.
+             #
+             # This is the same self-match defect as orchestrator_pids above, and
+             # the consequence here is the worse of the two: a probe that always
+             # says BUSY means the guard never reaps, so the protection against
+             # killing live work would have protected a dead fleet forever.
+             #
+             # Fixed by asking for the thing itself rather than for a string: a
+             # python process whose argv contains the run_fold MODULE path. $$ is
+             # the probing shell's own pid, excluded explicitly.
+             "for p in /proc/[0-9]*; do "
+             "  pid=${p##*/}; [ \"$pid\" = \"$$\" ] && continue; "
+             "  exe=$(readlink -f $p/exe 2>/dev/null) || continue; "
+             "  case \"${exe##*/}\" in python*) ;; *) continue ;; esac; "
+             "  if tr '\\0' ' ' < $p/cmdline 2>/dev/null "
+             f"     | grep -q 'scripts.phase1b.{FOLD_PROCESS_PATTERN}'; then "
+             "    echo BUSY; exit 0; fi; "
+             "done; echo IDLE"],
             capture_output=True, text=True, timeout=POD_PROBE_TIMEOUT_S + 15, check=False,
         )
     except (subprocess.TimeoutExpired, OSError) as exc:
