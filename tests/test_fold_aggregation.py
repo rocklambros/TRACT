@@ -8,6 +8,7 @@ indicators from every fold.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -22,7 +23,11 @@ pytest.importorskip("numpy")
 pytest.importorskip("torch", reason="needs the phase0 extra")
 pytest.importorskip("datasets", reason="needs the phase0 extra")
 
+from tract import staleness
 from tract.config import FOLD_RESULT_FILENAME, PROJECT_ROOT
+from tract.staleness import TRACKED_INPUTS, check_result
+from tract.text_selection import merged_corpus_path, merged_corpus_sha256
+from tract.training.data_quality import fold_input_digests
 from tract.training.orchestrate import (
     aggregate_fold_results,
     load_fold_results,
@@ -815,3 +820,184 @@ class TestTheGuardsAcceptRealResults:
                 zero_shot = record.get("zero_shot") or {}
                 if "hit1_indicators" in zero_shot:
                     assert set(zero_shot["hit1_indicators"]) <= {0, 1}, path
+
+
+class TestTheStalenessCheckReadsWhatTheFoldWrote:
+    """A fold hashes the corpus it TRAINED ON. The check hashed a different file.
+
+    fold_input_digests writes all_controls_sha256 = merged_corpus_sha256(),
+    which resolves through merged_corpus_path() to the licensed overlay at
+    data/processed/licensed/all_controls.json whenever that overlay is staged
+    -- and it must be staged, because a run without it silently trains on a
+    corpus missing every restricted framework. tract.staleness compared that
+    digest against a hardcoded data/processed/all_controls.json. The overlay is
+    the tracked corpus plus the restricted frameworks, so the two files can
+    never hold the same bytes, and during a real campaign EVERY fold was
+    therefore reported stale. Replayed against the arms as configured, with the
+    overlay on disk: A1 prose+sw refused on all_controls_sha256, A3
+    prose+sw+qwen refused on all_controls_sha256, and A5 --no-prose proceeded
+    only because it records no corpus digest at all. A flawless five-fold run
+    produced no number anyone was allowed to quote.
+
+    Both directions are asserted on purpose. Widening the check until A1 passes
+    was the cheap fix and the wrong one: what makes the aggregate worth quoting
+    is that a corpus which really did move is still caught, and the arms above
+    would have been just as green under a check that had simply stopped
+    looking.
+    """
+
+    # The corpus digest every committed Campaign 2 fold record carries, read
+    # from results/phase1b/c2_A1_prose_sw_bge/fold_ASVS/fold_result.json. It
+    # names a real corpus that is genuinely no longer on disk, which makes it a
+    # far better inverse case than 64 zeros: a check can reject an obvious
+    # sentinel and still bless a plausible one.
+    _PRE_REBUILD_CORPUS_SHA256 = (
+        "776be12eb54289e9b94c7eecc061922fbf28ff39dcf4d61108e65d8d144aeb41"
+    )
+
+    def _campaign(
+        self, root: Path, inputs: dict[str, str | None],
+    ) -> Path:
+        """Two folds of one arm, recording the digests a real producer wrote."""
+        for framework in ("ASVS", "CAPEC"):
+            _write_fold(root, framework, [1, 0], inputs=inputs)
+        return root / "fold_ASVS" / FOLD_RESULT_FILENAME
+
+    def test_the_corpus_a_fold_trained_on_reads_back_as_current(
+        self, tmp_path: Path
+    ) -> None:
+        """The campaign-fatal case, stated against the real producer.
+
+        Not a hand-written digest: fold_input_digests is the function
+        run_single_fold calls, so whatever it writes here is byte-for-byte what
+        a paid fold would have written.
+        """
+        digests = fold_input_digests(
+            with_prose=True, with_stopwords=True, with_framework_identity=False,
+        )
+        assert digests["all_controls_sha256"] == merged_corpus_sha256()
+
+        status = check_result(self._campaign(tmp_path, digests))
+
+        assert not status.is_stale, (
+            f"a fold that recorded the corpus it read was called stale: "
+            f"{[(s.field, s.path) for s in status.stale]}"
+        )
+        assert status.is_checkable
+
+    def test_a_corpus_that_really_moved_is_still_reported_stale(
+        self, tmp_path: Path
+    ) -> None:
+        """The inverse, so the fix cannot be a blanket weakening."""
+        digests = dict(fold_input_digests(
+            with_prose=True, with_stopwords=True, with_framework_identity=False,
+        ))
+        digests["all_controls_sha256"] = self._PRE_REBUILD_CORPUS_SHA256
+
+        status = check_result(self._campaign(tmp_path, digests))
+
+        assert status.is_stale
+        moved = {item.field: item for item in status.stale}
+        assert "all_controls_sha256" in moved
+        assert moved["all_controls_sha256"].recorded == self._PRE_REBUILD_CORPUS_SHA256
+        # The digest the reader offers as "current" has to be the digest the
+        # writer would record today, or the report names a file nobody read.
+        assert moved["all_controls_sha256"].current == merged_corpus_sha256()
+        # Only the corpus moved; blaming the curated links as well would send a
+        # reader to re-run a parser that is fine.
+        assert "curated_links_sha256" not in moved
+
+    def test_the_check_resolves_the_path_the_producer_hashed(self) -> None:
+        """One source of truth, asserted rather than assumed.
+
+        The two sides used to name the file independently, in two modules, and
+        nothing said they had to agree.
+        """
+        assert TRACKED_INPUTS["all_controls_sha256"] == merged_corpus_path()
+
+    def test_the_check_follows_the_corpus_rather_than_a_literal(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """The regression has to bite in a checkout with no overlay staged.
+
+        Without the licensed source on disk merged_corpus_path() falls back to
+        the tracked corpus -- which is exactly the literal the check used to
+        hold -- so every assertion above would pass straight over the bug on a
+        CI runner. Pointing the producer at a corpus neither path names is the
+        only way to state "the reader resolves whatever the writer resolved"
+        independently of which corpus this particular checkout happens to hold.
+        """
+        corpus = tmp_path / "corpus" / "all_controls.json"
+        corpus.parent.mkdir(parents=True)
+        corpus.write_text('{"frameworks": []}', encoding="utf-8")
+        monkeypatch.setattr(staleness, "merged_corpus_path", lambda: corpus)
+
+        digests: dict[str, str | None] = {
+            "all_controls_sha256": hashlib.sha256(
+                corpus.read_bytes()
+            ).hexdigest(),
+        }
+
+        assert not check_result(self._campaign(tmp_path, digests)).is_stale
+
+    def test_every_digest_a_fold_records_is_a_digest_the_check_reads(
+        self,
+    ) -> None:
+        """A field the writer writes and the reader ignores cannot go stale.
+
+        fold_input_digests writes four; TRACKED_INPUTS listed three, so a
+        framework-identity token set that changed between folds was invisible
+        to the only instrument that looks. Asserted structurally, because the
+        symptom of the omission is silence.
+        """
+        written = set(fold_input_digests(
+            with_prose=True, with_stopwords=True, with_framework_identity=True,
+        ))
+        assert written == set(TRACKED_INPUTS)
+
+    def test_a_clean_campaign_reaches_an_aggregate(self, tmp_path: Path) -> None:
+        """End to end through the gate that actually refused.
+
+        check_result reports; _assert_results_are_current is what turns the
+        report into a RuntimeError and costs a campaign its result.
+        """
+        from scripts.phase1b import runpod_parallel as rpp
+
+        self._campaign(tmp_path, fold_input_digests(
+            with_prose=True, with_stopwords=True, with_framework_identity=False,
+        ))
+
+        rpp._assert_results_are_current(tmp_path, allow_stale=False)
+
+    def test_a_campaign_measured_on_a_corpus_that_moved_is_refused(
+        self, tmp_path: Path
+    ) -> None:
+        digests = dict(fold_input_digests(
+            with_prose=True, with_stopwords=True, with_framework_identity=False,
+        ))
+        digests["all_controls_sha256"] = self._PRE_REBUILD_CORPUS_SHA256
+        self._campaign(tmp_path, digests)
+
+        from scripts.phase1b import runpod_parallel as rpp
+
+        with pytest.raises(RuntimeError, match="all_controls_sha256"):
+            rpp._assert_results_are_current(tmp_path, allow_stale=False)
+
+    def test_every_committed_record_can_still_be_spoken_about(self) -> None:
+        """Widening TRACKED_INPUTS must not silence the 32 published records.
+
+        is_checkable is a ratio against the number of tracked inputs, so adding
+        a fourth field moves the bar under every record already on disk. The
+        five title-only folds record the fewest digests of any of them and are
+        the ones this would fall over first.
+        """
+        proc = subprocess.run(
+            ["git", "ls-files", "results/phase1b/*/fold_*/" + FOLD_RESULT_FILENAME],
+            cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=30,
+        )
+        assert proc.returncode == 0, proc.stderr
+        paths = [PROJECT_ROOT / line.strip() for line in proc.stdout.splitlines()]
+        assert len(paths) >= 30, f"only {len(paths)} committed records found"
+
+        for path in paths:
+            assert check_result(path).is_checkable, path

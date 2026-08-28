@@ -1,9 +1,9 @@
 """Which recorded results were produced from inputs that have since moved.
 
-Every fold records the digests of the three files it read: the curated links,
-the merged corpus, and the stopword list. That makes staleness DETECTABLE. It
-does not make it detected, and this project has already published one figure
-that did not survive audit.
+Every fold records the digests of the files it read: the curated links, the
+merged corpus, the stopword list and the framework-identity tokens. That makes
+staleness DETECTABLE. It does not make it detected, and this project has
+already published one figure that did not survive audit.
 
 So this module answers one question a reader should be able to ask cheaply:
 "is the number I am about to quote still describing the inputs that produced
@@ -22,19 +22,59 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from tract.config import PROCESSED_DIR, PROJECT_ROOT, TRAINING_DIR
+from tract.config import PROJECT_ROOT
+from tract.framework_identity import FRAMEWORK_IDENTITY_PATH
 from tract.io import repo_relative
+from tract.stopwords import STOPWORDS_PATH
+from tract.text_selection import merged_corpus_path
+from tract.training.data_quality import CURATED_PATH
 
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results"
 
-# The three inputs a fold records, mapped to the file each digest describes.
-# Keyed by the field name in fold_result.json["inputs"], so a field that stops
-# being written shows up as unrecorded rather than as fresh.
-TRACKED_INPUTS: Final[dict[str, Path]] = {
-    "curated_links_sha256": TRAINING_DIR / "hub_links_curated.jsonl",
-    "all_controls_sha256": PROCESSED_DIR / "all_controls.json",
-    "stopwords_sha256": PROCESSED_DIR / "stopwords.json",
-}
+
+def tracked_inputs() -> dict[str, Path]:
+    """The file each digest in a fold's ``inputs`` block describes.
+
+    Keyed by the field name in fold_result.json["inputs"], so a field that
+    stops being written shows up as unrecorded rather than as fresh.
+
+    Every path is imported from the module that WROTE the digest rather than
+    spelled a second time here, because the one path that was spelled twice is
+    the one that cost a campaign its result. fold_input_digests hashes
+    merged_corpus_path(), which prefers the licensed overlay whenever it is
+    staged -- and it is staged on every real run, because `provision` refuses
+    on a corpus mismatch and the ISO 27001 fold would otherwise have no
+    controls. This module held the literal data/processed/all_controls.json
+    instead. The overlay is that file plus the restricted frameworks, so the
+    writer's digest and the reader's could not match on any run that was
+    configured correctly: replayed with the overlay on disk, every fold of A1
+    (prose+sw) and A3 (prose+sw+qwen) came back stale on all_controls_sha256
+    alone, and `aggregate` refuses stale folds. A flawless five-fold campaign
+    would have produced no number anyone was allowed to quote.
+
+    A function rather than a literal mapping because one of these four paths is
+    a property of the checkout rather than of the repository: staging or
+    clearing the overlay moves it, and a value resolved once at import cannot
+    follow it.
+    """
+    return {
+        "curated_links_sha256": CURATED_PATH,
+        "all_controls_sha256": merged_corpus_path(),
+        "stopwords_sha256": STOPWORDS_PATH,
+        # Written by fold_input_digests since the framework-identity arm landed
+        # and unread here until now. A digest nobody checks cannot go stale, so
+        # a token set rebuilt between one fold and the next was invisible to the
+        # one instrument whose whole job is to notice that.
+        "framework_identity_sha256": FRAMEWORK_IDENTITY_PATH,
+    }
+
+
+# The import-time snapshot, for callers that want the field NAMES rather than a
+# live path: describe() lists them and is_checkable counts them, and both are
+# fixed by the writer's schema rather than by which corpus this checkout holds.
+# check_result calls tracked_inputs() instead, so the paths it hashes are
+# resolved at the moment it runs.
+TRACKED_INPUTS: Final[dict[str, Path]] = tracked_inputs()
 
 
 @dataclass(frozen=True)
@@ -61,7 +101,7 @@ class ResultStatus:
 
     @property
     def is_checkable(self) -> bool:
-        """False when a result records none of the three digests.
+        """False when a result records none of the tracked digests.
 
         An unrecorded input is worse than a stale one. A stale digest says the
         number is old; a missing digest says nothing at all, and cannot be
@@ -82,7 +122,10 @@ def check_result(result_path: Path) -> ResultStatus:
     inputs = payload.get("inputs") or {}
     stale: list[StaleInput] = []
     unrecorded: list[str] = []
-    for field, path in TRACKED_INPUTS.items():
+    # Resolved here rather than read from the snapshot above, so that a check
+    # run after the overlay was staged hashes the corpus the fold actually
+    # read. See tracked_inputs().
+    for field, path in tracked_inputs().items():
         recorded = inputs.get(field)
         if not recorded:
             unrecorded.append(field)
