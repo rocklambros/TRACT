@@ -126,10 +126,37 @@ MAX_DEADLINE_EXTENSIONS: Final[int] = int(
     os.environ.get("TRACT_RUNPOD_MAX_ARMS", "12")
 )
 
-# A fold's results run to gigabytes; the previous 300s was optimistic. Retries
-# because a failed collection destroys work that has already been paid for.
-RSYNC_TIMEOUT_S: Final[int] = 1800
-RSYNC_ATTEMPTS: Final[int] = 3
+# rsync's --timeout is an I/O-IDLE timer, not a wall clock: it fires when no
+# bytes have moved for this long, whatever the process is nominally doing. Both
+# directions carry it. The two walls below bound the process itself, and they
+# are separate because the two directions move payloads three orders of
+# magnitude apart.
+RSYNC_IDLE_TIMEOUT_S: Final[int] = 120
+
+# The PUSH is the working tree: 61,327,794 bytes across 560 files, measured on
+# 2026-08-28 with the exclude list _rsync_to builds. 300s is a 200 KB/s floor
+# for that payload. It used to borrow the pull's 1800s wall, which on 61MB
+# tolerates 34 KB/s -- around 250x slower than a healthy link -- and it carried
+# no idle timer at all, so a stalled-but-alive transfer was bounded by nothing
+# shorter than that wall. On 2026-08-27 the two omissions together cost 90
+# minutes and a fleet: a pod sat with 82MB present and moved ZERO bytes across
+# a sampled 45-second window while the push ran its full wall, three times, and
+# the four other pods sat at run_folds' bootstrap barrier until the campaign
+# aborted without launching a single fold.
+#
+# Two attempts, not the pull's three. Re-sending the tree is idempotent and a
+# retry is cheap, but a third wall buys a third case of the same wedge.
+RSYNC_PUSH_TIMEOUT_S: Final[int] = 300
+RSYNC_PUSH_ATTEMPTS: Final[int] = 2
+PUSH_PAYLOAD_BYTES: Final[int] = 61_327_794
+
+# The PULL is where the gigabytes argument belongs, and it is the one step
+# whose failure destroys work that has already been paid for: a fold's per-item
+# indicators exist only on the pod until this succeeds. Hence the long wall and
+# the third attempt.
+RSYNC_PULL_TIMEOUT_S: Final[int] = 1800
+RSYNC_PULL_ATTEMPTS: Final[int] = 3
+RSYNC_PULL_BACKOFF_S: Final[int] = 10
 
 # One fold: LoRA training plus a paired zero-shot pass.
 FOLD_TIMEOUT_S: Final[int] = 7200
@@ -154,6 +181,33 @@ SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
 SSH_BOOTSTRAP_TIMEOUT_S: Final[int] = 900
 SSH_CONNECT_ATTEMPTS: Final[int] = 4
 SSH_RETRY_BACKOFF_S: Final[int] = 15
+
+# One pod's bootstrap, end to end, as a wall clock. The work under it is
+# apt-get, a 61MB push, a pip install, a 1.3GB model fetch and a CUDA probe:
+# two to four minutes on a healthy pod. Twenty-five minutes is roughly five
+# times that, and still an order of magnitude tighter than the ladder it
+# replaces -- four SSH steps at four connect attempts each, plus the push, is
+# 4.27h per pod, and was 5.61h before the push got its own wall. Every minute
+# of that is fleet time, not pod time: run_folds bootstraps inside a
+# ThreadPoolExecutor context manager, so the whole fleet waits at the barrier
+# for the slowest pod.
+#
+# Enforced COOPERATIVELY, by _clamp_to_deadline shortening each step until a
+# thread that has run out of budget ends itself. Nothing outside the thread
+# can end it: the executor's context manager joins on exit, cancel() cannot
+# touch a future that has already started -- and max_workers == len(pods), so
+# every future has -- and shutdown(wait=False, cancel_futures=True) leaves the
+# process hanging at interpreter exit instead. The premortem tested all three.
+BOOTSTRAP_DEADLINE_S: Final[int] = 1500
+# Cooperative means the deadline can be overrun by a wait that began just
+# before it expired. The longest of those is the last SSH backoff.
+BOOTSTRAP_DEADLINE_SLACK_S: Final[int] = (
+    SSH_RETRY_BACKOFF_S * (SSH_CONNECT_ATTEMPTS - 1)
+)
+# How many _ssh calls _bootstrap_pod issues. A test pins this against the
+# function's own source, because _check_budget priced three of them for as
+# long as there have been four.
+BOOTSTRAP_SSH_STEPS: Final[int] = 4
 
 # The validation split holds out traditional-security frameworks instead of
 # AI ones, so arm selection happens on 1,265 items rather than the test set's
@@ -354,11 +408,46 @@ def _is_transient_ssh_failure(stderr: str) -> bool:
     return any(marker in text for marker in TRANSIENT_SSH_MARKERS)
 
 
+def _clamp_to_deadline(deadline: float, step_timeout: int, step: str) -> int:
+    """How long this step may run before the pod's bootstrap deadline bites.
+
+    The cooperative half of BOOTSTRAP_DEADLINE_S. A caller holding an absolute
+    monotonic deadline asks this for every timeout it is about to pass to a
+    subprocess, so a step that starts late is given only what is left rather
+    than its nominal ceiling, and a step with nothing left never starts.
+
+    Args:
+        deadline: Absolute time.monotonic() value the bootstrap must end by.
+        step_timeout: What this step would be allowed if it were alone.
+        step: Named in the failure, so an operator reading a bootstrap error
+            knows which stage the pod ran out of budget in.
+
+    Returns:
+        Seconds, never below one. int() truncation turns a sub-second remainder
+        into zero, and a zero-second timeout is an artifact of rounding rather
+        than a decision anyone made.
+
+    Raises:
+        TimeoutError: The deadline has already passed. Raised rather than
+            returning, because the alternative is issuing a doomed subprocess
+            call and then paying the retry ladder's backoff on top of it.
+    """
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError(
+            f"Pod bootstrap deadline exceeded by {-remaining:.0f}s before "
+            f"'{step}' could start (budget was {BOOTSTRAP_DEADLINE_S}s). This "
+            f"pod is abandoned so the rest of the fleet stops waiting on it."
+        )
+    return max(1, min(step_timeout, int(remaining)))
+
+
 def _ssh(
     ip: str, port: int, cmd: str,
     check: bool = True,
     env: dict[str, str] | None = None,
     timeout: int = SSH_DEFAULT_TIMEOUT_S,
+    deadline: float | None = None,
 ) -> subprocess.CompletedProcess[str]:
     _require_ssh_key()
     ip, port = validate_ssh_endpoint(ip, port)
@@ -377,11 +466,18 @@ def _ssh(
     # campaign that had already paid for its pods. Only transport failures are
     # retried: a command that ran and exited non-zero is reported as-is,
     # because re-running it could repeat a side effect.
+    #
+    # `deadline` clamps EVERY attempt, not just the first. Clamping only the
+    # first would leak the whole ladder: four attempts at the caller's ceiling
+    # plus 90s of backoff is 4x the budget a caller thought it had handed out.
     for attempt in range(1, SSH_CONNECT_ATTEMPTS + 1):
+        attempt_timeout = timeout if deadline is None else _clamp_to_deadline(
+            deadline, timeout, f"ssh {cmd[:40]}",
+        )
         try:
             result = subprocess.run(
                 ssh_cmd, shell=True, input=script, text=True,
-                capture_output=True, timeout=timeout,
+                capture_output=True, timeout=attempt_timeout,
             )
         except subprocess.TimeoutExpired:
             # A hung session produces no returncode at all, so the marker
@@ -391,7 +487,7 @@ def _ssh(
                 raise
             logger.warning(
                 "[ssh %s:%d] hung for %ds (attempt %d/%d); retrying.",
-                ip, port, timeout, attempt, SSH_CONNECT_ATTEMPTS,
+                ip, port, attempt_timeout, attempt, SSH_CONNECT_ATTEMPTS,
             )
             time.sleep(SSH_RETRY_BACKOFF_S * attempt)
             continue
@@ -421,7 +517,17 @@ def _ssh(
     return result
 
 
-def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
+def _rsync_to(
+    ip: str, port: int, local_path: str, remote_path: str,
+    deadline: float | None = None,
+) -> None:
+    """Ship the working tree to a pod, with an idle timer and a short wall.
+
+    Args:
+        deadline: Absolute time.monotonic() value the caller's bootstrap must
+            end by, if it has one. Each attempt is clamped to what remains, so
+            a wedged push cannot spend the budget the steps after it need.
+    """
     ip, port = validate_ssh_endpoint(ip, port)
     # The exclude list is what stands between the operator's working tree and
     # five rented hosts, so it has to cover everything .gitignore does. The
@@ -441,8 +547,14 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
         ".ipynb_checkpoints", ".pytest_cache", ".ruff_cache", "*.egg-info",
         ".DS_Store",
     ))
+    # --timeout and --partial are the twenty characters this direction was
+    # missing while its sibling had them. The idle timer abandons a transfer
+    # that has stopped moving bytes instead of waiting out the process wall,
+    # and --partial keeps the file that was in flight when it fired, so the
+    # retry deltas against what arrived instead of starting that file again.
+    # See RSYNC_PUSH_TIMEOUT_S for what the omission cost.
     cmd = (
-        f"rsync -rltz {excludes} "
+        f"rsync -rltz --partial --timeout={RSYNC_IDLE_TIMEOUT_S} {excludes} "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     # Retried for the same reason _rsync_from is. This direction had no
@@ -450,14 +562,21 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
     # two pods of a five-pod fleet mid-campaign -- the same connection-level
     # flakiness the SSH retry already handles, arriving through a different
     # subprocess. Sending the tree again is idempotent, so a retry is free.
-    for attempt in range(1, RSYNC_ATTEMPTS + 1):
-        logger.info("[rsync to] %s:%d %s (attempt %d/%d)",
-                    ip, port, remote_path, attempt, RSYNC_ATTEMPTS)
+    for attempt in range(1, RSYNC_PUSH_ATTEMPTS + 1):
+        wall = RSYNC_PUSH_TIMEOUT_S if deadline is None else _clamp_to_deadline(
+            deadline, RSYNC_PUSH_TIMEOUT_S, "rsync push",
+        )
+        # The payload size is in the line because a slow push is the failure
+        # this direction has, and an operator watching it needs to know what
+        # the wall was sized for.
+        logger.info("[rsync to] %s:%d %s (attempt %d/%d, %.1fMB, %ds wall)",
+                    ip, port, remote_path, attempt, RSYNC_PUSH_ATTEMPTS,
+                    PUSH_PAYLOAD_BYTES / 1e6, wall)
         try:
-            subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+            subprocess.run(cmd, shell=True, check=True, timeout=wall)
             return
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
-            if attempt == RSYNC_ATTEMPTS:
+            if attempt == RSYNC_PUSH_ATTEMPTS:
                 raise
             backoff = SSH_RETRY_BACKOFF_S * attempt
             logger.warning("rsync to %s:%d failed (%s); retrying in %ds.",
@@ -478,24 +597,26 @@ def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
     # through it, which turns retrieving results into an arbitrary write on the
     # operator's machine. -l is kept because the tree may hold internal links.
     cmd = (
-        f"rsync -rltz --safe-links --partial --timeout=120 "
+        f"rsync -rltz --safe-links --partial "
+        f"--timeout={RSYNC_IDLE_TIMEOUT_S} "
         f"-e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
     )
     last_error: Exception | None = None
-    for attempt in range(1, RSYNC_ATTEMPTS + 1):
+    for attempt in range(1, RSYNC_PULL_ATTEMPTS + 1):
         logger.info("[rsync from] %s:%d %s (attempt %d/%d)",
-                    ip, port, remote_path, attempt, RSYNC_ATTEMPTS)
+                    ip, port, remote_path, attempt, RSYNC_PULL_ATTEMPTS)
         try:
-            subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+            subprocess.run(cmd, shell=True, check=True,
+                           timeout=RSYNC_PULL_TIMEOUT_S)
             return
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
             last_error = exc
             logger.warning("  rsync attempt %d failed: %s", attempt, exc)
-            if attempt < RSYNC_ATTEMPTS:
-                time.sleep(10 * attempt)
+            if attempt < RSYNC_PULL_ATTEMPTS:
+                time.sleep(RSYNC_PULL_BACKOFF_S * attempt)
     raise RuntimeError(
         f"Failed to collect {remote_path} from {ip}:{port} after "
-        f"{RSYNC_ATTEMPTS} attempts: {last_error}"
+        f"{RSYNC_PULL_ATTEMPTS} attempts: {last_error}"
     )
 
 
@@ -634,6 +755,29 @@ def _extend_deadline() -> None:
                 MAX_RUN_HOURS, meta["deadline_extensions"], MAX_DEADLINE_EXTENSIONS)
 
 
+def _bootstrap_ladder_s() -> int:
+    """Bootstrap's worst case if only the retry ladder bounded it.
+
+    Not what the code permits any more -- BOOTSTRAP_DEADLINE_S is -- but the
+    number that deadline exists to defend against, and the one _check_budget
+    was trying to state. Kept as an expression over the constants rather than
+    a literal so it cannot fall out of step with them: every term below is a
+    knob someone may turn, and turning one used to leave the budget model
+    describing a bootstrap that no longer existed.
+    """
+    # Backoff between attempts is SSH_RETRY_BACKOFF_S * attempt, summed over
+    # every attempt but the last: 15 + 30 + 45.
+    ssh_backoff = (
+        SSH_RETRY_BACKOFF_S * SSH_CONNECT_ATTEMPTS * (SSH_CONNECT_ATTEMPTS - 1) // 2
+    )
+    per_ssh = SSH_CONNECT_ATTEMPTS * SSH_BOOTSTRAP_TIMEOUT_S + ssh_backoff
+    push_backoff = (
+        SSH_RETRY_BACKOFF_S * RSYNC_PUSH_ATTEMPTS * (RSYNC_PUSH_ATTEMPTS - 1) // 2
+    )
+    push = RSYNC_PUSH_ATTEMPTS * RSYNC_PUSH_TIMEOUT_S + push_backoff
+    return BOOTSTRAP_SSH_STEPS * per_ssh + push
+
+
 def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     """Refuse to provision a fleet whose worst case exceeds the budget.
 
@@ -645,24 +789,47 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     fleet_hourly = price_per_pod * n_pods
 
     # Price the wall the code can actually reach, not the one it intends to.
-    # The bounding timeouts are: bootstrap (three _ssh at SSH_DEFAULT_TIMEOUT_S
-    # plus one rsync), the fold itself, and a SERIAL collect across pods. A
-    # budget check against MAX_RUN_HOURS alone understated the permitted spend
-    # by more than a factor of two, which made the gate unreachable: the $12/hr
-    # part filter already caps worst case below the $1000 budget, so the check
-    # could never fire on any input the caller could produce.
-    bootstrap_h = (3 * SSH_DEFAULT_TIMEOUT_S + RSYNC_TIMEOUT_S) / 3600
+    # The bounding stages are bootstrap, the fold itself, and a SERIAL collect
+    # across pods. A budget check against MAX_RUN_HOURS alone understated the
+    # permitted spend by more than a factor of two, which made the gate
+    # unreachable: the $12/hr part filter already caps worst case below the
+    # $1000 budget, so the check could never fire on any input the caller
+    # could produce.
+    #
+    # The bootstrap term was (3 * SSH_DEFAULT_TIMEOUT_S + RSYNC_TIMEOUT_S), or
+    # 3.50h, and was wrong three ways at once: _bootstrap_pod issues FOUR _ssh
+    # calls, they run at SSH_BOOTSTRAP_TIMEOUT_S rather than the hour-long
+    # default, and neither SSH_CONNECT_ATTEMPTS nor the rsync attempts appeared
+    # in it at all. Two of those errors happened to cancel the third, which is
+    # the least durable way for a number to be approximately right.
+    #
+    # What is priced now is BOOTSTRAP_DEADLINE_S, because that is the bound
+    # _bootstrap_pod enforces on itself; the retry ladder underneath it, still
+    # reported below, is 4.27h and would price a wall no pod can reach. The
+    # slack is the one backoff sleep that can begin just before the deadline
+    # expires.
+    bootstrap_h = (BOOTSTRAP_DEADLINE_S + BOOTSTRAP_DEADLINE_SLACK_S) / 3600
+    ladder_h = _bootstrap_ladder_s() / 3600
     fold_h = FOLD_TIMEOUT_S / 3600
-    collect_h = n_pods * RSYNC_ATTEMPTS * RSYNC_TIMEOUT_S / 3600
+    # Attempts and their backoff, per pod, because collect walks the roster
+    # serially and every pod can pay the full ladder.
+    collect_per_pod_s = (
+        RSYNC_PULL_ATTEMPTS * RSYNC_PULL_TIMEOUT_S
+        + RSYNC_PULL_BACKOFF_S * RSYNC_PULL_ATTEMPTS * (RSYNC_PULL_ATTEMPTS - 1) // 2
+    )
+    collect_h = n_pods * collect_per_pod_s / 3600
     reachable_h = bootstrap_h + fold_h + collect_h
     worst_case = fleet_hourly * reachable_h
 
     logger.info("Budget check:")
     logger.info("  %s at $%.2f/hr x %d pods = $%.2f/hr",
                 gpu_type, price_per_pod, n_pods, fleet_hourly)
-    logger.info("  reachable wall time = %.1fh (bootstrap %.1f + fold %.1f + "
-                "serial collect %.1f), declared cap %.1fh",
+    logger.info("  reachable wall time = %.2fh (bootstrap %.2f + fold %.2f + "
+                "serial collect %.2f), declared cap %.1fh",
                 reachable_h, bootstrap_h, fold_h, collect_h, MAX_RUN_HOURS)
+    logger.info("  bootstrap retry ladder would permit %.2fh/pod; the "
+                "cooperative deadline holds it to %.2fh",
+                ladder_h, bootstrap_h)
     logger.info("  worst case = $%.2f against budget $%.2f",
                 worst_case, BUDGET_USD)
 
@@ -689,6 +856,15 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
         "budget_usd": BUDGET_USD,
         "max_run_hours": MAX_RUN_HOURS,
         "reachable_hours": reachable_h,
+        # Per stage, because the total is a sum of three very different
+        # arguments and the state file is where an operator reconstructs which
+        # one moved. bootstrap_ladder_hours is what the retry ladder would
+        # permit without the deadline: recorded so its removal shows up as a
+        # number, not as a silently cheaper estimate.
+        "bootstrap_hours": bootstrap_h,
+        "bootstrap_ladder_hours": ladder_h,
+        "fold_hours": fold_h,
+        "collect_hours": collect_h,
     }
 
 
@@ -970,18 +1146,42 @@ def provision(
 def _bootstrap_pod(
     pod: dict[str, Any], base_model: str = PHASE1B_BASE_MODEL,
     env: dict[str, str] | None = None,
+    deadline: float | None = None,
 ) -> None:
+    """Install the stack on one pod, or give up inside BOOTSTRAP_DEADLINE_S.
+
+    Args:
+        deadline: Absolute time.monotonic() value this pod's bootstrap must
+            finish by. Defaults to BOOTSTRAP_DEADLINE_S from now, so a caller
+            that knows nothing about deadlines still gets one.
+
+    Raises:
+        TimeoutError: The deadline passed with steps still to run. The pod is
+            left as it is -- it is still billing and still named in the state
+            file -- and the fleet stops waiting on it.
+
+    Every step is clamped to what remains of the deadline instead of running
+    to its own ceiling. That is the only mechanism that works here: this runs
+    on a worker thread inside run_folds' ThreadPoolExecutor, whose context
+    manager joins every thread on the way out, so a wedged step is not
+    something the orchestrator can cancel from outside -- the thread has to
+    end itself. On 2026-08-27 one did not, and four healthy pods waited 90
+    minutes at the barrier for a fifth that was moving no bytes.
+    """
     ip, port, role = pod["ip"], pod["port"], pod["role"]
+    if deadline is None:
+        deadline = time.monotonic() + BOOTSTRAP_DEADLINE_S
     # The caller passes the env so the credential is read once on the main
     # thread. Falling back to _get_pod_env() here keeps a direct call working,
     # but the fleet path must not take that branch: see run_folds.
     pod_env = _get_pod_env() if env is None else env
-    logger.info("Bootstrapping pod for fold '%s' (%s:%d)...", role, ip, port)
+    logger.info("Bootstrapping pod for fold '%s' (%s:%d), %ds budget...",
+                role, ip, port, BOOTSTRAP_DEADLINE_S)
 
     _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1",
-         check=False, timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+         check=False, timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
-    _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
+    _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/", deadline=deadline)
 
     # --break-system-packages is required, not sloppy. The pod image ships a
     # Debian-packaged Python 3.12, which is PEP 668 "externally managed", so a
@@ -998,7 +1198,7 @@ def _bootstrap_pod(
         "cd /workspace/tract && "
         "pip install --quiet -e '.[phase0]' && "
         "pip install --quiet -r requirements-train.txt"
-    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
     # Fetch the base model once, here, rather than inside the fold. A 429 at
     # this point costs a bootstrap; the same 429 twenty minutes into training
@@ -1017,7 +1217,7 @@ def _bootstrap_pod(
         "p = snapshot_download(name, revision=s.revision); "
         "print(f\"cached {name} at {s.revision[:12]} -> {p}\")'"
     ), env={**pod_env, "TRACT_BASE_MODEL": base_model},
-       timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+       timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
     # Fatal, not advisory. This probe used to run with check=False while
     # tract/training/loop.py sets fp16=torch.cuda.is_available(): a driver
@@ -1032,9 +1232,10 @@ def _bootstrap_pod(
         "print(f\"torch={torch.__version__} cuda={torch.version.cuda} "
         "gpu={torch.cuda.get_device_name(0)} tf={transformers.__version__} "
         "st={sentence_transformers.__version__} peft={peft.__version__}\")'"
-    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
-    logger.info("Bootstrap complete for fold '%s'", role)
+    logger.info("Bootstrap complete for fold '%s' with %ds of budget to spare",
+                role, max(0, int(deadline - time.monotonic())))
 
 
 def _run_fold_on_pod(

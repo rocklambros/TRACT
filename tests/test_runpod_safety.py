@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -1474,3 +1475,439 @@ class TestReapSweepCoversBothSplits:
         assert not (validation & test_only), (
             "the two splits now share names; this test's premise is stale"
         )
+
+
+class _FakeClock:
+    """A monotonic clock the test drives, so deadline arithmetic is exact.
+
+    Substituted for the `time` module in the orchestrator's namespace rather
+    than patched onto the real one: these tests assert on second-precise
+    clamping, and a real clock makes the expected value a range.
+    """
+
+    def __init__(self, now: float = 1000.0) -> None:
+        self.now = now
+
+    def monotonic(self) -> float:
+        return self.now
+
+    def time(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        # Backoff sleeps spend the bootstrap deadline like any other wait,
+        # which is the whole reason they are modelled here.
+        self.now += seconds
+
+
+class TestRsyncPushCarriesTheIdleTimer:
+    """The 20 characters that cost 90 minutes and the last of four fleets.
+
+    `--timeout` is rsync's I/O-idle timer, not a wall clock: it fires when no
+    bytes move for that long. The PULL has carried it since the collect path
+    was written; the PUSH never did, so a stalled-but-alive transfer was bounded
+    only by the 1800s process wall, three times over. On 2026-08-27 a pod sat
+    with 82MB present and moved ZERO bytes in a sampled 45-second window while
+    that ran, and the fleet's bootstrap barrier held for 90 minutes before
+    `if bootstrap_errors: raise` aborted the campaign without launching a fold.
+    """
+
+    def _push(self, monkeypatch: pytest.MonkeyPatch, **kwargs: Any) -> tuple[str, dict]:
+        from scripts.phase1b import runpod_parallel as rp
+
+        seen: dict[str, Any] = {}
+
+        def _run(cmd: str, **kw: Any) -> None:
+            seen["cmd"], seen["kwargs"] = cmd, kw
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        rp._rsync_to("1.2.3.4", 22, "/local/", "/remote/", **kwargs)
+        return seen["cmd"], seen["kwargs"]
+
+    def _pull(self, monkeypatch: pytest.MonkeyPatch) -> tuple[str, dict]:
+        from scripts.phase1b import runpod_parallel as rp
+
+        seen: dict[str, Any] = {}
+
+        def _run(cmd: str, **kw: Any) -> None:
+            seen["cmd"], seen["kwargs"] = cmd, kw
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        rp._rsync_from("1.2.3.4", 22, "/remote/", "/local/")
+        return seen["cmd"], seen["kwargs"]
+
+    def test_the_push_command_declares_the_idle_timeout(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        cmd, _ = self._push(monkeypatch)
+        assert f"--timeout={rp.RSYNC_IDLE_TIMEOUT_S}" in cmd
+
+    def test_the_push_command_resumes_a_partial_transfer(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Without --partial the idle timer throws away everything it had."""
+        cmd, _ = self._push(monkeypatch)
+        assert "--partial" in cmd
+
+    def test_the_push_and_the_pull_agree_on_the_idle_timer(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        push, _ = self._push(monkeypatch)
+        pull, _ = self._pull(monkeypatch)
+        flag = f"--timeout={rp.RSYNC_IDLE_TIMEOUT_S}"
+        assert flag in push and flag in pull
+
+    def test_the_push_is_walled_by_the_push_timeout(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        _, kwargs = self._push(monkeypatch)
+        assert kwargs["timeout"] == rp.RSYNC_PUSH_TIMEOUT_S
+
+    def test_the_pull_keeps_the_longer_wall(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Results run to gigabytes; that justification is the pull's alone."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        _, kwargs = self._pull(monkeypatch)
+        assert kwargs["timeout"] == rp.RSYNC_PULL_TIMEOUT_S
+
+    def test_the_push_wall_is_sized_for_the_measured_payload(self) -> None:
+        """61,327,794 bytes over 560 files, measured with this exclude list."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        assert rp.RSYNC_PUSH_TIMEOUT_S == 300
+        assert rp.RSYNC_PUSH_ATTEMPTS == 2
+        assert rp.RSYNC_PULL_TIMEOUT_S == 1800
+        assert rp.RSYNC_PULL_ATTEMPTS == 3
+        # 61.3MB / 300s is a 200 KB/s floor. The pull's 1800s wall on the same
+        # payload would tolerate 34 KB/s, some 250x slower than a healthy link.
+        assert rp.RSYNC_PUSH_TIMEOUT_S < rp.RSYNC_PULL_TIMEOUT_S
+        assert rp.PUSH_PAYLOAD_BYTES / rp.RSYNC_PUSH_TIMEOUT_S == pytest.approx(
+            204_425.98, abs=1.0
+        )
+
+    def test_the_push_stops_after_two_attempts(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Three 30-minute attempts is what 90 minutes of wedge was made of."""
+        import subprocess as sp
+
+        from scripts.phase1b import runpod_parallel as rp
+
+        calls = {"n": 0}
+
+        def _run(cmd: str, **kwargs: Any) -> None:
+            calls["n"] += 1
+            raise sp.CalledProcessError(255, cmd)
+
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp.time, "sleep", lambda s: None)
+
+        with pytest.raises(sp.CalledProcessError):
+            rp._rsync_to("1.2.3.4", 22, "/local/", "/remote/")
+        assert calls["n"] == rp.RSYNC_PUSH_ATTEMPTS
+
+
+class TestBootstrapDeadlineIsCooperative:
+    """A grace timer cannot free a wedged bootstrap; a clamp can.
+
+    The premortem proved the abandon-the-future approach fails: `with
+    ThreadPoolExecutor` joins the wedged thread on the way out, cancel()
+    succeeds on none of the pods because max_workers == len(pods) so every
+    future is already running, and shutdown(wait=False, cancel_futures=True)
+    still hangs the interpreter at atexit. The only mechanism that ends a
+    wedged bootstrap is the wedged thread ending itself, so every step is
+    clamped to what remains of an absolute deadline and the step past it
+    raises instead of blocking.
+    """
+
+    def _clock(self, monkeypatch: pytest.MonkeyPatch) -> _FakeClock:
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = _FakeClock()
+        monkeypatch.setattr(rp, "time", clock)
+        return clock
+
+    def test_a_step_gets_its_full_timeout_when_the_deadline_is_far(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = self._clock(monkeypatch)
+        assert rp._clamp_to_deadline(
+            clock.now + 10_000, rp.SSH_BOOTSTRAP_TIMEOUT_S, "pip install",
+        ) == rp.SSH_BOOTSTRAP_TIMEOUT_S
+
+    def test_a_step_is_clamped_to_what_remains(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = self._clock(monkeypatch)
+        assert rp._clamp_to_deadline(
+            clock.now + 120, rp.SSH_BOOTSTRAP_TIMEOUT_S, "pip install",
+        ) == 120
+
+    def test_a_step_never_gets_less_than_a_second(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """int() truncation must not turn 0.4s left into a zero-second step."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = self._clock(monkeypatch)
+        assert rp._clamp_to_deadline(
+            clock.now + 0.4, rp.SSH_BOOTSTRAP_TIMEOUT_S, "pip install",
+        ) == 1
+
+    def test_an_expired_deadline_raises_instead_of_starting_the_step(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = self._clock(monkeypatch)
+        with pytest.raises(TimeoutError, match="bootstrap deadline"):
+            rp._clamp_to_deadline(
+                clock.now - 1, rp.SSH_BOOTSTRAP_TIMEOUT_S, "cuda probe",
+            )
+
+    def test_ssh_clamps_every_retry_attempt_not_only_the_first(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The retry ladder is where an unclamped deadline leaks 4x its budget."""
+        import subprocess as sp
+
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = _FakeClock()
+        granted: list[int] = []
+
+        def _run(*args: Any, **kwargs: Any) -> None:
+            granted.append(kwargs["timeout"])
+            clock.now += kwargs["timeout"]
+            raise sp.TimeoutExpired(cmd="ssh", timeout=kwargs["timeout"])
+
+        monkeypatch.setattr(rp, "time", clock)
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp, "_require_ssh_key", lambda: None)
+
+        deadline = clock.now + rp.BOOTSTRAP_DEADLINE_S
+        with pytest.raises(TimeoutError, match="bootstrap deadline"):
+            rp._ssh("1.2.3.4", 22, "true",
+                    timeout=rp.SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
+
+        # 900 hung, 15s backoff, then only 585 of the 1500 remained.
+        assert granted == [900, 585]
+        overshoot = clock.now - deadline
+        assert 0 <= overshoot <= rp.BOOTSTRAP_DEADLINE_SLACK_S
+
+    def test_every_step_of_one_pod_shares_one_deadline(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = _FakeClock()
+        deadlines: list[float] = []
+
+        def _ssh(ip, port, cmd, check=True, env=None, timeout=0, deadline=None):
+            deadlines.append(deadline)
+
+            class _R:
+                returncode, stdout, stderr = 0, "", ""
+
+            return _R()
+
+        def _rsync(ip, port, local, remote, deadline=None):
+            deadlines.append(deadline)
+
+        monkeypatch.setattr(rp, "time", clock)
+        monkeypatch.setattr(rp, "_ssh", _ssh)
+        monkeypatch.setattr(rp, "_rsync_to", _rsync)
+
+        rp._bootstrap_pod(
+            {"ip": "1.2.3.4", "port": 22, "role": "MITRE ATLAS"},
+            base_model="BAAI/bge-large-en-v1.5", env={},
+        )
+
+        expected = clock.now + rp.BOOTSTRAP_DEADLINE_S
+        assert deadlines == [expected] * len(deadlines)
+        assert len(deadlines) == rp.BOOTSTRAP_SSH_STEPS + 1
+
+    def test_a_wedged_step_ends_the_pod_at_the_deadline(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The 90-minute hang, replayed: every step wedges for all it is given."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        clock = _FakeClock()
+        granted: list[int] = []
+
+        class _R:
+            returncode, stdout, stderr = 0, "", ""
+
+        def _run(*args: Any, **kwargs: Any) -> _R:
+            granted.append(kwargs["timeout"])
+            clock.now += kwargs["timeout"]
+            return _R()
+
+        monkeypatch.setattr(rp, "time", clock)
+        monkeypatch.setattr(rp.subprocess, "run", _run)
+        monkeypatch.setattr(rp, "_require_ssh_key", lambda: None)
+
+        start = clock.now
+        with pytest.raises(TimeoutError, match="bootstrap deadline"):
+            rp._bootstrap_pod(
+                {"ip": "1.2.3.4", "port": 22, "role": "MITRE ATLAS"},
+                base_model="BAAI/bge-large-en-v1.5", env={},
+            )
+
+        # apt-get took its full 900, the push was clamped to its own 300 wall,
+        # the pip step got only the 300 that were left, and the model fetch
+        # never started.
+        assert granted == [900, 300, 300]
+        assert clock.now - start == rp.BOOTSTRAP_DEADLINE_S
+
+    def test_the_deadline_is_far_shorter_than_the_ladder_it_replaces(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        assert rp.BOOTSTRAP_DEADLINE_S == 1500
+        # 4 SSH steps x 4 attempts x 900s + 90s of backoff, plus a 2 x 300s
+        # push: the wall the timeouts alone permit.
+        assert rp._bootstrap_ladder_s() == 15_375
+        assert rp._bootstrap_ladder_s() / rp.BOOTSTRAP_DEADLINE_S > 10
+
+
+class TestBudgetPricesTheBootstrapItActuallyRuns:
+    """The gate modelled a bootstrap that does not exist.
+
+    (3 * SSH_DEFAULT_TIMEOUT_S + RSYNC_TIMEOUT_S) / 3600 = 3.50h was wrong on
+    three counts: _bootstrap_pod issues FOUR _ssh calls, they run at
+    SSH_BOOTSTRAP_TIMEOUT_S rather than the hour-long default, and neither
+    SSH_CONNECT_ATTEMPTS nor the rsync attempts appeared at all. It happened to
+    land near the true figure by cancelling errors in opposite directions,
+    which is the least durable kind of correct.
+    """
+
+    def _budget(self, price: float, budget_usd: float, n_pods: int = 5) -> dict:
+        from scripts.phase1b import runpod_parallel as rp
+
+        with patch.object(rp, "get_gpu_price", return_value=price), \
+                patch.object(rp, "BUDGET_USD", budget_usd):
+            return rp._check_budget("NVIDIA H100 80GB HBM3", n_pods)
+
+    def test_the_ladder_counts_every_ssh_call_bootstrap_makes(self) -> None:
+        """Four, not three. Asserted against the function, not against memory."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        source = Path("scripts/phase1b/runpod_parallel.py").read_text(
+            encoding="utf-8"
+        )
+        bootstrap = source.split("def _bootstrap_pod")[1].split("\ndef ")[0]
+        assert rp.BOOTSTRAP_SSH_STEPS == bootstrap.count("_ssh(")
+
+    def test_the_ladder_prices_attempts_and_the_bootstrap_ceiling(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        per_ssh = (
+            rp.SSH_CONNECT_ATTEMPTS * rp.SSH_BOOTSTRAP_TIMEOUT_S
+            + rp.SSH_RETRY_BACKOFF_S * 6
+        )
+        push = rp.RSYNC_PUSH_ATTEMPTS * rp.RSYNC_PUSH_TIMEOUT_S + rp.SSH_RETRY_BACKOFF_S
+        assert rp._bootstrap_ladder_s() == rp.BOOTSTRAP_SSH_STEPS * per_ssh + push
+
+    def test_the_old_model_understated_the_ladder_it_meant_to_bound(self) -> None:
+        """The regression itself, so it cannot quietly return."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        old = 3 * rp.SSH_DEFAULT_TIMEOUT_S + rp.RSYNC_PULL_TIMEOUT_S
+        assert old == 12_600
+        assert old < rp._bootstrap_ladder_s()
+
+    def test_the_bootstrap_term_is_the_deadline_the_code_enforces(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        budget = self._budget(price=3.0, budget_usd=1000.0)
+        assert budget["bootstrap_hours"] == pytest.approx(
+            (rp.BOOTSTRAP_DEADLINE_S + rp.BOOTSTRAP_DEADLINE_SLACK_S) / 3600
+        )
+        assert budget["bootstrap_ladder_hours"] == pytest.approx(
+            rp._bootstrap_ladder_s() / 3600
+        )
+
+    def test_the_reachable_hours_are_the_sum_of_the_priced_stages(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        budget = self._budget(price=3.0, budget_usd=1000.0)
+        assert budget["reachable_hours"] == pytest.approx(
+            budget["bootstrap_hours"] + budget["fold_hours"]
+            + budget["collect_hours"]
+        )
+        assert budget["worst_case_usd"] == pytest.approx(
+            budget["fleet_usd_per_hour"] * budget["reachable_hours"]
+        )
+
+    def test_the_campaign_budget_admits_the_fleet_it_was_set_for(self) -> None:
+        """$7.89/hr/pod is what .pod_state.json recorded for Campaign 2."""
+        budget = self._budget(price=7.89, budget_usd=600.0)
+        assert budget["worst_case_usd"] < 600.0
+
+    def test_the_most_expensive_permitted_part_still_admits_at_600(self) -> None:
+        """The $12/hr filter is the only bound on price, so price the ceiling."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        budget = self._budget(
+            price=rp.MAX_USD_PER_HOUR_PER_POD, budget_usd=600.0,
+        )
+        assert budget["worst_case_usd"] < 600.0
+
+
+class TestAWedgedBootstrapIsAttributedNotPropagated:
+    """A pod that runs out of deadline must land as that pod's failure.
+
+    `_clamp_to_deadline` raises TimeoutError, which is an OSError and not a
+    RuntimeError. run_folds' bootstrap loop catches Exception, so the wedge is
+    recorded against its role and the other pods' futures still report -- but
+    that is a property of one word in an except clause, and the whole point of
+    the deadline is that the fleet learns which pod died rather than waiting on
+    it. Narrowing that clause would abandon the surviving futures instead.
+    """
+
+    ROLES = ("MITRE ATLAS", "NIST AI 100-2", "OWASP AI Exchange")
+
+    def test_the_wedged_pod_is_named_and_the_others_still_bootstrap(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [{"role": r, "ip": "1.2.3.4", "port": 22, "pod_id": f"id-{r}"}
+                for r in self.ROLES]
+        bootstrapped: list[str] = []
+
+        def _bootstrap(pod, base_model=None, env=None, deadline=None):
+            if pod["role"] == "NIST AI 100-2":
+                raise TimeoutError(
+                    "Pod bootstrap deadline exceeded by 3s before 'rsync push' "
+                    "could start (budget was 1500s)."
+                )
+            bootstrapped.append(pod["role"])
+
+        monkeypatch.setattr(rpp, "_load_pod_state", lambda: pods)
+        monkeypatch.setattr(rpp, "_check_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "_extend_deadline", lambda: None)
+        monkeypatch.setattr(rpp, "fold_roster", lambda split="test": list(self.ROLES))
+        monkeypatch.setattr(rpp, "_get_pod_env", lambda: {"HF_TOKEN": "hf_read_only"})
+        monkeypatch.setattr(rpp, "_bootstrap_pod", _bootstrap)
+        monkeypatch.setattr(
+            rpp, "assert_corpus_matches_training_links", lambda: "d" * 64,
+        )
+
+        with pytest.raises(RuntimeError, match="NIST AI 100-2"):
+            rpp.run_folds("cfg")
+
+        assert sorted(bootstrapped) == ["MITRE ATLAS", "OWASP AI Exchange"]
