@@ -1911,3 +1911,92 @@ class TestAWedgedBootstrapIsAttributedNotPropagated:
             rpp.run_folds("cfg")
 
         assert sorted(bootstrapped) == ["MITRE ATLAS", "OWASP AI Exchange"]
+
+
+class TestTheFoldLaunchCannotDoubleStartATrainer:
+    """A retried launch used to start a second trainer on the same GPU.
+
+    2026-08-28, arm A3 (Qwen3-0.6B, ~89-minute folds): the launch was given
+    SSH_DEFAULT_TIMEOUT_S (3600) and `_ssh` retries on TimeoutExpired, so the
+    session hit its one-hour wall and the launch was sent again. `setsid`
+    guarantees the first trainer survives, so both trained the same fold on one
+    A100 -- confirmed on the pod as pids 1248 and 1720, 6636 MiB and 6576 MiB,
+    started exactly sixty minutes apart. The fold could then never finish
+    inside FOLD_TIMEOUT_S.
+
+    Invisible until a fold outran the launch timeout. Arm A1's 34-minute folds
+    finished first, so A1 passed on speed rather than correctness.
+    """
+
+    def test_the_launch_gets_its_own_short_timeout_not_the_work_timeout(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+        import inspect
+
+        src = inspect.getsource(rp._run_fold_on_pod)
+        assert "SSH_LAUNCH_TIMEOUT_S" in src, (
+            "the fold launch must use its own short wall clock; sharing "
+            "SSH_DEFAULT_TIMEOUT_S is what let a retry double-start a trainer"
+        )
+        assert "timeout=SSH_DEFAULT_TIMEOUT_S" not in src
+        assert rp.SSH_LAUNCH_TIMEOUT_S < rp.SSH_DEFAULT_TIMEOUT_S
+        # A detach-and-echo that takes a minute is already pathological.
+        assert rp.SSH_LAUNCH_TIMEOUT_S <= 300
+
+    def test_the_launch_is_idempotent_under_retry(self) -> None:
+        """The command itself must refuse to start a second trainer."""
+        from scripts.phase1b import runpod_parallel as rp
+        import inspect
+
+        src = inspect.getsource(rp._run_fold_on_pod)
+        assert "mkdir" in src, (
+            "the launch needs an atomic guard so a retried send cannot start a "
+            "second detached trainer"
+        )
+        assert "already-launched" in src
+
+    def test_the_guard_is_not_a_process_match(self) -> None:
+        """pgrep would carry the pattern in the probing shell's own argv.
+
+        Written three times in this repository already. The guard must be a
+        filesystem primitive, not a scan of the process table.
+        """
+        from scripts.phase1b import runpod_parallel as rp
+        import inspect
+
+        # Strip comments and docstring prose before matching. The first draft
+        # of this test asserted on the raw source and failed on the COMMENT that
+        # explains why pgrep is wrong -- a check that cannot tell an
+        # explanation from an instance is the same category error it is
+        # defending against.
+        src = inspect.getsource(rp._run_fold_on_pod)
+        code = "\n".join(
+            line.split("#", 1)[0] for line in src.splitlines()
+        )
+        assert "pgrep" not in code, (
+            "a pgrep guard matches the shell running the pgrep; use the atomic "
+            "mkdir instead"
+        )
+
+    def test_a_second_send_of_the_same_command_starts_nothing(self, tmp_path) -> None:
+        """Run the real shell logic twice and assert only one launch happens."""
+        import subprocess
+
+        remote = tmp_path / "workspace"
+        remote.mkdir()
+        lock = remote / "fold_TEST.launched"
+        marker = remote / "ran.count"
+        cmd = (
+            f"cd {remote} && "
+            f"if mkdir {lock} 2>/dev/null; then "
+            f"echo x >> {marker}; echo started; "
+            f"else echo already-launched; fi"
+        )
+        first = subprocess.run(["bash", "-c", cmd], capture_output=True, text=True, check=True)
+        second = subprocess.run(["bash", "-c", cmd], capture_output=True, text=True, check=True)
+
+        assert first.stdout.strip() == "started"
+        assert second.stdout.strip() == "already-launched"
+        assert marker.read_text().count("x") == 1, (
+            "the guarded command ran its payload twice; a retried launch would "
+            "put two trainers on one GPU"
+        )

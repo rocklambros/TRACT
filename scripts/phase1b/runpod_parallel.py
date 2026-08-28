@@ -179,6 +179,13 @@ SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
 # only fires on a returncode and a hang never produces one. Fifteen minutes is
 # generous for the work and short enough that a hang becomes a retry.
 SSH_BOOTSTRAP_TIMEOUT_S: Final[int] = 900
+
+# The fold launch detaches a trainer and echoes. It should return in under a
+# second; a minute is already pathological. It used to be given
+# SSH_DEFAULT_TIMEOUT_S -- 3600 -- and _ssh retries on TimeoutExpired, so on
+# 2026-08-28 a fold that outran the hour got a SECOND trainer on the same GPU.
+# A fire-and-forget command must never share a wall clock sized for work.
+SSH_LAUNCH_TIMEOUT_S: Final[int] = 120
 SSH_CONNECT_ATTEMPTS: Final[int] = 4
 SSH_RETRY_BACKOFF_S: Final[int] = 15
 
@@ -1269,10 +1276,38 @@ def _run_fold_on_pod(
     slug = re.sub(r"[^A-Za-z0-9]+", "_", framework)
     log_path = f"{remote_dir}/fold_{slug}.log"
     exit_path = f"{remote_dir}/fold_{slug}.exit"
+    # IDEMPOTENT, because this command is sent through a transport that retries.
+    #
+    # _ssh retries on TimeoutExpired, and the launch used to be given
+    # SSH_DEFAULT_TIMEOUT_S -- one hour -- for a command whose whole job is to
+    # detach a process and echo. On 2026-08-28 arm A3's folds ran ~89 minutes
+    # each; the launch session hit its one-hour wall, _ssh retried, and a SECOND
+    # detached trainer started on the same GPU. `setsid` guarantees the first
+    # survives, so both then trained the same fold at half speed, into a log
+    # they interleaved, and the fold could not finish inside FOLD_TIMEOUT_S.
+    # Confirmed on the pod: pids 1248 and 1720, both `run_fold --framework
+    # 'NIST 800-53 v5'`, 6636 MiB and 6576 MiB on one A100, started exactly
+    # sixty minutes apart.
+    #
+    # The bug was invisible until a fold outran the launch timeout. Arm A1's
+    # 34-minute folds finished before the wall was ever reached, so A1 passed
+    # not because this was correct but because it was fast enough.
+    #
+    # `mkdir` is the guard because it is atomic on POSIX and needs no process
+    # matching: exactly one caller can create the directory, so a retry takes
+    # the else branch and reports the launch it did not perform. A pgrep guard
+    # was the obvious alternative and is the wrong tool -- the shell running the
+    # pgrep carries the pattern in its own command line, which is a defect this
+    # repository has now written three times.
+    lock_path = f"{remote_dir}/fold_{slug}.launched"
     launch = (
-        f"cd {remote_dir} && rm -f {shlex.quote(exit_path)} && "
+        f"cd {remote_dir} && "
+        f"if mkdir {shlex.quote(lock_path)} 2>/dev/null; then "
+        f"rm -f {shlex.quote(exit_path)}; "
         f"setsid nohup bash -c {shlex.quote(fold_cmd + f'; echo $? > {exit_path}')} "
-        f"> {shlex.quote(log_path)} 2>&1 < /dev/null & echo started"
+        f"> {shlex.quote(log_path)} 2>&1 < /dev/null & "
+        f"echo started; "
+        f"else echo already-launched; fi"
     )
 
     logger.info("[%s] Launching fold (detached)...", framework)
@@ -1283,7 +1318,7 @@ def _run_fold_on_pod(
     # hiccup ended the fleet. See run_folds for the other half of the fix.
     pod_env = _get_pod_env() if env is None else env
     try:
-        _ssh(ip, port, launch, env=pod_env, timeout=SSH_DEFAULT_TIMEOUT_S)
+        _ssh(ip, port, launch, env=pod_env, timeout=SSH_LAUNCH_TIMEOUT_S)
     except Exception as e:
         elapsed = time.time() - start
         logger.error("[%s] LAUNCH FAILED after %.1fm: %s", framework, elapsed / 60, e)
