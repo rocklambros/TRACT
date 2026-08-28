@@ -1,0 +1,1583 @@
+[
+  {
+    "control_text": "Rules for the effective use of cryptography, including cryptographic key management, shall be defined and implemented.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "170-772",
+    "predicted_top10": [
+      "287-305",
+      "508-702",
+      "783-255",
+      "340-375",
+      "742-431",
+      "170-772",
+      "878-880",
+      "674-425",
+      "821-832",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "The organization shall identify and meet the requirements regarding the preservation of privacy andprotection of PII according to laws and regulations and contractual requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "362-550",
+    "predicted_top10": [
+      "247-250",
+      "510-324",
+      "766-162",
+      "571-640",
+      "362-550",
+      "546-564",
+      "307-242",
+      "261-010",
+      "571-271",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "Rules for the secure development of software and systems shall be established and applied.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "616-305",
+    "predicted_top10": [
+      "616-305",
+      "148-853",
+      "787-638",
+      "635-851",
+      "820-877",
+      "036-275",
+      "766-162",
+      "567-755",
+      "854-643",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "Principles for engineering secure systems shall be established, documented,maintainedandappliedtoanyinformationsystemdevelopment activities.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "616-305",
+      "635-851",
+      "787-638",
+      "766-162",
+      "820-877",
+      "155-155",
+      "170-772",
+      "847-247",
+      "708-355",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "Configurations, including security configurations, of , software, services andnetworksshall be established, documented, implemented, monitored and reviewed.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "486-813",
+      "180-488",
+      "233-748",
+      "708-355",
+      "110-531",
+      "148-853",
+      "473-177",
+      "636-660",
+      "832-555",
+      "470-731"
+    ]
+  },
+  {
+    "control_text": "Read and write access to source code, development tools and software libraries shall be appropriately managed.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "080-466",
+    "predicted_top10": [
+      "787-638",
+      "128-128",
+      "866-553",
+      "820-877",
+      "148-853",
+      "036-275",
+      "724-770",
+      "820-878",
+      "616-305",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "Theorganization shall direct, monitor and review the activities to outsourced system development.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "616-305",
+      "635-851",
+      "261-010",
+      "636-660",
+      "148-853",
+      "862-452",
+      "613-285",
+      "766-162",
+      "847-247",
+      "417-342"
+    ]
+  },
+  {
+    "control_text": "Processes and procedures shall be defined and implemented to manage the information security risks with the use of supplier's products or services.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "766-162",
+      "787-638",
+      "847-247",
+      "616-305",
+      "862-452",
+      "247-250",
+      "307-242",
+      "820-877",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "Relevant information security requirements shall be established and agreed with each supplier based on the type of supplier relationship.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "883-173",
+      "530-671",
+      "430-636",
+      "787-638",
+      "847-247",
+      "251-446",
+      "881-234",
+      "423-055",
+      "852-770"
+    ]
+  },
+  {
+    "control_text": "Processes for acquisition, use, management and exit from services shall be established in accordance with the organization's information security requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "247-250",
+      "862-452",
+      "636-660",
+      "616-305",
+      "766-162",
+      "261-010",
+      "724-770",
+      "571-271",
+      "560-224",
+      "613-285"
+    ]
+  },
+  {
+    "control_text": "Processes and procedures shall be defined and implemented to manage the information security risks with the ICT products and services supply chain.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "883-173",
+      "847-247",
+      "616-305",
+      "423-055",
+      "766-162",
+      "881-234",
+      "852-770",
+      "820-877",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "Theorganization shall regularly monitor, review,evaluateandmanage change in supplier information security andservice delivery.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "636-660",
+      "148-227",
+      "635-851",
+      "766-162",
+      "464-513",
+      "261-010",
+      "616-305",
+      "745-356",
+      "247-250",
+      "708-355"
+    ]
+  },
+  {
+    "control_text": "Security testing processes shall be defined and implemented in the development life cycle.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "433-442",
+    "predicted_top10": [
+      "088-377",
+      "570-487",
+      "745-356",
+      "433-442",
+      "411-684",
+      "616-305",
+      "635-851",
+      "207-435",
+      "464-513",
+      "626-250"
+    ]
+  },
+  {
+    "control_text": "Test information shall beappropriately selected,protectedandmanaged.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "433-442",
+    "predicted_top10": [
+      "570-487",
+      "088-377",
+      "207-435",
+      "433-442",
+      "832-555",
+      "411-684",
+      "841-710",
+      "128-128",
+      "703-813",
+      "308-515"
+    ]
+  },
+  {
+    "control_text": "An inventory of information and other assets, including owners, shall be developed and maintained.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "287-823",
+    "predicted_top10": [
+      "560-224",
+      "356-282",
+      "820-878",
+      "287-823",
+      "162-655",
+      "217-168",
+      "858-745",
+      "275-483",
+      "447-083",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "Secure coding principles shall be applied to software development.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "036-275",
+    "predicted_top10": [
+      "036-275",
+      "616-305",
+      "787-638",
+      "635-851",
+      "148-853",
+      "820-877",
+      "820-878",
+      "822-100",
+      "068-102",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "Audit tests and other assurance activities involving assessment of operational systems shall be planned and agreed between the tester and management.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "217-168",
+    "predicted_top10": [
+      "217-168",
+      "088-377",
+      "464-513",
+      "842-876",
+      "745-356",
+      "148-420",
+      "626-250",
+      "843-841",
+      "411-684",
+      "703-813"
+    ]
+  },
+  {
+    "control_text": "The organization's approach to managing information security and implementation including people, processes and technologies shall be reviewed independently at planned intervals, or when significant changes occur.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "510-324",
+    "predicted_top10": [
+      "261-010",
+      "571-271",
+      "635-851",
+      "766-162",
+      "464-513",
+      "247-250",
+      "567-755",
+      "616-305",
+      "636-660",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "Compliance with the organization's information security policy, topic-specific policies, rules and standards shall be regularly reviewed.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "510-324",
+    "predicted_top10": [
+      "766-162",
+      "510-324",
+      "464-513",
+      "261-010",
+      "571-271",
+      "635-851",
+      "217-168",
+      "135-200",
+      "626-250",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "The organization shall and maintain contact with relevant authorities.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "510-324",
+    "predicted_top10": [
+      "510-324",
+      "833-030",
+      "247-250",
+      "261-010",
+      "571-271",
+      "278-646",
+      "546-564",
+      "567-755",
+      "634-733",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "Information about technical vulnerabilities of information systems in use shall be obtained, the organization's exposure to such vulnerabilities shall be evaluated and shall be taken.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "732-148",
+    "predicted_top10": [
+      "732-148",
+      "307-242",
+      "464-513",
+      "613-286",
+      "745-356",
+      "058-083",
+      "766-162",
+      "463-577",
+      "847-247",
+      "760-764"
+    ]
+  },
+  {
+    "control_text": "Information stored in information systems, devices or in any other storage media shall be deleted when no longer required.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "074-873",
+    "predicted_top10": [
+      "762-451",
+      "715-304",
+      "046-257",
+      "617-524",
+      "858-745",
+      "614-353",
+      "208-830",
+      "268-272",
+      "257-117",
+      "424-242"
+    ]
+  },
+  {
+    "control_text": "Information shall be classified according to the information security needs of the organization based onconfidentiality, integrity, availability and relevant interested party requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "765-788",
+    "predicted_top10": [
+      "766-162",
+      "247-250",
+      "004-517",
+      "074-873",
+      "636-660",
+      "635-851",
+      "503-455",
+      "724-770",
+      "261-010",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "An set of procedures for information labelling shall be developed and implemented in accordance with the information classification scheme adopted by the organization.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "731-120",
+    "predicted_top10": [
+      "766-162",
+      "074-873",
+      "247-250",
+      "546-564",
+      "307-242",
+      "820-877",
+      "464-513",
+      "571-271",
+      "510-324",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "The organization shall implement procedures to protect intellectual property rights.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "247-250",
+      "613-285",
+      "616-305",
+      "522-616",
+      "787-638",
+      "567-755",
+      "766-162",
+      "270-568",
+      "546-564",
+      "261-010"
+    ]
+  },
+  {
+    "control_text": "shall be protected from loss, destruction, falsification, unauthorized access and unauthorized release.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "333-858",
+      "881-321",
+      "524-446",
+      "275-483",
+      "774-888",
+      "482-866",
+      "267-468",
+      "340-375",
+      "307-111",
+      "783-255"
+    ]
+  },
+  {
+    "control_text": "Information processing facilitiesshallbeimplementedwithredundancy sufficient to meet availability requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "233-748",
+      "356-282",
+      "708-355",
+      "148-227",
+      "341-076",
+      "467-784",
+      "636-660",
+      "486-813",
+      "470-731",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "Theorganization shall plan howtomaintaininformation security atan level during disruption.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "058-083",
+      "636-660",
+      "240-464",
+      "467-784",
+      "623-550",
+      "436-325",
+      "233-748",
+      "148-227",
+      "464-513",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "ICT readiness shall be planned, implemented, maintained and tested based on business continuity objectives andICTcontinuity requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "635-851",
+      "240-464",
+      "464-513",
+      "862-452",
+      "261-010",
+      "571-271",
+      "567-755",
+      "616-305",
+      "766-162",
+      "307-242"
+    ]
+  },
+  {
+    "control_text": "Information security requirements shall be identified, specified and approved when developing or acquiring applications.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "004-517",
+    "predicted_top10": [
+      "004-517",
+      "787-638",
+      "635-851",
+      "766-162",
+      "616-305",
+      "036-275",
+      "503-455",
+      "546-564",
+      "417-342",
+      "148-853"
+    ]
+  },
+  {
+    "control_text": "Information transfer rules, procedures, or agreements shall be in place for all types of transfer facilities the organization and between the organization and other parties.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "004-517",
+    "predicted_top10": [
+      "247-250",
+      "278-646",
+      "634-733",
+      "862-452",
+      "435-702",
+      "270-568",
+      "613-285",
+      "228-551",
+      "847-247",
+      "261-010"
+    ]
+  },
+  {
+    "control_text": "Legal, statutory, regulatory and contractual requirements relevant to information security and the organization's approach to meet requirements shall be identified, documented and kept up to date.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "766-162",
+      "635-851",
+      "261-010",
+      "004-517",
+      "510-324",
+      "247-250",
+      "546-564",
+      "571-271",
+      "787-638",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "Information relating to information security threats shall be collected and analysed to produce threat intelligence.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "888-770",
+    "predicted_top10": [
+      "888-770",
+      "818-434",
+      "307-242",
+      "043-703",
+      "068-102",
+      "766-162",
+      "475-586",
+      "308-515",
+      "220-870",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "Management shall require all personnel to apply information security in accordance with the established information security policy, topic-specific policies and procedures of the organization.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "261-010",
+      "571-271",
+      "013-021",
+      "427-113",
+      "635-851",
+      "172-101",
+      "766-162",
+      "636-660",
+      "247-250",
+      "724-770"
+    ]
+  },
+  {
+    "control_text": "Background verification checks on all candidates to becomepersonnel shall be carried out prior to joining the organizationandonanongoing basis taking consideration laws, regulations and ethics and be proportional to the business requirements, the classification of the information to be accessed and the perceived risks.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "270-568",
+      "427-113",
+      "633-428",
+      "013-021",
+      "247-250",
+      "634-733",
+      "362-550",
+      "571-640",
+      "586-842"
+    ]
+  },
+  {
+    "control_text": "Information security responsibilities and duties that remain valid after termination or change of employment shall be defined, enforced and communicated to relevant personnel and other interested parties.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "013-021",
+      "427-113",
+      "247-250",
+      "261-010",
+      "362-550",
+      "724-770",
+      "251-446",
+      "123-124",
+      "634-733"
+    ]
+  },
+  {
+    "control_text": "Personnel and other interested parties as shall return all the organization's assets in their possession change or termination of their employment, contract or agreement.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "427-113",
+      "287-823",
+      "013-021",
+      "424-242",
+      "080-466",
+      "157-587",
+      "208-830",
+      "362-550",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "Confidentiality or non-disclosure agreements reflecting the organization's needs for the protection of information shall be identified, documented, regularly reviewed and signed by personnel and other relevant interested parties.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "308-515",
+      "571-640",
+      "247-250",
+      "362-550",
+      "818-434",
+      "633-428",
+      "270-568",
+      "172-101",
+      "148-420",
+      "634-733"
+    ]
+  },
+  {
+    "control_text": "A disciplinary process shall be formalized and communicated to actions against personnel and other relevant interested parties committed an information security policy violation.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "261-010",
+      "247-250",
+      "135-200",
+      "571-271",
+      "510-324",
+      "013-021",
+      "172-101",
+      "766-162",
+      "427-113",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "The employment contractual agreements shall state the personnel'sand the organization's responsibilities for information security.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "427-113",
+      "013-021",
+      "261-010",
+      "251-446",
+      "247-250",
+      "634-733",
+      "571-271",
+      "724-770",
+      "201-246"
+    ]
+  },
+  {
+    "control_text": "Information security roles and responsibilities shall be defined and allocated according to the organization needs.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "013-021",
+    "predicted_top10": [
+      "261-010",
+      "013-021",
+      "571-271",
+      "766-162",
+      "635-851",
+      "560-224",
+      "636-660",
+      "247-250",
+      "427-113",
+      "724-770"
+    ]
+  },
+  {
+    "control_text": "Personnel of the organization andrelevant interested parties shall receive information security awareness, education and training and regular updates of the organization's information security policy, topic-specific policies andprocedures, as relevant for their job function.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "428-544",
+      "013-021",
+      "261-010",
+      "427-113",
+      "118-775",
+      "244-750",
+      "172-101",
+      "571-271",
+      "635-851",
+      "833-030"
+    ]
+  },
+  {
+    "control_text": "Theuseofresourcesshallbemonitoredandadjustedinlinewithcurrent and expected capacity requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "058-083",
+      "886-662",
+      "660-052",
+      "630-573",
+      "703-813",
+      "356-282",
+      "187-083",
+      "058-443",
+      "176-154",
+      "341-076"
+    ]
+  },
+  {
+    "control_text": "Information security policy and topic-specific policies shall be defined, approved by management, published, communicated to and acknowledged by relevant personnel and relevant interested parties, and reviewed at planned intervals and if significant changes occur.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "766-162",
+      "135-200",
+      "261-010",
+      "635-851",
+      "247-250",
+      "571-271",
+      "847-247",
+      "636-660",
+      "546-564",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "Rules for the acceptable use and procedures for handling information and other assets shallbeidentified,documentedandimplemented.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "820-878",
+      "362-550",
+      "247-250",
+      "128-128",
+      "766-162",
+      "820-877",
+      "356-282",
+      "787-638",
+      "162-655",
+      "560-224"
+    ]
+  },
+  {
+    "control_text": "Information security shall be integrated project management.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "635-851",
+      "261-010",
+      "766-162",
+      "571-271",
+      "636-660",
+      "546-564",
+      "616-305",
+      "847-247",
+      "464-513",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "The organization shall and maintain contact with special interest groups or other specialist security forums and professional associations.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "833-030",
+    "predicted_top10": [
+      "833-030",
+      "563-088",
+      "118-775",
+      "546-564",
+      "567-755",
+      "028-727",
+      "261-010",
+      "634-733",
+      "571-271",
+      "428-544"
+    ]
+  },
+  {
+    "control_text": "Development, testing and production environments shall be separated and secured.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "473-177",
+      "708-355",
+      "233-748",
+      "148-853",
+      "128-128",
+      "486-813",
+      "636-660",
+      "123-124",
+      "234-282",
+      "724-770"
+    ]
+  },
+  {
+    "control_text": "Operating procedures for information processing facilities shall be documented and made available to personnel them.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "820-877",
+      "162-655",
+      "820-878",
+      "787-638",
+      "842-876",
+      "234-282",
+      "068-102",
+      "172-101",
+      "633-428",
+      "270-568"
+    ]
+  },
+  {
+    "control_text": "Rules to control physical and logical access to information and other assets shall be established and implemented based on business and information security requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "247-250",
+      "128-128",
+      "560-224",
+      "724-770",
+      "117-371",
+      "447-083",
+      "757-271",
+      "708-355",
+      "787-638",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "Access rights to information and other assets shall be provisioned, reviewed, modified and removed in accordance with the organization's topic-specific policy on and rules for access control.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "247-250",
+      "128-128",
+      "123-124",
+      "724-770",
+      "560-224",
+      "524-603",
+      "817-808",
+      "447-083",
+      "540-566",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "The full life cycle of identities shall be managed.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "576-042",
+      "138-448",
+      "440-361",
+      "813-610",
+      "235-658",
+      "270-568",
+      "646-227",
+      "404-126",
+      "358-860",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "Conflicting duties and conflicting areas of responsibility shall be segregated.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "013-021",
+      "284-521",
+      "546-564",
+      "560-224",
+      "113-133",
+      "117-371",
+      "660-867",
+      "576-042",
+      "757-271",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "Access to information andother assets shall be restricted in accordance with the established topic-specific policy onaccess control.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "152-725",
+      "447-083",
+      "128-128",
+      "247-250",
+      "713-684",
+      "524-603",
+      "636-854",
+      "275-483",
+      "817-808",
+      "560-224"
+    ]
+  },
+  {
+    "control_text": "Theorganization shall assess information security events anddecide if they are to be categorized as information security incidents.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "307-242",
+      "464-513",
+      "766-162",
+      "635-851",
+      "732-148",
+      "463-577",
+      "058-083",
+      "546-564",
+      "567-755",
+      "510-324"
+    ]
+  },
+  {
+    "control_text": "Theorganization shall plan andpreparefor managinginformation security incidents bydefining, establishing andcommunicatinginformation security incident management processes, roles and responsibilities.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "464-513",
+      "571-271",
+      "307-242",
+      "732-148",
+      "261-010",
+      "513-183",
+      "510-324",
+      "240-464",
+      "842-876"
+    ]
+  },
+  {
+    "control_text": "Knowledgegainedfrominformation security incidents shall be to strengthen and improve the information security controls.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "635-851",
+      "463-577",
+      "307-242",
+      "732-148",
+      "464-513",
+      "766-162",
+      "436-325",
+      "058-083",
+      "261-010",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "Theorganization shall establishandimplementproceduresfortheidentification, collection, acquisition and preservation of evidence to information security events.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "464-513",
+      "766-162",
+      "847-247",
+      "423-055",
+      "307-242",
+      "567-755",
+      "745-356",
+      "635-851",
+      "546-564",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "The organization shall provide a mechanism for personnel to report observed or suspected information security events through channels in a timely manner.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "217-168",
+      "464-513",
+      "510-324",
+      "571-271",
+      "842-876",
+      "058-083",
+      "261-010",
+      "766-162",
+      "028-727",
+      "402-706"
+    ]
+  },
+  {
+    "control_text": "Information security incidents shallberespondedtoinaccordancewith the documented procedures.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "464-513",
+      "307-242",
+      "766-162",
+      "510-324",
+      "842-876",
+      "217-168",
+      "635-851",
+      "463-577",
+      "745-356",
+      "732-148"
+    ]
+  },
+  {
+    "control_text": "Networks, systems and applications shall be monitored for anomalous behaviour and actions taken to potential information security incidents.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "058-083",
+    "predicted_top10": [
+      "058-083",
+      "418-853",
+      "552-588",
+      "464-513",
+      "887-750",
+      "703-813",
+      "725-682",
+      "307-242",
+      "217-168",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "Security of assets off-premises",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "157-587",
+    "predicted_top10": [
+      "307-111",
+      "223-780",
+      "356-282",
+      "234-282",
+      "287-823",
+      "173-554",
+      "208-830",
+      "850-376",
+      "862-452",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "Equipment siting and protection",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "157-587",
+    "predicted_top10": [
+      "234-282",
+      "157-587",
+      "850-376",
+      "114-853",
+      "862-452",
+      "683-036",
+      "486-813",
+      "080-466",
+      "163-776",
+      "223-780"
+    ]
+  },
+  {
+    "control_text": "Logs that record activities, exceptions, faults andother relevant events shall be produced, stored, protected and analysed.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "843-841",
+      "402-706",
+      "067-050",
+      "240-274",
+      "260-200",
+      "842-876",
+      "026-280",
+      "555-048",
+      "148-420",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "Backupcopies of information,softwareandsystemsshallbemaintained and regularly tested in accordance with the agreed topic-specific policy on backup.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "163-776",
+    "predicted_top10": [
+      "163-776",
+      "257-117",
+      "356-282",
+      "858-745",
+      "614-353",
+      "058-083",
+      "208-830",
+      "473-177",
+      "433-442",
+      "461-680"
+    ]
+  },
+  {
+    "control_text": "The clocks of information processing systems by the organization shall be synchronized to approved time sources.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "770-362",
+      "770-361",
+      "247-250",
+      "114-277",
+      "636-660",
+      "261-010",
+      "510-324",
+      "724-770",
+      "470-731",
+      "177-260"
+    ]
+  },
+  {
+    "control_text": "Security shall be implemented when personnel are working remotely to protect information accessed, processed or stored outside the organization's premises.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "467-784",
+      "341-076",
+      "683-036",
+      "278-646",
+      "862-452",
+      "634-733",
+      "636-660",
+      "435-702",
+      "356-282",
+      "228-551"
+    ]
+  },
+  {
+    "control_text": "Information stored on, processed by or accessible user end point devices shall be protected.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "356-282",
+      "762-451",
+      "614-353",
+      "447-083",
+      "186-540",
+      "482-866",
+      "224-321",
+      "307-111",
+      "715-304",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Procedures and shall be implemented to securely manage software installation on operational systems.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "862-452",
+      "124-564",
+      "473-177",
+      "263-184",
+      "787-638",
+      "613-285",
+      "148-853",
+      "080-466",
+      "234-282",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "Protection against malware shall be implemented and supported by user awareness.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "872-574",
+    "predicted_top10": [
+      "872-574",
+      "887-750",
+      "112-273",
+      "154-031",
+      "307-242",
+      "888-770",
+      "838-636",
+      "803-457",
+      "132-146",
+      "552-588"
+    ]
+  },
+  {
+    "control_text": "Equipmentshall bemaintainedcorrectly to ensure availability, integrity and confidentiality of information.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "356-282",
+      "223-780",
+      "341-076",
+      "467-784",
+      "683-036",
+      "862-452",
+      "234-282",
+      "278-646",
+      "128-128",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Items of equipment containing storage media shall be verified to ensure that any sensitive data and licensed software removed or securely overwritten prior to disposal or re-use.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "762-451",
+      "275-483",
+      "715-304",
+      "447-083",
+      "046-257",
+      "617-524",
+      "758-262",
+      "126-668",
+      "157-587",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Storage media shall be managed through their life cycle of acquisition, use, transportation anddisposal in accordance with the organization's classification scheme and handling requirements.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "613-285",
+      "130-550",
+      "522-616",
+      "758-262",
+      "157-587",
+      "208-830",
+      "287-823",
+      "126-668",
+      "163-776",
+      "046-257"
+    ]
+  },
+  {
+    "control_text": "Security mechanisms,service level sand service requirements of network services shall be identified, implemented and monitored.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "467-784",
+    "predicted_top10": [
+      "004-517",
+      "467-784",
+      "341-076",
+      "636-660",
+      "228-551",
+      "148-227",
+      "683-036",
+      "278-646",
+      "634-733",
+      "435-702"
+    ]
+  },
+  {
+    "control_text": "Access to external websites shall be managed to reduce exposure to malicious content.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "467-784",
+    "predicted_top10": [
+      "273-600",
+      "636-347",
+      "356-282",
+      "336-512",
+      "522-616",
+      "467-784",
+      "028-727",
+      "760-765",
+      "683-036",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Networksandnetworkdevicesshallbesecured,managedandcontrolled to protect information in systems and applications.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "467-784",
+      "356-282",
+      "708-355",
+      "636-660",
+      "341-076",
+      "440-372",
+      "148-227",
+      "223-780",
+      "435-702",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "Groups of information services, users and information systems shall be segregated in the organization's networks.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "515-021",
+    "predicted_top10": [
+      "467-784",
+      "708-355",
+      "724-770",
+      "636-660",
+      "247-250",
+      "862-452",
+      "634-733",
+      "278-646",
+      "546-564",
+      "560-224"
+    ]
+  },
+  {
+    "control_text": "Security perimeters shall be defined and to protect areas that contain information and other assets.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "560-224",
+      "447-083",
+      "234-282",
+      "273-600",
+      "356-282",
+      "036-275",
+      "482-866",
+      "762-451",
+      "660-867",
+      "731-120"
+    ]
+  },
+  {
+    "control_text": "Clear desk rules for papers and removable storage media and clear screen rules for information processing facilities shall be defined and appropriately enforced.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "560-224",
+      "247-250",
+      "128-128",
+      "234-282",
+      "130-550",
+      "724-770",
+      "636-660",
+      "503-455",
+      "522-616",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "Information processing facilities shall beprotected frompowerfailures and other disruptions caused by failures in supporting utilities.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "467-784",
+      "234-282",
+      "636-660",
+      "683-036",
+      "708-355",
+      "208-830",
+      "356-282",
+      "623-550",
+      "724-770",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "Protection against physical andenvironmental threats, such as natural [...] shall be designed and implemented.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "567-755",
+      "132-146",
+      "307-242",
+      "660-867",
+      "888-770",
+      "436-325",
+      "463-577",
+      "240-464",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "Security for working in secure areas shall be designed and implemented.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "862-452",
+      "234-282",
+      "567-755",
+      "635-851",
+      "616-305",
+      "683-036",
+      "546-564",
+      "560-224",
+      "467-784",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "Secure areas shall be protected by entry controls and access points.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "273-600",
+      "683-036",
+      "862-452",
+      "467-784",
+      "850-376",
+      "524-446",
+      "881-321",
+      "576-042",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "Physical security for offices, rooms and facilities shall be designed and implemented.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "850-376",
+      "155-155",
+      "708-355",
+      "560-224",
+      "616-305",
+      "467-784",
+      "326-704",
+      "862-452",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "Premises shall be continuously monitored for unauthorized physical access.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "834-645",
+      "713-683",
+      "552-588",
+      "418-853",
+      "234-282",
+      "227-045",
+      "743-110",
+      "067-050",
+      "683-036",
+      "273-600"
+    ]
+  },
+  {
+    "control_text": "Cables carrying power, data or supporting information services shall be protected from interception, interference or damage.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "683-036",
+      "527-034",
+      "636-854",
+      "435-702",
+      "186-540",
+      "273-600",
+      "745-045",
+      "467-784",
+      "558-807",
+      "278-646"
+    ]
+  },
+  {
+    "control_text": "Changes to information processing facilities and information systems shall be subject to change management procedures.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "112-648",
+    "predicted_top10": [
+      "112-648",
+      "124-564",
+      "850-376",
+      "247-250",
+      "636-660",
+      "560-224",
+      "234-282",
+      "724-770",
+      "080-466",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "Data masking shall be in accordance with the organization's topic-specific policy on access control and other topic-specific policies, and business requirements, taking legislation consideration.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "854-643",
+    "predicted_top10": [
+      "356-282",
+      "247-250",
+      "724-770",
+      "128-128",
+      "074-873",
+      "510-324",
+      "362-550",
+      "440-372",
+      "447-083",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Data leakage prevention shall be applied to systems, networks and any other devices that process, store or transmit sensitive information.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "854-643",
+    "predicted_top10": [
+      "173-554",
+      "356-282",
+      "224-321",
+      "275-483",
+      "186-540",
+      "765-788",
+      "267-468",
+      "683-036",
+      "440-372",
+      "482-866"
+    ]
+  },
+  {
+    "control_text": "Allocation and management of authentication information shall be controlled by a management process, including advising personnel on handling of authentication information.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "270-568",
+      "633-428",
+      "586-842",
+      "235-658",
+      "247-250",
+      "634-733",
+      "576-042",
+      "789-320",
+      "080-466",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "Secure authentication technologies and procedures shall be implemented based on information access restrictions and the topic-specific policy on access control.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "270-568",
+      "633-428",
+      "634-733",
+      "354-752",
+      "586-842",
+      "808-425",
+      "435-702",
+      "789-320",
+      "247-250",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "The use of utility programs that can be capable of overriding system and application controls shall be restricted and tightly controlled.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "540-566",
+    "predicted_top10": [
+      "611-158",
+      "515-021",
+      "417-342",
+      "344-611",
+      "273-600",
+      "660-867",
+      "576-042",
+      "152-725",
+      "860-084",
+      "725-682"
+    ]
+  },
+  {
+    "control_text": "The allocation and use of privileged access rights shall be restricted and managed.",
+    "framework": "ISO 27001",
+    "ground_truth_hub_id": "368-633",
+    "predicted_top10": [
+      "817-808",
+      "284-521",
+      "123-124",
+      "447-083",
+      "128-128",
+      "560-224",
+      "540-566",
+      "524-603",
+      "247-250",
+      "220-442"
+    ]
+  }
+]
