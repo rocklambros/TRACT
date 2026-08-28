@@ -1,0 +1,4184 @@
+[
+  {
+    "control_text": "The not contain sufficient technical or engineering documentation ( on paper or in electronic form) that contains descriptions of all the relevant software/ elements of the , such as usage, structure, architectural components, interfaces, design, implementation, configuration, operation, etc. When technical documentation is limited or lacking, products are more difficult to maintain. indirectly affects security by making it more difficult or time-consuming to find and/or fix vulnerabilities. When using time-limited or labor-limited third-party/in-house security consulting services (such as threat modeling, vulnerability discovery, or pentesting), insufficient documentation can force consultants to invest unnecessary time in learning the is organized, instead of focusing their expertise on finding the flaws or suggesting effective mitigations. With respect to design, the lack of a formal, final manufacturer reference can make it difficult or impossible to the final , including post-manufacture verification. One cannot ensure that design functionality or operation is acceptable tolerances, conforms to specifications, and is free from unexpected behavior. Hardware-related documentation may engineering artifacts such as description language (HDLs), netlists, Gerber files, Bills of Materials, EDA (Electronic Design Automation) tool files, etc.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "626-250",
+      "745-356",
+      "787-638",
+      "124-564",
+      "766-162",
+      "818-434",
+      "080-466",
+      "486-813",
+      "613-285"
+    ]
+  },
+  {
+    "control_text": "The not documentation that represents it is designed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "162-655",
+      "820-878",
+      "036-275",
+      "822-100",
+      "745-356",
+      "766-162",
+      "787-638",
+      "626-250",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "The product's design documentation not adequately describe control flow, data flow, system initialization, relationships between tasks, components, rationales, or other important aspects of the design.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "820-878",
+      "162-655",
+      "822-100",
+      "068-102",
+      "626-250",
+      "036-275",
+      "766-162",
+      "854-643",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "The product's documentation not adequately inputs, outputs, or system/software interfaces.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "787-638",
+      "820-877",
+      "766-162",
+      "162-655",
+      "626-250",
+      "847-247",
+      "820-878",
+      "004-517",
+      "503-455",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "The document not fully all mechanisms that are to control or influence product-specific programs are executed. includes environmental variables, configuration files, registry keys, command-line switches or options, or system settings.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "486-813",
+      "123-124",
+      "724-770",
+      "540-566",
+      "080-466",
+      "247-250",
+      "117-371",
+      "757-271",
+      "832-555",
+      "180-488"
+    ]
+  },
+  {
+    "control_text": "The documentation not sufficiently describe the techniques that are for error handling, exception processing, or similar mechanisms. Documentation may to cover error handling techniques at layers, such as module, executable, compilable code unit, or callable.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "513-183",
+      "863-636",
+      "118-602",
+      "612-435",
+      "842-876",
+      "344-611",
+      "141-555",
+      "787-638",
+      "820-877",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "The not restrict or incorrectly restricts access to a resource from an unauthorized actor. Access control involves the use of several protection mechanisms such as: Authentication (proving the identity of an actor) Authorization (ensuring that a given actor can access a resource), and Accountability (tracking of activities that were performed) When any mechanism is not applied or otherwise fails, attackers can compromise the security of the by gaining privileges, reading sensitive information, executing commands, evading detection, etc. are two distinct behaviors that can introduce access control weaknesses: Specification: incorrect privileges, permissions, ownership, etc. are explicitly specified for either the user or the resource (for example, setting a password file to be world-writable, or giving administrator to a guest user). action be performed by the program or the administrator. Enforcement: the mechanism contains errors that prevent it from properly enforcing the specified access control requirements (e.g., allowing the user to specify their own privileges, or allowing a syntactically-incorrect ACL to produce insecure settings). problem occurs the program itself, in that it not actually enforce the security policy that the administrator specifies.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "757-271",
+      "817-808",
+      "123-124",
+      "443-447",
+      "368-633",
+      "612-252",
+      "664-080",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "The chip not implement or not correctly perform access control to check users are authorized to access internal registers and test modes through the physical debug/test interface. A device's internal information may be accessed through a scan chain of interconnected internal registers, usually through a JTAG interface. The JTAG interface provides access to registers in a serial fashion in the form of a scan chain for the purposes of debugging programs running on a device. Since almost all information contained a device may be accessed over interface, device manufacturers typically insert form of authentication and authorization to prevent unintended use of sensitive information. mechanism is implemented in addition to on-chip protections that are already present. If authorization, authentication, or other form of access control is not implemented or not implemented correctly, a user may be to bypass on-chip protection mechanisms through the debug interface. Sometimes, designers choose not to expose the debug pins on the motherboard. Instead, they choose to hide pins in the intermediate layers of the board. is primarily done to work around the lack of debug authorization inside the chip. In such a scenario (without debug authorization), when the debug interface is exposed, chip internals are accessible to an attacker.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "123-124",
+      "117-371",
+      "128-128",
+      "540-566",
+      "801-310",
+      "757-271",
+      "368-633",
+      "817-808",
+      "664-080",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "The implements access controls a policy or other feature with the intention to disable or restrict accesses (reads and/or writes) to assets in a system from untrusted agents. , implemented access controls lack required granularity, renders the control policy too broad it allows accesses from unauthorized agents to the security-sensitive assets. Integrated circuits and engines can expose accesses to assets (device configuration, keys, etc.) to trusted firmware or a software module (commonly set by BIOS/bootloader). access is typically access-controlled. a power reset, the or system usually starts with default values in registers, and the trusted firmware (Boot firmware) configures the access-control protection. A common weakness that can exist in such protection schemes is that access controls or policies are not granular enough. condition allows agents beyond trusted agents to access assets and to a loss of functionality or the ability to set up the device securely. further in security risks from leaked, sensitive, key material to modification of device configuration.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "724-770",
+      "247-250",
+      "123-124",
+      "220-442",
+      "715-644",
+      "128-128",
+      "117-371",
+      "801-310",
+      "538-770",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "The design control register \"sticky bits\" or write-once bit fields are improperly implemented, such that they can be reprogrammed by software. Integrated circuits and IP software programmable controls and settings are commonly stored in register circuits. register contents to be initialized at reset to default values that are hard coded in the description language (HDL) code of the unit. A common security protection method to protect register settings from modification by software is to make the settings write-once or \"sticky.\" allows writing to such registers only once, whereupon they become read-only. is useful to allow initial boot software to configure systems settings to secure values while blocking runtime software from modifying such settings. Failure to implement write-once restrictions in design can expose such registers to re-programmed by software and written times. For example, write-once fields be implemented to only be write-protected if they set to value \"1\", wherein they work as \"write-1-once\" and not \"write-once\".",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "123-124",
+      "540-566",
+      "368-633",
+      "817-808",
+      "801-310",
+      "612-252",
+      "082-327",
+      "664-080",
+      "443-447",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "The a trusted lock bit for restricting access to registers, address regions, or other resources, the not prevent the value of the lock bit from modified after it set. In integrated circuits and intellectual property (IP) cores, device configuration controls are commonly programmed after a device power reset by a trusted firmware or software module (e.g., BIOS/bootloader) and locked from any further modification. behavior is commonly implemented using a trusted lock bit. When set, the lock bit disables writes to a protected set of registers or address regions. Design or coding errors in the implementation of the lock bit protection feature may allow the lock bit to be modified or cleared by software after it set. Attackers be to unlock the system and features that the bit is to protect.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "123-124",
+      "724-770",
+      "447-083",
+      "128-128",
+      "801-310",
+      "220-442",
+      "540-566",
+      "117-371",
+      "368-633",
+      "380-540"
+    ]
+  },
+  {
+    "control_text": "The CPU is not configured to provide support for exclusivity of write and execute operations on memory. allows an attacker to execute data from all of memory. CPUs provide a special bit that supports exclusivity of write and execute operations. bit is to segregate areas of memory to either mark them as code (instructions, can be executed) or data ( should not be executed). In , if a user can write to a region of memory, the user cannot execute from that region and vice versa. exclusivity provided by special bit is leveraged by the operating system to protect executable space. While bit is available in most modern processors by default, in CPUs the exclusivity is implemented a memory-protection unit (MPU) and memory-management unit (MMU) in memory regions can be carved out with exact read, write, and execute permissions. , if the CPU not an MMU/MPU, is no write exclusivity.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "612-252",
+      "082-327",
+      "443-447",
+      "540-566",
+      "368-633",
+      "801-310",
+      "664-080",
+      "831-570",
+      "117-371",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "The memory-mapped I/O registers that act as an interface to functionality from software, is access control to registers. Software commonly accesses peripherals in a System-on-Chip (SoC) or other device through a memory-mapped register interface. Malicious software tamper with any security-critical data that is accessible directly or indirectly through the register interface, to a loss of confidentiality and integrity.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "540-566",
+      "757-271",
+      "612-252",
+      "443-447",
+      "664-080",
+      "368-633",
+      "082-327",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "The an obsolete encoding mechanism to implement access controls. a System-On-a-Chip (SoC), various circuits and engines generate transactions for the purpose of accessing (read/write) assets or performing various actions (e.g., reset, fetch, compute, etc.). Among various types of message information, a typical transaction is comprised of source identity (identifying the originator of the transaction) and a destination identity (routing the transaction to the respective entity). Sometimes the transactions are qualified with a Security Token. Security Token helps the destination agent decide on the set of allowed actions (e.g., access to an asset for reads and writes). A policy encoder is to map the bus transactions to Security Tokens that in turn are as access-controls/protection mechanisms. A common weakness involves using an encoding is no longer trusted, i.e., an obsolete encoding.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "650-560",
+      "582-541",
+      "117-371",
+      "273-600",
+      "640-364",
+      "551-400",
+      "757-271",
+      "801-310",
+      "307-111",
+      "405-411"
+    ]
+  },
+  {
+    "control_text": "The conducts a secure-boot process that transfers bootloader code from Non-Volatile Memory (NVM) Volatile Memory (VM), it not sufficient access control or other protections for the Volatile Memory. Adversaries bypass the secure-boot process and execute their own untrusted, malicious boot code. As a part of a secure-boot process, the read-only-memory (ROM) code for a System-on-Chip (SoC) or other system fetches bootloader code from Non-Volatile Memory (NVM) and stores the code in Volatile Memory (VM), such as dynamic, random-access memory (DRAM) or static, random-access memory (SRAM). The NVM is usually external to the SoC, while the VM is internal to the SoC. As the code is transferred from NVM to VM, it is authenticated by the SoC's ROM code.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "757-271",
+      "117-371",
+      "801-310",
+      "307-111",
+      "028-254",
+      "307-507",
+      "347-352",
+      "273-600",
+      "171-222",
+      "278-413"
+    ]
+  },
+  {
+    "control_text": "Signals between a IP and the parent system design are incorrectly connected causing security risks. Individual IP must communicate with the parent system in order for the to function correctly and as . If implemented incorrectly, while not causing any apparent functional , may security . For example, if the IP should only be reset by a system-wide hard reset, instead the reset input is connected to a software-triggered debug mode reset ( is asserted during a hard reset), integrity of data inside the IP can be violated.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "862-452",
+      "801-310",
+      "467-784",
+      "117-371",
+      "757-271",
+      "273-600",
+      "247-250",
+      "724-770",
+      "708-355",
+      "613-285"
+    ]
+  },
+  {
+    "control_text": "The register contents for attestation or measurement reporting data to verify boot flow are modifiable by an adversary. A System-on-Chip (SoC) implements secure boot or verified boot. During boot flow, the SoC the code that it authenticates. The measurement is usually done by calculating the one-way hash of the code binary and extending it to the previous hash. The hashing algorithm should be a Secure One-Way hash function. The final hash, i.e., the value obtained after the completion of the boot flow, serves as the measurement data in reporting or in attestation. The calculated hash is stored in registers that can later be read by the party of interest to tampering of the boot flow. A common weakness is that the contents in registers are modifiable by an adversary, thus spoofing the measurement.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "307-507",
+      "426-842",
+      "483-883",
+      "456-636",
+      "504-340",
+      "171-222",
+      "347-352",
+      "028-254",
+      "405-411",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "The System-on-Chip (SoC) implements a Security Identifier mechanism to differentiate actions are allowed or disallowed when a transaction originates from an entity. , the Security Identifiers are not correctly implemented. Systems-On-Chip (Integrated circuits and engines) implement Security Identifiers to differentiate/identify actions originated from various agents. actions be 'read', 'write', 'program', 'reset', 'fetch', 'compute', etc. Security identifiers are generated and assigned to every agent in the System (SoC) that is either capable of generating an action or receiving an action from agent. Every agent be assigned a unique, Security Identifier based on trust level or privileges. A broad class of flaws can exist in the Security Identifier process, including not limited to missing security identifiers, conversion of security identifiers, incorrect generation of security identifiers, etc.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "724-770",
+      "123-124",
+      "611-158",
+      "273-600",
+      "817-808",
+      "284-521",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "The product's debug components contain incorrect chaining or granularity of debug components. For debugging and troubleshooting a chip, several design elements are implemented, including: Various Test Access Ports (TAPs) allow boundary scan commands to be executed. For scanning the internal components of a chip, are scan cells that allow the chip to be as a \"stimulus and response\" mechanism. Chipmakers create custom methods to observe the internal components of their chips by placing various tracing hubs their chip and creating hierarchical or interconnected structures among hubs. Logic errors during design or synthesis misconfigure the interconnection of the debug components, allow unintended access permissions.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "344-611",
+      "117-371",
+      "757-271",
+      "123-124",
+      "843-841",
+      "067-050",
+      "368-633",
+      "817-808",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "The bridge incorrectly translates security attributes from either trusted to untrusted or from untrusted to trusted when converting from one fabric protocol to . A bridge allows IP blocks supporting fabric protocols to be integrated the system. Fabric end-points or interfaces usually dedicated signals to transport security attributes. For example, HPROT signals in AHB, AxPROT signals in AXI, and MReqInfo and SRespInfo signals in OCP. The values on signals are to indicate the security attributes of the transaction. the immutable identity of the controller initiating the transaction, privilege level, and type of transaction (e.g., read/write, cacheable/non-cacheable, posted/non-posted). A weakness can arise if the bridge IP block, translates the signals from the protocol in the IP block endpoint to the protocol by the central bus, not properly translate the security attributes. As a , the identity of the initiator be translated from untrusted to trusted or vice-versa. in access-control bypass, privilege escalation, or denial of service.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "273-600",
+      "640-364",
+      "650-560",
+      "801-310",
+      "848-711",
+      "117-371",
+      "757-271",
+      "405-411",
+      "745-045",
+      "316-272"
+    ]
+  },
+  {
+    "control_text": "During runtime, the allows for test or debug logic (feature) to be activated, allows for changing the state of the . feature can alter the behavior of the system and allow for alteration and leakage of sensitive data by an adversary. An adversary can advantage of test or debug logic that is made accessible through the during normal operation to modify the behavior of the system. For example, an accessible Test/debug mode may allow read/write access to any system data. Using error injection (a common test/debug feature) during a transmit/receive operation on a bus, data may be modified to produce an unintended message. Similarly, confidentiality be compromised by such features allowing access to secrets.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "817-808",
+      "540-566",
+      "757-271",
+      "123-124",
+      "368-633",
+      "612-252",
+      "664-080",
+      "443-447"
+    ]
+  },
+  {
+    "control_text": "The bus controller enables bits in the fabric end-point to allow responder devices to control transactions on the fabric. To support reusability, certain fabric interfaces and end points provide a configurable register bit that allows IP blocks connected to the controller to access other peripherals connected to the fabric. allows the end point to be with devices that function as a controller or responder. If bit is set by default in , or if firmware incorrectly sets it later, a device to be a responder on a fabric is now capable of controlling transactions to other devices and compromise system security.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "664-080",
+      "117-371",
+      "801-310",
+      "612-252",
+      "443-447",
+      "540-566",
+      "368-633",
+      "082-327",
+      "757-271",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "The address map of the on-chip fabric protected and unprotected regions overlapping, allowing an attacker to bypass access control to the overlapping portion of the protected region. Various ranges can be defined in the system-address map, either in the memory or in Memory-Mapped-IO (MMIO) space. ranges are usually defined using special range registers that contain information, such as base address and size. Address decoding is the process of determining for range the incoming transaction is destined. To ensure isolation, ranges containing secret data are access-control protected. Occasionally, ranges overlap. The overlap either be intentional (e.g. to a limited number of range registers or limited choice in choosing size of the range) or unintentional (e.g. introduced by errors). designs allow dynamic remapping of address ranges assigned to peripheral MMIO ranges. In such designs, intentional address overlaps can be created through misconfiguration by malicious software. When protected and unprotected ranges overlap, an attacker send a transaction and potentially compromise the protections in place, violating the principle of least privilege.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "612-252",
+      "801-310",
+      "117-371",
+      "082-327",
+      "664-080",
+      "757-271",
+      "443-447",
+      "368-633",
+      "540-566",
+      "166-151"
+    ]
+  },
+  {
+    "control_text": "The a fabric bridge for transactions between two Intellectual Property (IP) blocks, the bridge not properly perform the expected privilege, identity, or other access control checks between IP blocks. In designs, IP blocks are connected through interconnect-bus fabrics (e.g. AHB and OCP). a System on Chip (SoC), the IP block subsystems be using bus protocols. In such a , the IP blocks are linked to the central bus (and to other IP blocks) through a fabric bridge. Bridges are as bus-interconnect-routing modules that link protocols or separate, segments of the overall SoC interconnect. For overall system security, it is important that the access-control privileges with any fabric transaction are consistently maintained and applied, even when they are routed or translated by a fabric bridge. A bridge that is connected to a fabric without security features forwards transactions to the slave without checking the privilege level of the master and in a weakness in SoC access-control security. The same weakness occurs if a bridge not check the identity of the transaction received from the slave interface of the bridge.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "724-770",
+      "273-600",
+      "123-124",
+      "220-442",
+      "817-808",
+      "128-128",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "Untrusted agents can disable alerts about signal conditions exceeding limits or the response mechanism that handles such alerts. sensors are to detect a device is operating design limits. The threshold values for limits are set by fuses or trusted software such as a BIOS. Modification of limits may be protected by mechanisms. When device sensors detect out of bound conditions, alert signals may be generated for remedial action, may the form of device shutdown or throttling. Warning signals that are not properly secured may be disabled or to generate spurious alerts, causing degraded performance or denial-of-service (DoS). alerts may be masked by untrusted software. Examples of alerts involve thermal and power sensor alerts.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "725-682",
+      "660-867",
+      "630-573",
+      "108-316",
+      "746-705",
+      "333-480",
+      "660-052",
+      "886-662",
+      "314-131",
+      "463-820"
+    ]
+  },
+  {
+    "control_text": "Trace data collected from several sources on the System-on-Chip (SoC) is stored in unprotected locations or transported to untrusted agents. To facilitate verification of complex System-on-Chip (SoC) designs, SoC integrators add specific IP blocks that trace the SoC's internal signals in real-time. enables observability of the SoC's internal behavior, validation of functional design, and detection of and software bugs. Such tracing IP blocks collect traces from several sources on the SoC including the CPU, crypto coprocessors, and on-chip fabrics. Traces collected from sources are aggregated inside trace IP block and forwarded to trace sinks, such as debug-trace ports that facilitate debugging by external and software debuggers. Since traces are collected from several security-sensitive sources, they must be protected against untrusted debuggers. If they are stored in unprotected memory, an untrusted software debugger can access traces and extract secret information. Additionally, if security-sensitive traces are not tagged as secure, an untrusted debugger access them to extract confidential information.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "344-611",
+      "820-878",
+      "240-274",
+      "757-271",
+      "745-356",
+      "843-841",
+      "801-310",
+      "834-645",
+      "117-371",
+      "067-050"
+    ]
+  },
+  {
+    "control_text": "An unauthorized agent can inject errors a redundant block to deprive the system of redundancy or put the system in a degraded operating mode. To ensure the performance and functional reliability of certain components, designers can implement blocks for redundancy in the that others fail. redundant block can be prevented from performing as if the design allows unauthorized agents to inject errors it. In , a path with injected errors may become unavailable to serve as a redundant channel. may put the system a degraded mode of operation be exploited by a subsequent attack.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "344-611",
+      "708-355",
+      "854-643",
+      "636-660",
+      "670-660",
+      "601-182",
+      "141-555",
+      "118-602",
+      "863-636",
+      "822-100"
+    ]
+  },
+  {
+    "control_text": "The not properly assign, modify, track, or check privileges for an actor, creating an unintended sphere of control for that actor.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "220-442",
+      "123-124",
+      "284-521",
+      "801-310",
+      "117-371",
+      "757-271",
+      "540-566",
+      "817-808",
+      "368-633",
+      "724-770"
+    ]
+  },
+  {
+    "control_text": "The assigns the wrong ownership, or not properly verify the ownership, of an object or resource.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "307-111",
+      "307-507",
+      "545-243",
+      "801-310",
+      "757-271",
+      "817-808",
+      "117-371",
+      "368-633",
+      "612-252",
+      "664-080"
+    ]
+  },
+  {
+    "control_text": "The not properly manage a user environment. Users can be assigned to the wrong group (class) of permissions resulting in unintended access rights to sensitive objects.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "123-124",
+      "724-770",
+      "220-442",
+      "757-271",
+      "117-371",
+      "801-310",
+      "128-128",
+      "540-566",
+      "817-808",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "The provides an Applications Programming Interface (API) or similar interface for interaction with external actors, the interface includes a dangerous method or function that is not properly restricted. weakness can to a wide variety of resultant weaknesses, depending on the behavior of the exposed method. It can apply to any number of technologies and approaches, such as ActiveX controls, Java functions, IOCTLs, and so on. The exposure can occur in a few ways: The function/method never to be exposed to outside actors. The function/method only to be accessible to a limited set of actors, such as Internet-based access from a single web site.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "123-124",
+      "611-158",
+      "724-770",
+      "814-322",
+      "817-808",
+      "540-566",
+      "220-442"
+    ]
+  },
+  {
+    "control_text": "The establishes a communication channel to (or from) an endpoint for privileged or protected operations, it not properly ensure that it is communicating with the correct endpoint. Attackers be to spoof the endpoint from a system or process, thus gaining the same level of access as the endpoint. While issue frequently involves authentication between network-based clients and servers, other types of communication channels and endpoints can weakness.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "278-413",
+      "582-541",
+      "113-133",
+      "576-042",
+      "820-421",
+      "813-610",
+      "586-842",
+      "634-733",
+      "618-403",
+      "551-054"
+    ]
+  },
+  {
+    "control_text": "The a transmission protocol that not a mechanism for verifying the integrity of the data during transmission, such as a checksum. If integrity check values or \"checksums\" are omitted from a protocol, is no of determining if data corrupted in transmission. The lack of checksum functionality in a protocol removes the first application-level check of data that can be . The end-to-end philosophy of checks states that integrity checks should be performed at the lowest level that they can be completely implemented. Excluding further sanity checks and input validation performed by applications, the protocol's checksum is the most important level of checksum, since it can be performed more completely than at any previous level and takes account entire messages, as opposed to single packets.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "483-883",
+      "504-340",
+      "426-842",
+      "456-636",
+      "482-866",
+      "224-321",
+      "307-507",
+      "745-045",
+      "267-468",
+      "848-711"
+    ]
+  },
+  {
+    "control_text": "The downloads source code or an executable from a remote location and executes the code without sufficiently verifying the origin and integrity of the code. An attacker can execute malicious code by compromising the host server, performing DNS spoofing, or modifying the code in transit.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "777-470",
+      "171-222",
+      "547-283",
+      "028-254",
+      "715-223",
+      "577-260",
+      "307-507",
+      "838-636",
+      "307-111",
+      "263-184"
+    ]
+  },
+  {
+    "control_text": "The copies an input buffer to an output buffer without verifying that the size of the input buffer is less than the size of the output buffer.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "866-553",
+      "831-570",
+      "660-052",
+      "314-131",
+      "538-446",
+      "630-573",
+      "746-705",
+      "806-367",
+      "653-242",
+      "715-304"
+    ]
+  },
+  {
+    "control_text": "The appears to contain benign or useful functionality, it contains code that is hidden from normal operation that violates the security policy of the user or the system administrator.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "757-271",
+      "611-158",
+      "117-371",
+      "801-310",
+      "838-636",
+      "832-555",
+      "762-451",
+      "777-470",
+      "462-245",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "Non-replicating malicious code only resides on the system or that is attacked; it not attempt to spread to other systems.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "473-177",
+      "872-574",
+      "154-031",
+      "265-800",
+      "838-636",
+      "462-245",
+      "233-748",
+      "863-521",
+      "417-342",
+      "866-553"
+    ]
+  },
+  {
+    "control_text": "Replicating malicious code, including viruses and worms, attempt to attack other systems once it successfully compromised the system or the .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "611-158",
+      "208-355",
+      "777-470",
+      "515-021",
+      "547-283",
+      "417-342",
+      "273-600",
+      "838-636",
+      "715-223",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "Weaknesses in are typically introduced during the configuration of the software.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "462-245",
+    "predicted_top10": [
+      "832-555",
+      "486-813",
+      "180-488",
+      "347-352",
+      "462-245",
+      "148-853",
+      "626-250",
+      "822-100",
+      "344-611",
+      "715-334"
+    ]
+  },
+  {
+    "control_text": "The code deprecated or obsolete functions, suggests that the code not actively reviewed or maintained. As programming languages evolve, functions occasionally become obsolete to: Advances in the language Improved understanding of operations should be performed effectively and securely Changes in the conventions that govern certain operations Functions that are removed are usually replaced by newer counterparts that perform the same task in and hopefully improved .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "673-475",
+    "predicted_top10": [
+      "832-555",
+      "462-245",
+      "433-442",
+      "411-684",
+      "673-475",
+      "822-100",
+      "036-275",
+      "626-250",
+      "820-877",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "The not properly prevent a person's private, personal information from accessed by actors either (1) are not explicitly authorized to access the information or (2) do not the implicit consent of the person about whom the information is collected.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "834-645",
+    "predicted_top10": [
+      "362-550",
+      "447-083",
+      "571-640",
+      "834-645",
+      "220-870",
+      "082-327",
+      "475-586",
+      "715-644",
+      "247-250",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "The contains code that is designed to disrupt the legitimate operation of the (or environment) when a certain time passes, or when a certain logical condition is met. When the time bomb or logic bomb is detonated, it may perform a denial of service such as crashing the system, deleting critical data, or degrading system response time. bomb be placed either a replicating or non-replicating Trojan horse.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "265-800",
+    "predicted_top10": [
+      "611-158",
+      "208-355",
+      "715-334",
+      "860-084",
+      "715-223",
+      "660-052",
+      "777-470",
+      "801-310",
+      "863-521",
+      "263-184"
+    ]
+  },
+  {
+    "control_text": "The imports, requires, or includes executable functionality (such as a library) from a source that is outside of the control sphere.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "715-223",
+      "863-521",
+      "547-283",
+      "777-470",
+      "715-334",
+      "577-260",
+      "613-287",
+      "613-285",
+      "462-245",
+      "423-055"
+    ]
+  },
+  {
+    "control_text": "The includes web functionality (such as a web widget) from domain, causes it to operate the domain of the , potentially granting total access and control of the to the untrusted source. Including third party functionality in a web-based environment is risky, especially if the source of the functionality is untrusted. Even if the third party is a trusted source, the may still be exposed to attacks and malicious behavior if that trusted source is compromised, or if the code is modified in transmission from the third party to the . weakness is common in \"mashup\" development on the web, may source functionality from other domains. For example, Javascript-based web widgets may be inserted by using '' tags, causes the code to run in the domain of the , not the remote site from the widget loaded. As a , the included code access to the local DOM, including cookies and other data that the developer not want the remote site to be to access. Such dependencies may be desirable, or even required, sometimes programmers are not aware that a dependency exists.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "777-470",
+      "838-636",
+      "577-260",
+      "547-283",
+      "715-223",
+      "154-031",
+      "860-084",
+      "462-245",
+      "814-322",
+      "657-084"
+    ]
+  },
+  {
+    "control_text": "The performs an operation at a privilege level that is higher than the minimum level required, creates new weaknesses or amplifies the consequences of other weaknesses.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "860-084",
+    "predicted_top10": [
+      "123-124",
+      "801-310",
+      "757-271",
+      "117-371",
+      "724-770",
+      "611-158",
+      "817-808",
+      "220-442",
+      "128-128",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "The relies on third-party components that are not actively supported or maintained by the original developer or a trusted proxy for the original developer.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "053-751",
+    "predicted_top10": [
+      "863-521",
+      "715-334",
+      "715-223",
+      "462-245",
+      "860-084",
+      "577-260",
+      "613-287",
+      "777-470",
+      "613-286",
+      "547-283"
+    ]
+  },
+  {
+    "control_text": "937",
+    "framework": "CWE",
+    "ground_truth_hub_id": "715-334",
+    "predicted_top10": [
+      "524-446",
+      "525-361",
+      "743-110",
+      "333-858",
+      "881-321",
+      "553-413",
+      "358-860",
+      "158-874",
+      "604-025",
+      "576-651"
+    ]
+  },
+  {
+    "control_text": "The a more complex mechanism than , to resultant weaknesses when the mechanism is not correctly understood, modeled, configured, implemented, or . Security mechanisms should be as simple as possible. Complex security mechanisms may engender partial implementations and compatibility problems, with resulting mismatches in assumptions and implemented security. A corollary of principle is that data specifications should be as simple as possible, complex data specifications in complex validation code. Complex tasks and systems may to be guarded by complex security checks, so simple systems should be preferred.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "036-275",
+    "predicted_top10": [
+      "820-877",
+      "636-660",
+      "708-355",
+      "344-611",
+      "820-878",
+      "822-100",
+      "341-076",
+      "068-102",
+      "854-643",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "Weaknesses in are to errors in the management of cryptographic keys.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-305",
+    "predicted_top10": [
+      "783-255",
+      "508-702",
+      "170-772",
+      "821-832",
+      "287-305",
+      "585-408",
+      "674-425",
+      "287-251",
+      "542-488",
+      "878-880"
+    ]
+  },
+  {
+    "control_text": "An ActiveX control is for use in a web browser, it exposes dangerous methods that perform actions that are outside of the browser's security model (e.g. the zone or domain). ActiveX controls can exercise far greater control over the operating system than typical Java or javascript. Exposed methods can be subject to various vulnerabilities, depending on the implemented behaviors of methods, and input validation is performed on the provided arguments. If is no integrity checking or origin validation, method be invoked by attackers.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-158",
+    "predicted_top10": [
+      "657-084",
+      "777-470",
+      "547-283",
+      "611-158",
+      "860-084",
+      "838-636",
+      "577-260",
+      "814-322",
+      "542-445",
+      "715-223"
+    ]
+  },
+  {
+    "control_text": "The not perform or incorrectly performs an authorization check when an actor attempts to access a resource or perform an action.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "128-128",
+      "817-808",
+      "650-560",
+      "368-633",
+      "664-080",
+      "612-252",
+      "123-124",
+      "443-447",
+      "166-151",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "The prevents direct access to a resource containing sensitive information, it not sufficiently limit access to metadata that is derived from the original, sensitive information. Developers correctly prevent unauthorized access to a database or other resource containing sensitive information, they not consider that portions of the original information be recorded in metadata, search indices, statistical reports, or other resources. If resources are not restricted, attackers be to extract or all of the original information, or otherwise infer details. For example, an attacker specify search terms that are to be unique to a particular person, or view metadata such as activity or creation dates in order to identify usage patterns.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "356-282",
+      "715-304",
+      "846-302",
+      "762-451",
+      "447-083",
+      "015-063",
+      "440-372",
+      "044-202",
+      "220-870",
+      "204-272"
+    ]
+  },
+  {
+    "control_text": "The provides software-controllable device functionality for such as power and clock management, it not properly limit functionality that can to modification of memory or register bits, or the ability to observe physical side channels. It is frequently assumed that physical attacks such as fault injection and side-channel analysis require an attacker to physical access to the device. assumption may be false if the device improperly secured power management features, or similar features. For mobile devices, minimizing power consumption is critical, devices run a wide variety of applications with performance requirements. Software-controllable mechanisms to dynamically scale device voltage and frequency and monitor power consumption are common features in today's chipsets, they enable attackers to mount fault injection and side-channel attacks without having physical access to the device. Fault injection attacks involve strategic manipulation of bits in a device to achieve a desired effect such as skipping an authentication step, elevating privileges, or altering the output of a cryptographic operation. Manipulation of the device clock and voltage supply is a well-known technique to inject faults and is cheap to implement with physical device access. Poorly protected power management features allow attacks to be performed from software. Other features, such as the ability to write repeatedly to DRAM at a rapid rate from unprivileged software, can in bit flips in other memory locations (Rowhammer, [REF-1083]). Side channel analysis requires gathering measurement traces of physical quantities such as power consumption. Modern processors power metering in the itself (e.g., Intel RAPL) if not adequately protected enable attackers to gather measurements for performing side-channel attacks from software.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "123-124",
+      "540-566",
+      "801-310",
+      "117-371",
+      "757-271",
+      "724-770",
+      "368-633",
+      "220-442",
+      "128-128",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "The not adequately protect confidential information on the device from accessed by Outsourced Semiconductor Assembly and Test (OSAT) vendors. In contrast to complete vertical integration of architecting, designing, manufacturing, assembling, and testing chips all a single organization, an organization can choose to simply architect and design a chip before outsourcing the rest of the process to OSAT entities (e.g., external foundries and test houses). In the latter example, the device enters an OSAT facility in a much more vulnerable pre-production stage where debug and test modes are accessible. Therefore, the chipmaker must place a certain level of trust with the OSAT. To counter , the chipmaker requires the OSAT partner to enter restrictive non-disclosure agreements (NDAs). Nonetheless, OSAT vendors likely customers, increases the risk of accidental sharing of information. may be a security vulnerability in the information technology (IT) system of the OSAT facility. Alternatively, a malicious insider at the OSAT facility may carry out an insider attack. Considering factors, it behooves the chipmaker to minimize any confidential information in the device that may be accessible to the OSAT vendor. Logic errors during design or synthesis misconfigure the interconnection of the debug components, provide authorization to sensitive information.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "613-285",
+      "862-452",
+      "616-305",
+      "883-173",
+      "247-250",
+      "077-772",
+      "626-250",
+      "881-234",
+      "473-177",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "The Android application exports a component for use by other applications, not properly restrict applications can launch the component or access the data it contains. The attacks and consequences of improperly exporting a component may depend on the exported component: If access to an exported Activity is not restricted, any application be to launch the activity. may allow a malicious application to gain access to sensitive information, modify the internal state of the application, or trick a user interacting with the victim application while believing they are still interacting with the malicious application. If access to an exported Service is not restricted, any application may start and bind to the Service. Depending on the exposed functionality, may allow a malicious application to perform unauthorized actions, gain access to sensitive information, or corrupt the internal state of the application. If access to a Content Provider is not restricted to only the expected applications, malicious applications be to access the sensitive data. Note that in Android before 4.2, the Content Provider is automatically exported unless it explicitly declared as NOT exported.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "117-371",
+      "762-451",
+      "757-271",
+      "860-084",
+      "801-310",
+      "154-031",
+      "462-245",
+      "838-636",
+      "611-158",
+      "715-223"
+    ]
+  },
+  {
+    "control_text": "The exposes sensitive information to an actor that is not explicitly authorized to access to that information. are kinds of mistakes that introduce information exposures. The severity of the error can range widely, depending on the context in the operates, the type of sensitive information that is revealed, and the benefits it may provide to an attacker. kinds of sensitive information : private, personal information, such as personal messages, financial data, health , geographic location, or contact details system status and environment, such as the operating system and installed packages business secrets and intellectual property network status and configuration the product's own code or internal state metadata, e.g. logging of connections or message headers indirect information, such as a discrepancy between two internal operations that can be observed by an outsider Information be sensitive to parties, each of may their own expectations for the information should be protected. parties : the product's own users people or organizations whose information is created or by the , even if they are not direct users the product's administrators, including the admins of the system(s) and/or networks on the operates the developer Information exposures can occur in ways: the code explicitly inserts sensitive information resources or messages that are intentionally made accessible to unauthorized actors, should not contain the information - i.e., the information should \"scrubbed\" or \"sanitized\" a weakness or mistake indirectly inserts the sensitive information resources, such as a web script error revealing the full system path of the program. the code manages resources that intentionally contain sensitive information, the resources are unintentionally made accessible to unauthorized actors. In , the information exposure is resultant - i.e., a weakness enabled the access to the information in the first place. It is common practice to describe any loss of confidentiality as an \"information exposure,\" can to overuse of CWE-200 in CWE mapping. From the CWE perspective, loss of confidentiality is a technical impact that can ar",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "044-202",
+      "077-772",
+      "015-063",
+      "204-272",
+      "846-302",
+      "173-554",
+      "715-304",
+      "762-451",
+      "240-274",
+      "220-870"
+    ]
+  },
+  {
+    "control_text": "The credentials for unlocking a device are shared across parties and may expose sensitive information. \"Unlocking a device\" means activating certain unadvertised debug and manufacturer-specific of a device using sensitive credentials. Unlocking a device be for the purpose of troubleshooting device problems. For example, suppose a device contains the ability to dump the content of the full system memory by disabling the memory-protection mechanisms. Since is a highly security-sensitive capability, capability is \"locked\" in the production part. Unless the device gets unlocked by supplying the proper credentials, the debug are not available. For where the chip designer, chip manufacturer (fabricator), and manufacturing and assembly testers are all employed by the same company, the risk of compromise of the credentials is greatly reduced. , the risk is greater when the chip designer is employed by one company, the chip manufacturer is employed by company (a foundry), and the assemblers and testers are employed by yet a third company. Since companies to perform various tests on the device to verify correct device function, they all to share the unlock key. Unfortunately, the level of secrecy and policy be quite at each company, greatly increasing the risk of sensitive credentials compromised.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "440-361",
+      "774-888",
+      "117-371",
+      "757-271",
+      "881-321",
+      "801-310",
+      "077-772",
+      "340-375",
+      "273-600",
+      "307-111"
+    ]
+  },
+  {
+    "control_text": "The product's functionality exposes information to certain actors in accordance with the developer's security policy, information is regarded as sensitive according to the security policies of other stakeholders such as the product's administrator, users, or others whose information is processed. When handling information, the developer must consider the information is regarded as sensitive by stakeholders, such as users or administrators. Each stakeholder effectively own security policy that the is expected to uphold. When a developer not treat that information as sensitive, can introduce a vulnerability that violates the expectations of the product's users.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "044-202",
+      "841-710",
+      "762-451",
+      "273-600",
+      "015-063",
+      "846-302",
+      "307-111",
+      "715-304",
+      "077-772",
+      "308-515"
+    ]
+  },
+  {
+    "control_text": "The inserts sensitive information debugging code, expose information if the debugging code is not disabled in production. When debugging, it may be to report detailed information to the programmer. , if the debugging code is not disabled when the is operating in a production environment, sensitive information may be exposed to attackers.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "843-841",
+      "344-611",
+      "240-274",
+      "067-050",
+      "832-555",
+      "473-177",
+      "433-442",
+      "208-805",
+      "402-706",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "The not properly prevent sensitive system-level information from accessed by unauthorized actors do not the same level of access to the underlying system as the . Network-based products, such as web applications, run on top of an operating system or similar environment. When the communicates with outside parties, details about the underlying system are expected to remain hidden, such as path names for data files, other OS users, installed packages, the application environment, etc. system information may be provided by the itself, or buried diagnostic or debugging messages. Debugging information helps an adversary learn about the system and form an attack plan. An information exposure occurs when system data or debugging information leaves the program through an output stream or logging function that makes it accessible to unauthorized parties. Using other weaknesses, an attacker errors to occur; the response to errors can reveal detailed system information, along with other impacts. An attacker can use messages that reveal technologies, operating systems, and versions to tune the attack against vulnerabilities in technologies. A may use diagnostic methods that provide significant implementation details such as stack traces as part of error handling mechanism.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "308-515",
+      "208-805",
+      "743-110",
+      "713-683",
+      "227-045",
+      "240-274",
+      "067-050",
+      "834-645",
+      "843-841",
+      "260-200"
+    ]
+  },
+  {
+    "control_text": "The places sensitive information files or directories that are accessible to actors are allowed to access to the files, not to the sensitive information.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "123-124",
+      "447-083",
+      "117-371",
+      "801-310",
+      "757-271",
+      "247-250",
+      "724-770",
+      "758-262",
+      "762-451",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "The not ensure or incorrectly ensures that structured messages or data are well-formed and that certain security properties are met before read from an upstream component or sent to a downstream component. If a message is malformed, it may the message to be incorrectly interpreted. Neutralization is an abstract term for any technique that ensures that input (and output) conforms with expectations and is \"safe.\" can be done by: checking that the input/output is already \"safe\" (e.g. validation) transformation of the input/output to be \"safe\" using techniques such as filtering, encoding/decoding, escaping/unescaping, quoting/unquoting, or canonicalization preventing the input/output from directly provided by an attacker (e.g. \"indirect selection\" that maps externally-provided values to internally-controlled values) preventing the input/output from processed at all weakness typically applies in where the prepares a control message that process must act on, such as a command or query, and malicious input that as data, can enter the control plane instead. , weakness applies to more general where are not always control implications.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "538-446",
+      "836-068",
+      "533-516",
+      "782-234",
+      "762-616",
+      "814-322",
+      "831-563",
+      "764-507",
+      "736-554",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as control elements or syntactic markers when they are sent to a downstream component. Most languages and protocols their own special elements such as characters and reserved words. special elements can carry control implications. If not prevent external control or influence over the inclusion of such special elements, the control flow of the program may be altered from . For example, both Unix and Windows interpret the symbol < (\"less than\") as meaning \"read input from a file\".",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "533-516",
+      "646-462",
+      "857-718",
+      "881-434",
+      "620-101",
+      "764-507",
+      "542-445",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "The invokes a generative AI/ML component whose behaviors and outputs cannot be directly controlled, the not validate or insufficiently validates the outputs to ensure that they align with the security, content, or privacy policy.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "780-757",
+      "686-110",
+      "073-507",
+      "204-272",
+      "010-108",
+      "803-457",
+      "061-753",
+      "012-625",
+      "715-644",
+      "382-481"
+    ]
+  },
+  {
+    "control_text": "The constructs all or part of a command, data structure, or record using externally-influenced input from an upstream component, it not neutralize or incorrectly neutralizes special elements that modify it is parsed or interpreted when it is sent to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "538-446",
+      "857-718",
+      "782-234",
+      "503-455",
+      "814-322",
+      "764-765",
+      "881-434",
+      "646-462",
+      "533-516",
+      "653-242"
+    ]
+  },
+  {
+    "control_text": "The stores sensitive information without properly limiting read or write access by unauthorized actors. If read access is not properly restricted, attackers can steal the sensitive information. If write access is not properly restricted, attackers can modify and possibly delete the data, causing incorrect and possibly a denial of service.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "614-353",
+    "predicted_top10": [
+      "362-550",
+      "447-083",
+      "538-770",
+      "044-202",
+      "846-302",
+      "762-451",
+      "356-282",
+      "077-772",
+      "307-111",
+      "715-304"
+    ]
+  },
+  {
+    "control_text": "The stores sensitive information in a file system or device that not built-in access control. While modern file systems or devices utilize form of access control in order to restrict access to data, not all storage mechanisms capability. For example, memory cards, floppy disks, CDs, and USB devices are typically made accessible to any user the system. can become a problem when sensitive data is stored in mechanisms in a multi-user environment, anybody on the system can read or write data. On Android devices, external storage is typically globally readable and writable by other applications on the device. External storage may be easily accessible through the mobile device's USB connection or physically accessible through the device's memory card port.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "614-353",
+    "predicted_top10": [
+      "762-451",
+      "307-111",
+      "117-371",
+      "801-310",
+      "540-566",
+      "846-302",
+      "757-271",
+      "715-304",
+      "447-083",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "The performs reverse DNS resolution on an IP address to obtain the hostname and make a security decision, it not properly ensure that the IP address is truly with the hostname. Since DNS names can be easily spoofed or misreported, and it may be difficult for the to detect if a trusted DNS server compromised, DNS names do not constitute a valid authentication mechanism. When the performs a reverse DNS resolution for an IP address, if an attacker controls the DNS server for that IP address, the attacker can the server to return an arbitrary hostname. As a , the attacker may be to bypass authentication, the wrong hostname to be recorded in log files to hide activities, or perform other attacks. Attackers can spoof DNS names by either (1) compromising a DNS server and modifying (sometimes called DNS cache poisoning), or (2) having legitimate control over a DNS server with their IP address.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "336-512",
+      "743-110",
+      "405-411",
+      "713-683",
+      "227-045",
+      "316-272",
+      "058-527",
+      "551-400",
+      "541-441",
+      "426-842"
+    ]
+  },
+  {
+    "control_text": "The not adequately verify the identity of actors at both ends of a communication channel, or not adequately ensure the integrity of the channel, in a that allows the channel to be accessed or influenced by an actor that is not an endpoint. In order to secure communication between two parties, it is important to adequately verify the identity of entities at each end of the communication channel. Inadequate or inconsistent verification may in insufficient or incorrect identification of either communicating entity. can negative consequences such as misplaced trust in the entity at the other end of the channel. An attacker can leverage by interposing between the communicating entities and masquerading as the original entity. In the absence of sufficient verification of identity, such an attacker can eavesdrop and potentially modify the communication between the original entities.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "634-733",
+      "582-541",
+      "558-807",
+      "278-413",
+      "586-842",
+      "530-671",
+      "576-042",
+      "354-753",
+      "270-568",
+      "633-428"
+    ]
+  },
+  {
+    "control_text": "The a primary channel for administration or restricted functionality, it not properly protect the channel.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "586-842",
+      "724-770",
+      "633-428",
+      "177-260",
+      "467-784",
+      "634-733",
+      "233-748",
+      "683-036",
+      "715-644",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "The protects a primary channel, it not use the same level of protection for an alternate channel.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "683-036",
+      "467-784",
+      "623-550",
+      "267-031",
+      "634-733",
+      "724-770",
+      "586-842",
+      "247-250",
+      "273-600",
+      "278-646"
+    ]
+  },
+  {
+    "control_text": "The an authentication algorithm that a single factor (e.g., a password) in a security context that should require more than one factor.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "524-446",
+      "525-361",
+      "553-413",
+      "358-860",
+      "841-757",
+      "802-056",
+      "487-305",
+      "630-577",
+      "333-858",
+      "354-752"
+    ]
+  },
+  {
+    "control_text": "The not perform any authentication for functionality that requires a provable user identity or consumes a significant amount of resources.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "886-662",
+      "187-083",
+      "233-748",
+      "108-316",
+      "267-031",
+      "623-550",
+      "230-318",
+      "208-830",
+      "586-842",
+      "180-488"
+    ]
+  },
+  {
+    "control_text": "The transmits sensitive or security-critical data in cleartext in a communication channel that can be sniffed by unauthorized actors.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "186-540",
+      "558-807",
+      "745-045",
+      "636-854",
+      "527-034",
+      "582-541",
+      "354-753",
+      "354-752",
+      "342-764",
+      "224-321"
+    ]
+  },
+  {
+    "control_text": "The provides or relies on use of HTTP communications when HTTPS is available. HTTP communications are not encrypted, HTTP is subject to various attacks against confidentiality, integrity, and authenticity. , unlike other protocols, HTTPS is widely available as a more secure alternative, it encryption.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "186-540",
+      "745-045",
+      "558-807",
+      "527-034",
+      "636-854",
+      "435-702",
+      "341-076",
+      "278-646",
+      "224-321",
+      "634-733"
+    ]
+  },
+  {
+    "control_text": "Information sent over a network can be compromised while in transit. An attacker may be to read or modify the contents if the data are sent in plaintext or are weakly encrypted.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "482-866",
+      "224-321",
+      "267-468",
+      "186-540",
+      "558-807",
+      "483-883",
+      "745-045",
+      "636-854",
+      "527-034",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "The Secure attribute for sensitive cookies in HTTPS sessions is not set. Omitting the secure flag makes it possible for the user agent to send the cookies in plaintext over an HTTP session.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "688-081",
+      "804-220",
+      "705-182",
+      "342-055",
+      "232-034",
+      "402-133",
+      "455-358",
+      "110-531",
+      "186-540",
+      "727-043"
+    ]
+  },
+  {
+    "control_text": "The not implement sufficient to prevent failed authentication attempts a short time frame.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "802-056",
+    "predicted_top10": [
+      "802-056",
+      "808-425",
+      "404-126",
+      "646-227",
+      "681-823",
+      "816-631",
+      "354-753",
+      "813-610",
+      "138-448",
+      "605-735"
+    ]
+  },
+  {
+    "control_text": "The insufficiently random numbers or values in a security context that depends on unpredictable numbers.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "542-270",
+      "664-571",
+      "542-488",
+      "622-835",
+      "027-210",
+      "206-254",
+      "346-640",
+      "287-251",
+      "704-530",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "The a cryptographic primitive that an Initialization Vector (IV), the not generate IVs that are sufficiently unpredictable or unique according to the expected cryptographic requirements for that primitive. By design, cryptographic primitives (such as block ciphers) require that IVs must certain properties for the uniqueness and/or unpredictability of an IV. Primitives may vary in important properties are. If properties are not maintained, e.g. by a bug in the code, the cryptography may be weakened or broken by attacking the IVs themselves.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "287-251",
+      "674-425",
+      "433-122",
+      "622-835",
+      "542-488",
+      "346-640",
+      "027-210",
+      "664-571",
+      "585-408",
+      "786-224"
+    ]
+  },
+  {
+    "control_text": "The device an algorithm that is predictable and generates a pseudo-random number. Pseudo-random number generator algorithms are predictable their registers a finite number of possible states, eventually to repeating patterns. As a , pseudo-random number generators (PRNGs) can compromise their randomness or expose their internal state to various attacks, such as reverse engineering or tampering.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "664-571",
+      "622-835",
+      "206-254",
+      "542-488",
+      "542-270",
+      "346-640",
+      "287-251",
+      "027-210",
+      "504-340",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "The number of possible random values is smaller than needed by the , making it more susceptible to brute force attacks.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "206-254",
+      "622-835",
+      "346-640",
+      "664-571",
+      "287-251",
+      "542-270",
+      "674-425",
+      "841-757",
+      "542-488",
+      "802-056"
+    ]
+  },
+  {
+    "control_text": "The a constant value, name, or reference, value can (or should) vary across environments.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "347-352",
+      "180-488",
+      "307-507",
+      "832-555",
+      "336-512",
+      "646-462",
+      "473-177",
+      "422-005",
+      "263-184",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "The a broken or risky cryptographic algorithm or protocol. Cryptographic algorithms are the methods by data is scrambled to prevent observation or influence by unauthorized actors. Insecure cryptography can be exploited to expose sensitive information, modify data in unexpected ways, spoof identities of other users or devices, or other impacts. It is very difficult to produce a secure algorithm, and even high-profile algorithms by accomplished cryptographic experts broken. Well-known techniques exist to break or weaken various kinds of cryptography. Accordingly, are a small number of well-understood and heavily studied algorithms that should be by most products. Using a non-standard or known-insecure algorithm is dangerous a determined adversary may be to break the algorithm and compromise whatever data protected. Since the state of cryptography advances so rapidly, it is common for an algorithm to be considered \"unsafe\" even if it once thought to be strong. can happen when new attacks are discovered, or if computing power increases so much that the cryptographic algorithm no longer provides the amount of protection that originally thought. For a number of reasons, weakness is even more challenging to manage with deployment of cryptographic algorithms as opposed to software implementation. First, if a flaw is discovered with hardware-implemented cryptography, the flaw cannot be fixed in most without a recall of the , is not easily replaceable software. Second, the is expected to work for years, the adversary's computing power only increase over time.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "742-431",
+      "504-340",
+      "002-801",
+      "674-425",
+      "841-757",
+      "786-224",
+      "122-287",
+      "767-701",
+      "441-132",
+      "170-772"
+    ]
+  },
+  {
+    "control_text": "To fulfill the for a cryptographic primitive, the implements a cryptographic algorithm using a non-standard, unproven, or disallowed/non-compliant cryptographic implementation. Cryptographic protocols and systems depend on cryptographic primitives (and algorithms) as their basic building blocks. common examples of primitives are digital signatures, one-way hash functions, ciphers, and public key cryptography; , the notion of \"primitive\" can vary depending on point of view. \"Terminology Notes\" for further explanation of concepts. Cryptographic primitives are defined to accomplish one very specific task in a precisely defined and mathematically reliable fashion. For example, suppose that for a specific cryptographic primitive (such as an encryption routine), the consensus is that the primitive can only be broken after trying out N inputs (where the larger the value of N, the stronger the cryptography). For an encryption scheme AES-256, one expect N to be so large as to be infeasible to execute in a reasonable amount of time. If a vulnerability is ever found that shows that one can break a cryptographic primitive in significantly less than the expected number of attempts, that primitive is considered weakened (or sometimes in extreme , colloquially it is \"broken\"). As a , anything using cryptographic primitive now be considered insecure or risky. Thus, even breaking or weakening a seemingly small cryptographic primitive the potential to render the whole system vulnerable, to reliance on the primitive. A historical example can be found in TLS when using DES. One colloquially call DES the cryptographic primitive for transport encryption in version of TLS. In the past, DES considered strong, no weaknesses were found in it; importantly, DES a key length of 56 bits. Trying N=2^56 keys considered impractical for most actors. Unfortunately, attacking a system with 56-bit keys is now practical brute force, makes defeating DES encryption practical. It is now practical for an adversary to read any information sent version of TLS and use information to attack the system. As a , it can be claimed that use of TLS is weak, and th",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "742-431",
+      "674-425",
+      "002-801",
+      "786-224",
+      "287-251",
+      "878-880",
+      "585-408",
+      "841-757",
+      "504-340",
+      "441-132"
+    ]
+  },
+  {
+    "control_text": "The the RSA algorithm not incorporate Optimal Asymmetric Encryption Padding (OAEP), weaken the encryption. Padding schemes are with cryptographic algorithms to make the plaintext less predictable and complicate attack efforts. The OAEP scheme is with RSA to nullify the impact of predictable common text.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "742-431",
+      "674-425",
+      "002-801",
+      "786-224",
+      "504-340",
+      "585-408",
+      "441-132",
+      "878-880",
+      "122-287",
+      "841-757"
+    ]
+  },
+  {
+    "control_text": "The contains a mechanism for users to recover or change their passwords without knowing the original password, the mechanism is weak. It is common for an application to a mechanism that provides a means for a user to gain access to their account in the event they forget their password. Very the password recovery mechanism is weak, the effect of making it more likely that it be possible for a person other than the legitimate system user to gain access to that user's account. Weak password recovery schemes completely undermine a strong password authentication scheme. weakness may be that the security question is too easy to guess or find an answer to (e.g. the question is too common, or the answers can be found using social media). Or be an implementation weakness in the password recovery mechanism code that may for instance trick the system e-mailing the new password to an e-mail account other than that of the user. be no throttling done on the rate of password resets so that a legitimate user can be denied service by an attacker if an attacker tries to recover their password in a rapid succession. The system may send the original password to the user rather than generating a new temporary password. In summary, password recovery functionality, if not carefully designed and implemented can become the system's weakest link that can be misused in a that allow an attacker to gain unauthorized access to the system.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-621",
+    "predicted_top10": [
+      "772-358",
+      "581-525",
+      "520-617",
+      "543-621",
+      "270-634",
+      "751-176",
+      "235-658",
+      "342-764",
+      "455-885",
+      "358-860"
+    ]
+  },
+  {
+    "control_text": "The not require that users should strong passwords.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "630-577",
+    "predicted_top10": [
+      "604-025",
+      "576-651",
+      "715-681",
+      "630-577",
+      "807-565",
+      "751-176",
+      "487-305",
+      "358-860",
+      "158-874",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "The stores or transmits sensitive data using an encryption scheme that is theoretically sound, is not strong enough for the level of protection required. A weak encryption scheme can be subjected to brute force attacks that a reasonable chance of succeeding using current attack methods and resources.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "841-757",
+    "predicted_top10": [
+      "674-425",
+      "786-224",
+      "441-132",
+      "742-431",
+      "504-340",
+      "482-866",
+      "170-772",
+      "224-321",
+      "433-122",
+      "745-045"
+    ]
+  },
+  {
+    "control_text": "Login pages do not use adequate to protect the user name and password while they are in transit from the client to the server.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "102-811",
+    "predicted_top10": [
+      "558-807",
+      "186-540",
+      "745-045",
+      "808-425",
+      "527-034",
+      "881-321",
+      "333-858",
+      "354-752",
+      "636-854",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "According to WASC, \"Insufficient Session Expiration is when a web site permits an attacker to reuse old session credentials or session IDs for authorization.\"",
+    "framework": "CWE",
+    "ground_truth_hub_id": "681-823",
+    "predicted_top10": [
+      "065-782",
+      "457-165",
+      "002-630",
+      "138-448",
+      "402-133",
+      "816-631",
+      "673-736",
+      "704-530",
+      "813-610",
+      "646-227"
+    ]
+  },
+  {
+    "control_text": "When an actor claims to a given identity, the not prove or insufficiently proves that the claim is correct.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "405-411",
+      "316-272",
+      "551-400",
+      "813-610",
+      "646-227",
+      "336-512",
+      "541-441",
+      "138-448",
+      "816-631",
+      "820-421"
+    ]
+  },
+  {
+    "control_text": "The an authentication mechanism to restrict access to specific users or identities, the mechanism not sufficiently prove that the claimed identity is correct. Attackers may be to bypass weak authentication faster and/or with less effort than expected.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "354-753",
+      "813-610",
+      "404-126",
+      "646-227",
+      "605-735",
+      "816-631",
+      "802-056",
+      "168-186",
+      "354-752",
+      "808-425"
+    ]
+  },
+  {
+    "control_text": "The contains an account lockout protection mechanism, the mechanism is too restrictive and can be triggered too easily, allows attackers to deny service to legitimate users by causing their accounts to be locked out. Account lockout is a security feature present in applications as a countermeasure to the brute force attack on the password based authentication mechanism of the system. After a certain number of failed login attempts, the users' account may be disabled for a certain period of time or until it is unlocked by an administrator. Other security events may possibly trigger account lockout. , an attacker may use very security feature to deny service to legitimate system users. It is therefore important to ensure that the account lockout security mechanism is not overly restrictive.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "802-056",
+      "746-705",
+      "463-820",
+      "630-573",
+      "808-425",
+      "176-154",
+      "268-088",
+      "660-052",
+      "681-823",
+      "354-752"
+    ]
+  },
+  {
+    "control_text": "The stores a password in plaintext resources such as memory or files.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "342-764",
+    "predicted_top10": [
+      "774-888",
+      "223-780",
+      "881-321",
+      "232-325",
+      "622-203",
+      "751-176",
+      "630-577",
+      "715-681",
+      "327-505",
+      "455-885"
+    ]
+  },
+  {
+    "control_text": "The implements an authentication technique, it skips a step that weakens the technique. Authentication techniques should follow the algorithms that them exactly, otherwise authentication can be bypassed or more easily subjected to brute force attacks.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-752",
+    "predicted_top10": [
+      "354-752",
+      "802-056",
+      "354-753",
+      "525-361",
+      "333-858",
+      "524-446",
+      "553-413",
+      "342-764",
+      "455-885",
+      "808-425"
+    ]
+  },
+  {
+    "control_text": "The supports password aging, the expiration period is too long. Password aging (or password rotation) is a policy that forces users to change their passwords after a defined time period passes, such as every 30 or 90 days. A long expiration provides more time for attackers to conduct password cracking before users are forced to change to a new password. Note that while password aging once considered an important security feature, it since fallen out of favor by , it is not as effective against modern threats compared to other mechanisms such as slow hashes. In addition, forcing frequent changes can unintentionally encourage users to select less-secure passwords. , password aging is still in use to factors such as compliance requirements, e.g., Payment Card Industry Data Security Standard (PCI DSS).",
+    "framework": "CWE",
+    "ground_truth_hub_id": "338-370",
+    "predicted_top10": [
+      "338-370",
+      "751-176",
+      "802-056",
+      "604-025",
+      "715-681",
+      "158-874",
+      "807-565",
+      "576-651",
+      "455-885",
+      "630-577"
+    ]
+  },
+  {
+    "control_text": "The web server receives a URL or similar request from an upstream component and retrieves the contents of URL, it not sufficiently ensure that the request is sent to the expected destination.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "814-322",
+    "predicted_top10": [
+      "814-322",
+      "640-364",
+      "273-600",
+      "405-411",
+      "307-111",
+      "316-272",
+      "848-711",
+      "650-560",
+      "314-701",
+      "232-217"
+    ]
+  },
+  {
+    "control_text": "The web application not restrict or incorrectly restricts frame objects or UI layers that belong to application or domain.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "480-071",
+      "257-668",
+      "764-765",
+      "736-237",
+      "004-517",
+      "268-100",
+      "503-455",
+      "515-021",
+      "822-100",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "The prepares a structured message for communication with component, encoding or escaping of the data is either missing or done incorrectly. As a , the structure of the message is not preserved. encoding or escaping can allow attackers to change the commands that are sent to component, inserting malicious commands instead. Most products follow a certain protocol that structured messages for communication between components, such as queries or commands. structured messages can contain raw data interspersed with metadata or control information. For example, \"GET /index.html HTTP/1.1\" is a structured message containing a command (\"GET\") with a single argument (\"/index.html\") and metadata about protocol version is (\"HTTP/1.1\"). If an application attacker-supplied inputs to construct a structured message without properly encoding or escaping, the attacker insert special characters that the data to be interpreted as control information or metadata. Consequently, the component that receives the output perform the wrong operations, or otherwise interpret the data incorrectly.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-100",
+    "predicted_top10": [
+      "857-718",
+      "782-234",
+      "533-516",
+      "653-242",
+      "538-446",
+      "732-873",
+      "611-051",
+      "161-451",
+      "064-808",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "The not neutralize or incorrectly neutralizes web scripting syntax in HTTP headers that can be by web browser components that can process raw headers, such as Flash. An attacker may be to conduct cross-site scripting and other attacks against users components enabled. If a not neutralize user controlled data placed in the header of an HTTP response coming from the server, the header may contain a script that get executed in the client's browser context, potentially resulting in a cross site scripting vulnerability or possibly an HTTP response splitting attack. It is important to carefully control data that is placed both in HTTP response header and in the HTTP response body to ensure that no scripting syntax is present, taking various encodings account.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-100",
+    "predicted_top10": [
+      "538-446",
+      "736-237",
+      "036-725",
+      "268-100",
+      "542-445",
+      "065-388",
+      "646-462",
+      "764-765",
+      "653-242",
+      "636-347"
+    ]
+  },
+  {
+    "control_text": "The not properly handle when an input an alternate encoding that is valid for the control sphere to the input is sent.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "036-725",
+    "predicted_top10": [
+      "036-725",
+      "538-446",
+      "782-234",
+      "533-516",
+      "653-242",
+      "611-051",
+      "737-086",
+      "031-447",
+      "146-706",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "The processes an XML document that can contain XML entities with URIs that resolve to documents outside of the sphere of control, causing the to embed incorrect documents output.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "764-507",
+    "predicted_top10": [
+      "764-507",
+      "533-516",
+      "611-051",
+      "064-808",
+      "134-207",
+      "620-101",
+      "607-671",
+      "161-451",
+      "538-446",
+      "782-234"
+    ]
+  },
+  {
+    "control_text": "The allocates a reusable resource or group of resources on behalf of an actor without imposing any restrictions on the size or number of resources that can be allocated.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "267-031",
+      "208-830",
+      "630-573",
+      "660-052",
+      "746-705",
+      "230-318",
+      "886-662",
+      "817-808",
+      "463-820",
+      "545-243"
+    ]
+  },
+  {
+    "control_text": "The allocates file descriptors or handles on behalf of an actor without imposing any restrictions on descriptors can be allocated, in violation of the security policy for that actor. can the to consume all available file descriptors or handles, can prevent other processes from performing critical file processing operations.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "660-052",
+      "463-820",
+      "630-573",
+      "746-705",
+      "267-031",
+      "176-154",
+      "268-088",
+      "545-243",
+      "108-316",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "The server contains a protection mechanism that assumes that any URI that is accessed using HTTP GET not a state change to the resource. allow attackers to bypass access restrictions and conduct resource modification and deletion attacks, since applications allow GET to modify state. The HTTP GET method and other methods are designed to retrieve resources and not to alter the state of the application or resources on the server side. Furthermore, the HTTP specification requires that GET requests (and other requests) should not side effects. Believing that it be enough to prevent unintended resource alterations, an application may disallow the HTTP requests to perform DELETE, PUT and POST operations on the resource representation. , is nothing in the HTTP protocol itself that actually prevents the HTTP GET method from performing more than just query of the data. Developers can easily code programs that accept a HTTP GET request that do in fact create, update or delete data on the server. For instance, it is a common practice with REST based Web Services to HTTP GET requests modifying resources on the server side. , whenever that happens, the access control needs to be properly enforced in the application. No assumptions should be made that only HTTP DELETE, PUT, POST, and other methods the power to alter the representation of the resource accessed in the request.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "532-878",
+    "predicted_top10": [
+      "532-878",
+      "664-080",
+      "304-667",
+      "426-842",
+      "817-808",
+      "615-744",
+      "612-252",
+      "316-272",
+      "650-560",
+      "483-883"
+    ]
+  },
+  {
+    "control_text": "The allows the upload or transfer of dangerous file types that are automatically processed environment.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "377-680",
+    "predicted_top10": [
+      "545-243",
+      "175-235",
+      "814-322",
+      "307-111",
+      "660-052",
+      "314-701",
+      "757-271",
+      "451-082",
+      "377-680",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "The web application not, or cannot, sufficiently verify a request intentionally provided by the user sent the request, originated from an unauthorized actor.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "464-084",
+    "predicted_top10": [
+      "405-411",
+      "316-272",
+      "640-364",
+      "650-560",
+      "541-441",
+      "426-842",
+      "848-711",
+      "814-322",
+      "483-883",
+      "307-111"
+    ]
+  },
+  {
+    "control_text": "A handles inputs or steps differently than B, causes A to perform incorrect actions based on perception of B's state. is generally found in proxies, firewalls, anti-virus software, and other intermediary devices that monitor, allow, deny, or modify traffic based on the client or server is expected to behave.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-512",
+    "predicted_top10": [
+      "715-644",
+      "801-310",
+      "220-442",
+      "534-605",
+      "117-371",
+      "273-600",
+      "757-271",
+      "854-643",
+      "724-770",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "The misinterprets an input, from an attacker or , in a security-relevant fashion.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-512",
+    "predicted_top10": [
+      "782-234",
+      "653-242",
+      "611-051",
+      "848-711",
+      "780-757",
+      "146-706",
+      "031-447",
+      "307-507",
+      "814-322",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "A acts as an intermediary or monitor between two or more endpoints, it not a complete model of an endpoint's features, behaviors, or state, potentially causing the to perform incorrect actions based on incomplete model.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-512",
+    "predicted_top10": [
+      "073-507",
+      "012-625",
+      "061-753",
+      "342-641",
+      "205-522",
+      "780-757",
+      "686-110",
+      "854-643",
+      "843-475",
+      "333-480"
+    ]
+  },
+  {
+    "control_text": "The not use, or incorrectly , an input validation framework that is provided by the source language or an independent library. modern coding languages provide developers with input validation frameworks to make the task of input validation easier and less error-prone. frameworks automatically check all input against specified criteria and direct execution to error handlers when invalid input is received. The use (i.e., an incorrect implementation or missing altogether) of frameworks is not directly exploitable, can to an exploitable condition if proper input validation is not performed later in the . Not using provided input validation frameworks can hurt the maintainability of code as future developers may not recognize the downstream input validation in the place of the validation framework.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "503-455",
+      "010-308",
+      "004-517",
+      "760-764",
+      "814-322",
+      "657-084",
+      "764-765",
+      "636-660",
+      "866-553",
+      "533-516"
+    ]
+  },
+  {
+    "control_text": "The receives input or data, it not validate or incorrectly validates that the input the properties that are required to process the data safely and correctly. Input validation is a frequently-used technique for checking potentially dangerous inputs in order to ensure that the inputs are safe for processing the code, or when communicating with other components. Input can consist of: raw data - strings, numbers, parameters, file contents, etc. metadata - information about the raw data, such as headers or size Data can be simple or structured. Structured data can be composed of nested layers, composed of combinations of metadata and raw data, with other simple or structured data. properties of raw data or metadata may to be validated entry the code, such as: specified quantities such as size, length, frequency, price, rate, number of operations, time, etc. implied or derived quantities, such as the actual size of a file instead of a specified size indexes, offsets, or positions more complex data structures symbolic keys or other elements hash tables, associative arrays, etc. well-formedness, i.e. syntactic correctness - compliance with expected syntax lexical token correctness - compliance with rules for is treated as a token specified or derived type - the actual type of the input (or the input appears to be) consistency - between individual data elements, between raw data and metadata, between references, etc. conformance to domain-specific rules, e.g. business logic equivalence - ensuring that equivalent inputs are treated the same authenticity, ownership, or other attestations about the input, e.g. a cryptographic signature to prove the source of the data Implied or derived properties of data must be calculated or inferred by the code itself. Errors in deriving properties may be considered a contributing factor to input validation.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "010-308",
+      "503-455",
+      "760-764",
+      "814-322",
+      "077-235",
+      "761-417",
+      "576-262",
+      "342-641",
+      "533-516",
+      "764-765"
+    ]
+  },
+  {
+    "control_text": "The receives input that is expected to specify an index, position, or offset an indexable resource such as a buffer or file, it not validate or incorrectly validates that the specified index/position/offset the required properties. , indexable resources such as memory buffers or files can be accessed using a specific position, index, or offset, such as an index for an array or a position for a file. When untrusted input is not properly validated before it is as an index, attackers access (or attempt to access) unauthorized portions of resources. be to buffer overflows, excessive resource allocation, or trigger unexpected failures.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "831-570",
+      "314-131",
+      "866-553",
+      "782-234",
+      "307-507",
+      "660-052",
+      "737-086",
+      "653-242",
+      "742-056",
+      "482-771"
+    ]
+  },
+  {
+    "control_text": "The receives input that is expected to be well-formed - i.e., to comply with a certain syntax - it not validate or incorrectly validates that the input complies with the syntax. , complex inputs are expected to follow a particular syntax, is either assumed by the input itself, or declared metadata such as headers. The syntax be for data exchange formats, markup languages, or even programming languages. When untrusted input is not properly validated for the expected syntax, attackers parsing failures, trigger unexpected errors, or expose latent vulnerabilities that not be directly exploitable if the input had conformed to the syntax.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "782-234",
+      "653-242",
+      "611-051",
+      "146-706",
+      "031-447",
+      "764-507",
+      "533-516",
+      "857-718",
+      "538-446",
+      "010-308"
+    ]
+  },
+  {
+    "control_text": "The receives a complex input with elements or fields that must be consistent with each other, it not validate or incorrectly validates that the input is actually consistent. input data can be structured with elements or fields that must be consistent with each other, e.g. a number-of-items field that is followed by the expected number of elements. When such complex inputs are inconsistent, attackers trigger unexpected errors, incorrect actions to place, or exploit latent vulnerabilities.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "538-446",
+      "881-434",
+      "782-234",
+      "743-237",
+      "010-308",
+      "533-516",
+      "657-084",
+      "814-322",
+      "503-455",
+      "836-068"
+    ]
+  },
+  {
+    "control_text": "The adds hooks to user-accessible API functions, it not properly validate the arguments. to resultant vulnerabilities. Such hooks can be in defensive software that runs with privileges, such as anti-virus or firewall, hooks kernel calls. When the arguments are not validated, they be to bypass the protection scheme or attack the itself.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "814-322",
+      "881-434",
+      "657-084",
+      "743-237",
+      "503-455",
+      "118-110",
+      "010-308",
+      "232-217",
+      "533-516",
+      "764-765"
+    ]
+  },
+  {
+    "control_text": "The not sufficiently verify the origin or authenticity of data, in a that causes it to accept invalid data.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "041-188",
+      "423-055",
+      "217-163",
+      "088-316",
+      "738-144",
+      "814-322",
+      "173-554",
+      "848-711",
+      "405-411",
+      "881-234"
+    ]
+  },
+  {
+    "control_text": "The two sources of the same data or information, it the source that less support for verification, is less trusted, or is less resistant to attack.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "423-055",
+      "777-470",
+      "173-554",
+      "881-234",
+      "041-188",
+      "715-223",
+      "547-283",
+      "738-144",
+      "171-222",
+      "852-770"
+    ]
+  },
+  {
+    "control_text": "The , when processing trusted data, accepts any untrusted data that is included with the trusted data, treating the untrusted data as if it were trusted.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "848-711",
+      "640-364",
+      "650-560",
+      "307-507",
+      "267-468",
+      "482-866",
+      "814-322",
+      "224-321",
+      "316-272",
+      "405-411"
+    ]
+  },
+  {
+    "control_text": "Security based on event locations are insecure and can be spoofed. Events are a messaging system may provide control data to programs listening for events. Events do not any type of authentication framework to allow them to be verified from a trusted source. Any application, in Windows, on a given desktop can send a message to any window on the same desktop. is no authentication framework for messages. Therefore, any message can be to manipulate any process on the desktop if the process not check the validity and safeness of messages.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "307-111",
+      "273-600",
+      "052-821",
+      "184-284",
+      "117-371",
+      "316-272",
+      "724-770",
+      "405-411",
+      "801-310",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "The obfuscation or encryption of inputs that should not be mutable by an external actor, the not use integrity checks to detect if inputs modified. When an application relies on obfuscation or incorrectly applied / weak encryption to protect client-controllable tokens or parameters, that may an effect on the user state, system state, or decision made on the server. Without protecting the tokens/parameters for integrity, the application is vulnerable to an attack where an adversary traverses the space of possible values of the said token/parameter in order to attempt to gain an advantage. The goal of the attacker is to find admissible value that somehow elevate their privileges in the system, disclose information or change the behavior of the system in beneficial to the attacker. If the application not protect critical tokens/parameters for integrity, it not be to that values tampered with. that are to protect data for confidentiality should not be relied to provide the integrity service.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "426-842",
+      "483-883",
+      "217-112",
+      "307-507",
+      "743-237",
+      "848-711",
+      "456-636",
+      "653-242",
+      "782-234",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "The deserializes untrusted data without sufficiently ensuring that the resulting data be valid.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "831-563",
+    "predicted_top10": [
+      "831-563",
+      "836-068",
+      "762-616",
+      "736-554",
+      "387-848",
+      "764-507",
+      "848-711",
+      "782-234",
+      "538-446",
+      "650-560"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes code syntax before using the input in a dynamic evaluation call (e.g. \"eval\").",
+    "framework": "CWE",
+    "ground_truth_hub_id": "387-848",
+    "predicted_top10": [
+      "317-743",
+      "646-462",
+      "422-005",
+      "657-084",
+      "538-446",
+      "764-765",
+      "387-848",
+      "881-434",
+      "542-445",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "The makes files or directories accessible to unauthorized actors, even though they should not be. Web servers, FTP servers, and similar servers may store a set of files underneath a \"root\" directory that is accessible to the server's users. Applications may store sensitive files underneath root without using access control to limit users may request files, if any. Alternately, an application package files or directories an archive file (e.g., ZIP or tar), the application not exclude sensitive files that are underneath directories. In technologies and containers, weakness present itself in the form of misconfigured storage accounts that can be read or written by a public or anonymous user.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "307-111",
+      "123-124",
+      "540-566",
+      "817-808",
+      "801-310",
+      "117-371",
+      "757-271",
+      "314-701",
+      "758-262",
+      "368-633"
+    ]
+  },
+  {
+    "control_text": "The stores sensitive data the web document root with insufficient access control, make it accessible to untrusted parties. Besides public-facing web pages and code, products may store sensitive data, code that is not directly invoked, or other files the web document root of the web server. If the server is not configured or otherwise to prevent direct access to files, attackers may obtain sensitive data.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "123-124",
+      "538-770",
+      "724-770",
+      "117-371",
+      "801-310",
+      "757-271",
+      "128-128",
+      "220-442",
+      "247-250",
+      "715-644"
+    ]
+  },
+  {
+    "control_text": "The stores sensitive data the FTP server root with insufficient access control, make it accessible to untrusted parties.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "757-271",
+      "117-371",
+      "801-310",
+      "123-124",
+      "538-770",
+      "724-770",
+      "128-128",
+      "307-111",
+      "817-808",
+      "762-451"
+    ]
+  },
+  {
+    "control_text": "The stores a CVS, git, or other repository in a directory, archive, or other resource that is stored, transferred, or otherwise made accessible to unauthorized actors. Version control repositories such as CVS or git store version-specific metadata and other details subdirectories. If subdirectories are stored on a web server or added to an archive, be by an attacker. information may usernames, filenames, path root, IP addresses, and detailed \"diff\" data about files changed - reveal source code snippets that were never to be made public.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "473-177",
+      "461-680",
+      "223-780",
+      "263-184",
+      "028-254",
+      "080-466",
+      "077-772",
+      "805-126",
+      "758-262",
+      "171-222"
+    ]
+  },
+  {
+    "control_text": "The generates a core dump file in a directory, archive, or other resource that is stored, transferred, or otherwise made accessible to unauthorized actors.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "461-680",
+      "715-304",
+      "843-841",
+      "240-274",
+      "866-553",
+      "356-282",
+      "026-280",
+      "067-050",
+      "860-084",
+      "614-353"
+    ]
+  },
+  {
+    "control_text": "The stores access control list files in a directory or other container that is accessible to actors outside of the control sphere. Exposure of access control list files may give the attacker information about the configuration of the site or system. information may be to bypass the security policy or identify trusted systems from an attack can be launched.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "817-808",
+      "123-124",
+      "443-447",
+      "612-252",
+      "664-080",
+      "368-633",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "A backup file is stored in a directory or archive that is made accessible to unauthorized actors. , older backup files are renamed with an extension such as .~bk to distinguish them from production files. The source code for old files that renamed in manner and left in the webroot can be retrieved. renaming may performed automatically by the web server, or manually by the administrator.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "307-111",
+      "762-451",
+      "614-353",
+      "314-701",
+      "141-385",
+      "758-262",
+      "040-843",
+      "267-786",
+      "077-772",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "The web application persistent cookies, the cookies contain sensitive information. Cookies are small bits of data that are sent by the web application stored locally in the browser. lets the application use the cookie to pass information between pages and store variable information. The web application controls information is stored in a cookie and it is . Typical types of information stored in cookies are session identifiers, personalization and customization information, and in rare even usernames to enable automated logins. are two types of cookies: session cookies and persistent cookies. Session cookies just live in the browser's memory and are not stored anywhere, persistent cookies are stored on the browser's hard drive. can security and privacy depending on the information stored in the cookie and it is accessed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "804-220",
+      "455-358",
+      "688-081",
+      "705-182",
+      "232-034",
+      "402-133",
+      "834-645",
+      "342-055",
+      "617-524",
+      "002-630"
+    ]
+  },
+  {
+    "control_text": "A possible shell file exists in /cgi-bin/ or other accessible directories. is extremely dangerous and can be by an attacker to execute commands on the web server.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "307-111",
+      "384-344",
+      "814-322",
+      "545-243",
+      "860-084",
+      "657-084",
+      "646-462",
+      "451-082",
+      "314-701",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "The PHP application receives input from an upstream component, it not restrict or incorrectly restricts the input before usage in \"require,\" \",\" or similar functions. In certain versions and configurations of PHP, can allow an attacker to specify a URL to a remote location from the obtain the code to execute. In other in association with path traversal, the attacker can specify a local file that may contain executable statements that can be parsed by PHP.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "742-056",
+    "predicted_top10": [
+      "742-056",
+      "547-283",
+      "857-718",
+      "737-086",
+      "782-234",
+      "777-470",
+      "653-242",
+      "232-217",
+      "611-051",
+      "814-322"
+    ]
+  },
+  {
+    "control_text": "The constructs all or part of an OS command using externally-influenced input from an upstream component, it not neutralize or incorrectly neutralizes special elements that modify the OS command when it is sent to a downstream component. weakness can to a vulnerability in environments in the attacker not direct access to the operating system, such as in web applications. Alternately, if the weakness occurs in a privileged program, it allow the attacker to specify commands that normally not be accessible, or to call alternate commands with privileges that the attacker not . The problem is exacerbated if the compromised process not follow the principle of least privilege, the attacker-controlled commands may run with special system privileges that increases the amount of damage. are at least two subtypes of OS command injection: The application intends to execute a single, fixed program that is own control. It intends to use externally-supplied inputs as arguments to that program. For example, the program use system(\"nslookup [HOSTNAME]\") to run nslookup and allow the user to supply a HOSTNAME, is as an argument. Attackers cannot prevent nslookup from executing. , if the program not remove command separators from the HOSTNAME argument, attackers place the separators the arguments, allows them to execute their own program after nslookup finished executing. The application accepts an input that it to fully select program to run, as as commands to use. The application simply redirects entire command to the operating system. For example, the program use \"exec([COMMAND])\" to execute the [COMMAND] that supplied by the user. If the COMMAND is attacker control, the attacker can execute arbitrary commands or programs. If the command is executed using functions exec() and CreateProcess(), the attacker not be to combine commands together in the same line. From a weakness standpoint, variants represent distinct programmer errors. In the first variant, the programmer clearly intends that input from untrusted parties be part of the arguments in the command to be executed. In the second variant, the programmer not intend for the",
+    "framework": "CWE",
+    "ground_truth_hub_id": "683-722",
+    "predicted_top10": [
+      "857-718",
+      "683-722",
+      "533-516",
+      "653-242",
+      "782-234",
+      "732-873",
+      "538-446",
+      "620-101",
+      "611-051",
+      "064-808"
+    ]
+  },
+  {
+    "control_text": "The allows user input to control or influence paths or file names that are in filesystem operations. allow an attacker to access or modify system files or other files that are critical to the application. Path manipulation errors occur when the two conditions are met: 1. An attacker can specify a path in an operation on the filesystem. 2. By specifying the resource, the attacker gains a capability that not otherwise be permitted. For example, the program may give the attacker the ability to overwrite the specified file or run with a configuration controlled by the attacker.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "737-086",
+    "predicted_top10": [
+      "675-168",
+      "737-086",
+      "742-056",
+      "540-566",
+      "782-234",
+      "307-507",
+      "664-080",
+      "612-252",
+      "443-447",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "The constructs the name of a file or other resource using input from an upstream component, it not restrict or incorrectly restricts the resulting name. may produce resultant weaknesses. For instance, if the names of resources contain scripting characters, it is possible that a script may get executed in the client's browser if the application ever displays the name of the resource on a dynamically generated web page. Alternately, if the resources are consumed by application parser, a specially crafted name can exploit vulnerability internal to the parser, potentially resulting in execution of arbitrary code on the server machine. The problems vary based on the context of usage of such malformed resource names and vulnerabilities are present in or assumptions are made by the targeted technology that make code execution possible.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "421-513",
+    "predicted_top10": [
+      "742-056",
+      "737-086",
+      "675-168",
+      "421-513",
+      "814-322",
+      "660-052",
+      "538-446",
+      "545-243",
+      "307-111",
+      "646-462"
+    ]
+  },
+  {
+    "control_text": "The external input to construct a pathname that is to identify a file or directory that is located underneath a restricted parent directory, the not properly neutralize special elements the pathname that can the pathname to resolve to a location that is outside of the restricted directory. file operations are to place a restricted directory. By using special elements such as \"..\" and \"/\" separators, attackers can escape outside of the restricted location to access files or directories that are elsewhere on the system. One of the most common special elements is the \"../\" sequence, in most modern operating systems is interpreted as the parent directory of the current location. is referred to as relative path traversal. Path traversal covers the use of absolute pathnames such as \"/usr/local/bin\" to access unexpected files. is referred to as absolute path traversal.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "675-168",
+    "predicted_top10": [
+      "742-056",
+      "737-086",
+      "675-168",
+      "782-234",
+      "615-744",
+      "857-718",
+      "683-722",
+      "653-242",
+      "611-051",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "The not handle or incorrectly handles a compressed input with a very high compression ratio that produces a large output. An example of data amplification is a \"decompression bomb,\" a small ZIP file that can produce a large amount of data when it is decompressed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "163-518",
+    "predicted_top10": [
+      "660-052",
+      "463-820",
+      "630-573",
+      "746-705",
+      "163-518",
+      "268-088",
+      "108-316",
+      "230-318",
+      "176-154",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "The allows a file to be uploaded, it relies on the file name or extension of the file to the behaviors. be by attackers to the file to be misclassified and processed in a dangerous fashion. An application use the file name or extension of a user-supplied file to the proper course of action, such as selecting the correct process to control should be passed, deciding data should be made available, or resources should be allocated. If the attacker can the code to misclassify the supplied file, the wrong action occur. For example, an attacker supply a file that ends in a \".php.gif\" extension that appears to be a GIF image, be processed as PHP code. In extreme , code execution is possible, the attacker exhaustion of resources, denial of service, exposure of debug or system data (including application source code), or bound to a particular server side process. weakness may be to a vulnerability in any of the technologies by the web and application servers, to misconfiguration, or resultant from flaw in the application itself.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "384-344",
+    "predicted_top10": [
+      "545-243",
+      "307-111",
+      "175-235",
+      "314-701",
+      "384-344",
+      "660-052",
+      "377-680",
+      "112-273",
+      "814-322",
+      "621-287"
+    ]
+  },
+  {
+    "control_text": "The not properly control the allocation and maintenance of a limited resource.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "746-705",
+      "630-573",
+      "463-820",
+      "267-031",
+      "230-318",
+      "660-052",
+      "268-088",
+      "176-154",
+      "660-867",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "The code boxed primitives, may introduce inefficiencies performance-critical operations.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "866-553",
+      "036-275",
+      "760-764",
+      "601-182",
+      "134-412",
+      "433-442",
+      "542-270",
+      "854-643",
+      "344-611",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "The not implement or incorrectly implements wear leveling operations in limited-write non-volatile memories. Non-volatile memories such as NAND Flash, EEPROM, etc. individually erasable segments, each of can be put through a limited number of program/erase or write cycles. For example, the device can only endure a limited number of writes, after the device becomes unreliable. In order to wear out the cells in a uniform manner, non-volatile memory and storage products based on the above-mentioned technologies implement a technique called wear leveling. Once a set threshold is reached, wear leveling maps writes of a logical block to a physical block. prevents a single physical block from prematurely failing to a high concentration of writes.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "758-262",
+      "447-083",
+      "126-668",
+      "356-282",
+      "208-830",
+      "866-553",
+      "670-660",
+      "267-031",
+      "130-550",
+      "601-182"
+    ]
+  },
+  {
+    "control_text": "The not properly control situations in an adversary can the to consume or produce excessive resources without requiring the adversary to invest equivalent work or otherwise prove authorization, i.e., the adversary's influence is \"asymmetric.\" can to poor performance to \"amplification\" of resource consumption, typically in a non-linear fashion. situation is worsened if the allows malicious users or attackers to consume more resources than their access level permits.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "630-573",
+      "746-705",
+      "463-820",
+      "660-052",
+      "230-318",
+      "268-088",
+      "176-154",
+      "886-662",
+      "267-031",
+      "108-316"
+    ]
+  },
+  {
+    "control_text": "The not properly maintain a reference to a resource that allocated, prevents the resource from reclaimed. not necessarily apply in languages or frameworks that automatically perform garbage collection, since the removal of all references may act as a signal that the resource is ready to be reclaimed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "866-553",
+      "670-660",
+      "267-031",
+      "208-830",
+      "380-540",
+      "863-521",
+      "356-282",
+      "660-052",
+      "134-412",
+      "736-554"
+    ]
+  },
+  {
+    "control_text": "The logs too much information, making log files hard to process and possibly hindering recovery efforts or forensic analysis after an attack. While logging is a good practice in general, and very high levels of logging are for debugging stages of development, too much logging in a production environment hinder a system administrator's ability to detect anomalous conditions. can provide cover for an attacker while attempting to penetrate a system, clutter the audit trail for forensic analysis, or make it more difficult to debug problems in a production environment.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "843-841",
+      "240-274",
+      "067-050",
+      "402-706",
+      "026-280",
+      "260-200",
+      "821-541",
+      "555-048",
+      "048-612",
+      "842-876"
+    ]
+  },
+  {
+    "control_text": "The is composed of a server that relies on the client to implement a mechanism that is to protect the server. When the server relies on protection mechanisms placed on the client side, an attacker can modify the client-side behavior to bypass the protection mechanisms, resulting in potentially unexpected interactions between the client and server. The consequences vary, depending on the mechanisms are trying to protect.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "848-711",
+    "predicted_top10": [
+      "640-364",
+      "848-711",
+      "650-560",
+      "426-842",
+      "483-883",
+      "405-411",
+      "316-272",
+      "456-636",
+      "224-321",
+      "482-866"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component that specifies attributes, properties, or fields that are to be initialized or updated in an object, it not properly control attributes can be modified. If the object contains attributes that were only for internal use, their unexpected modification to a vulnerability. weakness is sometimes by the language-specific mechanisms that make it possible, such as mass assignment, autobinding, or object injection.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "042-550",
+    "predicted_top10": [
+      "814-322",
+      "657-084",
+      "743-237",
+      "881-434",
+      "077-235",
+      "307-507",
+      "010-308",
+      "660-052",
+      "232-217",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "The not handle or incorrectly handles when the number of parameters, fields, or arguments with the same name exceeds the expected amount.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "743-237",
+    "predicted_top10": [
+      "630-573",
+      "746-705",
+      "743-237",
+      "268-088",
+      "463-820",
+      "176-154",
+      "217-112",
+      "653-242",
+      "782-234",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "The web application accepts a user-controlled input that specifies a link to an external site, and that link in a redirect.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "232-217",
+    "predicted_top10": [
+      "814-322",
+      "657-084",
+      "232-217",
+      "480-071",
+      "542-445",
+      "764-765",
+      "881-434",
+      "257-668",
+      "760-765",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "The performs a calculation that can produce an integer overflow or wraparound when the logic assumes that the resulting value always be larger than the original value. occurs when an integer value is incremented to a value that is too large to store in the representation. When occurs, the value may become a very small or negative number.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "482-771",
+    "predicted_top10": [
+      "482-771",
+      "314-131",
+      "831-570",
+      "782-234",
+      "746-705",
+      "630-573",
+      "660-867",
+      "463-820",
+      "268-088",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "The a function that accepts a format string as an argument, the format string originates from an external source.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "824-732",
+    "predicted_top10": [
+      "824-732",
+      "653-242",
+      "831-570",
+      "611-051",
+      "314-131",
+      "031-447",
+      "782-234",
+      "146-706",
+      "866-553",
+      "232-217"
+    ]
+  },
+  {
+    "control_text": "The constructs all or part of an SQL command using externally-influenced input from an upstream component, it not neutralize or incorrectly neutralizes special elements that modify the SQL command when it is sent to a downstream component. Without sufficient removal or quoting of SQL syntax in user-controllable inputs, the generated SQL query can inputs to be interpreted as SQL instead of ordinary user data.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "064-808",
+    "predicted_top10": [
+      "732-873",
+      "857-718",
+      "653-242",
+      "533-516",
+      "064-808",
+      "782-234",
+      "611-051",
+      "146-706",
+      "031-447",
+      "161-451"
+    ]
+  },
+  {
+    "control_text": "The not properly handle when an input contains Unicode encoding.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "533-516",
+    "predicted_top10": [
+      "533-516",
+      "036-725",
+      "538-446",
+      "782-234",
+      "653-242",
+      "611-051",
+      "607-671",
+      "737-086",
+      "146-706",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "The not neutralize or incorrectly neutralizes user-controllable input before it is placed in output that is as a web page that is served to other users. are variants of cross-site scripting, characterized by a variety of terms or involving attack topologies. , they all indicate the same fundamental weakness: neutralization of dangerous input between the adversary and a victim.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "542-445",
+      "646-462",
+      "538-446",
+      "657-084",
+      "422-005",
+      "533-516",
+      "881-434",
+      "366-835",
+      "620-101",
+      "736-237"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special characters such as \"<\", \">\", and \"&\" that be interpreted as web-scripting elements when they are sent to a downstream component that processes web pages.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "538-446",
+      "533-516",
+      "881-434",
+      "542-445",
+      "764-765",
+      "036-725",
+      "646-462",
+      "653-242",
+      "857-718",
+      "782-234"
+    ]
+  },
+  {
+    "control_text": "The not neutralize or incorrectly neutralizes \"javascript:\" or other URIs from dangerous attributes tags, such as onmouseover, onload, onerror, or style.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "764-765",
+      "542-445",
+      "607-671",
+      "538-446",
+      "646-462",
+      "760-765",
+      "145-310",
+      "657-084",
+      "257-668",
+      "366-835"
+    ]
+  },
+  {
+    "control_text": "The web application improperly neutralizes user-controlled input for executable script disguised with URI encodings.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "538-446",
+      "533-516",
+      "542-445",
+      "653-242",
+      "657-084",
+      "232-217",
+      "764-765",
+      "611-051",
+      "646-462",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "The not neutralize or incorrectly neutralizes user-controlled input for alternate script syntax.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "653-242",
+      "646-462",
+      "542-445",
+      "657-084",
+      "422-005",
+      "764-765",
+      "031-447",
+      "232-217"
+    ]
+  },
+  {
+    "control_text": "The constructs all or part of an LDAP query using externally-influenced input from an upstream component, it not neutralize or incorrectly neutralizes special elements that modify the LDAP query when it is sent to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "531-558",
+    "predicted_top10": [
+      "531-558",
+      "653-242",
+      "611-051",
+      "146-706",
+      "031-447",
+      "732-873",
+      "036-725",
+      "782-234",
+      "533-516",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "The external input to dynamically construct an XPath expression to retrieve data from an XML database, it not neutralize or incorrectly neutralizes that input. allows an attacker to control the structure of the query. The net effect is that the attacker control over the information selected from the XML database and may use that ability to control application flow, modify logic, retrieve unauthorized data, or bypass important checks (e.g. authentication).",
+    "framework": "CWE",
+    "ground_truth_hub_id": "134-207",
+    "predicted_top10": [
+      "611-051",
+      "782-234",
+      "653-242",
+      "764-507",
+      "146-706",
+      "031-447",
+      "134-207",
+      "732-873",
+      "533-516",
+      "036-725"
+    ]
+  },
+  {
+    "control_text": "A process is invoked with sensitive command-line arguments, environment variables, or other elements that can be seen by other processes on the operating system. operating systems allow a user to list information about processes that are owned by other users. Other users information such as command line arguments or environment variable settings. When data contains sensitive information such as credentials, it allow other users to launch an attack against the or resources.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "208-805",
+    "predicted_top10": [
+      "857-718",
+      "540-566",
+      "683-722",
+      "340-375",
+      "217-112",
+      "774-888",
+      "814-322",
+      "841-710",
+      "240-274",
+      "743-237"
+    ]
+  },
+  {
+    "control_text": "The inappropriately exposes a directory listing with an index of all the resources located inside of the directory.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "208-805",
+    "predicted_top10": [
+      "615-744",
+      "817-808",
+      "841-710",
+      "443-447",
+      "664-080",
+      "067-050",
+      "612-252",
+      "082-327",
+      "368-633",
+      "240-274"
+    ]
+  },
+  {
+    "control_text": "The not neutralize or incorrectly neutralizes delimiters.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "881-434",
+      "764-765",
+      "646-462",
+      "542-445",
+      "782-234",
+      "387-848",
+      "533-516",
+      "806-367",
+      "036-725"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as input terminators when they are sent to a downstream component. For example, a \".\" in SMTP signifies the end of mail message data, whereas a null character can be for the end of a string.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "881-434",
+      "036-725",
+      "782-234",
+      "533-516",
+      "814-322",
+      "764-765",
+      "657-084",
+      "653-242",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "The not properly handle when a leading character or sequence (\"leader\") is missing or malformed, or if leaders are when only one should be allowed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "782-234",
+      "036-725",
+      "611-051",
+      "653-242",
+      "764-507",
+      "538-446",
+      "737-086",
+      "146-706",
+      "387-848",
+      "831-563"
+    ]
+  },
+  {
+    "control_text": "Quotes injected a can be to compromise a system. As data are parsed, an injected/absent/duplicate/malformed use of quotes may the process to unexpected actions.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "533-516",
+      "607-671",
+      "857-718",
+      "764-765",
+      "782-234",
+      "620-101",
+      "646-462",
+      "657-084",
+      "732-873"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as escape, meta, or control character sequences when they are sent to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "036-725",
+      "533-516",
+      "857-718",
+      "653-242",
+      "611-051",
+      "881-434",
+      "764-507",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as comment delimiters when they are sent to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "881-434",
+      "646-462",
+      "533-516",
+      "542-445",
+      "764-765",
+      "782-234",
+      "036-725",
+      "814-322",
+      "764-507"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as macro symbols when they are sent to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "646-462",
+      "881-434",
+      "764-765",
+      "533-516",
+      "857-718",
+      "422-005",
+      "657-084",
+      "782-234",
+      "814-322"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as substitution characters when they are sent to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "036-725",
+      "653-242",
+      "881-434",
+      "533-516",
+      "611-051",
+      "542-445",
+      "646-462",
+      "857-718"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as variable name delimiters when they are sent to a downstream component. As data is parsed, an injected delimiter may the process to unexpected actions that in an attack. Example: \"$\" for an environment variable.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "881-434",
+      "782-234",
+      "646-462",
+      "533-516",
+      "764-765",
+      "657-084",
+      "742-056",
+      "737-086",
+      "422-005"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as wildcards or matching symbols when they are sent to a downstream component. As data is parsed, an injected element may the process to unexpected actions.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "533-516",
+      "814-322",
+      "657-084",
+      "881-434",
+      "764-765",
+      "764-507",
+      "010-308",
+      "857-718"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes special elements that be interpreted as whitespace when they are sent to a downstream component. can space, tab, etc.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "881-434",
+      "764-765",
+      "036-725",
+      "533-516",
+      "503-455",
+      "542-445",
+      "857-718",
+      "010-308"
+    ]
+  },
+  {
+    "control_text": "The not properly handle the characters that are to mark the beginning and ending of a group of entities, such as parentheses, brackets, and braces. Paired delimiters : < and > angle brackets ( and ) parentheses { and } braces [ and ] square brackets \" \" double quotes ' ' single quotes",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "533-516",
+      "607-671",
+      "764-765",
+      "542-445",
+      "387-848",
+      "620-101",
+      "646-462",
+      "881-434",
+      "782-234"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes NUL characters or null bytes when they are sent to a downstream component. As data is parsed, an injected NUL character or null byte may the to believe the input is terminated earlier than it actually is, or otherwise the input to be misinterpreted. be to inject potentially dangerous input that occurs after the null byte or otherwise bypass validation routines and other protection mechanisms.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "036-725",
+      "653-242",
+      "533-516",
+      "611-051",
+      "881-434",
+      "542-445",
+      "764-507",
+      "146-706"
+    ]
+  },
+  {
+    "control_text": "The not properly filter, remove, quote, or otherwise manage the invalid use of special elements in user-controlled input, adverse effect on behavior and integrity.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "503-455",
+      "764-765",
+      "010-308",
+      "657-084",
+      "538-446",
+      "782-234",
+      "533-516",
+      "653-242",
+      "814-322",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes leading special elements that be interpreted in unexpected ways when they are sent to a downstream component. As data is parsed, improperly handled leading special elements may the process to unexpected actions that in an attack.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "036-725",
+      "533-516",
+      "857-718",
+      "611-051",
+      "764-507",
+      "653-242",
+      "737-086",
+      "010-308"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes trailing special elements that be interpreted in unexpected ways when they are sent to a downstream component. As data is parsed, improperly handled trailing special elements may the process to unexpected actions that in an attack.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "764-507",
+      "036-725",
+      "653-242",
+      "611-051",
+      "533-516",
+      "806-367",
+      "542-445",
+      "831-563"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes internal special elements that be interpreted in unexpected ways when they are sent to a downstream component. As data is parsed, improperly handled internal special elements may the process to unexpected actions that in an attack.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "533-516",
+      "764-507",
+      "814-322",
+      "764-765",
+      "657-084",
+      "036-725",
+      "542-445",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "The accidental addition of a data-structure sentinel can serious programming logic problems. Data-structure sentinels are to mark the structure of data. A common example of is the null character at the end of strings or a special sentinel to mark the end of a linked list. It is dangerous to allow type of control data to be easily accessible. Therefore, it is important to protect from the addition or modification of sentinels.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "762-616",
+      "670-660",
+      "866-553",
+      "134-412",
+      "831-563",
+      "387-848",
+      "782-234",
+      "836-068",
+      "831-570"
+    ]
+  },
+  {
+    "control_text": "The receives data from an upstream component, not filter or incorrectly filters special elements before sending it to a downstream component.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "814-322",
+      "538-446",
+      "848-711",
+      "660-052",
+      "273-600",
+      "534-605",
+      "267-468",
+      "186-540",
+      "482-866",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "The constructs all or part of a code segment using externally-influenced input from an upstream component, it not neutralize or incorrectly neutralizes special elements that modify the syntax or behavior of the code segment.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "344-611",
+      "764-765",
+      "854-643",
+      "636-660",
+      "503-455",
+      "538-446",
+      "646-462",
+      "760-764",
+      "761-417",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "The a template engine to insert or process externally-influenced input, it not neutralize or incorrectly neutralizes special elements or syntax that can be interpreted as template expressions or other code directives when processed by the engine. web applications use template engines that allow developers to insert externally-influenced values free text or messages in order to generate a full web page, document, message, etc. Such engines Twig, Jinja2, Pug, Java Server Pages, FreeMarker, Velocity, ColdFusion, Smarty, and others - including PHP itself. CMS (Content Management Systems) use templates. Template engines their own custom command or expression language. If an attacker can influence input a template before it is processed, the attacker can invoke arbitrary expressions, i.e. perform injection attacks. For example, in template languages, an attacker inject the expression \"{{7 7}}\" and if the output returns \"49\" instead. The syntax varies depending on the language. In , XSS-style attacks can work, can obscure the root if the developer not closely investigate the root of the error. Template engines can be on the server or client, so both \"sides\" be affected by injection. The mechanisms of attack or the affected technologies be , the mistake is fundamentally the same.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "646-462",
+      "422-005",
+      "657-084",
+      "538-446",
+      "653-242",
+      "542-445",
+      "533-516",
+      "620-101",
+      "611-051",
+      "607-671"
+    ]
+  },
+  {
+    "control_text": "The receives input from an upstream component, it not neutralize or incorrectly neutralizes code syntax before inserting the input an executable resource, such as a library, configuration file, or template.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "832-555",
+      "646-462",
+      "538-446",
+      "764-765",
+      "611-158",
+      "814-322",
+      "657-084",
+      "422-005",
+      "547-283",
+      "782-234"
+    ]
+  },
+  {
+    "control_text": "The not properly verify that the source of data or communication is valid.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "405-411",
+    "predicted_top10": [
+      "814-322",
+      "640-364",
+      "848-711",
+      "738-144",
+      "423-055",
+      "503-455",
+      "173-554",
+      "613-285",
+      "077-235",
+      "405-411"
+    ]
+  },
+  {
+    "control_text": "The a WebSocket, it not properly verify that the source of data or communication is valid. WebSockets provide a bi-directional low latency communication (near real-time) between a client and a server. WebSockets are than HTTP in that the connections are long-lived, as the channel remain open until the client or the server is ready to send the message, whereas in HTTP, once the response occurs ( typically happens immediately), the transaction completes. A WebSocket can leverage the existing HTTP protocol over ports 80 and 443, it is not limited to HTTP. WebSockets can make cross-origin requests that are not restricted by browser-based protection mechanisms such as the Same Origin Policy (SOP) or Cross-Origin Resource Sharing (CORS). Without explicit origin validation, makes CSRF attacks more powerful.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "405-411",
+    "predicted_top10": [
+      "814-322",
+      "483-883",
+      "405-411",
+      "551-400",
+      "316-272",
+      "848-711",
+      "426-842",
+      "186-540",
+      "640-364",
+      "558-807"
+    ]
+  },
+  {
+    "control_text": "The identifies an error condition and creates own diagnostic or error messages that contain sensitive information.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "612-435",
+    "predicted_top10": [
+      "513-183",
+      "842-876",
+      "402-706",
+      "843-841",
+      "067-050",
+      "058-083",
+      "240-274",
+      "612-435",
+      "863-636",
+      "732-148"
+    ]
+  },
+  {
+    "control_text": "A handler is not available or implemented. When an exception is thrown and not caught, the process given up an opportunity to decide if a given failure or event is worth a change in execution.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "118-602",
+    "predicted_top10": [
+      "118-602",
+      "863-636",
+      "141-555",
+      "612-435",
+      "513-183",
+      "344-611",
+      "601-182",
+      "534-605",
+      "333-480",
+      "267-031"
+    ]
+  },
+  {
+    "control_text": "The not use a standardized method for handling errors throughout the code, introduce inconsistent error handling and resultant weaknesses. If the handles error messages individually, on a one-by-one basis, is likely to in inconsistent error handling. The causes of errors may be lost. , detailed information about the causes of an error may be unintentionally returned to the user.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "863-636",
+    "predicted_top10": [
+      "513-183",
+      "863-636",
+      "118-602",
+      "612-435",
+      "344-611",
+      "141-555",
+      "636-660",
+      "854-643",
+      "842-876",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "The writes sensitive information to a log file. Logging sensitive user data, full path names, or system information provides attackers with an additional, less-protected path to acquiring the information.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "067-050",
+    "predicted_top10": [
+      "240-274",
+      "843-841",
+      "015-063",
+      "402-706",
+      "067-050",
+      "821-541",
+      "148-420",
+      "842-876",
+      "026-280",
+      "770-362"
+    ]
+  },
+  {
+    "control_text": "Weaknesses in are to the design and architecture of audit-based components of the system. Frequently deal with logging user activities in order to identify attackers and modifications to the system. The weaknesses in to a degradation of the quality of the audit capability if they are not addressed when designing or implementing a secure architecture.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "260-200",
+    "predicted_top10": [
+      "843-841",
+      "148-420",
+      "842-876",
+      "402-706",
+      "217-168",
+      "821-541",
+      "770-362",
+      "555-048",
+      "240-274",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "The constructs a log message from external input, it not neutralize or incorrectly neutralizes special elements when the message is written to a log file.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "048-612",
+    "predicted_top10": [
+      "240-274",
+      "048-612",
+      "260-200",
+      "843-841",
+      "821-541",
+      "402-706",
+      "067-050",
+      "026-280",
+      "555-048",
+      "015-063"
+    ]
+  },
+  {
+    "control_text": "When a security-critical event occurs, the either not record the event or omits important details about the event when logging it. When security-critical events are not logged properly, such as a failed login attempt, can make malicious behavior more difficult to detect and may hinder forensic analysis after an attack succeeds. As organizations adopt storage resources, technologies require configuration changes to enable detailed logging information, since detailed logging can incur additional costs. to telemetry gaps in critical audit logs. For example, in Azure, the default value for logging is disabled.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "184-284",
+    "predicted_top10": [
+      "843-841",
+      "842-876",
+      "402-706",
+      "058-083",
+      "148-420",
+      "067-050",
+      "240-274",
+      "821-541",
+      "260-200",
+      "026-280"
+    ]
+  },
+  {
+    "control_text": "The detects a specific error, takes no actions to handle the error.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "725-682",
+    "predicted_top10": [
+      "513-183",
+      "118-602",
+      "863-636",
+      "612-435",
+      "141-555",
+      "344-611",
+      "166-151",
+      "067-050",
+      "842-876",
+      "843-841"
+    ]
+  },
+  {
+    "control_text": "The not properly limit the number or frequency of interactions that it with an actor, such as the number of incoming requests. can allow the actor to perform actions more frequently than expected. The actor be a human or an automated process such as a virus or bot. be to a denial of service, compromise program logic (such as limiting humans to a single vote), or other consequences. For example, an authentication routine not limit the number of times an attacker can guess a password. Or, a web site conduct a poll only expect humans to vote a maximum of once a day.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-535",
+    "predicted_top10": [
+      "187-083",
+      "108-316",
+      "630-573",
+      "176-154",
+      "886-662",
+      "746-705",
+      "463-820",
+      "268-088",
+      "660-052",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "The requires that an actor should only be to perform an action once, or to only one unique action, the not enforce or improperly enforces restriction. In various applications, a user is only expected to perform a certain action once, such as voting, requesting a refund, or making a purchase. When restriction is not enforced, sometimes can security implications. For example, in a voting application, an attacker attempt to \"stuff the ballot box\" by voting times. If votes are counted separately, the attacker directly affect wins the vote. significant business impact depending on the purpose of the .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-535",
+    "predicted_top10": [
+      "802-056",
+      "746-705",
+      "630-573",
+      "463-820",
+      "660-052",
+      "534-605",
+      "268-088",
+      "176-154",
+      "817-808",
+      "552-588"
+    ]
+  },
+  {
+    "control_text": "The not check or incorrectly checks for unusual or exceptional conditions that are not expected to occur frequently during day to day operation of the . The programmer may assume that certain events or conditions never occur or do not to be worried about, such as low memory conditions, lack of access to resources to restrictive permissions, or misbehaving clients or components. , attackers may intentionally trigger unusual conditions, thus violating the programmer's assumptions, possibly introducing instability, incorrect behavior, or a vulnerability. Note that entry is not exclusively about the use of exceptions and exception handling, are mechanisms for both checking and handling unusual or unexpected conditions.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "418-853",
+    "predicted_top10": [
+      "601-182",
+      "344-611",
+      "854-643",
+      "141-555",
+      "670-660",
+      "863-636",
+      "725-682",
+      "660-867",
+      "822-100",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "The not properly check when a function or operation returns a value that is legitimate for the function, is not expected by the .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "418-853",
+    "predicted_top10": [
+      "782-234",
+      "854-643",
+      "653-242",
+      "503-455",
+      "814-322",
+      "611-051",
+      "128-128",
+      "866-553",
+      "764-765",
+      "780-757"
+    ]
+  },
+  {
+    "control_text": "The supports a session in more than one behavior must be performed by an actor, it not properly ensure that the actor performs the behaviors in the required sequence. By performing actions in an unexpected order, or by omitting steps, an attacker manipulate the business logic of the or it to enter an invalid state. In , can expose resultant weaknesses. For example, a file-sharing protocol require that an actor perform separate steps to provide a username, a password, before to transfer files. If the file-sharing server accepts a password command followed by a transfer command, without any username provided, the still perform the transfer. Note that is than CWE-696, focuses on when the performs actions in the wrong sequence; entry is closely , it is focused on ensuring that the actor performs actions in the correct sequence. Workflow-related behaviors : Steps are performed in the expected order. Required steps are not omitted. Steps are not interrupted. Steps are performed in a timely fashion.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "534-605",
+    "predicted_top10": [
+      "534-605",
+      "670-660",
+      "380-540",
+      "854-643",
+      "601-182",
+      "820-878",
+      "822-100",
+      "344-611",
+      "708-355",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "The contains a concurrent code sequence that requires temporary, exclusive access to a shared resource, a timing window exists in the shared resource can be modified by code sequence operating concurrently. A race condition occurs concurrent environments, and it is effectively a property of a code sequence. Depending on the context, a code sequence may be in the form of a function call, a small number of instructions, a series of program invocations, etc. A race condition violates properties, are closely : Exclusivity - the code sequence is given exclusive access to the shared resource, i.e., no other code sequence can modify properties of the shared resource before the original sequence completed execution. Atomicity - the code sequence is behaviorally atomic, i.e., no other thread or process can concurrently execute the same sequence of instructions (or a subset) against the same resource. A race condition exists when an \"interfering code sequence\" can still access the shared resource, violating exclusivity. The interfering code sequence be \"trusted\" or \"untrusted.\" A trusted interfering code sequence occurs the ; it cannot be modified by the attacker, and it can only be invoked indirectly. An untrusted interfering code sequence can be authored directly by the attacker, and typically it is external to the vulnerable .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "670-660",
+      "380-540",
+      "134-412",
+      "534-605",
+      "820-878",
+      "267-031",
+      "036-275",
+      "822-100",
+      "344-611",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "A write-once register in design is programmable by an untrusted software component earlier than the trusted software component, resulting in a race condition issue. Integrated circuits and IP software programmable controls and settings are commonly stored in register circuits. register contents to be initialized at reset to defined default values that are hard coded in the description language (HDL) code of the unit. A common security protection method to protect register settings from modification by software is to make them write-once. means the implementation only allows writing to such registers once, and they become read-only after having written once by software. is useful to allow initial boot software to configure systems settings to secure values while blocking runtime software from modifying such settings. Implementation in design of such controls can expose such registers to a race condition security flaw. For example, consider a design that two software/firmware modules executing in parallel. One module is trusted (module A) and is untrusted (module B). In design it be possible for Module B to send write cycles to the write-once register before Module A. Since the field is write-once the programmed value from Module A be ignored and the pre-empted value programmed by Module B be by .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "670-660",
+      "380-540",
+      "134-412",
+      "801-310",
+      "368-633",
+      "757-271",
+      "817-808",
+      "117-371",
+      "307-507",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "A race condition in the logic in undermining security guarantees of the system. A race condition in logic circuits typically occurs when a logic gate gets inputs from signals that traversed paths while originating from the same source. Such inputs to the gate can change at slightly times in response to a change in the source signal. in a timing error or a glitch (temporary or permanent) that causes the output to change to an unwanted state before settling back to the desired state. If such timing errors occur in access control logic or finite state machines that are implemented in security sensitive flows, an attacker exploit them to circumvent existing protections.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "670-660",
+      "380-540",
+      "134-412",
+      "817-808",
+      "534-605",
+      "307-507",
+      "082-327",
+      "801-310",
+      "368-633",
+      "443-447"
+    ]
+  },
+  {
+    "control_text": "The checks the state of a resource before using that resource, the resource's state can change between the check and the use in a that invalidates the of the check.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "380-540",
+    "predicted_top10": [
+      "128-128",
+      "724-770",
+      "123-124",
+      "854-643",
+      "433-442",
+      "233-748",
+      "715-644",
+      "208-830",
+      "623-550",
+      "028-728"
+    ]
+  },
+  {
+    "control_text": "The stores, transfers, or shares a resource that contains sensitive information, it not properly remove that information before the makes the resource available to unauthorized actors. Resources that may contain sensitive data documents, packets, messages, databases, etc. While data may be useful to an individual user or small set of users share the resource, it may to be removed before the resource can be shared outside of the trusted group. The process of removal is sometimes called cleansing or scrubbing. For example, a for editing documents not remove sensitive data such as reviewer comments or the local pathname where the document is stored. Or, a proxy not remove an internal IP address from headers before making an outgoing request to an Internet site.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "356-282",
+      "762-451",
+      "715-304",
+      "846-302",
+      "157-430",
+      "447-083",
+      "044-202",
+      "362-550",
+      "077-772",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "The not fully clear security-sensitive values, such as keys and intermediate values in cryptographic operations, when debug mode is entered. Security sensitive values, keys, intermediate steps of cryptographic operations, etc. are stored in temporary registers in the . If values are not cleared when debug mode is entered they may be accessed by a debugger allowing sensitive information to be accessible by untrusted parties.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "715-304",
+      "208-805",
+      "232-325",
+      "846-302",
+      "542-488",
+      "542-270",
+      "508-702",
+      "157-430",
+      "067-050",
+      "664-571"
+    ]
+  },
+  {
+    "control_text": "The not check or incorrectly checks the revocation status of a certificate, may it to use a certificate that compromised. An check for certificate revocation is a far more serious flaw than certificate failures. is the use of any revoked certificate is almost certainly malicious. The most common reason for certificate revocation is compromise of the system in question, with the that no legitimate servers be using a revoked certificate, unless they are sorely out of sync.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "537-367",
+    "predicted_top10": [
+      "430-636",
+      "537-367",
+      "551-400",
+      "530-671",
+      "504-340",
+      "742-431",
+      "002-801",
+      "440-361",
+      "483-883",
+      "646-227"
+    ]
+  },
+  {
+    "control_text": "The not validate, or incorrectly validates, a certificate.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "530-671",
+    "predicted_top10": [
+      "430-636",
+      "537-367",
+      "742-431",
+      "530-671",
+      "002-801",
+      "504-340",
+      "170-772",
+      "248-646",
+      "483-883",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "The OpenSSL and trusts or a certificate without using the SSL_get_verify_() function to ensure that the certificate satisfies all security requirements.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "530-671",
+    "predicted_top10": [
+      "430-636",
+      "530-671",
+      "742-431",
+      "002-801",
+      "504-340",
+      "767-701",
+      "745-045",
+      "248-646",
+      "841-757",
+      "558-807"
+    ]
+  },
+  {
+    "control_text": "The web application an HTTP method to process a request, the request includes sensitive information in the query string.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "333-888",
+    "predicted_top10": [
+      "186-540",
+      "217-112",
+      "715-304",
+      "846-302",
+      "224-321",
+      "482-866",
+      "267-468",
+      "232-217",
+      "015-063",
+      "532-878"
+    ]
+  },
+  {
+    "control_text": "The not properly handle when the expected number of parameters, fields, or arguments is not provided in input, or if parameters are undefined.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "217-112",
+    "predicted_top10": [
+      "743-237",
+      "217-112",
+      "653-242",
+      "782-234",
+      "232-217",
+      "611-051",
+      "503-455",
+      "010-308",
+      "031-447",
+      "146-706"
+    ]
+  },
+  {
+    "control_text": "If too few arguments are sent to a function, the function still pop the expected number of arguments from the stack. Potentially, a variable number of arguments be exhausted in a function as .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "217-112",
+    "predicted_top10": [
+      "831-570",
+      "630-573",
+      "746-705",
+      "217-112",
+      "743-237",
+      "268-088",
+      "782-234",
+      "314-131",
+      "176-154",
+      "463-820"
+    ]
+  },
+  {
+    "control_text": "The not handle or incorrectly handles when a particular parameter, field, or argument name is not defined or supported by the .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "217-112",
+    "predicted_top10": [
+      "743-237",
+      "782-234",
+      "653-242",
+      "232-217",
+      "217-112",
+      "611-051",
+      "737-086",
+      "036-725",
+      "146-706",
+      "031-447"
+    ]
+  },
+  {
+    "control_text": "Weaknesses in are to the design and implementation of data confidentiality and integrity. Frequently deal with the use of encoding techniques, encryption libraries, and hashing algorithms. The weaknesses in to a degradation of the quality data if they are not addressed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "036-810",
+    "predicted_top10": [
+      "170-772",
+      "664-571",
+      "542-270",
+      "542-488",
+      "504-340",
+      "483-883",
+      "742-431",
+      "674-425",
+      "027-210",
+      "114-277"
+    ]
+  },
+  {
+    "control_text": "Covert timing channels convey information by modulating aspect of system behavior over time, so that the program receiving the information can observe system behavior and infer protected information. In instances, knowing when data is transmitted between parties can provide a malicious user with privileged information. , externally monitoring the timing of operations can potentially reveal sensitive data. For example, a cryptographic operation can expose internal state if the time it takes to perform the operation varies, based on the state. Covert channels are frequently classified as either storage or timing channels. examples of covert timing channels are the system's paging rate, the time a certain transaction requires to execute, and the time it takes to gain access to a shared bus.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "878-880",
+    "predicted_top10": [
+      "878-880",
+      "582-541",
+      "558-807",
+      "186-540",
+      "745-045",
+      "527-034",
+      "278-413",
+      "543-428",
+      "634-733",
+      "354-752"
+    ]
+  },
+  {
+    "control_text": "The not encrypt sensitive or critical information before storage or transmission.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "267-468",
+    "predicted_top10": [
+      "715-304",
+      "275-483",
+      "223-780",
+      "356-282",
+      "846-302",
+      "224-321",
+      "482-866",
+      "267-468",
+      "126-668",
+      "435-702"
+    ]
+  },
+  {
+    "control_text": "The web application not use an caching policy that specifies the extent to each web page and form fields should be cached.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "473-758",
+    "predicted_top10": [
+      "473-758",
+      "846-302",
+      "157-430",
+      "268-100",
+      "736-237",
+      "426-842",
+      "483-883",
+      "060-472",
+      "065-388",
+      "316-272"
+    ]
+  },
+  {
+    "control_text": "The releases a resource such as memory or a file so that it can be made available for reuse, it not clear or \"zeroize\" the information contained in the resource before the performs a critical state transition or makes the resource available for reuse by other entities. When resources are released, they can be made available for reuse. For example, after memory is de-allocated, an operating system may make the memory available to process, or disk space may be reallocated when a file is deleted. As removing information requires time and additional resources, operating systems do not usually clear the previously written information. Even when the resource is reused by the same process, weakness can arise when new data is not as large as the old data, leaves portions of the old data still available. Equivalent errors can occur in other situations where the length of data is variable the data structure is not. If memory is not cleared after use, the information may be read by less trustworthy parties when the memory is reallocated. weakness can apply in , such as when a device or system switches between power, sleep, or debug states during normal operation, or when execution changes to users or privilege levels.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "715-304",
+    "predicted_top10": [
+      "866-553",
+      "208-830",
+      "356-282",
+      "715-304",
+      "267-031",
+      "670-660",
+      "341-076",
+      "470-731",
+      "182-732",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "The product's data removal process not completely delete all data and potentially sensitive information components. Physical properties of devices, such as remanence of magnetic media, residual charge of ROMs/RAMs, or screen burn-in may still retain sensitive data after a data removal process taken place and power is removed. Recovering data after erasure or overwriting is possible to a phenomenon called data remanence. For example, if the same value is written repeatedly to a memory location, the corresponding memory cells can become physically altered to a degree such that even after the original data is erased that data can still be recovered through physical characterization of the memory cells.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "715-304",
+    "predicted_top10": [
+      "356-282",
+      "762-451",
+      "447-083",
+      "715-304",
+      "157-430",
+      "362-550",
+      "858-745",
+      "077-772",
+      "208-830",
+      "044-202"
+    ]
+  },
+  {
+    "control_text": "The code a cache that contains sensitive information, the cache can be read by an actor outside of the control sphere. Applications may use caches to improve efficiency when communicating with remote entities or performing intensive calculations. A cache maintains a pool of objects, threads, connections, pages, financial data, passwords, or other resources to minimize the time it takes to initialize and access resources. If the cache is accessible to unauthorized actors, attackers can read the cache and obtain sensitive information.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "846-302",
+    "predicted_top10": [
+      "846-302",
+      "157-430",
+      "762-451",
+      "715-304",
+      "077-772",
+      "447-083",
+      "173-554",
+      "044-202",
+      "223-780",
+      "482-866"
+    ]
+  },
+  {
+    "control_text": "The contains hard-coded credentials, such as a password or cryptographic key. are two main variations: Inbound: the contains an authentication mechanism that checks the input credentials against a hard-coded set of credentials. In variant, a default administration account is created, and a simple password is hard-coded the and with that account. hard-coded password is the same for each installation of the , and it usually cannot be changed or disabled by system administrators without manually modifying the program, or otherwise patching the . It can be difficult for the administrator to detect. Outbound: the connects to system or component, and it contains hard-coded credentials for connecting to that component. variant applies to front-end systems that authenticate with a back-end service. The back-end service may require a fixed password that can be easily discovered. The programmer may simply hard-code back-end credentials the front-end .",
+    "framework": "CWE",
+    "ground_truth_hub_id": "774-888",
+    "predicted_top10": [
+      "774-888",
+      "881-321",
+      "340-375",
+      "551-054",
+      "813-610",
+      "065-183",
+      "455-885",
+      "630-577",
+      "354-752",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "The generates a hash for a password, it a scheme that not provide a sufficient level of computational effort that make password cracking attacks infeasible or expensive. password storage mechanisms compute a hash and store the hash, instead of storing the original password in plaintext. In design, authentication involves accepting an incoming password, computing hash, and comparing it to the stored hash. hash algorithms are designed to execute quickly with minimal overhead, even cryptographic hashes. , efficiency is a problem for password storage, it can reduce an attacker's workload for brute-force password cracking. If an attacker can obtain the hashes through other method (such as SQL injection on a database that stores hashes), the attacker can store the hashes offline and use various techniques to crack the passwords by computing hashes efficiently. Without a built-in workload, modern attacks can compute large numbers of hashes, or even exhaust the entire space of all possible passwords, a very short amount of time, using massively-parallel computing (such as computing) and GPU, ASIC, or FPGA . In such a scenario, an efficient hash algorithm helps the attacker. are several properties of a hash scheme that are relevant to strength against an offline, massively-parallel attack: The amount of CPU time required to compute the hash (\"stretching\") The amount of memory required to compute the hash (\"memory-hard\" operations) Including a random value, along with the password, as input to the hash computation (\"salting\") Given a hash, is no of determining an input (e.g., a password) that produces hash value, other than by guessing possible inputs (\"one-way\" hashing) Relative to the number of all possible hashes that can be generated by the scheme, is a low likelihood of producing the same hash for inputs (\"collision resistance\") Note that the security requirements for the may vary depending on the environment and the value of the passwords. schemes not provide all of properties, yet may still provide sufficient security for the environment. Conversely, a solution be very strong in preserving one property, still very w",
+    "framework": "CWE",
+    "ground_truth_hub_id": "767-435",
+    "predicted_top10": [
+      "622-203",
+      "767-435",
+      "715-681",
+      "576-651",
+      "604-025",
+      "807-565",
+      "630-577",
+      "622-835",
+      "082-530",
+      "078-427"
+    ]
+  },
+  {
+    "control_text": "The a one-way cryptographic hash against an input that should not be reversible, such as a password, the not use a salt as part of the input. makes it easier for attackers to pre-compute the hash value using dictionary attack techniques such as rainbow tables. It should be noted that, despite common perceptions, the use of a good salt with a hash not sufficiently increase the effort for an attacker is targeting an individual password, or a large amount of computing resources available, such as with cloud-based services or specialized, inexpensive . Offline password cracking can still be effective if the hash function is not expensive to compute; cryptographic functions are designed to be efficient and can be vulnerable to attacks using massive computing resources, even if the hash is cryptographically strong. The use of a salt only slightly increases the computing requirements for an attacker compared to other strategies such as adaptive hash functions. CWE-916 for more details.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "767-435",
+    "predicted_top10": [
+      "622-203",
+      "767-435",
+      "082-530",
+      "077-781",
+      "078-427",
+      "576-651",
+      "807-565",
+      "604-025",
+      "715-681",
+      "630-577"
+    ]
+  },
+  {
+    "control_text": "The a one-way cryptographic hash against an input that should not be reversible, such as a password, the a predictable salt as part of the input. makes it easier for attackers to pre-compute the hash value using dictionary attack techniques such as rainbow tables, effectively disabling the protection that an unpredictable salt provide. It should be noted that, despite common perceptions, the use of a good salt with a hash not sufficiently increase the effort for an attacker is targeting an individual password, or a large amount of computing resources available, such as with cloud-based services or specialized, inexpensive . Offline password cracking can still be effective if the hash function is not expensive to compute; cryptographic functions are designed to be efficient and can be vulnerable to attacks using massive computing resources, even if the hash is cryptographically strong. The use of a salt only slightly increases the computing requirements for an attacker compared to other strategies such as adaptive hash functions. CWE-916 for more details.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "767-435",
+    "predicted_top10": [
+      "622-203",
+      "767-435",
+      "082-530",
+      "077-781",
+      "576-651",
+      "078-427",
+      "807-565",
+      "604-025",
+      "715-681",
+      "630-577"
+    ]
+  },
+  {
+    "control_text": "The transmits or stores authentication credentials, it an insecure method that is susceptible to unauthorized interception and/or retrieval.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "881-321",
+      "558-807",
+      "582-541",
+      "354-752",
+      "634-733",
+      "186-540",
+      "455-885",
+      "586-842",
+      "808-425",
+      "774-888"
+    ]
+  },
+  {
+    "control_text": "The stores a password in a configuration file that be accessible to actors do not know the password. can in compromise of the system for the password is . An attacker gain access to file and learn the stored password or worse yet, change the password to one of their choosing.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "774-888",
+      "881-321",
+      "340-375",
+      "630-577",
+      "751-176",
+      "604-025",
+      "487-305",
+      "455-885",
+      "715-681",
+      "576-651"
+    ]
+  },
+  {
+    "control_text": "Obscuring a password with a trivial encoding not protect the password. Password management occur when a password is stored in plaintext in an application's properties or configuration file. A programmer can attempt to remedy the password management problem by obscuring the password with an encoding function, such as base 64 encoding, effort not adequately protect the password.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "715-681",
+      "774-888",
+      "604-025",
+      "576-651",
+      "487-305",
+      "630-577",
+      "807-565",
+      "881-321",
+      "622-203",
+      "340-375"
+    ]
+  },
+  {
+    "control_text": "The not mask passwords during entry, increasing the potential for attackers to observe and capture passwords.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "455-885",
+      "630-577",
+      "487-305",
+      "789-320",
+      "751-176",
+      "881-321",
+      "604-025",
+      "622-203",
+      "715-681",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "The a Pseudo-Random Number Generator (PRNG) in a security context, the PRNG's algorithm is not cryptographically strong. When a non-cryptographic PRNG is in a cryptographic context, it can expose the cryptography to certain types of attacks. a pseudo-random number generator (PRNG) is not designed for cryptography. Sometimes a mediocre source of randomness is sufficient or preferable for algorithms that use random numbers. Weak generators generally less processing power and/or do not use the precious, finite, entropy sources on a system. While such PRNGs very useful features, same features be to break the cryptography.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "664-571",
+    "predicted_top10": [
+      "542-488",
+      "664-571",
+      "622-835",
+      "206-254",
+      "287-251",
+      "742-431",
+      "542-270",
+      "027-210",
+      "674-425",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "Weaknesses in are to the management of credentials.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "065-183",
+    "predicted_top10": [
+      "586-842",
+      "455-885",
+      "354-753",
+      "813-610",
+      "633-428",
+      "816-631",
+      "065-183",
+      "605-735",
+      "808-425",
+      "168-186"
+    ]
+  },
+  {
+    "control_text": "When setting a new password for a user, the not require knowledge of the original password, or using form of authentication. be by an attacker to change passwords for user, thus gaining the privileges with that user.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "327-505",
+    "predicted_top10": [
+      "751-176",
+      "327-505",
+      "772-358",
+      "630-577",
+      "487-305",
+      "358-860",
+      "576-651",
+      "604-025",
+      "715-681",
+      "543-621"
+    ]
+  },
+  {
+    "control_text": "The SameSite attribute for sensitive cookies is not set, or an insecure value is . The SameSite attribute controls cookies are sent for cross-domain requests. attribute may three values: 'Lax', 'Strict', or 'None'. If the 'None' value is , a website may create a cross-domain POST HTTP request to website, and the browser automatically adds cookies to request. may to Cross-Site-Request-Forgery (CSRF) attacks if are no additional protections in place (such as Anti-CSRF tokens).",
+    "framework": "CWE",
+    "ground_truth_hub_id": "342-055",
+    "predicted_top10": [
+      "342-055",
+      "804-220",
+      "688-081",
+      "464-084",
+      "705-182",
+      "232-034",
+      "060-472",
+      "036-147",
+      "028-727",
+      "110-531"
+    ]
+  },
+  {
+    "control_text": "The a cookie to store sensitive information, the cookie is not marked with the HttpOnly flag.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "804-220",
+    "predicted_top10": [
+      "804-220",
+      "715-304",
+      "617-524",
+      "455-358",
+      "688-081",
+      "846-302",
+      "834-645",
+      "046-257",
+      "232-325",
+      "881-321"
+    ]
+  },
+  {
+    "control_text": "attack-focused weakness is caused by incorrectly implemented authentication schemes that are subject to spoofing attacks.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "354-753",
+      "813-610",
+      "816-631",
+      "605-735",
+      "646-227",
+      "404-126",
+      "168-186",
+      "138-448",
+      "342-764",
+      "551-400"
+    ]
+  },
+  {
+    "control_text": "The referer field in HTTP requests can be easily modified and, as such, is not a valid means of message integrity checking.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "426-842",
+      "483-883",
+      "456-636",
+      "307-507",
+      "405-411",
+      "316-272",
+      "541-441",
+      "336-512",
+      "551-400",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "The an algorithm or scheme that produces insufficient entropy, leaving patterns or clusters of values that are more likely to occur than others.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "704-530",
+    "predicted_top10": [
+      "346-640",
+      "664-571",
+      "622-835",
+      "542-270",
+      "542-488",
+      "287-251",
+      "206-254",
+      "674-425",
+      "027-210",
+      "841-757"
+    ]
+  },
+  {
+    "control_text": "The lack of entropy available for, or by, a Pseudo-Random Number Generator (PRNG) can be a stability and security threat.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "704-530",
+    "predicted_top10": [
+      "664-571",
+      "542-270",
+      "622-835",
+      "542-488",
+      "346-640",
+      "287-251",
+      "206-254",
+      "027-210",
+      "704-530",
+      "674-425"
+    ]
+  },
+  {
+    "control_text": "Authenticating a user, or otherwise establishing a new user session, without invalidating any existing session identifier gives an attacker the opportunity to steal authenticated sessions. Such a scenario is commonly observed when: A web application authenticates a user without first invalidating the existing session, thereby continuing to use the session already with the user. An attacker is to force a session identifier on a user so that, once the user authenticates, the attacker access to the authenticated session. The application or container predictable session identifiers. In the generic exploit of session fixation vulnerabilities, an attacker creates a new session on a web application and the session identifier. The attacker causes the victim to associate, and possibly authenticate, against the server using that session identifier, giving the attacker access to the user's account through the active session.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-630",
+    "predicted_top10": [
+      "813-610",
+      "002-630",
+      "816-631",
+      "138-448",
+      "354-753",
+      "582-541",
+      "605-735",
+      "646-227",
+      "402-133",
+      "551-400"
+    ]
+  },
+  {
+    "control_text": "The elevated privilege level required to perform operations such as chroot() should be dropped immediately after the operation is performed.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "540-566",
+    "predicted_top10": [
+      "860-084",
+      "123-124",
+      "330-281",
+      "540-566",
+      "801-310",
+      "757-271",
+      "117-371",
+      "515-021",
+      "180-488",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "During installation, installed file permissions are set to allow anyone to modify files.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "817-808",
+    "predicted_top10": [
+      "123-124",
+      "540-566",
+      "817-808",
+      "757-271",
+      "117-371",
+      "801-310",
+      "080-466",
+      "758-262",
+      "447-083",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "The system's authorization functionality not prevent one user from gaining access to user's data or record by modifying the key value identifying the data. Retrieval of a user record occurs in the system based on key value that is user control. The key typically identify a user-related record stored in the system and be to lookup that record for presentation to the user. It is likely that an attacker to be an authenticated user in the system. , the authorization process not properly check the data access operation to ensure that the authenticated user performing the operation sufficient entitlements to perform the requested data access, hence bypassing any other authorization checks present in the system. For example, attackers can look at places where user specific data is retrieved (e.g. search screens) and the key for the item looked up is controllable externally. The key may be a hidden field in the HTML form field, be passed as a URL parameter or as an unencrypted cookie variable, in each of it be possible to tamper with the key value. One manifestation of weakness is when a system sequential or otherwise easily-guessable session IDs that allow one user to easily switch to user's session and read/modify their data.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "524-603",
+    "predicted_top10": [
+      "817-808",
+      "650-560",
+      "664-080",
+      "368-633",
+      "612-252",
+      "524-603",
+      "284-521",
+      "082-327",
+      "304-667",
+      "443-447"
+    ]
+  },
+  {
+    "control_text": "The a database table that includes that should not be accessible to an actor, it executes a SQL statement with a primary key that can be controlled by that actor. When a user can set a primary key to any value, the user can modify the key to point to unauthorized . Database access control errors occur when: Data enters a program from an untrusted source. The data is to specify the value of a primary key in a SQL query. The untrusted source not the permissions to be to access all rows in the table.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "524-603",
+    "predicted_top10": [
+      "538-770",
+      "814-322",
+      "801-310",
+      "757-271",
+      "724-770",
+      "117-371",
+      "732-873",
+      "817-808",
+      "123-124",
+      "126-668"
+    ]
+  },
+  {
+    "control_text": "The specifies permissions for a security-critical resource in a that allows that resource to be read or modified by unintended actors. When a resource is given a permission setting that provides access to a wider range of actors than required, it to the exposure of sensitive information, or the modification of that resource by unintended parties. is especially dangerous when the resource is to program configuration, execution, or sensitive user data. For example, consider a misconfigured storage account for the that can be read or written by a public or anonymous user.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "123-124",
+      "817-808",
+      "220-442",
+      "801-310",
+      "128-128",
+      "540-566",
+      "724-770",
+      "233-748",
+      "757-271",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "A defines a set of insecure permissions that are inherited by objects that are created by the program.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "123-124",
+      "724-770",
+      "128-128",
+      "817-808",
+      "540-566",
+      "220-442",
+      "715-644",
+      "801-310",
+      "117-371",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "A inherits a set of insecure permissions for an object, e.g. when copying from an archive file, without user awareness or involvement.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "123-124",
+      "540-566",
+      "817-808",
+      "757-271",
+      "801-310",
+      "117-371",
+      "220-442",
+      "368-633",
+      "128-128",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "While it is executing, the sets the permissions of an object in a that violates the permissions that specified by the user.",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "817-808",
+      "540-566",
+      "368-633",
+      "801-310",
+      "612-252",
+      "123-124",
+      "664-080",
+      "443-447",
+      "757-271",
+      "284-521"
+    ]
+  }
+]

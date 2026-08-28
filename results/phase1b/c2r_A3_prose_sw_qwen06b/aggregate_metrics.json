@@ -1,0 +1,116 @@
+{
+  "aggregate_hit1": {
+    "ci_high": 0.2924901185770751,
+    "ci_low": 0.24426877470355732,
+    "fold_sizes": {
+      "ASVS": 277,
+      "CAPEC": 349,
+      "CWE": 246,
+      "ISO 27001": 93,
+      "NIST 800-53 v5": 300
+    },
+    "macro_mean": 0.2970435818729248,
+    "mean": 0.26798418972332017,
+    "n_folds": 5,
+    "n_resamples": 10000,
+    "n_total": 1265
+  },
+  "config_name": "c2r_A3_prose_sw_qwen06b",
+  "gate": {
+    "alpha_effective": 0.016952427508441503,
+    "ci_high": 0.012648221343873518,
+    "ci_high_familywise": 0.01818181818181818,
+    "ci_low": -0.04189723320158103,
+    "ci_low_familywise": -0.048221343873517786,
+    "ci_low_pass": false,
+    "familywise_pass": false,
+    "macro_delta": 0.007323218404185555,
+    "micro_delta": -0.015019762845849802,
+    "n_configurations": 3,
+    "n_total": 1265,
+    "negative_folds": [
+      "ASVS"
+    ],
+    "p_value": 0.8641,
+    "paired": true,
+    "per_fold": {
+      "ASVS": {
+        "delta": -0.39350180505415167,
+        "n_eval_items": 277,
+        "trained_hit1": 0.23465703971119134,
+        "zero_shot_hit1": 0.628158844765343
+      },
+      "CAPEC": {
+        "delta": 0.0830945558739255,
+        "n_eval_items": 349,
+        "trained_hit1": 0.19197707736389685,
+        "zero_shot_hit1": 0.10888252148997135
+      },
+      "CWE": {
+        "delta": 0.09756097560975607,
+        "n_eval_items": 246,
+        "trained_hit1": 0.35772357723577236,
+        "zero_shot_hit1": 0.2601626016260163
+      },
+      "ISO 27001": {
+        "delta": 0.1827956989247312,
+        "n_eval_items": 93,
+        "trained_hit1": 0.44086021505376344,
+        "zero_shot_hit1": 0.25806451612903225
+      },
+      "NIST 800-53 v5": {
+        "delta": 0.06666666666666668,
+        "n_eval_items": 300,
+        "trained_hit1": 0.26,
+        "zero_shot_hit1": 0.19333333333333333
+      }
+    },
+    "point_estimate_pass": false,
+    "selection_optimistic": true,
+    "threshold": 0.1,
+    "verdicts_agree": true,
+    "worst_fold": "ASVS",
+    "worst_fold_delta": -0.39350180505415167
+  },
+  "lexical_overlap": {
+    "echo_fraction": 0.07905138339920949,
+    "hit_at_1_echo": 0.49,
+    "hit_at_1_non_echo": 0.24892703862660945,
+    "n_lexical_echo": 100,
+    "n_non_echo": 1165,
+    "n_total": 1265
+  },
+  "per_fold": {
+    "ASVS": {
+      "hit_at_1": 0.23465703971119134,
+      "hit_at_5": 0.5054151624548736,
+      "mrr": 0.3649352442171251,
+      "ndcg_at_10": 0.4181916978270381
+    },
+    "CAPEC": {
+      "hit_at_1": 0.19197707736389685,
+      "hit_at_5": 0.4269340974212034,
+      "mrr": 0.30769853048864226,
+      "ndcg_at_10": 0.35072362035095095
+    },
+    "CWE": {
+      "hit_at_1": 0.35772357723577236,
+      "hit_at_5": 0.6138211382113821,
+      "mrr": 0.4731642115895092,
+      "ndcg_at_10": 0.5257465199597833
+    },
+    "ISO 27001": {
+      "hit_at_1": 0.44086021505376344,
+      "hit_at_5": 0.6451612903225806,
+      "mrr": 0.5373799972235411,
+      "ndcg_at_10": 0.5727018241588973
+    },
+    "NIST 800-53 v5": {
+      "hit_at_1": 0.26,
+      "hit_at_5": 0.47,
+      "mrr": 0.3604548749515119,
+      "ndcg_at_10": 0.3989798956552763
+    }
+  },
+  "scoped_to_folds": null
+}
