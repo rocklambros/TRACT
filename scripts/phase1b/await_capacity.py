@@ -21,11 +21,21 @@ runbook puts between `provision` and `run`, trains, collects, and tears down. It
 does NOT aggregate: that produces the number, it needs --n-configurations, and a
 human should read it. It stops after one arm.
 
-Every failure path tears the fleet down before returning. The one incident this
-apparatus already had was an interrupt landing in the window where
-.pod_state.json records pods=[], which left `teardown` reporting "nothing scoped
-to terminate" while four pods billed -- so teardown here is followed by an
-independent sweep against the account, by name, across both splits.
+Every failure path either tears the fleet down or STOPS, loudly, naming the pods
+it deliberately left up; it never returns to polling with a fleet running. The
+one incident this apparatus already had was an interrupt landing in the window
+where .pod_state.json records pods=[], which left `teardown` reporting "nothing
+scoped to terminate" while four pods billed -- so teardown here is followed by
+an independent sweep against the account, by name, across both splits.
+
+WHAT $? MEANS, because the two failures that leave money running have to be
+distinguishable by a wrapper and by a human reading a log at 3am:
+    0  the arm is complete and collected, and the pods are down.
+    1  gave up -- capacity never appeared, or every attempt failed. Nothing is
+       running.
+    2  refused before creating anything. The reaper could not be armed.
+    3  STOPPED WITH PODS UP. A fleet holds uncollected folds and is billing
+       until someone collects it and tears it down.
 
 Owner: TRACT.
 """
@@ -33,7 +43,9 @@ Owner: TRACT.
 from __future__ import annotations
 
 import argparse
+import enum
 import logging
+import os
 import subprocess
 import sys
 import time
@@ -41,9 +53,24 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from scripts.phase0.runpod_provision import _gql, get_running_pods, terminate_pods
+from scripts.phase0.runpod_provision import (
+    SSH_POLL_TIMEOUT_S,
+    _gql,
+    get_running_pods,
+    terminate_pods,
+)
+# One number, not two. The arm command below used to ask for --on-active=8h
+# while the guard's own cadence was 2h, so the two halves of the same control
+# disagreed about how often anything gets looked at.
+from scripts.phase1b.reaper_guard import REARM_SECONDS
 from scripts.phase1b.runpod_parallel import (
+    BOOTSTRAP_DEADLINE_S,
+    BOOTSTRAP_DEADLINE_SLACK_S,
+    FOLD_TIMEOUT_S,
     PROJECT_ROOT,
+    RSYNC_PULL_ATTEMPTS,
+    RSYNC_PULL_BACKOFF_S,
+    RSYNC_PULL_TIMEOUT_S,
     select_pod_configs,
 )
 
@@ -52,12 +79,19 @@ from scripts.phase1b.runpod_parallel import (
 # wiped at logout -- but a log file in PROJECT_ROOT shows up as untracked and
 # breaks the clean-tree check the runbook's Gate 0 makes before every provision,
 # which is the check that keeps git_sha from being confidently wrong.
-LOG_DIR: Final[Path] = Path.home() / "tract-campaign2-logs"
+#
+# Overridable because importing this module OPENS the log, and the test suite
+# imports it: without the override, `pytest` during a live campaign interleaves
+# fixture output into the one file an incident review reads afterwards.
+LOG_DIR_ENV: Final[str] = "TRACT_CAMPAIGN2_LOG_DIR"
+LOG_DIR: Final[Path] = Path(
+    os.environ.get(LOG_DIR_ENV) or Path.home() / "tract-campaign2-logs"
+)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # Attached to the root logger explicitly rather than through basicConfig.
 # basicConfig is a NO-OP when the root logger already has handlers, and
-# runpod_parallel.py calls it at import -- which this module does at line 45,
+# runpod_parallel.py calls it at import -- which the import block above does,
 # before reaching here. The first run therefore logged to the terminal and
 # wrote a ZERO-BYTE file, so the only record of a three-attempt provisioning
 # session was tmux scrollback, which is finite and scrolls away.
@@ -76,6 +110,10 @@ logger = logging.getLogger(__name__)
 EXIT_OK: Final[int] = 0
 EXIT_GAVE_UP: Final[int] = 1
 EXIT_REFUSED: Final[int] = 2
+# Distinct from EXIT_GAVE_UP because the two demand opposite responses from
+# whoever reads $?: "gave up, nothing is running" can wait until morning, and
+# "stopped, five pods are still billing" cannot.
+EXIT_FLEET_HELD: Final[int] = 3
 
 # Gate A of the runbook. A five-fold arm on a slower part is not a cheaper run,
 # it is a dead one: a 57-minute Qwen fold at 0.47x throughput becomes ~120
@@ -113,6 +151,91 @@ MAX_PROVISION_ATTEMPTS: Final[int] = 3
 # ip=pending for 156s and were still healthy, so a minute is far too short.
 ENDPOINT_WAIT_S: Final[int] = 6 * 60
 ENDPOINT_POLL_S: Final[int] = 15
+
+# WHEN THE REAPER SHOULD FIRST LOOK, for the window this module opens.
+#
+# Never later than the guard's own steady-state cadence, which is why
+# REARM_SECONDS is imported rather than restated: a first look scheduled after
+# the interval the guard then re-arms itself on is a number that can only be
+# wrong. Shorter than it, deliberately, because of what the window contains.
+#
+# Between provision and the first fold there is nothing to protect: no fold has
+# run, no indicator exists, and a fleet nobody is driving is pure loss. The
+# guard already knows the difference -- it stands down and re-arms whenever a
+# runpod_parallel process is alive, and asks every pod whether a fold is running
+# before it touches anything -- so an early check costs a log line while the arm
+# is healthy and bounds an ORPHANED pre-training fleet to under an hour. At the
+# 2026-08-27 rate of $3.29/hr x 5 pods that is ~$12 of exposure against the ~$130
+# the old --on-active=8h permitted, three times that whole night's loss.
+#
+# The objection to answer is what an early check might destroy. Two windows have
+# pods up with no runpod_parallel process alive: Gate B's endpoint wait, where
+# nothing has been computed and being reaped costs a re-provision rather than a
+# fold; and a fleet held for uncollected results, which cannot exist inside the
+# first 45 minutes -- a bootstrap plus a fold is longer than that. By then the
+# guard is on its own REARM cadence and this number no longer applies, so
+# shortening it does not shorten anyone's window to rescue paid-for work.
+FIRST_REAPER_CHECK_SECONDS: Final[int] = min(45 * 60, REARM_SECONDS)
+FIRST_REAPER_CHECK: Final[str] = f"{FIRST_REAPER_CHECK_SECONDS // 60}min"
+# systemd-run only registers a timer unit; it does not run the job. Thirty
+# seconds is a hang, not a slow start, and hanging here would hold up the
+# provision this is a precondition for.
+REAPER_ARM_TIMEOUT_S: Final[int] = 30
+
+# WHY EVERY STAGE NEEDS ITS OWN WALL.
+#
+# orchestrator() called subprocess.run with no timeout, so a wedged child owned
+# the watcher: MAX_WALL_SECONDS is re-read at the top of the polling loop, which
+# a running stage never reaches. On 2026-08-27 one pod sat in rsync inside the
+# bootstrap barrier for ninety minutes and the watcher waited out every minute
+# of it, with four other pods billing and no way to reconsider.
+#
+# Sized UP from the orchestrator's own ceilings rather than guessed, because the
+# two failures are not symmetric: a wall that fires early kills training that
+# has already been paid for, while one that fires late costs the hourly rate.
+# These are ceilings-of-ceilings, and their only job is to guarantee the watcher
+# gets control back. `run` and `collect` reuse the same reachable-wall model
+# _check_budget prices, so no stage can outlive the spend the budget gate
+# already authorised.
+STAGE_TIMEOUT_MARGIN: Final[float] = 1.25
+# Both splits carry five folds and every Campaign 2 arm is a validation arm.
+FLEET_SIZE: Final[int] = len(select_pod_configs(None, "validation"))
+# provision walks a fallback ladder of GPU types when one is out of capacity,
+# and every rung waits SSH_POLL_TIMEOUT_S for endpoints before giving up.
+PROVISION_TIMEOUT_S: Final[int] = int(
+    STAGE_TIMEOUT_MARGIN * len(ACCEPTABLE_GPUS) * SSH_POLL_TIMEOUT_S
+)
+# The bootstrap barrier plus one fold, the same two terms _check_budget prices.
+# Imported rather than restated so that shortening a bootstrap deadline over
+# there shortens this wall here, instead of leaving a stale number that quietly
+# permits more than the budget gate was told about.
+RUN_TIMEOUT_S: Final[int] = int(
+    STAGE_TIMEOUT_MARGIN
+    * (BOOTSTRAP_DEADLINE_S + BOOTSTRAP_DEADLINE_SLACK_S + FOLD_TIMEOUT_S)
+)
+# A SERIAL rsync per pod, each pod able to pay the full pull ladder including
+# its backoffs -- _check_budget's collect term exactly. This is the largest wall
+# here by a wide margin; the ladder itself is the orchestrator's to shorten.
+COLLECT_TIMEOUT_S: Final[int] = int(
+    STAGE_TIMEOUT_MARGIN * FLEET_SIZE * (
+        RSYNC_PULL_ATTEMPTS * RSYNC_PULL_TIMEOUT_S
+        + RSYNC_PULL_BACKOFF_S * RSYNC_PULL_ATTEMPTS * (RSYNC_PULL_ATTEMPTS - 1) // 2
+    )
+)
+# Terminate calls against an API, with no SSH and no data movement. A teardown
+# that cannot finish in fifteen minutes is wedged rather than slow, and the
+# account sweep that follows it is the real backstop.
+TEARDOWN_TIMEOUT_S: Final[int] = 15 * 60
+STAGE_TIMEOUT_S: Final[dict[str, int]] = {
+    "provision": PROVISION_TIMEOUT_S,
+    "run": RUN_TIMEOUT_S,
+    "collect": COLLECT_TIMEOUT_S,
+    "teardown": TEARDOWN_TIMEOUT_S,
+}
+# timeout(1)'s convention, so a wedged stage reads unambiguously in the log and
+# is never mistaken for a subcommand's own exit code. Non-zero above all: every
+# caller here tests the return value, and a wedge is a failure.
+STAGE_TIMEOUT_RC: Final[int] = 124
 
 
 @dataclass(frozen=True)
@@ -192,34 +315,82 @@ def sweep_account() -> int:
 
 
 def arm_the_reaper() -> None:
-    """Ensure a scheduled reaper exists before a fleet does.
+    """Ensure a scheduled reaper exists before a fleet does, or RAISE.
 
-    Never raises. A watcher that dies because systemd-run was unhappy is worse
-    than one running without the backstop, because the backstop is not the only
-    control -- this module tears down on every path -- whereas a dead watcher
-    provisions nothing and reports nothing.
+    This used to log a warning and carry on, reasoning that the backstop is not
+    the only control because this module tears down on every path. The premortem
+    that followed the 2026-08-27 night rejected that: the paths this module
+    tears down on are the ones it survives to reach. A SIGKILL, an OOM, a closed
+    tmux, or the stranding bug fixed in attempt_arm below all end with pods up
+    and no code left running to notice -- which is precisely the scenario the
+    reaper exists for, and precisely the scenario in which "proceeding without
+    it" means creating a billing fleet with no bound on it at all.
+
+    So it is a precondition now. Refusing costs a capacity window; proceeding
+    costs whatever the fleet bills until a human happens to look.
+
+    Raises:
+        RuntimeError: if no timer could be armed, for any reason.
     """
     unit = f"tract-reaper-await-{int(time.time())}"
     try:
         subprocess.run(
-            ["systemd-run", "--user", "--collect", "--on-active=8h",
+            ["systemd-run", "--user", "--collect",
+             f"--on-active={FIRST_REAPER_CHECK}",
              f"--unit={unit}", f"--working-directory={PROJECT_ROOT}",
              "--setenv=USE_TF=0",
              sys.executable, "-m", "scripts.phase1b.reaper_guard", "--confirm"],
-            check=True, capture_output=True, timeout=30,
+            check=True, capture_output=True, timeout=REAPER_ARM_TIMEOUT_S,
         )
-        logger.info("Reaper armed as %s (T+8h) before provisioning.", unit)
-    except Exception as exc:  # noqa: BLE001 - see docstring
-        logger.warning("Could not arm the reaper (%s). Proceeding: this module "
-                       "tears down on every path, but the independent backstop "
-                       "is absent if it dies.", exc)
+    # OSError covers the host that has no systemd-run at all, which is the one
+    # form of this failure that is a property of the machine rather than a hiccup.
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
+        detail = getattr(exc, "stderr", b"") or b""
+        raise RuntimeError(
+            f"could not arm the reaper as {unit} ({exc}: "
+            f"{detail.decode('utf-8', 'replace').strip()}). A fleet created "
+            f"now would have no bound on it except this process staying alive. "
+            f"Check `systemctl --user list-timers 'tract-reaper*'` and whether "
+            f"the user manager is running (loginctl enable-linger)."
+        ) from exc
+    logger.info("Reaper armed as %s (first check T+%s) before provisioning.",
+                unit, FIRST_REAPER_CHECK)
 
 
 def orchestrator(*args: str) -> int:
-    """Run one runpod_parallel subcommand, streaming its output. Returns rc."""
+    """Run one runpod_parallel subcommand, streaming its output. Returns rc.
+
+    A stage that outruns its wall is reported as FAILED rather than waited on.
+    The child is killed; the ssh and rsync processes it spawned are its own
+    children and outlive it, and whatever the pods were doing continues -- the
+    teardown path in attempt_arm and the reaper guard are what answer for the
+    remote side. What this buys is the watcher's own control back.
+
+    Raises:
+        ValueError: for a stage with no declared wall. Every caller here is
+            inside this file, so that is a typo, and running an unbounded child
+            against a billing fleet is not the way to discover it.
+    """
+    stage = args[0]
+    timeout = STAGE_TIMEOUT_S.get(stage)
+    if timeout is None:
+        raise ValueError(
+            f"No wall is declared for orchestrator stage {stage!r}. Known "
+            f"stages: {sorted(STAGE_TIMEOUT_S)}."
+        )
     cmd = [sys.executable, "-m", "scripts.phase1b.runpod_parallel", *args]
-    logger.info("$ %s", " ".join(cmd[2:]))
-    return subprocess.run(cmd, cwd=PROJECT_ROOT, check=False).returncode
+    logger.info("$ %s   [wall %dm]", " ".join(cmd[2:]), timeout // 60)
+    try:
+        return subprocess.run(
+            cmd, cwd=PROJECT_ROOT, check=False, timeout=timeout,
+        ).returncode
+    except subprocess.TimeoutExpired:
+        logger.error(
+            "'%s' exceeded its %dm wall and was killed. It is treated as a "
+            "failed stage: the pods may still be working, but nothing here is "
+            "watching them any more.", stage, timeout // 60,
+        )
+        return STAGE_TIMEOUT_RC
 
 
 def gate_a_gpu_is_fast_enough() -> bool:
@@ -303,9 +474,45 @@ def gate_b_ssh_actually_authenticates() -> bool:
     return result.returncode == 0 and "uid=0" in out
 
 
-def attempt_arm(arm: Arm) -> bool:
-    """Provision, gate, train, collect, tear down. True only on a complete arm."""
+class ArmOutcome(enum.Enum):
+    """What an attempt left behind, which is what the caller has to know.
+
+    A bool could not carry the distinction that cost the money. "Failed, the
+    pods are down" and "failed, the pods are deliberately still up" were both
+    False, and main() retried both -- and provisioning again rewrites
+    .pod_state.json with the new fleet's ids, under pod names identical to the
+    old fleet's. One retry over a held fleet makes the held fleet invisible to
+    `teardown` and leaves only the name-based sweep able to find it at all.
+    """
+
+    COMPLETE = "complete"
+    #: Failed, and nothing is billing. Safe to try again.
+    FLEET_DOWN = "fleet_down"
+    #: Failed with pods UP on purpose, because they hold uncollected folds.
+    FLEET_HELD = "fleet_held"
+    #: Nothing was created: a precondition said no.
+    REFUSED = "refused"
+
+
+def attempt_arm(arm: Arm) -> ArmOutcome:
+    """Provision, gate, train, collect, tear down. One arm, one fleet."""
     base = ("--config-name", arm.config_name, "--split", arm.split, *arm.flags)
+
+    # Re-arm the reaper before creating anything, and before the try, because a
+    # refusal here must not take the teardown path: no fleet exists yet, and the
+    # sweep would be an API call answering a question nobody asked.
+    #
+    # This watcher can poll for twelve hours; the guard disarms after three
+    # consecutive quiet checks. So by the time capacity appears the independent
+    # spend bound may be long gone -- and the fleet it would have to bound is
+    # the one about to be created, unattended, possibly at 3am. Arming is
+    # idempotent enough: a live unit name collides and is skipped, which is the
+    # harmless direction.
+    try:
+        arm_the_reaper()
+    except RuntimeError as exc:
+        logger.error("REFUSING to provision: %s", exc)
+        return ArmOutcome.REFUSED
 
     # The same distinction full_pipeline draws, and for the same reason:
     # "leaving pods up costs money; terminating them costs the run." Teardown is
@@ -317,56 +524,67 @@ def attempt_arm(arm: Arm) -> bool:
     nothing_to_lose = True
     results_are_safe = False
     try:
-        # Re-arm the reaper before creating anything. This watcher can poll for
-        # twelve hours; the guard disarms after three consecutive quiet checks,
-        # which is about six. So by the time capacity appears the independent
-        # spend bound may be long gone -- and the fleet it would have to bound is
-        # the one we are about to create, unattended, possibly at 3am. Arming is
-        # idempotent enough: a live unit name collides and is skipped, which is
-        # the harmless direction.
-        arm_the_reaper()
-
         if orchestrator("provision", *base) != 0:
             logger.error("provision failed. Nothing has been computed, so the "
                          "fleet is torn down.")
-            return False
+            return ArmOutcome.FLEET_DOWN
         if not gate_a_gpu_is_fast_enough():
             logger.error("Gate A failed. Not spending training hours on a fleet "
                          "whose folds would die at FOLD_TIMEOUT_S.")
-            return False
+            return ArmOutcome.FLEET_DOWN
         if not gate_b_ssh_actually_authenticates():
             logger.error("Gate B failed: SSH did not authenticate. Tearing down "
                          "now rather than discovering it inside bootstrap, "
                          "minutes later, with five pods billing.")
-            return False
-
-        # From here a pod may hold the only copy of a fold's indicators.
-        nothing_to_lose = False
+            return ArmOutcome.FLEET_DOWN
 
         run_rc = orchestrator("run", *base)
-        collect_rc = orchestrator("collect", *base)
-
-        if collect_rc != 0:
-            logger.error(
-                "collect FAILED. Pods are being LEFT RUNNING and are still "
-                "billing, deliberately: a fold's per-item indicators exist only "
-                "on them and teardown would destroy paid-for work. Recover with "
-                "`runpod_parallel collect --config-name %s --split %s`, then "
-                "teardown by hand. The reaper guard is the backstop if nobody "
-                "does.", arm.config_name, arm.split,
-            )
-            return False
-
         if run_rc != 0:
-            # Collected, so the fleet is expendable -- but the arm is incomplete
-            # and a partial fold set cannot produce a LOFO number.
-            results_are_safe = True
-            logger.error("run reported failed folds. What landed has been "
-                         "collected; the arm is incomplete and needs a human.")
-            return False
+            # THE STRANDING BUG OF 2026-08-27, and the reason this branch exists
+            # at all. `collect` used to run here unconditionally, and its exit
+            # code alone decided whether the fleet lived. A run that aborts in
+            # the bootstrap barrier computes nothing and never creates the
+            # remote results directory, so rsync exits 23 -- and the failure
+            # that PROVED the pods were empty was read as proof that they were
+            # full. Five pods spent the night billing on a fleet holding
+            # nothing, and were terminated by hand the next morning.
+            #
+            # Nothing here can tell a bootstrap abort from two dead folds: both
+            # are exit 1 out of `run`. Teardown is the answer to both. A partial
+            # fold set cannot produce a LOFO number, so the alternative is
+            # paying the hourly rate while a human reaches the same conclusion.
+            # The recoverable case is the one below, where `run` SUCCEEDED and
+            # there is therefore something on those pods worth holding them for.
+            logger.error(
+                "run failed (rc=%d) and collect is deliberately NOT being "
+                "attempted: a run that aborted before its folds has nothing to "
+                "collect, and it was collect's failure on an empty fleet that "
+                "stranded five pods on 2026-08-27. Any fold that did finish "
+                "goes with the fleet -- a partial arm cannot produce a number. "
+                "The fold-by-fold detail is above, in `run`'s own output.",
+                run_rc,
+            )
+            return ArmOutcome.FLEET_DOWN
+
+        # From here a pod may hold the only copy of a fold's indicators: `run`
+        # returned 0, which the orchestrator emits only when every fold in the
+        # roster reported ok.
+        nothing_to_lose = False
+
+        if orchestrator("collect", *base) != 0:
+            logger.error(
+                "collect FAILED after a clean run. Pods are being LEFT RUNNING "
+                "and are still billing, deliberately: a fold's per-item "
+                "indicators exist only on them and teardown would destroy "
+                "paid-for work. Recover with `runpod_parallel collect "
+                "--config-name %s --split %s`, then teardown by hand. The "
+                "reaper guard is the backstop if nobody does.",
+                arm.config_name, arm.split,
+            )
+            return ArmOutcome.FLEET_HELD
 
         results_are_safe = True
-        return True
+        return ArmOutcome.COMPLETE
     finally:
         if nothing_to_lose or results_are_safe:
             orchestrator("teardown")
@@ -410,11 +628,34 @@ def main(argv: list[str] | None = None) -> int:
                 return EXIT_OK
             attempts += 1
             logger.warning("Provision attempt %d of %d.", attempts, MAX_PROVISION_ATTEMPTS)
-            if attempt_arm(arm):
+            outcome = attempt_arm(arm)
+            if outcome is ArmOutcome.COMPLETE:
                 logger.warning("Arm %s COMPLETE and collected. Pods are down. "
                                "Aggregate is deliberately NOT run -- it needs "
                                "--n-configurations 3 and a human to read it.", arm.key)
                 return EXIT_OK
+            if outcome is ArmOutcome.REFUSED:
+                # Nothing was created, and nothing will be: whatever refused
+                # will refuse the next attempt identically. Retrying would only
+                # spend the capacity window.
+                logger.error("Attempt %d was REFUSED before anything was "
+                             "created. Not retrying: the precondition that said "
+                             "no will say no again.", attempts)
+                return EXIT_REFUSED
+            if outcome is ArmOutcome.FLEET_HELD:
+                # The one state in which polling again would be actively
+                # destructive: provision() rewrites .pod_state.json, both fleets
+                # carry the same pod names, and the held fleet -- the one with
+                # uncollected folds on it -- would stop being reachable by
+                # `teardown` at all.
+                logger.error(
+                    "STOPPING with pods UP. Attempt %d left a fleet holding "
+                    "uncollected folds and the watcher will NOT provision over "
+                    "it: that would overwrite .pod_state.json and make this "
+                    "fleet unreachable by teardown. Collect it, then tear it "
+                    "down. Until you do, it is billing.", attempts,
+                )
+                return EXIT_FLEET_HELD
             if attempts >= MAX_PROVISION_ATTEMPTS:
                 logger.error("Gave up after %d attempts. Capacity appears and "
                              "evaporates faster than the signal predicts; a "
