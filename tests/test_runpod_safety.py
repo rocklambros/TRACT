@@ -2000,3 +2000,332 @@ class TestTheFoldLaunchCannotDoubleStartATrainer:
             "the guarded command ran its payload twice; a retried launch would "
             "put two trainers on one GPU"
         )
+
+
+class TestPhase0PodChannelIsAuthenticated:
+    """Phase 0's pod channel authenticated no host and offered every key.
+
+    `StrictHostKeyChecking=no` with `UserKnownHostsFile=/dev/null` is not a weak
+    check, it is no check: the endpoints dialled here come from the RunPod API
+    and from a `.pod_state.json` that may be hours stale, against a provider
+    that recycles IP:port, and the identity offered on that handshake was
+    `~/.ssh/id_ed25519` -- the key that opens everything else this account
+    reaches. The phase 1B sibling has used accept-new, a repo-local known_hosts
+    and a dedicated key since its own review; this pins the same posture here.
+    """
+
+    @staticmethod
+    def _keyed(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Any:
+        """The module with an SSH key that exists, so _require_ssh_key passes."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        key = tmp_path / "tract_runpod"
+        key.write_text("stub", encoding="utf-8")
+        monkeypatch.setattr(rp0, "SSH_KEY", str(key))
+        return rp0
+
+    def test_host_keys_are_checked_and_recorded(self) -> None:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        opts = list(rp0.SSH_OPTS)
+        assert "StrictHostKeyChecking=accept-new" in opts
+        assert "StrictHostKeyChecking=no" not in opts
+        assert f"UserKnownHostsFile={rp0.KNOWN_HOSTS_FILE}" in opts
+        assert "UserKnownHostsFile=/dev/null" not in opts
+        assert "IdentitiesOnly=yes" in opts
+
+    def test_the_key_is_dedicated_not_the_operators_identity(self) -> None:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        assert "id_ed25519" not in rp0.SSH_KEY
+        assert rp0.SSH_KEY.endswith("tract_runpod")
+        # The literal, not the word: the comment above the constant names the
+        # old default on purpose and must not fail this.
+        source = Path(rp0.__file__).read_text(encoding="utf-8")
+        assert '"~/.ssh/id_ed25519"' not in source
+
+    def test_a_missing_key_names_the_fix(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A missing dedicated key must be an error, not a silent fallback."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setattr(rp0, "SSH_KEY", str(tmp_path / "absent"))
+        with pytest.raises(FileNotFoundError, match="ssh-keygen"):
+            rp0._require_ssh_key()
+
+    def test_a_missing_key_is_found_before_a_fleet_is_bought(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Otherwise the discovery costs four billing H100s."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setattr(rp0, "SSH_KEY", str(tmp_path / "absent"))
+
+        def _boom(**kwargs: Any) -> str:
+            raise AssertionError("bought a fleet with no key to reach it")
+
+        monkeypatch.setattr(rp0, "find_fastest_available", _boom)
+        with pytest.raises(FileNotFoundError, match="ssh-keygen"):
+            rp0.provision()
+
+    def test_a_hostile_endpoint_never_reaches_a_subprocess(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """.pod_state.json is a file on disk and publicIp is a remote string."""
+        rp0 = self._keyed(monkeypatch, tmp_path)
+        calls: list[Any] = []
+        monkeypatch.setattr(
+            rp0.subprocess, "run", lambda *a, **k: calls.append(a)
+        )
+        with pytest.raises(ValueError, match="not an IP address"):
+            rp0._ssh("203.0.113.7; rm -rf /", 22, "true")
+        with pytest.raises(ValueError, match="not an IP address"):
+            rp0._rsync_from("$(id)", 22, "/remote/", "/local/")
+        with pytest.raises(ValueError, match="not an IP address"):
+            rp0._rsync_to("`id`", 22, "/local/", "/remote/")
+        assert calls == []
+
+    def test_provision_discards_last_rounds_host_keys(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Otherwise a recycled IP:port reads as a host-key failure mid-fleet."""
+        rp0 = self._keyed(monkeypatch, tmp_path)
+
+        known = tmp_path / ".runpod_known_hosts"
+        known.write_text("203.0.113.7 ssh-ed25519 AAAA\n", encoding="utf-8")
+        monkeypatch.setattr(rp0, "KNOWN_HOSTS_FILE", known)
+        monkeypatch.setattr(
+            rp0, "find_fastest_available", lambda min_vram_gb: "GPU"
+        )
+        monkeypatch.setattr(rp0, "create_pods_parallel", lambda *a, **k: [])
+        monkeypatch.setattr(rp0, "_save_pod_state", lambda pods: None)
+        rp0.provision()
+        assert not known.exists()
+
+
+class TestPhase0TransfersAreArgvAndSafeLinked:
+    """Both directions ran through a shell, and the pull trusted the pod's tree.
+
+    `subprocess.run(cmd, shell=True)` is forbidden outright by CLAUDE.md, and
+    here it was handed a string with an API-supplied endpoint and a remote path
+    interpolated into it. The pull additionally had no --safe-links, which its
+    phase 1B sibling has carried since a review named the attack: a hostile pod
+    ships `x -> /home/<op>/.ssh` and the next pass writes through it. The push
+    excluded six patterns and none of the sensitive ones.
+    """
+
+    @staticmethod
+    def _capture(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> tuple[Any, dict[str, Any]]:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        key = tmp_path / "tract_runpod"
+        key.write_text("stub", encoding="utf-8")
+        monkeypatch.setattr(rp0, "SSH_KEY", str(key))
+        seen: dict[str, Any] = {}
+
+        def _run(cmd: Any, **kwargs: Any) -> None:
+            seen["cmd"], seen["kwargs"] = cmd, kwargs
+
+        monkeypatch.setattr(rp0.subprocess, "run", _run)
+        return rp0, seen
+
+    def test_the_module_starts_no_shell(self) -> None:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        source = Path(rp0.__file__).read_text(encoding="utf-8")
+        assert "shell=True" not in source
+
+    def test_the_pull_refuses_a_symlink_out_of_the_destination(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        rp0, seen = self._capture(monkeypatch, tmp_path)
+        rp0._rsync_from(
+            "203.0.113.7", 22041, "/workspace/tract/results/phase0/", "/local/"
+        )
+        argv = seen["cmd"]
+        assert isinstance(argv, list), "an argv, not a string a shell re-reads"
+        assert "--safe-links" in argv
+        assert "shell" not in seen["kwargs"]
+        assert seen["kwargs"]["timeout"] == rp0.RSYNC_TIMEOUT_S
+        assert argv[-2] == "root@203.0.113.7:/workspace/tract/results/phase0/"
+
+    def test_the_push_withholds_the_secrets_and_the_bulk_corpus(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """.pod_state.json holds every pod's live IP and SSH port; .env and
+        crosswalk.db are the filesystem route to the same disclosure the
+        credential exports were; data/raw is the licensed corpus."""
+        rp0, seen = self._capture(monkeypatch, tmp_path)
+        rp0._rsync_to("203.0.113.7", 22041, "/local/", "/workspace/tract/")
+        argv = seen["cmd"]
+        assert isinstance(argv, list)
+        for pat in (
+            ".env", "*.db", "data/raw", "venv", ".venv", ".claude",
+            ".pod_state.json", ".pod_state.json.*", "*.tmp",
+            ".runpod_known_hosts",
+        ):
+            assert f"--exclude={pat}" in argv, f"push still ships {pat}"
+        assert "shell" not in seen["kwargs"]
+
+    def test_the_rsync_transport_carries_the_checked_options(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """rsync splits -e itself, so this is the one string left on the path."""
+        rp0, seen = self._capture(monkeypatch, tmp_path)
+        rp0._rsync_to("203.0.113.7", 22041, "/local/", "/workspace/tract/")
+        argv = seen["cmd"]
+        transport = argv[argv.index("-e") + 1]
+        assert transport.startswith("ssh ")
+        assert "StrictHostKeyChecking=accept-new" in transport
+        assert transport.endswith("-p 22041")
+
+    def test_ssh_passes_the_script_on_stdin_not_in_argv(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        key = tmp_path / "tract_runpod"
+        key.write_text("stub", encoding="utf-8")
+        monkeypatch.setattr(rp0, "SSH_KEY", str(key))
+        seen: dict[str, Any] = {}
+
+        class _Result:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        def _run(cmd: Any, **kwargs: Any) -> _Result:
+            seen["cmd"], seen["kwargs"] = cmd, kwargs
+            return _Result()
+
+        monkeypatch.setattr(rp0.subprocess, "run", _run)
+        rp0._ssh("203.0.113.7", 22041, "echo hi", env={"X": "1"})
+        assert seen["cmd"][0] == "ssh"
+        assert seen["cmd"][-3:] == ["root@203.0.113.7", "bash", "-s"]
+        assert seen["kwargs"]["input"] == 'export X="1"\necho hi'
+        assert seen["kwargs"]["timeout"] == rp0.SSH_TIMEOUT_S
+        assert "shell" not in seen["kwargs"]
+
+
+class TestPhase0PodsCarryNoStandingCredential:
+    """Two account-wide keys used to go to all four pods, before every command.
+
+    ANTHROPIC_API_KEY can spend money and WANDB_API_KEY can rewrite the
+    experiment record; both were read from `pass` and exported on every pod,
+    including pods that fell back to the COMMUNITY tier, over a channel that
+    checked no host key. Nine of the ten scheduled commands never call either
+    service. The WandB key is gone outright -- phase 0 is finished, `collect`
+    brings the JSON back and `run_summary` runs where that key already lives --
+    and the Anthropic key, which exp4_hub_descriptions genuinely needs, is gated
+    on that command AND on an explicit opt-in.
+    """
+
+    PHASE_C = "python -m scripts.phase0.exp4_hub_descriptions --model all --curated"
+    PHASE_A = "python -m scripts.phase0.exp3_hierarchy_paths --model bge --curated"
+
+    def test_a_command_that_never_calls_the_api_gets_nothing(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Gating per RUN left the key on all four pods for phases A and B."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setenv(rp0.SHIP_ANTHROPIC_KEY_ENV, "1")
+
+        def _boom(name: str) -> str:
+            raise AssertionError(f"read `pass {name}` for a local embedding run")
+
+        monkeypatch.setattr(rp0, "_get_credential", _boom)
+        pod = {"role": "small-b", "cloud_type": rp0.PRICE_CLOUD_TYPE}
+        assert rp0._get_pod_env(pod, self.PHASE_A) == {}
+
+    def test_a_pod_gets_nothing_unless_the_operator_opts_in(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.delenv(rp0.SHIP_ANTHROPIC_KEY_ENV, raising=False)
+
+        def _boom(name: str) -> str:
+            raise AssertionError(f"read `pass {name}` with no opt-in")
+
+        monkeypatch.setattr(rp0, "_get_credential", _boom)
+        pod = {"role": "small-a", "cloud_type": rp0.PRICE_CLOUD_TYPE}
+        assert rp0._get_pod_env(pod, self.PHASE_C) == {}
+
+    def test_the_opt_in_forwards_the_anthropic_key_and_nothing_else(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setenv(rp0.SHIP_ANTHROPIC_KEY_ENV, "1")
+        monkeypatch.setattr(rp0, "_get_credential", lambda name: "sk-stub")
+        pod = {"role": "small-a", "cloud_type": rp0.PRICE_CLOUD_TYPE}
+        assert rp0._get_pod_env(pod, self.PHASE_C) == {
+            "ANTHROPIC_API_KEY": "sk-stub"
+        }
+
+    def test_the_wandb_key_is_never_read(self) -> None:
+        """Tracking runs on the operator's machine after collect, as in 1B."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        source = Path(rp0.__file__).read_text(encoding="utf-8")
+        assert '"wandb/api-key"' not in source
+        assert 'env["WANDB_API_KEY"]' not in source
+
+    def test_an_off_tier_fleet_is_refused_before_the_tree_is_pushed(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """create_pod falls back a tier silently when capacity is short, and
+        the tier is a statement about where licensed corpus went."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setenv(rp0.SHIP_ANTHROPIC_KEY_ENV, "1")
+        monkeypatch.setattr(rp0, "_load_pod_state", lambda: [
+            {"role": "small-a", "ip": "203.0.113.7", "port": 22,
+             "cloud_type": rp0.PRICE_CLOUD_TYPE},
+            {"role": "small-b", "ip": "203.0.113.8", "port": 22,
+             "cloud_type": "COMMUNITY"},
+        ])
+
+        def _boom(pod: dict[str, Any]) -> None:
+            raise AssertionError("pushed the working tree to a COMMUNITY pod")
+
+        monkeypatch.setattr(rp0, "_bootstrap_pod", _boom)
+        with pytest.raises(RuntimeError, match="COMMUNITY"):
+            rp0.run_experiments()
+
+    def test_an_unrecorded_tier_is_not_treated_as_the_priced_one(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A pod dict from an older state file carries no cloud_type at all."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setenv(rp0.SHIP_ANTHROPIC_KEY_ENV, "1")
+        with pytest.raises(RuntimeError, match="unrecorded"):
+            rp0._require_priced_tier([{"role": "small-a"}])
+
+    def test_the_preflight_is_silent_without_the_opt_in(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No credential is going anywhere, so the tier is not this check's
+        business -- the push is gated elsewhere or not at all, which residual
+        risk names."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.delenv(rp0.SHIP_ANTHROPIC_KEY_ENV, raising=False)
+        rp0._require_priced_tier([{"role": "small-a", "cloud_type": "COMMUNITY"}])
+
+    def test_the_per_pod_check_still_backstops_the_preflight(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A last-line assertion that _require_priced_tier ran, not the control."""
+        from scripts.phase0 import runpod_orchestrate as rp0
+
+        monkeypatch.setenv(rp0.SHIP_ANTHROPIC_KEY_ENV, "1")
+        monkeypatch.setattr(rp0, "_get_credential", lambda name: "sk-stub")
+        pod = {"role": "small-a", "cloud_type": "COMMUNITY"}
+        with pytest.raises(RuntimeError, match="Refusing to forward"):
+            rp0._get_pod_env(pod, self.PHASE_C)

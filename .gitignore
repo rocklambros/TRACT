@@ -68,6 +68,7 @@ scripts/phase0/.pod_ids
 scripts/phase0/.pod_state.json
 scripts/phase1b/.pod_state.json
 scripts/phase1b/.runpod_known_hosts
+scripts/phase0/.runpod_known_hosts
 scripts/phase0/.pod_state_0r.json
 .claude/
 wandb/
