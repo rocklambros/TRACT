@@ -820,8 +820,18 @@ TRACT_MODEL_SNAPSHOT_ALLOW_PATTERNS: Final[tuple[str, ...]] = (
 #   CI "model-pins" job, which is what keeps this pin from rotting the way the
 #   original deferral did.
 TRACT_PIN_UNSET: Final[str] = "UNSET"
-TRACT_DATASET_PINNED_REVISION: Final[str] = TRACT_PIN_UNSET
-TRACT_CROSSWALK_DB_SHA256: Final[str] = TRACT_PIN_UNSET
+# Verified 2026-08-29 against the published artifact, not against the local
+# copy: fetched from the dataset repo at this revision into a temp directory and
+# hashed there. It matches the crosswalk.db already on disk byte for byte, but
+# the point is that the comparison was made -- pinning to a local digest nobody
+# had checked against the published file would record the wrong thing with full
+# confidence.
+TRACT_DATASET_PINNED_REVISION: Final[str] = (
+    "57930dcae45503956a1510ac72e3f57bef215764"
+)
+TRACT_CROSSWALK_DB_SHA256: Final[str] = (
+    "e9ddba3596399ea48e17223519c73bd77e13c31218203de2029552e945356e29"
+)
 
 # Keyed by basename, matching TRACT_MODEL_PINNED_FILE_HASHES above, so a name
 # added to HF_DATABASE_FILES without a digest beside it is a lookup miss the
