@@ -465,6 +465,14 @@ class TestQuietCheckRearms:
         for _ in range(rg.QUIET_CHECKS_BEFORE_DISARM - 1):
             rg.main(["--confirm"])
         monkeypatch.setattr(rg, "running_pod_count", lambda: 3)
+        # fleet_is_idle is mocked because the real one calls
+        # get_running_pods(), which shells out to the `pass` password
+        # manager. Without it the probe raises, the fleet reads as NOT
+        # idle, and main() returns EXIT_OK instead of reaping -- so this
+        # test passed on a developer machine and failed in CI, where
+        # `pass` does not exist. A unit test must not depend on a
+        # credential store being installed.
+        monkeypatch.setattr(rg, "fleet_is_idle", lambda: (True, "all idle"))
         monkeypatch.setattr(
             "scripts.phase1b.runpod_parallel.reap", lambda confirm: None
         )
@@ -544,6 +552,14 @@ class TestReapFailureStillRearms:
 
         monkeypatch.setattr(rg, "orchestrator_pids", lambda: [])
         monkeypatch.setattr(rg, "running_pod_count", lambda: 4)
+        # fleet_is_idle is mocked because the real one calls
+        # get_running_pods(), which shells out to the `pass` password
+        # manager. Without it the probe raises, the fleet reads as NOT
+        # idle, and main() returns EXIT_OK instead of reaping -- so this
+        # test passed on a developer machine and failed in CI, where
+        # `pass` does not exist. A unit test must not depend on a
+        # credential store being installed.
+        monkeypatch.setattr(rg, "fleet_is_idle", lambda: (True, "all idle"))
         monkeypatch.setattr(rg, "rearm", lambda: calls.append("rearm"))
         monkeypatch.setattr("scripts.phase1b.runpod_parallel.reap", boom)
 
@@ -566,6 +582,8 @@ class TestReapFailureStillRearms:
 
         monkeypatch.setattr(rg, "orchestrator_pids", lambda: [])
         monkeypatch.setattr(rg, "running_pod_count", lambda: 2)
+        # Same reason as above: the real fleet_is_idle shells out to `pass`.
+        monkeypatch.setattr(rg, "fleet_is_idle", lambda: (True, "all idle"))
         monkeypatch.setattr(rg, "rearm", lambda: calls.append("rearm"))
         monkeypatch.setattr(
             "scripts.phase1b.runpod_parallel.reap",
