@@ -471,6 +471,67 @@ def test_every_overlay_framework_has_a_gitignore_line() -> None:
         )
 
 
+def test_every_overlay_framework_has_a_fold_predictions_gitignore_line() -> None:
+    """A LOFO fold's predictions.json IS the held-out framework's prose.
+
+    Distinct from the test above, which covers the parser's output path. This
+    covers the LOFO orchestrator's: `collect` rsyncs a fleet's results into
+    results/phase1b/<config>/fold_<framework>/predictions.json, and every row
+    carries the eval anchor verbatim. When the held-out framework is licensed,
+    that file is the licensed text.
+
+    The .gitignore comment claimed a test enforced this and none did, which is
+    how DSOMM -- roughly half the fingerprint corpus -- went uncovered while the
+    two narrower RESTRICTED members were listed. Keyed on OVERLAY_FRAMEWORK_IDS
+    for that reason.
+
+    The directory name comes from the link's standard_name, not the framework
+    id: run_fold.py builds it as `fold_{args.framework.replace(' ', '_')}` and
+    args.framework is a standard_name. Deriving it here from the curated links
+    rather than hardcoding it means a display-name change breaks this test
+    instead of silently unprotecting a framework.
+    """
+    from scripts.phase0.common import CURATED_LINKS_PATH
+    from tract.config import OVERLAY_FRAMEWORK_IDS
+
+    # Read the JSONL rather than load_curated_links(): HubStandardLink drops
+    # framework_id and keeps only standard_name, and the join between the two
+    # is exactly what this test needs.
+    names_by_id: dict[str, set[str]] = {}
+    with CURATED_LINKS_PATH.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            framework_id = record.get("framework_id")
+            standard_name = record.get("standard_name")
+            if framework_id and standard_name:
+                names_by_id.setdefault(framework_id, set()).add(standard_name)
+
+    ignore_lines = {
+        line.strip()
+        for line in (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    }
+    checked = 0
+    for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):
+        for standard_name in sorted(names_by_id.get(framework_id, set())):
+            fold_dir = f"fold_{standard_name.replace(' ', '_')}"
+            expected = f"results/phase1b/**/{fold_dir}/predictions.json"
+            checked += 1
+            assert expected in ignore_lines, (
+                f"{expected} is missing from .gitignore. A LOFO fold holding "
+                f"out {standard_name!r} writes that framework's licensed prose "
+                f"to predictions.json, and `collect` followed by `git add -A` "
+                f"would commit it."
+            )
+    assert checked >= len(OVERLAY_FRAMEWORK_IDS), (
+        f"Only {checked} fold paths checked for "
+        f"{len(OVERLAY_FRAMEWORK_IDS)} overlay frameworks. An overlay framework "
+        "with no curated link contributes no standard_name, so this test would "
+        "pass while protecting nothing."
+    )
+
+
 def test_merged_corpus_carries_no_unpublishable_prose() -> None:
     """A tracked all_controls.json must carry no overlay source's prose.
 
