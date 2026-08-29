@@ -532,6 +532,49 @@ def test_every_overlay_framework_has_a_fold_predictions_gitignore_line() -> None
     )
 
 
+def test_no_new_tracked_but_ignored_prediction_files_appear() -> None:
+    """Pin the set of files that are BOTH tracked and ignored.
+
+    Three campaign-1 fold predictions for ISO 27001 are in the index and also
+    match a .gitignore rule added later. Git ignore rules do not apply to files
+    already tracked, so for those three paths the rule is inert: a future run
+    writing to them followed by `git add -A` would commit whatever they contain.
+
+    They are NOT untracked here. All three hold title-only anchors and match
+    zero licensed fingerprints (verified), several are cited by path from
+    CAMPAIGN2.md, and PREINPUTS-ARCHIVE.md records the deliberate decision to
+    keep superseded runs as evidence. `git rm --cached` would delete clean
+    evidence to close a gap that the tree-wide scan in this module already
+    covers -- `git ls-files` reads the INDEX, so tracked-but-ignored files are
+    scanned like any other.
+
+    What is not covered is a FOURTH such file appearing, which would arrive
+    with no rule stopping it and no reason for anyone to look. This pins the
+    set so that has to be a decision rather than an accident.
+    """
+    result = subprocess.run(
+        ["git", "ls-files", "-i", "-c", "--exclude-standard"],
+        capture_output=True, text=True, check=True, cwd=REPO_ROOT,
+    )
+    predictions = {
+        line for line in result.stdout.splitlines()
+        if line.endswith("predictions.json")
+    }
+    known = {
+        "results/phase1b/c2_A1_prose_sw_bge/fold_ISO_27001/predictions.json",
+        "results/phase1b/c2_A2_prose_sw_bge_bal3/fold_ISO_27001/predictions.json",
+        "results/phase1b/c2_canary_qwen/fold_ISO_27001/predictions.json",
+    }
+    assert predictions == known, (
+        "the set of tracked-AND-ignored prediction files changed.\n"
+        f"  appeared: {sorted(predictions - known)}\n"
+        f"  gone:     {sorted(known - predictions)}\n"
+        "A new entry means a fold wrote a restricted framework's predictions to "
+        "a path already in the index, where the ignore rule cannot stop it. "
+        "Untrack it, or add it here with a reason."
+    )
+
+
 def test_merged_corpus_carries_no_unpublishable_prose() -> None:
     """A tracked all_controls.json must carry no overlay source's prose.
 
