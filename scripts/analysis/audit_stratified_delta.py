@@ -46,10 +46,10 @@ from scripts.phase0.common import (
     AI_FRAMEWORK_ID_MAP,
     AI_FRAMEWORK_NAMES,
     build_evaluation_corpus,
+    load_curated_links,
 )
 from tract.config import PHASE1B_RESULTS_DIR, TRAINING_DIR
 from tract.training.evaluate import paired_bootstrap_delta
-from tract.training.orchestrate import load_curated_links
 
 logger = logging.getLogger(__name__)
 

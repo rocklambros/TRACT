@@ -417,3 +417,80 @@ committed 2026-04-29, by which time Phase 0 zero-shot baselines existed. If a
 model was in the loop, these 56 corrections are Tier 3 by the project's own
 rule, and the contamination is downstream in published artifacts. **This
 question should be answered before the OpenCRE RFC cites any of them.**
+
+## 14. The domain-shortcut hypothesis, tested and refuted
+
+Campaign 3's premortem proposed that the +0.1361 might not be semantic at all.
+The reasoning was structural and checked out: build the framework-hub bipartite
+graph over all 4,405 curated links, enumerate connected components **supplying no
+AI/general labels**, and exactly two fall out — **380 hubs / 14 frameworks** and
+**78 hubs / 8 frameworks** (the five rotating AI frameworks plus ENISA, ETSI,
+BIML). Intersection empty. All 147 test golds land in the 78-hub component.
+
+Worse, the domain is written into the text being ranked. A bare `\bAI\b` regex
+over exactly what `build_firewalled_hub_text` emits matches **78/78** AI-component
+hubs and **0/380** general ones — `"Technical AI security controls > Secure AI
+inference"` versus `"Session management > Session token generation"`.
+
+So a model could score here by learning "AI text → answer in the AI region",
+collapsing 522 candidates to 78 with no semantic mapping whatsoever. Nothing in
+Campaign 2 excluded it.
+
+### The measurement
+
+`scripts/phase1b/domain_shortcut_probe.py`, run on one pod for 10 minutes at
+$1.59/hr (**≈$0.27**). Hand the *zero-shot* encoder the AI region for free —
+restrict its ranking pool to those 78 hubs — and see how much of the trained
+model's advantage that alone buys.
+
+| quantity | hit@1 |
+|---|---|
+| full-pool zero-shot (**control**, campaign says 0.4558) | **0.4558**, drift **0.0000** |
+| AI-restricted zero-shot (522 → 78 candidates) | 0.4626 |
+| **free domain-oracle gain** | **+0.0068** |
+| trained model | 0.5918 |
+
+| fold | n | full | restricted | gain |
+|---|---|---|---|---|
+| MITRE ATLAS | 43 | 0.3023 | 0.3256 | +0.0233 |
+| NIST AI 100-2 | 28 | 0.3214 | 0.3214 | +0.0000 |
+| OWASP AI Exchange | 63 | 0.6349 | 0.6349 | +0.0000 |
+| OWASP Top10 for LLM | 6 | 0.3333 | 0.3333 | +0.0000 |
+| OWASP Top10 for ML | 7 | 0.4286 | 0.4286 | +0.0000 |
+
+The control reproduced the campaign's paired zero-shot to **four decimal places**,
+which is what licenses reading the restricted figure at all.
+
+### The verdict
+
+**Deleting 444 of 522 candidate hubs — a 6.7× collapse of the label space, chance
+rising from 0.0019 to 0.0128 — moves exactly one item in 147.** Four of five
+folds do not move at all.
+
+**The domain shortcut explains +0.0068 of the +0.1361. It is refuted as an
+explanation of this result.** The base encoder was already ranking effectively
+inside the AI region; the 380 general hubs were never meaningful distractors, so
+there was no distractor-rejection gain available for fine-tuning to capture.
+
+Two hypotheses died here, and the second is worth recording because it was the
+more careful one. The premortem's cross-attack estimated a perfect domain oracle
+would recover **70–114%** of the headline, using the BGE zero-shot in
+`zero_shot_firewalled_baseline` as a stand-in for the Qwen baseline that actually
+produced the delta. It flagged that substitution as the weakest link in its own
+argument. It was right to: measured on the real paired baseline, the oracle
+recovers **5%**. A stand-in encoder was not a usable proxy, and no amount of
+further offline reasoning would have found that out.
+
+### What this changes
+
+**+0.1292 of the +0.1361 is not domain detection.** Combined with §5 — the gain
+concentrates on items whose text does not contain its own answer — the
+non-lexical, non-structural reading of this result is now the surviving one.
+
+It does **not** rescue §13. The audit-untouched co-primary is still +0.1000, and
+these are independent: one says the gain is not a candidate-set artifact, the
+other says part of it is a labelling artifact. Both hold.
+
+The pre-registered rule was: if the shortcut is not excluded, fund no curation.
+**It is excluded, so curation is justified** — on the audit-untouched reading of
+the effect, not the pooled one.
