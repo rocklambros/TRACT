@@ -41,6 +41,7 @@ import tarfile
 from pathlib import Path
 from typing import Final
 
+from tract.io import atomic_write_bytes
 from tract.config import (
     OVERLAY_FRAMEWORK_IDS,
     PROCESSED_FRAMEWORKS_DIR,
@@ -176,7 +177,19 @@ def main(argv: list[str] | None = None) -> int:
         # and never one the archive supplied. A hostile tar cannot direct a
         # write, because nothing it contains is used as a path.
         for name, destination in sorted(expected.items()):
-            member = archive.getmember(name)
+            try:
+                member = archive.getmember(name)
+            except KeyError:
+                # getmember raises a bare KeyError carrying only the member
+                # name, which reads as an internal error rather than "this
+                # archive is missing a framework".
+                logger.error(
+                    "Refusing to extract: %s is absent from the archive. The "
+                    "pack is incomplete -- the overlay is a SET spanning two "
+                    "directories, and a partial unpack trains on a corpus that "
+                    "silently omits a framework.", name,
+                )
+                return EXIT_REFUSED
             if not member.isfile():
                 logger.error("Refusing to extract %s: not a regular file", name)
                 return EXIT_REFUSED
@@ -185,7 +198,11 @@ def main(argv: list[str] | None = None) -> int:
                 logger.error("Refusing to extract %s: no readable content", name)
                 return EXIT_REFUSED
             destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(payload.read())
+            # Atomic, per the project I/O rule. A plain write_bytes left a
+            # truncated corpus on Ctrl-C or a full disk, and
+            # merged_corpus_path() only checks that the file EXISTS -- so
+            # the next run would hash and train against half a file.
+            atomic_write_bytes(payload.read(), destination)
             written += 1
 
     logger.info("Extracted %d file(s) into %s", written, PROJECT_ROOT)

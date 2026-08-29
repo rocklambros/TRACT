@@ -89,6 +89,44 @@ def atomic_write_text(text: str, path: Path | str) -> None:
         raise
 
 
+def atomic_write_bytes(payload: bytes, path: Path | str) -> None:
+    """Atomically write *payload* to *path*.
+
+    The binary sibling of atomic_write_text, added for the licensed-overlay
+    unpack. That path extracts a 13MB corpus with plain write_bytes(), so a
+    Ctrl-C or a full disk mid-extract left a truncated
+    data/processed/licensed/all_controls.json -- and because
+    merged_corpus_path() only tests that the file EXISTS, every downstream
+    reader (ProseIndex.load, fold_input_digests, tract.staleness) would then
+    hash and train against half a corpus.
+
+    Args:
+        payload: The full file contents to write.
+        path: Destination file path.
+
+    Raises:
+        OSError: If the write or rename fails.
+    """
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+
+    fd, tmp_path = tempfile.mkstemp(
+        dir=target.parent,
+        prefix=f".{target.name}.",
+        suffix=".tmp",
+    )
+    try:
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(payload)
+        os.replace(tmp_path, target)
+    except Exception:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
+
 def load_json(path: Path | str) -> Any:
     """Load and return parsed JSON from *path*.
 
