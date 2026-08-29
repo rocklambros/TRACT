@@ -143,7 +143,18 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
 - **Lazy Model Auto-Download:** COMPLETE — `tract assign` downloads the pinned model from HuggingFace on first use (sha256-verified, sentinel-gated), tolerates the published flat layout, and adds `tract --version`. Forces the PyTorch backend (`USE_TF=0` at import) to avoid a TensorFlow import deadlock in `sentence-transformers`. `assign --file` preserves input order and carries an `input_index`. Distinct exit codes: 2 user error, 3 offline, 4 integrity, 5 missing runtime.
-- **2,722 tests** (`pytest tests/ -q --collect-only`, 2026-08-27 — this line said 920 long after the suite had tripled, so re-derive it rather than trust it), 20 CLI subcommands
+- **2,832 tests** (`pytest tests/ -q --collect-only`, 2026-08-28 — this line said 920, then 2,722, each long after the suite had moved, so re-derive it rather than trust it), 20 CLI subcommands
+- **Campaign 2 (LOFO re-run, 2026-08-28):** COMPLETE. Three validation arms
+  (n=1,265) then one held-out AI test round (n=147). Test-round micro hit@1
+  delta **+0.1361 [+0.0476, +0.2245]** over paired zero-shot, absolute 0.5918.
+  This clears the 0.10 gate on the **point estimate only** — `ci_low_pass` and
+  `familywise_pass` both fail, and P(true delta ≤ 0.10) = 0.203. The clause
+  designating the point estimate as the verdict was written after arm results
+  existed, so it is not blind pre-registration. **No arm cleared Gate 1 on
+  validation** and the primary arm A1 is significantly negative. The pre-declared
+  agentic smoke test FAILED at 1–2 of 6. Read `docs/campaign2-results.md` before
+  quoting anything from this campaign; it lists which of the campaign's own
+  commit messages were later superseded. A3 is **not** the shipped model.
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands

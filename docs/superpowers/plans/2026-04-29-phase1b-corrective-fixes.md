@@ -1064,8 +1064,9 @@ git commit -m "test: add end-to-end integration test for corrected training pipe
 ### Task 9: Update Memory and Documentation
 
 **Files:**
-- Modify: `~/.claude/projects/-home-rock-github-projects-TRACT/memory/project_phase1b_bookmark.md`
-- Modify: `~/.claude/projects/-home-rock-github-projects-TRACT/memory/MEMORY.md`
+- Modify: the session memory store (paths redacted 2026-08-28 — they named a
+  private per-project directory outside the repository, which does not belong
+  in a public design record)
 
 - [ ] **Step 1: Update phase1b bookmark with adversarial review findings and Gate 0 result**
 
