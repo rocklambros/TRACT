@@ -760,7 +760,8 @@ class TestTheBusyProbeCannotMatchItself:
     def test_the_probe_does_not_use_a_bare_pattern_match(self) -> None:
         """The regression itself. A bare `pgrep -f <pattern>` is the defect."""
         from scripts.phase1b import reaper_guard as g
-        import inspect, re
+        import inspect
+        import re
 
         src = inspect.getsource(g.pod_training_state)
         bare = re.search(r"pgrep\s+-[a-z]*f[a-z]*\s+\{?FOLD_PROCESS_PATTERN", src)
@@ -778,4 +779,94 @@ class TestTheBusyProbeCannotMatchItself:
         assert "python" in src, (
             "the probe must require a python interpreter, not any process whose "
             "command line happens to contain the module path"
+        )
+
+
+class TestFleetHoldMarker:
+    """A fleet held for rescue looks exactly like an orphaned one.
+
+    await_capacity's FLEET_HELD path leaves pods up when `collect` fails after
+    a clean run and tells the operator to recover by hand. At that moment no
+    orchestrator is alive and every fold process has exited, so every liveness
+    probe answers IDLE -- indistinguishable from the orphaned-fleet case the
+    guard exists to reap. Without a marker the guard terminates the pods
+    holding the only copy of that arm's per-item indicators, and bounds the
+    rescue window at REARM rather than leaving it open.
+    """
+
+    @staticmethod
+    def _args(confirm: bool = True):
+        import argparse
+
+        return argparse.Namespace(confirm=confirm)
+
+    def test_hold_marker_blocks_the_reap(self, monkeypatch, tmp_path) -> None:
+        from scripts.phase1b import reaper_guard as g
+
+        monkeypatch.setattr(g, "_state_dir", lambda: tmp_path)
+        (tmp_path / g.HOLD_FILENAME).write_text("held", encoding="utf-8")
+        monkeypatch.setattr(g, "fleet_is_idle", lambda: (True, "all idle"))
+        monkeypatch.setattr(g, "_campaign_is_complete", lambda: False)
+        monkeypatch.setattr(g, "orchestrator_pids", lambda: [])
+        # Pods must exist: main returns early on count == 0, which is the
+        # quiet-campaign path and never reaches the reap decision.
+        monkeypatch.setattr(g, "running_pod_count", lambda: 5)
+
+        reaped: list[bool] = []
+        monkeypatch.setattr(
+            "scripts.phase1b.runpod_parallel.reap",
+            lambda **kw: reaped.append(True),
+        )
+        rearmed: list[bool] = []
+        monkeypatch.setattr(g, "rearm", lambda: rearmed.append(True))
+
+        rc = g.main(["--confirm"])
+        assert rc == g.EXIT_OK
+        assert reaped == [], "held fleet was reaped; its results are gone"
+        assert rearmed == [True], "guard must keep watching a held fleet"
+
+    def test_without_the_marker_an_idle_fleet_is_still_reaped(
+        self, monkeypatch, tmp_path,
+    ) -> None:
+        """The marker must not become a blanket disable."""
+        from scripts.phase1b import reaper_guard as g
+
+        monkeypatch.setattr(g, "_state_dir", lambda: tmp_path)
+        assert not (tmp_path / g.HOLD_FILENAME).exists()
+        monkeypatch.setattr(g, "fleet_is_idle", lambda: (True, "all idle"))
+        monkeypatch.setattr(g, "_campaign_is_complete", lambda: False)
+        monkeypatch.setattr(g, "orchestrator_pids", lambda: [])
+        # Pods must exist: main returns early on count == 0, which is the
+        # quiet-campaign path and never reaches the reap decision.
+        monkeypatch.setattr(g, "running_pod_count", lambda: 5)
+
+        reaped: list[bool] = []
+        monkeypatch.setattr(
+            "scripts.phase1b.runpod_parallel.reap",
+            lambda **kw: reaped.append(True),
+        )
+        monkeypatch.setattr(g, "rearm", lambda: None)
+
+        g.main(["--confirm"])
+        assert reaped == [True], "an genuinely orphaned fleet must still be reaped"
+
+    def test_dry_run_does_not_reset_the_quiet_streak(
+        self, monkeypatch, tmp_path,
+    ) -> None:
+        """--confirm's help promises a dry run changes nothing."""
+        from scripts.phase1b import reaper_guard as g
+
+        monkeypatch.setattr(g, "_state_dir", lambda: tmp_path)
+        monkeypatch.setattr(g, "fleet_is_idle", lambda: (False, "still training"))
+        monkeypatch.setattr(g, "_campaign_is_complete", lambda: False)
+        monkeypatch.setattr(g, "orchestrator_pids", lambda: [])
+
+        writes: list[int] = []
+        monkeypatch.setattr(g, "_write_quiet_streak", lambda n: writes.append(n))
+        monkeypatch.setattr(g, "rearm", lambda: None)
+
+        g.main([])
+        assert writes == [], (
+            "a dry run reset the quiet streak; the next two real checks would "
+            "re-arm instead of disarming"
         )

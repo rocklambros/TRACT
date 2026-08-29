@@ -595,10 +595,27 @@ def attempt_arm(arm: Arm) -> ArmOutcome:
     finally:
         if nothing_to_lose or results_are_safe:
             orchestrator("teardown")
-            swept = sweep_account()
-            if swept:
-                logger.warning("Swept %d pod(s) teardown did not reach -- the "
-                               "pods=[] window again.", swept)
+            # sweep_account raises when a pod refuses to terminate, and
+            # get_running_pods raises on any API or network error. Raising from
+            # a `finally` REPLACES the return value: the ArmOutcome is
+            # discarded, the exception escapes main(), and the process exits 1
+            # -- which this module documents as "gave up ... Nothing is
+            # running". That is the precise inverse of the truth in the case
+            # that matters, a pod that would not die and is still billing. The
+            # one distinction the exit codes exist to draw is the one the
+            # unguarded raise destroys.
+            try:
+                swept = sweep_account()
+            except Exception as exc:  # noqa: BLE001 - must not mask the outcome
+                logger.error(
+                    "SWEEP FAILED after teardown: %s. Pods may still be "
+                    "billing. Check the RunPod console; do not read this run's "
+                    "exit code as evidence the account is clear.", exc,
+                )
+            else:
+                if swept:
+                    logger.warning("Swept %d pod(s) teardown did not reach -- "
+                                   "the pods=[] window again.", swept)
         else:
             logger.error("NOT tearing down. Pods hold uncollected results.")
 

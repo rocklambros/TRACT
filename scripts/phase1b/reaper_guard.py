@@ -146,6 +146,12 @@ FLAGS_WITH_SEPARATE_VALUE: Final[frozenset[str]] = frozenset(
 STATE_DIRNAME: Final[str] = "tract-reaper"
 QUIET_STREAK_FILENAME: Final[str] = "quiet-streak.json"
 CAMPAIGN_COMPLETE_FILENAME: Final[str] = "campaign-complete"
+# "This fleet is idle on purpose -- do not reap it." Distinct from
+# CAMPAIGN_COMPLETE: that one says the campaign is over and the guard should
+# stand down, this one says a fleet is being rescued and must survive. Written
+# by an operator (or by await_capacity's FLEET_HELD path) and removed when the
+# results are safe.
+HOLD_FILENAME: Final[str] = "fleet-hold"
 QUIET_STREAK_KEY: Final[str] = "quiet_checks"
 QUIET_UPDATED_KEY: Final[str] = "updated_at"
 
@@ -711,7 +717,33 @@ def main(argv: list[str] | None = None) -> int:
         logger.warning(
             "NOT REAPING -- %s. Re-arming; the fleet keeps running.", reason,
         )
-        _write_quiet_streak(0)
+        # Gated on --confirm like every other state write in this function.
+        # --confirm's own help says "without it, report and change nothing",
+        # and this line broke that: a dry run reset a streak that had reached
+        # 2, so the next two real checks re-armed instead of disarming and a
+        # finished campaign kept a live timer pointed at whatever carries these
+        # names later. The QUIET_CHECKS comment calls that "its own way to
+        # destroy paid-for work".
+        if args.confirm:
+            _write_quiet_streak(0)
+            rearm()
+        return EXIT_OK
+
+    # An idle fleet is ambiguous and the guard cannot tell the two cases apart
+    # from liveness alone. await_capacity's FLEET_HELD path deliberately leaves
+    # a fleet up when `collect` FAILED after a clean run, and tells the operator
+    # to recover by hand -- at which point no orchestrator is alive and every
+    # fold has exited, so every probe answers IDLE. Reaping then terminates the
+    # pods holding the only copy of that arm's per-item indicators, and bounds
+    # the rescue window at REARM rather than leaving it open as the message
+    # implies. A hold marker is the operator's way to say "idle on purpose".
+    hold = _state_dir() / HOLD_FILENAME
+    if hold.exists():
+        logger.warning(
+            "NOT REAPING -- %s exists, so this fleet is held deliberately "
+            "(collect failed, or a warm-pod retry is in progress). Remove it "
+            "when the results are safe. Re-arming.", hold,
+        )
         if args.confirm:
             rearm()
         return EXIT_OK

@@ -1318,12 +1318,51 @@ def _run_fold_on_pod(
     # hiccup ended the fleet. See run_folds for the other half of the fix.
     pod_env = _get_pod_env() if env is None else env
     try:
-        _ssh(ip, port, launch, env=pod_env, timeout=SSH_LAUNCH_TIMEOUT_S)
+        launched = _ssh(ip, port, launch, env=pod_env,
+                        timeout=SSH_LAUNCH_TIMEOUT_S)
     except Exception as e:
         elapsed = time.time() - start
         logger.error("[%s] LAUNCH FAILED after %.1fm: %s", framework, elapsed / 60, e)
         return {"fold": framework, "status": "failed",
                 "error": f"launch: {e}", "elapsed_s": elapsed}
+
+    # The lock's two branches mean opposite things and the exit status cannot
+    # tell them apart -- both are 0. Reading the word it echoed is the whole
+    # point of echoing it, and this was written without a reader: a retry took
+    # the else branch, satisfied check=True, and the poller below then read the
+    # PREVIOUS run's exit file within one poll interval. With a prior exit of 0
+    # that reports COMPLETE in seconds having trained nothing, and `collect`
+    # then rsyncs the old results into a number nobody re-earned. The runbook
+    # and the orchestrator's own failure message both tell an operator to
+    # re-run `run`, so this is a documented path, not an exotic one.
+    if "already-launched" in (launched.stdout or ""):
+        alive = _ssh(
+            ip, port,
+            # /proc rather than pgrep: the shell running a pgrep carries the
+            # pattern in its own command line. Same defect, third occurrence.
+            "n=0; for d in /proc/[0-9]*; do "
+            'c=$(tr "\\0" " " < $d/cmdline 2>/dev/null); '
+            "case \"$c\" in *run_fold*) case \"$c\" in *\\$*) ;; "
+            "*python*) n=$((n+1));; esac;; esac; done; echo $n",
+            check=False, timeout=SSH_LAUNCH_TIMEOUT_S,
+        )
+        n_trainers = (alive.stdout or "0").strip().splitlines()[-1].strip()
+        if n_trainers.isdigit() and int(n_trainers) > 0:
+            logger.info("[%s] Already running (%s trainer(s)); attaching to it",
+                        framework, n_trainers)
+        else:
+            elapsed = time.time() - start
+            logger.error(
+                "[%s] REFUSING: %s exists but no trainer is running, so this "
+                "pod holds a FINISHED fold. Polling would report that run's "
+                "stale exit code as though this launch produced it. To re-run "
+                "deliberately: ssh in and `rm -rf %s`.",
+                framework, lock_path, lock_path,
+            )
+            return {"fold": framework, "status": "failed",
+                    "error": f"stale launch lock at {lock_path}; refusing to "
+                             "report a prior run's exit code as this one's",
+                    "elapsed_s": elapsed}
 
     # Poll for the sentinel. A dropped poll is retried rather than fatal: the
     # fold is still running on the pod either way, and treating a transient
