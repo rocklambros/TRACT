@@ -136,13 +136,13 @@ class TestCSVFormulaInjection:
 
     def test_every_trigger_is_covered_and_non_strings_survive(self) -> None:
         """Guards the trigger set itself, and the float that used to crash it."""
-        from tract.crosswalk.export import _neutralize_csv_cell
+        from tract.crosswalk.export import neutralize_csv_cell
 
         for trigger in ("=", "+", "-", "@", "\t", "\r"):
             payload = f"{trigger}cmd|'/c calc'!A0"
-            assert _neutralize_csv_cell(payload) != payload, trigger
+            assert neutralize_csv_cell(payload) != payload, trigger
         # Every row carries a float confidence and a nullable reviewer; a guard
         # that indexed value[0] would take down every CSV export.
-        assert _neutralize_csv_cell(-0.5) == -0.5
-        assert _neutralize_csv_cell(None) is None
-        assert _neutralize_csv_cell("") == ""
+        assert neutralize_csv_cell(-0.5) == -0.5
+        assert neutralize_csv_cell(None) is None
+        assert neutralize_csv_cell("") == ""

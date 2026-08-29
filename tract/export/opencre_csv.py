@@ -32,6 +32,7 @@ import tempfile
 from io import StringIO
 from pathlib import Path
 
+from tract.crosswalk.export import CSV_FORMULA_TRIGGERS, neutralize_csv_cell
 from tract.export.filters import ExportableAssignment
 from tract.export.opencre_names import build_hyperlink, get_opencre_name
 from tract.licensing import exportable_description
@@ -39,12 +40,60 @@ from tract.licensing import exportable_description
 logger = logging.getLogger(__name__)
 
 
+def _is_formula_shaped(value: str) -> bool:
+    """True when a spreadsheet would treat this cell as a formula.
+
+    Shares CSV_FORMULA_TRIGGERS with the crosswalk exporter so the two cannot
+    drift, and repeats its numeric carve-out: "-1" and "-0.5" are numbers in a
+    cell, not formulas, and refusing them would reject legitimate identifiers.
+    """
+    if not value.startswith(CSV_FORMULA_TRIGGERS):
+        return False
+    try:
+        float(value)
+    except ValueError:
+        return True
+    return False
+
+
+def _require_safe_identifier(value: str, column: str, section_id: str) -> str:
+    """Refuse a formula-shaped value in a column OpenCRE parses as a key.
+
+    Escaping is the right remedy for prose and the wrong one here.
+    `parse_export_format()` splits `CRE 0` on the separator to recover a hub id
+    and reads `|id` as a section identifier, so an apostrophe guard would be
+    stored AS PART OF THE KEY -- `'342-641` resolves to no CRE, and the mapping
+    silently vanishes from the import rather than arriving wrong-looking.
+
+    Passing it through unguarded is the injection this function exists to stop,
+    and escaping it is data corruption, so the only honest option left is to
+    refuse. No identifier in any parsed framework is formula-shaped today; if
+    one ever is, that is a parser bug worth surfacing loudly rather than
+    papering over at the export boundary.
+    """
+    if _is_formula_shaped(value):
+        raise ValueError(
+            f"Row {section_id!r} carries a formula-shaped value in {column!r}: "
+            f"{value!r}. OpenCRE parses this column as an identifier, so it can "
+            "be neither escaped (the guard character would become part of the "
+            "key and the mapping would not resolve) nor exported as-is (a "
+            "spreadsheet would evaluate it). Fix the value at its parser."
+        )
+    return value
+
+
 def generate_opencre_csv(rows: list[ExportableAssignment], framework_id: str) -> str:
     """Generate OpenCRE CSV string from filtered assignment rows.
 
+    Prose columns are neutralised against CSV formula injection; identifier
+    columns are refused if formula-shaped, because escaping a key OpenCRE
+    parses would corrupt the mapping rather than protect anyone. See
+    _require_safe_identifier.
+
     Raises:
         ValueError: a row carries no framework_id, so its licence tier cannot
-            be resolved. Raised by tract.licensing.exportable_description.
+            be resolved (from tract.licensing.exportable_description); or a row
+            carries a formula-shaped hub id, hub name or section id.
         KeyError: framework_id has no OpenCRE name or hyperlink template.
     """
     opencre_name = get_opencre_name(framework_id)
@@ -65,8 +114,16 @@ def generate_opencre_csv(rows: list[ExportableAssignment], framework_id: str) ->
 
     withheld = 0
     for row in sorted_rows:
-        cre0 = f"{row['hub_id']}|{row['hub_name']}"
-        hyperlink = build_hyperlink(framework_id, row["section_id"])
+        # Identifier columns: refuse rather than escape. See
+        # _require_safe_identifier for why those are the only two options.
+        section_id = _require_safe_identifier(
+            row["section_id"], "id", row["section_id"],
+        )
+        cre0 = "{}|{}".format(
+            _require_safe_identifier(row["hub_id"], "CRE 0 (hub id)", section_id),
+            _require_safe_identifier(row["hub_name"], "CRE 0 (hub name)", section_id),
+        )
+        hyperlink = build_hyperlink(framework_id, section_id)
         # Keyed on the ROW's framework, not on the argument. The two agree on
         # every call site today, and keying on the argument would let a row
         # belonging to a withheld framework ride out under a publishable one's
@@ -77,12 +134,18 @@ def generate_opencre_csv(rows: list[ExportableAssignment], framework_id: str) ->
         if description != row["description"]:
             withheld += 1
 
+        # Prose columns: neutralise. OpenCRE copies these verbatim into its
+        # database and never evaluates them (parse_export_format has no formula
+        # handling at all), so a leading apostrophe is cosmetic there and stops
+        # a spreadsheet executing the cell when an analyst opens the exported
+        # file -- which is where the real exposure is, since this CSV is the
+        # RFC deliverable and gets read outside the project.
         writer.writerow({
             "CRE 0": cre0,
-            f"{opencre_name}|name": row["title"],
-            f"{opencre_name}|id": row["section_id"],
-            f"{opencre_name}|description": description,
-            f"{opencre_name}|hyperlink": hyperlink,
+            f"{opencre_name}|name": neutralize_csv_cell(row["title"]),
+            f"{opencre_name}|id": section_id,
+            f"{opencre_name}|description": neutralize_csv_cell(description),
+            f"{opencre_name}|hyperlink": neutralize_csv_cell(hyperlink),
         })
 
     if withheld:
