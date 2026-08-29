@@ -103,10 +103,6 @@ _TITLE_LENGTH_CEILING: int = 60
 # Text formats only. A .png or a .xlsx cannot be read as UTF-8, and a binary
 # artifact that smuggled licensed prose would be a different problem with a
 # different control.
-_SCANNED_SUFFIXES: frozenset[str] = frozenset({
-    ".py", ".md", ".json", ".jsonl", ".txt", ".csv", ".yml", ".yaml", ".rst",
-})
-
 # A 32-hex-character truncated sha256, the only shape a fingerprint may take.
 _FINGERPRINT_RE: re.Pattern[str] = re.compile(r"^[0-9a-f]{32}$")
 _SHA256_RE: re.Pattern[str] = re.compile(r"^[0-9a-f]{64}$")
@@ -407,11 +403,18 @@ def test_no_verbatim_licensed_statement_anywhere_in_the_tree(
     scanned = 0
     for relative in sorted(_tracked_files(".")):
         path = REPO_ROOT / relative
-        if path.suffix not in _SCANNED_SUFFIXES or path == FINGERPRINT_PATH:
+        if path == FINGERPRINT_PATH:
             continue
         try:
             body = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
+            # Binary, or unreadable. Not skipped by NAME: the suffix allowlist
+            # this replaced skipped 16 tracked files, and Path(".gitignore")
+            # .suffix is "" -- which is how a 12-word run of Annex A ended up
+            # in a .gitignore comment, in the very commit that fixed the
+            # original leak, and this gate reported clean. Decoding is the
+            # right test because it fails CLOSED: a new text file is scanned
+            # whatever it is called.
             continue
         scanned += 1
         hit = fingerprints.first_hit(body)
