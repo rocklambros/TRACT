@@ -128,8 +128,17 @@ Rank on **absolute micro-averaged validation hit@1, not delta**. The gate delta
 is measured against a per-arm zero-shot baseline that moves with both anchor and
 encoder, so ranking on delta rewards whichever arm started worst. A1 advances
 unless another arm beats it by more than **4.0 hit@1 points** — the corrected
-validation MDE. An arm can win selection and still fail the gate; that is the
-design, not a defect.
+validation MDE. **If two non-primary arms both clear A1 by more than the MDE,
+the higher absolute validation hit@1 advances.** An arm can win selection and
+still fail the gate; that is the design, not a defect.
+
+> The bolded sentence was missing from this file until 2026-08-28 and it is the
+> clause that decides this campaign. `CAMPAIGN2.md:168-169` has always carried
+> it; this restatement stopped one sentence early. Read alone, the truncated
+> version says the primary is eliminated and nothing chooses between the two
+> survivors — which invites either a third, unregistered statistic or an
+> amendment dated after the numbers are visible. Both are post-hoc selection.
+> This is a transcription fix against `CAMPAIGN2.md`, not a change of rule.
 
 ## The test round — once
 
