@@ -74,8 +74,11 @@ def fleet(monkeypatch: pytest.MonkeyPatch) -> dict[str, object]:
         return 0
 
     monkeypatch.setattr(ac, "arm_the_reaper", lambda: None)
-    monkeypatch.setattr(ac, "gate_a_gpu_is_fast_enough", lambda: True)
-    monkeypatch.setattr(ac, "gate_b_ssh_actually_authenticates", lambda: True)
+    # gate_a takes the arm's split, so the stub must accept it. It used to
+    # be hardcoded to "validation" while ARMS["TEST"] provisions the test
+    # roster; both hold five frameworks, so it passed by coincidence.
+    monkeypatch.setattr(ac, "gate_a_gpu_is_fast_enough", lambda *a, **k: True)
+    monkeypatch.setattr(ac, "gate_b_ssh_actually_authenticates", lambda *a, **k: True)
     monkeypatch.setattr(ac, "sweep_account", sweep)
     return {"swept": swept}
 
@@ -168,7 +171,7 @@ class TestFleetIsNeverStrandedHoldingNothing:
     ) -> None:
         orch = FakeOrchestrator()
         monkeypatch.setattr(ac, "orchestrator", orch)
-        monkeypatch.setattr(ac, gate, lambda: False)
+        monkeypatch.setattr(ac, gate, lambda *a, **k: False)
 
         assert ac.attempt_arm(ARM) is ac.ArmOutcome.FLEET_DOWN
         assert orch.calls == ["provision", "teardown"]
@@ -394,3 +397,35 @@ class TestLoggingStaysOutOfTheIncidentLog:
     def test_the_log_directory_is_redirectable(self) -> None:
         """Asserted so the redirect at the top of this file cannot rot away."""
         assert ac.LOG_DIR == Path(os.environ["TRACT_CAMPAIGN2_LOG_DIR"])
+
+
+def test_gate_a_expects_the_pod_count_of_the_arms_own_split(
+    monkeypatch: pytest.MonkeyPatch, tmp_path,
+) -> None:
+    """Gate A must count against the roster the arm actually provisions.
+
+    It was hardcoded to "validation" while ARMS["TEST"] provisions the test
+    split. Both rosters hold five frameworks today, so the gate passed by
+    coincidence -- and a coincidence is not a gate. This pins the behaviour by
+    forcing the two rosters to differ.
+    """
+    import json
+
+    state_dir = tmp_path / "scripts" / "phase1b"
+    state_dir.mkdir(parents=True)
+    (state_dir / ".pod_state.json").write_text(json.dumps({"pods": [
+        {"name": f"p{i}", "gpu_type": "NVIDIA H100 NVL", "cloud_type": "SECURE"}
+        for i in range(2)
+    ]}), encoding="utf-8")
+    monkeypatch.setattr(ac, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(
+        ac, "select_pod_configs",
+        lambda _cfg, split: [{}] * (2 if split == "test" else 5),
+    )
+
+    assert ac.gate_a_gpu_is_fast_enough("test") is True, (
+        "two pods against a two-fold test roster is a complete fleet"
+    )
+    assert ac.gate_a_gpu_is_fast_enough("validation") is False, (
+        "two pods against a five-fold validation roster is short three folds"
+    )

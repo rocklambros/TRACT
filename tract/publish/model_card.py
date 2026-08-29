@@ -72,7 +72,17 @@ def _ranked_folds(
             "Model card cannot be built: fold_results is empty, so there is no "
             "measured fold to describe. Run the LOFO evaluation before publishing."
         )
-    ordered = sorted(fold_results, key=lambda fold: (fold["hit1"], fold["fold"]))
+    # Through _measured, like every other published figure in this module. A
+    # direct fold["hit1"] raises a bare KeyError naming neither the file nor
+    # the fold, from the one function whose whole purpose is provenance -- and
+    # _measured exists precisely to report "not measured, from <origin>".
+    ordered = sorted(
+        fold_results,
+        key=lambda fold: (
+            _measured(fold, "hit1", "a fold_results entry"),
+            _measured(fold, "fold", "a fold_results entry"),
+        ),
+    )
     return ordered[-1], ordered[0]
 
 
@@ -124,6 +134,13 @@ def generate_model_card(
             f"| {delta:+.3f} | {fold.get('hit_any', 'N/A')} | {fold['n']} |\n"
         )
         total_n += fold["n"]
+
+    # Derived, not "5". The sentence rendering total_n also said "across 5 AI
+    # frameworks" as a literal, so a four- or six-fold run published a card
+    # stating the wrong fold count immediately beside a correctly derived
+    # control count -- the exact literal-versus-derived defect the rest of this
+    # module was rewritten to remove.
+    n_folds = len(fold_results)
 
     micro_hit1 = sum(f["hit1"] * f["n"] for f in fold_results) / total_n
     micro_zs = sum(f["zs_hit1"] * f["n"] for f in fold_results) / total_n
@@ -386,7 +403,7 @@ run. Read them under the erratum at the top of this card.
 
 ### Confidence Intervals
 
-All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{hit1_ci['ci_low']:.3f}, {hit1_ci['ci_high']:.3f}], computed by fold-stratified bootstrap over the per-fold hit@1 indicators, reflecting the relatively small evaluation set ({total_n} controls across 5 AI frameworks).
+All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{hit1_ci['ci_low']:.3f}, {hit1_ci['ci_high']:.3f}], computed by fold-stratified bootstrap over the per-fold hit@1 indicators, reflecting the relatively small evaluation set ({total_n} controls across {n_folds} held-out frameworks).
 
 ---
 

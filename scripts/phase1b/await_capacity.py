@@ -198,8 +198,15 @@ REAPER_ARM_TIMEOUT_S: Final[int] = 30
 # _check_budget prices, so no stage can outlive the spend the budget gate
 # already authorised.
 STAGE_TIMEOUT_MARGIN: Final[float] = 1.25
-# Both splits carry five folds and every Campaign 2 arm is a validation arm.
-FLEET_SIZE: Final[int] = len(select_pod_configs(None, "validation"))
+# Sized on the LARGER roster, not on "validation". That comment used to read
+# "every Campaign 2 arm is a validation arm", which stopped being true the
+# moment the TEST arm was registered here. Both rosters hold five frameworks
+# today, so the old constant was right by coincidence; adding or dropping one
+# validation framework would have sized the test round's timeouts against a
+# fleet it never provisions.
+FLEET_SIZE: Final[int] = max(
+    len(select_pod_configs(None, split)) for split in ("validation", "test")
+)
 # provision walks a fallback ladder of GPU types when one is out of capacity,
 # and every rung waits SSH_POLL_TIMEOUT_S for endpoints before giving up.
 PROVISION_TIMEOUT_S: Final[int] = int(
@@ -400,8 +407,15 @@ def orchestrator(*args: str) -> int:
         return STAGE_TIMEOUT_RC
 
 
-def gate_a_gpu_is_fast_enough() -> bool:
-    """Every pod landed on a part that can finish a fold inside the timeout."""
+def gate_a_gpu_is_fast_enough(split: str = "validation") -> bool:
+    """Every pod landed on a part that can finish a fold inside the timeout.
+
+    The expected pod count follows the ARM's split. It was hardcoded to
+    "validation" while ARMS["TEST"] provisions the test roster: both hold five
+    frameworks today, so the gate passed by coincidence. Change either roster
+    and a fleet short one fold passes the gate, or a healthy fleet fails it and
+    the single unrepeatable test round loses its capacity window.
+    """
     import json
 
     state_path = PROJECT_ROOT / "scripts" / "phase1b" / ".pod_state.json"
@@ -417,7 +431,7 @@ def gate_a_gpu_is_fast_enough() -> bool:
         verdict = "OK" if gpu in ACCEPTABLE_GPUS else "TOO SLOW"
         logger.info("  Gate A: %s -> %s (%s) %s", pod.get("name"), gpu, cloud, verdict)
         ok = ok and gpu in ACCEPTABLE_GPUS
-    expected = len(select_pod_configs(None, "validation"))
+    expected = len(select_pod_configs(None, split))
     if len(pods) != expected:
         logger.error("Gate A: %d pods, expected %d. A LOFO arm short one fold "
                      "cannot produce a number.", len(pods), expected)
@@ -535,7 +549,7 @@ def attempt_arm(arm: Arm) -> ArmOutcome:
             logger.error("provision failed. Nothing has been computed, so the "
                          "fleet is torn down.")
             return ArmOutcome.FLEET_DOWN
-        if not gate_a_gpu_is_fast_enough():
+        if not gate_a_gpu_is_fast_enough(arm.split):
             logger.error("Gate A failed. Not spending training hours on a fleet "
                          "whose folds would die at FOLD_TIMEOUT_S.")
             return ArmOutcome.FLEET_DOWN
