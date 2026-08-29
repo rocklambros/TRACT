@@ -6,6 +6,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from typing import Final
 
 from tract.review.types import (
     AcceptanceRate,
@@ -23,6 +24,36 @@ from tract.review.types import (
 logger = logging.getLogger(__name__)
 
 _DEFAULT_CONFIDENCE_THRESHOLD = 0.5
+
+# The provenance the export draws calibration items from. Items in a review
+# file carrying it are calibration; the main review query excludes this
+# provenance, so nothing else in the file can have it.
+CALIBRATION_PROVENANCE: Final[str] = "ground_truth_T1-AI"
+
+
+def _calibration_ids_from_db(db_path: Path) -> frozenset[int]:
+    """Assignment ids the export would have drawn calibration items from.
+
+    A superset of what any one export selected -- selection samples this pool --
+    but sound as a membership test for ids that are actually in a review file,
+    because the reviewable query excludes this provenance entirely.
+
+    Returns an empty set when the database has no such rows, which is the
+    honest answer: an export built against that database had no calibration
+    items either, and `_compute_calibration_quality` already reports a null
+    quality score for an empty set.
+    """
+    from tract.crosswalk.schema import get_connection  # noqa: PLC0415
+
+    conn = get_connection(db_path)
+    try:
+        rows = conn.execute(
+            "SELECT id FROM assignments WHERE provenance = ?",
+            (CALIBRATION_PROVENANCE,),
+        ).fetchall()
+    finally:
+        conn.close()
+    return frozenset(int(r["id"]) for r in rows)
 
 
 def compute_review_metrics(
@@ -45,8 +76,15 @@ def compute_review_metrics(
     """
     predictions = review_data.get("predictions", [])
 
-    real = [p for p in predictions if p.get("id", 0) >= 0]
-    calibration = [p for p in predictions if p.get("id", 0) < 0]
+    # Calibration membership comes from the database, not from a marker in the
+    # reviewed file. It used to be `id < 0`, which is exactly the tell that let
+    # the reviewer these items measure pick them out of their own worklist
+    # (F19). The reviewer-facing export now carries real assignment ids and a
+    # uniform provenance, so the only surviving discriminator is the store --
+    # which the reviewer never sees and which cannot drift from it.
+    calibration_ids = _calibration_ids_from_db(db_path)
+    real = [p for p in predictions if p.get("id") not in calibration_ids]
+    calibration = [p for p in predictions if p.get("id") in calibration_ids]
 
     coverage = _compute_coverage(real)
     overall = _compute_overall_rates(real)
@@ -149,7 +187,13 @@ def _compute_calibration_quality(calibration: list[ReviewItem]) -> CalibrationQu
     agreed = 0
     disagreements: list[CalibrationDisagreement] = []
     for c in reviewed:
-        status = c.get("status")
+        # `reviewed` already excludes status == "pending", but .get() still
+        # types as str | None and CalibrationDisagreement declares status as
+        # str. Defaulting names the impossible case rather than asserting it
+        # away: an item with no status at all is a malformed record, and
+        # recording it as such is more useful in a disagreement report than
+        # crashing the metrics run that would have surfaced it.
+        status = c.get("status") or "missing"
         if status == "accepted":
             agreed += 1
         else:

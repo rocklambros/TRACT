@@ -505,6 +505,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--model-dir", default=None,
         help="Path to deployment model directory",
     )
+    p_review_export.add_argument(
+        "--operator-dir", default=None,
+        help=(
+            "Where to write the calibration answer key. Defaults to a SIBLING "
+            "of --output, never inside it, so that sending the reviewer the "
+            "output directory does not send them the key."
+        ),
+    )
 
     # ── review-validate ─────────────────────────────────────────────
     p_review_validate = subparsers.add_parser(
@@ -1838,7 +1846,10 @@ def _cmd_import_ground_truth(args: argparse.Namespace) -> None:
 
 
 def _cmd_review_export(args: argparse.Namespace) -> None:
-    from tract.review.export import generate_review_export
+    from tract.review.export import (
+        DEFAULT_OPERATOR_DIRNAME,
+        generate_review_export,
+    )
     from tract.review.guide import generate_hub_reference, generate_reviewer_guide
 
     output_dir = Path(args.output)
@@ -1851,12 +1862,17 @@ def _cmd_review_export(args: argparse.Namespace) -> None:
         model_dir = Path(args.model_dir)
         source = "local"
 
+    operator_dir = (
+        Path(args.operator_dir) if getattr(args, "operator_dir", None)
+        else output_dir.parent / DEFAULT_OPERATOR_DIRNAME
+    )
     metadata = generate_review_export(
         PHASE1C_CROSSWALK_DB_PATH,
         model_dir,
         output_dir,
         PHASE1D_CALIBRATION_PATH,
         source=source,
+        operator_dir=operator_dir,
     )
     generate_reviewer_guide(output_dir, metadata)
     generate_hub_reference(PHASE1C_CROSSWALK_DB_PATH, output_dir)
@@ -1867,6 +1883,12 @@ def _cmd_review_export(args: argparse.Namespace) -> None:
     )
     print(f"Priority breakdown: {metadata['priority_breakdown']}")
     print(f"Files written to {output_dir}")
+    # Printed separately and named as an answer key, because the whole scheme
+    # fails if this directory is handed over with the work.
+    print(
+        f"Calibration key written to {operator_dir} -- OPERATOR ONLY. "
+        f"Send the reviewer {output_dir} and nothing else."
+    )
 
 
 def _cmd_review_validate(args: argparse.Namespace) -> None:

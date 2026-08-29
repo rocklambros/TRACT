@@ -132,14 +132,31 @@ class IngestReviewDocument(TypedDict):
 
 
 class ExportMetadata(TypedDict):
-    """Summary header for the export, also the return value of the export."""
+    """Summary header written into review_export.json -- the reviewer's copy.
+
+    `calibration_items` is deliberately absent. Written here it is a check
+    figure: it tells the reviewer being audited how many of their items are
+    controls, which turns a guess about which ones into something they can
+    verify (F19). The count is real and the operator needs it, so it lives on
+    ExportSummary, which is returned to the caller and never serialised into
+    the reviewer's file.
+    """
 
     generated_at: str
     model_version: str
     total_predictions: int
-    calibration_items: int
     framework_breakdown: dict[str, int]
     priority_breakdown: dict[str, int]
+
+
+class ExportSummary(ExportMetadata):
+    """What generate_review_export returns to its caller, who is the operator.
+
+    A superset of what is written. Anything added here is visible to the
+    operator only; anything added to ExportMetadata reaches the reviewer.
+    """
+
+    calibration_items: int
 
 
 class ReviewExportDocument(TypedDict):
