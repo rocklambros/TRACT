@@ -778,12 +778,43 @@ TRACT_CALIBRATION_SHA256: Final[str] = (
 TRACT_HIERARCHY_SHA256: Final[str] = (
     "8dc48bd397cf6ee455193a9768760258f235fb5519659915dccd733dcaa19738")
 
-# sha256 keyed by the file's basename, for download-time integrity.
+# sha256 keyed by the file's path within the snapshot, for download-time
+# integrity. EVERY member of TRACT_MODEL_SNAPSHOT_ALLOW_PATTERNS needs an entry
+# and _verify_pinned refuses a snapshot carrying a file it has no hash for.
+#
+# This used to name four: the weights and the three deployment artifacts. The
+# other nine were downloaded and consumed unverified, and they are not inert
+# padding -- SentenceTransformer imports the classes modules.json names and
+# builds the model from config.json, so an altered pair changes every assignment
+# the tool produces while the CLI reports a clean integrity check. Pinning the
+# weights and leaving the file that decides which code loads them unpinned is
+# the wrong half.
+#
+# Computed 2026-08-29 from the pinned revision; the original four re-verified
+# unchanged at the same time.
 TRACT_MODEL_PINNED_FILE_HASHES: Final[dict[str, str]] = {
     "model.safetensors": TRACT_MODEL_SAFETENSORS_SHA256,
     "deployment_artifacts.npz": TRACT_DEPLOYMENT_ARTIFACTS_SHA256,
     "calibration.json": TRACT_CALIBRATION_SHA256,
     "cre_hierarchy.json": TRACT_HIERARCHY_SHA256,
+    "config.json": (
+        "18614f5bf7d7912a48ff06cdf9717ec4f2394fe727278b7c821e895df16f19ff"),
+    "tokenizer.json": (
+        "91f1def9b9391fdabe028cd3f3fcc4efd34e5d1f08c3bf2de513ebb5911a1854"),
+    "tokenizer_config.json": (
+        "479a5afc56069a77cc24c74a1943501275664e8d493e215f5716a81ebc0e86db"),
+    "special_tokens_map.json": (
+        "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a"),
+    "vocab.txt": (
+        "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"),
+    "config_sentence_transformers.json": (
+        "fbb6db75971b7f9a254da06349b1f5fa7427666b4ae1170ff398a0c6594622ef"),
+    "modules.json": (
+        "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf"),
+    "sentence_bert_config.json": (
+        "65c2293c310f5476a8d1cbada277722c3e7ae5b5ddbaa2d2fe5d075f410d6d02"),
+    "1_Pooling/config.json": (
+        "31345c23e6f8196484977bf94e465bfe9859101fc4a89d53befad73f776014a9"),
 }
 
 TRACT_MODEL_SNAPSHOT_ALLOW_PATTERNS: Final[tuple[str, ...]] = (
