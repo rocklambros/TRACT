@@ -1,0 +1,117 @@
+{
+  "aggregate_hit1": {
+    "ci_high": 0.2782608695652174,
+    "ci_low": 0.2316205533596838,
+    "fold_sizes": {
+      "ASVS": 277,
+      "CAPEC": 349,
+      "CWE": 246,
+      "ISO 27001": 93,
+      "NIST 800-53 v5": 300
+    },
+    "macro_mean": 0.26463777230645585,
+    "mean": 0.25533596837944667,
+    "n_folds": 5,
+    "n_resamples": 10000,
+    "n_total": 1265
+  },
+  "config_name": "c2r_A5_title_bge",
+  "gate": {
+    "alpha_effective": 0.016952427508441503,
+    "ci_high": 0.0031818181818178944,
+    "ci_high_familywise": 0.009486166007905139,
+    "ci_low": -0.04743083003952569,
+    "ci_low_familywise": -0.05236864717118317,
+    "ci_low_pass": false,
+    "familywise_pass": false,
+    "macro_delta": -0.011557673180906568,
+    "micro_delta": -0.022134387351778657,
+    "n_configurations": 3,
+    "n_total": 1265,
+    "negative_folds": [
+      "ASVS",
+      "NIST 800-53 v5"
+    ],
+    "p_value": 0.9546,
+    "paired": true,
+    "per_fold": {
+      "ASVS": {
+        "delta": -0.27436823104693137,
+        "n_eval_items": 277,
+        "trained_hit1": 0.4584837545126354,
+        "zero_shot_hit1": 0.7328519855595668
+      },
+      "CAPEC": {
+        "delta": 0.0515759312320917,
+        "n_eval_items": 349,
+        "trained_hit1": 0.14613180515759314,
+        "zero_shot_hit1": 0.09455587392550144
+      },
+      "CWE": {
+        "delta": 0.11382113821138212,
+        "n_eval_items": 246,
+        "trained_hit1": 0.2764227642276423,
+        "zero_shot_hit1": 0.16260162601626016
+      },
+      "ISO 27001": {
+        "delta": 0.06451612903225803,
+        "n_eval_items": 93,
+        "trained_hit1": 0.26881720430107525,
+        "zero_shot_hit1": 0.20430107526881722
+      },
+      "NIST 800-53 v5": {
+        "delta": -0.013333333333333336,
+        "n_eval_items": 300,
+        "trained_hit1": 0.17333333333333334,
+        "zero_shot_hit1": 0.18666666666666668
+      }
+    },
+    "point_estimate_pass": false,
+    "selection_optimistic": true,
+    "threshold": 0.1,
+    "verdicts_agree": true,
+    "worst_fold": "ASVS",
+    "worst_fold_delta": -0.27436823104693137
+  },
+  "lexical_overlap": {
+    "echo_fraction": 0.045059288537549404,
+    "hit_at_1_echo": 0.6140350877192983,
+    "hit_at_1_non_echo": 0.23841059602649006,
+    "n_lexical_echo": 57,
+    "n_non_echo": 1208,
+    "n_total": 1265
+  },
+  "per_fold": {
+    "ASVS": {
+      "hit_at_1": 0.4584837545126354,
+      "hit_at_5": 0.7148014440433214,
+      "mrr": 0.5840882098558321,
+      "ndcg_at_10": 0.6353883174640299
+    },
+    "CAPEC": {
+      "hit_at_1": 0.14613180515759314,
+      "hit_at_5": 0.3008595988538682,
+      "mrr": 0.22946667283375027,
+      "ndcg_at_10": 0.2519600284976034
+    },
+    "CWE": {
+      "hit_at_1": 0.2764227642276423,
+      "hit_at_5": 0.4796747967479675,
+      "mrr": 0.37199940268142856,
+      "ndcg_at_10": 0.4078783244091942
+    },
+    "ISO 27001": {
+      "hit_at_1": 0.26881720430107525,
+      "hit_at_5": 0.4731182795698925,
+      "mrr": 0.36594185469034796,
+      "ndcg_at_10": 0.39904969308847676
+    },
+    "NIST 800-53 v5": {
+      "hit_at_1": 0.17333333333333334,
+      "hit_at_5": 0.3233333333333333,
+      "mrr": 0.25096787792666686,
+      "ndcg_at_10": 0.279650778876246
+    }
+  },
+  "scoped_to_folds": null
+}
