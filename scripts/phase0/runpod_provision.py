@@ -30,6 +30,25 @@ GPU_PREFERENCE: Final[list[str]] = [
     "NVIDIA A100 80GB PCIe",
 ]
 
+# RunPod's two tiers. SECURE is RunPod's own datacentres; COMMUNITY is
+# third-party hosts, and cheaper for that reason.
+CLOUD_TYPE_SECURE: Final[str] = "SECURE"
+CLOUD_TYPE_COMMUNITY: Final[str] = "COMMUNITY"
+# create_pod asks for these in order and takes the first that has capacity.
+# This tuple is AUTHORITATIVE: it is what the fleet actually runs on, and
+# get_gpu_price prices its head rather than asking a separate question.
+CLOUD_TYPE_PREFERENCE: Final[tuple[str, ...]] = (
+    CLOUD_TYPE_SECURE, CLOUD_TYPE_COMMUNITY,
+)
+# The tier every budget number is computed against. Pricing the preferred tier
+# rather than the cross-cloud lowest matters because the two diverge: measured
+# live on 2026-08-26, an H100 80GB was $2.69/hr unfiltered and $3.29/hr with
+# secureCloud:true, so the unfiltered figure understated the fleet by 22.3%.
+# Pricing the head of the preference order is also the conservative choice --
+# SECURE is the dearer tier, so a fallback to COMMUNITY can only come in under
+# the budget that was already checked.
+PRICE_CLOUD_TYPE: Final[str] = CLOUD_TYPE_PREFERENCE[0]
+
 
 def _get_api_key() -> str:
     result = subprocess.run(
@@ -74,12 +93,19 @@ def list_available_gpus(min_vram_gb: int = 48) -> list[dict[str, Any]]:
 
 
 def get_gpu_price(gpu_type_id: str, gpu_count: int = 1) -> float:
-    """On-demand USD/hour for one pod of this GPU type.
+    """On-demand USD/hour for one pod of this GPU type, on the tier we buy.
 
     Raises if the price cannot be read. A run whose hourly rate is unknown
     cannot be checked against a budget, and "unknown" must not silently become
     "free" -- that is how a fleet of the most expensive part on the market gets
     provisioned against a ceiling that exists only in prose.
+
+    The query is filtered to PRICE_CLOUD_TYPE rather than asking for the
+    cross-cloud lowest price. Without the filter this priced a pod the code
+    does not prefer: create_pod asks for SECURE first, and on 2026-08-26 the
+    unfiltered lowest for an H100 80GB was $2.69/hr against $3.29/hr secure --
+    a 22.3% understatement carried into every budget check, every "worst case"
+    line in the log, and the campaign plan built on them.
     """
     data = _gql(
         "query GpuPrice($id: String, $input: GpuLowestPriceInput) { "
@@ -88,7 +114,13 @@ def get_gpu_price(gpu_type_id: str, gpu_count: int = 1) -> float:
         "    lowestPrice(input: $input) { uninterruptablePrice minimumBidPrice } "
         "  } "
         "}",
-        {"id": gpu_type_id, "input": {"gpuCount": gpu_count}},
+        {
+            "id": gpu_type_id,
+            "input": {
+                "gpuCount": gpu_count,
+                "secureCloud": PRICE_CLOUD_TYPE == CLOUD_TYPE_SECURE,
+            },
+        },
     )
     types = data.get("gpuTypes") or []
     if not types:
@@ -247,11 +279,26 @@ def create_pod(
     volume_gb: int = 50,
     container_disk_gb: int = 20,
 ) -> dict[str, Any]:
-    """Create a RunPod pod with retry. Returns {pod_id, ip, port, gpu_type, name}."""
+    """Create a RunPod pod with retry.
+
+    Returns {pod_id, ip, port, gpu_type, name, cloud_type}.
+
+    `cloud_type` is which tier of CLOUD_TYPE_PREFERENCE actually accepted the
+    pod. It used to go unrecorded, so a fleet that fell back from SECURE to
+    COMMUNITY looked identical in the logs and in the state file to one that
+    did not. That is not bookkeeping: _rsync_to ships the working tree,
+    data/processed/licensed included, to whichever host answered, so the tier
+    is a statement about where licensed corpus went. It also explains a price
+    that came in under the budget check, which prices SECURE.
+    """
     max_attempts = 3
     for attempt in range(1, max_attempts + 1):
         pod = None
-        for cloud_type in ["SECURE", "COMMUNITY"]:
+        # Captured beside `pod` rather than read back off the response: the tier
+        # we ASKED for is the fact worth recording, and it is known here without
+        # depending on a field the REST payload may or may not carry.
+        landed_cloud = ""
+        for cloud_type in CLOUD_TYPE_PREFERENCE:
             payload = {
                 "name": name,
                 "imageName": image,
@@ -270,6 +317,7 @@ def create_pod(
             data = resp.json()
             if isinstance(data, dict) and data.get("id"):
                 pod = data
+                landed_cloud = cloud_type
                 break
             err = data[0]["error"] if isinstance(data, list) else data.get("error", "")
             logger.warning("%s cloud (attempt %d): %s", cloud_type, attempt, err)
@@ -284,7 +332,17 @@ def create_pod(
 
     pod_id = pod["id"]
     _validate_pod_id(pod_id)
-    logger.info("Pod created: %s (%s) — waiting for SSH...", pod_id, gpu_type_id)
+    if landed_cloud != PRICE_CLOUD_TYPE:
+        # Loud, because this is the silent half of the fallback: the pod is
+        # cheaper than the budget assumed and is running on a host RunPod does
+        # not own, and neither fact appeared anywhere before.
+        logger.warning(
+            "Pod %s (%s) landed on the %s tier, not the preferred %s. The "
+            "working tree, licensed corpus included, will be rsynced to it.",
+            pod_id, name, landed_cloud, PRICE_CLOUD_TYPE,
+        )
+    logger.info("Pod created: %s (%s, %s cloud) — waiting for SSH...",
+                pod_id, gpu_type_id, landed_cloud)
 
     try:
         ssh_info = _wait_for_ssh(pod_id)
@@ -310,6 +368,7 @@ def create_pod(
         "port": ssh_info["port"],
         "gpu_type": gpu_type_id,
         "name": name,
+        "cloud_type": landed_cloud,
     }
 
 
@@ -380,7 +439,11 @@ def create_pods_parallel(
             container_disk_gb=container_disk_gb,
         )
         pod["role"] = cfg["role"]
-        logger.info("Ready: %s @ %s:%d", cfg["name"], pod["ip"], pod["port"])
+        # The one line that ties a fold to the host it will train on, so the
+        # tier belongs on it rather than only in create_pod's own log.
+        logger.info("Ready: %s @ %s:%d (%s cloud) for fold %s",
+                    cfg["name"], pod["ip"], pod["port"],
+                    pod.get("cloud_type") or "unrecorded", cfg["role"])
         return pod
 
     workers = min(max_workers, len(configs))

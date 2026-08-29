@@ -1,11 +1,12 @@
 """Model loading utilities for Phase 1C orchestration."""
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 
 from sentence_transformers import SentenceTransformer
+
+from tract.training.checkpoint import assert_checkpoint_is_inert
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +16,24 @@ EXPECTED_DIM = 1024
 def load_fold_model(fold_path: Path) -> SentenceTransformer:
     """Load a saved LOFO fold model with LoRA adapters.
 
+    Fold checkpoints come back off rented third-party GPU pods, so the
+    directory is vetted before sentence-transformers is allowed to look at it:
+    by the time it has read modules.json, whatever that file named has already
+    been imported and run.
+
     Args:
         fold_path: Path to fold directory (e.g., results/.../fold_MITRE_ATLAS).
                    Expects model/model/ subdirectory with adapter files.
+
+    Raises:
+        FileNotFoundError: If the model/model/ subdirectory does not exist.
+        ValueError: If the checkpoint fails assert_checkpoint_is_inert, or if
+            the smoke-test embedding has the wrong dimension.
     """
     model_dir = fold_path / "model" / "model"
-    if not model_dir.exists():
-        raise FileNotFoundError(f"Model directory not found: {model_dir}")
+    assert_checkpoint_is_inert(model_dir)
 
-    model = SentenceTransformer(str(model_dir))
+    model = SentenceTransformer(str(model_dir), trust_remote_code=False)
     model.max_seq_length = 512
 
     emb = model.encode(["smoke test"], normalize_embeddings=True, show_progress_bar=False)
@@ -42,19 +52,10 @@ def load_deployment_model(model_dir: Path) -> SentenceTransformer:
 
     Raises:
         FileNotFoundError: If model_dir does not exist.
-        ValueError: If config.json declares auto_map or custom_pipelines (custom code injection).
+        ValueError: If the checkpoint fails assert_checkpoint_is_inert, or if
+            the smoke-test embedding has the wrong dimension.
     """
-    if not model_dir.exists():
-        raise FileNotFoundError(f"Model directory not found: {model_dir}")
-
-    config_path = model_dir / "config.json"
-    if config_path.exists():
-        cfg = json.loads(config_path.read_text(encoding="utf-8"))
-        if cfg.get("auto_map") or cfg.get("custom_pipelines"):
-            raise ValueError(
-                f"Refusing to load model with custom code (auto_map/custom_pipelines) "
-                f"in {config_path}"
-            )
+    assert_checkpoint_is_inert(model_dir)
 
     model = SentenceTransformer(str(model_dir), trust_remote_code=False)
     model.max_seq_length = 512

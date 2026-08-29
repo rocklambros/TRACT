@@ -12,11 +12,13 @@ Orchestrates the full Phase 1B pipeline:
 from __future__ import annotations
 
 import logging
+import math
 import os
 import subprocess
 import time
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import numpy as np
 
@@ -112,6 +114,31 @@ ARM_DEFINING_KEYS: tuple[str, ...] = (
     # label -- the two most different experiments this project can run.
     "hub_rep_format",
 )
+
+# hit@1 is an indicator: for each eval item the top-ranked hub either was a
+# valid answer or it was not. evaluate_on_fold writes 1.0 or 0.0 and nothing
+# else, so any other value in the array did not come from a measurement.
+INDICATOR_DOMAIN: Final[frozenset[float]] = frozenset({0.0, 1.0})
+
+# How many distinct offending values an error quotes before it stops counting.
+# Enough to tell one stray entry from a wholly fabricated array, few enough
+# that a 1,400-item fold does not print a wall of numbers into a CI log.
+MAX_REPORTED_OFFENDING_VALUES: Final[int] = 8
+
+# metrics.hit_at_1 and mean(hit1_indicators) are the same integer count over
+# the same denominator, computed in two modules (score_predictions in
+# scripts.phase0.common, and here), so on every one of the 32 committed fold
+# records they agree exactly. This tolerance is for float summation order and
+# nothing else: one flipped indicator in the largest committed fold (CAPEC,
+# 349 items) moves the mean by 2.9e-3, six orders of magnitude above it, and
+# is meant to be caught.
+INDICATOR_METRIC_TOLERANCE: Final[float] = 1e-9
+
+# A hit rate is a fraction of items, and a difference of two hit rates
+# measured on the same items cannot leave [-1, 1]. Named because three
+# separate layers check them and must not drift apart.
+HIT_RATE_BOUNDS: Final[tuple[float, float]] = (0.0, 1.0)
+HIT_RATE_DELTA_BOUNDS: Final[tuple[float, float]] = (-1.0, 1.0)
 
 
 def _get_git_sha() -> str:
@@ -439,6 +466,124 @@ def lexical_overlap_diagnostic(
     }
 
 
+def _numeric_value(value: Any) -> float | None:
+    """The value of one indicator entry as a double, or None if it has none.
+
+    None here means "this entry is not a number at all" -- a string, a null, a
+    nested list, or an integer too large for a double -- and the callers below
+    turn that into a raise. It is a classification, not a failure signal.
+    """
+    if not isinstance(value, (int, float)):
+        return None
+    try:
+        return float(value)
+    except OverflowError:
+        # A JSON integer wider than a double. Whatever it is, it is not a hit.
+        return None
+
+
+def _out_of_domain_values(indicators: Sequence[Any]) -> tuple[list[str], int]:
+    """The distinct entries that are neither 0 nor 1, as text to quote.
+
+    Returns the values to show and how many further distinct ones were left
+    out. Numbers sort numerically and everything else follows them by repr, so
+    the sample reads in the order a human would have written it rather than in
+    whatever order json.load happened to hand the array over.
+    """
+    ranked: dict[str, tuple[int, float, str]] = {}
+    for value in indicators:
+        numeric = _numeric_value(value)
+        if numeric is not None and numeric in INDICATOR_DOMAIN:
+            continue
+        shown = repr(value)
+        if numeric is not None and not math.isnan(numeric):
+            ranked[shown] = (0, numeric, shown)
+        else:
+            ranked[shown] = (1, 0.0, shown)
+
+    ordered = [shown for shown, _ in sorted(ranked.items(), key=lambda kv: kv[1])]
+    return (
+        ordered[:MAX_REPORTED_OFFENDING_VALUES],
+        max(0, len(ordered) - MAX_REPORTED_OFFENDING_VALUES),
+    )
+
+
+def _assert_indicator_domain(
+    indicators: Sequence[Any], path: Path, field: str,
+) -> None:
+    """Refuse an indicator array that is not made of hits and misses.
+
+    Every other guard in load_fold_results checks SHAPE: that a field is
+    present, that two arrays are the same length, that the folds agree on an
+    arm, on their inputs and on a commit. A red-team pass wrote five fold
+    records whose hit1_indicators were all 7.0 and walked them through the
+    real load -> aggregate -> gate path: every guard passed, the aggregate
+    logged "hit@1 (micro): 7.0000", and the gate returned
+    point_estimate_pass=true, ci_low_pass=true, verdicts_agree=true. Nothing
+    between the file and the headline number had ever asked what the values
+    meant.
+    """
+    offending, withheld = _out_of_domain_values(indicators)
+    if not offending:
+        return
+    suffix = f" (and {withheld} more distinct values)" if withheld else ""
+    raise ValueError(
+        f"{path}: {field} holds values outside the 0/1 indicator domain: "
+        f"{', '.join(offending)}{suffix}. hit@1 is a per-item indicator -- the "
+        "top-ranked hub was a valid answer or it was not -- so an array "
+        "carrying anything else did not come from evaluate_on_fold and must "
+        "not be micro-averaged into a hit rate."
+    )
+
+
+def _assert_summary_matches_indicators(
+    metrics: Any, indicators: Sequence[Any], path: Path, where: str,
+) -> None:
+    """Make the record's two statements of its own hit@1 agree.
+
+    A fold record says hit@1 twice: once as metrics.hit_at_1, which is what a
+    human reads, and once as the array the micro average, the bootstrap CI and
+    the gate are all computed from. Nothing made them agree. The domain check
+    above catches an array that was never indicators; this catches the subtler
+    producer-side case where a well-formed array no longer describes the
+    summary sitting beside it in the same file -- a rescore applied to one and
+    not the other, or a record assembled from two runs.
+
+    Called after _assert_indicator_domain, so every entry is already 0 or 1.
+    """
+    if not indicators:
+        raise ValueError(
+            f"{path}: {where} covers an empty indicator array. A fold with no "
+            "eval items cannot state a hit rate, and n_eval_items=0 satisfies "
+            "the length check by arithmetic accident."
+        )
+    if not isinstance(metrics, dict) or "hit_at_1" not in metrics:
+        raise ValueError(
+            f"{path}: {where} carries no 'hit_at_1' to check its "
+            f"{len(indicators)} indicators against. Every producer of this "
+            "file writes one, so a record without it was assembled somewhere "
+            "else -- which is the case this cross-check exists for. Skipping "
+            "the check when the field is absent is how a guard dies."
+        )
+    reported = _numeric_value(metrics["hit_at_1"])
+    if reported is None:
+        raise ValueError(
+            f"{path}: {where} reports hit_at_1={metrics['hit_at_1']!r}, which "
+            "is not a number, so it states nothing the indicators can be "
+            "checked against."
+        )
+    measured = float(sum(indicators)) / len(indicators)
+    if abs(reported - measured) > INDICATOR_METRIC_TOLERANCE:
+        raise ValueError(
+            f"{path}: {where} reports hit_at_1={reported!r} while the "
+            f"{len(indicators)} indicators beside it average {measured!r}. "
+            "The record states its own hit@1 twice and the two statements "
+            f"disagree by more than {INDICATOR_METRIC_TOLERANCE:g}, so one of "
+            "them describes an evaluation the other did not; refusing to "
+            "aggregate either."
+        )
+
+
 def load_fold_results(
     results_dir: Path,
     expected_frameworks: set[str] | None = None,
@@ -473,18 +618,37 @@ def load_fold_results(
                 f"{record['n_eval_items']} eval items. The fold record is "
                 "internally inconsistent; refusing to aggregate it."
             )
+        _assert_indicator_domain(record["hit1_indicators"], path, "hit1_indicators")
+        _assert_summary_matches_indicators(
+            record.get("metrics"), record["hit1_indicators"], path, "metrics",
+        )
         zero_shot = record.get("zero_shot") or {}
         zs_indicators = zero_shot.get("hit1_indicators")
-        if zs_indicators is not None and len(zs_indicators) != record["n_eval_items"]:
-            # Equal length is what makes the delta paired. A baseline array of
-            # the wrong length cannot be aligned item-for-item with the trained
-            # one, and a mis-paired delta gets a paired interval it has not
-            # earned.
-            raise ValueError(
-                f"{path}: {len(zs_indicators)} zero-shot indicators for "
-                f"{record['n_eval_items']} eval items. The baseline is not "
-                "paired with the trained run; refusing to aggregate it."
+        if zs_indicators is not None:
+            if len(zs_indicators) != record["n_eval_items"]:
+                # Equal length is what makes the delta paired. A baseline array
+                # of the wrong length cannot be aligned item-for-item with the
+                # trained one, and a mis-paired delta gets a paired interval it
+                # has not earned.
+                raise ValueError(
+                    f"{path}: {len(zs_indicators)} zero-shot indicators for "
+                    f"{record['n_eval_items']} eval items. The baseline is not "
+                    "paired with the trained run; refusing to aggregate it."
+                )
+            # The gate reports trained MINUS baseline, so a fabricated baseline
+            # buys the same headline as a fabricated trained run and reads as
+            # the more innocent half of the record.
+            _assert_indicator_domain(
+                zs_indicators, path, "zero_shot.hit1_indicators",
             )
+            if "metrics" in zero_shot:
+                # Checked when present rather than required: a fold that was
+                # not run with include_zero_shot carries no block at all, and
+                # the block's own contract is the indicator array -- the
+                # summary is a convenience some producers write.
+                _assert_summary_matches_indicators(
+                    zero_shot["metrics"], zs_indicators, path, "zero_shot.metrics",
+                )
         records.append(record)
 
     if not records:
@@ -578,11 +742,54 @@ def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]
     headline number instead of its share of the items.
     """
     fold_hit1s = [np.asarray(r["hit1_indicators"], dtype=float) for r in fold_results]
-    aggregate: dict[str, Any] = dict(fold_stratified_bootstrap_ci(fold_hit1s))
+
+    # The domain check runs BEFORE the bootstrap, not after. gate_decision
+    # already orders it this way and says why -- it checks the delta "before the
+    # family-wise interval below, so a second 10,000-resample pass is not spent
+    # on an array that was never a measurement" -- and this layer asserted the
+    # same invariant while paying the cost anyway: five folds x 10,000
+    # resamples, then a raise on the very next statement.
+    #
+    # load_fold_results now refuses an indicator array that is not 0/1, but it
+    # is not on every path into this function: run_experiment hands over the
+    # in-memory dicts run_single_fold returned, which never touch a file and
+    # never meet that check. The 7.0 replay reached "AGGREGATE hit@1 (micro):
+    # 7.0000" precisely because one guard was doing all the work, so this layer
+    # states the invariant it can state on its own. A NaN mean fails this too,
+    # since every comparison against NaN is false.
+    low, high = HIT_RATE_BOUNDS
+    mean = float(np.mean(np.concatenate(fold_hit1s))) if fold_hit1s else float("nan")
+    if not low <= mean <= high:
+        raise ValueError(
+            f"Aggregate micro hit@1 is {mean!r}, outside [{low}, {high}]. It "
+            "is a fraction of eval items, so it cannot be. The per-item "
+            "indicators these folds were pooled from are not measurements of "
+            "hit@1; refusing to report a hit rate from them."
+        )
 
     # Report the macro figure alongside it. They differ only through fold-size
     # imbalance, so a wide gap is a signal about the folds, not a second result.
     macro = float(np.mean([float(np.mean(f)) for f in fold_hit1s]))
+    # Checked independently of the micro rather than inferred from it, because
+    # one large clean fold hides a poisoned small one in the pool: 100 zeros
+    # beside a single 3.0 gives a micro of 0.0297, which no range check on the
+    # micro alone would ever flag, and a macro of 1.5.
+    if not low <= macro <= high:
+        raise ValueError(
+            f"Aggregate macro hit@1 is {macro!r}, outside [{low}, {high}], "
+            f"while the micro figure ({mean!r}) is inside it. At least one "
+            "fold's indicators are not hit@1 measurements and pooling hid it."
+        )
+    # Only now, with both figures inside their domain, is the bootstrap worth
+    # 10,000 resamples per fold.
+    aggregate: dict[str, Any] = dict(fold_stratified_bootstrap_ci(fold_hit1s))
+    if abs(float(aggregate["mean"]) - mean) > 1e-9:
+        raise ValueError(
+            f"The bootstrap's pooled mean ({aggregate['mean']!r}) disagrees "
+            f"with the mean this function checked ({mean!r}). They are the same "
+            "quantity computed two ways, so a disagreement means the range "
+            "check above did not govern the number being reported."
+        )
     aggregate["macro_mean"] = macro
     aggregate["n_folds"] = len(fold_hit1s)
     aggregate["fold_sizes"] = {
@@ -647,6 +854,23 @@ def gate_decision(
     ]
     # paired_bootstrap_delta reports B - A, so the baseline is A.
     paired = paired_bootstrap_delta(baseline, trained)
+    # The third statement of the same invariant, at the layer that publishes
+    # the verdict. run_experiment calls this with in-memory fold dicts that
+    # passed through neither the loader nor the aggregate, and the 7.0 replay
+    # ended here: a delta of 7.0 returned point_estimate_pass=true,
+    # ci_low_pass=true and verdicts_agree=true. A delta is a difference of two
+    # rates measured on the same items and cannot leave [-1, 1]. Checked before
+    # the family-wise interval below, so a second 10,000-resample pass is not
+    # spent on an array that was never a measurement.
+    delta_low, delta_high = HIT_RATE_DELTA_BOUNDS
+    micro_delta = float(paired["delta_mean"])
+    if not delta_low <= micro_delta <= delta_high:
+        raise ValueError(
+            f"Micro hit@1 delta is {micro_delta!r}, outside "
+            f"[{delta_low}, {delta_high}]. Either the trained indicators or "
+            "the paired zero-shot ones are not per-item hit@1 measurements, "
+            "so this is not a gate decision; refusing to return one."
+        )
     # A second interval at the family-wise level, so a campaign that ran many
     # configurations reports one the selection cannot inflate.
     corrected = (

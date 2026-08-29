@@ -68,6 +68,7 @@ scripts/phase0/.pod_ids
 scripts/phase0/.pod_state.json
 scripts/phase1b/.pod_state.json
 scripts/phase1b/.runpod_known_hosts
+scripts/phase0/.runpod_known_hosts
 scripts/phase0/.pod_state_0r.json
 .claude/
 wandb/
@@ -108,6 +109,35 @@ venv/
 # terms and tests/test_licensed_text_not_tracked.py for the enforcement.
 data/processed/frameworks/etsi.json
 data/processed/frameworks/iso_27001.json
+
+# A fold's predictions.json quotes the held-out framework's control text
+# verbatim -- that is what a prediction record IS. When the held-out framework
+# is a restricted source, that file is the licensed prose itself.
+#
+# Found 2026-08-28 the hard way: arm A1's ISO 27001 fold was committed and
+# PUSHED carrying Annex A control statements verbatim -- 52 of its 93 rows
+# match the fingerprint corpus, 30 of them on every window, longest contiguous
+# run 35 words. The tree-wide fingerprint gate caught it, which is the gate
+# working; the failure was that the gate ran after the push rather than before.
+#
+# This comment used to quote the offending sentence, which reproduced a 13-word
+# run of Annex A in a file the gate cannot read: _SCANNED_SUFFIXES keys on
+# Path.suffix and Path(".gitignore").suffix is "". Describing the breach is
+# sufficient; quoting it re-commits it somewhere nothing checks.
+#
+# ISO 27001 is in the VALIDATION roster, so every validation arm reproduces
+# this. One line per member of tract.config.OVERLAY_FRAMEWORK_IDS -- not the
+# narrower RESTRICTED set, because DSOMM contributes about half the fingerprint
+# corpus and had no line here until 2026-08-28. The fold directory is named
+# from the link's standard_name (run_fold.py:313), which is why DSOMM's entry
+# is the parenthesised display name and not the framework id.
+# test_every_overlay_framework_has_a_fold_predictions_gitignore_line enforces
+# this; before that test existed, this comment claimed an enforcement that did
+# not exist.
+# fold_result.json is unaffected: it carries indicators and metrics, not prose.
+results/phase1b/**/fold_ISO_27001/predictions.json
+results/phase1b/**/fold_ETSI/predictions.json
+results/phase1b/**/fold_DevSecOps_Maturity_Model_(DSOMM)/predictions.json
 # One line per member of tract.config.CONDITIONAL_FRAMEWORK_IDS, and there are
 # two of them. Five CC BY-SA frameworks left this list once LICENSES/ shipped
 # the real texts and NOTICE gained the modification statement: twelve of the
@@ -129,6 +159,14 @@ data/processed/frameworks/iso_27001.json
 # not produce. tests/test_corpus_acceptance.py::TestSpecAcceptance caught it.
 data/processed/frameworks/dsomm.json
 data/processed/licensed/
+
+# An overlay transfer archive carries ETSI, ISO 27001 and DSOMM prose.
+# scripts/stage_licensed_overlay.py refuses to write one inside the tree, but a
+# plain `tar czf` does not, and the whole point of these lines is that the
+# escape happens through the channel nobody predicted. Belt and braces.
+*.tar.gz
+*.tgz
+*.tar
 # Repair audit records quote source text verbatim on both sides of a move, so
 # a restricted framework's audit file carries the same licensed prose the two
 # rules above keep out of git.

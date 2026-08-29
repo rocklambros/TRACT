@@ -1,0 +1,1107 @@
+[
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "547-824",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Restrict Number of AI Model Queries",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "187-083",
+    "predicted_top10": [
+      "187-083",
+      "886-662",
+      "463-820",
+      "746-705",
+      "630-573",
+      "176-154",
+      "268-088",
+      "333-480",
+      "547-824",
+      "230-318"
+    ]
+  },
+  {
+    "control_text": "Control Access to AI Models and Data in Production",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "715-644",
+    "predicted_top10": [
+      "715-644",
+      "440-372",
+      "768-532",
+      "818-434",
+      "805-126",
+      "488-626",
+      "663-200",
+      "220-870",
+      "810-884",
+      "182-732"
+    ]
+  },
+  {
+    "control_text": "AI Telemetry Logging",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "703-813",
+    "predicted_top10": [
+      "843-841",
+      "067-050",
+      "713-683",
+      "841-710",
+      "842-876",
+      "240-274",
+      "743-110",
+      "402-706",
+      "026-280",
+      "227-045"
+    ]
+  },
+  {
+    "control_text": "Adversarial Input Detection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "761-417",
+      "802-101",
+      "989-492",
+      "641-760",
+      "342-641",
+      "576-262",
+      "108-316",
+      "843-475",
+      "467-215",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "Adversarial Input Detection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "761-417",
+      "802-101",
+      "989-492",
+      "641-760",
+      "342-641",
+      "576-262",
+      "108-316",
+      "843-475",
+      "467-215",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "Input Restoration",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "641-760",
+      "761-417",
+      "843-475",
+      "576-262",
+      "802-101",
+      "108-316",
+      "989-492",
+      "342-641",
+      "106-447",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "Use Multi-Modal Sensors",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "703-813",
+      "234-282",
+      "834-645",
+      "522-616",
+      "713-683",
+      "480-071",
+      "637-021",
+      "227-045",
+      "743-110",
+      "887-750"
+    ]
+  },
+  {
+    "control_text": "Adversarial Input Detection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "761-417",
+      "802-101",
+      "989-492",
+      "641-760",
+      "342-641",
+      "576-262",
+      "108-316",
+      "843-475",
+      "467-215",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "Generative AI Guardrails",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "205-522",
+    "predicted_top10": [
+      "860-723",
+      "622-835",
+      "346-640",
+      "533-635",
+      "206-254",
+      "532-102",
+      "364-516",
+      "467-215",
+      "220-442",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Passive AI Output Obfuscation",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "010-108",
+    "predicted_top10": [
+      "488-626",
+      "430-722",
+      "474-203",
+      "768-532",
+      "440-372",
+      "010-108",
+      "204-272",
+      "805-126",
+      "818-434",
+      "637-021"
+    ]
+  },
+  {
+    "control_text": "Use Ensemble Methods",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "146-871",
+    "predicted_top10": [
+      "146-871",
+      "860-723",
+      "547-824",
+      "532-102",
+      "663-550",
+      "854-183",
+      "886-662",
+      "601-182",
+      "467-215",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "Input Restoration",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "641-760",
+    "predicted_top10": [
+      "641-760",
+      "761-417",
+      "843-475",
+      "576-262",
+      "802-101",
+      "108-316",
+      "989-492",
+      "342-641",
+      "106-447",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "Verify AI Artifacts",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "364-516",
+      "547-824",
+      "663-550",
+      "433-442",
+      "061-753",
+      "011-322",
+      "073-507",
+      "130-171",
+      "646-285",
+      "854-643"
+    ]
+  },
+  {
+    "control_text": "AI Bill of Materials",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "881-234",
+      "613-285",
+      "423-055",
+      "852-770",
+      "883-173",
+      "820-877",
+      "854-643",
+      "701-654",
+      "560-224",
+      "708-355"
+    ]
+  },
+  {
+    "control_text": "Maintain AI Dataset Provenance",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "423-055",
+    "predicted_top10": [
+      "858-745",
+      "715-304",
+      "715-644",
+      "762-451",
+      "440-372",
+      "801-310",
+      "307-507",
+      "614-353",
+      "307-111",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "Data from Local System",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "077-772",
+    "predicted_top10": [
+      "762-451",
+      "715-304",
+      "307-111",
+      "175-235",
+      "801-310",
+      "117-371",
+      "614-353",
+      "757-271",
+      "545-243",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "Model Hardening",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "384-015",
+    "predicted_top10": [
+      "384-015",
+      "233-748",
+      "582-035",
+      "803-457",
+      "547-824",
+      "474-203",
+      "011-322",
+      "364-516",
+      "234-123",
+      "276-748"
+    ]
+  },
+  {
+    "control_text": "Sanitize Training Data",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "041-188",
+    "predicted_top10": [
+      "041-188",
+      "567-025",
+      "538-446",
+      "563-186",
+      "058-443",
+      "088-316",
+      "440-372",
+      "881-434",
+      "576-262",
+      "641-760"
+    ]
+  },
+  {
+    "control_text": "Generative AI Guidelines",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "755-340",
+    "predicted_top10": [
+      "860-723",
+      "364-516",
+      "547-824",
+      "843-475",
+      "532-102",
+      "886-662",
+      "533-635",
+      "467-215",
+      "346-640",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "Generative AI Model Alignment",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "860-723",
+      "467-215",
+      "532-102",
+      "364-516",
+      "547-824",
+      "034-540",
+      "346-640",
+      "663-550",
+      "622-835",
+      "637-021"
+    ]
+  },
+  {
+    "control_text": "Poison Training Data",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "567-025",
+      "555-083",
+      "041-188",
+      "738-144",
+      "058-443",
+      "867-642",
+      "488-626",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain Compromise: Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "881-234",
+      "883-173",
+      "852-770",
+      "423-055",
+      "701-654",
+      "613-285",
+      "547-824",
+      "886-662",
+      "860-723",
+      "854-643"
+    ]
+  },
+  {
+    "control_text": "LLM Data Leakage",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "077-772",
+      "173-554",
+      "077-235",
+      "220-870",
+      "044-202",
+      "810-884",
+      "356-282",
+      "182-732",
+      "440-372",
+      "488-626"
+    ]
+  },
+  {
+    "control_text": "Exfiltration via AI Inference API: Extract AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "141-385",
+      "488-626",
+      "474-203",
+      "043-703",
+      "034-540",
+      "663-550",
+      "768-532",
+      "440-372",
+      "551-400",
+      "805-126"
+    ]
+  },
+  {
+    "control_text": "Limit Public Release of Information",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "818-434",
+    "predicted_top10": [
+      "220-870",
+      "077-772",
+      "044-202",
+      "818-434",
+      "810-884",
+      "510-324",
+      "204-272",
+      "362-550",
+      "308-515",
+      "447-083"
+    ]
+  },
+  {
+    "control_text": "Limit Model Artifact Release",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "818-434",
+    "predicted_top10": [
+      "886-662",
+      "746-705",
+      "268-088",
+      "333-480",
+      "463-820",
+      "601-182",
+      "630-573",
+      "187-083",
+      "788-323",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "AI Agent Tools Permissions Configuration",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "715-644",
+      "540-566",
+      "817-808",
+      "220-442",
+      "123-124",
+      "664-080",
+      "368-633",
+      "612-252",
+      "128-128",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Privileged AI Agent Permissions Configuration",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "540-566",
+      "715-644",
+      "817-808",
+      "664-080",
+      "368-633",
+      "220-442",
+      "612-252",
+      "082-327",
+      "123-124",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "Single-User AI Agent Permissions Configuration",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "715-644",
+      "220-442",
+      "540-566",
+      "817-808",
+      "123-124",
+      "664-080",
+      "368-633",
+      "524-603",
+      "612-252",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Generative AI Guardrails",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "205-522",
+    "predicted_top10": [
+      "860-723",
+      "622-835",
+      "346-640",
+      "533-635",
+      "206-254",
+      "532-102",
+      "364-516",
+      "467-215",
+      "220-442",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "Encrypt Sensitive Information",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "768-532",
+    "predicted_top10": [
+      "482-866",
+      "267-468",
+      "224-321",
+      "636-854",
+      "400-007",
+      "186-540",
+      "527-034",
+      "745-045",
+      "275-483",
+      "558-807"
+    ]
+  },
+  {
+    "control_text": "Passive AI Output Obfuscation",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "010-108",
+    "predicted_top10": [
+      "488-626",
+      "430-722",
+      "474-203",
+      "768-532",
+      "440-372",
+      "010-108",
+      "204-272",
+      "805-126",
+      "818-434",
+      "637-021"
+    ]
+  },
+  {
+    "control_text": "LLM Prompt Injection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "012-625",
+      "686-110",
+      "843-475",
+      "106-447",
+      "268-100",
+      "483-253",
+      "536-158",
+      "480-071",
+      "257-668",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Encrypt Sensitive Information",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "440-372",
+    "predicted_top10": [
+      "482-866",
+      "267-468",
+      "224-321",
+      "636-854",
+      "400-007",
+      "186-540",
+      "527-034",
+      "745-045",
+      "275-483",
+      "558-807"
+    ]
+  },
+  {
+    "control_text": "Data from Information Repositories",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "173-554",
+    "predicted_top10": [
+      "173-554",
+      "077-772",
+      "074-873",
+      "044-202",
+      "836-068",
+      "041-188",
+      "126-668",
+      "161-451",
+      "028-728",
+      "766-162"
+    ]
+  },
+  {
+    "control_text": "Sanitize Training Data",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "041-188",
+    "predicted_top10": [
+      "041-188",
+      "567-025",
+      "538-446",
+      "563-186",
+      "058-443",
+      "088-316",
+      "440-372",
+      "881-434",
+      "576-262",
+      "641-760"
+    ]
+  },
+  {
+    "control_text": "RAG Poisoning",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "217-163",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "701-654",
+      "867-642",
+      "567-025",
+      "217-163",
+      "555-083",
+      "020-540",
+      "088-316",
+      "743-237"
+    ]
+  },
+  {
+    "control_text": "Restrict AI Agent Tool Invocation on Untrusted Data",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "440-372",
+      "488-626",
+      "768-532",
+      "088-316",
+      "041-188",
+      "802-101",
+      "715-644",
+      "663-200",
+      "576-262",
+      "615-663"
+    ]
+  },
+  {
+    "control_text": "Human In-the-Loop for AI Agent Actions",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "202-604",
+    "predicted_top10": [
+      "761-417",
+      "342-641",
+      "843-475",
+      "576-262",
+      "802-101",
+      "989-492",
+      "860-723",
+      "663-200",
+      "187-083",
+      "703-813"
+    ]
+  },
+  {
+    "control_text": "User Training",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "533-635",
+    "predicted_top10": [
+      "244-750",
+      "533-635",
+      "428-544",
+      "408-838",
+      "384-015",
+      "433-442",
+      "118-775",
+      "616-305",
+      "820-877",
+      "041-173"
+    ]
+  },
+  {
+    "control_text": "Validate AI model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Manipulate AI Model: Poison AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "020-540",
+    "predicted_top10": [
+      "481-710",
+      "854-183",
+      "615-663",
+      "333-480",
+      "860-723",
+      "802-101",
+      "234-123",
+      "989-492",
+      "641-760",
+      "220-442"
+    ]
+  },
+  {
+    "control_text": "Exfiltration via AI Inference API",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "220-870",
+    "predicted_top10": [
+      "488-626",
+      "440-372",
+      "043-703",
+      "768-532",
+      "141-385",
+      "474-203",
+      "010-108",
+      "663-550",
+      "551-400",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "AI Artifact Collection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "267-786",
+    "predicted_top10": [
+      "818-434",
+      "715-644",
+      "858-745",
+      "533-635",
+      "423-055",
+      "637-021",
+      "440-372",
+      "287-823",
+      "883-173",
+      "225-553"
+    ]
+  },
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Validate AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "547-824",
+      "364-516",
+      "532-102",
+      "663-550",
+      "860-723",
+      "989-492",
+      "768-532",
+      "802-101",
+      "011-322",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Adversarial Input Detection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "761-417",
+      "802-101",
+      "989-492",
+      "641-760",
+      "342-641",
+      "576-262",
+      "108-316",
+      "843-475",
+      "467-215",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "Adversarial Input Detection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "761-417",
+      "802-101",
+      "989-492",
+      "641-760",
+      "342-641",
+      "576-262",
+      "108-316",
+      "843-475",
+      "467-215",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "LLM Prompt Injection: Direct",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "686-110",
+      "012-625",
+      "843-475",
+      "536-158",
+      "483-253",
+      "106-447",
+      "780-757",
+      "886-662",
+      "761-417",
+      "187-083"
+    ]
+  },
+  {
+    "control_text": "LLM Prompt Injection: Indirect",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "012-625",
+    "predicted_top10": [
+      "012-625",
+      "686-110",
+      "843-475",
+      "483-253",
+      "106-447",
+      "536-158",
+      "761-417",
+      "576-262",
+      "034-540",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "Evade AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "010-108",
+      "663-550",
+      "860-723",
+      "034-540",
+      "532-102",
+      "370-877",
+      "220-442",
+      "802-101",
+      "342-641",
+      "474-203"
+    ]
+  },
+  {
+    "control_text": "Poison Training Data",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "567-025",
+      "555-083",
+      "041-188",
+      "738-144",
+      "058-443",
+      "867-642",
+      "488-626",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "Manipulate AI Model: Poison AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "867-642",
+    "predicted_top10": [
+      "481-710",
+      "854-183",
+      "615-663",
+      "333-480",
+      "860-723",
+      "802-101",
+      "234-123",
+      "989-492",
+      "641-760",
+      "220-442"
+    ]
+  },
+  {
+    "control_text": "Exfiltration via AI Inference API",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "475-586",
+    "predicted_top10": [
+      "488-626",
+      "440-372",
+      "043-703",
+      "768-532",
+      "141-385",
+      "474-203",
+      "010-108",
+      "663-550",
+      "551-400",
+      "034-540"
+    ]
+  },
+  {
+    "control_text": "Exfiltration via AI Inference API: Invert AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "488-626",
+      "034-540",
+      "474-203",
+      "141-385",
+      "551-400",
+      "440-372",
+      "663-550",
+      "768-532",
+      "043-703",
+      "715-644"
+    ]
+  },
+  {
+    "control_text": "Exfiltration via AI Inference API: Infer Training Data Membership",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "488-626",
+      "440-372",
+      "043-703",
+      "551-400",
+      "034-540",
+      "768-532",
+      "141-385",
+      "715-644",
+      "346-640",
+      "663-550"
+    ]
+  },
+  {
+    "control_text": "Data from Information Repositories",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "173-554",
+    "predicted_top10": [
+      "173-554",
+      "077-772",
+      "074-873",
+      "044-202",
+      "836-068",
+      "041-188",
+      "126-668",
+      "161-451",
+      "028-728",
+      "766-162"
+    ]
+  },
+  {
+    "control_text": "Exfiltration via AI Inference API: Extract AI Model",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "141-385",
+      "488-626",
+      "474-203",
+      "043-703",
+      "034-540",
+      "663-550",
+      "768-532",
+      "440-372",
+      "551-400",
+      "805-126"
+    ]
+  },
+  {
+    "control_text": "AI Artifact Collection",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "267-786",
+    "predicted_top10": [
+      "818-434",
+      "715-644",
+      "858-745",
+      "533-635",
+      "423-055",
+      "637-021",
+      "440-372",
+      "287-823",
+      "883-173",
+      "225-553"
+    ]
+  },
+  {
+    "control_text": "Denial of AI Service",
+    "framework": "MITRE ATLAS",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "623-550",
+      "187-083",
+      "663-200",
+      "230-318",
+      "220-442",
+      "715-644",
+      "041-173",
+      "370-877",
+      "886-662",
+      "225-553"
+    ]
+  }
+]

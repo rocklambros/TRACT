@@ -306,3 +306,174 @@ class TestResolveModelOrExit:
         from tract.config import EXIT_OFFLINE, EXIT_INTEGRITY
         assert cli.EXIT_OFFLINE == EXIT_OFFLINE
         assert cli.EXIT_INTEGRITY == EXIT_INTEGRITY
+
+
+class TestDownloadDatasetPin:
+    """crosswalk.db gets the model's treatment: pinned revision, checked bytes.
+
+    The attack is a moved dataset tag serving a different crosswalk.db, which
+    every later `tract` query would then read.
+    """
+
+    PAYLOAD = b"a crosswalk database"
+
+    def _patch_paths(self, monkeypatch, tmp_path):
+        """Patch on the cli module: it imported these names, not the module."""
+        monkeypatch.setattr(cli, "PHASE1D_DEPLOYMENT_MODEL_DIR", tmp_path / "dm")
+        monkeypatch.setattr(cli, "PHASE1C_RESULTS_DIR", tmp_path / "res")
+        monkeypatch.setattr(
+            cli, "PHASE1C_CROSSWALK_DB_PATH", tmp_path / "res" / "crosswalk.db")
+        for name in ("TRACT_DATASET_REPO_ID", "TRACT_DATASET_REVISION",
+                     "TRACT_DATASET_SHA256", "TRACT_DATASET_ALLOW_UNVERIFIED"):
+            monkeypatch.delenv(name, raising=False)
+
+    def _pin(self, monkeypatch, revision, digest):
+        monkeypatch.setattr(cli, "TRACT_DATASET_PINNED_REVISION", revision)
+        monkeypatch.setattr(cli, "TRACT_CROSSWALK_DB_SHA256", digest)
+        monkeypatch.setattr(
+            cli, "TRACT_DATASET_PINNED_FILE_HASHES", {"crosswalk.db": digest})
+
+    def _fake_download(self, cache, seen, payload):
+        """Stands in for hf_hub_download, honouring local_dir when it is given."""
+        from pathlib import Path
+
+        def _fake(**kwargs):
+            seen.append(kwargs)
+            if "local_dir" in kwargs:
+                dest = Path(kwargs["local_dir"]) / kwargs["filename"]
+                body = b"model bytes"
+            else:
+                dest = cache / kwargs["filename"]
+                body = payload
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(body)
+            return str(dest)
+
+        return _fake
+
+    def test_unpinned_dataset_refuses_before_the_model_download(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        """UNSET must refuse, and refuse before spending 1.3 GB to get there."""
+        import argparse
+        from unittest.mock import patch
+        from tract.config import EXIT_INTEGRITY, TRACT_PIN_UNSET
+
+        self._patch_paths(monkeypatch, tmp_path)
+        self._pin(monkeypatch, TRACT_PIN_UNSET, TRACT_PIN_UNSET)
+
+        with patch("huggingface_hub.hf_hub_download") as dl:
+            dl.return_value = str(tmp_path / "f")
+            with pytest.raises(SystemExit) as exc:
+                cli._cmd_download(argparse.Namespace(model_only=False, force=True))
+
+        assert exc.value.code == EXIT_INTEGRITY
+        assert dl.call_count == 0, "refused only after downloading the model"
+
+    def test_model_only_is_unaffected_by_the_unset_pin(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        """The refusal must not become a wall in front of the model."""
+        import argparse
+        from unittest.mock import patch
+        from tract.config import TRACT_PIN_UNSET
+
+        self._patch_paths(monkeypatch, tmp_path)
+        self._pin(monkeypatch, TRACT_PIN_UNSET, TRACT_PIN_UNSET)
+        seen: list[dict] = []
+
+        with patch("huggingface_hub.hf_hub_download",
+                   self._fake_download(tmp_path / "cache", seen, self.PAYLOAD)):
+            cli._cmd_download(argparse.Namespace(model_only=True, force=True))
+
+        assert seen and all(k.get("repo_type") != "dataset" for k in seen)
+
+    def test_db_is_fetched_at_the_pinned_revision_and_lands_atomically(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        import argparse
+        import hashlib
+        from unittest.mock import patch
+
+        self._patch_paths(monkeypatch, tmp_path)
+        digest = hashlib.sha256(self.PAYLOAD).hexdigest()
+        self._pin(monkeypatch, "c0ffee", digest)
+        seen: list[dict] = []
+
+        with patch("huggingface_hub.hf_hub_download",
+                   self._fake_download(tmp_path / "cache", seen, self.PAYLOAD)):
+            cli._cmd_download(argparse.Namespace(model_only=False, force=True))
+
+        dataset_calls = [k for k in seen if k.get("repo_type") == "dataset"]
+        assert dataset_calls, "the database was never requested"
+        for kwargs in dataset_calls:
+            assert kwargs["revision"] == "c0ffee"
+            # local_dir would write straight onto the live database, before
+            # anything had checked the bytes.
+            assert "local_dir" not in kwargs
+        assert (tmp_path / "res" / "crosswalk.db").read_bytes() == self.PAYLOAD
+
+    def test_a_swapped_db_never_touches_the_good_one(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        """The regression that matters: a mismatch must not destroy a good DB."""
+        import argparse
+        from unittest.mock import patch
+        from tract.config import EXIT_INTEGRITY
+
+        self._patch_paths(monkeypatch, tmp_path)
+        self._pin(monkeypatch, "c0ffee", "0" * 64)
+        good = tmp_path / "res" / "crosswalk.db"
+        good.parent.mkdir(parents=True)
+        good.write_bytes(b"the good database that was already here")
+        seen: list[dict] = []
+
+        with patch("huggingface_hub.hf_hub_download",
+                   self._fake_download(tmp_path / "cache", seen, self.PAYLOAD)):
+            with pytest.raises(SystemExit) as exc:
+                cli._cmd_download(argparse.Namespace(model_only=False, force=True))
+
+        assert exc.value.code == EXIT_INTEGRITY
+        assert good.read_bytes() == b"the good database that was already here"
+
+    def test_naming_a_revision_alone_does_not_disable_the_check(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        """One env var must not restore the unpinned fetch this pin ended."""
+        import argparse
+        from unittest.mock import patch
+        from tract.config import EXIT_INTEGRITY
+
+        self._patch_paths(monkeypatch, tmp_path)
+        self._pin(monkeypatch, "c0ffee", "0" * 64)
+        monkeypatch.setenv("TRACT_DATASET_REVISION", "main")
+
+        with patch("huggingface_hub.hf_hub_download") as dl:
+            dl.return_value = str(tmp_path / "f")
+            with pytest.raises(SystemExit) as exc:
+                cli._cmd_download(argparse.Namespace(model_only=False, force=True))
+
+        assert exc.value.code == EXIT_INTEGRITY
+        assert dl.call_count == 0
+
+    def test_a_stated_digest_keeps_the_escape_hatch_checked(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        import argparse
+        import hashlib
+        from unittest.mock import patch
+
+        self._patch_paths(monkeypatch, tmp_path)
+        self._pin(monkeypatch, "c0ffee", "0" * 64)
+        monkeypatch.setenv("TRACT_DATASET_REVISION", "main")
+        monkeypatch.setenv("TRACT_DATASET_SHA256",
+                           hashlib.sha256(self.PAYLOAD).hexdigest())
+        seen: list[dict] = []
+
+        with patch("huggingface_hub.hf_hub_download",
+                   self._fake_download(tmp_path / "cache", seen, self.PAYLOAD)):
+            cli._cmd_download(argparse.Namespace(model_only=False, force=True))
+
+        dataset_calls = [k for k in seen if k.get("repo_type") == "dataset"]
+        assert [k["revision"] for k in dataset_calls] == ["main"]
+        assert (tmp_path / "res" / "crosswalk.db").read_bytes() == self.PAYLOAD

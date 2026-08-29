@@ -4,21 +4,23 @@ Written on the Mac, 2026-08-20. **Both pre-provisioning gates were closed on
 the Mac on 2026-08-26**, so this file now describes a run that is cleared to
 provision. Read it before provisioning anything.
 
-**Start here: `git checkout campaign-2`.** It is cut from `main` at `753f614`,
-which is the merge of PR #62. `semantic-rebuild` is merged and finished.
+**Start here: `git checkout campaign-2-results`.** It is cut from `main` at
+`f0a6968`, the merge of PR #72, which carries every Mac-side change this
+briefing describes. `semantic-rebuild` and `campaign-2` are both merged and
+finished; do not use either.
 
-**PR #72 is open as a draft against `main` and exists so this branch gets CI.**
-The workflow triggers on `push: [main]` and on `pull_request`, so a plain
-branch push runs nothing. Without that PR every campaign commit would land
-unchecked. After each push, confirm all 8 jobs are green before you treat a
-result as banked.
+**PR #73 is open as a draft for this branch and exists so it gets CI.** The workflow
+triggers on `push: [main]` and on `pull_request`, so a plain branch push runs
+NOTHING. Without that PR every campaign commit would land unchecked. After
+each push, confirm all 8 jobs are green before you treat a result as banked.
+If you ever cut another branch, open a draft PR for it the same day.
 
 The two gates and their state:
 
 1. **Four owner decisions answered and committed.** DONE 2026-08-26. The
    decision record at the end of "Owner decisions" has four filled rows.
    **Do not re-ask them.** D3 was answered (a), so the corpus rebuild is
-   merged and Campaign 2 runs on `campaign-2`.
+   merged and Campaign 2 runs on `campaign-2-results`.
 2. **P2 and P3 from the premortem fixed.** DONE 2026-08-26 in commit
    `90a5f15`, with tests in `tests/test_runpod_safety.py`. P2 could abandon
    four healthy folds and leave five GPUs billing. P3 could destroy a
@@ -58,24 +60,35 @@ root:
 >    decision record at the end of "Owner decisions" has four filled rows —
 >    read them, do not ask me again. P2 and P3 were fixed in commit `90a5f15`;
 >    run `pytest tests/test_runpod_safety.py -q` and confirm it passes here.
->    Work on `campaign-2`, already cut from `main` at `753f614`. Do not use
->    `semantic-rebuild`; it is merged and finished.
-> 2. Verify the environment against the "Before you provision" checklist.
+>    Work on `campaign-2-results`, already cut from `main` at `f0a6968`. Do
+>    not use `semantic-rebuild` or `campaign-2`; both are merged and
+>    finished.
+> 2. Stage the licensed overlay FIRST; nothing else can proceed without it.
+>    It is not in GitHub and cannot be: ETSI, ISO 27001 and DSOMM reserve or
+>    condition redistribution. ISO 27001 is one of the five VALIDATION folds,
+>    so without it that fold has no controls and arm selection is impossible.
+>    Run `python -m scripts.stage_licensed_overlay --verify`. If it reports
+>    missing, STOP and tell me: I have to pack it on the Mac with
+>    `--pack` and send you a 2.7 MB archive. Do not work around this, and in
+>    particular do not regenerate the training-links sidecar to make the gate
+>    pass -- that records the short corpus as correct and trains 7.8% under
+>    while reporting normally.
+> 3. Verify the environment against the "Before you provision" checklist.
 >    Report each item as pass or fail with the command output that settled it.
 >    Stop if any fails.
-> 3. Read "Adversarial premortem: the orchestrator". Confirm or refute P1, P5
+> 4. Read "Adversarial premortem: the orchestrator". Confirm or refute P1, P5
 >    and P6 on this machine by running the code, not by reading it, and apply
 >    the P1 and P5 mitigations. P2, P3 and P4 are already fixed; re-verify
 >    them by running their tests rather than by reading the diff. Then run
 >    your own `/adversarial-premortem-complete` pass over
 >    `scripts/phase1b/runpod_parallel.py`, because mine was one reviewer and
 >    the skill uses six. Tell me what you fixed and what you parked.
-> 4. Run the campaign per `results/phase1b/CAMPAIGN2.md`. Five arms on
+> 5. Run the campaign per `results/phase1b/CAMPAIGN2.md`. Five arms on
 >    validation, then the test set once with the winner. All five arms re-run.
 >    Do not reuse the A1 or A2 results already in the repository.
-> 5. After each `collect`, confirm `git status` shows the new fold results,
+> 6. After each `collect`, confirm `git status` shows the new fold results,
 >    run the licensed-text gate, commit, and push.
-> 6. After the test round only, run the agentic smoke test once on the winning
+> 7. After the test round only, run the agentic smoke test once on the winning
 >    arm, against the pass condition already committed in
 >    `data/eval/agentic_smoke_test.json`. It is six items. Report it in prose
 >    as "n of 6". Do not turn it into a metric and do not re-select an arm on
@@ -237,10 +250,60 @@ by design. Mitigations, all of which you apply before provisioning:
 - Run the orchestrator under `tmux` or `nohup` so a dropped SSH session to the
   Jetson does not kill it. A killed orchestrator is the exact scenario with no
   bound.
-- Schedule an independent reaper. A cron or `at` job at T+8h that runs
-  `python -m scripts.phase1b.runpod_parallel reap --confirm` costs nothing when
-  the run finished cleanly, because `reap` finds no targets and exits. It is
-  the only bound that survives the orchestrator dying.
+- Schedule an independent reaper. It is the only bound that survives the
+  orchestrator dying. **Schedule `scripts/phase1b/reaper_guard.py`, NOT bare
+  `reap --confirm`** -- the bare form was what this bullet used to say and it is
+  a loaded gun. `reap` has no liveness guard: it terminates every pod matching
+  this run's names, and sweeps the account by name when the state file is stale,
+  without ever asking whether folds are still training. Fired at T+8h against a
+  campaign that legitimately ran long it destroys paid-for GPU hours whose
+  per-item indicators exist only on those pods -- and it is aimed straight at the
+  recovery window `full_pipeline` deliberately creates by leaving pods up on
+  failure so a fold can be retried on a warm pod.
+
+  The guard asks two questions first: is an orchestrator process alive, and are
+  any of this run's pods actually running. It reaps only when the orchestrator is
+  gone AND pods are still billing, which is exactly the P1 case and nothing else.
+  If the orchestrator is alive it re-arms rather than giving up, because a guard
+  that stands down once has only moved the unbounded window later. Arm it when
+  you launch, not before:
+
+  ```bash
+  # --working-directory is NOT optional. systemd-run starts the unit in the
+  # user's home, where `-m scripts.phase1b.reaper_guard` raises
+  # ModuleNotFoundError in ~59ms -- while `list-timers` still shows it ARMED,
+  # so the checklist row that verifies the bound passes on a unit that reaps
+  # nothing. Verified 2026-08-26.
+  systemd-run --user --on-active=8h --unit=tract-reaper \
+      --working-directory="$PWD" --setenv=USE_TF=0 \
+      "$(command -v python3)" -m scripts.phase1b.reaper_guard --confirm
+  systemctl --user list-timers 'tract-reaper*'    # confirm it is armed
+  ```
+
+  **And when the campaign is over, tell the guard so.** It re-arms after a quiet
+  check now rather than standing down, because the quiet state between two arms
+  is byte-for-byte what a finished campaign looks like from outside -- the
+  earlier version disarmed in the first inter-arm gap and left every arm after
+  it unbounded. A streak counter eventually decides quiet means finished, but
+  the sentinel says it immediately:
+
+  ```bash
+  systemctl --user stop 'tract-reaper*.timer'
+  systemctl --user list-timers 'tract-reaper*' --all   # must print 0 timers
+  ```
+
+  **Corrected 2026-08-28.** This block used to `touch` a `campaign-complete`
+  sentinel first. Nothing in the repository ever removes that file, the guard
+  checks it before its streak logic and returns without re-arming, and the user
+  units run with `Linger=yes` so it survives logout — so leaving it behind
+  disables the guard for the **next campaign**, whose fleets then run with no
+  independent spend bound. The sentinel is for telling a *running* guard to
+  stand down; once the timers are stopped there is nothing running to tell.
+  Before arming anything next time, check the directory is empty.
+
+  `at` is not installed on the Jetson and cron cannot express a one-shot
+  relative delay; the user manager is running with `Linger=yes`, so a transient
+  systemd timer survives logout. It does not survive a reboot -- re-arm after one.
 - Make `reap --confirm` the first command of any session that resumes after an
   unexplained gap. Run it before you read logs and before you form a theory.
 
@@ -320,7 +383,35 @@ real ceiling. Corrected in `90a5f15`.
 The owner then lowered the ceiling itself to **1000** on 2026-08-26, so the
 docstring and the code now agree on that figure. **Set the variable explicitly
 for this campaign regardless**: 1000 is the backstop that applies when nobody
-exported anything, and this campaign costs $90. Export 200.
+exported anything, and this campaign costs $90.
+
+**CORRECTED 2026-08-26 evening: export 600, not 200. 200 refuses to provision.**
+This paragraph used to say 200 and the reasoning was wrong in a specific,
+instructive way. It sized the variable against expected spend at the price
+`runpod_parallel price` reports -- but `price` and the real gate do not price
+the same GPU. `price` calls `find_fastest_available` (the HEAD of the preference
+order), while `provision` calls `_check_budget` on
+`max(candidates, key=lambda c: c[1])` -- the most expensive part that could
+actually be used as a fallback. The comment at the call site says why: so the
+check "cannot be passed by a cheap first choice and then silently exceeded by
+the fallback."
+
+Measured against the live catalogue on 2026-08-26: HEAD is H100 80GB at
+$2.69/hr, so `price` prints $174.85. MAX is B300 SXM6 AC at $6.94/hr, so the
+real gate computes **$451.10**. Executed both, read-only:
+
+    budget=200  price-command view   -> ADMITS   ($174.85)
+    budget=200  REAL provision gate  -> REFUSES  (5 x B300 at $6.94/hr -> $451.10)
+    budget=600  REAL provision gate  -> ADMITS   ($451.10)
+
+So the dry run certifies a gate that is not the one that runs. **Never size this
+variable from `price`.** Re-derive it on the day against
+`max(rank_available_gpus(48, 12.0))`, because that list is a live market reading
+and moves without any code change.
+
+600 admits today's $451.10 with margin, tolerates a max-candidate spike to
+$9.23/hr, and still fires below the $780 structural ceiling that the $12/hr part
+filter imposes at five pods -- so unlike the 1000 default it remains reachable.
 
 ### P5. A cap that permits ten times the expected spend is not a cap
 
@@ -329,16 +420,31 @@ defaults to 6. That is 72 hours of fleet time before the extension refusal
 fires. At five pods and roughly $2.70 an hour, about $970. Campaign 2 needs
 $90.
 
-Set both for this campaign before you provision:
+Set this for this campaign before you provision:
 
 ```bash
-export TRACT_RUNPOD_BUDGET_USD=200
-export TRACT_RUNPOD_MAX_ARMS=6
+export TRACT_RUNPOD_BUDGET_USD=600
 ```
 
-Six arms covers five validation arms plus the single test round, which is
-exactly what the pre-registration calls for. Anything beyond that is a signal
-to stop and think rather than a window to extend into.
+**`TRACT_RUNPOD_MAX_ARMS=6` was here and has been REMOVED, because it does
+nothing.** The name is a misnomer: it does not cap arms, pods or folds. It sets
+`MAX_DEADLINE_EXTENSIONS`, which caps how many times `run_folds` may be
+re-invoked against ONE persisted fleet. Under this campaign's shape it can never
+fire -- `CAMPAIGN2.md` puts one 5-pod fleet per arm, and `provision`'s final
+`_save_pod_state` rewrites `meta` wholesale without a `deadline_extensions` key,
+so every provision resets the counter to zero and it reaches 1. Setting it to 6
+bought nothing the default did not, and if arms ever DID share a fleet it would
+leave no headroom for the retry that `full_pipeline` itself recommends on a fold
+failure. Counting it as a spend control was the error; leave it unset.
+
+One fact worth stating plainly, because it changes what this variable is for.
+There is no cumulative spend ledger anywhere in the module -- the budget is a
+per-provision admission test with no memory of prior rounds, so a campaign of N
+rounds permits N x BUDGET. To bound the $920 remaining across six rounds you
+would need 920/6 = $153; to admit even one round today you need more than $451.
+**No value satisfies both.** This variable cannot enforce the authorization. It
+is a per-round sanity check, and the thing that actually bounds a live fleet is
+the scheduled reaper in P1.
 
 ### P6. The mid-run deadline reports, it does not enforce
 
@@ -374,15 +480,15 @@ Every item is a command with an answer, not a judgment call.
 |---|---|
 | four decisions answered | DONE. Read the four filled rows; do not re-ask |
 | P2 and P3 fixed | DONE in `90a5f15`. `pytest tests/test_runpod_safety.py -q` passes, 53 tests |
-| spend bounds set | `TRACT_RUNPOD_BUDGET_USD=200` and `TRACT_RUNPOD_MAX_ARMS=6` exported |
-| orchestrator survives a dropped session | launched under `tmux` or `nohup`, not a bare SSH foreground |
-| independent reaper scheduled | a cron or `at` job at T+8h runs `reap --confirm` |
+| spend bounds set | `TRACT_RUNPOD_BUDGET_USD=600` exported. NOT 200 -- that refuses to provision. `TRACT_RUNPOD_MAX_ARMS` is inert, leave it unset. See P4 |
+| orchestrator survives a dropped session | launched in a named `tmux` session, not `nohup` and not a bare SSH foreground. `tmux` lets you reattach and watch a 3.5h run; `nohup` only leaves a log |
+| independent reaper scheduled | `systemctl --user list-timers tract-reaper` shows it armed, running `scripts.phase1b.reaper_guard` -- NOT bare `reap --confirm`. See P1 |
 | GPG agent warm | `gpg-connect-agent 'keepalive' /bye` returns OK |
-| on the right branch | `git status` shows `campaign-2`, cut from `main` at `753f614`, clean tree. NOT `semantic-rebuild` |
+| on the right branch | `git status` shows `campaign-2-results`, cut from `main` at `f0a6968`, clean tree. NOT `semantic-rebuild` or `campaign-2` |
 | corpus is complete | the snippet above returns a digest. Also enforced in code now: `provision`, `run_folds` and `run_fold.py` each refuse on a mismatch |
 | stopwords present | `data/processed/stopwords.json` exists and is tracked |
-| credentials load | `pass runpod/api-key`, `pass huggingface/token`, `pass wandb/api-key` each return a value |
-| HF token is read-scope | it fetches the base model and nothing else. A write token on a rented host is a published-model compromise |
+| credentials load | `pass runpod/api-key`, **`pass huggingface/read-token`**, `pass wandb/api-key` each return a value. NOT `huggingface/token` -- this row named the wrong entry until 2026-08-26. `_get_pod_env` reads `HF_READ_TOKEN_ENTRY = "huggingface/read-token"` (runpod_parallel.py:217) and the code refuses the write entry by name. The read entry did not exist; the fleet would have raised at `run_folds:1069`, AFTER five pods were billing |
+| HF token is read-scope | Create it read-only, then `pass insert -f -e huggingface/read-token`. `huggingface/token` carries repo.write to the live model and dataset repos and MUST NOT be used -- the orchestrator enforces this by reading a different entry, so the guarantee is structural rather than a promise |
 | SSH key registered | `~/.ssh/tract_runpod` exists and its `.pub` is on the RunPod account |
 | price sanity | `python -m scripts.phase1b.runpod_parallel price` creates nothing and prints the estimate |
 | suite is green | `pytest tests/ -q -m "not integration"` |

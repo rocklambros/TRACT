@@ -6,7 +6,7 @@ Self-contained prompts for continuing the TRACT project in new Claude Code sessi
 - Data Preparation: COMPLETE
 - Phase 0 (Zero-Shot Baselines): COMPLETE — Gates A+B passed
 - Phase 1A (Hierarchy, Descriptions, Ingestion): COMPLETE
-- Phase 1B (Training Pipeline): COMPLETE — Gate 1 CLEAN PASS (hit@1=0.531, delta=+0.132)
+- Phase 1B (Training Pipeline): COMPLETE. The "Gate 1 CLEAN PASS (hit@1=0.531, delta=+0.132)" line that stood here is WITHDRAWN — see PRD.md section 6.4. Campaign 2 superseded it: test-round delta +0.1361 [+0.0476, +0.2245], n=147, which clears the 0.10 threshold on the point estimate only. Read `docs/campaign2-results.md` before quoting any figure.
 - Phase 1C (Guardrails, Active Learning, Crosswalk DB): COMPLETE — 2 AL rounds converged, 636 assignments, 339 tests
 - Phase 1D (CLI, Hub Proposals): COMPLETE — 8 CLI commands, hub proposal pipeline, 394 tests
 - Phase 5A (Export Pipeline + Fork Import): COMPLETE — 411 assignments across 5 frameworks, coverage gaps report
@@ -46,7 +46,7 @@ Run these checks and stop if any fail:
 
 ## Phase 1B results to incorporate
 The trained model exists at results/phase1b/phase1b_textaware/fold_*/model/. Key facts:
-- Gate 1 PASS: micro hit@1=0.531 (delta=+0.132 over zero-shot 0.399)
+- Gate 1: WITHDRAWN figure, do not quote. Current: `docs/campaign2-results.md`.
 - Per-fold: ATLAS=0.279(n=43), NIST=0.429(n=28), OWASP-X=0.762(n=63), LLM-10=0.333(n=6), ML-10=0.714(n=7)
 - Zero-shot per-fold: ATLAS=0.273, NIST=0.107, OWASP-X=0.619, LLM-10=0.333, ML-10=0.429
 - Model predictions for all 5 folds are in fold_*/predictions.json (control_text, ground_truth_hub_id, predicted_top10)
@@ -55,7 +55,7 @@ The trained model exists at results/phase1b/phase1b_textaware/fold_*/model/. Key
 
 ## Lessons from Phase 1B (incorporate these)
 1. **Pre-register gate metrics.** Define success criteria BEFORE running experiments. Post-hoc metric substitution (e.g., switching micro→macro after seeing results) is not permitted. Document criteria in the spec.
-2. **Report per-fold deltas, not just aggregates.** Aggregate hit@1=0.531 masked that ATLAS was flat. Per-fold delta vs zero-shot revealed the real picture.
+2. **Report per-fold deltas, not just aggregates.** The withdrawn aggregate masked that ATLAS was flat. Per-fold delta vs zero-shot revealed the real picture.
 3. **Traditional framework links are always in training by LOFO design.** When a CWE section maps to the same hub as an ATLAS eval item, this is the semantic bridge mechanism working as designed, NOT information leakage. Do not filter these out.
 4. **Multi-hub text mappings are valid CRE graph structure.** 35% of control texts map to >1 hub. Handle at the batching/loss layer (HubAwareTemperatureSampler), never at the data layer (dropping examples).
 5. **Adversarial review catches real errors.** R2 compared 4-fold FT vs 5-fold ZS (apples to oranges) — without cross-examination this would have become a false "model only helps one framework" conclusion.

@@ -169,3 +169,71 @@ class TestPublishDryRun:
                 gpu_hours=0,
                 dry_run=True,
             )
+
+    def test_dry_run_does_not_execute_the_aibom_validator(self, tmp_path) -> None:
+        """Step 5 sat above the dry-run return, so `publish-hf --dry-run` cloned
+        and ran an external repository's HEAD on the publishing host. A dry run
+        must not execute foreign code.
+        """
+        import tract.publish as publish_mod
+
+        ws = _setup_publish_workspace(tmp_path)
+        fold_results = [
+            {
+                "fold": "Test Fold", "hit1": 0.5, "zs_hit1": 0.3, "n": 10,
+                "hit_any": 0.6,
+                "hit1_indicators": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+            },
+        ]
+
+        def _explode(*a, **kw) -> None:
+            raise AssertionError("AIBOM validator ran without --validate-aibom")
+
+        with patch.object(publish_mod, "_validate_aibom", side_effect=_explode), \
+                patch("tract.publish.merge.merge_lora_adapters", side_effect=_fake_merge):
+            publish_mod.publish_to_huggingface(
+                repo_id="test/repo",
+                staging_dir=ws["staging_dir"],
+                model_dir=ws["model_dir"],
+                artifacts_path=ws["artifacts"],
+                hierarchy_path=ws["hierarchy"],
+                hub_descriptions_path=ws["hub_descriptions"],
+                calibration_path=ws["calibration"],
+                ece_gate_path=ws["ece_gate"],
+                bridge_report_path=ws["bridge_report"],
+                fold_results=fold_results,
+                gpu_hours=1.0,
+                dry_run=True,
+            )
+
+        assert (ws["staging_dir"] / "README.md").exists()
+
+    def test_unpinned_validate_aibom_fails_before_the_merge(self, tmp_path) -> None:
+        """The pin used to be checked inside step 5, after step 1 had already
+        merged — and merging loads the weights. A missing --aibom-commit must
+        cost nothing.
+        """
+        from tract.publish import publish_to_huggingface
+
+        ws = _setup_publish_workspace(tmp_path)
+
+        def _explode_merge(*a, **kw) -> None:
+            raise AssertionError("adapters were merged before the pin was checked")
+
+        with patch("tract.publish.merge.merge_lora_adapters", side_effect=_explode_merge):
+            with pytest.raises(ValueError, match="40-character commit SHA"):
+                publish_to_huggingface(
+                    repo_id="test/repo",
+                    staging_dir=ws["staging_dir"],
+                    model_dir=ws["model_dir"],
+                    artifacts_path=ws["artifacts"],
+                    hierarchy_path=ws["hierarchy"],
+                    hub_descriptions_path=ws["hub_descriptions"],
+                    calibration_path=ws["calibration"],
+                    ece_gate_path=ws["ece_gate"],
+                    bridge_report_path=ws["bridge_report"],
+                    fold_results=[],
+                    gpu_hours=0,
+                    dry_run=True,
+                    validate_aibom=True,
+                )

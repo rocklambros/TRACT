@@ -1,0 +1,104 @@
+[
+  {
+    "control_text": "Data and Model Poisoning",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "020-540",
+      "034-540",
+      "481-710",
+      "077-235",
+      "044-202",
+      "867-642",
+      "182-732",
+      "701-654",
+      "780-757"
+    ]
+  },
+  {
+    "control_text": "Supply Chain",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "613-287",
+      "613-286",
+      "613-285",
+      "860-084",
+      "423-055",
+      "881-234",
+      "715-223",
+      "673-475",
+      "863-521",
+      "852-770"
+    ]
+  },
+  {
+    "control_text": "Sensitive Information Disclosure",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "044-202",
+      "308-515",
+      "267-786",
+      "743-110",
+      "333-888",
+      "182-732",
+      "342-781",
+      "362-550",
+      "813-610",
+      "028-727"
+    ]
+  },
+  {
+    "control_text": "Improper Output Handling",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "780-757",
+    "predicted_top10": [
+      "777-470",
+      "545-243",
+      "130-550",
+      "806-367",
+      "451-082",
+      "675-168",
+      "831-563",
+      "161-451",
+      "533-516",
+      "863-636"
+    ]
+  },
+  {
+    "control_text": "Prompt Injection",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "536-158",
+      "483-253",
+      "843-475",
+      "686-110",
+      "012-625",
+      "760-764",
+      "106-447",
+      "780-757",
+      "620-101",
+      "732-873"
+    ]
+  },
+  {
+    "control_text": "Unbounded Consumption",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "767-435",
+      "155-155",
+      "230-318",
+      "486-813",
+      "170-772",
+      "546-564",
+      "701-654",
+      "077-235",
+      "886-662",
+      "020-540"
+    ]
+  }
+]

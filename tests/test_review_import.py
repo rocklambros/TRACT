@@ -336,3 +336,70 @@ class TestValidationBlocksImport:
             assert row["reviewer"] is None
         finally:
             conn.close()
+
+
+class TestReviewScopeIsEnforcedOnImport:
+    """A returned review file may only rewrite rows that were exported.
+
+    generate_review_export narrows review to active_learning_round_2 /
+    model_prediction and deliberately withholds ground truth. The import used to
+    honour any positive id, so the narrowing meant nothing on the way back in:
+    an outside reviewer's file naming a ground_truth_T1-AI row rewrote it, and
+    those rows are the calibration control over the reviewer submitting the
+    file. validate.py asserts the id EXISTS, which is a different question.
+    """
+
+    @staticmethod
+    def _add_out_of_scope_row(db_path: Path, provenance: str) -> int:
+        conn = get_connection(db_path)
+        conn.execute("PRAGMA foreign_keys=OFF")
+        cur = conn.execute(
+            "INSERT INTO assignments "
+            "(control_id, hub_id, confidence, provenance, review_status) "
+            "VALUES (?, ?, ?, ?, ?)",
+            ("ctrl-1", "hub-2", 1.0, provenance, "pending"),
+        )
+        row_id = int(cur.lastrowid or 0)
+        conn.commit()
+        conn.close()
+        return row_id
+
+    def test_a_calibration_row_cannot_be_rewritten(
+        self, review_import_db: Path, tmp_path: Path,
+    ) -> None:
+        """The exact attack: the audited reviewer edits their own answer key."""
+        victim = self._add_out_of_scope_row(review_import_db, "ground_truth_T1-AI")
+        review = _write_review_json(
+            tmp_path,
+            [_make_prediction(victim, status="reassigned", reviewer_hub_id="hub-4")],
+        )
+        with pytest.raises(ValueError, match="not an in-scope reviewable row"):
+            apply_review_decisions(review_import_db, review, "mallory")
+
+        conn = get_connection(review_import_db)
+        hub, status = conn.execute(
+            "SELECT hub_id, review_status FROM assignments WHERE id = ?", (victim,)
+        ).fetchone()
+        conn.close()
+        assert hub == "hub-2", "the calibration row was rewritten"
+        assert status == "pending"
+
+    def test_ground_truth_cannot_be_rewritten(
+        self, review_import_db: Path, tmp_path: Path,
+    ) -> None:
+        victim = self._add_out_of_scope_row(review_import_db, "opencre_ground_truth")
+        review = _write_review_json(
+            tmp_path, [_make_prediction(victim, status="rejected")],
+        )
+        with pytest.raises(ValueError, match="not an in-scope reviewable row"):
+            apply_review_decisions(review_import_db, review, "mallory")
+
+    def test_in_scope_rows_are_unaffected(
+        self, review_import_db: Path, tmp_path: Path,
+    ) -> None:
+        """The guard must not narrow the legitimate path it protects."""
+        review = _write_review_json(
+            tmp_path, [_make_prediction(1, status="accepted")],
+        )
+        result = apply_review_decisions(review_import_db, review, "alice")
+        assert result["accepted"] == 1

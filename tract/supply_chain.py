@@ -284,9 +284,15 @@ AUDIT_SUPPRESSIONS: Final[tuple[AuditSuppression, ...]] = (
             "is tract/model_resolver.py, which verifies a recorded sha256 per "
             "file against tract.config.TRACT_MODEL_PINNED_FILE_HASHES before the "
             "model is used, so config.json cannot change under the default repo "
-            "and revision. The mitigation lapses when TRACT_MODEL_REPO or "
+            "and revision. The mitigation lapses when TRACT_MODEL_REPO_ID or "
             "TRACT_MODEL_REVISION overrides the default, which model_resolver "
-            "logs as revision-trust only. Fixed in transformers 5.3.0."
+            "logs as revision-trust only. Scope note, so a later reader does "
+            "not extend this argument past what it covers: it is about the "
+            "MODEL repo only. The crosswalk dataset has its own pin, "
+            "TRACT_DATASET_PINNED_FILE_HASHES, which currently ships UNSET -- "
+            "`tract download` refuses rather than fetching unverified, and "
+            "crosswalk.db never reaches from_pretrained in any case. "
+            "Fixed in transformers 5.3.0."
         ),
     ),
     AuditSuppression(

@@ -1,0 +1,172 @@
+[
+  {
+    "control_text": "Data Poisoning Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "555-083",
+      "020-540",
+      "567-025",
+      "217-163",
+      "041-188",
+      "867-642",
+      "701-654",
+      "444-058"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain Attacks",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "881-234",
+      "701-654",
+      "852-770",
+      "883-173",
+      "423-055",
+      "613-285",
+      "582-035",
+      "663-200",
+      "481-710",
+      "646-285"
+    ]
+  },
+  {
+    "control_text": "Model Theft",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "342-781",
+      "182-732",
+      "474-203",
+      "141-385",
+      "077-235",
+      "267-786",
+      "805-126",
+      "715-644",
+      "663-550",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Model Poisoning",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "481-710",
+      "615-663",
+      "867-642",
+      "020-540",
+      "701-654",
+      "555-083",
+      "276-748",
+      "474-203",
+      "854-183",
+      "061-753"
+    ]
+  },
+  {
+    "control_text": "Model Theft",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "267-786",
+    "predicted_top10": [
+      "342-781",
+      "182-732",
+      "474-203",
+      "141-385",
+      "077-235",
+      "267-786",
+      "805-126",
+      "715-644",
+      "663-550",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Input Manipulation Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "653-242",
+      "611-051",
+      "010-308",
+      "146-706",
+      "641-760",
+      "031-447",
+      "782-234",
+      "217-163",
+      "761-417",
+      "743-237"
+    ]
+  },
+  {
+    "control_text": "Model Poisoning",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "481-710",
+      "615-663",
+      "867-642",
+      "020-540",
+      "701-654",
+      "555-083",
+      "276-748",
+      "474-203",
+      "854-183",
+      "061-753"
+    ]
+  },
+  {
+    "control_text": "Model Inversion Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "532-102",
+      "663-550",
+      "141-385",
+      "382-481",
+      "474-203",
+      "475-586",
+      "011-322",
+      "547-824",
+      "043-703"
+    ]
+  },
+  {
+    "control_text": "Membership Inference Attack",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "475-586",
+      "141-385",
+      "043-703",
+      "532-102",
+      "663-550",
+      "382-481",
+      "346-640",
+      "622-835"
+    ]
+  },
+  {
+    "control_text": "Model Theft",
+    "framework": "OWASP Top10 for ML",
+    "ground_truth_hub_id": "267-786",
+    "predicted_top10": [
+      "342-781",
+      "182-732",
+      "474-203",
+      "141-385",
+      "077-235",
+      "267-786",
+      "805-126",
+      "715-644",
+      "663-550",
+      "818-434"
+    ]
+  }
+]

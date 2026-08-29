@@ -1,0 +1,478 @@
+[
+  {
+    "control_text": "Limiting user queries",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "187-083",
+    "predicted_top10": [
+      "650-560",
+      "152-725",
+      "817-808",
+      "187-083",
+      "123-124",
+      "304-667",
+      "848-711",
+      "447-083",
+      "368-633",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "Randomized smoothing",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "641-760",
+    "predicted_top10": [
+      "547-824",
+      "058-443",
+      "854-183",
+      "532-102",
+      "205-522",
+      "467-215",
+      "333-480",
+      "364-516",
+      "146-871",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "Detection techniques",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "547-824",
+      "474-203",
+      "703-813",
+      "488-626",
+      "364-516",
+      "532-102",
+      "058-443",
+      "467-215",
+      "989-492",
+      "663-550"
+    ]
+  },
+  {
+    "control_text": "Availability Violations",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "801-310",
+      "028-254",
+      "757-271",
+      "117-371",
+      "171-222",
+      "230-318",
+      "148-227",
+      "053-751",
+      "267-031",
+      "777-470"
+    ]
+  },
+  {
+    "control_text": "Filtering retrieved inputs",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "848-711",
+      "843-475",
+      "467-215",
+      "217-112",
+      "342-641",
+      "989-492",
+      "653-242",
+      "743-237",
+      "641-760",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain Attacks and Mitigations",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "881-234",
+      "852-770",
+      "701-654",
+      "423-055",
+      "613-285",
+      "883-173",
+      "886-662",
+      "582-035",
+      "803-457",
+      "364-516"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain Mitigations",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "852-770",
+    "predicted_top10": [
+      "881-234",
+      "852-770",
+      "701-654",
+      "613-285",
+      "423-055",
+      "883-173",
+      "886-662",
+      "582-035",
+      "803-457",
+      "661-440"
+    ]
+  },
+  {
+    "control_text": "Privacy Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "220-870",
+    "predicted_top10": [
+      "220-870",
+      "440-372",
+      "488-626",
+      "768-532",
+      "247-250",
+      "447-083",
+      "128-128",
+      "077-772",
+      "715-644",
+      "044-202"
+    ]
+  },
+  {
+    "control_text": "Adversarial training",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "408-838",
+    "predicted_top10": [
+      "408-838",
+      "533-635",
+      "467-215",
+      "370-877",
+      "989-492",
+      "802-101",
+      "073-507",
+      "761-417",
+      "342-641",
+      "854-183"
+    ]
+  },
+  {
+    "control_text": "Training for alignment",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "860-723",
+      "467-215",
+      "533-635",
+      "547-824",
+      "364-516",
+      "146-871",
+      "532-102",
+      "408-838",
+      "854-183",
+      "755-340"
+    ]
+  },
+  {
+    "control_text": "Targeted Poisoning",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "555-083",
+      "867-642",
+      "020-540",
+      "838-636",
+      "234-123",
+      "854-183",
+      "760-764",
+      "738-144"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain - Poisoning Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "701-654",
+      "881-234",
+      "852-770",
+      "423-055",
+      "883-173",
+      "481-710",
+      "613-285",
+      "867-642",
+      "738-144",
+      "615-663"
+    ]
+  },
+  {
+    "control_text": "Data Reconstruction",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "257-117",
+      "567-025",
+      "858-745",
+      "762-451",
+      "488-626",
+      "703-813",
+      "077-772",
+      "663-550",
+      "475-586"
+    ]
+  },
+  {
+    "control_text": "Model Extraction",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "474-203",
+      "532-102",
+      "663-550",
+      "430-722",
+      "034-540",
+      "805-126",
+      "141-385",
+      "467-215",
+      "547-824",
+      "860-723"
+    ]
+  },
+  {
+    "control_text": "Availability Poisoning",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "757-271",
+      "540-566",
+      "307-507",
+      "053-751",
+      "028-254",
+      "777-470",
+      "273-600",
+      "171-222"
+    ]
+  },
+  {
+    "control_text": "Backdoor Poisoning",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "555-083",
+      "481-710",
+      "838-636",
+      "867-642",
+      "020-540",
+      "234-123",
+      "154-031",
+      "854-183",
+      "205-522"
+    ]
+  },
+  {
+    "control_text": "Differential privacy",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "488-626",
+    "predicted_top10": [
+      "440-372",
+      "488-626",
+      "220-870",
+      "768-532",
+      "474-203",
+      "475-586",
+      "044-202",
+      "805-126",
+      "058-443",
+      "563-186"
+    ]
+  },
+  {
+    "control_text": "Prompt instruction and formatting techniques",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "106-447",
+    "predicted_top10": [
+      "036-275",
+      "787-638",
+      "162-655",
+      "820-878",
+      "822-100",
+      "344-611",
+      "533-516",
+      "068-102",
+      "620-101",
+      "820-877"
+    ]
+  },
+  {
+    "control_text": "An LLM moderator",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "205-522",
+    "predicted_top10": [
+      "766-162",
+      "118-775",
+      "567-755",
+      "013-021",
+      "571-271",
+      "833-030",
+      "427-113",
+      "261-010",
+      "563-088",
+      "172-101"
+    ]
+  },
+  {
+    "control_text": "Formal verification",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "433-442",
+      "613-286",
+      "473-177",
+      "832-555",
+      "854-643",
+      "344-611",
+      "364-516",
+      "745-356",
+      "570-487",
+      "601-182"
+    ]
+  },
+  {
+    "control_text": "Poisoning Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "555-083",
+      "867-642",
+      "020-540",
+      "838-636",
+      "234-123",
+      "760-764",
+      "854-183",
+      "607-671"
+    ]
+  },
+  {
+    "control_text": "Integrity Violations",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "061-753",
+    "predicted_top10": [
+      "456-636",
+      "171-222",
+      "426-842",
+      "483-883",
+      "307-507",
+      "028-254",
+      "577-260",
+      "777-470",
+      "613-287",
+      "347-352"
+    ]
+  },
+  {
+    "control_text": "Reinforcement learning from human feedback (RLHF)",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "533-635",
+      "408-838",
+      "202-604",
+      "370-877",
+      "854-183",
+      "333-480",
+      "989-492",
+      "547-824",
+      "467-215",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "Model Poisoning",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "481-710",
+      "867-642",
+      "020-540",
+      "555-083",
+      "615-663",
+      "854-183",
+      "701-654",
+      "061-753",
+      "234-123",
+      "276-748"
+    ]
+  },
+  {
+    "control_text": "Direct Prompt Injection Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "686-110",
+      "012-625",
+      "536-158",
+      "483-253",
+      "843-475",
+      "106-447",
+      "760-764",
+      "020-540",
+      "867-642",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "Indirect Prompt Injection Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "012-625",
+    "predicted_top10": [
+      "012-625",
+      "686-110",
+      "483-253",
+      "536-158",
+      "843-475",
+      "370-877",
+      "760-764",
+      "867-642",
+      "738-144",
+      "803-457"
+    ]
+  },
+  {
+    "control_text": "Evasion Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "370-877",
+      "384-015",
+      "011-322",
+      "333-480",
+      "803-457",
+      "854-183",
+      "408-838",
+      "585-408",
+      "205-522",
+      "467-215"
+    ]
+  },
+  {
+    "control_text": "Membership Inference",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "227-045",
+      "713-683",
+      "475-586",
+      "532-102",
+      "743-110",
+      "663-550",
+      "551-400",
+      "346-640"
+    ]
+  }
+]

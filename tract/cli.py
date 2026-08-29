@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from tract.model_resolver import ResolvedModel
 
 from tract.export.filters import ExportableAssignment
+from tract.io import atomic_write_bytes, sha256_file
 from tract.review.types import (
     EMPTY_REVIEW_METRICS,
     IngestControl,
@@ -55,7 +56,15 @@ from tract.config import (
     PHASE3_REVIEW_OUTPUT_DIR,
     PHASE5_OPENCRE_EXPORT_DIR,
     PROCESSED_DIR,
+    TRACT_CROSSWALK_DB_SHA256,
+    TRACT_DATASET_ALLOW_UNVERIFIED_ENV,
+    TRACT_DATASET_PINNED_FILE_HASHES,
+    TRACT_DATASET_PINNED_REVISION,
+    TRACT_DATASET_REPO_ID_ENV,
+    TRACT_DATASET_REVISION_ENV,
+    TRACT_DATASET_SHA256_ENV,
     TRACT_MODEL_PINNED_REVISION,
+    TRACT_PIN_UNSET,
     TRAINING_DIR,
 )
 import tract as _tract_pkg
@@ -96,6 +105,102 @@ def _resolve_model_or_exit() -> ResolvedModel:
     except ModelIntegrityError as exc:
         print(str(exc), file=sys.stderr)
         sys.exit(EXIT_INTEGRITY)
+
+
+def _resolve_dataset_pin_or_exit() -> tuple[str, str, dict[str, str]]:
+    """Repo, revision, and the digests the downloaded files must match.
+
+    The dataset half of what _resolve_model_or_exit does for the model, and it
+    exists for the same reason: a HuggingFace tag is mutable on a dataset repo
+    too, and crosswalk.db is the file every later `tract` query reads, so an
+    unpinned fetch lets whoever can move that tag rewrite the answers.
+
+    Three ways out, and none of them is a single variable that restores the old
+    unpinned fetch:
+
+    * default repo at the pinned revision -- verified against the recorded
+      digests, and REFUSED while those are still UNSET, because a check that
+      waives itself when its constant is empty leaves the download exactly as
+      unverified as it was and says so nowhere;
+    * another repo or revision plus TRACT_DATASET_SHA256 -- verified against
+      the digest the operator states, so the escape hatch stays checkable;
+    * another repo or revision plus TRACT_DATASET_ALLOW_UNVERIFIED=1 -- no
+      check at all, which is a thing someone has to write down.
+
+    Returns:
+        (repo_id, revision, digests keyed by filename). An empty mapping means
+        the operator explicitly opted out of verification.
+    """
+    repo_id = os.environ.get(TRACT_DATASET_REPO_ID_ENV, HF_DATASET_REPO_ID)
+    revision = os.environ.get(
+        TRACT_DATASET_REVISION_ENV, TRACT_DATASET_PINNED_REVISION)
+
+    if repo_id == HF_DATASET_REPO_ID and revision == TRACT_DATASET_PINNED_REVISION:
+        unpinned = [
+            name for name in HF_DATABASE_FILES
+            if TRACT_DATASET_PINNED_FILE_HASHES.get(name, TRACT_PIN_UNSET)
+            == TRACT_PIN_UNSET
+        ]
+        if revision == TRACT_PIN_UNSET or unpinned:
+            print(
+                "The crosswalk dataset has no recorded pin yet "
+                f"(revision={TRACT_DATASET_PINNED_REVISION}, "
+                f"crosswalk.db sha256={TRACT_CROSSWALK_DB_SHA256}), so a "
+                "download of it cannot be verified and this refuses to write "
+                "one. A maintainer records both constants in tract/config.py "
+                "with `python scripts/recompute_model_pins.py --dataset "
+                "<dataset_commit_sha>`; the bump procedure sits next to them. "
+                "Meanwhile `tract download --model-only` still works, and so "
+                f"does naming a revision with {TRACT_DATASET_REVISION_ENV} "
+                f"plus the digest you expect in {TRACT_DATASET_SHA256_ENV}.",
+                file=sys.stderr,
+            )
+            sys.exit(EXIT_INTEGRITY)
+        return repo_id, revision, dict(TRACT_DATASET_PINNED_FILE_HASHES)
+
+    if revision == TRACT_PIN_UNSET:
+        print(
+            f"{TRACT_DATASET_REPO_ID_ENV} names {repo_id} but no revision was "
+            f"given and the recorded one is {TRACT_PIN_UNSET}. Set "
+            f"{TRACT_DATASET_REVISION_ENV} to a commit SHA.",
+            file=sys.stderr,
+        )
+        sys.exit(EXIT_INTEGRITY)
+
+    stated = os.environ.get(TRACT_DATASET_SHA256_ENV, "")
+    if stated:
+        if len(HF_DATABASE_FILES) != 1:
+            print(
+                f"{TRACT_DATASET_SHA256_ENV} states one digest but "
+                f"{len(HF_DATABASE_FILES)} files would be downloaded, so it "
+                "cannot cover them. Record the pins in tract/config.py "
+                "instead.",
+                file=sys.stderr,
+            )
+            sys.exit(EXIT_INTEGRITY)
+        logger.warning(
+            "Fetching %s@%s and checking it against the digest stated in %s, "
+            "not the recorded pin.", repo_id, revision, TRACT_DATASET_SHA256_ENV)
+        return repo_id, revision, {HF_DATABASE_FILES[0]: stated}
+
+    if os.environ.get(TRACT_DATASET_ALLOW_UNVERIFIED_ENV) == "1":
+        logger.warning(
+            "%s=1: fetching %s@%s with NO integrity check. Whatever that "
+            "revision serves becomes the database every later query reads.",
+            TRACT_DATASET_ALLOW_UNVERIFIED_ENV, repo_id, revision)
+        return repo_id, revision, {}
+
+    print(
+        f"Refusing to fetch the crosswalk database from {repo_id}@{revision}: "
+        "that is not the pinned default, so the recorded digest does not "
+        f"apply. Either state the digest you expect in "
+        f"{TRACT_DATASET_SHA256_ENV}, or set "
+        f"{TRACT_DATASET_ALLOW_UNVERIFIED_ENV}=1 to accept an unverified "
+        "database. A single environment variable must not be able to turn the "
+        "check off by accident.",
+        file=sys.stderr,
+    )
+    sys.exit(EXIT_INTEGRITY)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -354,6 +459,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_publish.add_argument("--dry-run", action="store_true", help="Build + scan, no upload")
     p_publish.add_argument("--skip-upload", action="store_true", help="Build + scan only")
     p_publish.add_argument("--gpu-hours", type=float, default=0.0, help="GPU training hours for model card")
+    p_publish.add_argument(
+        "--validate-aibom", action="store_true",
+        help=("Run the third-party AIBOM validator: clones aibom-generator at "
+              "--aibom-commit and executes it on this host"),
+    )
+    p_publish.add_argument(
+        "--aibom-commit", default="",
+        help=("Full 40-character commit SHA of aibom-generator to run for "
+              "--validate-aibom. A branch name is refused: it resolves to "
+              "whatever that repository holds at publish time."),
+    )
 
     # ── import-ground-truth ─────────────────────────────────────────
     p_import_gt = subparsers.add_parser(
@@ -519,6 +635,16 @@ def _cmd_download(args: argparse.Namespace) -> None:
         print("All artifacts already present. Use --force to re-download.")
         return
 
+    # Resolved before the model loop pulls ~1.3 GB, not inside the dataset
+    # branch below it. While the dataset pin is unrecorded this exits 4, and
+    # doing that afterwards would spend a gigabyte and change on every run to
+    # arrive at the same refusal. Guarded by the same predicate as the fetch
+    # itself, so `--model-only` and an already-present database never see it.
+    want_db = not args.model_only and not (existing_db and not args.force)
+    dataset_pin: tuple[str, str, dict[str, str]] | None = (
+        _resolve_dataset_pin_or_exit() if want_db else None
+    )
+
     if not existing_model or args.force:
         print(f"Downloading model from {HF_DEFAULT_REPO_ID}...")
         st_model_dir.mkdir(parents=True, exist_ok=True)
@@ -544,21 +670,44 @@ def _cmd_download(args: argparse.Namespace) -> None:
     else:
         print("Model artifacts already present (skipping).")
 
-    if not args.model_only:
-        if existing_db and not args.force:
-            print(f"crosswalk.db already present at {PHASE1C_CROSSWALK_DB_PATH}")
-        else:
-            print(f"Downloading crosswalk.db from {HF_DATASET_REPO_ID}...")
-            PHASE1C_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-            for filename in HF_DATABASE_FILES:
-                hf_hub_download(
-                    repo_id=HF_DATASET_REPO_ID,
-                    repo_type="dataset",
-                    filename=filename,
-                    local_dir=str(PHASE1C_RESULTS_DIR),
-                )
-                print(f"  {filename}")
-            print(f"Database saved to {PHASE1C_CROSSWALK_DB_PATH}")
+    if not args.model_only and not want_db:
+        print(f"crosswalk.db already present at {PHASE1C_CROSSWALK_DB_PATH}")
+    elif dataset_pin is not None:
+        repo_id, revision, expected_hashes = dataset_pin
+        print(f"Downloading crosswalk.db from {repo_id}@{revision}...")
+        for filename in HF_DATABASE_FILES:
+            # No local_dir on purpose. local_dir=PHASE1C_RESULTS_DIR writes
+            # straight onto results/phase1c/crosswalk.db, so a machine holding
+            # a good 7 MB database lost it the moment a moved tag served
+            # different bytes -- the overwrite happened before anything had
+            # checked them, and the failure path then deleted what was left.
+            # Landing in the HF cache means a failed verification never
+            # touches the live path.
+            landed = Path(hf_hub_download(
+                repo_id=repo_id,
+                repo_type="dataset",
+                filename=filename,
+                revision=revision,
+            ))
+            expected = expected_hashes.get(filename)
+            if expected is not None:
+                actual = sha256_file(landed)
+                if actual != expected:
+                    print(
+                        f"Integrity check failed for {filename}: expected "
+                        f"{expected}, got {actual}. What {repo_id}@{revision} "
+                        f"serves is not what the pin records, so nothing under "
+                        f"{PHASE1C_RESULTS_DIR} was touched.",
+                        file=sys.stderr,
+                    )
+                    sys.exit(EXIT_INTEGRITY)
+            # Only now does the live path change, and atomically: the next run
+            # gates on PHASE1C_CROSSWALK_DB_PATH.exists() alone, so a partial
+            # file left by an interrupted copy would read as a good database
+            # for the rest of its life.
+            atomic_write_bytes(landed.read_bytes(), PHASE1C_RESULTS_DIR / filename)
+            print(f"  {filename}")
+        print(f"Database saved to {PHASE1C_CROSSWALK_DB_PATH}")
 
     print("\nDone. You can now run:")
     print("  tract assign 'Ensure AI models are tested for bias'")
@@ -1516,7 +1665,7 @@ def _cmd_publish_hf(args: argparse.Namespace) -> None:
         PHASE1D_ARTIFACTS_PATH,
         PHASE1D_CALIBRATION_PATH,
     )
-    from tract.publish import publish_to_huggingface
+    from tract.publish import AIBOM_COMMIT_SHA, publish_to_huggingface
 
     model_dir = PHASE1D_DEPLOYMENT_MODEL_DIR / "model" / "model"
     bridge_report = BRIDGE_OUTPUT_DIR / "bridge_report.json"
@@ -1539,6 +1688,8 @@ def _cmd_publish_hf(args: argparse.Namespace) -> None:
         gpu_hours=args.gpu_hours,
         dry_run=args.dry_run,
         skip_upload=args.skip_upload,
+        validate_aibom=args.validate_aibom,
+        aibom_commit=args.aibom_commit or AIBOM_COMMIT_SHA,
     )
 
 

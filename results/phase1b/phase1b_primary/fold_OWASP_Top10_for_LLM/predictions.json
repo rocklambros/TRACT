@@ -1,0 +1,223 @@
+[
+  {
+    "control_text": "Data and Model Poisoning",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "867-642",
+      "567-025",
+      "701-654",
+      "020-540",
+      "555-083",
+      "217-163",
+      "088-316",
+      "738-144"
+    ]
+  },
+  {
+    "control_text": "Supply Chain",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "881-234",
+      "613-285",
+      "852-770",
+      "423-055",
+      "701-654",
+      "883-173",
+      "613-286",
+      "148-227",
+      "223-780",
+      "234-282"
+    ]
+  },
+  {
+    "control_text": "Sensitive Information Disclosure",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "308-515",
+      "044-202",
+      "208-805",
+      "362-550",
+      "768-532",
+      "818-434",
+      "510-324",
+      "220-870",
+      "571-640",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Improper Output Handling",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "780-757",
+    "predicted_top10": [
+      "161-451",
+      "764-765",
+      "538-446",
+      "620-101",
+      "204-272",
+      "866-553",
+      "725-682",
+      "806-367",
+      "832-555",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Improper Output Handling",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "780-757",
+    "predicted_top10": [
+      "161-451",
+      "764-765",
+      "538-446",
+      "620-101",
+      "204-272",
+      "866-553",
+      "725-682",
+      "806-367",
+      "832-555",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Data and Model Poisoning",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "867-642",
+      "567-025",
+      "701-654",
+      "020-540",
+      "555-083",
+      "217-163",
+      "088-316",
+      "738-144"
+    ]
+  },
+  {
+    "control_text": "Prompt Injection",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "686-110",
+      "012-625",
+      "536-158",
+      "483-253",
+      "760-764",
+      "843-475",
+      "780-757",
+      "020-540",
+      "187-083",
+      "867-642"
+    ]
+  },
+  {
+    "control_text": "Prompt Injection",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "012-625",
+    "predicted_top10": [
+      "686-110",
+      "012-625",
+      "536-158",
+      "483-253",
+      "760-764",
+      "843-475",
+      "780-757",
+      "020-540",
+      "187-083",
+      "867-642"
+    ]
+  },
+  {
+    "control_text": "Data and Model Poisoning",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "867-642",
+      "567-025",
+      "701-654",
+      "020-540",
+      "555-083",
+      "217-163",
+      "088-316",
+      "738-144"
+    ]
+  },
+  {
+    "control_text": "Data and Model Poisoning",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "867-642",
+      "567-025",
+      "701-654",
+      "020-540",
+      "555-083",
+      "217-163",
+      "088-316",
+      "738-144"
+    ]
+  },
+  {
+    "control_text": "Sensitive Information Disclosure",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "220-870",
+    "predicted_top10": [
+      "308-515",
+      "044-202",
+      "208-805",
+      "362-550",
+      "768-532",
+      "818-434",
+      "510-324",
+      "220-870",
+      "571-640",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Sensitive Information Disclosure",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "077-772",
+    "predicted_top10": [
+      "308-515",
+      "044-202",
+      "208-805",
+      "362-550",
+      "768-532",
+      "818-434",
+      "510-324",
+      "220-870",
+      "571-640",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Unbounded Consumption",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "630-573",
+      "746-705",
+      "463-820",
+      "176-154",
+      "268-088",
+      "660-052",
+      "230-318",
+      "886-662",
+      "670-660",
+      "187-083"
+    ]
+  }
+]

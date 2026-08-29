@@ -401,6 +401,46 @@ Every framework re-ingested from its official source. NOT from the old project's
 > interval criterion explicitly so point-versus-interval cannot be settled after
 > the fact, and fixes the fold roster in advance.
 
+#### 6.4.2 Campaign 2 result (2026-08-28)
+
+The semantic rebuild referred to above ran as Campaign 2. Pre-registration:
+`results/phase1b/CAMPAIGN2.md`. Full results and caveats:
+`docs/campaign2-results.md`. The short version, stated so that §6.4's warning
+and the new number cannot be read apart:
+
+- **Test round** (5 held-out AI frameworks, n=147, one run, `n_configurations=1`):
+  micro hit@1 delta **+0.1361 [+0.0476, +0.2245]** over the paired zero-shot
+  baseline; absolute 0.5918 [0.5170, 0.6667].
+- **`point_estimate_pass: true`, `ci_low_pass: false`, `familywise_pass: false`,
+  `verdicts_agree: false`.** The bootstrap puts P(true delta ≤ 0.10) at 0.203
+  and the one-sided 95% lower bound at +0.0612. The reported `p = 0.0016` tests
+  the effect against **zero**, not against the gate.
+- The pre-registration designates `point_estimate_pass` as the verdict, but that
+  clause was committed 2026-08-27, eight days after Campaign 2 arm results were
+  already in the repository, and its threshold arithmetic was derived from
+  indicators on the test set it governs. It is not blind pre-registration.
+- **This is the same verdict pattern §6.4 withdrew a headline for.** Campaign 1:
+  +0.1293 [0.0408, 0.2177]. Campaign 2: +0.1361 [0.0476, 0.2245]. Same n, same
+  threshold, same three booleans.
+- **What is genuinely different:** the gain is concentrated in the 109 items
+  whose anchor does not contain its own answer (+0.1743 [+0.073, +0.275]), while
+  the 38 lexical-echo items contribute +0.0263. Campaign 1's headline failed on
+  precisely that axis. This is the result's real defense, not the clause above.
+- **Validation (n=1,265) does not support a general claim.** No arm cleared the
+  gate; A1 (the primary) is significantly negative at −0.0609. Four of five
+  validation folds are positive — the negative aggregate is driven by ASVS
+  alone (−0.3935), which is the only framework in the corpus with a 1:1 hub
+  bijection (277 links, 277 distinct hubs). Whether ASVS is a valid LOFO fold
+  is **open**, and §6.4's own negative-fold rule flags it.
+- **The pre-declared agentic smoke test FAILED** (1–2 of 6, below a
+  constant-predictor baseline of 3 of 6). It is not a metric and no arm was
+  re-selected on it.
+
+Gate 1 should be described as passing on the pre-registered point-estimate
+criterion **and only that criterion**, with the interval result stated in the
+same breath. `TRACT_MODEL_PINNED_REVISION` is unchanged; the Campaign 2 arm is
+a research result, not the shipped model.
+
 #### 6.4.1 Multi-Hub Training Pairs and Batch Sampling
 Controls legitimately map to multiple CRE hubs (multi-hop graph structure). These multi-hub text mappings are preserved as separate training pairs — never dropped or deduplicated across hubs. Deduplication occurs only within the same (text, hub) pair (case-insensitive), keeping the best quality tier.
 

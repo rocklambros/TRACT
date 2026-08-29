@@ -117,3 +117,41 @@ class TestGateDecision:
         folds = [_fold("A", [1] * 30 + [0] * 20, [1] * 20 + [0] * 30)]
         assert gate_decision(folds)["threshold"] == pytest.approx(0.10)
         assert gate_decision(folds, threshold=0.05)["threshold"] == pytest.approx(0.05)
+
+
+class TestDeltaRangeGuard:
+    """The gate is the last layer, and it must not trust the two above it.
+
+    A red-team pass wrote five fold records whose hit1_indicators were all
+    7.0. They cleared every shape check in load_fold_results, the aggregate
+    logged "hit@1 (micro): 7.0000", and this function returned
+    point_estimate_pass=true, ci_low_pass=true and verdicts_agree=true off a
+    delta of 7.0. The loader now refuses those arrays and the aggregate
+    range-checks its own output, but run_experiment calls gate_decision with
+    in-memory fold dicts that never pass through either. A delta is a
+    difference of two rates and cannot leave [-1, 1].
+    """
+
+    def test_a_delta_outside_minus_one_to_one_is_refused(self) -> None:
+        with pytest.raises(ValueError, match="outside"):
+            gate_decision([_fold("A", [7, 7, 7], [0, 0, 0])])
+
+    def test_a_poisoned_baseline_is_refused_too(self) -> None:
+        """The delta is symmetric, so the baseline is the other way in."""
+        with pytest.raises(ValueError, match="outside"):
+            gate_decision([_fold("A", [1, 1, 1], [-9, -9, -9])])
+
+    def test_a_perfect_improvement_is_not_a_false_positive(self) -> None:
+        """+1.0 sits exactly on the bound and is a legitimate result:
+        every item missed by the baseline and hit by the trained model."""
+        decision = gate_decision([_fold("A", [1] * 20, [0] * 20)])
+
+        assert decision["micro_delta"] == pytest.approx(1.0)
+        assert decision["point_estimate_pass"] is True
+
+    def test_a_total_regression_is_not_a_false_positive(self) -> None:
+        """And -1.0 sits on the other one."""
+        decision = gate_decision([_fold("A", [0] * 20, [1] * 20)])
+
+        assert decision["micro_delta"] == pytest.approx(-1.0)
+        assert decision["point_estimate_pass"] is False

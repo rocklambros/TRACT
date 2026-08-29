@@ -1,0 +1,410 @@
+{
+  "candidates": [
+    {
+      "ai_hub_id": "011-322",
+      "cosine_similarity": 0.555137,
+      "status": "accepted",
+      "trad_hub_id": "570-487"
+    },
+    {
+      "ai_hub_id": "011-322",
+      "cosine_similarity": 0.546643,
+      "status": "accepted",
+      "trad_hub_id": "088-377"
+    },
+    {
+      "ai_hub_id": "011-322",
+      "cosine_similarity": 0.498694,
+      "status": "accepted",
+      "trad_hub_id": "433-442"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "cosine_similarity": 0.540408,
+      "status": "accepted",
+      "trad_hub_id": "503-455"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "cosine_similarity": 0.539456,
+      "status": "accepted",
+      "trad_hub_id": "010-308"
+    },
+    {
+      "ai_hub_id": "077-235",
+      "cosine_similarity": 0.402959,
+      "status": "rejected",
+      "trad_hub_id": "161-451"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "cosine_similarity": 0.488468,
+      "status": "accepted",
+      "trad_hub_id": "455-885"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "cosine_similarity": 0.476138,
+      "status": "accepted",
+      "trad_hub_id": "503-455"
+    },
+    {
+      "ai_hub_id": "106-447",
+      "cosine_similarity": 0.451178,
+      "status": "accepted",
+      "trad_hub_id": "857-718"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "cosine_similarity": 0.617596,
+      "status": "accepted",
+      "trad_hub_id": "503-455"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "cosine_similarity": 0.60152,
+      "status": "accepted",
+      "trad_hub_id": "010-308"
+    },
+    {
+      "ai_hub_id": "108-316",
+      "cosine_similarity": 0.50327,
+      "status": "accepted",
+      "trad_hub_id": "630-573"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "cosine_similarity": 0.605452,
+      "status": "accepted",
+      "trad_hub_id": "307-507"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "cosine_similarity": 0.505904,
+      "status": "accepted",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "130-171",
+      "cosine_similarity": 0.494234,
+      "status": "accepted",
+      "trad_hub_id": "504-340"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "cosine_similarity": 0.504868,
+      "status": "accepted",
+      "trad_hub_id": "762-451"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "cosine_similarity": 0.493372,
+      "status": "accepted",
+      "trad_hub_id": "461-680"
+    },
+    {
+      "ai_hub_id": "173-554",
+      "cosine_similarity": 0.488364,
+      "status": "accepted",
+      "trad_hub_id": "614-353"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "cosine_similarity": 0.773608,
+      "status": "accepted",
+      "trad_hub_id": "427-113"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "cosine_similarity": 0.652833,
+      "status": "accepted",
+      "trad_hub_id": "013-021"
+    },
+    {
+      "ai_hub_id": "202-604",
+      "cosine_similarity": 0.512517,
+      "status": "accepted",
+      "trad_hub_id": "076-470"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "cosine_similarity": 0.483916,
+      "status": "accepted",
+      "trad_hub_id": "013-021"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "cosine_similarity": 0.473003,
+      "status": "accepted",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "205-522",
+      "cosine_similarity": 0.428511,
+      "status": "rejected",
+      "trad_hub_id": "427-113"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "cosine_similarity": 0.458284,
+      "status": "accepted",
+      "trad_hub_id": "456-636"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "cosine_similarity": 0.434167,
+      "status": "rejected",
+      "trad_hub_id": "307-507"
+    },
+    {
+      "ai_hub_id": "217-163",
+      "cosine_similarity": 0.43348,
+      "status": "rejected",
+      "trad_hub_id": "715-304"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "cosine_similarity": 0.669336,
+      "status": "accepted",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "cosine_similarity": 0.541412,
+      "status": "accepted",
+      "trad_hub_id": "854-643"
+    },
+    {
+      "ai_hub_id": "333-480",
+      "cosine_similarity": 0.515383,
+      "status": "accepted",
+      "trad_hub_id": "660-867"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "cosine_similarity": 0.514579,
+      "status": "accepted",
+      "trad_hub_id": "888-770"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "cosine_similarity": 0.512898,
+      "status": "accepted",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "475-586",
+      "cosine_similarity": 0.418848,
+      "status": "rejected",
+      "trad_hub_id": "428-544"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "cosine_similarity": 0.543695,
+      "status": "accepted",
+      "trad_hub_id": "088-377"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "cosine_similarity": 0.530356,
+      "status": "accepted",
+      "trad_hub_id": "570-487"
+    },
+    {
+      "ai_hub_id": "483-253",
+      "cosine_similarity": 0.468179,
+      "status": "accepted",
+      "trad_hub_id": "433-442"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "cosine_similarity": 0.538998,
+      "status": "accepted",
+      "trad_hub_id": "570-487"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "cosine_similarity": 0.516247,
+      "status": "accepted",
+      "trad_hub_id": "088-377"
+    },
+    {
+      "ai_hub_id": "536-158",
+      "cosine_similarity": 0.44837,
+      "status": "rejected",
+      "trad_hub_id": "433-442"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "cosine_similarity": 0.648685,
+      "status": "accepted",
+      "trad_hub_id": "234-123"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "cosine_similarity": 0.642133,
+      "status": "accepted",
+      "trad_hub_id": "838-636"
+    },
+    {
+      "ai_hub_id": "555-083",
+      "cosine_similarity": 0.532094,
+      "status": "accepted",
+      "trad_hub_id": "441-132"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "cosine_similarity": 0.605008,
+      "status": "accepted",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "cosine_similarity": 0.530481,
+      "status": "rejected",
+      "trad_hub_id": "346-640"
+    },
+    {
+      "ai_hub_id": "663-550",
+      "cosine_similarity": 0.520688,
+      "status": "rejected",
+      "trad_hub_id": "206-254"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "cosine_similarity": 0.447004,
+      "status": "rejected",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "cosine_similarity": 0.443798,
+      "status": "rejected",
+      "trad_hub_id": "234-123"
+    },
+    {
+      "ai_hub_id": "755-340",
+      "cosine_similarity": 0.441579,
+      "status": "rejected",
+      "trad_hub_id": "118-775"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "cosine_similarity": 0.593786,
+      "status": "accepted",
+      "trad_hub_id": "161-451"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "cosine_similarity": 0.438695,
+      "status": "rejected",
+      "trad_hub_id": "503-455"
+    },
+    {
+      "ai_hub_id": "780-757",
+      "cosine_similarity": 0.374821,
+      "status": "rejected",
+      "trad_hub_id": "782-234"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "cosine_similarity": 0.487302,
+      "status": "accepted",
+      "trad_hub_id": "820-878"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "cosine_similarity": 0.41486,
+      "status": "rejected",
+      "trad_hub_id": "822-100"
+    },
+    {
+      "ai_hub_id": "810-884",
+      "cosine_similarity": 0.413596,
+      "status": "rejected",
+      "trad_hub_id": "820-877"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "cosine_similarity": 0.695868,
+      "status": "accepted",
+      "trad_hub_id": "356-282"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "cosine_similarity": 0.497196,
+      "status": "accepted",
+      "trad_hub_id": "074-873"
+    },
+    {
+      "ai_hub_id": "858-745",
+      "cosine_similarity": 0.492062,
+      "status": "accepted",
+      "trad_hub_id": "046-257"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "cosine_similarity": 0.537112,
+      "status": "rejected",
+      "trad_hub_id": "346-640"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "cosine_similarity": 0.516618,
+      "status": "rejected",
+      "trad_hub_id": "206-254"
+    },
+    {
+      "ai_hub_id": "860-723",
+      "cosine_similarity": 0.515406,
+      "status": "accepted",
+      "trad_hub_id": "073-507"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "cosine_similarity": 0.675369,
+      "status": "accepted",
+      "trad_hub_id": "630-573"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "cosine_similarity": 0.663538,
+      "status": "accepted",
+      "trad_hub_id": "560-224"
+    },
+    {
+      "ai_hub_id": "886-662",
+      "cosine_similarity": 0.645735,
+      "status": "accepted",
+      "trad_hub_id": "463-820"
+    }
+  ],
+  "counts": {
+    "accepted": 46,
+    "rejected": 17,
+    "total": 63
+  },
+  "created_at": "2026-05-03T10:43:02.756192+00:00",
+  "parameters": {
+    "method": "top_k_per_ai_hub",
+    "top_k": 3
+  },
+  "similarity_stats": {
+    "matrix_shape": [
+      21,
+      382
+    ],
+    "max": 0.774,
+    "mean": 0.162,
+    "min": -0.149,
+    "percentiles": {
+      "25": 0.089,
+      "50": 0.156,
+      "75": 0.227,
+      "90": 0.296,
+      "95": 0.341,
+      "99": 0.448
+    },
+    "std": 0.106
+  }
+}

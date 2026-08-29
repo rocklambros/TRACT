@@ -1,0 +1,5935 @@
+[
+  {
+    "control_text": "Accessing Functionality Not Properly Constrained by ACLs",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "664-080",
+      "650-560",
+      "640-364",
+      "801-310",
+      "117-371",
+      "757-271",
+      "612-252",
+      "540-566",
+      "284-521",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "Exploit Non-Production Interfaces",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "860-084",
+      "336-512",
+      "777-470",
+      "640-364",
+      "834-645",
+      "838-636",
+      "307-111",
+      "148-227",
+      "664-080",
+      "028-254"
+    ]
+  },
+  {
+    "control_text": "Privilege Abuse",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "540-566",
+      "247-250",
+      "220-442",
+      "220-870",
+      "612-252",
+      "443-447",
+      "123-124",
+      "368-633",
+      "308-515",
+      "515-021"
+    ]
+  },
+  {
+    "control_text": "Collect Data from Common Resource Locations",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "834-645",
+      "173-554",
+      "423-055",
+      "077-772",
+      "356-282",
+      "307-111",
+      "660-052",
+      "044-202",
+      "026-280",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "Infrastructure Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "230-318",
+      "708-355",
+      "217-163",
+      "738-144",
+      "862-452",
+      "336-512",
+      "615-663",
+      "838-636",
+      "467-784",
+      "435-702"
+    ]
+  },
+  {
+    "control_text": "White Box Reverse Engineering",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "433-442",
+      "555-083",
+      "034-540",
+      "843-475",
+      "838-636",
+      "570-487",
+      "764-765",
+      "635-851",
+      "854-183",
+      "626-250"
+    ]
+  },
+  {
+    "control_text": "Using Malicious Files",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "112-273",
+      "154-031",
+      "838-636",
+      "307-111",
+      "860-084",
+      "615-663",
+      "265-800",
+      "777-470",
+      "555-083",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "Exploiting Incorrectly Configured Access Control Security Levels",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "650-560",
+      "817-808",
+      "273-600",
+      "640-364",
+      "538-770",
+      "664-080",
+      "524-603"
+    ]
+  },
+  {
+    "control_text": "Embedding Scripts within Scripts",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "646-462",
+      "533-516",
+      "064-808",
+      "620-101",
+      "366-835",
+      "422-005",
+      "607-671",
+      "760-765",
+      "317-743",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "Privilege Escalation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "765-788",
+      "068-102",
+      "636-660",
+      "546-564",
+      "635-851",
+      "820-877",
+      "118-775",
+      "515-021",
+      "344-611",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "Leverage Executable Code in Non-Executable Files",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "314-131",
+      "860-084",
+      "863-521",
+      "417-342",
+      "263-184",
+      "253-452",
+      "838-636",
+      "175-235",
+      "832-555",
+      "715-334"
+    ]
+  },
+  {
+    "control_text": "Malicious Logic Insertion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "154-031",
+      "738-144",
+      "838-636",
+      "265-800",
+      "555-083",
+      "481-710",
+      "615-663",
+      "061-753",
+      "073-507",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "Infected Memory",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "866-553",
+      "831-570",
+      "615-663",
+      "660-052",
+      "715-304",
+      "020-540",
+      "112-273",
+      "481-710",
+      "838-636",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Modification of Windows Service Configuration",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "336-512",
+      "486-813",
+      "664-080",
+      "650-560",
+      "615-744",
+      "817-808",
+      "110-531",
+      "582-541",
+      "640-364",
+      "152-725"
+    ]
+  },
+  {
+    "control_text": "Malicious Root Certificate",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "307-507",
+      "674-425",
+      "537-367",
+      "430-636",
+      "347-352",
+      "530-671",
+      "053-751",
+      "863-521",
+      "171-222",
+      "170-772"
+    ]
+  },
+  {
+    "control_text": "Contradictory Destinations in Traffic Routing Schemes",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "273-600",
+      "725-682",
+      "534-605",
+      "336-512",
+      "117-371",
+      "660-867",
+      "801-310",
+      "232-217",
+      "670-660",
+      "822-100"
+    ]
+  },
+  {
+    "control_text": "WebView Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "857-718",
+      "760-764",
+      "732-873",
+      "547-283",
+      "760-765",
+      "134-207",
+      "064-808",
+      "366-835",
+      "533-516",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Android Activity Hijack",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "082-327",
+      "664-080",
+      "612-252",
+      "540-566",
+      "615-744",
+      "304-667",
+      "834-645",
+      "650-560",
+      "268-272",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "Intent Spoof",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "532-878",
+      "582-541",
+      "304-667",
+      "804-220",
+      "551-400",
+      "525-361",
+      "615-744",
+      "402-133",
+      "543-512",
+      "426-842"
+    ]
+  },
+  {
+    "control_text": "WebView Exposure",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "480-071",
+      "208-805",
+      "268-100",
+      "857-718",
+      "333-888",
+      "402-133",
+      "257-668",
+      "545-243",
+      "736-237",
+      "760-765"
+    ]
+  },
+  {
+    "control_text": "Data Injected During Configuration",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "732-873",
+      "857-718",
+      "547-283",
+      "486-813",
+      "743-237",
+      "175-235",
+      "866-553",
+      "806-367",
+      "117-371",
+      "615-663"
+    ]
+  },
+  {
+    "control_text": "Pull Data from System Resources",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "077-772",
+      "173-554",
+      "423-055",
+      "044-202",
+      "780-757",
+      "040-843",
+      "843-475",
+      "077-235",
+      "314-701",
+      "046-257"
+    ]
+  },
+  {
+    "control_text": "Incomplete Data Deletion in a Multi-Tenant Environment",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "715-304",
+      "762-451",
+      "660-052",
+      "046-257",
+      "567-025",
+      "088-316",
+      "041-188",
+      "217-163",
+      "545-243",
+      "814-322"
+    ]
+  },
+  {
+    "control_text": "Install New Service",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "263-184",
+      "148-227",
+      "467-784",
+      "515-021",
+      "253-452",
+      "862-452",
+      "764-765",
+      "007-274",
+      "473-177",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "Modify Existing Service",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "764-765",
+      "417-342",
+      "112-648",
+      "862-452",
+      "635-851",
+      "860-084",
+      "258-115",
+      "515-021",
+      "486-813",
+      "715-334"
+    ]
+  },
+  {
+    "control_text": "Install Rootkit",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "860-084",
+      "154-031",
+      "112-273",
+      "838-636",
+      "555-083",
+      "263-184",
+      "715-334",
+      "863-521",
+      "777-470",
+      "715-223"
+    ]
+  },
+  {
+    "control_text": "Replace File Extension Handlers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "130-550",
+      "545-243",
+      "314-701",
+      "737-086",
+      "742-056",
+      "118-602",
+      "384-344",
+      "175-235",
+      "758-262",
+      "480-071"
+    ]
+  },
+  {
+    "control_text": "Replace Trusted Executable",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "860-084",
+      "715-334",
+      "307-507",
+      "863-521",
+      "171-222",
+      "314-131",
+      "715-223",
+      "028-254",
+      "347-352",
+      "577-260"
+    ]
+  },
+  {
+    "control_text": "Modify Shared File",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "715-304",
+      "860-084",
+      "307-111",
+      "175-235",
+      "660-052",
+      "384-344",
+      "545-243",
+      "163-518",
+      "314-701",
+      "715-334"
+    ]
+  },
+  {
+    "control_text": "Add Malicious File to Shared Webroot",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "307-111",
+      "314-701",
+      "112-273",
+      "545-243",
+      "384-344",
+      "860-084",
+      "154-031",
+      "814-322",
+      "660-052",
+      "838-636"
+    ]
+  },
+  {
+    "control_text": "Run Software at Logon",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "789-320",
+      "470-731",
+      "582-541",
+      "177-260",
+      "457-165",
+      "633-428",
+      "673-736",
+      "586-842",
+      "820-421",
+      "440-361"
+    ]
+  },
+  {
+    "control_text": "Disable Security Software",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "028-254",
+      "180-488",
+      "540-566",
+      "154-031",
+      "860-084",
+      "208-805",
+      "253-452",
+      "462-245",
+      "347-352",
+      "777-470"
+    ]
+  },
+  {
+    "control_text": "Restful Privilege Elevation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "664-080",
+      "612-252",
+      "220-442",
+      "540-566",
+      "368-633",
+      "715-644",
+      "443-447",
+      "284-521",
+      "304-667",
+      "543-512"
+    ]
+  },
+  {
+    "control_text": "Hardware Fault Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "843-475",
+      "117-371",
+      "757-271",
+      "801-310",
+      "058-083",
+      "866-553",
+      "503-455",
+      "148-227",
+      "732-148",
+      "020-540"
+    ]
+  },
+  {
+    "control_text": "Mobile Device Fault Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "513-183",
+      "887-750",
+      "843-475",
+      "760-764",
+      "058-083",
+      "683-036",
+      "108-316",
+      "362-550",
+      "732-148",
+      "630-573"
+    ]
+  },
+  {
+    "control_text": "Exploitation of Improperly Configured or Implemented Memory Protections",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "831-570",
+      "866-553",
+      "611-158",
+      "757-271",
+      "801-310",
+      "314-131",
+      "630-573",
+      "117-371",
+      "715-304",
+      "660-052"
+    ]
+  },
+  {
+    "control_text": "Exploitation of Improperly Controlled Registers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "757-271",
+      "117-371",
+      "611-158",
+      "314-131",
+      "725-682",
+      "630-573",
+      "715-304",
+      "832-555",
+      "746-705"
+    ]
+  },
+  {
+    "control_text": "Exploitation of Improperly Controlled Hardware Security Identifiers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "757-271",
+      "117-371",
+      "053-751",
+      "650-560",
+      "611-158",
+      "817-808",
+      "082-327",
+      "640-364",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "DHCP Spoofing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "336-512",
+      "820-421",
+      "273-600",
+      "148-227",
+      "558-807",
+      "640-364",
+      "113-133",
+      "582-541",
+      "467-784",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "Exploiting Incorrect Chaining or Granularity of Hardware Debug Components",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "757-271",
+      "117-371",
+      "611-158",
+      "314-131",
+      "630-573",
+      "725-682",
+      "273-600",
+      "670-660",
+      "053-751"
+    ]
+  },
+  {
+    "control_text": "Subverting Environment Variable Values",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "824-732",
+      "538-446",
+      "715-304",
+      "821-832",
+      "622-835",
+      "206-254",
+      "725-682",
+      "346-640",
+      "743-237",
+      "641-760"
+    ]
+  },
+  {
+    "control_text": "Client-side Injection-induced Buffer Overflow",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "831-570",
+      "660-052",
+      "866-553",
+      "480-071",
+      "611-158",
+      "646-462",
+      "881-434",
+      "547-283",
+      "806-367",
+      "657-084"
+    ]
+  },
+  {
+    "control_text": "Content Spoofing Via Application API Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "736-237",
+      "377-680",
+      "304-667",
+      "268-100",
+      "333-888",
+      "543-512",
+      "532-878",
+      "402-133",
+      "664-080",
+      "615-744"
+    ]
+  },
+  {
+    "control_text": "Manipulating Opaque Client-based Data Tokens",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "483-883",
+      "426-842",
+      "551-400",
+      "532-878",
+      "543-512",
+      "551-054",
+      "804-220",
+      "186-540",
+      "402-133",
+      "456-636"
+    ]
+  },
+  {
+    "control_text": "Exploitation of Thunderbolt Protection Flaws",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "053-751",
+      "330-281",
+      "286-500",
+      "540-566",
+      "820-421",
+      "860-084",
+      "171-222",
+      "347-352",
+      "314-131",
+      "180-488"
+    ]
+  },
+  {
+    "control_text": "Manipulating State",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "802-101",
+      "989-492",
+      "761-417",
+      "854-643",
+      "370-877",
+      "217-163",
+      "641-760",
+      "073-507",
+      "342-641",
+      "333-480"
+    ]
+  },
+  {
+    "control_text": "Manipulating Writeable Configuration Files",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "486-813",
+      "462-245",
+      "180-488",
+      "347-352",
+      "832-555",
+      "314-131",
+      "860-084",
+      "080-466",
+      "863-521",
+      "822-100"
+    ]
+  },
+  {
+    "control_text": "Software Integrity Attack",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "613-287",
+      "307-507",
+      "061-753",
+      "577-260",
+      "276-748",
+      "364-516",
+      "715-223",
+      "433-442",
+      "854-643",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "Malicious Software Download",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "307-111",
+      "314-701",
+      "040-843",
+      "112-273",
+      "860-084",
+      "028-254",
+      "154-031",
+      "077-772",
+      "182-732",
+      "838-636"
+    ]
+  },
+  {
+    "control_text": "Malicious Software Update",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "838-636",
+      "028-254",
+      "715-334",
+      "154-031",
+      "777-470",
+      "701-654",
+      "555-083",
+      "007-274",
+      "860-084",
+      "577-260"
+    ]
+  },
+  {
+    "control_text": "Malicious Automated Software Update via Redirection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "028-254",
+      "715-334",
+      "838-636",
+      "860-084",
+      "263-184",
+      "208-355",
+      "154-031",
+      "777-470",
+      "253-452",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "Malicious Manual Software Update",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "028-254",
+      "715-334",
+      "838-636",
+      "263-184",
+      "007-274",
+      "777-470",
+      "154-031",
+      "863-521",
+      "208-355",
+      "860-084"
+    ]
+  },
+  {
+    "control_text": "Open-Source Library Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "860-084",
+      "838-636",
+      "314-131",
+      "154-031",
+      "611-158",
+      "613-286",
+      "863-521",
+      "715-334",
+      "832-555",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "Malicious Automated Software Update via Spoofing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "028-254",
+      "838-636",
+      "715-334",
+      "860-084",
+      "777-470",
+      "307-507",
+      "577-260",
+      "154-031",
+      "208-355",
+      "555-083"
+    ]
+  },
+  {
+    "control_text": "Adversary in the Browser (AiTB)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "132-146",
+      "370-877",
+      "803-457",
+      "333-858",
+      "630-573",
+      "304-667",
+      "547-283",
+      "615-744",
+      "640-364",
+      "152-725"
+    ]
+  },
+  {
+    "control_text": "Spoof Open-Source Software Metadata",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "664-080",
+      "612-252",
+      "540-566",
+      "304-667",
+      "082-327",
+      "615-744",
+      "637-021",
+      "834-645",
+      "443-447",
+      "268-272"
+    ]
+  },
+  {
+    "control_text": "Spoof Version Control System Commit Metadata",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "736-237",
+      "615-744",
+      "664-080",
+      "268-100",
+      "208-805",
+      "715-304",
+      "804-220",
+      "304-667",
+      "612-252",
+      "443-447"
+    ]
+  },
+  {
+    "control_text": "StarJacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "370-877",
+      "141-385",
+      "073-507",
+      "862-452",
+      "567-755",
+      "012-625",
+      "616-305",
+      "267-786",
+      "686-110",
+      "463-577"
+    ]
+  },
+  {
+    "control_text": "Repo Jacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "838-636",
+      "883-173",
+      "860-084",
+      "307-507",
+      "863-521",
+      "881-234",
+      "423-055",
+      "263-184",
+      "701-654",
+      "777-470"
+    ]
+  },
+  {
+    "control_text": "Buffer Overflow via Environment Variables",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "314-131",
+      "831-570",
+      "117-371",
+      "611-158",
+      "757-271",
+      "866-553",
+      "660-052",
+      "801-310",
+      "480-071",
+      "715-304"
+    ]
+  },
+  {
+    "control_text": "Overflow Buffers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "831-570",
+      "482-771",
+      "314-131",
+      "660-052",
+      "866-553",
+      "838-636",
+      "611-158",
+      "746-705",
+      "515-021",
+      "630-573"
+    ]
+  },
+  {
+    "control_text": "Filter Failure through Buffer Overflow",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "314-131",
+      "660-052",
+      "863-636",
+      "715-304",
+      "611-158",
+      "480-071",
+      "118-602",
+      "482-771",
+      "831-570",
+      "866-553"
+    ]
+  },
+  {
+    "control_text": "MIME Conversion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "522-616",
+      "736-237",
+      "637-021",
+      "036-725",
+      "268-100",
+      "161-451",
+      "780-757",
+      "543-512",
+      "377-680",
+      "044-202"
+    ]
+  },
+  {
+    "control_text": "Overflow Binary Resource File",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "314-131",
+      "801-310",
+      "660-052",
+      "757-271",
+      "117-371",
+      "611-158",
+      "715-304",
+      "175-235",
+      "831-570",
+      "866-553"
+    ]
+  },
+  {
+    "control_text": "Buffer Overflow via Symbolic Links",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "314-131",
+      "611-158",
+      "482-771",
+      "117-371",
+      "831-570",
+      "757-271",
+      "801-310",
+      "725-682",
+      "832-555",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "Overflow Variables and Tags",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "538-446",
+      "482-771",
+      "824-732",
+      "881-434",
+      "646-462",
+      "806-367",
+      "743-237",
+      "232-217",
+      "542-445",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Buffer Overflow via Parameter Expansion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "831-570",
+      "482-771",
+      "314-131",
+      "757-271",
+      "866-553",
+      "630-573",
+      "117-371",
+      "611-158",
+      "660-052",
+      "746-705"
+    ]
+  },
+  {
+    "control_text": "String Format Overflow in syslog()",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "824-732",
+      "806-367",
+      "736-237",
+      "268-100",
+      "538-446",
+      "715-304",
+      "048-612",
+      "065-388",
+      "036-725",
+      "541-441"
+    ]
+  },
+  {
+    "control_text": "Buffer Overflow in an API Call",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "660-052",
+      "831-570",
+      "314-131",
+      "866-553",
+      "480-071",
+      "757-271",
+      "611-158",
+      "630-573",
+      "801-310",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "Buffer Overflow in Local Command-Line Utilities",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "314-131",
+      "660-052",
+      "831-570",
+      "866-553",
+      "611-158",
+      "480-071",
+      "757-271",
+      "117-371",
+      "482-771",
+      "257-668"
+    ]
+  },
+  {
+    "control_text": "Forced Integer Overflow",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "482-771",
+      "746-705",
+      "287-251",
+      "725-682",
+      "630-573",
+      "878-880",
+      "611-158",
+      "674-425",
+      "660-867",
+      "742-431"
+    ]
+  },
+  {
+    "control_text": "Install Malicious Extension",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "860-084",
+      "838-636",
+      "154-031",
+      "314-131",
+      "715-334",
+      "863-521",
+      "263-184",
+      "611-158",
+      "715-223",
+      "577-260"
+    ]
+  },
+  {
+    "control_text": "Evercookie",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "834-645",
+    "predicted_top10": [
+      "804-220",
+      "455-358",
+      "342-055",
+      "402-133",
+      "688-081",
+      "232-034",
+      "457-165",
+      "065-782",
+      "704-530",
+      "673-736"
+    ]
+  },
+  {
+    "control_text": "Cross Site Identification",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "834-645",
+    "predicted_top10": [
+      "467-784",
+      "633-428",
+      "862-452",
+      "724-770",
+      "270-568",
+      "148-227",
+      "278-646",
+      "683-036",
+      "247-250",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "Probe iOS Screenshots",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "834-645",
+    "predicted_top10": [
+      "208-805",
+      "834-645",
+      "841-710",
+      "762-451",
+      "461-680",
+      "356-282",
+      "418-853",
+      "010-108",
+      "715-304",
+      "483-715"
+    ]
+  },
+  {
+    "control_text": "Shoulder Surfing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "834-645",
+    "predicted_top10": [
+      "428-544",
+      "761-417",
+      "641-760",
+      "418-853",
+      "068-102",
+      "552-588",
+      "686-110",
+      "012-625",
+      "520-617",
+      "408-838"
+    ]
+  },
+  {
+    "control_text": "Code Inclusion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "613-286",
+      "433-442",
+      "473-177",
+      "417-342",
+      "732-148",
+      "820-877",
+      "616-305",
+      "307-242",
+      "635-851",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "Serialized Data External Linking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "736-554",
+      "831-563",
+      "762-616",
+      "836-068",
+      "387-848",
+      "806-367",
+      "764-507",
+      "061-186",
+      "607-671",
+      "275-483"
+    ]
+  },
+  {
+    "control_text": "DTD Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "547-283",
+      "760-764",
+      "161-451",
+      "857-718",
+      "503-455",
+      "732-873",
+      "020-540",
+      "533-516",
+      "686-110",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Local Code Inclusion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "433-442",
+      "613-286",
+      "473-177",
+      "635-851",
+      "570-487",
+      "832-555",
+      "417-342",
+      "732-148",
+      "263-184",
+      "411-684"
+    ]
+  },
+  {
+    "control_text": "PHP Local File Inclusion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "545-243",
+      "175-235",
+      "384-344",
+      "758-262",
+      "660-052",
+      "814-322",
+      "480-071",
+      "307-111",
+      "857-718",
+      "547-283"
+    ]
+  },
+  {
+    "control_text": "Remote Code Inclusion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "263-184",
+      "253-452",
+      "860-084",
+      "473-177",
+      "148-227",
+      "661-440",
+      "883-173",
+      "613-286",
+      "838-636",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Force Use of Corrupted Files",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "384-344",
+      "307-111",
+      "163-518",
+      "545-243",
+      "314-701",
+      "660-052",
+      "175-235",
+      "715-304",
+      "758-262",
+      "112-273"
+    ]
+  },
+  {
+    "control_text": "Local Execution of Code",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "263-184",
+      "253-452",
+      "515-021",
+      "314-131",
+      "860-084",
+      "451-082",
+      "545-243",
+      "473-177",
+      "838-636",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Inclusion of Code in Existing Process",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "253-452",
+      "263-184",
+      "417-342",
+      "148-853",
+      "314-131",
+      "832-555",
+      "863-521",
+      "473-177",
+      "860-084",
+      "261-010"
+    ]
+  },
+  {
+    "control_text": "Root/Jailbreak Detection Evasion via Hooking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "640-364",
+      "611-158",
+      "664-080",
+      "650-560",
+      "860-084",
+      "547-283",
+      "314-131",
+      "028-254",
+      "777-470",
+      "152-725"
+    ]
+  },
+  {
+    "control_text": "Cross Zone Scripting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "860-084",
+    "predicted_top10": [
+      "657-084",
+      "646-462",
+      "764-765",
+      "881-434",
+      "760-765",
+      "635-851",
+      "547-283",
+      "161-451",
+      "533-516",
+      "422-005"
+    ]
+  },
+  {
+    "control_text": "Expanding Control over the Operating System from the Database",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "860-084",
+    "predicted_top10": [
+      "286-500",
+      "715-644",
+      "220-442",
+      "538-770",
+      "330-281",
+      "757-271",
+      "486-813",
+      "117-371",
+      "148-227",
+      "515-021"
+    ]
+  },
+  {
+    "control_text": "Target Programs with Elevated Privileges",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "860-084",
+    "predicted_top10": [
+      "515-021",
+      "860-084",
+      "330-281",
+      "314-131",
+      "540-566",
+      "817-808",
+      "368-633",
+      "650-560",
+      "611-158",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "Directory Indexing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "758-262",
+      "545-243",
+      "130-550",
+      "660-052",
+      "451-082",
+      "112-273",
+      "384-344",
+      "314-701",
+      "074-873",
+      "515-021"
+    ]
+  },
+  {
+    "control_text": "Bypassing ATA Password Security",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "724-770",
+      "354-752",
+      "553-413",
+      "333-858",
+      "633-428",
+      "802-056",
+      "634-733",
+      "270-568",
+      "813-610",
+      "789-320"
+    ]
+  },
+  {
+    "control_text": "Poison Web Service Registry",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "664-080",
+      "814-322",
+      "860-084",
+      "611-158",
+      "640-364",
+      "657-084",
+      "577-260",
+      "154-031",
+      "715-223",
+      "307-111"
+    ]
+  },
+  {
+    "control_text": "Session Credential Falsification through Prediction",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "582-541",
+      "551-054",
+      "551-400",
+      "727-043",
+      "813-610",
+      "804-220",
+      "716-526",
+      "704-530",
+      "002-630",
+      "688-081"
+    ]
+  },
+  {
+    "control_text": "Reusing Session IDs (aka Session Replay)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "002-630",
+      "727-043",
+      "716-526",
+      "704-530",
+      "238-346",
+      "457-165",
+      "455-358",
+      "705-182",
+      "673-736",
+      "342-055"
+    ]
+  },
+  {
+    "control_text": "Collect Data from Registries",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "834-645",
+      "362-550",
+      "220-870",
+      "074-873",
+      "423-055",
+      "571-640",
+      "082-327",
+      "646-285",
+      "268-272",
+      "041-188"
+    ]
+  },
+  {
+    "control_text": "Key Negotiation of Bluetooth Attack (KNOB)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "525-361",
+      "278-413",
+      "725-682",
+      "820-421",
+      "650-560",
+      "553-413",
+      "683-036",
+      "354-752",
+      "304-667",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "Manipulating Web Input to File System Calls",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "545-243",
+      "857-718",
+      "683-722",
+      "130-550",
+      "451-082",
+      "621-287",
+      "314-701",
+      "547-283",
+      "384-344",
+      "758-262"
+    ]
+  },
+  {
+    "control_text": "Manipulating User-Controlled Variables",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "743-237",
+      "802-101",
+      "989-492",
+      "217-163",
+      "538-446",
+      "824-732",
+      "641-760",
+      "206-254",
+      "622-835",
+      "346-640"
+    ]
+  },
+  {
+    "control_text": "Forceful Browsing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "686-110",
+      "152-725",
+      "887-750",
+      "463-820",
+      "333-480",
+      "480-071",
+      "314-701",
+      "163-518",
+      "232-217",
+      "187-083"
+    ]
+  },
+  {
+    "control_text": "Excavation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "842-876",
+      "307-242",
+      "463-577",
+      "510-324",
+      "141-385",
+      "217-168",
+      "077-772",
+      "220-870",
+      "473-177",
+      "074-873"
+    ]
+  },
+  {
+    "control_text": "Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "613-286",
+      "307-242",
+      "433-442",
+      "058-083",
+      "732-148",
+      "842-876",
+      "473-177",
+      "757-271",
+      "362-550",
+      "234-282"
+    ]
+  },
+  {
+    "control_text": "Web Application Fingerprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "447-083",
+      "768-532",
+      "220-870",
+      "834-645",
+      "715-644",
+      "362-550",
+      "805-126",
+      "440-372",
+      "128-128",
+      "854-643"
+    ]
+  },
+  {
+    "control_text": "Exploiting Trust in Client",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "483-883",
+      "426-842",
+      "551-400",
+      "456-636",
+      "551-054",
+      "767-701",
+      "532-878",
+      "558-807",
+      "527-034",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "Fingerprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "447-083",
+      "362-550",
+      "768-532",
+      "440-372",
+      "220-870",
+      "571-640",
+      "637-021",
+      "503-455",
+      "843-475",
+      "170-772"
+    ]
+  },
+  {
+    "control_text": "ICMP Echo Request Ping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "176-154",
+      "770-361",
+      "108-316",
+      "232-034",
+      "843-841",
+      "673-736",
+      "314-701",
+      "118-602",
+      "705-182",
+      "804-220"
+    ]
+  },
+  {
+    "control_text": "TCP SYN Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "767-701",
+      "467-784",
+      "273-600",
+      "745-045",
+      "148-227",
+      "683-036",
+      "228-551",
+      "336-512",
+      "558-807",
+      "278-646"
+    ]
+  },
+  {
+    "control_text": "Enumerate Mail Exchange (MX) Records",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "615-744",
+      "841-710",
+      "843-841",
+      "834-645",
+      "260-200",
+      "026-280",
+      "402-706",
+      "612-435",
+      "240-274",
+      "668-364"
+    ]
+  },
+  {
+    "control_text": "DNS Zone Transfers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "336-512",
+      "273-600",
+      "228-551",
+      "467-784",
+      "278-646",
+      "558-807",
+      "683-036",
+      "724-770",
+      "148-227",
+      "341-076"
+    ]
+  },
+  {
+    "control_text": "Host Discovery",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "336-512",
+      "148-227",
+      "467-784",
+      "843-475",
+      "850-376",
+      "515-021",
+      "034-540",
+      "232-034",
+      "286-500",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "Traceroute Route Enumeration",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "725-682",
+      "273-600",
+      "746-705",
+      "336-512",
+      "630-573",
+      "232-217",
+      "611-158",
+      "534-605",
+      "117-371",
+      "822-100"
+    ]
+  },
+  {
+    "control_text": "ICMP Address Mask Request",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "336-512",
+      "273-600",
+      "640-364",
+      "152-725",
+      "650-560",
+      "117-371",
+      "630-573",
+      "801-310",
+      "664-080",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "Timestamp Request",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "342-781",
+      "077-772",
+      "173-554",
+      "423-055",
+      "834-645",
+      "402-133",
+      "044-202",
+      "456-636",
+      "770-361",
+      "532-878"
+    ]
+  },
+  {
+    "control_text": "ICMP Information Request",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "208-805",
+      "841-710",
+      "834-645",
+      "843-841",
+      "356-282",
+      "026-280",
+      "336-512",
+      "333-888",
+      "176-154",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "TCP ACK Ping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "273-600",
+      "683-036",
+      "650-560",
+      "725-682",
+      "630-573",
+      "108-316",
+      "745-045",
+      "767-701",
+      "341-076",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "UDP Ping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "132-146",
+      "108-316",
+      "117-371",
+      "113-133",
+      "273-600",
+      "623-550",
+      "336-512",
+      "176-154",
+      "725-682",
+      "820-421"
+    ]
+  },
+  {
+    "control_text": "TCP SYN Ping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "767-701",
+      "273-600",
+      "745-045",
+      "148-227",
+      "623-550",
+      "683-036",
+      "467-784",
+      "336-512",
+      "989-492",
+      "341-076"
+    ]
+  },
+  {
+    "control_text": "Port Scanning",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "058-083",
+      "148-227",
+      "843-475",
+      "467-784",
+      "703-813",
+      "862-452",
+      "757-271",
+      "801-310",
+      "128-128",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "TCP Connect Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "683-036",
+      "278-646",
+      "341-076",
+      "273-600",
+      "745-045",
+      "148-227",
+      "467-784",
+      "176-154",
+      "354-752",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "TCP FIN Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "148-227",
+      "467-784",
+      "630-573",
+      "273-600",
+      "843-475",
+      "176-154",
+      "683-036",
+      "757-271",
+      "336-512",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "TCP Xmas Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "176-154",
+      "148-227",
+      "630-573",
+      "467-784",
+      "558-807",
+      "273-600",
+      "767-701",
+      "525-361",
+      "745-045",
+      "354-752"
+    ]
+  },
+  {
+    "control_text": "TCP Null Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "176-154",
+      "148-227",
+      "336-512",
+      "745-045",
+      "273-600",
+      "558-807",
+      "440-361",
+      "630-573",
+      "532-878",
+      "618-403"
+    ]
+  },
+  {
+    "control_text": "TCP ACK Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "128-128",
+      "650-560",
+      "724-770",
+      "683-036",
+      "630-573",
+      "273-600",
+      "525-361",
+      "354-752",
+      "278-646",
+      "634-733"
+    ]
+  },
+  {
+    "control_text": "TCP Window Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "176-154",
+      "630-573",
+      "467-784",
+      "273-600",
+      "148-227",
+      "336-512",
+      "683-036",
+      "058-083",
+      "132-146",
+      "887-750"
+    ]
+  },
+  {
+    "control_text": "TCP RPC Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "630-573",
+      "336-512",
+      "176-154",
+      "148-227",
+      "273-600",
+      "467-784",
+      "117-371",
+      "801-310",
+      "611-158",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "UDP Scan",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "630-573",
+      "117-371",
+      "801-310",
+      "273-600",
+      "757-271",
+      "148-227",
+      "176-154",
+      "058-083",
+      "611-158",
+      "113-133"
+    ]
+  },
+  {
+    "control_text": "Network Topology Mapping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "273-600",
+      "148-227",
+      "336-512",
+      "467-784",
+      "486-813",
+      "515-021",
+      "155-155",
+      "801-310",
+      "117-371",
+      "854-643"
+    ]
+  },
+  {
+    "control_text": "Scanning for Vulnerable Software",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "732-148",
+      "613-286",
+      "433-442",
+      "838-636",
+      "112-273",
+      "863-521",
+      "570-487",
+      "555-083",
+      "058-083",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "Active OS Fingerprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "286-500",
+      "757-271",
+      "801-310",
+      "117-371",
+      "128-128",
+      "540-566",
+      "538-770",
+      "715-644",
+      "268-272",
+      "208-805"
+    ]
+  },
+  {
+    "control_text": "Passive OS Fingerprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "540-566",
+      "834-645",
+      "268-272",
+      "336-512",
+      "286-500",
+      "208-805",
+      "805-126",
+      "447-083",
+      "715-644",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "IP ID Sequencing Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "843-475",
+      "148-227",
+      "270-568",
+      "703-813",
+      "467-784",
+      "633-428",
+      "585-408",
+      "475-586",
+      "470-731",
+      "878-880"
+    ]
+  },
+  {
+    "control_text": "IP 'ID' Echoed Byte-Order Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "630-573",
+      "611-158",
+      "273-600",
+      "715-304",
+      "725-682",
+      "660-052",
+      "314-131"
+    ]
+  },
+  {
+    "control_text": "IP (DF) 'Don't Fragment Bit' Echoing Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "336-512",
+      "725-682",
+      "118-602",
+      "273-600",
+      "108-316",
+      "615-744",
+      "640-364",
+      "715-304",
+      "483-715",
+      "841-710"
+    ]
+  },
+  {
+    "control_text": "TCP Timestamp Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "646-227",
+      "148-227",
+      "404-126",
+      "176-154",
+      "630-573",
+      "052-821",
+      "843-475",
+      "618-403",
+      "043-703",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "TCP Sequence Number Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "843-475",
+      "841-757",
+      "767-701",
+      "148-227",
+      "646-227",
+      "525-361",
+      "354-752",
+      "176-154",
+      "745-045",
+      "404-126"
+    ]
+  },
+  {
+    "control_text": "TCP (ISN) Greatest Common Divisor Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "630-573",
+      "273-600",
+      "117-371",
+      "757-271",
+      "611-158",
+      "801-310",
+      "725-682",
+      "746-705",
+      "482-771",
+      "113-133"
+    ]
+  },
+  {
+    "control_text": "TCP (ISN) Counter Rate Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "176-154",
+      "630-573",
+      "746-705",
+      "273-600",
+      "725-682",
+      "767-701",
+      "187-083",
+      "268-088",
+      "354-752",
+      "152-725"
+    ]
+  },
+  {
+    "control_text": "TCP (ISN) Sequence Predictability Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "767-701",
+      "630-573",
+      "989-492",
+      "534-605",
+      "532-102",
+      "187-083",
+      "176-154",
+      "802-101",
+      "727-043",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "TCP Congestion Control Flag (ECN) Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "273-600",
+      "630-573",
+      "117-371",
+      "725-682",
+      "801-310",
+      "336-512",
+      "757-271",
+      "176-154",
+      "683-036",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "TCP Initial Window Size Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "273-600",
+      "630-573",
+      "176-154",
+      "660-052",
+      "746-705",
+      "148-227",
+      "117-371",
+      "757-271",
+      "843-475",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "TCP Options Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "273-600",
+      "767-701",
+      "354-752",
+      "745-045",
+      "525-361",
+      "630-573",
+      "558-807",
+      "683-036",
+      "725-682",
+      "746-705"
+    ]
+  },
+  {
+    "control_text": "TCP 'RST' Flag Checksum Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "757-271",
+      "611-158",
+      "630-573",
+      "273-600",
+      "848-711",
+      "640-364",
+      "670-660",
+      "171-222"
+    ]
+  },
+  {
+    "control_text": "ICMP Error Message Quoting Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "118-602",
+      "036-147",
+      "268-100",
+      "483-715",
+      "841-710",
+      "480-071",
+      "048-612",
+      "650-560",
+      "208-805",
+      "615-744"
+    ]
+  },
+  {
+    "control_text": "ICMP Error Message Echoing Integrity Probe",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "841-710",
+      "048-612",
+      "208-805",
+      "118-602",
+      "843-841",
+      "770-361",
+      "260-200",
+      "820-421",
+      "268-100",
+      "036-147"
+    ]
+  },
+  {
+    "control_text": "Browser Fingerprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "547-283",
+      "630-573",
+      "843-475",
+      "757-271",
+      "467-784",
+      "447-083",
+      "801-310",
+      "637-021",
+      "117-371",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "File Discovery",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "130-550",
+      "758-262",
+      "077-772",
+      "074-873",
+      "040-843",
+      "058-083",
+      "220-870",
+      "044-202",
+      "843-475",
+      "173-554"
+    ]
+  },
+  {
+    "control_text": "Use of Known Domain Credentials",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "813-610",
+      "820-421",
+      "551-054",
+      "605-735",
+      "881-321",
+      "774-888",
+      "558-807",
+      "342-764",
+      "065-183",
+      "551-400"
+    ]
+  },
+  {
+    "control_text": "Process Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "862-452",
+      "058-083",
+      "745-356",
+      "148-853",
+      "253-452",
+      "708-355",
+      "473-177",
+      "850-376",
+      "636-660",
+      "842-876"
+    ]
+  },
+  {
+    "control_text": "Services Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "862-452",
+      "708-355",
+      "473-177",
+      "307-242",
+      "546-564",
+      "745-356",
+      "155-155",
+      "560-224",
+      "636-660",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "Account Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "247-250",
+      "362-550",
+      "724-770",
+      "447-083",
+      "571-640",
+      "128-128",
+      "538-770",
+      "586-842",
+      "123-124",
+      "842-876"
+    ]
+  },
+  {
+    "control_text": "Group Permission Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "284-521",
+      "540-566",
+      "612-252",
+      "664-080",
+      "220-442",
+      "640-364",
+      "082-327",
+      "443-447",
+      "123-124",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "Owner Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "284-521",
+      "757-271",
+      "082-327",
+      "540-566",
+      "801-310",
+      "560-224",
+      "612-252",
+      "571-640",
+      "117-371",
+      "447-083"
+    ]
+  },
+  {
+    "control_text": "Establish Rogue Location",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "552-588",
+      "148-227",
+      "336-512",
+      "230-318",
+      "418-853",
+      "878-880",
+      "585-408",
+      "073-507",
+      "475-586",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "Identify Shared Files/Directories on System",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "307-111",
+      "314-701",
+      "758-262",
+      "384-344",
+      "545-243",
+      "208-805",
+      "660-052",
+      "614-353",
+      "130-550",
+      "175-235"
+    ]
+  },
+  {
+    "control_text": "Peripheral Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "801-310",
+      "757-271",
+      "117-371",
+      "148-227",
+      "486-813",
+      "515-021",
+      "336-512",
+      "850-376",
+      "538-770",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Eavesdropping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "768-532",
+      "220-870",
+      "141-385",
+      "308-515",
+      "475-586",
+      "435-702",
+      "474-203",
+      "362-550",
+      "805-126",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "System Location Discovery",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "148-227",
+      "467-784",
+      "843-475",
+      "034-540",
+      "850-376",
+      "058-083",
+      "703-813",
+      "336-512",
+      "475-586",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "Using Slashes in Alternate Encoding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "736-237",
+      "268-100",
+      "806-367",
+      "061-186",
+      "542-445",
+      "065-388",
+      "036-725",
+      "620-101",
+      "480-071",
+      "533-516"
+    ]
+  },
+  {
+    "control_text": "WSDL Scanning",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "547-283",
+      "377-680",
+      "080-373",
+      "532-878",
+      "543-512",
+      "764-507",
+      "777-470",
+      "657-084",
+      "814-322",
+      "664-080"
+    ]
+  },
+  {
+    "control_text": "Server Side Include (SSI) Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "547-283",
+      "857-718",
+      "732-873",
+      "657-084",
+      "760-764",
+      "607-671",
+      "422-005",
+      "814-322",
+      "533-516",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "HTTP Request Splitting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "806-367",
+      "532-878",
+      "854-643",
+      "356-282",
+      "161-451",
+      "430-722",
+      "273-600",
+      "670-660",
+      "736-237",
+      "061-186"
+    ]
+  },
+  {
+    "control_text": "Command Line Execution through SQL Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "732-873",
+      "857-718",
+      "620-101",
+      "064-808",
+      "533-516",
+      "683-722",
+      "451-082",
+      "607-671",
+      "366-835",
+      "760-764"
+    ]
+  },
+  {
+    "control_text": "Double Encoding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "430-722",
+      "806-367",
+      "161-451",
+      "736-237",
+      "036-725",
+      "204-272",
+      "488-626",
+      "533-516",
+      "440-372",
+      "163-518"
+    ]
+  },
+  {
+    "control_text": "Format String Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "533-516",
+      "620-101",
+      "806-367",
+      "607-671",
+      "064-808",
+      "161-451",
+      "732-873",
+      "764-507",
+      "065-388",
+      "736-237"
+    ]
+  },
+  {
+    "control_text": "Command Delimiters",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "806-367",
+      "538-446",
+      "344-611",
+      "820-878",
+      "533-516",
+      "824-732",
+      "161-451",
+      "068-102",
+      "620-101",
+      "106-447"
+    ]
+  },
+  {
+    "control_text": "XML Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "134-207",
+      "764-507",
+      "760-764",
+      "857-718",
+      "533-516",
+      "064-808",
+      "620-101",
+      "161-451",
+      "547-283",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "Leverage Alternate Encoding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "736-237",
+      "806-367",
+      "268-100",
+      "036-725",
+      "430-722",
+      "065-388",
+      "061-186",
+      "480-071",
+      "467-215",
+      "543-512"
+    ]
+  },
+  {
+    "control_text": "HTTP Response Smuggling",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "186-540",
+      "426-842",
+      "356-282",
+      "077-772",
+      "745-045",
+      "834-645",
+      "435-702",
+      "173-554",
+      "220-870",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "Inter-component Protocol Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "530-671",
+      "767-701",
+      "435-702",
+      "228-551",
+      "273-600",
+      "854-643",
+      "745-045",
+      "847-247",
+      "527-034",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "Data Interchange Protocol Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "117-371",
+      "538-770",
+      "757-271",
+      "503-455",
+      "847-247",
+      "801-310",
+      "854-643",
+      "217-163",
+      "148-227",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Web Services Protocol Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "532-878",
+      "467-784",
+      "148-227",
+      "854-643",
+      "118-110",
+      "636-854",
+      "186-540",
+      "745-045",
+      "543-512",
+      "228-551"
+    ]
+  },
+  {
+    "control_text": "SOAP Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "080-373",
+      "456-636",
+      "532-878",
+      "547-283",
+      "636-854",
+      "118-110",
+      "745-045",
+      "527-034",
+      "543-512",
+      "435-702"
+    ]
+  },
+  {
+    "control_text": "Fuzzing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "838-636",
+      "764-765",
+      "154-031",
+      "613-286",
+      "615-663",
+      "576-262",
+      "555-083",
+      "854-183",
+      "467-215",
+      "481-710"
+    ]
+  },
+  {
+    "control_text": "Using Leading 'Ghost' Character Sequences to Bypass Input Filters",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "881-434",
+      "576-262",
+      "641-760",
+      "538-446",
+      "542-445",
+      "802-101",
+      "106-447",
+      "989-492",
+      "761-417",
+      "727-043"
+    ]
+  },
+  {
+    "control_text": "HTTP Response Splitting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "806-367",
+      "036-725",
+      "430-722",
+      "636-347",
+      "736-237",
+      "161-451",
+      "106-447",
+      "268-100",
+      "061-186",
+      "467-215"
+    ]
+  },
+  {
+    "control_text": "Exploiting Multiple Input Interpretation Layers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "989-492",
+      "761-417",
+      "802-101",
+      "430-722",
+      "467-215",
+      "843-475",
+      "342-641",
+      "854-643",
+      "108-316",
+      "106-447"
+    ]
+  },
+  {
+    "control_text": "Generic Cross-Browser Cross-Domain Theft",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "664-080",
+      "834-645",
+      "615-744",
+      "304-667",
+      "640-364",
+      "612-252",
+      "333-888",
+      "650-560",
+      "402-133",
+      "307-111"
+    ]
+  },
+  {
+    "control_text": "Embedding NULL Bytes",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "456-636",
+      "483-883",
+      "743-237",
+      "836-068",
+      "426-842",
+      "762-616",
+      "831-563",
+      "488-626",
+      "430-722",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "Postfix, Null Terminate, and Backslash",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "881-434",
+      "657-084",
+      "538-446",
+      "646-462",
+      "764-765",
+      "814-322",
+      "422-005",
+      "542-445",
+      "232-217",
+      "480-071"
+    ]
+  },
+  {
+    "control_text": "Argument Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "760-764",
+      "012-625",
+      "686-110",
+      "857-718",
+      "732-873",
+      "481-710",
+      "370-877",
+      "161-451",
+      "843-475",
+      "867-642"
+    ]
+  },
+  {
+    "control_text": "Using Slashes and URL Encoding Combined to Bypass Validation Logic",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "232-217",
+      "607-671",
+      "542-445",
+      "620-101",
+      "533-516",
+      "653-242",
+      "764-507",
+      "333-888",
+      "881-434",
+      "657-084"
+    ]
+  },
+  {
+    "control_text": "Blind SQL Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "732-873",
+      "857-718",
+      "843-475",
+      "064-808",
+      "536-158",
+      "760-764",
+      "134-207",
+      "547-283",
+      "533-516",
+      "483-253"
+    ]
+  },
+  {
+    "control_text": "Using Unicode Encoding to Bypass Validation Logic",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "620-101",
+      "533-516",
+      "607-671",
+      "806-367",
+      "764-507",
+      "653-242",
+      "762-616",
+      "387-848",
+      "831-563",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "URL Encoding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "268-100",
+      "736-237",
+      "806-367",
+      "533-516",
+      "036-725",
+      "620-101",
+      "333-888",
+      "065-388",
+      "061-186",
+      "161-451"
+    ]
+  },
+  {
+    "control_text": "Using Escaped Slashes in Alternate Encoding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "736-237",
+      "268-100",
+      "806-367",
+      "061-186",
+      "542-445",
+      "620-101",
+      "065-388",
+      "533-516",
+      "480-071",
+      "036-725"
+    ]
+  },
+  {
+    "control_text": "Using UTF-8 Encoding to Bypass Validation Logic",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "620-101",
+      "607-671",
+      "653-242",
+      "533-516",
+      "806-367",
+      "764-507",
+      "743-237",
+      "061-186",
+      "611-051",
+      "232-217"
+    ]
+  },
+  {
+    "control_text": "XPath Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "134-207",
+      "760-764",
+      "857-718",
+      "760-765",
+      "451-082",
+      "547-283",
+      "161-451",
+      "366-835",
+      "064-808",
+      "764-507"
+    ]
+  },
+  {
+    "control_text": "XQuery Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "760-764",
+      "134-207",
+      "857-718",
+      "732-873",
+      "547-283",
+      "760-765",
+      "064-808",
+      "620-101",
+      "611-051",
+      "607-671"
+    ]
+  },
+  {
+    "control_text": "DNS Cache Poisoning",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "336-512",
+      "846-302",
+      "623-550",
+      "515-021",
+      "473-758",
+      "867-642",
+      "615-663",
+      "132-146",
+      "208-355",
+      "020-540"
+    ]
+  },
+  {
+    "control_text": "DNS Rebinding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "336-512",
+      "273-600",
+      "467-784",
+      "640-364",
+      "650-560",
+      "368-633",
+      "623-550",
+      "228-551",
+      "664-080",
+      "683-036"
+    ]
+  },
+  {
+    "control_text": "User-Controlled Filename",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "737-086",
+      "742-056",
+      "675-168",
+      "421-513",
+      "824-732",
+      "715-304",
+      "736-237",
+      "058-527",
+      "268-100",
+      "762-451"
+    ]
+  },
+  {
+    "control_text": "Pharming",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "307-242",
+      "172-101",
+      "510-324",
+      "433-442",
+      "473-177",
+      "701-654",
+      "613-285",
+      "872-574",
+      "635-851",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "Harvesting Information via API Event Monitoring",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "834-645",
+      "804-220",
+      "077-772",
+      "333-888",
+      "402-133",
+      "532-878",
+      "173-554",
+      "543-512",
+      "615-744",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "Leveraging Active Adversary in the Middle Attacks to Bypass Same Origin Policy",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "664-080",
+      "640-364",
+      "336-512",
+      "284-521",
+      "650-560",
+      "405-411",
+      "615-744",
+      "232-217",
+      "333-888",
+      "316-272"
+    ]
+  },
+  {
+    "control_text": "Utilizing REST's Trust in the System Resource to Obtain Sensitive Data",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "426-842",
+      "483-883",
+      "456-636",
+      "532-878",
+      "551-054",
+      "551-400",
+      "543-512",
+      "464-084",
+      "186-540",
+      "558-807"
+    ]
+  },
+  {
+    "control_text": "DNS Blocking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "336-512",
+      "467-784",
+      "228-551",
+      "623-550",
+      "470-731",
+      "636-854",
+      "341-076",
+      "278-646",
+      "368-633",
+      "683-036"
+    ]
+  },
+  {
+    "control_text": "IP Address Blocking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "467-784",
+      "336-512",
+      "683-036",
+      "273-600",
+      "132-146",
+      "636-854",
+      "228-551",
+      "527-034",
+      "148-227",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "WiFi MAC Address Tracking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "724-770",
+      "273-600",
+      "683-036",
+      "128-128",
+      "801-310",
+      "820-421",
+      "336-512",
+      "117-371",
+      "715-644",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "WiFi SSID Tracking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "273-600",
+      "683-036",
+      "336-512",
+      "820-421",
+      "467-784",
+      "148-227",
+      "128-128",
+      "801-310",
+      "113-133",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "Evil Twin Wi-Fi Attack",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "683-036",
+      "132-146",
+      "354-752",
+      "525-361",
+      "273-600",
+      "333-858",
+      "558-807",
+      "725-682",
+      "767-701",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "Adversary in the Middle (AiTM)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "225-553",
+      "755-340",
+      "205-522",
+      "370-877",
+      "803-457",
+      "220-442",
+      "202-604",
+      "646-285",
+      "061-753",
+      "582-035"
+    ]
+  },
+  {
+    "control_text": "Dictionary-based Password Attack",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "622-203",
+      "807-565",
+      "767-435",
+      "715-681",
+      "881-321",
+      "576-651",
+      "513-845",
+      "783-255",
+      "604-025",
+      "346-640"
+    ]
+  },
+  {
+    "control_text": "Password Brute Forcing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "767-435",
+      "622-203",
+      "807-565",
+      "604-025",
+      "576-651",
+      "078-427",
+      "715-681",
+      "346-640",
+      "513-845",
+      "082-530"
+    ]
+  },
+  {
+    "control_text": "Kerberoasting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "854-643",
+      "786-224",
+      "435-702",
+      "742-431",
+      "504-340",
+      "878-880",
+      "170-772",
+      "674-425",
+      "862-452",
+      "483-883"
+    ]
+  },
+  {
+    "control_text": "Rainbow Table Password Cracking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "622-203",
+      "767-435",
+      "346-640",
+      "513-845",
+      "821-832",
+      "340-375",
+      "082-530",
+      "622-835",
+      "508-702",
+      "807-565"
+    ]
+  },
+  {
+    "control_text": "Remote Services with Stolen Credentials",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "834-645",
+      "558-807",
+      "333-858",
+      "820-421",
+      "551-054",
+      "713-683",
+      "582-541",
+      "813-610",
+      "774-888",
+      "551-400"
+    ]
+  },
+  {
+    "control_text": "Windows Admin Shares with Stolen Credentials",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "713-683",
+      "368-633",
+      "834-645",
+      "208-805",
+      "743-110",
+      "524-603",
+      "650-560",
+      "762-451",
+      "615-744",
+      "067-050"
+    ]
+  },
+  {
+    "control_text": "Password Spraying",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "630-577",
+      "807-565",
+      "604-025",
+      "767-435",
+      "622-203",
+      "751-176",
+      "715-681",
+      "622-835",
+      "082-530",
+      "206-254"
+    ]
+  },
+  {
+    "control_text": "Credential Stuffing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "751-176",
+      "455-885",
+      "881-321",
+      "630-577",
+      "715-681",
+      "327-505",
+      "772-358",
+      "807-565",
+      "487-305",
+      "270-634"
+    ]
+  },
+  {
+    "control_text": "Use of Captured Hashes (Pass The Hash)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "622-203",
+      "767-435",
+      "077-781",
+      "078-427",
+      "082-530",
+      "342-764",
+      "881-321",
+      "774-888",
+      "783-255",
+      "232-325"
+    ]
+  },
+  {
+    "control_text": "Use of Captured Tickets (Pass The Ticket)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "834-645",
+      "582-541",
+      "841-710",
+      "356-282",
+      "713-683",
+      "843-841",
+      "615-744",
+      "268-272",
+      "128-128",
+      "804-220"
+    ]
+  },
+  {
+    "control_text": "Use of Known Kerberos Credentials",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "813-610",
+      "558-807",
+      "820-421",
+      "333-858",
+      "553-413",
+      "774-888",
+      "551-054",
+      "354-752",
+      "340-375",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "Use of Known Operating System Credentials",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "774-888",
+      "330-281",
+      "813-610",
+      "789-320",
+      "820-421",
+      "881-321",
+      "586-842",
+      "340-375",
+      "270-568",
+      "065-183"
+    ]
+  },
+  {
+    "control_text": "Try Common or Default Usernames and Passwords",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "065-183",
+      "772-358",
+      "455-885",
+      "881-321",
+      "751-176",
+      "327-505",
+      "342-764",
+      "235-658",
+      "630-577",
+      "487-305"
+    ]
+  },
+  {
+    "control_text": "Choosing Message Identifier",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "538-770",
+      "715-644",
+      "270-568",
+      "530-671",
+      "036-725",
+      "633-428",
+      "724-770"
+    ]
+  },
+  {
+    "control_text": "Force the System to Reset Values",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "108-316",
+      "622-835",
+      "440-361",
+      "802-101",
+      "206-254",
+      "725-682",
+      "456-535",
+      "715-304",
+      "046-257",
+      "543-428"
+    ]
+  },
+  {
+    "control_text": "Communication Channel Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "683-036",
+      "435-702",
+      "273-600",
+      "854-643",
+      "725-682",
+      "068-102",
+      "767-701",
+      "430-722",
+      "344-611",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "Using Unpublished Interfaces or Functionality",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "860-084",
+      "863-521",
+      "462-245",
+      "483-715",
+      "612-252",
+      "307-507",
+      "314-131",
+      "053-751",
+      "777-470",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Cross Site Request Forgery",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "426-842",
+      "804-220",
+      "402-133",
+      "664-080",
+      "333-888",
+      "834-645",
+      "464-084",
+      "582-541",
+      "615-744",
+      "532-878"
+    ]
+  },
+  {
+    "control_text": "Session Sidejacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "582-541",
+      "804-220",
+      "727-043",
+      "002-630",
+      "238-346",
+      "716-526",
+      "457-165",
+      "704-530",
+      "065-782",
+      "232-034"
+    ]
+  },
+  {
+    "control_text": "Interception",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "141-385",
+      "510-324",
+      "012-625",
+      "768-532",
+      "220-870",
+      "760-764",
+      "467-784",
+      "247-250",
+      "503-455",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "Signature Spoofing by Mixing Signed and Unsigned Content",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "483-883",
+      "674-425",
+      "786-224",
+      "742-431",
+      "426-842",
+      "504-340",
+      "002-801",
+      "027-210",
+      "801-310",
+      "441-132"
+    ]
+  },
+  {
+    "control_text": "Sniff Application Code",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "128-128",
+      "611-158",
+      "058-083",
+      "834-645",
+      "630-573",
+      "725-682",
+      "757-271",
+      "307-507",
+      "483-715",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "Brute Force",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "223-780",
+      "078-427",
+      "767-435",
+      "622-203",
+      "265-800",
+      "077-781",
+      "370-877",
+      "141-385",
+      "803-457",
+      "852-770"
+    ]
+  },
+  {
+    "control_text": "Encryption Brute Forcing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "786-224",
+      "504-340",
+      "878-880",
+      "742-431",
+      "742-432",
+      "585-408",
+      "674-425",
+      "170-772",
+      "223-780",
+      "508-702"
+    ]
+  },
+  {
+    "control_text": "Signature Spoofing by Key Recreation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "742-431",
+      "002-801",
+      "585-408",
+      "821-832",
+      "786-224",
+      "674-425",
+      "878-880",
+      "504-340",
+      "287-251",
+      "783-255"
+    ]
+  },
+  {
+    "control_text": "Cryptanalysis",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "170-772",
+      "223-780",
+      "742-432",
+      "504-340",
+      "742-431",
+      "435-702",
+      "585-408",
+      "786-224",
+      "878-880",
+      "508-702"
+    ]
+  },
+  {
+    "control_text": "Creating a Rogue Certification Authority Certificate",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "537-367",
+      "530-671",
+      "585-408",
+      "674-425",
+      "430-636",
+      "742-431",
+      "170-772",
+      "786-224",
+      "278-413",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "Signature Spoof",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "637-021",
+      "663-550",
+      "585-408",
+      "333-858",
+      "426-842",
+      "002-801",
+      "027-210",
+      "551-054",
+      "542-488",
+      "834-645"
+    ]
+  },
+  {
+    "control_text": "Signature Spoofing by Improper Validation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "653-242",
+      "146-706",
+      "611-051",
+      "426-842",
+      "483-883",
+      "456-636",
+      "031-447",
+      "530-671",
+      "848-711",
+      "762-616"
+    ]
+  },
+  {
+    "control_text": "Cryptanalysis of Cellular Encryption",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "170-772",
+      "742-431",
+      "786-224",
+      "504-340",
+      "674-425",
+      "585-408",
+      "435-702",
+      "002-801",
+      "742-432",
+      "878-880"
+    ]
+  },
+  {
+    "control_text": "Rooting SIM Cards",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "148-227",
+      "515-021",
+      "286-500",
+      "841-757",
+      "883-173",
+      "555-083",
+      "553-413",
+      "715-644",
+      "002-801",
+      "854-183"
+    ]
+  },
+  {
+    "control_text": "Password Recovery Exploitation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "543-621",
+    "predicted_top10": [
+      "581-525",
+      "543-621",
+      "520-617",
+      "270-634",
+      "772-358",
+      "751-176",
+      "604-025",
+      "630-577",
+      "223-780",
+      "622-203"
+    ]
+  },
+  {
+    "control_text": "Protocol Analysis",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "841-757",
+    "predicted_top10": [
+      "170-772",
+      "435-702",
+      "854-643",
+      "467-784",
+      "634-733",
+      "767-701",
+      "270-568",
+      "585-408",
+      "433-442",
+      "708-355"
+    ]
+  },
+  {
+    "control_text": "Authentication Abuse",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "333-858",
+      "802-056",
+      "813-610",
+      "354-752",
+      "525-361",
+      "646-227",
+      "553-413",
+      "404-126",
+      "605-735",
+      "808-425"
+    ]
+  },
+  {
+    "control_text": "Authentication Bypass",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "813-610",
+      "605-735",
+      "816-631",
+      "582-541",
+      "646-227",
+      "440-361",
+      "354-753",
+      "354-752",
+      "634-733",
+      "404-126"
+    ]
+  },
+  {
+    "control_text": "Identity Spoofing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "333-858",
+      "525-361",
+      "586-842",
+      "474-203",
+      "768-532",
+      "553-413",
+      "551-400",
+      "715-644",
+      "488-626",
+      "805-126"
+    ]
+  },
+  {
+    "control_text": "Fake the Source of Data",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "426-842",
+      "010-108",
+      "663-550",
+      "834-645",
+      "483-883",
+      "637-021",
+      "780-757",
+      "738-144",
+      "488-626",
+      "543-512"
+    ]
+  },
+  {
+    "control_text": "Inducing Account Lockout",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "816-631",
+      "646-227",
+      "813-610",
+      "404-126",
+      "354-753",
+      "440-361",
+      "168-186",
+      "605-735",
+      "681-823",
+      "138-448"
+    ]
+  },
+  {
+    "control_text": "Session Hijacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "582-541",
+      "804-220",
+      "402-133",
+      "238-346",
+      "457-165",
+      "232-034",
+      "002-630",
+      "673-736",
+      "727-043",
+      "618-403"
+    ]
+  },
+  {
+    "control_text": "Token Impersonation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "551-400",
+      "551-054",
+      "483-883",
+      "426-842",
+      "582-541",
+      "716-526",
+      "727-043",
+      "612-252",
+      "304-667",
+      "663-550"
+    ]
+  },
+  {
+    "control_text": "Upload a Web Shell to a Web Server",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "545-243",
+      "857-718",
+      "384-344",
+      "760-765",
+      "314-701",
+      "307-111",
+      "547-283",
+      "621-287",
+      "366-835",
+      "480-071"
+    ]
+  },
+  {
+    "control_text": "Server Side Request Forgery",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "814-322",
+    "predicted_top10": [
+      "657-084",
+      "814-322",
+      "232-217",
+      "646-462",
+      "377-680",
+      "542-445",
+      "881-434",
+      "061-186",
+      "611-158",
+      "664-080"
+    ]
+  },
+  {
+    "control_text": "Clickjacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "576-262",
+      "370-877",
+      "552-588",
+      "483-715",
+      "456-535",
+      "342-641",
+      "418-853",
+      "637-021",
+      "333-480",
+      "615-744"
+    ]
+  },
+  {
+    "control_text": "Flash File Overlay",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "660-052",
+      "480-071",
+      "545-243",
+      "547-283",
+      "175-235",
+      "384-344",
+      "314-701",
+      "758-262",
+      "463-820",
+      "112-273"
+    ]
+  },
+  {
+    "control_text": "iFrame Overlay",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "480-071",
+      "257-668",
+      "547-283",
+      "660-052",
+      "268-100",
+      "630-573",
+      "646-462",
+      "806-367",
+      "314-131",
+      "857-718"
+    ]
+  },
+  {
+    "control_text": "Task Impersonation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "715-644",
+      "220-442",
+      "612-252",
+      "805-126",
+      "540-566",
+      "304-667",
+      "834-645",
+      "474-203",
+      "082-327",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "Tapjacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "834-645",
+      "220-870",
+      "217-163",
+      "483-715",
+      "141-385",
+      "362-550",
+      "637-021",
+      "475-586",
+      "234-282",
+      "571-640"
+    ]
+  },
+  {
+    "control_text": "Cross Frame Scripting (XFS)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "545-243",
+      "175-235",
+      "314-131",
+      "660-052",
+      "646-462",
+      "263-184",
+      "831-570",
+      "253-452",
+      "764-765",
+      "422-005"
+    ]
+  },
+  {
+    "control_text": "Credential Prompt Impersonation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "582-541",
+      "235-658",
+      "789-320",
+      "808-425",
+      "813-610",
+      "586-842",
+      "067-050",
+      "455-885",
+      "820-421",
+      "551-054"
+    ]
+  },
+  {
+    "control_text": "Web Server Logs Tampering",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-100",
+    "predicted_top10": [
+      "843-841",
+      "841-710",
+      "048-612",
+      "260-200",
+      "208-805",
+      "026-280",
+      "713-683",
+      "402-706",
+      "555-048",
+      "770-361"
+    ]
+  },
+  {
+    "control_text": "AJAX Footprinting",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "268-100",
+    "predicted_top10": [
+      "854-643",
+      "843-475",
+      "148-227",
+      "660-052",
+      "764-765",
+      "883-173",
+      "630-573",
+      "831-570",
+      "657-084",
+      "743-237"
+    ]
+  },
+  {
+    "control_text": "Using Alternative IP Address Encodings",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "036-725",
+    "predicted_top10": [
+      "273-600",
+      "558-807",
+      "767-701",
+      "524-446",
+      "745-045",
+      "354-752",
+      "333-858",
+      "525-361",
+      "806-367",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "Data Serialization External Entities Blowup",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "764-507",
+    "predicted_top10": [
+      "736-554",
+      "831-563",
+      "836-068",
+      "762-616",
+      "387-848",
+      "670-660",
+      "806-367",
+      "764-507",
+      "782-234",
+      "061-186"
+    ]
+  },
+  {
+    "control_text": "Flooding",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "307-242",
+      "481-710",
+      "463-577",
+      "732-148",
+      "867-642",
+      "473-177",
+      "613-286",
+      "842-876",
+      "077-235",
+      "615-663"
+    ]
+  },
+  {
+    "control_text": "Excessive Allocation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "746-705",
+      "463-820",
+      "660-052",
+      "630-573",
+      "886-662",
+      "831-570",
+      "230-318",
+      "560-224",
+      "660-867",
+      "176-154"
+    ]
+  },
+  {
+    "control_text": "XML Ping of the Death",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "764-507",
+      "456-636",
+      "387-848",
+      "532-878",
+      "232-217",
+      "767-701",
+      "543-512",
+      "848-711",
+      "134-207",
+      "745-045"
+    ]
+  },
+  {
+    "control_text": "Exponential Data Expansion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "444-058",
+      "346-640",
+      "886-662",
+      "532-102",
+      "058-443",
+      "287-251",
+      "854-183",
+      "467-215",
+      "547-824",
+      "622-835"
+    ]
+  },
+  {
+    "control_text": "Serialized Data Parameter Blowup",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "743-237",
+      "736-554",
+      "806-367",
+      "831-563",
+      "387-848",
+      "836-068",
+      "762-616",
+      "764-507",
+      "543-512",
+      "456-636"
+    ]
+  },
+  {
+    "control_text": "Serialized Data with Nested Payloads",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "762-616",
+      "736-554",
+      "831-563",
+      "836-068",
+      "456-636",
+      "764-507",
+      "387-848",
+      "806-367",
+      "426-842",
+      "543-512"
+    ]
+  },
+  {
+    "control_text": "Oversized Serialized Data Payloads",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "806-367",
+      "736-554",
+      "660-052",
+      "836-068",
+      "743-237",
+      "831-563",
+      "762-616",
+      "387-848",
+      "822-100",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "HTTP DoS",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "186-540",
+      "804-220",
+      "668-364",
+      "636-347",
+      "623-550",
+      "228-551",
+      "582-541",
+      "356-282",
+      "278-646",
+      "402-133"
+    ]
+  },
+  {
+    "control_text": "TCP Flood",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "230-318",
+      "623-550",
+      "630-573",
+      "176-154",
+      "273-600",
+      "113-133",
+      "148-227",
+      "132-146",
+      "467-784",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "UDP Flood",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "630-573",
+      "176-154",
+      "230-318",
+      "117-371",
+      "746-705",
+      "273-600",
+      "801-310",
+      "757-271",
+      "515-021",
+      "660-052"
+    ]
+  },
+  {
+    "control_text": "ICMP Flood",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "176-154",
+      "660-052",
+      "623-550",
+      "336-512",
+      "230-318",
+      "314-701",
+      "515-021",
+      "630-573",
+      "117-371",
+      "463-820"
+    ]
+  },
+  {
+    "control_text": "HTTP Flood",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "230-318",
+      "176-154",
+      "623-550",
+      "336-512",
+      "532-878",
+      "746-705",
+      "630-573",
+      "186-540",
+      "061-186",
+      "660-052"
+    ]
+  },
+  {
+    "control_text": "SSL Flood",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "767-701",
+      "230-318",
+      "745-045",
+      "248-646",
+      "674-425",
+      "878-880",
+      "435-702",
+      "467-784",
+      "623-550",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "Amplification",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "732-148",
+      "613-286",
+      "433-442",
+      "223-780",
+      "760-764",
+      "444-058",
+      "146-871",
+      "463-577",
+      "867-642",
+      "010-678"
+    ]
+  },
+  {
+    "control_text": "Quadratic Data Expansion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "058-443",
+      "467-215",
+      "346-640",
+      "444-058",
+      "532-102",
+      "034-540",
+      "860-723",
+      "547-824",
+      "567-025",
+      "854-183"
+    ]
+  },
+  {
+    "control_text": "SOAP Array Blowup",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "080-373",
+      "630-573",
+      "532-878",
+      "743-237",
+      "456-636",
+      "767-701",
+      "746-705",
+      "657-084",
+      "547-283",
+      "814-322"
+    ]
+  },
+  {
+    "control_text": "TCP Fragmentation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "273-600",
+      "148-227",
+      "515-021",
+      "467-784",
+      "336-512",
+      "623-550",
+      "113-133",
+      "683-036",
+      "230-318",
+      "767-701"
+    ]
+  },
+  {
+    "control_text": "UDP Fragmentation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "515-021",
+      "273-600",
+      "148-227",
+      "113-133",
+      "336-512",
+      "117-371",
+      "801-310",
+      "757-271",
+      "467-784",
+      "230-318"
+    ]
+  },
+  {
+    "control_text": "ICMP Fragmentation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "515-021",
+      "336-512",
+      "148-227",
+      "623-550",
+      "273-600",
+      "467-784",
+      "208-830",
+      "424-242",
+      "113-133",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "XML Flood",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "764-507",
+      "836-068",
+      "831-563",
+      "782-234",
+      "762-616",
+      "736-554",
+      "387-848",
+      "134-207",
+      "163-518",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "JSON Hijacking (aka JavaScript Hijacking)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "464-084",
+    "predicted_top10": [
+      "377-680",
+      "532-878",
+      "607-671",
+      "333-888",
+      "732-873",
+      "304-667",
+      "743-237",
+      "387-848",
+      "543-512",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "Cross-Domain Search Timing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "464-084",
+    "predicted_top10": [
+      "618-403",
+      "470-731",
+      "065-782",
+      "341-076",
+      "052-821",
+      "148-227",
+      "187-083",
+      "177-260",
+      "238-346",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "Object Relational Mapping Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "760-764",
+      "732-873",
+      "857-718",
+      "836-068",
+      "547-283",
+      "161-451",
+      "843-475",
+      "034-540",
+      "854-643",
+      "481-710"
+    ]
+  },
+  {
+    "control_text": "SQL Injection through SOAP Parameter Tampering",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "732-873",
+      "547-283",
+      "857-718",
+      "607-671",
+      "620-101",
+      "456-636",
+      "533-516",
+      "611-051",
+      "743-237",
+      "764-507"
+    ]
+  },
+  {
+    "control_text": "LDAP Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "531-558",
+      "857-718",
+      "760-764",
+      "547-283",
+      "732-873",
+      "161-451",
+      "620-101",
+      "683-722",
+      "533-516",
+      "607-671"
+    ]
+  },
+  {
+    "control_text": "Input Data Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "217-163",
+      "843-475",
+      "342-641",
+      "761-417",
+      "503-455",
+      "641-760",
+      "108-316",
+      "802-101",
+      "989-492",
+      "567-025"
+    ]
+  },
+  {
+    "control_text": "Flash Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "760-764",
+      "857-718",
+      "686-110",
+      "843-475",
+      "536-158",
+      "161-451",
+      "012-625",
+      "077-235",
+      "483-253",
+      "080-373"
+    ]
+  },
+  {
+    "control_text": "XSS Using MIME Type Mismatch",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "377-680",
+      "547-283",
+      "607-671",
+      "065-388",
+      "620-101",
+      "533-516",
+      "881-434",
+      "732-873"
+    ]
+  },
+  {
+    "control_text": "File Content Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "857-718",
+      "451-082",
+      "161-451",
+      "760-764",
+      "130-550",
+      "533-516",
+      "547-283",
+      "621-287",
+      "620-101",
+      "545-243"
+    ]
+  },
+  {
+    "control_text": "Fuzzing for garnering other adjacent user/sensitive data",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "834-645",
+      "558-807",
+      "356-282",
+      "186-540",
+      "333-858",
+      "713-683",
+      "527-034",
+      "426-842",
+      "808-425",
+      "615-744"
+    ]
+  },
+  {
+    "control_text": "Accessing/Intercepting/Modifying HTTP Cookies",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "804-220",
+      "402-133",
+      "333-888",
+      "304-667",
+      "615-744",
+      "664-080",
+      "061-186",
+      "736-237",
+      "268-100",
+      "705-182"
+    ]
+  },
+  {
+    "control_text": "DOM-Based XSS",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "542-445",
+      "881-434",
+      "657-084",
+      "646-462",
+      "533-516",
+      "422-005",
+      "607-671",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Cross-Site Scripting (XSS)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "422-005",
+      "657-084",
+      "881-434",
+      "646-462",
+      "542-445",
+      "607-671",
+      "533-516",
+      "134-207"
+    ]
+  },
+  {
+    "control_text": "SQL Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "732-873",
+      "760-764",
+      "857-718",
+      "064-808",
+      "134-207",
+      "533-516",
+      "620-101",
+      "481-710",
+      "607-671",
+      "451-082"
+    ]
+  },
+  {
+    "control_text": "NoSQL Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "867-642",
+      "732-873",
+      "481-710",
+      "034-540",
+      "020-540",
+      "615-663",
+      "760-764",
+      "857-718",
+      "423-055",
+      "077-235"
+    ]
+  },
+  {
+    "control_text": "OS Command Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "857-718",
+      "760-764",
+      "286-500",
+      "547-283",
+      "683-722",
+      "161-451",
+      "020-540",
+      "732-873",
+      "451-082",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Cache Poisoning",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "481-710",
+      "615-663",
+      "867-642",
+      "020-540",
+      "846-302",
+      "157-430",
+      "838-636",
+      "555-083",
+      "473-758",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Content Spoofing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "377-680",
+      "402-133",
+      "543-512",
+      "736-237",
+      "426-842",
+      "637-021",
+      "532-878",
+      "804-220",
+      "664-080",
+      "268-100"
+    ]
+  },
+  {
+    "control_text": "Spoofing of UDDI/ebXML Messages",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "558-807",
+      "304-667",
+      "333-888",
+      "402-133",
+      "820-421",
+      "426-842",
+      "664-080",
+      "615-744",
+      "745-045",
+      "804-220"
+    ]
+  },
+  {
+    "control_text": "Application API Message Manipulation via Man-in-the-Middle",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "532-878",
+      "543-512",
+      "304-667",
+      "767-701",
+      "630-573",
+      "743-237",
+      "806-367",
+      "061-186",
+      "881-434",
+      "525-361"
+    ]
+  },
+  {
+    "control_text": "Transaction or Event Tampering via Application API Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "304-667",
+      "532-878",
+      "725-682",
+      "848-711",
+      "630-573",
+      "611-158",
+      "743-237",
+      "543-512",
+      "615-744",
+      "746-705"
+    ]
+  },
+  {
+    "control_text": "Application API Navigation Remapping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "304-667",
+      "664-080",
+      "538-770",
+      "630-573",
+      "486-813",
+      "705-182",
+      "232-217"
+    ]
+  },
+  {
+    "control_text": "Navigation Remapping To Propagate Malicious Content",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "232-217",
+      "480-071",
+      "336-512",
+      "630-573",
+      "657-084",
+      "611-158",
+      "764-765",
+      "615-744",
+      "881-434",
+      "725-682"
+    ]
+  },
+  {
+    "control_text": "Application API Button Hijacking",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "304-667",
+      "611-158",
+      "664-080",
+      "232-217",
+      "743-237",
+      "333-888",
+      "615-744",
+      "630-573",
+      "848-711",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "Padding Oracle Crypto Attack",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "742-431",
+      "786-224",
+      "504-340",
+      "002-801",
+      "878-880",
+      "674-425",
+      "585-408",
+      "841-757",
+      "170-772",
+      "742-432"
+    ]
+  },
+  {
+    "control_text": "Browser in the Middle (BiTM)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "273-600",
+      "801-310",
+      "336-512",
+      "113-133",
+      "515-021",
+      "314-701",
+      "660-052",
+      "630-573"
+    ]
+  },
+  {
+    "control_text": "Object Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "831-563",
+    "predicted_top10": [
+      "760-764",
+      "857-718",
+      "481-710",
+      "161-451",
+      "077-235",
+      "141-385",
+      "732-873",
+      "020-540",
+      "843-475",
+      "701-654"
+    ]
+  },
+  {
+    "control_text": "Exploitation of Trusted Identifiers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "483-883",
+      "426-842",
+      "841-757",
+      "002-801",
+      "504-340",
+      "530-671",
+      "742-431",
+      "786-224",
+      "768-532",
+      "440-372"
+    ]
+  },
+  {
+    "control_text": "Probe System Files",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "058-083",
+      "112-273",
+      "130-550",
+      "307-111",
+      "314-701",
+      "843-475",
+      "545-243",
+      "040-843",
+      "758-262",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "PHP Remote File Inclusion",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "742-056",
+    "predicted_top10": [
+      "307-111",
+      "545-243",
+      "314-701",
+      "384-344",
+      "814-322",
+      "480-071",
+      "333-888",
+      "175-235",
+      "857-718",
+      "860-084"
+    ]
+  },
+  {
+    "control_text": "Path Traversal",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "675-168",
+    "predicted_top10": [
+      "708-355",
+      "155-155",
+      "253-452",
+      "854-643",
+      "515-021",
+      "601-182",
+      "486-813",
+      "473-177",
+      "843-475",
+      "534-605"
+    ]
+  },
+  {
+    "control_text": "Functionality Misuse",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "611-158",
+      "757-271",
+      "117-371",
+      "801-310",
+      "725-682",
+      "314-131",
+      "630-573",
+      "746-705",
+      "838-636",
+      "673-475"
+    ]
+  },
+  {
+    "control_text": "Sustained Client Engagement",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "546-564",
+      "464-513",
+      "616-305",
+      "463-577",
+      "567-755",
+      "833-030",
+      "745-356",
+      "118-775",
+      "766-162",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "Regular Expression Exponential Blowup",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "346-640",
+      "622-835",
+      "767-435",
+      "287-251",
+      "206-254",
+      "807-565",
+      "715-681",
+      "886-662",
+      "538-446",
+      "841-757"
+    ]
+  },
+  {
+    "control_text": "Manipulating Hidden Fields",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "848-711",
+    "predicted_top10": [
+      "488-626",
+      "474-203",
+      "467-215",
+      "802-101",
+      "217-163",
+      "641-760",
+      "010-108",
+      "034-540",
+      "342-641",
+      "761-417"
+    ]
+  },
+  {
+    "control_text": "Create Malicious Client",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "848-711",
+    "predicted_top10": [
+      "154-031",
+      "838-636",
+      "615-663",
+      "555-083",
+      "481-710",
+      "860-084",
+      "738-144",
+      "020-540",
+      "265-800",
+      "777-470"
+    ]
+  },
+  {
+    "control_text": "Removing Important Client Functionality",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "848-711",
+    "predicted_top10": [
+      "762-451",
+      "540-566",
+      "268-272",
+      "612-252",
+      "368-633",
+      "515-021",
+      "483-715",
+      "208-805",
+      "817-808",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "Removing/short-circuiting 'Purse' logic: removing/mutating 'cash' decrements",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "848-711",
+    "predicted_top10": [
+      "743-237",
+      "482-771",
+      "346-640",
+      "287-251",
+      "841-757",
+      "002-801",
+      "746-705",
+      "543-428",
+      "881-434",
+      "513-845"
+    ]
+  },
+  {
+    "control_text": "HTTP Parameter Pollution (HPP)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "743-237",
+    "predicted_top10": [
+      "743-237",
+      "806-367",
+      "767-701",
+      "268-100",
+      "745-045",
+      "117-371",
+      "782-234",
+      "547-283",
+      "674-425",
+      "746-705"
+    ]
+  },
+  {
+    "control_text": "Cross-Site Flashing",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "232-217",
+    "predicted_top10": [
+      "536-158",
+      "843-475",
+      "028-254",
+      "263-184",
+      "148-227",
+      "253-452",
+      "007-274",
+      "570-487",
+      "887-750",
+      "810-884"
+    ]
+  },
+  {
+    "control_text": "XSS Targeting Non-Script Elements",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "422-005",
+      "881-434",
+      "657-084",
+      "646-462",
+      "542-445",
+      "607-671",
+      "732-873",
+      "683-722"
+    ]
+  },
+  {
+    "control_text": "XSS Using Alternate Syntax",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "366-835",
+      "760-765",
+      "542-445",
+      "533-516",
+      "881-434",
+      "620-101",
+      "607-671",
+      "657-084",
+      "646-462",
+      "065-388"
+    ]
+  },
+  {
+    "control_text": "XSS Targeting HTML Attributes",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "366-835",
+      "760-765",
+      "533-516",
+      "620-101",
+      "683-722",
+      "064-808",
+      "542-445",
+      "422-005",
+      "607-671",
+      "732-873"
+    ]
+  },
+  {
+    "control_text": "XSS Targeting URI Placeholders",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "366-835",
+      "760-765",
+      "542-445",
+      "881-434",
+      "422-005",
+      "657-084",
+      "316-272",
+      "607-671",
+      "533-516",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "XSS Through HTTP Query Strings",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "333-888",
+      "402-133",
+      "065-388",
+      "533-516",
+      "607-671",
+      "620-101",
+      "857-718",
+      "061-186"
+    ]
+  },
+  {
+    "control_text": "Reflected XSS",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "547-283",
+      "857-718",
+      "422-005",
+      "533-516",
+      "607-671",
+      "657-084",
+      "161-451",
+      "760-764"
+    ]
+  },
+  {
+    "control_text": "Stored XSS",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "617-524",
+      "657-084",
+      "857-718",
+      "758-262",
+      "607-671",
+      "881-434",
+      "455-358",
+      "384-344"
+    ]
+  },
+  {
+    "control_text": "XSS Through HTTP Headers",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "760-765",
+      "366-835",
+      "480-071",
+      "065-388",
+      "333-888",
+      "061-186",
+      "636-347",
+      "316-272",
+      "268-100",
+      "402-133"
+    ]
+  },
+  {
+    "control_text": "Email Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "760-764",
+      "857-718",
+      "134-207",
+      "161-451",
+      "732-873",
+      "064-808",
+      "451-082",
+      "760-765",
+      "547-283",
+      "531-558"
+    ]
+  },
+  {
+    "control_text": "Using Meta-characters in E-mail Headers to Inject Malicious Payloads",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "542-445",
+      "881-434",
+      "065-388",
+      "620-101",
+      "268-100",
+      "607-671",
+      "736-237",
+      "533-516",
+      "480-071",
+      "422-005"
+    ]
+  },
+  {
+    "control_text": "Alternative Execution Due to Deceptive Filenames",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "421-513",
+      "675-168",
+      "737-086",
+      "742-056",
+      "307-111",
+      "384-344",
+      "314-701",
+      "843-841",
+      "058-527",
+      "208-805"
+    ]
+  },
+  {
+    "control_text": "Log Injection-Tampering-Forging",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "048-612",
+      "821-541",
+      "843-841",
+      "841-710",
+      "260-200",
+      "026-280",
+      "402-706",
+      "770-362",
+      "148-420",
+      "240-274"
+    ]
+  },
+  {
+    "control_text": "Code Injection",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "760-764",
+      "161-451",
+      "857-718",
+      "481-710",
+      "686-110",
+      "012-625",
+      "020-540",
+      "451-082",
+      "843-475",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "Exploit Script-Based APIs",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "405-411",
+    "predicted_top10": [
+      "860-084",
+      "838-636",
+      "532-878",
+      "611-158",
+      "154-031",
+      "743-237",
+      "630-573",
+      "547-283",
+      "663-550",
+      "304-667"
+    ]
+  },
+  {
+    "control_text": "SaaS User Request Forgery",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "405-411",
+    "predicted_top10": [
+      "426-842",
+      "543-512",
+      "483-883",
+      "834-645",
+      "532-878",
+      "612-252",
+      "304-667",
+      "664-080",
+      "146-706",
+      "464-084"
+    ]
+  },
+  {
+    "control_text": "Fuzzing for application mapping",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "067-050",
+    "predicted_top10": [
+      "854-643",
+      "822-100",
+      "674-425",
+      "832-555",
+      "757-271",
+      "486-813",
+      "801-310",
+      "307-507",
+      "725-682",
+      "504-340"
+    ]
+  },
+  {
+    "control_text": "Audit Log Manipulation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "048-612",
+    "predicted_top10": [
+      "843-841",
+      "841-710",
+      "402-706",
+      "842-876",
+      "148-420",
+      "067-050",
+      "217-168",
+      "260-200",
+      "555-048",
+      "240-274"
+    ]
+  },
+  {
+    "control_text": "Leveraging Race Conditions",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "380-540",
+      "134-412",
+      "670-660",
+      "630-573",
+      "230-318",
+      "660-867",
+      "746-705",
+      "725-682",
+      "848-711",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "Leveraging Time-of-Check and Time-of-Use (TOCTOU) Race Conditions",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "134-412",
+      "380-540",
+      "670-660",
+      "660-867",
+      "746-705",
+      "534-605",
+      "630-573",
+      "230-318",
+      "725-682",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "Leveraging Race Conditions via Symbolic Links",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "380-540",
+    "predicted_top10": [
+      "670-660",
+      "725-682",
+      "134-412",
+      "380-540",
+      "611-158",
+      "630-573",
+      "848-711",
+      "746-705",
+      "801-310",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "Windows ::DATA Alternate Data Stream",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "356-282",
+      "715-304",
+      "660-052",
+      "314-701",
+      "780-757",
+      "307-111",
+      "736-237",
+      "117-371",
+      "257-117",
+      "026-280"
+    ]
+  },
+  {
+    "control_text": "Lifting Sensitive Data Embedded in Cache",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "846-302",
+      "157-430",
+      "046-257",
+      "715-304",
+      "473-758",
+      "257-117",
+      "617-524",
+      "163-518",
+      "384-344",
+      "622-203"
+    ]
+  },
+  {
+    "control_text": "Retrieve Embedded Sensitive Data",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "077-772",
+      "173-554",
+      "015-063",
+      "040-843",
+      "614-353",
+      "044-202",
+      "834-645",
+      "307-111",
+      "220-870",
+      "227-045"
+    ]
+  },
+  {
+    "control_text": "Sniffing Attacks",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "267-468",
+    "predicted_top10": [
+      "481-710",
+      "141-385",
+      "615-663",
+      "867-642",
+      "020-540",
+      "760-764",
+      "843-475",
+      "220-870",
+      "475-586",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "Sniffing Network Traffic",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "267-468",
+    "predicted_top10": [
+      "467-784",
+      "148-227",
+      "058-083",
+      "843-475",
+      "176-154",
+      "703-813",
+      "336-512",
+      "834-645",
+      "887-750",
+      "273-600"
+    ]
+  },
+  {
+    "control_text": "Cellular Traffic Intercept",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "267-468",
+    "predicted_top10": [
+      "467-784",
+      "683-036",
+      "148-227",
+      "435-702",
+      "854-643",
+      "862-452",
+      "503-455",
+      "887-750",
+      "278-646",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Read Sensitive Constants Within an Executable",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "774-888",
+    "predicted_top10": [
+      "824-732",
+      "455-885",
+      "881-321",
+      "774-888",
+      "067-050",
+      "743-110",
+      "543-428",
+      "612-435",
+      "342-764",
+      "275-483"
+    ]
+  },
+  {
+    "control_text": "Signature Spoofing by Key Theft",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "742-431",
+      "674-425",
+      "002-801",
+      "786-224",
+      "504-340",
+      "585-408",
+      "878-880",
+      "821-832",
+      "508-702",
+      "340-375"
+    ]
+  },
+  {
+    "control_text": "Web Services API Signature Forgery Leveraging Hash Function Extension Weakness",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "551-054",
+      "767-435",
+      "483-883",
+      "622-203",
+      "551-400",
+      "532-878",
+      "456-636",
+      "767-701",
+      "841-757",
+      "082-530"
+    ]
+  },
+  {
+    "control_text": "Signature Spoofing by Misrepresentation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "426-842",
+      "483-883",
+      "551-054",
+      "304-667",
+      "637-021",
+      "551-400",
+      "820-421",
+      "612-252",
+      "530-671",
+      "543-512"
+    ]
+  },
+  {
+    "control_text": "Bluetooth Impersonation AttackS (BIAS)",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "525-361",
+      "553-413",
+      "333-858",
+      "551-400",
+      "524-446",
+      "354-752",
+      "715-644",
+      "820-421",
+      "558-807",
+      "304-667"
+    ]
+  },
+  {
+    "control_text": "Session Credential Falsification through Forging",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-630",
+    "predicted_top10": [
+      "582-541",
+      "551-054",
+      "804-220",
+      "551-400",
+      "688-081",
+      "002-630",
+      "727-043",
+      "713-683",
+      "716-526",
+      "705-182"
+    ]
+  },
+  {
+    "control_text": "Session Fixation",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "002-630",
+    "predicted_top10": [
+      "002-630",
+      "065-782",
+      "457-165",
+      "238-346",
+      "673-736",
+      "716-526",
+      "704-530",
+      "177-260",
+      "582-541",
+      "470-731"
+    ]
+  },
+  {
+    "control_text": "Signing Malicious Code",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "307-507",
+      "860-084",
+      "777-470",
+      "715-223",
+      "611-158",
+      "863-521",
+      "314-131",
+      "613-286",
+      "838-636",
+      "347-352"
+    ]
+  },
+  {
+    "control_text": "Hijacking a privileged process",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "540-566",
+      "368-633",
+      "664-080",
+      "220-442",
+      "640-364",
+      "307-111",
+      "612-252",
+      "208-805",
+      "650-560",
+      "860-084"
+    ]
+  },
+  {
+    "control_text": "Replace Binaries",
+    "framework": "CAPEC",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "863-521",
+      "860-084",
+      "314-131",
+      "613-286",
+      "715-334",
+      "171-222",
+      "053-751",
+      "462-245",
+      "838-636",
+      "263-184"
+    ]
+  }
+]

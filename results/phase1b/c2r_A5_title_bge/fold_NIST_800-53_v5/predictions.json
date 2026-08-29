@@ -1,0 +1,5102 @@
+[
+  {
+    "control_text": "CM-2 BASELINE CONFIGURATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "486-813",
+    "predicted_top10": [
+      "486-813",
+      "180-488",
+      "257-668",
+      "336-512",
+      "117-371",
+      "462-245",
+      "847-247",
+      "347-352",
+      "053-751",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "CM-6 Configuration Settings",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "486-813",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "486-813",
+      "347-352",
+      "462-245",
+      "820-421",
+      "540-566",
+      "582-541",
+      "180-488"
+    ]
+  },
+  {
+    "control_text": "SC-12 CRYPTOGRAPHIC KEY ESTABLISHMENT AND MANAGEMENT",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "170-772",
+    "predicted_top10": [
+      "783-255",
+      "287-305",
+      "508-702",
+      "340-375",
+      "504-340",
+      "742-431",
+      "543-428",
+      "170-772",
+      "585-408",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "SC-13 Cryptographic Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "170-772",
+    "predicted_top10": [
+      "742-431",
+      "504-340",
+      "170-772",
+      "002-801",
+      "674-425",
+      "585-408",
+      "786-224",
+      "783-255",
+      "878-880",
+      "841-757"
+    ]
+  },
+  {
+    "control_text": "SC-17 Public Key Infrastructure Certificates",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "170-772",
+    "predicted_top10": [
+      "430-636",
+      "585-408",
+      "530-671",
+      "767-701",
+      "504-340",
+      "742-431",
+      "674-425",
+      "841-757",
+      "786-224",
+      "170-772"
+    ]
+  },
+  {
+    "control_text": "SC-5 DENIAL-OF-SERVICE PROTECTION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "623-550",
+    "predicted_top10": [
+      "623-550",
+      "230-318",
+      "128-128",
+      "108-316",
+      "152-725",
+      "273-600",
+      "725-682",
+      "187-083",
+      "886-662",
+      "440-361"
+    ]
+  },
+  {
+    "control_text": "SC-20 Secure Name/address Resolution Service (authoritative Source)",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "058-527",
+    "predicted_top10": [
+      "058-527",
+      "530-671",
+      "551-400",
+      "278-413",
+      "354-752",
+      "558-807",
+      "336-512",
+      "808-425",
+      "258-115",
+      "430-636"
+    ]
+  },
+  {
+    "control_text": "SC-21 Secure Name/address Resolution Service (recursive or Caching Resolver)",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "058-527",
+    "predicted_top10": [
+      "582-541",
+      "058-527",
+      "615-744",
+      "278-413",
+      "340-375",
+      "342-764",
+      "820-421",
+      "774-888",
+      "551-054",
+      "576-042"
+    ]
+  },
+  {
+    "control_text": "SA-15 Development Process, Standards, and Tools",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "616-305",
+    "predicted_top10": [
+      "787-638",
+      "616-305",
+      "433-442",
+      "233-748",
+      "708-355",
+      "464-513",
+      "148-853",
+      "745-356",
+      "473-177",
+      "364-516"
+    ]
+  },
+  {
+    "control_text": "SA-3 System Development Life Cycle",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "616-305",
+    "predicted_top10": [
+      "616-305",
+      "473-177",
+      "745-356",
+      "635-851",
+      "787-638",
+      "307-242",
+      "424-242",
+      "433-442",
+      "464-513",
+      "820-877"
+    ]
+  },
+  {
+    "control_text": "SA-8 Security and Privacy Engineering Principles",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "616-305",
+    "predicted_top10": [
+      "447-083",
+      "768-532",
+      "440-372",
+      "708-355",
+      "435-702",
+      "126-668",
+      "488-626",
+      "170-772",
+      "275-483",
+      "504-340"
+    ]
+  },
+  {
+    "control_text": "SI-3 Malicious Code Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "616-305",
+    "predicted_top10": [
+      "154-031",
+      "838-636",
+      "611-158",
+      "860-084",
+      "764-765",
+      "866-553",
+      "515-021",
+      "540-566",
+      "547-283",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "PL-8 SECURITY AND PRIVACY ARCHITECTURES",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "447-083",
+      "440-372",
+      "768-532",
+      "467-784",
+      "724-770",
+      "538-770",
+      "247-250",
+      "854-643",
+      "715-644",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "SA-17 Developer Security and Privacy Architecture and Design",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "708-355",
+      "447-083",
+      "768-532",
+      "234-282",
+      "126-668",
+      "435-702",
+      "636-660",
+      "155-155",
+      "440-372",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "SA-20 Customized Development of Critical Components",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "473-177",
+      "787-638",
+      "433-442",
+      "616-305",
+      "635-851",
+      "745-356",
+      "263-184",
+      "417-342",
+      "233-748",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "SC-27 Platform-independent Applications",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "777-470",
+      "547-283",
+      "577-260",
+      "715-223",
+      "307-507",
+      "673-475",
+      "175-235",
+      "540-566",
+      "838-636",
+      "483-883"
+    ]
+  },
+  {
+    "control_text": "SC-29 Heterogeneity",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "780-757",
+      "567-025",
+      "041-188",
+      "208-355",
+      "467-215",
+      "601-182",
+      "088-316",
+      "563-186",
+      "532-102",
+      "333-480"
+    ]
+  },
+  {
+    "control_text": "SA-23 Specialization",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "326-704",
+    "predicted_top10": [
+      "787-638",
+      "424-242",
+      "626-250",
+      "663-200",
+      "616-305",
+      "041-173",
+      "433-442",
+      "862-452",
+      "223-780",
+      "244-750"
+    ]
+  },
+  {
+    "control_text": "CM-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "247-250",
+      "172-101",
+      "766-162",
+      "510-324",
+      "571-271",
+      "261-010",
+      "636-660",
+      "567-755",
+      "427-113",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "CM-10 Software Usage Restrictions",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "673-475",
+      "547-283",
+      "154-031",
+      "866-553",
+      "777-470",
+      "860-084",
+      "053-751",
+      "175-235",
+      "660-052",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "CM-11 User-installed Software",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "777-470",
+      "547-283",
+      "715-223",
+      "577-260",
+      "053-751",
+      "171-222",
+      "838-636",
+      "673-475",
+      "154-031",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "CM-12 Information Location",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "762-451",
+      "307-111",
+      "615-744",
+      "715-304",
+      "841-710",
+      "455-358",
+      "314-701",
+      "240-274",
+      "617-524",
+      "614-353"
+    ]
+  },
+  {
+    "control_text": "CM-13 Data Action Mapping",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "762-451",
+      "743-110",
+      "240-274",
+      "067-050",
+      "713-683",
+      "227-045",
+      "841-710",
+      "208-805",
+      "713-684",
+      "843-841"
+    ]
+  },
+  {
+    "control_text": "CM-14 Signed Components",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "742-431",
+      "612-252",
+      "082-327",
+      "307-507",
+      "664-080",
+      "002-801",
+      "447-083",
+      "504-340",
+      "443-447",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "CM-3 Configuration Change Control",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "757-271",
+      "801-310",
+      "117-371",
+      "347-352",
+      "462-245",
+      "486-813",
+      "180-488",
+      "053-751",
+      "863-521",
+      "715-334"
+    ]
+  },
+  {
+    "control_text": "CM-4 Impact Analyses",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "738-144",
+      "307-242",
+      "732-148",
+      "546-564",
+      "832-555",
+      "803-457",
+      "433-442",
+      "473-177",
+      "155-155",
+      "888-770"
+    ]
+  },
+  {
+    "control_text": "CM-5 Access Restrictions for Change",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "273-600",
+      "724-770",
+      "128-128",
+      "757-271",
+      "801-310",
+      "540-566",
+      "123-124",
+      "117-371",
+      "447-083",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "CM-7 Least Functionality",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "715-304",
+      "123-124",
+      "540-566",
+      "611-158",
+      "483-715",
+      "673-475",
+      "117-371",
+      "801-310",
+      "757-271",
+      "762-451"
+    ]
+  },
+  {
+    "control_text": "CM-8 System Component Inventory",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "080-466",
+      "157-587",
+      "287-823",
+      "863-521",
+      "124-564",
+      "423-055",
+      "114-853",
+      "072-713",
+      "613-285",
+      "850-376"
+    ]
+  },
+  {
+    "control_text": "CM-9 Configuration Management Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "124-564",
+    "predicted_top10": [
+      "486-813",
+      "462-245",
+      "124-564",
+      "801-310",
+      "347-352",
+      "757-271",
+      "117-371",
+      "180-488",
+      "863-521",
+      "080-466"
+    ]
+  },
+  {
+    "control_text": "SI-14 Non-persistence",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "858-745",
+      "356-282",
+      "455-358",
+      "307-507",
+      "208-355",
+      "307-111",
+      "426-842",
+      "715-304",
+      "230-318",
+      "545-243"
+    ]
+  },
+  {
+    "control_text": "SI-22 Information Diversity",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "881-234",
+      "423-055",
+      "852-770",
+      "661-440",
+      "467-215",
+      "847-247",
+      "883-173",
+      "886-662",
+      "287-251",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "SI-23 Information Fragmentation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "886-662",
+      "230-318",
+      "630-573",
+      "746-705",
+      "463-820",
+      "623-550",
+      "108-316",
+      "268-088",
+      "660-052",
+      "287-251"
+    ]
+  },
+  {
+    "control_text": "SC-3 Security Function Isolation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "515-021",
+      "220-442",
+      "154-031",
+      "123-124",
+      "540-566",
+      "860-084",
+      "838-636",
+      "106-447",
+      "854-643",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "SC-32 System Partitioning",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "860-084",
+      "540-566",
+      "053-751",
+      "263-184",
+      "486-813",
+      "777-470",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "SC-39 Process Isolation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "515-021",
+      "148-227",
+      "263-184",
+      "154-031",
+      "253-452",
+      "724-770",
+      "801-310",
+      "636-660",
+      "123-124",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "SC-44 Detonation Chambers",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "708-355",
+    "predicted_top10": [
+      "821-832",
+      "508-702",
+      "126-668",
+      "340-375",
+      "223-780",
+      "783-255",
+      "032-213",
+      "287-305",
+      "234-282",
+      "232-325"
+    ]
+  },
+  {
+    "control_text": "SC-31 Covert Channel Analysis",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "585-408",
+      "786-224",
+      "745-045",
+      "170-772",
+      "341-076",
+      "636-854",
+      "186-540",
+      "558-807",
+      "504-340",
+      "742-431"
+    ]
+  },
+  {
+    "control_text": "SA-10 Developer Configuration Management",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "080-466",
+    "predicted_top10": [
+      "080-466",
+      "124-564",
+      "486-813",
+      "863-521",
+      "462-245",
+      "347-352",
+      "180-488",
+      "461-680",
+      "053-751",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "SC-34 Non-modifiable Executable Programs",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "473-177",
+    "predicted_top10": [
+      "611-158",
+      "860-084",
+      "154-031",
+      "175-235",
+      "422-005",
+      "838-636",
+      "483-715",
+      "387-848",
+      "540-566",
+      "646-462"
+    ]
+  },
+  {
+    "control_text": "SA-22 Unsupported System Components",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "053-751",
+      "117-371",
+      "757-271",
+      "801-310",
+      "673-475",
+      "540-566",
+      "860-084",
+      "278-413",
+      "611-158",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "SA-4 Acquisition Process",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "883-173",
+      "881-234",
+      "852-770",
+      "423-055",
+      "701-654",
+      "464-513",
+      "141-385",
+      "247-250",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "SR-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "172-101",
+      "247-250",
+      "766-162",
+      "427-113",
+      "510-324",
+      "636-660",
+      "571-271",
+      "567-755",
+      "261-010",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "SR-10 Inspection of Systems or Components",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "114-853",
+      "703-813",
+      "626-250",
+      "058-083",
+      "842-876",
+      "411-684",
+      "287-823",
+      "157-587",
+      "234-282",
+      "887-750"
+    ]
+  },
+  {
+    "control_text": "SR-11 Component Authenticity",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "426-842",
+      "483-883",
+      "347-352",
+      "307-507",
+      "028-254",
+      "456-636",
+      "171-222",
+      "336-512",
+      "130-171",
+      "053-751"
+    ]
+  },
+  {
+    "control_text": "SR-12 Component Disposal",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "424-242",
+      "287-823",
+      "157-587",
+      "858-745",
+      "046-257",
+      "114-853",
+      "163-776",
+      "821-832",
+      "208-830",
+      "072-713"
+    ]
+  },
+  {
+    "control_text": "SR-2 Supply Chain Risk Management Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "852-770",
+      "423-055",
+      "883-173",
+      "473-177",
+      "307-242",
+      "701-654",
+      "862-452",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "SR-3 Supply Chain Controls and Processes",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "423-055",
+      "852-770",
+      "883-173",
+      "148-227",
+      "072-713",
+      "862-452",
+      "701-654",
+      "424-242"
+    ]
+  },
+  {
+    "control_text": "SR-4 Provenance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "267-786",
+      "342-781",
+      "141-385",
+      "080-466",
+      "881-234",
+      "072-713",
+      "613-285",
+      "852-770",
+      "883-173",
+      "287-823"
+    ]
+  },
+  {
+    "control_text": "SR-5 Acquisition Strategies, Tools, and Methods",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "287-823",
+      "072-713",
+      "613-285",
+      "340-375",
+      "223-780",
+      "508-702",
+      "124-564",
+      "080-466",
+      "881-321",
+      "881-234"
+    ]
+  },
+  {
+    "control_text": "SR-6 Supplier Assessments and Reviews",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "852-770",
+      "423-055",
+      "883-173",
+      "701-654",
+      "364-516",
+      "626-250",
+      "433-442",
+      "473-177"
+    ]
+  },
+  {
+    "control_text": "SR-7 Supply Chain Operations Security",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "423-055",
+      "883-173",
+      "852-770",
+      "701-654",
+      "862-452",
+      "854-643",
+      "467-784",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "SR-8 Notification Agreements",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "847-247",
+      "510-324",
+      "820-878",
+      "530-671",
+      "668-364",
+      "546-564",
+      "818-434",
+      "251-446",
+      "646-285",
+      "782-234"
+    ]
+  },
+  {
+    "control_text": "SR-9 Tamper Resistance and Detection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "683-036",
+      "708-355",
+      "503-455",
+      "234-282",
+      "356-282",
+      "010-108",
+      "887-750",
+      "344-611",
+      "435-702",
+      "233-748"
+    ]
+  },
+  {
+    "control_text": "PM-30 Supply Chain Risk Management Strategy",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "852-770",
+      "883-173",
+      "423-055",
+      "701-654",
+      "613-286",
+      "473-177",
+      "148-227",
+      "307-242"
+    ]
+  },
+  {
+    "control_text": "SA-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "172-101",
+      "247-250",
+      "510-324",
+      "427-113",
+      "636-660",
+      "766-162",
+      "261-010",
+      "567-755",
+      "571-271",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "SA-9 External System Services",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "613-285",
+    "predicted_top10": [
+      "423-055",
+      "148-227",
+      "613-285",
+      "234-282",
+      "157-587",
+      "850-376",
+      "424-242",
+      "724-770",
+      "715-644",
+      "080-466"
+    ]
+  },
+  {
+    "control_text": "SA-16 Developer-provided Training",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "244-750",
+    "predicted_top10": [
+      "244-750",
+      "533-635",
+      "428-544",
+      "384-015",
+      "408-838",
+      "787-638",
+      "011-322",
+      "364-516",
+      "433-442",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "SA-5 System Documentation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "820-877",
+    "predicted_top10": [
+      "787-638",
+      "820-877",
+      "036-275",
+      "162-655",
+      "820-878",
+      "068-102",
+      "340-375",
+      "344-611",
+      "822-100",
+      "455-885"
+    ]
+  },
+  {
+    "control_text": "PL-7 CONCEPT OF OPERATIONS",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "820-877",
+    "predicted_top10": [
+      "862-452",
+      "223-780",
+      "344-611",
+      "787-638",
+      "708-355",
+      "616-305",
+      "435-702",
+      "068-102",
+      "464-513",
+      "233-748"
+    ]
+  },
+  {
+    "control_text": "SA-11 Developer Testing and Evaluation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "433-442",
+    "predicted_top10": [
+      "570-487",
+      "364-516",
+      "011-322",
+      "433-442",
+      "555-083",
+      "547-824",
+      "411-684",
+      "088-377",
+      "473-177",
+      "760-764"
+    ]
+  },
+  {
+    "control_text": "PM-5 System Inventory",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "287-823",
+    "predicted_top10": [
+      "287-823",
+      "157-587",
+      "114-853",
+      "423-055",
+      "858-745",
+      "163-776",
+      "424-242",
+      "614-353",
+      "821-832",
+      "342-781"
+    ]
+  },
+  {
+    "control_text": "RA-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "247-250",
+      "724-770",
+      "172-101",
+      "636-660",
+      "427-113",
+      "766-162",
+      "571-271",
+      "510-324",
+      "862-452",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "RA-2 Security Categorization",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "582-035",
+      "663-200",
+      "220-442",
+      "636-660",
+      "862-452",
+      "424-242",
+      "724-770",
+      "515-021",
+      "225-553",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "RA-3 Risk Assessment",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "202-604",
+      "205-522",
+      "663-200",
+      "333-480",
+      "436-325",
+      "307-242",
+      "041-173",
+      "234-123",
+      "755-340",
+      "582-035"
+    ]
+  },
+  {
+    "control_text": "RA-5 Vulnerability Monitoring and Scanning",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "732-148",
+      "058-083",
+      "080-466",
+      "570-487",
+      "703-813",
+      "832-555",
+      "112-273",
+      "124-564",
+      "888-770",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "RA-6 Technical Surveillance Countermeasures Survey",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "663-200",
+      "058-083",
+      "888-770",
+      "703-813",
+      "818-434",
+      "803-457",
+      "582-035",
+      "636-660",
+      "787-638",
+      "887-750"
+    ]
+  },
+  {
+    "control_text": "RA-7 Risk Response",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "436-325",
+      "333-480",
+      "240-464",
+      "202-604",
+      "663-200",
+      "888-770",
+      "234-123",
+      "582-035",
+      "205-522",
+      "463-577"
+    ]
+  },
+  {
+    "control_text": "RA-8 Privacy Impact Assessments",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "220-870",
+      "447-083",
+      "440-372",
+      "247-250",
+      "768-532",
+      "715-644",
+      "724-770",
+      "368-633",
+      "123-124",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "RA-9 Criticality Analysis",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "732-148",
+      "832-555",
+      "601-182",
+      "364-516",
+      "230-318",
+      "240-464",
+      "886-662",
+      "660-867",
+      "670-660",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "PM-11 Mission and Business Process Definition",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "616-305",
+      "862-452",
+      "464-513",
+      "571-271",
+      "766-162",
+      "473-177",
+      "261-010",
+      "148-853",
+      "567-755",
+      "745-356"
+    ]
+  },
+  {
+    "control_text": "PM-28 Risk Framing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "582-035",
+      "803-457",
+      "660-867",
+      "010-108",
+      "725-682",
+      "854-643",
+      "822-100",
+      "888-770",
+      "073-507",
+      "234-123"
+    ]
+  },
+  {
+    "control_text": "PM-8 Critical Infrastructure Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "240-464",
+      "435-702",
+      "560-224",
+      "708-355",
+      "862-452",
+      "223-780",
+      "344-611",
+      "424-242",
+      "467-784",
+      "683-036"
+    ]
+  },
+  {
+    "control_text": "PM-9 Risk Management Strategy",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "307-242",
+    "predicted_top10": [
+      "307-242",
+      "663-200",
+      "803-457",
+      "582-035",
+      "732-148",
+      "854-643",
+      "240-464",
+      "344-611",
+      "862-452",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "SI-6 Security and Privacy Function Verification",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "626-250",
+    "predicted_top10": [
+      "447-083",
+      "768-532",
+      "440-372",
+      "435-702",
+      "503-455",
+      "114-277",
+      "400-007",
+      "488-626",
+      "275-483",
+      "854-643"
+    ]
+  },
+  {
+    "control_text": "SI-7 Software, Firmware, and Information Integrity",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "626-250",
+    "predicted_top10": [
+      "114-277",
+      "456-636",
+      "426-842",
+      "130-171",
+      "171-222",
+      "483-883",
+      "088-316",
+      "613-287",
+      "028-254",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "CA-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "247-250",
+      "172-101",
+      "510-324",
+      "766-162",
+      "724-770",
+      "567-755",
+      "427-113",
+      "636-660",
+      "261-010",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "CA-2 Control Assessments",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "307-242",
+      "766-162",
+      "616-305",
+      "567-755",
+      "636-660",
+      "464-513",
+      "862-452",
+      "433-442",
+      "787-638",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "CA-5 Plan of Action and Milestones",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "616-305",
+      "464-513",
+      "787-638",
+      "148-853",
+      "766-162",
+      "862-452",
+      "745-356",
+      "567-755",
+      "463-577",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "CA-6 Authorization",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "128-128",
+      "664-080",
+      "612-252",
+      "368-633",
+      "082-327",
+      "284-521",
+      "817-808",
+      "123-124",
+      "443-447",
+      "166-151"
+    ]
+  },
+  {
+    "control_text": "CA-7 Continuous Monitoring",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "058-083",
+      "148-227",
+      "128-128",
+      "887-750",
+      "703-813",
+      "177-260",
+      "725-682",
+      "762-451",
+      "538-770",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "CA-8 Penetration Testing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "570-487",
+      "585-408",
+      "170-772",
+      "504-340",
+      "742-431",
+      "768-532",
+      "805-126",
+      "002-801",
+      "382-481",
+      "786-224"
+    ]
+  },
+  {
+    "control_text": "SI-20 Tainting",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "217-163",
+      "426-842",
+      "782-234",
+      "615-663",
+      "455-358",
+      "082-327",
+      "307-507",
+      "664-080",
+      "447-083",
+      "704-530"
+    ]
+  },
+  {
+    "control_text": "SI-5 Security Alerts, Advisories, and Directives",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "028-728",
+      "821-541",
+      "503-455",
+      "636-347",
+      "402-706",
+      "731-120",
+      "004-517",
+      "463-577",
+      "260-200",
+      "118-110"
+    ]
+  },
+  {
+    "control_text": "PM-6 Measures of Performance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "547-824",
+      "433-442",
+      "601-182",
+      "010-678",
+      "223-780",
+      "307-242",
+      "364-516",
+      "464-513",
+      "636-660",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "PM-31 Continuous Monitoring Strategy",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "464-513",
+    "predicted_top10": [
+      "058-083",
+      "240-464",
+      "560-224",
+      "887-750",
+      "725-682",
+      "862-452",
+      "267-031",
+      "467-784",
+      "463-577",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "AU-13 Monitoring for Information Disclosure",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "217-168",
+    "predicted_top10": [
+      "220-870",
+      "077-772",
+      "308-515",
+      "044-202",
+      "440-372",
+      "768-532",
+      "805-126",
+      "488-626",
+      "818-434",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "AU-14 Session Audit",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "217-168",
+    "predicted_top10": [
+      "834-645",
+      "586-842",
+      "713-683",
+      "402-133",
+      "558-807",
+      "841-710",
+      "745-045",
+      "308-515",
+      "551-400",
+      "636-854"
+    ]
+  },
+  {
+    "control_text": "PM-7 Enterprise Architecture",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "766-162",
+    "predicted_top10": [
+      "155-155",
+      "708-355",
+      "177-260",
+      "586-842",
+      "467-784",
+      "724-770",
+      "862-452",
+      "273-600",
+      "344-611",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "SI-2 Flaw Remediation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "732-148",
+    "predicted_top10": [
+      "854-183",
+      "234-123",
+      "041-188",
+      "088-316",
+      "058-443",
+      "130-171",
+      "641-760",
+      "467-215",
+      "760-764",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "PM-17 Protecting Controlled Unclassified Information on External Systems",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "074-873",
+    "predicted_top10": [
+      "440-372",
+      "356-282",
+      "522-616",
+      "173-554",
+      "467-784",
+      "400-007",
+      "267-468",
+      "768-532",
+      "488-626",
+      "482-866"
+    ]
+  },
+  {
+    "control_text": "PM-23 Data Governance Body",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "074-873",
+    "predicted_top10": [
+      "440-372",
+      "225-553",
+      "538-770",
+      "447-083",
+      "724-770",
+      "567-755",
+      "423-055",
+      "571-640",
+      "766-162",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "SI-12 Information Management and Retention",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "858-745",
+      "614-353",
+      "356-282",
+      "124-564",
+      "208-830",
+      "538-770",
+      "715-644",
+      "424-242",
+      "287-823",
+      "850-376"
+    ]
+  },
+  {
+    "control_text": "PM-18 Privacy Program Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "440-372",
+      "220-870",
+      "768-532",
+      "447-083",
+      "362-550",
+      "488-626",
+      "044-202",
+      "077-772",
+      "636-660",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "PM-19 Privacy Program Leadership Role",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "427-113",
+      "567-755",
+      "766-162",
+      "013-021",
+      "172-101",
+      "571-271",
+      "261-010",
+      "563-088",
+      "862-452",
+      "217-168"
+    ]
+  },
+  {
+    "control_text": "PM-20 Dissemination of Privacy Program Information",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "077-772",
+      "818-434",
+      "308-515",
+      "220-870",
+      "044-202",
+      "208-805",
+      "173-554",
+      "182-732",
+      "362-550",
+      "463-577"
+    ]
+  },
+  {
+    "control_text": "PM-22 Personally Identifiable Information Quality Management",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "447-083",
+      "440-372",
+      "571-640",
+      "362-550",
+      "768-532",
+      "586-842",
+      "488-626",
+      "220-870",
+      "041-188",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "PM-25 Minimization of Personally Identifiable Information Used in Testing, Training, and Research",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "220-870",
+      "308-515",
+      "077-772",
+      "488-626",
+      "267-786",
+      "474-203",
+      "044-202",
+      "440-372",
+      "805-126",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "PM-27 Privacy Reporting",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "220-870",
+      "362-550",
+      "308-515",
+      "440-372",
+      "077-772",
+      "044-202",
+      "447-083",
+      "768-532",
+      "208-805",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "PM-24 Data Integrity Board",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "088-316",
+      "715-304",
+      "456-636",
+      "130-171",
+      "307-507",
+      "426-842",
+      "347-352",
+      "483-883",
+      "276-748",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "PT-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "172-101",
+      "636-660",
+      "261-010",
+      "510-324",
+      "427-113",
+      "571-271",
+      "766-162",
+      "463-577",
+      "503-455",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "PT-2 Authority to Process Personally Identifiable Information",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "362-550",
+      "308-515",
+      "227-045",
+      "834-645",
+      "571-640",
+      "208-805",
+      "247-250",
+      "240-274",
+      "743-110",
+      "713-683"
+    ]
+  },
+  {
+    "control_text": "PT-3 Personally Identifiable Information Processing Purposes",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "362-550",
+      "308-515",
+      "227-045",
+      "834-645",
+      "713-683",
+      "743-110",
+      "571-640",
+      "208-805",
+      "447-083",
+      "220-870"
+    ]
+  },
+  {
+    "control_text": "PT-4 Consent",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "082-327",
+      "612-252",
+      "664-080",
+      "368-633",
+      "443-447",
+      "123-124",
+      "715-644",
+      "768-532",
+      "817-808",
+      "686-110"
+    ]
+  },
+  {
+    "control_text": "PT-5 Privacy Notice",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "308-515",
+      "362-550",
+      "208-805",
+      "834-645",
+      "571-640",
+      "220-870",
+      "447-083",
+      "227-045",
+      "743-110",
+      "713-683"
+    ]
+  },
+  {
+    "control_text": "PT-6 System of Records Notice",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "308-515",
+      "208-805",
+      "227-045",
+      "067-050",
+      "834-645",
+      "743-110",
+      "713-683",
+      "463-577",
+      "841-710",
+      "612-435"
+    ]
+  },
+  {
+    "control_text": "PT-7 Specific Categories of Personally Identifiable Information",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "362-550",
+      "308-515",
+      "447-083",
+      "227-045",
+      "765-788",
+      "713-683",
+      "220-870",
+      "571-640",
+      "743-110",
+      "208-805"
+    ]
+  },
+  {
+    "control_text": "PT-8 Computer Matching Requirements",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "852-770",
+      "072-713",
+      "787-638",
+      "613-285",
+      "223-780",
+      "004-517",
+      "881-234",
+      "233-748",
+      "547-824",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "PM-21 Accounting of Disclosures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "044-202",
+      "818-434",
+      "077-772",
+      "220-870",
+      "308-515",
+      "182-732",
+      "805-126",
+      "342-781",
+      "510-324",
+      "217-168"
+    ]
+  },
+  {
+    "control_text": "SI-18 Personally Identifiable Information Quality Operations",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "447-083",
+      "440-372",
+      "362-550",
+      "220-870",
+      "768-532",
+      "488-626",
+      "571-640",
+      "044-202",
+      "586-842",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "SI-19 De-identification",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-640",
+    "predicted_top10": [
+      "488-626",
+      "474-203",
+      "637-021",
+      "768-532",
+      "043-703",
+      "141-385",
+      "227-045",
+      "308-515",
+      "220-870",
+      "805-126"
+    ]
+  },
+  {
+    "control_text": "CP-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "172-101",
+      "247-250",
+      "510-324",
+      "261-010",
+      "766-162",
+      "571-271",
+      "427-113",
+      "636-660",
+      "567-755",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "CP-10 System Recovery and Reconstitution",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "520-617",
+      "581-525",
+      "257-117",
+      "007-274",
+      "424-242",
+      "124-564",
+      "240-464",
+      "267-031",
+      "842-876",
+      "270-634"
+    ]
+  },
+  {
+    "control_text": "CP-11 Alternate Communications Protocols",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "530-671",
+      "767-701",
+      "745-045",
+      "847-247",
+      "527-034",
+      "278-646",
+      "341-076",
+      "248-646",
+      "824-732",
+      "260-200"
+    ]
+  },
+  {
+    "control_text": "CP-12 Safe Mode",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "123-124",
+      "860-084",
+      "843-841",
+      "540-566",
+      "515-021",
+      "402-706",
+      "764-765",
+      "208-830",
+      "660-052",
+      "238-346"
+    ]
+  },
+  {
+    "control_text": "CP-13 Alternative Security Mechanisms",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "860-084",
+      "540-566",
+      "764-765",
+      "123-124",
+      "866-553",
+      "175-235",
+      "117-371",
+      "347-352",
+      "515-021",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "CP-2 Contingency Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "240-464",
+      "424-242",
+      "463-577",
+      "267-031",
+      "560-224",
+      "344-611",
+      "862-452",
+      "616-305",
+      "571-271",
+      "635-851"
+    ]
+  },
+  {
+    "control_text": "CP-3 Contingency Training",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "240-464",
+      "533-635",
+      "244-750",
+      "408-838",
+      "384-015",
+      "854-183",
+      "428-544",
+      "860-723",
+      "146-871",
+      "989-492"
+    ]
+  },
+  {
+    "control_text": "CP-4 Contingency Plan Testing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "240-464",
+      "473-177",
+      "344-611",
+      "433-442",
+      "088-377",
+      "616-305",
+      "745-356",
+      "307-242",
+      "464-513",
+      "601-182"
+    ]
+  },
+  {
+    "control_text": "CP-6 Alternate Storage Site",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "175-235",
+      "545-243",
+      "307-111",
+      "614-353",
+      "617-524",
+      "461-680",
+      "758-262",
+      "762-451",
+      "860-084",
+      "046-257"
+    ]
+  },
+  {
+    "control_text": "CP-7 Alternate Processing Site",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "615-744",
+      "175-235",
+      "545-243",
+      "742-056",
+      "232-217",
+      "284-521",
+      "843-841",
+      "817-808",
+      "268-100",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "CP-8 Telecommunications Services",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "467-784",
+      "177-260",
+      "362-550",
+      "586-842",
+      "447-083",
+      "247-250",
+      "724-770",
+      "240-274",
+      "842-876",
+      "435-702"
+    ]
+  },
+  {
+    "control_text": "CP-9 System Backup",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "163-776",
+      "614-353",
+      "461-680",
+      "762-451",
+      "356-282",
+      "715-304",
+      "307-111",
+      "863-521",
+      "040-843",
+      "080-466"
+    ]
+  },
+  {
+    "control_text": "SI-13 Predictable Failure Prevention",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "240-464",
+    "predicted_top10": [
+      "240-464",
+      "601-182",
+      "364-516",
+      "732-148",
+      "208-355",
+      "660-867",
+      "333-480",
+      "854-643",
+      "130-171",
+      "547-824"
+    ]
+  },
+  {
+    "control_text": "SC-18 Mobile Code",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "004-517",
+    "predicted_top10": [
+      "273-600",
+      "551-400",
+      "138-448",
+      "558-807",
+      "482-866",
+      "267-468",
+      "224-321",
+      "605-735",
+      "650-560",
+      "646-227"
+    ]
+  },
+  {
+    "control_text": "RA-10 Threat Hunting",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "888-770",
+    "predicted_top10": [
+      "112-273",
+      "888-770",
+      "615-744",
+      "725-682",
+      "570-487",
+      "863-521",
+      "832-555",
+      "154-031",
+      "010-108",
+      "267-786"
+    ]
+  },
+  {
+    "control_text": "PM-16 Threat Awareness Program",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "888-770",
+    "predicted_top10": [
+      "888-770",
+      "803-457",
+      "428-544",
+      "818-434",
+      "725-682",
+      "435-702",
+      "683-036",
+      "663-200",
+      "636-660",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "SA-21 Developer Screening",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "745-356",
+      "613-285",
+      "881-234",
+      "411-684",
+      "852-770",
+      "570-487",
+      "635-851",
+      "883-173",
+      "867-642",
+      "805-126"
+    ]
+  },
+  {
+    "control_text": "PS-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "766-162",
+      "427-113",
+      "510-324",
+      "862-452",
+      "636-660",
+      "571-271",
+      "261-010",
+      "567-755",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "PS-2 Position Risk Designation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "427-113",
+      "013-021",
+      "464-513",
+      "766-162",
+      "567-755",
+      "338-370",
+      "571-271",
+      "463-577",
+      "633-428"
+    ]
+  },
+  {
+    "control_text": "PS-3 Personnel Screening",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "427-113",
+      "553-413",
+      "525-361",
+      "524-446",
+      "308-515",
+      "358-860",
+      "076-470",
+      "802-056",
+      "881-321"
+    ]
+  },
+  {
+    "control_text": "PS-4 Personnel Termination",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "424-242",
+      "427-113",
+      "172-101",
+      "238-346",
+      "457-165",
+      "013-021",
+      "563-088",
+      "106-447",
+      "470-731",
+      "205-522"
+    ]
+  },
+  {
+    "control_text": "PS-5 Personnel Transfer",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "553-413",
+      "881-321",
+      "172-101",
+      "524-446",
+      "525-361",
+      "358-860",
+      "338-370",
+      "427-113",
+      "715-681",
+      "101-217"
+    ]
+  },
+  {
+    "control_text": "PS-6 Access Agreements",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "247-250",
+      "172-101",
+      "724-770",
+      "227-045",
+      "715-644",
+      "713-683",
+      "743-110",
+      "308-515",
+      "427-113",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "PS-7 External Personnel Security",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "172-101",
+      "881-321",
+      "427-113",
+      "234-282",
+      "553-413",
+      "503-455",
+      "633-428",
+      "862-452",
+      "636-660",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "PS-8 Personnel Sanctions",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "427-113",
+      "172-101",
+      "013-021",
+      "802-056",
+      "807-565",
+      "510-324",
+      "862-452",
+      "524-446",
+      "012-625",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "PS-9 Position Descriptions",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "172-101",
+    "predicted_top10": [
+      "455-885",
+      "013-021",
+      "172-101",
+      "278-646",
+      "427-113",
+      "634-733",
+      "862-452",
+      "464-513",
+      "503-455",
+      "789-320"
+    ]
+  },
+  {
+    "control_text": "PM-13 Security and Privacy Workforce",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "013-021",
+    "predicted_top10": [
+      "862-452",
+      "172-101",
+      "427-113",
+      "636-660",
+      "571-640",
+      "225-553",
+      "571-271",
+      "467-784",
+      "261-010",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "PM-2 Information Security Program Leadership Role",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "013-021",
+    "predicted_top10": [
+      "766-162",
+      "635-851",
+      "567-755",
+      "261-010",
+      "571-271",
+      "427-113",
+      "616-305",
+      "118-775",
+      "013-021",
+      "563-088"
+    ]
+  },
+  {
+    "control_text": "PM-29 Risk Management Program Leadership Roles",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "013-021",
+    "predicted_top10": [
+      "766-162",
+      "635-851",
+      "013-021",
+      "567-755",
+      "427-113",
+      "571-271",
+      "261-010",
+      "307-242",
+      "616-305",
+      "563-088"
+    ]
+  },
+  {
+    "control_text": "AT-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "247-250",
+      "172-101",
+      "636-660",
+      "766-162",
+      "427-113",
+      "724-770",
+      "510-324",
+      "567-755",
+      "261-010",
+      "463-577"
+    ]
+  },
+  {
+    "control_text": "AT-2 Literacy Training and Awareness",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "244-750",
+      "533-635",
+      "428-544",
+      "384-015",
+      "820-877",
+      "787-638",
+      "408-838",
+      "616-305",
+      "068-102",
+      "307-242"
+    ]
+  },
+  {
+    "control_text": "AT-3 Role-based Training",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "244-750",
+      "533-635",
+      "428-544",
+      "013-021",
+      "408-838",
+      "384-015",
+      "455-885",
+      "427-113",
+      "118-775",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "AT-4 Training Records",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "244-750",
+      "818-434",
+      "858-745",
+      "805-126",
+      "461-680",
+      "820-877",
+      "474-203",
+      "220-870",
+      "533-635",
+      "267-786"
+    ]
+  },
+  {
+    "control_text": "AT-6 Training Feedback",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "428-544",
+    "predicted_top10": [
+      "547-824",
+      "854-183",
+      "364-516",
+      "010-678",
+      "533-635",
+      "408-838",
+      "011-322",
+      "384-015",
+      "244-750",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "SA-2 Allocation of Resources",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "560-224",
+      "230-318",
+      "886-662",
+      "108-316",
+      "187-083",
+      "630-573",
+      "424-242",
+      "240-464",
+      "660-052",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "PM-3 Information Security and Privacy Resources",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "636-660",
+      "435-702",
+      "862-452",
+      "586-842",
+      "571-640",
+      "223-780",
+      "818-434",
+      "440-372",
+      "503-455",
+      "447-083"
+    ]
+  },
+  {
+    "control_text": "PL-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "636-660",
+      "862-452",
+      "766-162",
+      "261-010",
+      "510-324",
+      "172-101",
+      "571-271",
+      "503-455",
+      "427-113",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "PL-10 Baseline Selection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "547-283",
+      "777-470",
+      "336-512",
+      "847-247",
+      "715-223",
+      "577-260",
+      "028-254",
+      "180-488",
+      "307-507",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "PL-11 Baseline Tailoring",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "547-283",
+      "777-470",
+      "180-488",
+      "336-512",
+      "860-084",
+      "577-260",
+      "847-247",
+      "715-223",
+      "161-451",
+      "347-352"
+    ]
+  },
+  {
+    "control_text": "PL-4 Rules of Behavior",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "560-224",
+    "predicted_top10": [
+      "764-765",
+      "036-275",
+      "344-611",
+      "822-100",
+      "660-867",
+      "582-035",
+      "854-643",
+      "860-084",
+      "333-480",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "PL-9 Central Management",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "860-084",
+      "862-452",
+      "148-227",
+      "261-010",
+      "636-660",
+      "571-271",
+      "724-770",
+      "486-813",
+      "515-021",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "PM-1 Information Security Program Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "862-452",
+      "616-305",
+      "636-660",
+      "571-271",
+      "307-242",
+      "261-010",
+      "464-513",
+      "435-702",
+      "766-162",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "PM-12 Insider Threat Program",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "304-667",
+      "615-663",
+      "640-364",
+      "650-560",
+      "273-600",
+      "220-442",
+      "524-603",
+      "152-725",
+      "768-532",
+      "841-757"
+    ]
+  },
+  {
+    "control_text": "PM-14 Testing, Training, and Monitoring",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "433-442",
+      "364-516",
+      "547-824",
+      "663-200",
+      "011-322",
+      "473-177",
+      "570-487",
+      "555-083",
+      "384-015",
+      "088-377"
+    ]
+  },
+  {
+    "control_text": "PM-26 Complaint Management",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "842-876",
+      "513-183",
+      "463-577",
+      "362-550",
+      "217-168",
+      "261-010",
+      "546-564",
+      "172-101",
+      "766-162",
+      "571-271"
+    ]
+  },
+  {
+    "control_text": "PM-32 Purposing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "543-428",
+      "513-845",
+      "783-255",
+      "841-757",
+      "786-224",
+      "767-435",
+      "342-764",
+      "440-361",
+      "206-254",
+      "878-880"
+    ]
+  },
+  {
+    "control_text": "PM-4 Plan of Action and Milestones Process",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "616-305",
+      "766-162",
+      "635-851",
+      "567-755",
+      "307-242",
+      "464-513",
+      "745-356",
+      "820-877",
+      "261-010",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "SC-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "510-324",
+      "172-101",
+      "427-113",
+      "766-162",
+      "247-250",
+      "567-755",
+      "636-660",
+      "261-010",
+      "862-452",
+      "135-200"
+    ]
+  },
+  {
+    "control_text": "SI-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "571-271",
+    "predicted_top10": [
+      "510-324",
+      "172-101",
+      "766-162",
+      "427-113",
+      "261-010",
+      "571-271",
+      "636-660",
+      "567-755",
+      "247-250",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "PM-15 Security and Privacy Groups and Associations",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "833-030",
+    "predicted_top10": [
+      "833-030",
+      "563-088",
+      "118-775",
+      "586-842",
+      "225-553",
+      "304-667",
+      "524-603",
+      "125-010",
+      "615-744",
+      "152-725"
+    ]
+  },
+  {
+    "control_text": "SC-26 Decoys",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "370-877",
+      "384-015",
+      "011-322",
+      "010-108",
+      "663-550",
+      "474-203",
+      "483-253",
+      "073-507",
+      "234-123",
+      "012-625"
+    ]
+  },
+  {
+    "control_text": "SC-30 Concealment and Misdirection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "010-108",
+      "488-626",
+      "637-021",
+      "356-282",
+      "522-616",
+      "503-455",
+      "474-203",
+      "400-007",
+      "843-475",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "SC-35 External Malicious Code Identification",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "112-273",
+      "743-110",
+      "611-158",
+      "307-111",
+      "483-715",
+      "227-045",
+      "713-683",
+      "545-243",
+      "208-805",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "SC-36 Distributed Processing and Storage",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "126-668",
+      "208-830",
+      "560-224",
+      "148-227",
+      "758-262",
+      "538-770",
+      "424-242",
+      "423-055",
+      "046-257",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "SC-37 Out-of-band Channels",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "273-600",
+      "102-811",
+      "582-541",
+      "623-550",
+      "128-128",
+      "201-246",
+      "278-413",
+      "668-364",
+      "168-186",
+      "513-183"
+    ]
+  },
+  {
+    "control_text": "SC-38 Operations Security",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "862-452",
+      "636-660",
+      "503-455",
+      "582-035",
+      "663-200",
+      "435-702",
+      "233-748",
+      "464-513",
+      "223-780",
+      "787-638"
+    ]
+  },
+  {
+    "control_text": "SC-42 Sensor Capability and Data",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "126-668",
+      "703-813",
+      "683-036",
+      "234-282",
+      "435-702",
+      "887-750",
+      "058-083",
+      "382-481",
+      "356-282",
+      "043-703"
+    ]
+  },
+  {
+    "control_text": "SC-43 Usage Restrictions",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "220-442",
+      "187-083",
+      "860-084",
+      "258-115",
+      "742-431",
+      "646-285",
+      "551-054",
+      "551-400",
+      "716-526",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "SC-46 Cross Domain Policy Enforcement",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "402-133",
+      "268-100",
+      "284-521",
+      "532-878",
+      "615-744",
+      "128-128",
+      "336-512",
+      "551-400",
+      "736-237",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "SC-47 Alternate Communications Paths",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "582-541",
+      "278-413",
+      "615-744",
+      "576-042",
+      "113-133",
+      "820-421",
+      "841-710",
+      "273-600",
+      "201-246",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "SC-48 Sensor Relocation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "157-587",
+      "114-853",
+      "117-371",
+      "850-376",
+      "801-310",
+      "762-451",
+      "715-644",
+      "141-385",
+      "757-271",
+      "080-466"
+    ]
+  },
+  {
+    "control_text": "SC-50 Software-enforced Separation and Policy Enforcement",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "862-452",
+    "predicted_top10": [
+      "515-021",
+      "636-660",
+      "724-770",
+      "862-452",
+      "546-564",
+      "467-784",
+      "854-643",
+      "847-247",
+      "510-324",
+      "764-765"
+    ]
+  },
+  {
+    "control_text": "AC-1 POLICY AND PROCEDURES",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "247-250",
+      "724-770",
+      "172-101",
+      "766-162",
+      "510-324",
+      "636-660",
+      "567-755",
+      "427-113",
+      "571-271",
+      "261-010"
+    ]
+  },
+  {
+    "control_text": "PM-10 Authorization Process",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "128-128",
+      "304-667",
+      "551-400",
+      "582-541",
+      "612-252",
+      "664-080",
+      "247-250",
+      "082-327",
+      "368-633",
+      "524-603"
+    ]
+  },
+  {
+    "control_text": "AC-20 Use of External Systems",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "423-055",
+      "673-475",
+      "417-342",
+      "148-227",
+      "613-285",
+      "757-271",
+      "053-751",
+      "860-084",
+      "881-234",
+      "852-770"
+    ]
+  },
+  {
+    "control_text": "AC-21 Information Sharing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "077-772",
+      "308-515",
+      "818-434",
+      "220-870",
+      "044-202",
+      "208-805",
+      "743-110",
+      "267-786",
+      "182-732",
+      "805-126"
+    ]
+  },
+  {
+    "control_text": "AC-22 Publicly Accessible Content",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "307-111",
+      "545-243",
+      "314-701",
+      "123-124",
+      "817-808",
+      "762-451",
+      "615-744",
+      "715-644",
+      "175-235",
+      "447-083"
+    ]
+  },
+  {
+    "control_text": "AC-23 Data Mining Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "447-083",
+      "440-372",
+      "488-626",
+      "220-870",
+      "715-644",
+      "768-532",
+      "423-055",
+      "713-684",
+      "220-442",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "AC-4 Information Flow Enforcement",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "247-250",
+    "predicted_top10": [
+      "128-128",
+      "724-770",
+      "467-784",
+      "854-643",
+      "273-600",
+      "123-124",
+      "660-867",
+      "247-250",
+      "447-083",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "IR-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "172-101",
+      "636-660",
+      "571-271",
+      "766-162",
+      "247-250",
+      "862-452",
+      "261-010",
+      "510-324",
+      "427-113",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "IR-2 Incident Response Training",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "244-750",
+      "428-544",
+      "533-635",
+      "463-577",
+      "616-305",
+      "307-242",
+      "787-638",
+      "068-102",
+      "820-877",
+      "384-015"
+    ]
+  },
+  {
+    "control_text": "IR-3 Incident Response Testing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "616-305",
+      "787-638",
+      "307-242",
+      "433-442",
+      "088-377",
+      "464-513",
+      "820-877",
+      "745-356",
+      "207-435"
+    ]
+  },
+  {
+    "control_text": "IR-4 Incident Handling",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "240-464",
+      "842-876",
+      "725-682",
+      "552-588",
+      "787-638",
+      "887-750",
+      "424-242",
+      "636-660",
+      "513-183"
+    ]
+  },
+  {
+    "control_text": "IR-5 Incident Monitoring",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "058-083",
+      "463-577",
+      "842-876",
+      "725-682",
+      "683-036",
+      "240-464",
+      "552-588",
+      "418-853",
+      "887-750",
+      "843-841"
+    ]
+  },
+  {
+    "control_text": "IR-6 Incident Reporting",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "058-083",
+      "842-876",
+      "820-877",
+      "843-841",
+      "552-588",
+      "418-853",
+      "745-356",
+      "184-284",
+      "162-655"
+    ]
+  },
+  {
+    "control_text": "IR-7 Incident Response Assistance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "240-464",
+      "820-877",
+      "787-638",
+      "464-513",
+      "634-733",
+      "520-617",
+      "428-544",
+      "616-305",
+      "244-750"
+    ]
+  },
+  {
+    "control_text": "IR-8 Incident Response Plan",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "463-577",
+      "240-464",
+      "787-638",
+      "820-877",
+      "616-305",
+      "307-242",
+      "464-513",
+      "862-452",
+      "842-876",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "IR-9 Information Spillage Response",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "463-577",
+    "predicted_top10": [
+      "818-434",
+      "077-772",
+      "173-554",
+      "044-202",
+      "463-577",
+      "220-870",
+      "182-732",
+      "820-877",
+      "440-372",
+      "810-884"
+    ]
+  },
+  {
+    "control_text": "SI-4 System Monitoring",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "058-083",
+    "predicted_top10": [
+      "058-083",
+      "703-813",
+      "887-750",
+      "217-168",
+      "842-876",
+      "862-452",
+      "148-227",
+      "636-660",
+      "663-200",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "SC-41 Port and I/O Device Access",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "157-587",
+    "predicted_top10": [
+      "540-566",
+      "117-371",
+      "757-271",
+      "801-310",
+      "664-080",
+      "082-327",
+      "612-252",
+      "123-124",
+      "443-447",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "SC-15 Collaborative Computing Devices and Applications",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "157-587",
+    "predicted_top10": [
+      "148-227",
+      "417-342",
+      "126-668",
+      "538-770",
+      "486-813",
+      "850-376",
+      "563-088",
+      "118-775",
+      "862-452",
+      "225-553"
+    ]
+  },
+  {
+    "control_text": "AU-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "172-101",
+      "247-250",
+      "510-324",
+      "427-113",
+      "567-755",
+      "766-162",
+      "636-660",
+      "571-271",
+      "261-010",
+      "862-452"
+    ]
+  },
+  {
+    "control_text": "AU-11 Audit Record Retention",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "307-111",
+      "356-282",
+      "858-745",
+      "614-353",
+      "834-645",
+      "713-683",
+      "208-805",
+      "308-515",
+      "762-451",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "AU-12 Audit Record Generation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "716-526",
+      "002-630",
+      "455-358",
+      "727-043",
+      "206-254",
+      "841-710",
+      "430-722",
+      "346-640",
+      "622-835",
+      "304-667"
+    ]
+  },
+  {
+    "control_text": "AU-16 Cross-organizational Audit Logging",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "841-710",
+      "240-274",
+      "217-168",
+      "843-841",
+      "058-083",
+      "842-876",
+      "260-200",
+      "067-050",
+      "026-280",
+      "510-324"
+    ]
+  },
+  {
+    "control_text": "AU-4 Audit Log Storage Capacity",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "660-052",
+      "463-820",
+      "356-282",
+      "746-705",
+      "630-573",
+      "163-518",
+      "307-111",
+      "758-262",
+      "858-745",
+      "614-353"
+    ]
+  },
+  {
+    "control_text": "AU-5 Response to Audit Logging Process Failures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "843-841",
+      "402-706",
+      "841-710",
+      "148-420",
+      "842-876",
+      "240-274",
+      "067-050",
+      "260-200",
+      "026-280",
+      "555-048"
+    ]
+  },
+  {
+    "control_text": "AU-6 Audit Record Review, Analysis, and Reporting",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "217-168",
+      "510-324",
+      "135-200",
+      "745-356",
+      "841-710",
+      "058-083",
+      "463-577",
+      "464-513",
+      "842-876",
+      "766-162"
+    ]
+  },
+  {
+    "control_text": "AU-7 Audit Record Reduction and Report Generation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "843-841",
+      "217-168",
+      "745-356",
+      "764-765",
+      "842-876",
+      "402-706",
+      "841-710",
+      "820-878",
+      "463-577",
+      "766-162"
+    ]
+  },
+  {
+    "control_text": "SI-11 Error Handling",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "842-876",
+    "predicted_top10": [
+      "513-183",
+      "863-636",
+      "843-475",
+      "342-641",
+      "668-364",
+      "576-262",
+      "653-242",
+      "646-285",
+      "118-602",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "SC-45 System Time Synchronization",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "770-362",
+      "618-403",
+      "770-361",
+      "258-115",
+      "052-821",
+      "878-880",
+      "418-525",
+      "065-782",
+      "582-541",
+      "146-556"
+    ]
+  },
+  {
+    "control_text": "SC-49 Hardware-enforced Separation and Policy Enforcement",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "540-566",
+      "123-124",
+      "715-304",
+      "447-083",
+      "724-770",
+      "284-521",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "SC-51 Hardware-based Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "447-083",
+      "117-371",
+      "234-282",
+      "801-310",
+      "540-566",
+      "757-271",
+      "307-507",
+      "273-600",
+      "742-431",
+      "053-751"
+    ]
+  },
+  {
+    "control_text": "SC-25 Thin Nodes",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "504-340",
+      "273-600",
+      "742-431",
+      "883-173",
+      "230-318",
+      "821-832",
+      "673-475",
+      "053-751",
+      "881-234",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "PL-2 System Security and Privacy Plans",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "636-660",
+      "862-452",
+      "503-455",
+      "435-702",
+      "467-784",
+      "223-780",
+      "234-282",
+      "805-126",
+      "440-372",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "SI-8 Spam Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-227",
+    "predicted_top10": [
+      "742-431",
+      "002-801",
+      "551-400",
+      "187-083",
+      "504-340",
+      "738-144",
+      "447-083",
+      "440-372",
+      "760-764",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "MA-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "247-250",
+      "724-770",
+      "636-660",
+      "172-101",
+      "862-452",
+      "571-271",
+      "766-162",
+      "261-010",
+      "510-324",
+      "567-755"
+    ]
+  },
+  {
+    "control_text": "MA-2 Controlled Maintenance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "424-242",
+      "114-853",
+      "208-830",
+      "560-224",
+      "240-464",
+      "850-376",
+      "663-200",
+      "125-010",
+      "276-748",
+      "148-227"
+    ]
+  },
+  {
+    "control_text": "MA-3 Maintenance Tools",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "114-853",
+      "157-587",
+      "287-823",
+      "125-010",
+      "424-242",
+      "124-564",
+      "850-376",
+      "007-274",
+      "538-770",
+      "208-830"
+    ]
+  },
+  {
+    "control_text": "MA-4 Nonlocal Maintenance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "801-310",
+      "715-304",
+      "762-451",
+      "117-371",
+      "757-271",
+      "123-124",
+      "148-227",
+      "538-770",
+      "858-745",
+      "715-644"
+    ]
+  },
+  {
+    "control_text": "MA-5 Maintenance Personnel",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "114-853",
+      "125-010",
+      "157-587",
+      "424-242",
+      "850-376",
+      "787-638",
+      "287-823",
+      "244-750",
+      "208-830",
+      "520-617"
+    ]
+  },
+  {
+    "control_text": "MA-6 Timely Maintenance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "114-853",
+      "240-464",
+      "208-355",
+      "007-274",
+      "257-117",
+      "424-242",
+      "208-830",
+      "230-318",
+      "560-224",
+      "157-587"
+    ]
+  },
+  {
+    "control_text": "MA-7 Field Maintenance",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "114-853",
+    "predicted_top10": [
+      "114-853",
+      "424-242",
+      "208-830",
+      "125-010",
+      "157-587",
+      "850-376",
+      "007-274",
+      "287-823",
+      "124-564",
+      "240-464"
+    ]
+  },
+  {
+    "control_text": "MP-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "636-660",
+      "172-101",
+      "862-452",
+      "766-162",
+      "571-271",
+      "427-113",
+      "567-755",
+      "261-010",
+      "510-324",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "MP-2 Media Access",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "522-616",
+      "307-111",
+      "356-282",
+      "314-701",
+      "614-353",
+      "234-282",
+      "040-843",
+      "077-772",
+      "208-805",
+      "173-554"
+    ]
+  },
+  {
+    "control_text": "MP-3 Media Marking",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "227-045",
+      "743-110",
+      "637-021",
+      "713-683",
+      "834-645",
+      "522-616",
+      "307-111",
+      "308-515",
+      "208-805",
+      "067-050"
+    ]
+  },
+  {
+    "control_text": "MP-4 Media Storage",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "522-616",
+      "614-353",
+      "356-282",
+      "758-262",
+      "307-111",
+      "617-524",
+      "858-745",
+      "046-257",
+      "314-701",
+      "275-483"
+    ]
+  },
+  {
+    "control_text": "MP-5 Media Transport",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "522-616",
+      "356-282",
+      "614-353",
+      "745-045",
+      "558-807",
+      "307-111",
+      "683-036",
+      "234-282",
+      "186-540",
+      "783-255"
+    ]
+  },
+  {
+    "control_text": "MP-6 Media Sanitization",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "764-765",
+      "736-237",
+      "268-100",
+      "522-616",
+      "480-071",
+      "881-434",
+      "538-446",
+      "257-668",
+      "041-188",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "MP-7 Media Use",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "522-616",
+      "545-243",
+      "307-111",
+      "384-344",
+      "356-282",
+      "175-235",
+      "010-108",
+      "637-021",
+      "455-358",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "MP-8 Media Downgrading",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "522-616",
+    "predicted_top10": [
+      "715-304",
+      "540-566",
+      "123-124",
+      "175-235",
+      "762-451",
+      "545-243",
+      "314-701",
+      "736-237",
+      "673-475",
+      "307-111"
+    ]
+  },
+  {
+    "control_text": "SC-22 Architecture and Provisioning for Name/address Resolution Service",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "467-784",
+    "predicted_top10": [
+      "058-527",
+      "582-541",
+      "278-413",
+      "273-600",
+      "576-042",
+      "820-421",
+      "486-813",
+      "036-147",
+      "113-133",
+      "615-744"
+    ]
+  },
+  {
+    "control_text": "SC-7 Boundary Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "467-784",
+    "predicted_top10": [
+      "467-784",
+      "683-036",
+      "546-564",
+      "582-541",
+      "558-807",
+      "128-128",
+      "551-400",
+      "447-083",
+      "688-081",
+      "278-413"
+    ]
+  },
+  {
+    "control_text": "PE-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "172-101",
+      "510-324",
+      "636-660",
+      "862-452",
+      "766-162",
+      "261-010",
+      "571-271",
+      "234-282",
+      "464-513",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "PE-10 Emergency Shutoff",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "230-318",
+      "560-224",
+      "240-464",
+      "267-031",
+      "208-830",
+      "424-242",
+      "725-682",
+      "623-550",
+      "660-052",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "PE-11 Emergency Power",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "240-464",
+      "267-031",
+      "560-224",
+      "230-318",
+      "208-830",
+      "118-602",
+      "552-588",
+      "725-682",
+      "418-853",
+      "157-587"
+    ]
+  },
+  {
+    "control_text": "PE-12 Emergency Lighting",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "157-587",
+      "208-830",
+      "114-853",
+      "032-213",
+      "240-464",
+      "850-376",
+      "125-010",
+      "036-810",
+      "560-224",
+      "126-668"
+    ]
+  },
+  {
+    "control_text": "PE-13 Fire Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "503-455",
+      "872-574",
+      "126-668",
+      "683-036",
+      "708-355",
+      "435-702",
+      "157-587",
+      "163-776",
+      "850-376"
+    ]
+  },
+  {
+    "control_text": "PE-14 Environmental Controls",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "503-455",
+      "636-660",
+      "538-770",
+      "424-242",
+      "862-452",
+      "850-376",
+      "663-200",
+      "126-668",
+      "522-616"
+    ]
+  },
+  {
+    "control_text": "PE-15 Water Damage Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "114-853",
+      "157-587",
+      "234-282",
+      "872-574",
+      "788-323",
+      "163-776",
+      "503-455",
+      "287-823",
+      "842-876",
+      "626-250"
+    ]
+  },
+  {
+    "control_text": "PE-16 Delivery and Removal",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "007-274",
+      "424-242",
+      "423-055",
+      "171-222",
+      "148-227",
+      "701-654",
+      "613-285",
+      "122-287",
+      "173-554",
+      "881-234"
+    ]
+  },
+  {
+    "control_text": "PE-17 Alternate Work Site",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "850-376",
+      "863-521",
+      "080-466",
+      "148-227",
+      "462-245",
+      "234-282",
+      "007-274",
+      "124-564",
+      "267-031",
+      "461-680"
+    ]
+  },
+  {
+    "control_text": "PE-18 Location of System Components",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "863-521",
+      "762-451",
+      "801-310",
+      "080-466",
+      "117-371",
+      "234-282",
+      "757-271",
+      "124-564",
+      "462-245",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "PE-19 Information Leakage",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "818-434",
+      "173-554",
+      "182-732",
+      "768-532",
+      "805-126",
+      "440-372",
+      "077-772",
+      "044-202",
+      "488-626",
+      "220-870"
+    ]
+  },
+  {
+    "control_text": "PE-2 Physical Access Authorizations",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "664-080",
+      "612-252",
+      "724-770",
+      "715-644",
+      "443-447",
+      "082-327",
+      "368-633",
+      "123-124",
+      "247-250",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "PE-20 Asset Monitoring and Tracking",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "148-227",
+      "762-451",
+      "850-376",
+      "287-823",
+      "058-083",
+      "538-770",
+      "234-282",
+      "124-564",
+      "356-282",
+      "157-587"
+    ]
+  },
+  {
+    "control_text": "PE-21 Electromagnetic Pulse Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "683-036",
+      "234-282",
+      "503-455",
+      "435-702",
+      "126-668",
+      "767-701",
+      "270-568",
+      "634-733",
+      "542-270",
+      "223-780"
+    ]
+  },
+  {
+    "control_text": "PE-22 Component Marking",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "227-045",
+      "743-110",
+      "234-282",
+      "713-683",
+      "308-515",
+      "208-805",
+      "162-655",
+      "067-050",
+      "344-611",
+      "834-645"
+    ]
+  },
+  {
+    "control_text": "PE-23 Facility Location",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "850-376",
+      "234-282",
+      "114-853",
+      "157-587",
+      "244-750",
+      "148-227",
+      "326-704",
+      "072-713",
+      "424-242",
+      "032-213"
+    ]
+  },
+  {
+    "control_text": "PE-3 Physical Access Control",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "724-770",
+      "538-770",
+      "801-310",
+      "715-644",
+      "247-250",
+      "540-566",
+      "123-124",
+      "715-304"
+    ]
+  },
+  {
+    "control_text": "PE-4 Access Control for Transmission",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "273-600",
+      "467-784",
+      "724-770",
+      "683-036",
+      "435-702",
+      "757-271",
+      "715-644",
+      "538-770",
+      "117-371",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "PE-5 Access Control for Output Devices",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "538-770",
+      "724-770",
+      "715-644",
+      "540-566",
+      "123-124",
+      "715-304",
+      "220-442"
+    ]
+  },
+  {
+    "control_text": "PE-6 Monitoring Physical Access",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "586-842",
+      "273-600",
+      "467-784",
+      "234-282",
+      "538-770",
+      "762-451",
+      "571-640",
+      "447-083",
+      "724-770",
+      "058-083"
+    ]
+  },
+  {
+    "control_text": "PE-8 Visitor Access Records",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "713-683",
+      "743-110",
+      "227-045",
+      "307-111",
+      "834-645",
+      "240-274",
+      "208-805",
+      "308-515",
+      "067-050",
+      "015-063"
+    ]
+  },
+  {
+    "control_text": "PE-9 Power Equipment and Cabling",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "234-282",
+    "predicted_top10": [
+      "234-282",
+      "157-587",
+      "850-376",
+      "114-853",
+      "126-668",
+      "683-036",
+      "148-227",
+      "613-285",
+      "467-784",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "AC-7 UNSUCCESSFUL LOGON ATTEMPTS",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "582-541",
+      "820-421",
+      "278-413",
+      "576-042",
+      "113-133",
+      "615-744",
+      "841-710",
+      "612-435",
+      "128-128",
+      "789-320"
+    ]
+  },
+  {
+    "control_text": "AC-8 SYSTEM USE NOTIFICATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "725-682",
+      "273-600",
+      "801-310",
+      "757-271",
+      "724-770",
+      "117-371",
+      "128-128",
+      "058-083",
+      "612-435",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "AC-9 PREVIOUS LOGON NOTIFICATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "582-541",
+      "820-421",
+      "576-042",
+      "612-435",
+      "841-710",
+      "615-744",
+      "278-413",
+      "725-682",
+      "113-133",
+      "208-805"
+    ]
+  },
+  {
+    "control_text": "IA-1 Policy and Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "247-250",
+      "172-101",
+      "510-324",
+      "766-162",
+      "636-660",
+      "571-271",
+      "567-755",
+      "261-010",
+      "862-452",
+      "427-113"
+    ]
+  },
+  {
+    "control_text": "IA-10 Adaptive Authentication",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "206-254",
+      "287-251",
+      "622-835",
+      "346-640",
+      "513-845",
+      "742-431",
+      "504-340",
+      "440-361",
+      "786-224",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "IA-12 Identity Proofing",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "881-321",
+      "551-400",
+      "551-054",
+      "206-254",
+      "783-255",
+      "340-375",
+      "637-021",
+      "543-428",
+      "802-056",
+      "440-361"
+    ]
+  },
+  {
+    "control_text": "IA-2 Identification and Authentication (organizational Users)",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "586-842",
+      "633-428",
+      "308-515",
+      "881-321",
+      "833-030",
+      "172-101",
+      "227-045",
+      "802-056",
+      "713-683",
+      "270-568"
+    ]
+  },
+  {
+    "control_text": "IA-3 Device Identification and Authentication",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "227-045",
+      "743-110",
+      "713-683",
+      "308-515",
+      "834-645",
+      "270-568",
+      "208-805",
+      "157-587",
+      "067-050",
+      "586-842"
+    ]
+  },
+  {
+    "control_text": "IA-4 Identifier Management",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "540-566",
+      "123-124",
+      "117-371",
+      "757-271",
+      "801-310",
+      "128-128",
+      "284-521",
+      "817-808",
+      "307-111",
+      "715-304"
+    ]
+  },
+  {
+    "control_text": "IA-5 AUTHENTICATOR MANAGEMENT",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "582-541",
+      "278-413",
+      "576-042",
+      "340-375",
+      "820-421",
+      "586-842",
+      "113-133",
+      "440-361",
+      "881-321",
+      "354-752"
+    ]
+  },
+  {
+    "control_text": "IA-8 Identification and Authentication (non-organizational Users)",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "633-428",
+    "predicted_top10": [
+      "586-842",
+      "551-400",
+      "881-321",
+      "802-056",
+      "558-807",
+      "713-683",
+      "834-645",
+      "743-110",
+      "342-764",
+      "308-515"
+    ]
+  },
+  {
+    "control_text": "IA-6 Authentication Feedback",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "270-568",
+    "predicted_top10": [
+      "582-541",
+      "576-042",
+      "278-413",
+      "354-752",
+      "440-361",
+      "820-421",
+      "270-568",
+      "881-321",
+      "802-056",
+      "808-425"
+    ]
+  },
+  {
+    "control_text": "IA-7 Cryptographic Module Authentication",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "270-568",
+    "predicted_top10": [
+      "783-255",
+      "742-431",
+      "585-408",
+      "002-801",
+      "786-224",
+      "504-340",
+      "170-772",
+      "674-425",
+      "841-757",
+      "543-428"
+    ]
+  },
+  {
+    "control_text": "IA-9 Service Identification and Authentication",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "270-568",
+    "predicted_top10": [
+      "227-045",
+      "743-110",
+      "713-683",
+      "586-842",
+      "834-645",
+      "308-515",
+      "551-400",
+      "208-805",
+      "270-568",
+      "881-321"
+    ]
+  },
+  {
+    "control_text": "AU-2 Event Logging",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "402-706",
+    "predicted_top10": [
+      "843-841",
+      "841-710",
+      "184-284",
+      "555-048",
+      "402-706",
+      "842-876",
+      "067-050",
+      "260-200",
+      "058-083",
+      "240-274"
+    ]
+  },
+  {
+    "control_text": "AU-3 Content of Audit Records",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "402-706",
+    "predicted_top10": [
+      "240-274",
+      "841-710",
+      "307-111",
+      "308-515",
+      "834-645",
+      "713-683",
+      "208-805",
+      "615-744",
+      "077-772",
+      "227-045"
+    ]
+  },
+  {
+    "control_text": "SI-10 INFORMATION INPUT VALIDATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "503-455",
+    "predicted_top10": [
+      "010-308",
+      "743-237",
+      "653-242",
+      "857-718",
+      "533-516",
+      "161-451",
+      "620-101",
+      "611-051",
+      "782-234",
+      "732-873"
+    ]
+  },
+  {
+    "control_text": "SI-16 Memory Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "866-553",
+    "predicted_top10": [
+      "866-553",
+      "831-570",
+      "314-131",
+      "715-304",
+      "117-371",
+      "053-751",
+      "757-271",
+      "447-083",
+      "673-475",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "SI-15 Information Output Filtering",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "161-451",
+    "predicted_top10": [
+      "204-272",
+      "488-626",
+      "010-108",
+      "780-757",
+      "503-455",
+      "764-765",
+      "041-188",
+      "440-372",
+      "430-722",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "SC-24 Fail in Known State",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "141-555",
+    "predicted_top10": [
+      "670-660",
+      "307-507",
+      "660-052",
+      "128-128",
+      "623-550",
+      "725-682",
+      "540-566",
+      "664-080",
+      "230-318",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "SI-17 Fail-safe Procedures",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "141-555",
+    "predicted_top10": [
+      "240-464",
+      "141-555",
+      "036-810",
+      "601-182",
+      "205-522",
+      "787-638",
+      "208-830",
+      "202-604",
+      "088-377",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "AU-10 Non-repudiation",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-420",
+    "predicted_top10": [
+      "530-671",
+      "551-400",
+      "767-701",
+      "426-842",
+      "258-115",
+      "430-636",
+      "483-883",
+      "745-045",
+      "558-807",
+      "456-636"
+    ]
+  },
+  {
+    "control_text": "AU-8 Time Stamps",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-420",
+    "predicted_top10": [
+      "713-683",
+      "227-045",
+      "743-110",
+      "834-645",
+      "558-807",
+      "745-045",
+      "186-540",
+      "308-515",
+      "240-274",
+      "551-400"
+    ]
+  },
+  {
+    "control_text": "AU-9 Protection of Audit Information",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "148-420",
+    "predicted_top10": [
+      "308-515",
+      "220-870",
+      "217-168",
+      "440-372",
+      "362-550",
+      "077-772",
+      "208-805",
+      "510-324",
+      "768-532",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "SI-21 Information Refresh",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "356-282",
+    "predicted_top10": [
+      "138-448",
+      "888-770",
+      "440-361",
+      "444-058",
+      "208-355",
+      "173-554",
+      "858-745",
+      "356-282",
+      "816-631",
+      "646-227"
+    ]
+  },
+  {
+    "control_text": "SC-6 Resource Availability",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "267-031",
+    "predicted_top10": [
+      "230-318",
+      "614-353",
+      "208-355",
+      "307-111",
+      "080-466",
+      "863-521",
+      "314-701",
+      "356-282",
+      "171-222",
+      "423-055"
+    ]
+  },
+  {
+    "control_text": "SC-11 Trusted Path",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "483-883",
+      "426-842",
+      "002-630",
+      "742-056",
+      "455-358",
+      "705-182",
+      "456-636",
+      "347-352",
+      "128-128",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "SC-16 Transmission of Security and Privacy Attributes",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "745-045",
+      "186-540",
+      "527-034",
+      "558-807",
+      "636-854",
+      "341-076",
+      "768-532",
+      "440-372",
+      "228-551",
+      "278-646"
+    ]
+  },
+  {
+    "control_text": "SC-8 TRANSMISSION CONFIDENTIALITY AND INTEGRITY",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "745-045",
+      "186-540",
+      "636-854",
+      "558-807",
+      "527-034",
+      "683-036",
+      "467-784",
+      "530-671",
+      "036-147",
+      "228-551"
+    ]
+  },
+  {
+    "control_text": "AC-17 Remote Access",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "715-644",
+      "724-770",
+      "220-442",
+      "538-770",
+      "123-124",
+      "540-566",
+      "314-701",
+      "117-371",
+      "817-808",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "AC-18 Wireless Access",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "273-600",
+      "715-644",
+      "724-770",
+      "586-842",
+      "538-770",
+      "177-260",
+      "467-784",
+      "683-036",
+      "713-684",
+      "571-640"
+    ]
+  },
+  {
+    "control_text": "CA-3 Information Exchange",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "833-030",
+      "605-735",
+      "308-515",
+      "834-645",
+      "227-045",
+      "713-683",
+      "813-610",
+      "743-110",
+      "558-807",
+      "808-425"
+    ]
+  },
+  {
+    "control_text": "CA-9 Internal System Connections",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "278-646",
+    "predicted_top10": [
+      "724-770",
+      "128-128",
+      "117-371",
+      "123-124",
+      "538-770",
+      "801-310",
+      "757-271",
+      "284-521",
+      "177-260",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "SC-28 PROTECTION OF INFORMATION AT REST",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "668-364",
+    "predicted_top10": [
+      "400-007",
+      "482-866",
+      "267-468",
+      "224-321",
+      "532-878",
+      "186-540",
+      "447-083",
+      "356-282",
+      "275-483",
+      "636-854"
+    ]
+  },
+  {
+    "control_text": "SC-40 Wireless Link Protection",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "683-036",
+    "predicted_top10": [
+      "683-036",
+      "530-671",
+      "558-807",
+      "745-045",
+      "467-784",
+      "435-702",
+      "527-034",
+      "354-752",
+      "234-282",
+      "344-611"
+    ]
+  },
+  {
+    "control_text": "SC-4 Information in Shared System Resources",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "208-830",
+    "predicted_top10": [
+      "762-451",
+      "307-111",
+      "356-282",
+      "080-466",
+      "208-805",
+      "461-680",
+      "615-744",
+      "743-110",
+      "841-710",
+      "614-353"
+    ]
+  },
+  {
+    "control_text": "AC-10 CONCURRENT SESSION CONTROL",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "177-260",
+    "predicted_top10": [
+      "670-660",
+      "623-550",
+      "128-128",
+      "757-271",
+      "117-371",
+      "123-124",
+      "660-052",
+      "801-310",
+      "540-566",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "IA-11 RE-AUTHENTICATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "177-260",
+    "predicted_top10": [
+      "551-400",
+      "582-541",
+      "002-630",
+      "278-413",
+      "576-042",
+      "258-115",
+      "440-361",
+      "820-421",
+      "537-367",
+      "138-448"
+    ]
+  },
+  {
+    "control_text": "SC-23 SESSION AUTHENTICITY",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "177-260",
+    "predicted_top10": [
+      "002-630",
+      "402-133",
+      "688-081",
+      "551-400",
+      "804-220",
+      "582-541",
+      "551-054",
+      "455-358",
+      "618-403",
+      "258-115"
+    ]
+  },
+  {
+    "control_text": "AC-11 DEVICE LOCK",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "470-731",
+    "predicted_top10": [
+      "273-600",
+      "715-304",
+      "801-310",
+      "117-371",
+      "757-271",
+      "128-128",
+      "762-451",
+      "400-007",
+      "307-111",
+      "278-413"
+    ]
+  },
+  {
+    "control_text": "AC-12 SESSION TERMINATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "470-731",
+    "predicted_top10": [
+      "457-165",
+      "238-346",
+      "470-731",
+      "673-736",
+      "065-782",
+      "618-403",
+      "002-630",
+      "582-541",
+      "052-821",
+      "804-220"
+    ]
+  },
+  {
+    "control_text": "SC-10 NETWORK DISCONNECT",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "470-731",
+    "predicted_top10": [
+      "273-600",
+      "623-550",
+      "230-318",
+      "278-413",
+      "440-361",
+      "576-042",
+      "801-310",
+      "670-660",
+      "725-682",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "SC-23(1)",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "457-165",
+    "predicted_top10": [
+      "145-310",
+      "716-526",
+      "238-346",
+      "028-728",
+      "457-165",
+      "010-308",
+      "317-743",
+      "618-403",
+      "146-706",
+      "727-043"
+    ]
+  },
+  {
+    "control_text": "SC-23(3)",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "002-630",
+    "predicted_top10": [
+      "145-310",
+      "317-743",
+      "238-346",
+      "457-165",
+      "804-220",
+      "705-182",
+      "042-550",
+      "657-084",
+      "618-403",
+      "524-603"
+    ]
+  },
+  {
+    "control_text": "AC-14 PERMITTED ACTIONS WITHOUT IDENTIFICATION OR AUTHENTICATION",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "834-645",
+      "713-683",
+      "743-110",
+      "813-610",
+      "227-045",
+      "308-515",
+      "307-111",
+      "354-753",
+      "582-541",
+      "841-710"
+    ]
+  },
+  {
+    "control_text": "AC-16 Security and Privacy Attributes",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "447-083",
+      "440-372",
+      "768-532",
+      "467-784",
+      "724-770",
+      "275-483",
+      "586-842",
+      "504-340",
+      "234-282",
+      "400-007"
+    ]
+  },
+  {
+    "control_text": "AC-2 ACCOUNT MANAGEMENT",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "586-842",
+      "881-321",
+      "287-823",
+      "724-770",
+      "080-466",
+      "247-250",
+      "802-056",
+      "340-375",
+      "633-428",
+      "813-610"
+    ]
+  },
+  {
+    "control_text": "AC-24 Access Control Decisions",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "724-770",
+      "123-124",
+      "540-566",
+      "715-644",
+      "128-128",
+      "443-447",
+      "664-080",
+      "817-808",
+      "082-327",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "AC-5 SEPARATION OF DUTIES",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "724-770",
+      "247-250",
+      "284-521",
+      "546-564",
+      "515-021",
+      "538-770",
+      "766-162",
+      "862-452",
+      "427-113",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "SC-2 Separation of System and User Functionality",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "724-770",
+      "854-643",
+      "636-660",
+      "764-765",
+      "862-452",
+      "515-021",
+      "247-250",
+      "766-162",
+      "447-083",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "AC-19 Access Control for Mobile Devices",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "724-770",
+      "128-128",
+      "273-600",
+      "447-083",
+      "715-644",
+      "123-124",
+      "368-633",
+      "247-250",
+      "443-447",
+      "664-080"
+    ]
+  },
+  {
+    "control_text": "AC-25 Reference Monitor",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "724-770",
+    "predicted_top10": [
+      "703-813",
+      "157-587",
+      "715-644",
+      "713-684",
+      "850-376",
+      "234-282",
+      "287-823",
+      "117-371",
+      "538-770",
+      "114-853"
+    ]
+  },
+  {
+    "control_text": "AC-6 LEAST PRIVILEGE",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "123-124",
+    "predicted_top10": [
+      "123-124",
+      "220-442",
+      "540-566",
+      "817-808",
+      "368-633",
+      "724-770",
+      "117-371",
+      "715-644",
+      "082-327",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "AC-3 ACCESS ENFORCEMENT",
+    "framework": "NIST 800-53 v5",
+    "ground_truth_hub_id": "128-128",
+    "predicted_top10": [
+      "724-770",
+      "128-128",
+      "123-124",
+      "247-250",
+      "715-644",
+      "273-600",
+      "368-633",
+      "713-684",
+      "817-808",
+      "664-080"
+    ]
+  }
+]

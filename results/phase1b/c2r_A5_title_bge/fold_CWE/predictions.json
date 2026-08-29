@@ -1,0 +1,4184 @@
+[
+  {
+    "control_text": "Insufficient Technical Documentation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "787-638",
+      "842-876",
+      "745-356",
+      "820-878",
+      "843-841",
+      "162-655",
+      "308-515",
+      "818-434",
+      "636-660"
+    ]
+  },
+  {
+    "control_text": "Missing Documentation for Design",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "745-356",
+      "787-638",
+      "626-250",
+      "068-102",
+      "820-878",
+      "433-442",
+      "162-655",
+      "473-177",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "Incomplete Design Documentation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "626-250",
+      "787-638",
+      "745-356",
+      "708-355",
+      "433-442",
+      "068-102",
+      "820-878",
+      "473-177",
+      "616-305"
+    ]
+  },
+  {
+    "control_text": "Incomplete I/O Documentation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "782-234",
+      "806-367",
+      "314-131",
+      "268-100",
+      "161-451",
+      "736-237",
+      "847-247",
+      "863-636",
+      "843-475",
+      "162-655"
+    ]
+  },
+  {
+    "control_text": "Incomplete Documentation of Program Execution",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "820-877",
+      "745-356",
+      "464-513",
+      "843-841",
+      "842-876",
+      "162-655",
+      "820-878",
+      "402-706",
+      "787-638",
+      "308-515"
+    ]
+  },
+  {
+    "control_text": "Insufficient Documentation of Error Handling Techniques",
+    "framework": "CWE",
+    "ground_truth_hub_id": "068-102",
+    "predicted_top10": [
+      "513-183",
+      "842-876",
+      "843-841",
+      "863-636",
+      "402-706",
+      "118-602",
+      "208-805",
+      "612-435",
+      "148-420",
+      "067-050"
+    ]
+  },
+  {
+    "control_text": "Improper Access Control",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "123-124",
+      "724-770",
+      "538-770",
+      "128-128",
+      "247-250",
+      "368-633",
+      "715-644",
+      "540-566",
+      "284-521",
+      "817-808"
+    ]
+  },
+  {
+    "control_text": "On-Chip Debug and Test Interface With Improper Access Control",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "123-124",
+      "540-566",
+      "715-644",
+      "612-252",
+      "538-770",
+      "368-633",
+      "443-447"
+    ]
+  },
+  {
+    "control_text": "Insufficient Granularity of Access Control",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "123-124",
+      "724-770",
+      "715-644",
+      "538-770",
+      "247-250",
+      "128-128",
+      "368-633",
+      "612-252",
+      "540-566",
+      "220-442"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of Write-Once Bit Fields",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "314-131",
+      "538-446",
+      "824-732",
+      "660-052",
+      "866-553",
+      "175-235",
+      "782-234",
+      "674-425",
+      "742-431",
+      "653-242"
+    ]
+  },
+  {
+    "control_text": "Improper Prevention of Lock Bit Modification",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "122-287",
+      "674-425",
+      "742-431",
+      "783-255",
+      "508-702",
+      "032-213",
+      "821-832",
+      "786-224",
+      "002-801",
+      "340-375"
+    ]
+  },
+  {
+    "control_text": "CPU Hardware Not Configured to Support Exclusivity of Write and Execute Operations",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "540-566",
+      "273-600",
+      "486-813",
+      "777-470",
+      "220-442",
+      "612-252",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Improper Access Control for Register Interface",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "612-252",
+      "368-633",
+      "540-566",
+      "443-447",
+      "664-080",
+      "082-327",
+      "817-808",
+      "284-521",
+      "268-272",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "Policy Uses Obsolete Encoding",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "782-234",
+      "653-242",
+      "611-051",
+      "737-086",
+      "036-725",
+      "146-706",
+      "538-446",
+      "314-131",
+      "443-447",
+      "268-100"
+    ]
+  },
+  {
+    "control_text": "Improper Access Control for Volatile Memory Containing Boot Code",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "540-566",
+      "612-252",
+      "284-521",
+      "273-600",
+      "443-447",
+      "368-633",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Hardware Child Block Incorrectly Connected to Parent System",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "757-271",
+      "540-566",
+      "273-600",
+      "860-084",
+      "123-124",
+      "486-813",
+      "220-442",
+      "762-451"
+    ]
+  },
+  {
+    "control_text": "Mutable Attestation or Measurement Reporting Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "440-372",
+      "173-554",
+      "077-772",
+      "044-202",
+      "736-554",
+      "088-316",
+      "220-870",
+      "041-188",
+      "488-626",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Insecure Security Identifier Mechanism",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "270-568",
+      "633-428",
+      "128-128",
+      "586-842",
+      "634-733",
+      "789-320",
+      "308-515",
+      "435-702",
+      "058-527",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "Incorrect Chaining or Granularity of Debug Components",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "863-521",
+      "462-245",
+      "715-334",
+      "611-158",
+      "860-084",
+      "344-611",
+      "263-184",
+      "832-555",
+      "347-352",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "Improper Translation of Security Attributes by Fabric Bridge",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "530-671",
+      "347-352",
+      "558-807",
+      "527-034",
+      "336-512",
+      "344-611",
+      "881-321",
+      "576-042",
+      "036-147",
+      "278-413"
+    ]
+  },
+  {
+    "control_text": "Hardware Allows Activation of Test or Debug Logic at Runtime",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "148-227",
+      "220-442",
+      "843-475",
+      "486-813",
+      "540-566",
+      "123-124",
+      "326-704"
+    ]
+  },
+  {
+    "control_text": "Improper Setting of Bus Controlling Capability in Fabric End-point",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "486-813",
+      "801-310",
+      "757-271",
+      "273-600",
+      "344-611",
+      "347-352",
+      "417-342",
+      "180-488",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "Fabric-Address Map Allows Programming of Unwarranted Overlaps of Protected and Unprotected Ranges",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "273-600",
+      "725-682",
+      "336-512",
+      "834-645",
+      "530-671",
+      "743-110",
+      "713-683",
+      "344-611",
+      "380-540",
+      "467-784"
+    ]
+  },
+  {
+    "control_text": "Improper Access Control in Fabric Bridge",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "540-566",
+      "801-310",
+      "757-271",
+      "273-600",
+      "117-371",
+      "123-124",
+      "128-128",
+      "284-521",
+      "724-770",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "Improper Protection for Outbound Error Messages and Alert Signals",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "683-036",
+      "668-364",
+      "278-646",
+      "435-702",
+      "558-807",
+      "808-425",
+      "228-551",
+      "530-671",
+      "623-550",
+      "634-733"
+    ]
+  },
+  {
+    "control_text": "Improper Management of Sensitive Trace Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "842-876",
+      "308-515",
+      "217-168",
+      "148-420",
+      "220-870",
+      "818-434",
+      "356-282",
+      "015-063",
+      "362-550",
+      "843-841"
+    ]
+  },
+  {
+    "control_text": "Unauthorized Error Injection Can Degrade Hardware Redundancy",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "801-310",
+      "757-271",
+      "612-252",
+      "540-566",
+      "082-327",
+      "368-633",
+      "268-272",
+      "443-447",
+      "664-080"
+    ]
+  },
+  {
+    "control_text": "Improper Privilege Management",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "117-371",
+      "757-271",
+      "801-310",
+      "540-566",
+      "284-521",
+      "368-633",
+      "817-808",
+      "612-252",
+      "123-124",
+      "860-084"
+    ]
+  },
+  {
+    "control_text": "Improper Ownership Management",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "715-644",
+      "123-124",
+      "128-128",
+      "538-770",
+      "247-250",
+      "724-770",
+      "540-566",
+      "080-466",
+      "586-842",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "Incorrect User Management",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "586-842",
+      "813-610",
+      "817-808",
+      "582-541",
+      "284-521",
+      "524-603",
+      "128-128",
+      "368-633",
+      "123-124",
+      "354-753"
+    ]
+  },
+  {
+    "control_text": "Exposed Dangerous Method or Function",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "036-275",
+      "736-554",
+      "387-848",
+      "848-711",
+      "838-636",
+      "640-364",
+      "822-100",
+      "831-563",
+      "820-878",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of Communication Channel to Intended Endpoints",
+    "framework": "CWE",
+    "ground_truth_hub_id": "757-271",
+    "predicted_top10": [
+      "435-702",
+      "278-646",
+      "467-784",
+      "683-036",
+      "341-076",
+      "228-551",
+      "527-034",
+      "862-452",
+      "636-660",
+      "558-807"
+    ]
+  },
+  {
+    "control_text": "Missing Support for Integrity Check",
+    "framework": "CWE",
+    "ground_truth_hub_id": "307-507",
+    "predicted_top10": [
+      "171-222",
+      "347-352",
+      "028-254",
+      "715-334",
+      "307-507",
+      "336-512",
+      "007-274",
+      "061-753",
+      "180-488",
+      "613-287"
+    ]
+  },
+  {
+    "control_text": "Download of Code Without Integrity Check",
+    "framework": "CWE",
+    "ground_truth_hub_id": "171-222",
+    "predicted_top10": [
+      "171-222",
+      "028-254",
+      "307-507",
+      "175-235",
+      "777-470",
+      "347-352",
+      "715-223",
+      "577-260",
+      "715-334",
+      "838-636"
+    ]
+  },
+  {
+    "control_text": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-131",
+    "predicted_top10": [
+      "831-570",
+      "314-131",
+      "653-242",
+      "611-051",
+      "782-234",
+      "031-447",
+      "824-732",
+      "146-706",
+      "482-771",
+      "660-052"
+    ]
+  },
+  {
+    "control_text": "Trojan Horse",
+    "framework": "CWE",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "701-654",
+      "615-663",
+      "481-710",
+      "883-173",
+      "002-801",
+      "504-340",
+      "171-222",
+      "867-642",
+      "841-757",
+      "555-083"
+    ]
+  },
+  {
+    "control_text": "Non-Replicating Malicious Code",
+    "framework": "CWE",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "838-636",
+      "715-223",
+      "547-283",
+      "777-470",
+      "611-158",
+      "860-084",
+      "577-260",
+      "715-334",
+      "832-555",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Replicating Malicious Code (Virus or Worm)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "154-031",
+    "predicted_top10": [
+      "838-636",
+      "715-223",
+      "860-084",
+      "777-470",
+      "863-521",
+      "577-260",
+      "547-283",
+      "715-334",
+      "347-352",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "16",
+    "framework": "CWE",
+    "ground_truth_hub_id": "462-245",
+    "predicted_top10": [
+      "567-755",
+      "755-340",
+      "202-604",
+      "766-162",
+      "408-838",
+      "571-271",
+      "634-733",
+      "261-010",
+      "062-850",
+      "125-010"
+    ]
+  },
+  {
+    "control_text": "Use of Obsolete Function",
+    "framework": "CWE",
+    "ground_truth_hub_id": "673-475",
+    "predicted_top10": [
+      "831-570",
+      "268-272",
+      "053-751",
+      "314-131",
+      "777-470",
+      "611-158",
+      "117-371",
+      "122-287",
+      "577-260",
+      "441-132"
+    ]
+  },
+  {
+    "control_text": "Exposure of Private Personal Information to an Unauthorized Actor",
+    "framework": "CWE",
+    "ground_truth_hub_id": "834-645",
+    "predicted_top10": [
+      "362-550",
+      "571-640",
+      "308-515",
+      "447-083",
+      "834-645",
+      "220-870",
+      "172-101",
+      "128-128",
+      "586-842",
+      "768-532"
+    ]
+  },
+  {
+    "control_text": "Logic/Time Bomb",
+    "framework": "CWE",
+    "ground_truth_hub_id": "265-800",
+    "predicted_top10": [
+      "230-318",
+      "886-662",
+      "187-083",
+      "867-642",
+      "670-660",
+      "470-731",
+      "380-540",
+      "108-316",
+      "622-835",
+      "630-573"
+    ]
+  },
+  {
+    "control_text": "Inclusion of Functionality from Untrusted Control Sphere",
+    "framework": "CWE",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "838-636",
+      "486-813",
+      "180-488",
+      "417-342",
+      "715-334",
+      "860-084",
+      "154-031",
+      "347-352",
+      "344-611",
+      "764-765"
+    ]
+  },
+  {
+    "control_text": "Inclusion of Web Functionality from an Untrusted Source",
+    "framework": "CWE",
+    "ground_truth_hub_id": "577-260",
+    "predicted_top10": [
+      "777-470",
+      "175-235",
+      "715-223",
+      "028-254",
+      "838-636",
+      "860-084",
+      "547-283",
+      "577-260",
+      "171-222",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "Execution with Unnecessary Privileges",
+    "framework": "CWE",
+    "ground_truth_hub_id": "860-084",
+    "predicted_top10": [
+      "540-566",
+      "817-808",
+      "368-633",
+      "220-442",
+      "860-084",
+      "284-521",
+      "117-371",
+      "664-080",
+      "612-252",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "Use of Unmaintained Third Party Components",
+    "framework": "CWE",
+    "ground_truth_hub_id": "053-751",
+    "predicted_top10": [
+      "417-342",
+      "757-271",
+      "117-371",
+      "801-310",
+      "344-611",
+      "860-084",
+      "863-521",
+      "777-470",
+      "486-813",
+      "715-334"
+    ]
+  },
+  {
+    "control_text": "937",
+    "framework": "CWE",
+    "ground_truth_hub_id": "715-334",
+    "predicted_top10": [
+      "688-081",
+      "727-043",
+      "705-182",
+      "232-034",
+      "804-220",
+      "618-403",
+      "673-736",
+      "755-340",
+      "110-531",
+      "238-346"
+    ]
+  },
+  {
+    "control_text": "Unnecessary Complexity in Protection Mechanism (Not Using 'Economy of Mechanism')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "036-275",
+    "predicted_top10": [
+      "670-660",
+      "230-318",
+      "380-540",
+      "344-611",
+      "134-412",
+      "708-355",
+      "660-867",
+      "273-600",
+      "886-662",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "320",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-305",
+    "predicted_top10": [
+      "746-705",
+      "268-088",
+      "630-573",
+      "513-183",
+      "463-820",
+      "176-154",
+      "842-876",
+      "743-110",
+      "108-316",
+      "660-867"
+    ]
+  },
+  {
+    "control_text": "Exposed Unsafe ActiveX Method",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-158",
+    "predicted_top10": [
+      "611-158",
+      "860-084",
+      "806-367",
+      "646-462",
+      "620-101",
+      "547-283",
+      "175-235",
+      "542-445",
+      "387-848",
+      "814-322"
+    ]
+  },
+  {
+    "control_text": "Improper Authorization",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "128-128",
+      "284-521",
+      "813-610",
+      "123-124",
+      "817-808",
+      "307-111",
+      "368-633",
+      "633-428",
+      "270-568",
+      "715-644"
+    ]
+  },
+  {
+    "control_text": "Exposure of Sensitive Information Through Metadata",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "220-870",
+      "044-202",
+      "077-772",
+      "440-372",
+      "818-434",
+      "731-120",
+      "447-083",
+      "488-626",
+      "768-532",
+      "173-554"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of Software Interfaces to Hardware Features",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "486-813",
+      "148-227",
+      "117-371",
+      "801-310",
+      "123-124",
+      "757-271",
+      "866-553",
+      "467-784",
+      "847-247",
+      "538-770"
+    ]
+  },
+  {
+    "control_text": "Unprotected Confidential Information on Device is Accessible by OSAT Vendors",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "683-036",
+      "308-515",
+      "525-361",
+      "768-532",
+      "818-434",
+      "805-126",
+      "553-413",
+      "141-385",
+      "834-645",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "Improper Export of Android Application Components",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-272",
+    "predicted_top10": [
+      "171-222",
+      "701-654",
+      "715-334",
+      "881-234",
+      "863-521",
+      "883-173",
+      "852-770",
+      "028-254",
+      "423-055",
+      "613-285"
+    ]
+  },
+  {
+    "control_text": "Exposure of Sensitive Information to an Unauthorized Actor",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "308-515",
+      "128-128",
+      "834-645",
+      "362-550",
+      "220-870",
+      "841-710",
+      "172-101",
+      "768-532",
+      "586-842",
+      "247-250"
+    ]
+  },
+  {
+    "control_text": "Device Unlock Credential Sharing",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "881-321",
+      "524-446",
+      "525-361",
+      "553-413",
+      "342-764",
+      "802-056",
+      "333-858",
+      "783-255",
+      "440-361",
+      "543-428"
+    ]
+  },
+  {
+    "control_text": "Exposure of Sensitive Information Due to Incompatible Policies",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "818-434",
+      "220-870",
+      "546-564",
+      "308-515",
+      "128-128",
+      "440-372",
+      "362-550",
+      "510-324",
+      "768-532",
+      "447-083"
+    ]
+  },
+  {
+    "control_text": "Insertion of Sensitive Information Into Debugging Code",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "208-805",
+      "462-245",
+      "615-744",
+      "080-466",
+      "308-515",
+      "347-352",
+      "336-512",
+      "486-813",
+      "461-680",
+      "863-521"
+    ]
+  },
+  {
+    "control_text": "Exposure of Sensitive System Information to an Unauthorized Control Sphere",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "128-128",
+      "123-124",
+      "724-770",
+      "467-784",
+      "247-250",
+      "586-842",
+      "634-733",
+      "486-813",
+      "273-600",
+      "435-702"
+    ]
+  },
+  {
+    "control_text": "Insertion of Sensitive Information into Externally-Accessible File or Directory",
+    "framework": "CWE",
+    "ground_truth_hub_id": "227-045",
+    "predicted_top10": [
+      "540-566",
+      "307-111",
+      "817-808",
+      "368-633",
+      "314-701",
+      "175-235",
+      "284-521",
+      "664-080",
+      "762-451",
+      "715-304"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "760-764",
+      "012-625",
+      "686-110",
+      "536-158",
+      "481-710",
+      "483-253",
+      "020-540",
+      "764-765",
+      "555-083",
+      "615-663"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Special Elements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "233-748",
+      "764-765",
+      "613-287",
+      "613-285",
+      "760-764",
+      "701-654",
+      "881-234",
+      "223-780",
+      "582-035",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Improper Validation of Generative AI Output",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "364-516",
+      "547-824",
+      "854-183",
+      "780-757",
+      "755-340",
+      "860-723",
+      "532-102",
+      "041-188",
+      "041-173",
+      "663-550"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "782-234",
+    "predicted_top10": [
+      "161-451",
+      "857-718",
+      "533-516",
+      "760-764",
+      "607-671",
+      "620-101",
+      "547-283",
+      "732-873",
+      "064-808",
+      "780-757"
+    ]
+  },
+  {
+    "control_text": "Insecure Storage of Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "614-353",
+    "predicted_top10": [
+      "223-780",
+      "126-668",
+      "435-702",
+      "440-372",
+      "275-483",
+      "768-532",
+      "805-126",
+      "220-870",
+      "758-262",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Storage of Sensitive Data in a Mechanism without Access Control",
+    "framework": "CWE",
+    "ground_truth_hub_id": "614-353",
+    "predicted_top10": [
+      "307-111",
+      "538-770",
+      "801-310",
+      "715-644",
+      "612-252",
+      "117-371",
+      "757-271",
+      "220-442",
+      "368-633",
+      "540-566"
+    ]
+  },
+  {
+    "control_text": "Reliance on Reverse DNS Resolution for a Security-Critical Action",
+    "framework": "CWE",
+    "ground_truth_hub_id": "336-512",
+    "predicted_top10": [
+      "058-527",
+      "336-512",
+      "576-042",
+      "273-600",
+      "582-541",
+      "278-413",
+      "113-133",
+      "615-744",
+      "834-645",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "Channel Accessible by Non-Endpoint",
+    "framework": "CWE",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "273-600",
+      "605-735",
+      "813-610",
+      "816-631",
+      "354-753",
+      "467-784",
+      "470-731",
+      "341-076",
+      "646-227",
+      "582-541"
+    ]
+  },
+  {
+    "control_text": "Unprotected Primary Channel",
+    "framework": "CWE",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "344-611",
+      "683-036",
+      "467-784",
+      "273-600",
+      "234-282",
+      "558-807",
+      "341-076",
+      "725-682",
+      "486-813",
+      "336-512"
+    ]
+  },
+  {
+    "control_text": "Unprotected Alternate Channel",
+    "framework": "CWE",
+    "ground_truth_hub_id": "273-600",
+    "predicted_top10": [
+      "273-600",
+      "683-036",
+      "558-807",
+      "344-611",
+      "467-784",
+      "341-076",
+      "808-425",
+      "530-671",
+      "745-045",
+      "834-645"
+    ]
+  },
+  {
+    "control_text": "Use of Single-factor Authentication",
+    "framework": "CWE",
+    "ground_truth_hub_id": "333-858",
+    "predicted_top10": [
+      "634-733",
+      "270-568",
+      "633-428",
+      "278-646",
+      "525-361",
+      "524-446",
+      "789-320",
+      "435-702",
+      "553-413",
+      "586-842"
+    ]
+  },
+  {
+    "control_text": "Missing Authentication for Critical Function",
+    "framework": "CWE",
+    "ground_truth_hub_id": "113-133",
+    "predicted_top10": [
+      "633-428",
+      "634-733",
+      "789-320",
+      "270-568",
+      "586-842",
+      "128-128",
+      "470-731",
+      "278-646",
+      "724-770",
+      "177-260"
+    ]
+  },
+  {
+    "control_text": "Cleartext Transmission of Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "527-034",
+      "186-540",
+      "745-045",
+      "558-807",
+      "636-854",
+      "435-702",
+      "278-646",
+      "228-551",
+      "808-425",
+      "004-517"
+    ]
+  },
+  {
+    "control_text": "Reliance on HTTP instead of HTTPS",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "745-045",
+      "551-400",
+      "186-540",
+      "307-507",
+      "483-883",
+      "426-842",
+      "217-112",
+      "307-111",
+      "316-272",
+      "405-411"
+    ]
+  },
+  {
+    "control_text": "J2EE Misconfiguration: Data Transmission Without Encryption",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "540-566",
+      "801-310",
+      "117-371",
+      "757-271",
+      "307-507",
+      "612-252",
+      "664-080",
+      "273-600",
+      "762-451",
+      "486-813"
+    ]
+  },
+  {
+    "control_text": "Sensitive Cookie in HTTPS Session Without 'Secure' Attribute",
+    "framework": "CWE",
+    "ground_truth_hub_id": "558-807",
+    "predicted_top10": [
+      "688-081",
+      "804-220",
+      "455-358",
+      "705-182",
+      "551-054",
+      "002-630",
+      "582-541",
+      "402-133",
+      "483-883",
+      "186-540"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of Excessive Authentication Attempts",
+    "framework": "CWE",
+    "ground_truth_hub_id": "802-056",
+    "predicted_top10": [
+      "802-056",
+      "354-752",
+      "524-446",
+      "525-361",
+      "333-858",
+      "558-807",
+      "808-425",
+      "681-823",
+      "553-413",
+      "440-361"
+    ]
+  },
+  {
+    "control_text": "Use of Insufficiently Random Values",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "664-571",
+      "622-835",
+      "206-254",
+      "542-270",
+      "542-488",
+      "346-640",
+      "027-210",
+      "287-251",
+      "002-801",
+      "082-530"
+    ]
+  },
+  {
+    "control_text": "Generation of Weak Initialization Vector (IV)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "467-215",
+      "433-122",
+      "547-283",
+      "577-260",
+      "441-132",
+      "777-470",
+      "664-571",
+      "854-183",
+      "715-223",
+      "314-131"
+    ]
+  },
+  {
+    "control_text": "Use of Predictable Algorithm in Random Number Generator",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "664-571",
+      "542-488",
+      "027-210",
+      "622-835",
+      "542-270",
+      "206-254",
+      "002-801",
+      "674-425",
+      "878-880",
+      "841-757"
+    ]
+  },
+  {
+    "control_text": "Small Space of Random Values",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "664-571",
+      "542-270",
+      "542-488",
+      "027-210",
+      "622-835",
+      "058-443",
+      "206-254",
+      "886-662",
+      "346-640",
+      "287-251"
+    ]
+  },
+  {
+    "control_text": "Use of Invariant Value in Dynamically Changing Context",
+    "framework": "CWE",
+    "ground_truth_hub_id": "287-251",
+    "predicted_top10": [
+      "307-507",
+      "483-883",
+      "848-711",
+      "426-842",
+      "650-560",
+      "456-636",
+      "640-364",
+      "316-272",
+      "405-411",
+      "646-462"
+    ]
+  },
+  {
+    "control_text": "Use of a Broken or Risky Cryptographic Algorithm",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "742-431",
+      "674-425",
+      "002-801",
+      "504-340",
+      "786-224",
+      "841-757",
+      "441-132",
+      "742-432",
+      "122-287",
+      "433-122"
+    ]
+  },
+  {
+    "control_text": "Use of a Cryptographic Primitive with a Risky Implementation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "674-425",
+      "742-431",
+      "783-255",
+      "508-702",
+      "002-801",
+      "504-340",
+      "287-251",
+      "786-224",
+      "878-880",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "Use of RSA Algorithm without OAEP",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-801",
+    "predicted_top10": [
+      "841-757",
+      "287-251",
+      "002-801",
+      "742-431",
+      "674-425",
+      "786-224",
+      "622-835",
+      "346-640",
+      "206-254",
+      "504-340"
+    ]
+  },
+  {
+    "control_text": "Weak Password Recovery Mechanism for Forgotten Password",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-621",
+    "predicted_top10": [
+      "581-525",
+      "772-358",
+      "520-617",
+      "543-621",
+      "270-634",
+      "622-203",
+      "751-176",
+      "358-860",
+      "487-305",
+      "604-025"
+    ]
+  },
+  {
+    "control_text": "Weak Password Requirements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "630-577",
+    "predicted_top10": [
+      "604-025",
+      "807-565",
+      "553-413",
+      "524-446",
+      "525-361",
+      "576-651",
+      "715-681",
+      "358-860",
+      "802-056",
+      "630-577"
+    ]
+  },
+  {
+    "control_text": "Inadequate Encryption Strength",
+    "framework": "CWE",
+    "ground_truth_hub_id": "841-757",
+    "predicted_top10": [
+      "786-224",
+      "767-701",
+      "674-425",
+      "504-340",
+      "441-132",
+      "170-772",
+      "742-431",
+      "742-432",
+      "745-045",
+      "122-287"
+    ]
+  },
+  {
+    "control_text": "Unprotected Transport of Credentials",
+    "framework": "CWE",
+    "ground_truth_hub_id": "102-811",
+    "predicted_top10": [
+      "525-361",
+      "524-446",
+      "881-321",
+      "553-413",
+      "333-858",
+      "802-056",
+      "358-860",
+      "807-565",
+      "604-025",
+      "715-681"
+    ]
+  },
+  {
+    "control_text": "Insufficient Session Expiration",
+    "framework": "CWE",
+    "ground_truth_hub_id": "681-823",
+    "predicted_top10": [
+      "470-731",
+      "065-782",
+      "002-630",
+      "618-403",
+      "307-111",
+      "314-701",
+      "816-631",
+      "681-823",
+      "551-400",
+      "646-227"
+    ]
+  },
+  {
+    "control_text": "Improper Authentication",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "813-610",
+      "354-753",
+      "605-735",
+      "816-631",
+      "404-126",
+      "646-227",
+      "138-448",
+      "168-186",
+      "270-568",
+      "633-428"
+    ]
+  },
+  {
+    "control_text": "Weak Authentication",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "270-568",
+      "633-428",
+      "341-076",
+      "354-752",
+      "128-128",
+      "586-842",
+      "470-731",
+      "558-807",
+      "634-733",
+      "605-735"
+    ]
+  },
+  {
+    "control_text": "Overly Restrictive Account Lockout Mechanism",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-753",
+    "predicted_top10": [
+      "802-056",
+      "354-752",
+      "440-361",
+      "342-764",
+      "813-610",
+      "623-347",
+      "881-321",
+      "558-807",
+      "354-753",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "Plaintext Storage of a Password",
+    "framework": "CWE",
+    "ground_truth_hub_id": "342-764",
+    "predicted_top10": [
+      "881-321",
+      "340-375",
+      "774-888",
+      "622-203",
+      "783-255",
+      "543-428",
+      "342-764",
+      "508-702",
+      "767-435",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "Missing Critical Step in Authentication",
+    "framework": "CWE",
+    "ground_truth_hub_id": "354-752",
+    "predicted_top10": [
+      "633-428",
+      "270-568",
+      "634-733",
+      "789-320",
+      "586-842",
+      "881-321",
+      "802-056",
+      "582-541",
+      "553-413",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "Password Aging with Long Expiration",
+    "framework": "CWE",
+    "ground_truth_hub_id": "338-370",
+    "predicted_top10": [
+      "681-823",
+      "622-835",
+      "802-056",
+      "881-321",
+      "841-757",
+      "543-428",
+      "715-681",
+      "524-446",
+      "783-255",
+      "206-254"
+    ]
+  },
+  {
+    "control_text": "Server-Side Request Forgery (SSRF)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "814-322",
+    "predicted_top10": [
+      "028-728",
+      "657-084",
+      "881-434",
+      "814-322",
+      "533-516",
+      "620-101",
+      "538-446",
+      "607-671",
+      "064-808",
+      "764-507"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of Rendered UI Layers or Frames",
+    "framework": "CWE",
+    "ground_truth_hub_id": "257-668",
+    "predicted_top10": [
+      "480-071",
+      "347-352",
+      "462-245",
+      "180-488",
+      "822-100",
+      "257-668",
+      "863-521",
+      "725-682",
+      "344-611",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Improper Encoding or Escaping of Output",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-100",
+    "predicted_top10": [
+      "533-516",
+      "538-446",
+      "620-101",
+      "782-234",
+      "857-718",
+      "653-242",
+      "683-722",
+      "036-725",
+      "611-051",
+      "737-086"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of HTTP Headers for Scripting Syntax",
+    "framework": "CWE",
+    "ground_truth_hub_id": "268-100",
+    "predicted_top10": [
+      "736-237",
+      "268-100",
+      "541-441",
+      "065-388",
+      "426-842",
+      "646-462",
+      "542-445",
+      "538-446",
+      "483-883",
+      "881-434"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Alternate Encoding",
+    "framework": "CWE",
+    "ground_truth_hub_id": "036-725",
+    "predicted_top10": [
+      "036-725",
+      "737-086",
+      "782-234",
+      "653-242",
+      "538-446",
+      "611-051",
+      "675-168",
+      "268-100",
+      "736-237",
+      "742-056"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of XML External Entity Reference",
+    "framework": "CWE",
+    "ground_truth_hub_id": "764-507",
+    "predicted_top10": [
+      "764-507",
+      "611-051",
+      "653-242",
+      "762-616",
+      "782-234",
+      "831-563",
+      "620-101",
+      "806-367",
+      "031-447",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "Allocation of Resources Without Limits or Throttling",
+    "framework": "CWE",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "886-662",
+      "463-820",
+      "230-318",
+      "746-705",
+      "630-573",
+      "560-224",
+      "187-083",
+      "660-867",
+      "660-052",
+      "267-031"
+    ]
+  },
+  {
+    "control_text": "Allocation of File Descriptors or Handles Without Limits or Throttling",
+    "framework": "CWE",
+    "ground_truth_hub_id": "630-573",
+    "predicted_top10": [
+      "660-052",
+      "746-705",
+      "463-820",
+      "630-573",
+      "230-318",
+      "380-540",
+      "560-224",
+      "545-243",
+      "757-271",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Trusting HTTP Permission Methods on the Server Side",
+    "framework": "CWE",
+    "ground_truth_hub_id": "532-878",
+    "predicted_top10": [
+      "664-080",
+      "814-322",
+      "653-242",
+      "612-252",
+      "817-808",
+      "646-462",
+      "782-234",
+      "611-051",
+      "538-446",
+      "377-680"
+    ]
+  },
+  {
+    "control_text": "Unrestricted Upload of File with Dangerous Type",
+    "framework": "CWE",
+    "ground_truth_hub_id": "377-680",
+    "predicted_top10": [
+      "175-235",
+      "660-052",
+      "745-045",
+      "463-820",
+      "621-287",
+      "538-446",
+      "547-283",
+      "163-518",
+      "275-483",
+      "762-451"
+    ]
+  },
+  {
+    "control_text": "Cross-Site Request Forgery (CSRF)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "464-084",
+    "predicted_top10": [
+      "060-472",
+      "028-727",
+      "464-084",
+      "834-645",
+      "402-133",
+      "615-744",
+      "342-055",
+      "304-667",
+      "743-110",
+      "841-710"
+    ]
+  },
+  {
+    "control_text": "Interpretation Conflict",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-512",
+    "predicted_top10": [
+      "857-718",
+      "782-234",
+      "538-446",
+      "683-722",
+      "653-242",
+      "620-101",
+      "611-051",
+      "806-367",
+      "762-616",
+      "533-516"
+    ]
+  },
+  {
+    "control_text": "Misinterpretation of Input",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-512",
+    "predicted_top10": [
+      "857-718",
+      "010-308",
+      "533-516",
+      "620-101",
+      "653-242",
+      "538-446",
+      "607-671",
+      "782-234",
+      "683-722",
+      "641-760"
+    ]
+  },
+  {
+    "control_text": "Incomplete Model of Endpoint Features",
+    "framework": "CWE",
+    "ground_truth_hub_id": "543-512",
+    "predicted_top10": [
+      "155-155",
+      "148-227",
+      "708-355",
+      "230-318",
+      "623-550",
+      "832-555",
+      "068-102",
+      "886-662",
+      "326-704",
+      "860-723"
+    ]
+  },
+  {
+    "control_text": "Improper Use of Validation Framework",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "832-555",
+      "547-283",
+      "364-516",
+      "547-824",
+      "764-765",
+      "577-260",
+      "611-158",
+      "715-223",
+      "613-287",
+      "777-470"
+    ]
+  },
+  {
+    "control_text": "Improper Input Validation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "010-308",
+      "641-760",
+      "533-516",
+      "802-101",
+      "857-718",
+      "161-451",
+      "989-492",
+      "106-447",
+      "607-671",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Improper Validation of Specified Index, Position, or Offset in Input",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "010-308",
+      "653-242",
+      "806-367",
+      "106-447",
+      "782-234",
+      "611-051",
+      "031-447",
+      "542-445",
+      "146-706",
+      "857-718"
+    ]
+  },
+  {
+    "control_text": "Improper Validation of Syntactic Correctness of Input",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "533-516",
+      "010-308",
+      "857-718",
+      "607-671",
+      "620-101",
+      "538-446",
+      "161-451",
+      "762-616",
+      "764-507",
+      "387-848"
+    ]
+  },
+  {
+    "control_text": "Improper Validation of Consistency within Input",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "010-308",
+      "161-451",
+      "857-718",
+      "533-516",
+      "547-283",
+      "760-764",
+      "780-757",
+      "613-287",
+      "607-671",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Improper Validation of Function Hook Arguments",
+    "framework": "CWE",
+    "ground_truth_hub_id": "611-051",
+    "predicted_top10": [
+      "533-516",
+      "607-671",
+      "646-462",
+      "620-101",
+      "857-718",
+      "542-445",
+      "538-446",
+      "387-848",
+      "657-084",
+      "881-434"
+    ]
+  },
+  {
+    "control_text": "Insufficient Verification of Data Authenticity",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "818-434",
+      "041-188",
+      "171-222",
+      "364-516",
+      "148-420",
+      "173-554",
+      "567-025",
+      "423-055",
+      "430-636",
+      "004-517"
+    ]
+  },
+  {
+    "control_text": "Use of Less Trusted Source",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "777-470",
+      "175-235",
+      "423-055",
+      "701-654",
+      "883-173",
+      "141-385",
+      "307-507",
+      "852-770",
+      "881-234",
+      "504-340"
+    ]
+  },
+  {
+    "control_text": "Acceptance of Extraneous Untrusted Data With Trusted Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "848-711",
+      "307-111",
+      "640-364",
+      "745-045",
+      "650-560",
+      "273-600",
+      "186-540",
+      "558-807",
+      "307-507",
+      "314-701"
+    ]
+  },
+  {
+    "control_text": "Trust of System Event Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "818-434",
+      "820-878",
+      "220-870",
+      "435-702",
+      "308-515",
+      "184-284",
+      "527-034",
+      "558-807",
+      "186-540",
+      "128-128"
+    ]
+  },
+  {
+    "control_text": "Reliance on Obfuscation or Encryption of Security-Relevant Inputs without Integrity Checking",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-636",
+    "predicted_top10": [
+      "307-507",
+      "456-636",
+      "640-364",
+      "061-753",
+      "426-842",
+      "504-340",
+      "848-711",
+      "483-883",
+      "347-352",
+      "405-411"
+    ]
+  },
+  {
+    "control_text": "Deserialization of Untrusted Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "831-563",
+    "predicted_top10": [
+      "736-554",
+      "831-563",
+      "848-711",
+      "307-507",
+      "762-616",
+      "640-364",
+      "836-068",
+      "504-340",
+      "615-663",
+      "650-560"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "387-848",
+    "predicted_top10": [
+      "646-462",
+      "422-005",
+      "317-743",
+      "657-084",
+      "857-718",
+      "542-445",
+      "732-873",
+      "881-434",
+      "620-101",
+      "736-237"
+    ]
+  },
+  {
+    "control_text": "Files or Directories Accessible to External Parties",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "307-111",
+      "540-566",
+      "713-684",
+      "314-701",
+      "123-124",
+      "447-083",
+      "664-080",
+      "817-808",
+      "368-633",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "Storage of File with Sensitive Data Under Web Root",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "307-111",
+      "540-566",
+      "715-304",
+      "846-302",
+      "314-701",
+      "123-124",
+      "617-524",
+      "275-483",
+      "762-451",
+      "333-888"
+    ]
+  },
+  {
+    "control_text": "Storage of File With Sensitive Data Under FTP Root",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "307-111",
+      "715-304",
+      "846-302",
+      "762-451",
+      "540-566",
+      "314-701",
+      "175-235",
+      "614-353",
+      "801-310",
+      "617-524"
+    ]
+  },
+  {
+    "control_text": "Exposure of Version-Control Repository to an Unauthorized Control Sphere",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "080-466",
+      "028-254",
+      "171-222",
+      "347-352",
+      "863-521",
+      "715-334",
+      "764-765",
+      "486-813",
+      "180-488",
+      "263-184"
+    ]
+  },
+  {
+    "control_text": "Exposure of Core Dump File to an Unauthorized Control Sphere",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "336-512",
+      "540-566",
+      "175-235",
+      "347-352",
+      "462-245",
+      "863-521",
+      "461-680",
+      "860-084",
+      "486-813",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "Exposure of Access Control List Files to an Unauthorized Control Sphere",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "540-566",
+      "817-808",
+      "123-124",
+      "368-633",
+      "284-521",
+      "612-252",
+      "664-080",
+      "128-128",
+      "443-447",
+      "713-684"
+    ]
+  },
+  {
+    "control_text": "Exposure of Backup File to an Unauthorized Control Sphere",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "614-353",
+      "128-128",
+      "163-776",
+      "762-451",
+      "208-830",
+      "123-124",
+      "273-600",
+      "307-111",
+      "467-784",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "Use of Persistent Cookies Containing Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "846-302",
+      "688-081",
+      "110-531",
+      "636-854",
+      "186-540",
+      "804-220",
+      "275-483",
+      "267-468",
+      "224-321",
+      "482-866"
+    ]
+  },
+  {
+    "control_text": "Command Shell in Externally Accessible Directory",
+    "framework": "CWE",
+    "ground_truth_hub_id": "314-701",
+    "predicted_top10": [
+      "540-566",
+      "742-056",
+      "175-235",
+      "757-271",
+      "801-310",
+      "117-371",
+      "817-808",
+      "860-084",
+      "545-243",
+      "675-168"
+    ]
+  },
+  {
+    "control_text": "Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "742-056",
+    "predicted_top10": [
+      "742-056",
+      "736-237",
+      "737-086",
+      "065-388",
+      "620-101",
+      "646-462",
+      "268-100",
+      "657-084",
+      "806-367",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "683-722",
+    "predicted_top10": [
+      "857-718",
+      "683-722",
+      "732-873",
+      "653-242",
+      "533-516",
+      "611-051",
+      "620-101",
+      "538-446",
+      "782-234",
+      "064-808"
+    ]
+  },
+  {
+    "control_text": "External Control of File Name or Path",
+    "framework": "CWE",
+    "ground_truth_hub_id": "737-086",
+    "predicted_top10": [
+      "806-367",
+      "540-566",
+      "736-237",
+      "742-056",
+      "737-086",
+      "336-512",
+      "268-100",
+      "175-235",
+      "860-084",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Improper Restriction of Names for Files and Other Resources",
+    "framework": "CWE",
+    "ground_truth_hub_id": "421-513",
+    "predicted_top10": [
+      "336-512",
+      "822-100",
+      "538-446",
+      "615-744",
+      "843-841",
+      "742-056",
+      "162-655",
+      "152-725",
+      "180-488",
+      "820-878"
+    ]
+  },
+  {
+    "control_text": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "675-168",
+    "predicted_top10": [
+      "615-744",
+      "675-168",
+      "742-056",
+      "737-086",
+      "421-513",
+      "822-100",
+      "551-054",
+      "336-512",
+      "774-888",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Highly Compressed Data (Data Amplification)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "163-518",
+    "predicted_top10": [
+      "463-820",
+      "660-052",
+      "746-705",
+      "630-573",
+      "268-088",
+      "176-154",
+      "173-554",
+      "444-058",
+      "163-518",
+      "886-662"
+    ]
+  },
+  {
+    "control_text": "Reliance on File Name or Extension of Externally-Supplied File",
+    "framework": "CWE",
+    "ground_truth_hub_id": "384-344",
+    "predicted_top10": [
+      "737-086",
+      "675-168",
+      "742-056",
+      "307-111",
+      "743-110",
+      "713-683",
+      "227-045",
+      "175-235",
+      "314-701",
+      "421-513"
+    ]
+  },
+  {
+    "control_text": "Uncontrolled Resource Consumption",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "230-318",
+      "886-662",
+      "267-031",
+      "630-573",
+      "746-705",
+      "463-820",
+      "560-224",
+      "670-660",
+      "187-083",
+      "660-052"
+    ]
+  },
+  {
+    "control_text": "Incorrect Use of Autoboxing and Unboxing for Performance Critical Operations",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "860-084",
+      "611-158",
+      "801-310",
+      "757-271",
+      "117-371",
+      "540-566",
+      "838-636",
+      "307-507",
+      "347-352",
+      "180-488"
+    ]
+  },
+  {
+    "control_text": "Improper Write Handling in Limited-write Non-Volatile Memories",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "866-553",
+      "801-310",
+      "117-371",
+      "715-304",
+      "878-880",
+      "002-801",
+      "126-668",
+      "742-431",
+      "757-271",
+      "674-425"
+    ]
+  },
+  {
+    "control_text": "Asymmetric Resource Consumption (Amplification)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "630-573",
+      "746-705",
+      "463-820",
+      "230-318",
+      "176-154",
+      "268-088",
+      "660-052",
+      "886-662",
+      "187-083",
+      "670-660"
+    ]
+  },
+  {
+    "control_text": "Missing Reference to Active Allocated Resource",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "801-310",
+      "117-371",
+      "757-271",
+      "540-566",
+      "611-158",
+      "175-235",
+      "860-084",
+      "307-507",
+      "664-080",
+      "612-252"
+    ]
+  },
+  {
+    "control_text": "Logging of Excessive Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "660-052",
+    "predicted_top10": [
+      "842-876",
+      "843-841",
+      "058-083",
+      "240-274",
+      "402-706",
+      "630-573",
+      "217-168",
+      "148-420",
+      "713-683",
+      "176-154"
+    ]
+  },
+  {
+    "control_text": "Client-Side Enforcement of Server-Side Security",
+    "framework": "CWE",
+    "ground_truth_hub_id": "848-711",
+    "predicted_top10": [
+      "657-084",
+      "881-434",
+      "814-322",
+      "848-711",
+      "646-462",
+      "806-367",
+      "538-446",
+      "620-101",
+      "640-364",
+      "542-445"
+    ]
+  },
+  {
+    "control_text": "Improperly Controlled Modification of Dynamically-Determined Object Attributes",
+    "framework": "CWE",
+    "ground_truth_hub_id": "042-550",
+    "predicted_top10": [
+      "640-364",
+      "848-711",
+      "650-560",
+      "646-462",
+      "422-005",
+      "387-848",
+      "542-445",
+      "145-310",
+      "307-507",
+      "347-352"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Extra Parameters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "743-237",
+    "predicted_top10": [
+      "217-163",
+      "780-757",
+      "217-112",
+      "020-540",
+      "989-492",
+      "867-642",
+      "106-447",
+      "683-722",
+      "760-764",
+      "012-625"
+    ]
+  },
+  {
+    "control_text": "URL Redirection to Untrusted Site ('Open Redirect')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "232-217",
+    "predicted_top10": [
+      "232-217",
+      "542-445",
+      "377-680",
+      "333-888",
+      "814-322",
+      "646-462",
+      "817-808",
+      "615-744",
+      "540-566",
+      "304-667"
+    ]
+  },
+  {
+    "control_text": "Integer Overflow or Wraparound",
+    "framework": "CWE",
+    "ground_truth_hub_id": "482-771",
+    "predicted_top10": [
+      "482-771",
+      "314-131",
+      "831-570",
+      "746-705",
+      "630-573",
+      "268-088",
+      "824-732",
+      "782-234",
+      "463-820",
+      "866-553"
+    ]
+  },
+  {
+    "control_text": "Use of Externally-Controlled Format String",
+    "framework": "CWE",
+    "ground_truth_hub_id": "824-732",
+    "predicted_top10": [
+      "824-732",
+      "782-234",
+      "314-131",
+      "653-242",
+      "611-051",
+      "036-725",
+      "737-086",
+      "831-570",
+      "806-367",
+      "031-447"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "064-808",
+    "predicted_top10": [
+      "732-873",
+      "857-718",
+      "683-722",
+      "064-808",
+      "653-242",
+      "611-051",
+      "533-516",
+      "620-101",
+      "538-446",
+      "146-706"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Unicode Encoding",
+    "framework": "CWE",
+    "ground_truth_hub_id": "533-516",
+    "predicted_top10": [
+      "036-725",
+      "782-234",
+      "737-086",
+      "653-242",
+      "538-446",
+      "611-051",
+      "857-718",
+      "533-516",
+      "620-101",
+      "683-722"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "542-445",
+      "646-462",
+      "736-237",
+      "268-100",
+      "881-434",
+      "657-084",
+      "232-217",
+      "814-322",
+      "538-446",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "366-835",
+      "760-765",
+      "065-388",
+      "542-445",
+      "646-462",
+      "881-434",
+      "657-084",
+      "422-005",
+      "736-237",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Script in Attributes in a Web Page",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "542-445",
+      "646-462",
+      "881-434",
+      "620-101",
+      "422-005",
+      "736-237",
+      "657-084",
+      "806-367",
+      "607-671",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Encoded URI Schemes in a Web Page",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "736-237",
+      "268-100",
+      "426-842",
+      "377-680",
+      "538-446",
+      "483-883",
+      "542-445",
+      "664-080",
+      "532-878",
+      "646-462"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Alternate XSS Syntax",
+    "framework": "CWE",
+    "ground_truth_hub_id": "366-835",
+    "predicted_top10": [
+      "366-835",
+      "760-765",
+      "538-446",
+      "653-242",
+      "611-051",
+      "657-084",
+      "065-388",
+      "736-237",
+      "881-434",
+      "857-718"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "531-558",
+    "predicted_top10": [
+      "531-558",
+      "732-873",
+      "857-718",
+      "064-808",
+      "683-722",
+      "611-051",
+      "607-671",
+      "653-242",
+      "533-516",
+      "760-764"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Data within XPath Expressions ('XPath Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "134-207",
+    "predicted_top10": [
+      "653-242",
+      "611-051",
+      "857-718",
+      "146-706",
+      "031-447",
+      "683-722",
+      "538-446",
+      "732-873",
+      "782-234",
+      "533-516"
+    ]
+  },
+  {
+    "control_text": "Invocation of Process Using Visible Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "208-805",
+    "predicted_top10": [
+      "308-515",
+      "789-320",
+      "768-532",
+      "220-870",
+      "805-126",
+      "818-434",
+      "834-645",
+      "440-372",
+      "128-128",
+      "362-550"
+    ]
+  },
+  {
+    "control_text": "Exposure of Information Through Directory Listing",
+    "framework": "CWE",
+    "ground_truth_hub_id": "208-805",
+    "predicted_top10": [
+      "834-645",
+      "615-744",
+      "713-684",
+      "713-683",
+      "743-110",
+      "227-045",
+      "067-050",
+      "015-063",
+      "841-710",
+      "308-515"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Delimiters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "857-718",
+      "653-242",
+      "611-051",
+      "683-722",
+      "533-516",
+      "764-507",
+      "620-101",
+      "762-616"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Input Terminators",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "857-718",
+      "106-447",
+      "010-308",
+      "641-760",
+      "607-671",
+      "989-492",
+      "760-764",
+      "732-873",
+      "547-283",
+      "533-516"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Input Leaders",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "370-877",
+      "802-101",
+      "106-447",
+      "989-492",
+      "760-764",
+      "761-417",
+      "641-760",
+      "020-540",
+      "467-215",
+      "061-753"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Quoting Syntax",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "857-718",
+      "268-100",
+      "620-101",
+      "736-237",
+      "542-445",
+      "782-234",
+      "806-367",
+      "533-516",
+      "646-462"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Escape, Meta, or Control Sequences",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "542-445",
+      "538-446",
+      "736-237",
+      "268-100",
+      "336-512",
+      "426-842",
+      "646-462",
+      "347-352",
+      "307-507",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Comment Delimiters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "542-445",
+      "881-434",
+      "620-101",
+      "857-718",
+      "657-084",
+      "653-242",
+      "736-237",
+      "646-462",
+      "533-516"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Macro Symbols",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "314-131",
+      "857-718",
+      "538-446",
+      "533-516",
+      "806-367",
+      "782-234",
+      "653-242",
+      "620-101",
+      "065-388",
+      "611-051"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Substitution Characters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "737-086",
+      "857-718",
+      "653-242",
+      "683-722",
+      "611-051",
+      "036-725",
+      "533-516",
+      "675-168"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Variable Name Delimiters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "782-234",
+      "538-446",
+      "314-131",
+      "653-242",
+      "611-051",
+      "824-732",
+      "857-718",
+      "762-616",
+      "737-086",
+      "764-507"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Wildcards or Matching Symbols",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "307-507",
+      "483-883",
+      "737-086",
+      "542-445",
+      "782-234",
+      "551-400",
+      "426-842",
+      "653-242",
+      "640-364"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Whitespace",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "653-242",
+      "611-051",
+      "806-367",
+      "857-718",
+      "542-445",
+      "268-100",
+      "620-101",
+      "736-237"
+    ]
+  },
+  {
+    "control_text": "Failure to Sanitize Paired Delimiters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "538-446",
+      "782-234",
+      "653-242",
+      "857-718",
+      "611-051",
+      "036-725",
+      "737-086",
+      "806-367",
+      "620-101",
+      "146-706"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Null Byte or NUL Character",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "782-234",
+      "653-242",
+      "611-051",
+      "036-725",
+      "538-446",
+      "146-706",
+      "737-086",
+      "031-447",
+      "314-131",
+      "824-732"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Invalid Use of Special Elements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "613-287",
+      "161-451",
+      "764-765",
+      "760-764",
+      "787-638",
+      "004-517",
+      "010-308",
+      "072-713",
+      "613-285",
+      "503-455"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Leading Special Elements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "233-748",
+      "764-765",
+      "613-287",
+      "613-285",
+      "701-654",
+      "760-764",
+      "223-780",
+      "881-234",
+      "555-083",
+      "582-035"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Trailing Special Elements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "613-287",
+      "538-446",
+      "547-283",
+      "161-451",
+      "715-223",
+      "577-260",
+      "762-616",
+      "533-516",
+      "314-131",
+      "620-101"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Internal Special Elements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "764-765",
+      "233-748",
+      "854-643",
+      "613-287",
+      "613-285",
+      "787-638",
+      "004-517",
+      "154-031",
+      "223-780",
+      "582-035"
+    ]
+  },
+  {
+    "control_text": "Addition of Data Structure Sentinel",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "725-682",
+      "611-158",
+      "832-555",
+      "462-245",
+      "863-521",
+      "273-600",
+      "801-310",
+      "486-813",
+      "344-611",
+      "757-271"
+    ]
+  },
+  {
+    "control_text": "Improper Filtering of Special Elements",
+    "framework": "CWE",
+    "ground_truth_hub_id": "538-446",
+    "predicted_top10": [
+      "161-451",
+      "764-765",
+      "760-764",
+      "780-757",
+      "041-188",
+      "613-287",
+      "738-144",
+      "701-654",
+      "567-025",
+      "836-068"
+    ]
+  },
+  {
+    "control_text": "Improper Control of Generation of Code ('Code Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "760-764",
+      "161-451",
+      "764-765",
+      "547-283",
+      "613-287",
+      "411-684",
+      "635-851",
+      "715-223",
+      "860-084",
+      "832-555"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Special Elements Used in a Template Engine",
+    "framework": "CWE",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "646-462",
+      "422-005",
+      "268-100",
+      "860-084",
+      "611-158",
+      "065-388",
+      "542-445",
+      "314-131",
+      "736-237",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "646-462",
+    "predicted_top10": [
+      "646-462",
+      "422-005",
+      "542-445",
+      "611-158",
+      "860-084",
+      "736-237",
+      "806-367",
+      "657-084",
+      "268-100",
+      "307-507"
+    ]
+  },
+  {
+    "control_text": "Origin Validation Error",
+    "framework": "CWE",
+    "ground_truth_hub_id": "405-411",
+    "predicted_top10": [
+      "405-411",
+      "316-272",
+      "307-507",
+      "737-086",
+      "653-242",
+      "426-842",
+      "736-237",
+      "782-234",
+      "538-446",
+      "307-111"
+    ]
+  },
+  {
+    "control_text": "Missing Origin Validation in WebSockets",
+    "framework": "CWE",
+    "ground_truth_hub_id": "405-411",
+    "predicted_top10": [
+      "316-272",
+      "405-411",
+      "551-400",
+      "307-507",
+      "426-842",
+      "483-883",
+      "745-045",
+      "307-111",
+      "456-636",
+      "273-600"
+    ]
+  },
+  {
+    "control_text": "Self-generated Error Message Containing Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "612-435",
+    "predicted_top10": [
+      "402-706",
+      "843-841",
+      "725-682",
+      "333-888",
+      "152-725",
+      "615-744",
+      "582-541",
+      "304-667",
+      "240-274",
+      "820-878"
+    ]
+  },
+  {
+    "control_text": "Missing Handler",
+    "framework": "CWE",
+    "ground_truth_hub_id": "118-602",
+    "predicted_top10": [
+      "820-421",
+      "834-645",
+      "067-050",
+      "841-710",
+      "582-541",
+      "113-133",
+      "235-658",
+      "576-042",
+      "278-413",
+      "118-602"
+    ]
+  },
+  {
+    "control_text": "Missing Standardized Error Handling Mechanism",
+    "framework": "CWE",
+    "ground_truth_hub_id": "863-636",
+    "predicted_top10": [
+      "513-183",
+      "863-636",
+      "118-602",
+      "842-876",
+      "612-435",
+      "847-247",
+      "843-841",
+      "141-555",
+      "240-464",
+      "208-805"
+    ]
+  },
+  {
+    "control_text": "Insertion of Sensitive Information into Log File",
+    "framework": "CWE",
+    "ground_truth_hub_id": "067-050",
+    "predicted_top10": [
+      "843-841",
+      "402-706",
+      "048-612",
+      "260-200",
+      "240-274",
+      "821-541",
+      "026-280",
+      "713-684",
+      "067-050",
+      "015-063"
+    ]
+  },
+  {
+    "control_text": "1009",
+    "framework": "CWE",
+    "ground_truth_hub_id": "260-200",
+    "predicted_top10": [
+      "668-364",
+      "058-527",
+      "551-400",
+      "258-115",
+      "551-054",
+      "802-056",
+      "808-425",
+      "532-878",
+      "681-823",
+      "586-842"
+    ]
+  },
+  {
+    "control_text": "Improper Output Neutralization for Logs",
+    "framework": "CWE",
+    "ground_truth_hub_id": "048-612",
+    "predicted_top10": [
+      "821-541",
+      "843-841",
+      "260-200",
+      "402-706",
+      "048-612",
+      "148-420",
+      "161-451",
+      "842-876",
+      "026-280",
+      "208-805"
+    ]
+  },
+  {
+    "control_text": "Insufficient Logging",
+    "framework": "CWE",
+    "ground_truth_hub_id": "184-284",
+    "predicted_top10": [
+      "843-841",
+      "842-876",
+      "402-706",
+      "260-200",
+      "148-420",
+      "058-083",
+      "026-280",
+      "770-362",
+      "208-805",
+      "821-541"
+    ]
+  },
+  {
+    "control_text": "Detection of Error Condition Without Action",
+    "framework": "CWE",
+    "ground_truth_hub_id": "725-682",
+    "predicted_top10": [
+      "513-183",
+      "118-602",
+      "863-636",
+      "208-805",
+      "843-841",
+      "612-435",
+      "842-876",
+      "552-588",
+      "402-706",
+      "615-744"
+    ]
+  },
+  {
+    "control_text": "Improper Control of Interaction Frequency",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-535",
+    "predicted_top10": [
+      "225-553",
+      "205-522",
+      "202-604",
+      "515-021",
+      "563-088",
+      "755-340",
+      "567-755",
+      "061-753",
+      "833-030",
+      "524-603"
+    ]
+  },
+  {
+    "control_text": "Improper Enforcement of a Single, Unique Action",
+    "framework": "CWE",
+    "ground_truth_hub_id": "456-535",
+    "predicted_top10": [
+      "646-285",
+      "510-324",
+      "128-128",
+      "284-521",
+      "567-755",
+      "135-200",
+      "205-522",
+      "202-604",
+      "766-162",
+      "546-564"
+    ]
+  },
+  {
+    "control_text": "Improper Check for Unusual or Exceptional Conditions",
+    "framework": "CWE",
+    "ground_truth_hub_id": "418-853",
+    "predicted_top10": [
+      "552-588",
+      "464-513",
+      "842-876",
+      "463-577",
+      "307-242",
+      "141-555",
+      "418-853",
+      "148-420",
+      "745-356",
+      "732-148"
+    ]
+  },
+  {
+    "control_text": "Unexpected Status Code or Return Value",
+    "framework": "CWE",
+    "ground_truth_hub_id": "418-853",
+    "predicted_top10": [
+      "808-425",
+      "822-100",
+      "304-667",
+      "558-807",
+      "615-744",
+      "532-878",
+      "725-682",
+      "582-541",
+      "186-540",
+      "333-888"
+    ]
+  },
+  {
+    "control_text": "Improper Enforcement of Behavioral Workflow",
+    "framework": "CWE",
+    "ground_truth_hub_id": "534-605",
+    "predicted_top10": [
+      "510-324",
+      "646-285",
+      "764-765",
+      "847-247",
+      "261-010",
+      "766-162",
+      "205-522",
+      "161-451",
+      "202-604",
+      "225-553"
+    ]
+  },
+  {
+    "control_text": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')",
+    "framework": "CWE",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "380-540",
+      "670-660",
+      "134-412",
+      "267-031",
+      "344-611",
+      "630-573",
+      "117-371",
+      "746-705",
+      "757-271",
+      "230-318"
+    ]
+  },
+  {
+    "control_text": "Race Condition for Write-Once Attributes",
+    "framework": "CWE",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "134-412",
+      "380-540",
+      "307-507",
+      "670-660",
+      "782-234",
+      "314-131",
+      "848-711",
+      "806-367",
+      "653-242",
+      "538-446"
+    ]
+  },
+  {
+    "control_text": "Hardware Logic Contains Race Conditions",
+    "framework": "CWE",
+    "ground_truth_hub_id": "670-660",
+    "predicted_top10": [
+      "380-540",
+      "134-412",
+      "670-660",
+      "117-371",
+      "757-271",
+      "108-316",
+      "801-310",
+      "273-600",
+      "230-318",
+      "883-173"
+    ]
+  },
+  {
+    "control_text": "Time-of-check Time-of-use (TOCTOU) Race Condition",
+    "framework": "CWE",
+    "ground_truth_hub_id": "380-540",
+    "predicted_top10": [
+      "134-412",
+      "380-540",
+      "670-660",
+      "267-031",
+      "230-318",
+      "344-611",
+      "725-682",
+      "273-600",
+      "622-835",
+      "630-573"
+    ]
+  },
+  {
+    "control_text": "Improper Removal of Sensitive Information Before Storage or Transfer",
+    "framework": "CWE",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "362-550",
+      "440-372",
+      "447-083",
+      "220-870",
+      "356-282",
+      "715-304",
+      "247-250",
+      "571-640",
+      "768-532",
+      "074-873"
+    ]
+  },
+  {
+    "control_text": "Exposure of Sensitive System Information Due to Uncleared Debug Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "762-451",
+    "predicted_top10": [
+      "208-805",
+      "486-813",
+      "162-655",
+      "822-100",
+      "725-682",
+      "820-878",
+      "402-706",
+      "843-841",
+      "308-515",
+      "818-434"
+    ]
+  },
+  {
+    "control_text": "Improper Check for Certificate Revocation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "537-367",
+    "predicted_top10": [
+      "430-636",
+      "530-671",
+      "537-367",
+      "551-400",
+      "058-527",
+      "287-251",
+      "558-807",
+      "273-600",
+      "585-408",
+      "783-255"
+    ]
+  },
+  {
+    "control_text": "Improper Certificate Validation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "530-671",
+    "predicted_top10": [
+      "430-636",
+      "530-671",
+      "537-367",
+      "742-431",
+      "558-807",
+      "002-801",
+      "551-400",
+      "504-340",
+      "170-772",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "Missing Validation of OpenSSL Certificate",
+    "framework": "CWE",
+    "ground_truth_hub_id": "530-671",
+    "predicted_top10": [
+      "430-636",
+      "248-646",
+      "530-671",
+      "742-431",
+      "170-772",
+      "537-367",
+      "674-425",
+      "228-551",
+      "767-701",
+      "786-224"
+    ]
+  },
+  {
+    "control_text": "Use of GET Request Method With Sensitive Query Strings",
+    "framework": "CWE",
+    "ground_truth_hub_id": "333-888",
+    "predicted_top10": [
+      "846-302",
+      "186-540",
+      "848-711",
+      "650-560",
+      "640-364",
+      "881-434",
+      "304-667",
+      "538-446",
+      "333-888",
+      "745-045"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Parameters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "217-112",
+    "predicted_top10": [
+      "867-642",
+      "481-710",
+      "020-540",
+      "843-475",
+      "989-492",
+      "217-112",
+      "217-163",
+      "780-757",
+      "012-625",
+      "760-764"
+    ]
+  },
+  {
+    "control_text": "Failure to Handle Missing Parameter",
+    "framework": "CWE",
+    "ground_truth_hub_id": "217-112",
+    "predicted_top10": [
+      "863-636",
+      "118-602",
+      "513-183",
+      "612-435",
+      "042-550",
+      "065-183",
+      "141-555",
+      "113-133",
+      "278-413",
+      "820-421"
+    ]
+  },
+  {
+    "control_text": "Improper Handling of Undefined Parameters",
+    "framework": "CWE",
+    "ground_truth_hub_id": "217-112",
+    "predicted_top10": [
+      "217-112",
+      "683-722",
+      "646-462",
+      "538-446",
+      "857-718",
+      "542-445",
+      "732-873",
+      "307-507",
+      "387-848",
+      "422-005"
+    ]
+  },
+  {
+    "control_text": "310",
+    "framework": "CWE",
+    "ground_truth_hub_id": "036-810",
+    "predicted_top10": [
+      "842-876",
+      "058-083",
+      "843-841",
+      "660-867",
+      "148-420",
+      "571-271",
+      "703-813",
+      "456-535",
+      "586-842",
+      "623-550"
+    ]
+  },
+  {
+    "control_text": "Covert Timing Channel",
+    "framework": "CWE",
+    "ground_truth_hub_id": "878-880",
+    "predicted_top10": [
+      "273-600",
+      "878-880",
+      "486-813",
+      "504-340",
+      "470-731",
+      "582-541",
+      "128-128",
+      "341-076",
+      "805-126",
+      "636-854"
+    ]
+  },
+  {
+    "control_text": "Missing Encryption of Sensitive Data",
+    "framework": "CWE",
+    "ground_truth_hub_id": "267-468",
+    "predicted_top10": [
+      "435-702",
+      "223-780",
+      "126-668",
+      "170-772",
+      "232-325",
+      "742-432",
+      "786-224",
+      "287-305",
+      "157-430",
+      "228-551"
+    ]
+  },
+  {
+    "control_text": "Use of Web Browser Cache Containing Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "473-758",
+    "predicted_top10": [
+      "846-302",
+      "715-304",
+      "307-111",
+      "186-540",
+      "224-321",
+      "314-701",
+      "157-430",
+      "400-007",
+      "482-866",
+      "267-468"
+    ]
+  },
+  {
+    "control_text": "Sensitive Information in Resource Not Removed Before Reuse",
+    "framework": "CWE",
+    "ground_truth_hub_id": "715-304",
+    "predicted_top10": [
+      "715-304",
+      "762-451",
+      "540-566",
+      "846-302",
+      "307-111",
+      "333-888",
+      "307-507",
+      "650-560",
+      "304-667",
+      "217-163"
+    ]
+  },
+  {
+    "control_text": "Insufficient or Incomplete Data Removal within Hardware Component",
+    "framework": "CWE",
+    "ground_truth_hub_id": "715-304",
+    "predicted_top10": [
+      "762-451",
+      "117-371",
+      "801-310",
+      "757-271",
+      "715-304",
+      "540-566",
+      "046-257",
+      "538-770",
+      "843-475",
+      "032-213"
+    ]
+  },
+  {
+    "control_text": "Use of Cache Containing Sensitive Information",
+    "framework": "CWE",
+    "ground_truth_hub_id": "846-302",
+    "predicted_top10": [
+      "846-302",
+      "715-304",
+      "157-430",
+      "186-540",
+      "473-758",
+      "400-007",
+      "224-321",
+      "482-866",
+      "267-468",
+      "614-353"
+    ]
+  },
+  {
+    "control_text": "Use of Hard-coded Credentials",
+    "framework": "CWE",
+    "ground_truth_hub_id": "774-888",
+    "predicted_top10": [
+      "553-413",
+      "524-446",
+      "881-321",
+      "525-361",
+      "802-056",
+      "333-858",
+      "358-860",
+      "715-681",
+      "338-370",
+      "807-565"
+    ]
+  },
+  {
+    "control_text": "Use of Password Hash With Insufficient Computational Effort",
+    "framework": "CWE",
+    "ground_truth_hub_id": "767-435",
+    "predicted_top10": [
+      "543-428",
+      "681-823",
+      "287-251",
+      "881-321",
+      "346-640",
+      "340-375",
+      "802-056",
+      "342-764",
+      "206-254",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "Use of a One-Way Hash without a Salt",
+    "framework": "CWE",
+    "ground_truth_hub_id": "767-435",
+    "predicted_top10": [
+      "543-428",
+      "783-255",
+      "841-757",
+      "742-431",
+      "287-251",
+      "585-408",
+      "002-801",
+      "681-823",
+      "504-340",
+      "622-835"
+    ]
+  },
+  {
+    "control_text": "Use of a One-Way Hash with a Predictable Salt",
+    "framework": "CWE",
+    "ground_truth_hub_id": "767-435",
+    "predicted_top10": [
+      "543-428",
+      "841-757",
+      "287-251",
+      "783-255",
+      "622-835",
+      "681-823",
+      "082-530",
+      "206-254",
+      "346-640",
+      "002-801"
+    ]
+  },
+  {
+    "control_text": "Insufficiently Protected Credentials",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "553-413",
+      "525-361",
+      "333-858",
+      "524-446",
+      "881-321",
+      "715-681",
+      "358-860",
+      "807-565",
+      "604-025",
+      "802-056"
+    ]
+  },
+  {
+    "control_text": "Password in Configuration File",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "774-888",
+      "340-375",
+      "622-203",
+      "881-321",
+      "751-176",
+      "455-885",
+      "487-305",
+      "767-435",
+      "576-651",
+      "715-681"
+    ]
+  },
+  {
+    "control_text": "Weak Encoding for Password",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "807-565",
+      "715-681",
+      "604-025",
+      "767-701",
+      "027-555",
+      "630-577",
+      "576-651",
+      "103-707",
+      "524-446",
+      "802-056"
+    ]
+  },
+  {
+    "control_text": "Missing Password Field Masking",
+    "framework": "CWE",
+    "ground_truth_hub_id": "881-321",
+    "predicted_top10": [
+      "751-176",
+      "455-885",
+      "487-305",
+      "553-413",
+      "630-577",
+      "881-321",
+      "622-203",
+      "327-505",
+      "604-025",
+      "524-446"
+    ]
+  },
+  {
+    "control_text": "Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)",
+    "framework": "CWE",
+    "ground_truth_hub_id": "664-571",
+    "predicted_top10": [
+      "542-488",
+      "742-431",
+      "664-571",
+      "002-801",
+      "674-425",
+      "027-210",
+      "441-132",
+      "504-340",
+      "585-408",
+      "786-224"
+    ]
+  },
+  {
+    "control_text": "255",
+    "framework": "CWE",
+    "ground_truth_hub_id": "065-183",
+    "predicted_top10": [
+      "463-820",
+      "746-705",
+      "660-052",
+      "268-088",
+      "630-573",
+      "176-154",
+      "743-237",
+      "681-823",
+      "653-242",
+      "622-835"
+    ]
+  },
+  {
+    "control_text": "Unverified Password Change",
+    "framework": "CWE",
+    "ground_truth_hub_id": "327-505",
+    "predicted_top10": [
+      "751-176",
+      "881-321",
+      "553-413",
+      "524-446",
+      "576-651",
+      "604-025",
+      "358-860",
+      "327-505",
+      "802-056",
+      "487-305"
+    ]
+  },
+  {
+    "control_text": "Sensitive Cookie with Improper SameSite Attribute",
+    "framework": "CWE",
+    "ground_truth_hub_id": "342-055",
+    "predicted_top10": [
+      "342-055",
+      "804-220",
+      "688-081",
+      "705-182",
+      "402-133",
+      "582-541",
+      "232-034",
+      "464-084",
+      "307-111",
+      "304-667"
+    ]
+  },
+  {
+    "control_text": "Sensitive Cookie Without 'HttpOnly' Flag",
+    "framework": "CWE",
+    "ground_truth_hub_id": "804-220",
+    "predicted_top10": [
+      "804-220",
+      "688-081",
+      "186-540",
+      "455-358",
+      "551-054",
+      "538-446",
+      "402-133",
+      "846-302",
+      "307-111",
+      "705-182"
+    ]
+  },
+  {
+    "control_text": "Authentication Bypass by Spoofing",
+    "framework": "CWE",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "605-735",
+      "646-227",
+      "354-753",
+      "813-610",
+      "816-631",
+      "404-126",
+      "168-186",
+      "138-448",
+      "354-752",
+      "551-400"
+    ]
+  },
+  {
+    "control_text": "Using Referer Field for Authentication",
+    "framework": "CWE",
+    "ground_truth_hub_id": "551-400",
+    "predicted_top10": [
+      "307-111",
+      "284-521",
+      "813-610",
+      "278-413",
+      "605-735",
+      "841-710",
+      "582-541",
+      "368-633",
+      "817-808",
+      "354-753"
+    ]
+  },
+  {
+    "control_text": "Insufficient Entropy",
+    "framework": "CWE",
+    "ground_truth_hub_id": "704-530",
+    "predicted_top10": [
+      "664-571",
+      "346-640",
+      "622-835",
+      "504-340",
+      "542-270",
+      "742-431",
+      "674-425",
+      "433-122",
+      "206-254",
+      "542-488"
+    ]
+  },
+  {
+    "control_text": "Insufficient Entropy in PRNG",
+    "framework": "CWE",
+    "ground_truth_hub_id": "704-530",
+    "predicted_top10": [
+      "664-571",
+      "346-640",
+      "504-340",
+      "742-431",
+      "542-488",
+      "622-835",
+      "746-705",
+      "287-251",
+      "630-573",
+      "585-408"
+    ]
+  },
+  {
+    "control_text": "Session Fixation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "002-630",
+    "predicted_top10": [
+      "582-541",
+      "002-630",
+      "284-521",
+      "817-808",
+      "065-782",
+      "402-133",
+      "307-111",
+      "368-633",
+      "238-346",
+      "455-358"
+    ]
+  },
+  {
+    "control_text": "Least Privilege Violation",
+    "framework": "CWE",
+    "ground_truth_hub_id": "540-566",
+    "predicted_top10": [
+      "368-633",
+      "540-566",
+      "817-808",
+      "123-124",
+      "220-442",
+      "284-521",
+      "612-252",
+      "117-371",
+      "664-080",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Incorrect Default Permissions",
+    "framework": "CWE",
+    "ground_truth_hub_id": "817-808",
+    "predicted_top10": [
+      "540-566",
+      "817-808",
+      "664-080",
+      "368-633",
+      "612-252",
+      "082-327",
+      "757-271",
+      "443-447",
+      "801-310",
+      "117-371"
+    ]
+  },
+  {
+    "control_text": "Authorization Bypass Through User-Controlled Key",
+    "framework": "CWE",
+    "ground_truth_hub_id": "524-603",
+    "predicted_top10": [
+      "368-633",
+      "817-808",
+      "612-252",
+      "307-111",
+      "650-560",
+      "664-080",
+      "002-630",
+      "540-566",
+      "443-447",
+      "284-521"
+    ]
+  },
+  {
+    "control_text": "Authorization Bypass Through User-Controlled SQL Primary Key",
+    "framework": "CWE",
+    "ground_truth_hub_id": "524-603",
+    "predicted_top10": [
+      "612-252",
+      "368-633",
+      "307-111",
+      "664-080",
+      "082-327",
+      "443-447",
+      "817-808",
+      "540-566",
+      "268-272",
+      "650-560"
+    ]
+  },
+  {
+    "control_text": "Incorrect Permission Assignment for Critical Resource",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "540-566",
+      "284-521",
+      "817-808",
+      "757-271",
+      "801-310",
+      "486-813",
+      "117-371",
+      "860-084",
+      "664-080",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "Insecure Inherited Permissions",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "540-566",
+      "860-084",
+      "817-808",
+      "284-521",
+      "801-310",
+      "757-271",
+      "220-442",
+      "117-371",
+      "368-633",
+      "123-124"
+    ]
+  },
+  {
+    "control_text": "Insecure Preserved Inherited Permissions",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "540-566",
+      "860-084",
+      "220-442",
+      "284-521",
+      "801-310",
+      "123-124",
+      "817-808",
+      "757-271",
+      "117-371",
+      "330-281"
+    ]
+  },
+  {
+    "control_text": "Incorrect Execution-Assigned Permissions",
+    "framework": "CWE",
+    "ground_truth_hub_id": "284-521",
+    "predicted_top10": [
+      "540-566",
+      "817-808",
+      "612-252",
+      "664-080",
+      "368-633",
+      "443-447",
+      "082-327",
+      "284-521",
+      "860-084",
+      "611-158"
+    ]
+  }
+]

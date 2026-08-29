@@ -103,10 +103,6 @@ _TITLE_LENGTH_CEILING: int = 60
 # Text formats only. A .png or a .xlsx cannot be read as UTF-8, and a binary
 # artifact that smuggled licensed prose would be a different problem with a
 # different control.
-_SCANNED_SUFFIXES: frozenset[str] = frozenset({
-    ".py", ".md", ".json", ".jsonl", ".txt", ".csv", ".yml", ".yaml", ".rst",
-})
-
 # A 32-hex-character truncated sha256, the only shape a fingerprint may take.
 _FINGERPRINT_RE: re.Pattern[str] = re.compile(r"^[0-9a-f]{32}$")
 _SHA256_RE: re.Pattern[str] = re.compile(r"^[0-9a-f]{64}$")
@@ -407,11 +403,18 @@ def test_no_verbatim_licensed_statement_anywhere_in_the_tree(
     scanned = 0
     for relative in sorted(_tracked_files(".")):
         path = REPO_ROOT / relative
-        if path.suffix not in _SCANNED_SUFFIXES or path == FINGERPRINT_PATH:
+        if path == FINGERPRINT_PATH:
             continue
         try:
             body = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
+            # Binary, or unreadable. Not skipped by NAME: the suffix allowlist
+            # this replaced skipped 16 tracked files, and Path(".gitignore")
+            # .suffix is "" -- which is how a 12-word run of Annex A ended up
+            # in a .gitignore comment, in the very commit that fixed the
+            # original leak, and this gate reported clean. Decoding is the
+            # right test because it fails CLOSED: a new text file is scanned
+            # whatever it is called.
             continue
         scanned += 1
         hit = fingerprints.first_hit(body)
@@ -469,6 +472,110 @@ def test_every_overlay_framework_has_a_gitignore_line() -> None:
             f"{expected} is missing from .gitignore, so a parser run followed "
             f"by `git add -A` would commit {framework_id}'s licensed text."
         )
+
+
+def test_every_overlay_framework_has_a_fold_predictions_gitignore_line() -> None:
+    """A LOFO fold's predictions.json IS the held-out framework's prose.
+
+    Distinct from the test above, which covers the parser's output path. This
+    covers the LOFO orchestrator's: `collect` rsyncs a fleet's results into
+    results/phase1b/<config>/fold_<framework>/predictions.json, and every row
+    carries the eval anchor verbatim. When the held-out framework is licensed,
+    that file is the licensed text.
+
+    The .gitignore comment claimed a test enforced this and none did, which is
+    how DSOMM -- roughly half the fingerprint corpus -- went uncovered while the
+    two narrower RESTRICTED members were listed. Keyed on OVERLAY_FRAMEWORK_IDS
+    for that reason.
+
+    The directory name comes from the link's standard_name, not the framework
+    id: run_fold.py builds it as `fold_{args.framework.replace(' ', '_')}` and
+    args.framework is a standard_name. Deriving it here from the curated links
+    rather than hardcoding it means a display-name change breaks this test
+    instead of silently unprotecting a framework.
+    """
+    from scripts.phase0.common import CURATED_LINKS_PATH
+    from tract.config import OVERLAY_FRAMEWORK_IDS
+
+    # Read the JSONL rather than load_curated_links(): HubStandardLink drops
+    # framework_id and keeps only standard_name, and the join between the two
+    # is exactly what this test needs.
+    names_by_id: dict[str, set[str]] = {}
+    with CURATED_LINKS_PATH.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            framework_id = record.get("framework_id")
+            standard_name = record.get("standard_name")
+            if framework_id and standard_name:
+                names_by_id.setdefault(framework_id, set()).add(standard_name)
+
+    ignore_lines = {
+        line.strip()
+        for line in (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    }
+    checked = 0
+    for framework_id in sorted(OVERLAY_FRAMEWORK_IDS):
+        for standard_name in sorted(names_by_id.get(framework_id, set())):
+            fold_dir = f"fold_{standard_name.replace(' ', '_')}"
+            expected = f"results/phase1b/**/{fold_dir}/predictions.json"
+            checked += 1
+            assert expected in ignore_lines, (
+                f"{expected} is missing from .gitignore. A LOFO fold holding "
+                f"out {standard_name!r} writes that framework's licensed prose "
+                f"to predictions.json, and `collect` followed by `git add -A` "
+                f"would commit it."
+            )
+    assert checked >= len(OVERLAY_FRAMEWORK_IDS), (
+        f"Only {checked} fold paths checked for "
+        f"{len(OVERLAY_FRAMEWORK_IDS)} overlay frameworks. An overlay framework "
+        "with no curated link contributes no standard_name, so this test would "
+        "pass while protecting nothing."
+    )
+
+
+def test_no_new_tracked_but_ignored_prediction_files_appear() -> None:
+    """Pin the set of files that are BOTH tracked and ignored.
+
+    Three campaign-1 fold predictions for ISO 27001 are in the index and also
+    match a .gitignore rule added later. Git ignore rules do not apply to files
+    already tracked, so for those three paths the rule is inert: a future run
+    writing to them followed by `git add -A` would commit whatever they contain.
+
+    They are NOT untracked here. All three hold title-only anchors and match
+    zero licensed fingerprints (verified), several are cited by path from
+    CAMPAIGN2.md, and PREINPUTS-ARCHIVE.md records the deliberate decision to
+    keep superseded runs as evidence. `git rm --cached` would delete clean
+    evidence to close a gap that the tree-wide scan in this module already
+    covers -- `git ls-files` reads the INDEX, so tracked-but-ignored files are
+    scanned like any other.
+
+    What is not covered is a FOURTH such file appearing, which would arrive
+    with no rule stopping it and no reason for anyone to look. This pins the
+    set so that has to be a decision rather than an accident.
+    """
+    result = subprocess.run(
+        ["git", "ls-files", "-i", "-c", "--exclude-standard"],
+        capture_output=True, text=True, check=True, cwd=REPO_ROOT,
+    )
+    predictions = {
+        line for line in result.stdout.splitlines()
+        if line.endswith("predictions.json")
+    }
+    known = {
+        "results/phase1b/c2_A1_prose_sw_bge/fold_ISO_27001/predictions.json",
+        "results/phase1b/c2_A2_prose_sw_bge_bal3/fold_ISO_27001/predictions.json",
+        "results/phase1b/c2_canary_qwen/fold_ISO_27001/predictions.json",
+    }
+    assert predictions == known, (
+        "the set of tracked-AND-ignored prediction files changed.\n"
+        f"  appeared: {sorted(predictions - known)}\n"
+        f"  gone:     {sorted(known - predictions)}\n"
+        "A new entry means a fold wrote a restricted framework's predictions to "
+        "a path already in the index, where the ignore rule cannot stop it. "
+        "Untrack it, or add it here with a reason."
+    )
 
 
 def test_merged_corpus_carries_no_unpublishable_prose() -> None:

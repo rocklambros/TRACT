@@ -41,8 +41,9 @@ from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
 # Lightweight on purpose: data_quality pulls neither torch nor datasets, so the
 # operator's machine can enforce the corpus gate without a training stack.
 from tract.training.data_quality import assert_corpus_matches_training_links
-from tract.io import load_json
+from tract.io import atomic_write_json, load_json
 from scripts.phase0.runpod_provision import (
+    PRICE_CLOUD_TYPE,
     is_capacity_error,
     rank_available_gpus,
     create_pods_parallel,
@@ -59,6 +60,13 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results" / "phase1b"
 POD_STATE_FILE: Final[Path] = PROJECT_ROOT / "scripts" / "phase1b" / ".pod_state.json"
+# Owner-only. The file holds every pod's live IP and SSH port, so a mode any
+# wider hands the fleet's address list to every account on this machine.
+POD_STATE_MODE: Final[int] = 0o600
+# Where the bytes go when the state file will not parse. reap unlinks the state
+# file when it finishes, and the unreadable bytes may still be the only record
+# of a pod its name sweep cannot see.
+POD_STATE_CORRUPT_SUFFIX: Final[str] = ".corrupt"
 
 # A run-scoped key, not the operator's general-purpose identity. The default
 # used to be ~/.ssh/id_ed25519, offered on every handshake to a host whose key
@@ -118,10 +126,37 @@ MAX_DEADLINE_EXTENSIONS: Final[int] = int(
     os.environ.get("TRACT_RUNPOD_MAX_ARMS", "12")
 )
 
-# A fold's results run to gigabytes; the previous 300s was optimistic. Retries
-# because a failed collection destroys work that has already been paid for.
-RSYNC_TIMEOUT_S: Final[int] = 1800
-RSYNC_ATTEMPTS: Final[int] = 3
+# rsync's --timeout is an I/O-IDLE timer, not a wall clock: it fires when no
+# bytes have moved for this long, whatever the process is nominally doing. Both
+# directions carry it. The two walls below bound the process itself, and they
+# are separate because the two directions move payloads three orders of
+# magnitude apart.
+RSYNC_IDLE_TIMEOUT_S: Final[int] = 120
+
+# The PUSH is the working tree: 61,327,794 bytes across 560 files, measured on
+# 2026-08-28 with the exclude list _rsync_to builds. 300s is a 200 KB/s floor
+# for that payload. It used to borrow the pull's 1800s wall, which on 61MB
+# tolerates 34 KB/s -- around 250x slower than a healthy link -- and it carried
+# no idle timer at all, so a stalled-but-alive transfer was bounded by nothing
+# shorter than that wall. On 2026-08-27 the two omissions together cost 90
+# minutes and a fleet: a pod sat with 82MB present and moved ZERO bytes across
+# a sampled 45-second window while the push ran its full wall, three times, and
+# the four other pods sat at run_folds' bootstrap barrier until the campaign
+# aborted without launching a single fold.
+#
+# Two attempts, not the pull's three. Re-sending the tree is idempotent and a
+# retry is cheap, but a third wall buys a third case of the same wedge.
+RSYNC_PUSH_TIMEOUT_S: Final[int] = 300
+RSYNC_PUSH_ATTEMPTS: Final[int] = 2
+PUSH_PAYLOAD_BYTES: Final[int] = 61_327_794
+
+# The PULL is where the gigabytes argument belongs, and it is the one step
+# whose failure destroys work that has already been paid for: a fold's per-item
+# indicators exist only on the pod until this succeeds. Hence the long wall and
+# the third attempt.
+RSYNC_PULL_TIMEOUT_S: Final[int] = 1800
+RSYNC_PULL_ATTEMPTS: Final[int] = 3
+RSYNC_PULL_BACKOFF_S: Final[int] = 10
 
 # One fold: LoRA training plus a paired zero-shot pass.
 FOLD_TIMEOUT_S: Final[int] = 7200
@@ -144,8 +179,42 @@ SSH_DEFAULT_TIMEOUT_S: Final[int] = 3600
 # only fires on a returncode and a hang never produces one. Fifteen minutes is
 # generous for the work and short enough that a hang becomes a retry.
 SSH_BOOTSTRAP_TIMEOUT_S: Final[int] = 900
+
+# The fold launch detaches a trainer and echoes. It should return in under a
+# second; a minute is already pathological. It used to be given
+# SSH_DEFAULT_TIMEOUT_S -- 3600 -- and _ssh retries on TimeoutExpired, so on
+# 2026-08-28 a fold that outran the hour got a SECOND trainer on the same GPU.
+# A fire-and-forget command must never share a wall clock sized for work.
+SSH_LAUNCH_TIMEOUT_S: Final[int] = 120
 SSH_CONNECT_ATTEMPTS: Final[int] = 4
 SSH_RETRY_BACKOFF_S: Final[int] = 15
+
+# One pod's bootstrap, end to end, as a wall clock. The work under it is
+# apt-get, a 61MB push, a pip install, a 1.3GB model fetch and a CUDA probe:
+# two to four minutes on a healthy pod. Twenty-five minutes is roughly five
+# times that, and still an order of magnitude tighter than the ladder it
+# replaces -- four SSH steps at four connect attempts each, plus the push, is
+# 4.27h per pod, and was 5.61h before the push got its own wall. Every minute
+# of that is fleet time, not pod time: run_folds bootstraps inside a
+# ThreadPoolExecutor context manager, so the whole fleet waits at the barrier
+# for the slowest pod.
+#
+# Enforced COOPERATIVELY, by _clamp_to_deadline shortening each step until a
+# thread that has run out of budget ends itself. Nothing outside the thread
+# can end it: the executor's context manager joins on exit, cancel() cannot
+# touch a future that has already started -- and max_workers == len(pods), so
+# every future has -- and shutdown(wait=False, cancel_futures=True) leaves the
+# process hanging at interpreter exit instead. The premortem tested all three.
+BOOTSTRAP_DEADLINE_S: Final[int] = 1500
+# Cooperative means the deadline can be overrun by a wait that began just
+# before it expired. The longest of those is the last SSH backoff.
+BOOTSTRAP_DEADLINE_SLACK_S: Final[int] = (
+    SSH_RETRY_BACKOFF_S * (SSH_CONNECT_ATTEMPTS - 1)
+)
+# How many _ssh calls _bootstrap_pod issues. A test pins this against the
+# function's own source, because _check_budget priced three of them for as
+# long as there have been four.
+BOOTSTRAP_SSH_STEPS: Final[int] = 4
 
 # The validation split holds out traditional-security frameworks instead of
 # AI ones, so arm selection happens on 1,265 items rather than the test set's
@@ -346,11 +415,46 @@ def _is_transient_ssh_failure(stderr: str) -> bool:
     return any(marker in text for marker in TRANSIENT_SSH_MARKERS)
 
 
+def _clamp_to_deadline(deadline: float, step_timeout: int, step: str) -> int:
+    """How long this step may run before the pod's bootstrap deadline bites.
+
+    The cooperative half of BOOTSTRAP_DEADLINE_S. A caller holding an absolute
+    monotonic deadline asks this for every timeout it is about to pass to a
+    subprocess, so a step that starts late is given only what is left rather
+    than its nominal ceiling, and a step with nothing left never starts.
+
+    Args:
+        deadline: Absolute time.monotonic() value the bootstrap must end by.
+        step_timeout: What this step would be allowed if it were alone.
+        step: Named in the failure, so an operator reading a bootstrap error
+            knows which stage the pod ran out of budget in.
+
+    Returns:
+        Seconds, never below one. int() truncation turns a sub-second remainder
+        into zero, and a zero-second timeout is an artifact of rounding rather
+        than a decision anyone made.
+
+    Raises:
+        TimeoutError: The deadline has already passed. Raised rather than
+            returning, because the alternative is issuing a doomed subprocess
+            call and then paying the retry ladder's backoff on top of it.
+    """
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError(
+            f"Pod bootstrap deadline exceeded by {-remaining:.0f}s before "
+            f"'{step}' could start (budget was {BOOTSTRAP_DEADLINE_S}s). This "
+            f"pod is abandoned so the rest of the fleet stops waiting on it."
+        )
+    return max(1, min(step_timeout, int(remaining)))
+
+
 def _ssh(
     ip: str, port: int, cmd: str,
     check: bool = True,
     env: dict[str, str] | None = None,
     timeout: int = SSH_DEFAULT_TIMEOUT_S,
+    deadline: float | None = None,
 ) -> subprocess.CompletedProcess[str]:
     _require_ssh_key()
     ip, port = validate_ssh_endpoint(ip, port)
@@ -369,11 +473,18 @@ def _ssh(
     # campaign that had already paid for its pods. Only transport failures are
     # retried: a command that ran and exited non-zero is reported as-is,
     # because re-running it could repeat a side effect.
+    #
+    # `deadline` clamps EVERY attempt, not just the first. Clamping only the
+    # first would leak the whole ladder: four attempts at the caller's ceiling
+    # plus 90s of backoff is 4x the budget a caller thought it had handed out.
     for attempt in range(1, SSH_CONNECT_ATTEMPTS + 1):
+        attempt_timeout = timeout if deadline is None else _clamp_to_deadline(
+            deadline, timeout, f"ssh {cmd[:40]}",
+        )
         try:
             result = subprocess.run(
                 ssh_cmd, shell=True, input=script, text=True,
-                capture_output=True, timeout=timeout,
+                capture_output=True, timeout=attempt_timeout,
             )
         except subprocess.TimeoutExpired:
             # A hung session produces no returncode at all, so the marker
@@ -383,7 +494,7 @@ def _ssh(
                 raise
             logger.warning(
                 "[ssh %s:%d] hung for %ds (attempt %d/%d); retrying.",
-                ip, port, timeout, attempt, SSH_CONNECT_ATTEMPTS,
+                ip, port, attempt_timeout, attempt, SSH_CONNECT_ATTEMPTS,
             )
             time.sleep(SSH_RETRY_BACKOFF_S * attempt)
             continue
@@ -413,22 +524,44 @@ def _ssh(
     return result
 
 
-def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
+def _rsync_to(
+    ip: str, port: int, local_path: str, remote_path: str,
+    deadline: float | None = None,
+) -> None:
+    """Ship the working tree to a pod, with an idle timer and a short wall.
+
+    Args:
+        deadline: Absolute time.monotonic() value the caller's bootstrap must
+            end by, if it has one. Each attempt is clamped to what remains, so
+            a wedged push cannot spend the budget the steps after it need.
+    """
     ip, port = validate_ssh_endpoint(ip, port)
     # The exclude list is what stands between the operator's working tree and
     # five rented hosts, so it has to cover everything .gitignore does. The
     # sharpest omission was .pod_state.json: it is chmod 600 locally precisely
     # because it holds every pod's live IP and SSH port, and it was being copied
     # to all of them, so owning one pod disclosed the address of the rest.
+    # '*.tmp' and '.pod_state.json.*' close the same hole for the two files that
+    # can now sit BESIDE it and hold the same addresses: the atomic write leaves
+    # '..pod_state.json.<rand>.tmp' if the orchestrator is killed mid-write, and
+    # reap parks unparseable bytes at '.pod_state.json.corrupt'. Neither name is
+    # matched by the exclude that exists for the file they are copies of.
     excludes = " ".join(f"--exclude={pat!r}" for pat in (
         "__pycache__", "*.pyc", ".git", "results", ".mypy_cache", "models",
         "wandb", ".wandb", ".env", "*.db", "data/raw", ".claude", "venv",
-        ".venv", ".pod_state.json", ".runpod_known_hosts", "build",
+        ".venv", ".pod_state.json", ".pod_state.json.*", "*.tmp",
+        ".runpod_known_hosts", "build",
         ".ipynb_checkpoints", ".pytest_cache", ".ruff_cache", "*.egg-info",
         ".DS_Store",
     ))
+    # --timeout and --partial are the twenty characters this direction was
+    # missing while its sibling had them. The idle timer abandons a transfer
+    # that has stopped moving bytes instead of waiting out the process wall,
+    # and --partial keeps the file that was in flight when it fired, so the
+    # retry deltas against what arrived instead of starting that file again.
+    # See RSYNC_PUSH_TIMEOUT_S for what the omission cost.
     cmd = (
-        f"rsync -rltz {excludes} "
+        f"rsync -rltz --partial --timeout={RSYNC_IDLE_TIMEOUT_S} {excludes} "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     # Retried for the same reason _rsync_from is. This direction had no
@@ -436,14 +569,21 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
     # two pods of a five-pod fleet mid-campaign -- the same connection-level
     # flakiness the SSH retry already handles, arriving through a different
     # subprocess. Sending the tree again is idempotent, so a retry is free.
-    for attempt in range(1, RSYNC_ATTEMPTS + 1):
-        logger.info("[rsync to] %s:%d %s (attempt %d/%d)",
-                    ip, port, remote_path, attempt, RSYNC_ATTEMPTS)
+    for attempt in range(1, RSYNC_PUSH_ATTEMPTS + 1):
+        wall = RSYNC_PUSH_TIMEOUT_S if deadline is None else _clamp_to_deadline(
+            deadline, RSYNC_PUSH_TIMEOUT_S, "rsync push",
+        )
+        # The payload size is in the line because a slow push is the failure
+        # this direction has, and an operator watching it needs to know what
+        # the wall was sized for.
+        logger.info("[rsync to] %s:%d %s (attempt %d/%d, %.1fMB, %ds wall)",
+                    ip, port, remote_path, attempt, RSYNC_PUSH_ATTEMPTS,
+                    PUSH_PAYLOAD_BYTES / 1e6, wall)
         try:
-            subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+            subprocess.run(cmd, shell=True, check=True, timeout=wall)
             return
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
-            if attempt == RSYNC_ATTEMPTS:
+            if attempt == RSYNC_PUSH_ATTEMPTS:
                 raise
             backoff = SSH_RETRY_BACKOFF_S * attempt
             logger.warning("rsync to %s:%d failed (%s); retrying in %ds.",
@@ -464,25 +604,44 @@ def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
     # through it, which turns retrieving results into an arbitrary write on the
     # operator's machine. -l is kept because the tree may hold internal links.
     cmd = (
-        f"rsync -rltz --safe-links --partial --timeout=120 "
+        f"rsync -rltz --safe-links --partial "
+        f"--timeout={RSYNC_IDLE_TIMEOUT_S} "
         f"-e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
     )
     last_error: Exception | None = None
-    for attempt in range(1, RSYNC_ATTEMPTS + 1):
+    for attempt in range(1, RSYNC_PULL_ATTEMPTS + 1):
         logger.info("[rsync from] %s:%d %s (attempt %d/%d)",
-                    ip, port, remote_path, attempt, RSYNC_ATTEMPTS)
+                    ip, port, remote_path, attempt, RSYNC_PULL_ATTEMPTS)
         try:
-            subprocess.run(cmd, shell=True, check=True, timeout=RSYNC_TIMEOUT_S)
+            subprocess.run(cmd, shell=True, check=True,
+                           timeout=RSYNC_PULL_TIMEOUT_S)
             return
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
             last_error = exc
             logger.warning("  rsync attempt %d failed: %s", attempt, exc)
-            if attempt < RSYNC_ATTEMPTS:
-                time.sleep(10 * attempt)
+            if attempt < RSYNC_PULL_ATTEMPTS:
+                time.sleep(RSYNC_PULL_BACKOFF_S * attempt)
     raise RuntimeError(
         f"Failed to collect {remote_path} from {ip}:{port} after "
-        f"{RSYNC_ATTEMPTS} attempts: {last_error}"
+        f"{RSYNC_PULL_ATTEMPTS} attempts: {last_error}"
     )
+
+
+def _assert_pod_state_is_private(path: Path) -> None:
+    """Refuse to leave the pod roster readable by other local accounts.
+
+    Split out from the write so it can be exercised directly: the mode is the
+    kind of property that is correct until some future change to the write path
+    quietly widens it, and nothing else here would notice a world-readable list
+    of live pod addresses and SSH ports.
+    """
+    mode = path.stat().st_mode & 0o777
+    if mode != POD_STATE_MODE:
+        raise RuntimeError(
+            f"{path} is mode {mode:#o}, not {POD_STATE_MODE:#o}. It holds every "
+            f"pod's live IP and SSH port, so it must not be readable by other "
+            f"accounts on this machine."
+        )
 
 
 def _save_pod_state(
@@ -490,19 +649,36 @@ def _save_pod_state(
 ) -> None:
     POD_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {"pods": pods, "meta": meta or {}}
-    POD_STATE_FILE.write_text(json.dumps(payload, indent=2, sort_keys=True))
-    # Contains live pod IPs and SSH ports. .gitignore covers it; chmod keeps it
-    # off other local accounts too.
-    POD_STATE_FILE.chmod(0o600)
+    # Atomic, because this file is the ONLY local record of which pods are
+    # billing. write_text truncates in place, so a crash, a full disk or a
+    # killed orchestrator part-way through left a file that exists and does not
+    # parse -- and every reader of it then dies on a JSONDecodeError: teardown,
+    # reap, and the scheduled reaper guard that is the last bound on spend once
+    # the orchestrator is gone. A temp file and os.replace() means a reader
+    # sees the previous roster or the new one, never half of either.
+    atomic_write_json(payload, POD_STATE_FILE)
+    # .gitignore covers this path; the mode keeps it off other local accounts.
+    # mkstemp creates the temp at 0600 and os.replace carries that mode across
+    # rather than the target's, so this restates the intent instead of closing
+    # a window -- and the check below is what actually holds it.
+    POD_STATE_FILE.chmod(POD_STATE_MODE)
+    _assert_pod_state_is_private(POD_STATE_FILE)
     logger.info("Pod state saved to %s (%d pods)", POD_STATE_FILE, len(pods))
 
 
 def _read_pod_state() -> dict[str, Any]:
+    """The recorded roster, or raise.
+
+    Deliberately fatal on a file that will not parse. Callers that terminate
+    pods BY ID cannot do anything sensible without the ids, and guessing there
+    would be a silent partial teardown. `reap` is the one caller that can work
+    without them -- it sweeps by name -- and it is the one that catches.
+    """
     if not POD_STATE_FILE.exists():
         raise FileNotFoundError(
             f"No pod state file at {POD_STATE_FILE} — run 'provision' first"
         )
-    raw: Any = json.loads(POD_STATE_FILE.read_text())
+    raw: Any = json.loads(POD_STATE_FILE.read_text(encoding="utf-8"))
     # Tolerate the previous bare-list format so a state file written by an
     # older run can still be read to tear its pods down.
     if isinstance(raw, list):
@@ -514,6 +690,38 @@ def _read_pod_state() -> dict[str, Any]:
         )
     state: dict[str, Any] = raw
     return state
+
+
+def _preserve_corrupt_pod_state() -> None:
+    """Move an unparseable state file aside instead of letting reap delete it.
+
+    reap unlinks the state file on its way out, which is right when the file
+    was understood and its pods dealt with. It is wrong for bytes nothing could
+    read: a truncated record can still name a pod the name sweep cannot see --
+    validation pods carry the `tract-p1b-val` prefix and reap's orphan sweep
+    matches POD_CONFIGS, which holds the test names only -- and those bytes are
+    then the last evidence that pod ever existed.
+
+    A failure to move them is logged and not raised. This runs inside the
+    recovery command, and refusing to reap a billing fleet because a rename
+    failed would be the wrong trade.
+    """
+    destination = POD_STATE_FILE.with_name(
+        POD_STATE_FILE.name + POD_STATE_CORRUPT_SUFFIX
+    )
+    try:
+        size = POD_STATE_FILE.stat().st_size
+        POD_STATE_FILE.replace(destination)
+    except OSError as exc:
+        logger.error(
+            "Could not move the unreadable %s aside (%s). reap will unlink it, "
+            "so copy it now if you want the bytes.", POD_STATE_FILE, exc,
+        )
+        return
+    logger.warning(
+        "Kept the %d unreadable byte(s) at %s. They may still name a pod the "
+        "name sweep cannot match.", size, destination,
+    )
 
 
 def _load_pod_state() -> list[dict[str, Any]]:
@@ -554,6 +762,29 @@ def _extend_deadline() -> None:
                 MAX_RUN_HOURS, meta["deadline_extensions"], MAX_DEADLINE_EXTENSIONS)
 
 
+def _bootstrap_ladder_s() -> int:
+    """Bootstrap's worst case if only the retry ladder bounded it.
+
+    Not what the code permits any more -- BOOTSTRAP_DEADLINE_S is -- but the
+    number that deadline exists to defend against, and the one _check_budget
+    was trying to state. Kept as an expression over the constants rather than
+    a literal so it cannot fall out of step with them: every term below is a
+    knob someone may turn, and turning one used to leave the budget model
+    describing a bootstrap that no longer existed.
+    """
+    # Backoff between attempts is SSH_RETRY_BACKOFF_S * attempt, summed over
+    # every attempt but the last: 15 + 30 + 45.
+    ssh_backoff = (
+        SSH_RETRY_BACKOFF_S * SSH_CONNECT_ATTEMPTS * (SSH_CONNECT_ATTEMPTS - 1) // 2
+    )
+    per_ssh = SSH_CONNECT_ATTEMPTS * SSH_BOOTSTRAP_TIMEOUT_S + ssh_backoff
+    push_backoff = (
+        SSH_RETRY_BACKOFF_S * RSYNC_PUSH_ATTEMPTS * (RSYNC_PUSH_ATTEMPTS - 1) // 2
+    )
+    push = RSYNC_PUSH_ATTEMPTS * RSYNC_PUSH_TIMEOUT_S + push_backoff
+    return BOOTSTRAP_SSH_STEPS * per_ssh + push
+
+
 def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     """Refuse to provision a fleet whose worst case exceeds the budget.
 
@@ -565,24 +796,47 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
     fleet_hourly = price_per_pod * n_pods
 
     # Price the wall the code can actually reach, not the one it intends to.
-    # The bounding timeouts are: bootstrap (three _ssh at SSH_DEFAULT_TIMEOUT_S
-    # plus one rsync), the fold itself, and a SERIAL collect across pods. A
-    # budget check against MAX_RUN_HOURS alone understated the permitted spend
-    # by more than a factor of two, which made the gate unreachable: the $12/hr
-    # part filter already caps worst case below the $1000 budget, so the check
-    # could never fire on any input the caller could produce.
-    bootstrap_h = (3 * SSH_DEFAULT_TIMEOUT_S + RSYNC_TIMEOUT_S) / 3600
+    # The bounding stages are bootstrap, the fold itself, and a SERIAL collect
+    # across pods. A budget check against MAX_RUN_HOURS alone understated the
+    # permitted spend by more than a factor of two, which made the gate
+    # unreachable: the $12/hr part filter already caps worst case below the
+    # $1000 budget, so the check could never fire on any input the caller
+    # could produce.
+    #
+    # The bootstrap term was (3 * SSH_DEFAULT_TIMEOUT_S + RSYNC_TIMEOUT_S), or
+    # 3.50h, and was wrong three ways at once: _bootstrap_pod issues FOUR _ssh
+    # calls, they run at SSH_BOOTSTRAP_TIMEOUT_S rather than the hour-long
+    # default, and neither SSH_CONNECT_ATTEMPTS nor the rsync attempts appeared
+    # in it at all. Two of those errors happened to cancel the third, which is
+    # the least durable way for a number to be approximately right.
+    #
+    # What is priced now is BOOTSTRAP_DEADLINE_S, because that is the bound
+    # _bootstrap_pod enforces on itself; the retry ladder underneath it, still
+    # reported below, is 4.27h and would price a wall no pod can reach. The
+    # slack is the one backoff sleep that can begin just before the deadline
+    # expires.
+    bootstrap_h = (BOOTSTRAP_DEADLINE_S + BOOTSTRAP_DEADLINE_SLACK_S) / 3600
+    ladder_h = _bootstrap_ladder_s() / 3600
     fold_h = FOLD_TIMEOUT_S / 3600
-    collect_h = n_pods * RSYNC_ATTEMPTS * RSYNC_TIMEOUT_S / 3600
+    # Attempts and their backoff, per pod, because collect walks the roster
+    # serially and every pod can pay the full ladder.
+    collect_per_pod_s = (
+        RSYNC_PULL_ATTEMPTS * RSYNC_PULL_TIMEOUT_S
+        + RSYNC_PULL_BACKOFF_S * RSYNC_PULL_ATTEMPTS * (RSYNC_PULL_ATTEMPTS - 1) // 2
+    )
+    collect_h = n_pods * collect_per_pod_s / 3600
     reachable_h = bootstrap_h + fold_h + collect_h
     worst_case = fleet_hourly * reachable_h
 
     logger.info("Budget check:")
     logger.info("  %s at $%.2f/hr x %d pods = $%.2f/hr",
                 gpu_type, price_per_pod, n_pods, fleet_hourly)
-    logger.info("  reachable wall time = %.1fh (bootstrap %.1f + fold %.1f + "
-                "serial collect %.1f), declared cap %.1fh",
+    logger.info("  reachable wall time = %.2fh (bootstrap %.2f + fold %.2f + "
+                "serial collect %.2f), declared cap %.1fh",
                 reachable_h, bootstrap_h, fold_h, collect_h, MAX_RUN_HOURS)
+    logger.info("  bootstrap retry ladder would permit %.2fh/pod; the "
+                "cooperative deadline holds it to %.2fh",
+                ladder_h, bootstrap_h)
     logger.info("  worst case = $%.2f against budget $%.2f",
                 worst_case, BUDGET_USD)
 
@@ -609,6 +863,15 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
         "budget_usd": BUDGET_USD,
         "max_run_hours": MAX_RUN_HOURS,
         "reachable_hours": reachable_h,
+        # Per stage, because the total is a sum of three very different
+        # arguments and the state file is where an operator reconstructs which
+        # one moved. bootstrap_ladder_hours is what the retry ladder would
+        # permit without the deadline: recorded so its removal shows up as a
+        # number, not as a silently cheaper estimate.
+        "bootstrap_hours": bootstrap_h,
+        "bootstrap_ladder_hours": ladder_h,
+        "fold_hours": fold_h,
+        "collect_hours": collect_h,
     }
 
 
@@ -769,6 +1032,31 @@ def provision(
     _preflight_training_stack()
     _preflight_corpus()
     _preflight_tracking()
+
+    # Start every round with no recorded host keys. The file only ever
+    # accumulates, and across a campaign's thirty pod-runs drawn from RunPod's
+    # IP and port pool an endpoint eventually comes back attached to a
+    # different machine. ssh then answers "Host key verification failed", which
+    # _is_transient_ssh_failure refuses to retry -- correctly, because a changed
+    # key normally IS a configuration error rather than a blip. Here it is a
+    # false positive that hard-aborts the bootstrap of a fleet that is already
+    # billing.
+    #
+    # Keeping the file across rounds buys no security to weigh against that.
+    # Every pod is created fresh minutes ago, so there is no legitimate earlier
+    # key for a new one to be compared against: an entry from a previous round
+    # describes a host that no longer exists. Within a round the file still
+    # does its job -- accept-new records each pod's key on first contact, and a
+    # key that changes mid-run is still a hard failure, which is the case this
+    # file was introduced for.
+    if KNOWN_HOSTS_FILE.exists():
+        logger.info(
+            "Discarding %s before this round. Its entries describe pods that "
+            "no longer exist, and a reused IP and port would read as a host-key "
+            "failure -- which is not retried.", KNOWN_HOSTS_FILE,
+        )
+    KNOWN_HOSTS_FILE.unlink(missing_ok=True)
+
     configs = select_pod_configs(folds, split)
     logger.info("Ranking available GPUs (>= 48GB VRAM, <= $%.2f/hr)...",
                 MAX_USD_PER_HOUR_PER_POD)
@@ -842,6 +1130,22 @@ def provision(
         "state": "running",
         "deadline": time.time() + MAX_RUN_HOURS * 3600,
     })
+    # create_pod carries the tier each pod landed on into the state file, so
+    # the record now says WHERE every fold ran and not merely that it did.
+    # Called out here as well because the fallback is silent per pod and the
+    # thing that follows provisioning is _rsync_to, which ships the working
+    # tree -- data/processed/licensed included -- to whichever hosts answered.
+    elsewhere = sorted(
+        p["role"] for p in pods if p.get("cloud_type") != PRICE_CLOUD_TYPE
+    )
+    if elsewhere:
+        logger.warning(
+            "%d of %d fold(s) are on a cloud tier other than %s (or recorded "
+            "none): %s. The licensed corpus is rsynced to those hosts, and the "
+            "budget was priced on %s.",
+            len(elsewhere), len(pods), PRICE_CLOUD_TYPE, elsewhere,
+            PRICE_CLOUD_TYPE,
+        )
     logger.info("All %d pods provisioned and SSH-ready.", len(pods))
     return pods
 
@@ -849,18 +1153,42 @@ def provision(
 def _bootstrap_pod(
     pod: dict[str, Any], base_model: str = PHASE1B_BASE_MODEL,
     env: dict[str, str] | None = None,
+    deadline: float | None = None,
 ) -> None:
+    """Install the stack on one pod, or give up inside BOOTSTRAP_DEADLINE_S.
+
+    Args:
+        deadline: Absolute time.monotonic() value this pod's bootstrap must
+            finish by. Defaults to BOOTSTRAP_DEADLINE_S from now, so a caller
+            that knows nothing about deadlines still gets one.
+
+    Raises:
+        TimeoutError: The deadline passed with steps still to run. The pod is
+            left as it is -- it is still billing and still named in the state
+            file -- and the fleet stops waiting on it.
+
+    Every step is clamped to what remains of the deadline instead of running
+    to its own ceiling. That is the only mechanism that works here: this runs
+    on a worker thread inside run_folds' ThreadPoolExecutor, whose context
+    manager joins every thread on the way out, so a wedged step is not
+    something the orchestrator can cancel from outside -- the thread has to
+    end itself. On 2026-08-27 one did not, and four healthy pods waited 90
+    minutes at the barrier for a fifth that was moving no bytes.
+    """
     ip, port, role = pod["ip"], pod["port"], pod["role"]
+    if deadline is None:
+        deadline = time.monotonic() + BOOTSTRAP_DEADLINE_S
     # The caller passes the env so the credential is read once on the main
     # thread. Falling back to _get_pod_env() here keeps a direct call working,
     # but the fleet path must not take that branch: see run_folds.
     pod_env = _get_pod_env() if env is None else env
-    logger.info("Bootstrapping pod for fold '%s' (%s:%d)...", role, ip, port)
+    logger.info("Bootstrapping pod for fold '%s' (%s:%d), %ds budget...",
+                role, ip, port, BOOTSTRAP_DEADLINE_S)
 
     _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1",
-         check=False, timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+         check=False, timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
-    _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
+    _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/", deadline=deadline)
 
     # --break-system-packages is required, not sloppy. The pod image ships a
     # Debian-packaged Python 3.12, which is PEP 668 "externally managed", so a
@@ -877,7 +1205,7 @@ def _bootstrap_pod(
         "cd /workspace/tract && "
         "pip install --quiet -e '.[phase0]' && "
         "pip install --quiet -r requirements-train.txt"
-    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
     # Fetch the base model once, here, rather than inside the fold. A 429 at
     # this point costs a bootstrap; the same 429 twenty minutes into training
@@ -896,7 +1224,7 @@ def _bootstrap_pod(
         "p = snapshot_download(name, revision=s.revision); "
         "print(f\"cached {name} at {s.revision[:12]} -> {p}\")'"
     ), env={**pod_env, "TRACT_BASE_MODEL": base_model},
-       timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+       timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
     # Fatal, not advisory. This probe used to run with check=False while
     # tract/training/loop.py sets fp16=torch.cuda.is_available(): a driver
@@ -911,9 +1239,10 @@ def _bootstrap_pod(
         "print(f\"torch={torch.__version__} cuda={torch.version.cuda} "
         "gpu={torch.cuda.get_device_name(0)} tf={transformers.__version__} "
         "st={sentence_transformers.__version__} peft={peft.__version__}\")'"
-    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S)
+    ), timeout=SSH_BOOTSTRAP_TIMEOUT_S, deadline=deadline)
 
-    logger.info("Bootstrap complete for fold '%s'", role)
+    logger.info("Bootstrap complete for fold '%s' with %ds of budget to spare",
+                role, max(0, int(deadline - time.monotonic())))
 
 
 def _run_fold_on_pod(
@@ -947,10 +1276,38 @@ def _run_fold_on_pod(
     slug = re.sub(r"[^A-Za-z0-9]+", "_", framework)
     log_path = f"{remote_dir}/fold_{slug}.log"
     exit_path = f"{remote_dir}/fold_{slug}.exit"
+    # IDEMPOTENT, because this command is sent through a transport that retries.
+    #
+    # _ssh retries on TimeoutExpired, and the launch used to be given
+    # SSH_DEFAULT_TIMEOUT_S -- one hour -- for a command whose whole job is to
+    # detach a process and echo. On 2026-08-28 arm A3's folds ran ~89 minutes
+    # each; the launch session hit its one-hour wall, _ssh retried, and a SECOND
+    # detached trainer started on the same GPU. `setsid` guarantees the first
+    # survives, so both then trained the same fold at half speed, into a log
+    # they interleaved, and the fold could not finish inside FOLD_TIMEOUT_S.
+    # Confirmed on the pod: pids 1248 and 1720, both `run_fold --framework
+    # 'NIST 800-53 v5'`, 6636 MiB and 6576 MiB on one A100, started exactly
+    # sixty minutes apart.
+    #
+    # The bug was invisible until a fold outran the launch timeout. Arm A1's
+    # 34-minute folds finished before the wall was ever reached, so A1 passed
+    # not because this was correct but because it was fast enough.
+    #
+    # `mkdir` is the guard because it is atomic on POSIX and needs no process
+    # matching: exactly one caller can create the directory, so a retry takes
+    # the else branch and reports the launch it did not perform. A pgrep guard
+    # was the obvious alternative and is the wrong tool -- the shell running the
+    # pgrep carries the pattern in its own command line, which is a defect this
+    # repository has now written three times.
+    lock_path = f"{remote_dir}/fold_{slug}.launched"
     launch = (
-        f"cd {remote_dir} && rm -f {shlex.quote(exit_path)} && "
+        f"cd {remote_dir} && "
+        f"if mkdir {shlex.quote(lock_path)} 2>/dev/null; then "
+        f"rm -f {shlex.quote(exit_path)}; "
         f"setsid nohup bash -c {shlex.quote(fold_cmd + f'; echo $? > {exit_path}')} "
-        f"> {shlex.quote(log_path)} 2>&1 < /dev/null & echo started"
+        f"> {shlex.quote(log_path)} 2>&1 < /dev/null & "
+        f"echo started; "
+        f"else echo already-launched; fi"
     )
 
     logger.info("[%s] Launching fold (detached)...", framework)
@@ -961,12 +1318,64 @@ def _run_fold_on_pod(
     # hiccup ended the fleet. See run_folds for the other half of the fix.
     pod_env = _get_pod_env() if env is None else env
     try:
-        _ssh(ip, port, launch, env=pod_env, timeout=SSH_DEFAULT_TIMEOUT_S)
+        launched = _ssh(ip, port, launch, env=pod_env,
+                        timeout=SSH_LAUNCH_TIMEOUT_S)
     except Exception as e:
         elapsed = time.time() - start
         logger.error("[%s] LAUNCH FAILED after %.1fm: %s", framework, elapsed / 60, e)
         return {"fold": framework, "status": "failed",
                 "error": f"launch: {e}", "elapsed_s": elapsed}
+
+    # The lock's two branches mean opposite things and the exit status cannot
+    # tell them apart -- both are 0. Reading the word it echoed is the whole
+    # point of echoing it, and this was written without a reader: a retry took
+    # the else branch, satisfied check=True, and the poller below then read the
+    # PREVIOUS run's exit file within one poll interval. With a prior exit of 0
+    # that reports COMPLETE in seconds having trained nothing, and `collect`
+    # then rsyncs the old results into a number nobody re-earned. The runbook
+    # and the orchestrator's own failure message both tell an operator to
+    # re-run `run`, so this is a documented path, not an exotic one.
+    # Exact match on the last line, not a substring scan of the whole stream.
+    # The launch echoes exactly one of two words, so `in` was both looser than
+    # needed and the same shape as the argv-substring defect the hygiene test
+    # exists to catch: any path or log line containing "already-launched"
+    # anywhere in stdout would have satisfied it.
+    launch_lines = (launched.stdout or "").strip().splitlines()
+    if launch_lines and launch_lines[-1].strip() == "already-launched":
+        alive = _ssh(
+            ip, port,
+            # Same probe shape as reaper_guard.pod_training_state, and for the
+            # same reason: a pgrep carries its own pattern in its own command
+            # line, so the probing shell answers about itself. $$ is excluded
+            # explicitly and the process is identified by its exe being python
+            # plus the run_fold MODULE path in argv, not by a loose substring.
+            "for p in /proc/[0-9]*; do "
+            '  pid=${p##*/}; [ "$pid" = "$$" ] && continue; '
+            "  exe=$(readlink -f $p/exe 2>/dev/null) || continue; "
+            '  case "${exe##*/}" in python*) ;; *) continue ;; esac; '
+            "  if tr '\\0' ' ' < $p/cmdline 2>/dev/null "
+            "     | grep -q 'scripts.phase1b.run_fold'; then "
+            "    echo BUSY; exit 0; fi; "
+            "done; echo IDLE",
+            check=False, timeout=SSH_LAUNCH_TIMEOUT_S,
+        )
+        answer = (alive.stdout or "").strip().splitlines()
+        if answer and answer[-1] == "BUSY":
+            logger.info("[%s] A trainer is already running; attaching to it",
+                        framework)
+        else:
+            elapsed = time.time() - start
+            logger.error(
+                "[%s] REFUSING: %s exists but no trainer is running, so this "
+                "pod holds a FINISHED fold. Polling would report that run's "
+                "stale exit code as though this launch produced it. To re-run "
+                "deliberately: ssh in and `rm -rf %s`.",
+                framework, lock_path, lock_path,
+            )
+            return {"fold": framework, "status": "failed",
+                    "error": f"stale launch lock at {lock_path}; refusing to "
+                             "report a prior run's exit code as this one's",
+                    "elapsed_s": elapsed}
 
     # Poll for the sentinel. A dropped poll is retried rather than fatal: the
     # fold is still running on the pod either way, and treating a transient
@@ -1497,6 +1906,17 @@ def reap(confirm: bool = False) -> None:
     # killed orchestrator -- is the one where this file is gone or stale.
     # Returning early here made the single recovery command report all-clear
     # on a fleet that was still billing.
+    #
+    # A file that exists and does not parse is that same situation wearing a
+    # different exception, and only FileNotFoundError was caught: a truncated
+    # state file therefore raised JSONDecodeError out of the ONE command that
+    # recovers a fleet -- and out of reaper_guard, which calls reap(confirm=True)
+    # and is the only automatic bound on spend once the orchestrator has died.
+    # ValueError is the right net: json.JSONDecodeError and UnicodeDecodeError
+    # both derive from it, as does _read_pod_state's own refusal of a payload
+    # that is neither a list nor an object. All three mean the same thing here
+    # -- there are no pod ids to work from -- and the name sweep below is what
+    # this command does when there are none.
     try:
         state = _read_pod_state()
     except FileNotFoundError:
@@ -1504,6 +1924,16 @@ def reap(confirm: bool = False) -> None:
             "No state file. Sweeping the account for pods matching this "
             "run's names instead."
         )
+        state = {"pods": [], "meta": {}}
+    except ValueError as exc:
+        logger.error(
+            "%s exists but did not parse: %s. Treating it as absent and "
+            "sweeping the account for pods matching this run's names. That "
+            "sweep is blind to any pod whose name is not in POD_CONFIGS, so "
+            "check the RunPod console before calling this fleet dead.",
+            POD_STATE_FILE, exc,
+        )
+        _preserve_corrupt_pod_state()
         state = {"pods": [], "meta": {}}
 
     pods = state["pods"]
@@ -1519,9 +1949,28 @@ def reap(confirm: bool = False) -> None:
     # exactly when reap is reached for. Terminating an empty list and reporting
     # "reaped cleanly" would hand back a false all-clear in the one case this
     # command exists for. Fall back to matching the account's running pods by
-    # the deterministic names in POD_CONFIGS.
+    # the deterministic names both splits can produce.
+    #
+    # BOTH splits, and that is not a detail. This matched POD_CONFIGS until
+    # 2026-08-27, and POD_CONFIGS is built from FOLD_FRAMEWORKS -- the TEST
+    # roster -- so it holds tract-p1b-fold0..4 only. select_pod_configs names
+    # validation pods tract-p1b-val-fold0..4 under a different prefix, and the
+    # two sets are disjoint. The sweep was therefore blind to every validation
+    # pod, which is four of Campaign 2's rounds.
+    #
+    # It cost a manual recovery within minutes of the first provision. A
+    # capacity error killed fold0 while four validation pods came up billing;
+    # the operator interrupted inside the pods=[] window this comment describes,
+    # so teardown reported "nothing scoped to terminate" and this fallback --
+    # the one path built for exactly that window -- would have swept past all
+    # four because their names were not in POD_CONFIGS. They had to be
+    # terminated by hand.
     known_ids = {p["pod_id"] for p in pods if p.get("pod_id")}
-    expected_names = {c["name"] for c in POD_CONFIGS}
+    expected_names = {
+        config["name"]
+        for split in ("test", "validation")
+        for config in select_pod_configs(None, split)
+    }
     orphans = [
         p for p in get_running_pods()
         if p.get("name") in expected_names and p.get("id") not in known_ids
@@ -1674,9 +2123,19 @@ def main() -> int:
                         default="test",
                         help="validation selects arms on 1,265 non-AI items; "
                              "test reports on the pre-registered 147")
-    parser.add_argument("--n-configurations", type=int, default=1,
-                        help="How many arms competed. Sidak-corrects the gate "
-                             "so a winner is not mistaken for a result.")
+    # No default, deliberately. This used to default to 1, and a forgotten flag
+    # then produced an UNCORRECTED nominal interval that is indistinguishable
+    # from a correct one -- no error, no warning, just a gate that priced a
+    # three-arm raffle as though one arm had run. Campaign 2 needs 3 on the
+    # validation aggregates where selection happens and 1 on the single
+    # uncontaminated test round, so neither value is safe as a silent default.
+    # Forcing the operator to state it converts a silent wrong number into a
+    # loud missing argument. See results/phase1b/CAMPAIGN2.md reporting rule 2.
+    parser.add_argument("--n-configurations", type=int, default=None,
+                        help="REQUIRED for `aggregate`. How many arms competed. "
+                             "Sidak-corrects the gate so a winner is not "
+                             "mistaken for a result. Campaign 2: 3 on "
+                             "validation, 1 on the test round.")
     parser.add_argument("--base-model", type=str, default=None,
                         help="Encoder arm: fine-tune this model instead of "
                              "the pinned BGE-large")
@@ -1726,6 +2185,22 @@ def main() -> int:
         raise SystemExit(
             f"Refusing to run arm {arm_flags} into the default results "
             f"directory. Pass a distinct --config-name."
+        )
+
+    # Checked here rather than by argparse's `required=`, because the flag is
+    # only meaningful for the two actions that reach gate_decision. Making it
+    # globally required would force a meaningless number onto `price`, `reap`
+    # and `teardown`, which is how required flags get reflexively set to 1.
+    if args.action in ("full", "aggregate") and args.n_configurations is None:
+        raise SystemExit(
+            "--n-configurations is required for "
+            f"`{args.action}` and has no default. It Sidak-corrects the gate "
+            "for the number of arms that competed, and a wrong value produces "
+            "an interval that looks correct. Campaign 2 pre-registers 3 for "
+            "the validation aggregates where arm selection happens, and 1 for "
+            "the single test round, because selection already happened on a "
+            "disjoint split. See results/phase1b/CAMPAIGN2.md, reporting "
+            "rule 2."
         )
 
     if args.action == "full":

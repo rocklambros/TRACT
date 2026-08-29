@@ -87,6 +87,19 @@ tract download --force               # Re-download even if files already exist
 - Model + inference artifacts: [`rockCO78/tract-cre-assignment`](https://huggingface.co/rockCO78/tract-cre-assignment)
 - Crosswalk database: [`rockCO78/tract-crosswalk-dataset`](https://huggingface.co/datasets/rockCO78/tract-crosswalk-dataset)
 
+**Integrity.** Both halves are fetched at a pinned revision and checked against
+a sha256 recorded in `tract/config.py`. The model pins are recorded; the dataset
+pins (`TRACT_DATASET_PINNED_REVISION`, `TRACT_CROSSWALK_DB_SHA256`) are still
+`UNSET`, and until a maintainer records them **`tract download` exits 4 rather
+than fetching a database nothing can verify**. `tract download --model-only`
+and `tract assign` are unaffected. To fetch it anyway, name the revision you
+want and state the digest you expect:
+
+```bash
+TRACT_DATASET_REVISION=<sha> TRACT_DATASET_SHA256=<sha256> tract download
+TRACT_DATASET_REVISION=<sha> TRACT_DATASET_ALLOW_UNVERIFIED=1 tract download  # no check at all
+```
+
 ---
 
 ## Explore
@@ -527,6 +540,8 @@ tract publish-hf --repo-id <repo-id> [options]
 | `--dry-run` | flag | false | Build and scan, no upload |
 | `--skip-upload` | flag | false | Build and scan only |
 | `--gpu-hours` | float | none | GPU training hours for model card |
+| `--validate-aibom` | flag | false | Clone and execute the third-party AIBOM validator on this host; off by default, including under `--dry-run` |
+| `--aibom-commit` | string | none | Full 40-character commit SHA of aibom-generator to run; required with `--validate-aibom`, branch names are refused |
 
 **Examples:**
 ```bash

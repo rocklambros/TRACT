@@ -1,0 +1,104 @@
+[
+  {
+    "control_text": "Data and Model Poisoning",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "555-083",
+      "020-540",
+      "867-642",
+      "738-144",
+      "838-636",
+      "567-025",
+      "061-753",
+      "701-654"
+    ]
+  },
+  {
+    "control_text": "Supply Chain",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "613-285",
+      "881-234",
+      "852-770",
+      "423-055",
+      "883-173",
+      "701-654",
+      "613-286",
+      "473-177",
+      "223-780",
+      "234-282"
+    ]
+  },
+  {
+    "control_text": "Sensitive Information Disclosure",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "308-515",
+      "044-202",
+      "818-434",
+      "208-805",
+      "362-550",
+      "204-272",
+      "571-640",
+      "220-870",
+      "447-083",
+      "510-324"
+    ]
+  },
+  {
+    "control_text": "Improper Output Handling",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "780-757",
+    "predicted_top10": [
+      "204-272",
+      "660-052",
+      "161-451",
+      "503-455",
+      "356-282",
+      "088-316",
+      "010-108",
+      "725-682",
+      "611-158",
+      "660-867"
+    ]
+  },
+  {
+    "control_text": "Prompt Injection",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "012-625",
+      "686-110",
+      "536-158",
+      "106-447",
+      "483-253",
+      "843-475",
+      "480-071",
+      "257-668",
+      "073-507",
+      "278-413"
+    ]
+  },
+  {
+    "control_text": "Unbounded Consumption",
+    "framework": "OWASP Top10 for LLM",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "746-705",
+      "630-573",
+      "463-820",
+      "660-052",
+      "268-088",
+      "176-154",
+      "886-662",
+      "230-318",
+      "187-083",
+      "560-224"
+    ]
+  }
+]

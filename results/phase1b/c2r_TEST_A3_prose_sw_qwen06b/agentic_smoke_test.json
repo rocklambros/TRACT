@@ -1,0 +1,380 @@
+{
+  "config_name": "c2r_TEST_A3_prose_sw_qwen06b",
+  "counts_by_fold": {
+    "MITRE ATLAS": 1,
+    "NIST AI 100-2": 1,
+    "OWASP AI Exchange": 2,
+    "OWASP Top10 for LLM": 1,
+    "OWASP Top10 for ML": 1
+  },
+  "is_a_metric": false,
+  "n_items": 6,
+  "n_models_scored": 5,
+  "per_fold": [
+    {
+      "held_out_framework": "MITRE ATLAS",
+      "hit_at_1": 0.16666666666666666,
+      "hit_at_5": 0.5,
+      "model_dir": "/workspace/tract/results/phase1b/c2r_TEST_A3_prose_sw_qwen06b/fold_MITRE_ATLAS/model/model",
+      "mrr": 0.33134920634920634,
+      "n_correct": 1,
+      "n_items": 6,
+      "n_wrong_branch": 4,
+      "per_item": [
+        {
+          "control_id": "ASI01",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 18,
+          "same_branch": false,
+          "top1_hub_id": "686-110",
+          "top1_hub_name": "Direct prompt injection"
+        },
+        {
+          "control_id": "ASI02",
+          "correct": true,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 1,
+          "same_branch": true,
+          "top1_hub_id": "220-442",
+          "top1_hub_name": "Model action privilege minimization"
+        },
+        {
+          "control_id": "ASI04",
+          "correct": false,
+          "ground_truth_hub_id": "881-234",
+          "ground_truth_hub_name": "AI supply chain management",
+          "rank_of_truth": 2,
+          "same_branch": false,
+          "top1_hub_id": "701-654",
+          "top1_hub_name": "Supply-chain model poisoning"
+        },
+        {
+          "control_id": "ASI06",
+          "correct": false,
+          "ground_truth_hub_id": "020-540",
+          "ground_truth_hub_name": "Direct runtime model poisoning",
+          "rank_of_truth": 4,
+          "same_branch": true,
+          "top1_hub_id": "481-710",
+          "top1_hub_name": "AI model poisoning"
+        },
+        {
+          "control_id": "ASI09",
+          "correct": false,
+          "ground_truth_hub_id": "202-604",
+          "ground_truth_hub_name": "Human AI oversight",
+          "rank_of_truth": 14,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        },
+        {
+          "control_id": "ASI10",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 9,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        }
+      ]
+    },
+    {
+      "held_out_framework": "NIST AI 100-2",
+      "hit_at_1": 0.16666666666666666,
+      "hit_at_5": 0.5,
+      "model_dir": "/workspace/tract/results/phase1b/c2r_TEST_A3_prose_sw_qwen06b/fold_NIST_AI_100-2/model/model",
+      "mrr": 0.34848484848484845,
+      "n_correct": 1,
+      "n_items": 6,
+      "n_wrong_branch": 4,
+      "per_item": [
+        {
+          "control_id": "ASI01",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 24,
+          "same_branch": false,
+          "top1_hub_id": "686-110",
+          "top1_hub_name": "Direct prompt injection"
+        },
+        {
+          "control_id": "ASI02",
+          "correct": true,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 1,
+          "same_branch": true,
+          "top1_hub_id": "220-442",
+          "top1_hub_name": "Model action privilege minimization"
+        },
+        {
+          "control_id": "ASI04",
+          "correct": false,
+          "ground_truth_hub_id": "881-234",
+          "ground_truth_hub_name": "AI supply chain management",
+          "rank_of_truth": 2,
+          "same_branch": false,
+          "top1_hub_id": "701-654",
+          "top1_hub_name": "Supply-chain model poisoning"
+        },
+        {
+          "control_id": "ASI06",
+          "correct": false,
+          "ground_truth_hub_id": "020-540",
+          "ground_truth_hub_name": "Direct runtime model poisoning",
+          "rank_of_truth": 3,
+          "same_branch": true,
+          "top1_hub_id": "481-710",
+          "top1_hub_name": "AI model poisoning"
+        },
+        {
+          "control_id": "ASI09",
+          "correct": false,
+          "ground_truth_hub_id": "202-604",
+          "ground_truth_hub_name": "Human AI oversight",
+          "rank_of_truth": 8,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        },
+        {
+          "control_id": "ASI10",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 11,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        }
+      ]
+    },
+    {
+      "held_out_framework": "OWASP AI Exchange",
+      "hit_at_1": 0.3333333333333333,
+      "hit_at_5": 0.5,
+      "model_dir": "/workspace/tract/results/phase1b/c2r_TEST_A3_prose_sw_qwen06b/fold_OWASP_AI_Exchange/model/model",
+      "mrr": 0.4628205128205128,
+      "n_correct": 2,
+      "n_items": 6,
+      "n_wrong_branch": 3,
+      "per_item": [
+        {
+          "control_id": "ASI01",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 10,
+          "same_branch": false,
+          "top1_hub_id": "686-110",
+          "top1_hub_name": "Direct prompt injection"
+        },
+        {
+          "control_id": "ASI02",
+          "correct": true,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 1,
+          "same_branch": true,
+          "top1_hub_id": "220-442",
+          "top1_hub_name": "Model action privilege minimization"
+        },
+        {
+          "control_id": "ASI04",
+          "correct": true,
+          "ground_truth_hub_id": "881-234",
+          "ground_truth_hub_name": "AI supply chain management",
+          "rank_of_truth": 1,
+          "same_branch": true,
+          "top1_hub_id": "881-234",
+          "top1_hub_name": "AI supply chain management"
+        },
+        {
+          "control_id": "ASI06",
+          "correct": false,
+          "ground_truth_hub_id": "020-540",
+          "ground_truth_hub_name": "Direct runtime model poisoning",
+          "rank_of_truth": 2,
+          "same_branch": true,
+          "top1_hub_id": "481-710",
+          "top1_hub_name": "AI model poisoning"
+        },
+        {
+          "control_id": "ASI09",
+          "correct": false,
+          "ground_truth_hub_id": "202-604",
+          "ground_truth_hub_name": "Human AI oversight",
+          "rank_of_truth": 13,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        },
+        {
+          "control_id": "ASI10",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 10,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        }
+      ]
+    },
+    {
+      "held_out_framework": "OWASP Top10 for LLM",
+      "hit_at_1": 0.16666666666666666,
+      "hit_at_5": 0.6666666666666666,
+      "model_dir": "/workspace/tract/results/phase1b/c2r_TEST_A3_prose_sw_qwen06b/fold_OWASP_Top10_for_LLM/model/model",
+      "mrr": 0.4184941520467836,
+      "n_correct": 1,
+      "n_items": 6,
+      "n_wrong_branch": 4,
+      "per_item": [
+        {
+          "control_id": "ASI01",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 19,
+          "same_branch": false,
+          "top1_hub_id": "686-110",
+          "top1_hub_name": "Direct prompt injection"
+        },
+        {
+          "control_id": "ASI02",
+          "correct": true,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 1,
+          "same_branch": true,
+          "top1_hub_id": "220-442",
+          "top1_hub_name": "Model action privilege minimization"
+        },
+        {
+          "control_id": "ASI04",
+          "correct": false,
+          "ground_truth_hub_id": "881-234",
+          "ground_truth_hub_name": "AI supply chain management",
+          "rank_of_truth": 2,
+          "same_branch": false,
+          "top1_hub_id": "701-654",
+          "top1_hub_name": "Supply-chain model poisoning"
+        },
+        {
+          "control_id": "ASI06",
+          "correct": false,
+          "ground_truth_hub_id": "020-540",
+          "ground_truth_hub_name": "Direct runtime model poisoning",
+          "rank_of_truth": 2,
+          "same_branch": true,
+          "top1_hub_id": "481-710",
+          "top1_hub_name": "AI model poisoning"
+        },
+        {
+          "control_id": "ASI09",
+          "correct": false,
+          "ground_truth_hub_id": "202-604",
+          "ground_truth_hub_name": "Human AI oversight",
+          "rank_of_truth": 3,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        },
+        {
+          "control_id": "ASI10",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 8,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        }
+      ]
+    },
+    {
+      "held_out_framework": "OWASP Top10 for ML",
+      "hit_at_1": 0.16666666666666666,
+      "hit_at_5": 0.6666666666666666,
+      "model_dir": "/workspace/tract/results/phase1b/c2r_TEST_A3_prose_sw_qwen06b/fold_OWASP_Top10_for_ML/model/model",
+      "mrr": 0.4060185185185185,
+      "n_correct": 1,
+      "n_items": 6,
+      "n_wrong_branch": 4,
+      "per_item": [
+        {
+          "control_id": "ASI01",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 5,
+          "same_branch": false,
+          "top1_hub_id": "686-110",
+          "top1_hub_name": "Direct prompt injection"
+        },
+        {
+          "control_id": "ASI02",
+          "correct": true,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 1,
+          "same_branch": true,
+          "top1_hub_id": "220-442",
+          "top1_hub_name": "Model action privilege minimization"
+        },
+        {
+          "control_id": "ASI04",
+          "correct": false,
+          "ground_truth_hub_id": "881-234",
+          "ground_truth_hub_name": "AI supply chain management",
+          "rank_of_truth": 2,
+          "same_branch": false,
+          "top1_hub_id": "701-654",
+          "top1_hub_name": "Supply-chain model poisoning"
+        },
+        {
+          "control_id": "ASI06",
+          "correct": false,
+          "ground_truth_hub_id": "020-540",
+          "ground_truth_hub_name": "Direct runtime model poisoning",
+          "rank_of_truth": 2,
+          "same_branch": true,
+          "top1_hub_id": "481-710",
+          "top1_hub_name": "AI model poisoning"
+        },
+        {
+          "control_id": "ASI09",
+          "correct": false,
+          "ground_truth_hub_id": "202-604",
+          "ground_truth_hub_name": "Human AI oversight",
+          "rank_of_truth": 9,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        },
+        {
+          "control_id": "ASI10",
+          "correct": false,
+          "ground_truth_hub_id": "220-442",
+          "ground_truth_hub_name": "Model action privilege minimization",
+          "rank_of_truth": 8,
+          "same_branch": false,
+          "top1_hub_id": "061-753",
+          "top1_hub_name": "AI model behaviour integrity threats"
+        }
+      ]
+    }
+  ],
+  "range": [
+    1,
+    2
+  ],
+  "verdict_against_pre_declared_condition": "fail"
+}

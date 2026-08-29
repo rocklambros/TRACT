@@ -31,6 +31,61 @@ def _measured(source: dict[str, Any], key: str, origin: str) -> Any:
     return source[key]
 
 
+# Why a fold is the weakest is a claim about that framework, and it is only made
+# where the errors have actually been read. MITRE ATLAS is the one fold whose
+# misses were inspected by hand: they landed on hubs adjacent to the right one
+# rather than on unrelated ones. Any other framework arriving in this position
+# gets the note below, which asserts nothing that has not been measured.
+WEAKEST_FOLD_NOTES: dict[str, str] = {
+    "MITRE ATLAS": (
+        'ATLAS techniques are highly specific ("Adversarial Perturbation" vs. '
+        '"Data Poisoning") and map to closely related hubs that are hard to '
+        "disambiguate. The model often predicts a neighboring hub rather than "
+        "the exact one."
+    ),
+}
+
+GENERIC_WEAKEST_FOLD_NOTE: str = (
+    "The model places this framework's controls least reliably of the folds in "
+    "this run. No error analysis has been published for it, so the reason is "
+    "not asserted here."
+)
+
+
+def _ranked_folds(
+    fold_results: list[dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Return the (strongest, weakest) fold by measured hit@1.
+
+    The interpretive prose under the results table used to name its folds and
+    quote their percentages as literals — 76.2% for OWASP AI Exchange, 27.9% for
+    MITRE ATLAS — so every regenerated card repeated the campaign-1 figures that
+    PRD.md later withdrew, whatever run was actually being published. The
+    limitations section had the same defect in a subtler form: it reached into
+    `fold_results[0]` and called it ATLAS, so reordering the caller's list moved
+    one fold's number under another fold's name.
+
+    Ties break on fold name so a re-run renders a byte-identical card.
+    """
+    if not fold_results:
+        raise ValueError(
+            "Model card cannot be built: fold_results is empty, so there is no "
+            "measured fold to describe. Run the LOFO evaluation before publishing."
+        )
+    # Through _measured, like every other published figure in this module. A
+    # direct fold["hit1"] raises a bare KeyError naming neither the file nor
+    # the fold, from the one function whose whole purpose is provenance -- and
+    # _measured exists precisely to report "not measured, from <origin>".
+    ordered = sorted(
+        fold_results,
+        key=lambda fold: (
+            _measured(fold, "hit1", "a fold_results entry"),
+            _measured(fold, "fold", "a fold_results entry"),
+        ),
+    )
+    return ordered[-1], ordered[0]
+
+
 def _measured_ci(fold_results: list[dict[str, Any]]) -> dict[str, float]:
     """Compute the aggregate hit@1 interval by fold-stratified bootstrap.
 
@@ -80,6 +135,13 @@ def generate_model_card(
         )
         total_n += fold["n"]
 
+    # Derived, not "5". The sentence rendering total_n also said "across 5 AI
+    # frameworks" as a literal, so a four- or six-fold run published a card
+    # stating the wrong fold count immediately beside a correctly derived
+    # control count -- the exact literal-versus-derived defect the rest of this
+    # module was rewritten to remove.
+    n_folds = len(fold_results)
+
     micro_hit1 = sum(f["hit1"] * f["n"] for f in fold_results) / total_n
     micro_zs = sum(f["zs_hit1"] * f["n"] for f in fold_results) / total_n
     micro_delta = micro_hit1 - micro_zs
@@ -106,10 +168,31 @@ def generate_model_card(
     # in tract.training.evaluate, not from arithmetic on the point estimate.
     hit1_ci = _measured_ci(fold_results)
 
-    bridge_counts = bridge_summary.get("counts", {})
-    n_accepted = bridge_counts.get("accepted", 0)
-    n_rejected = bridge_counts.get("rejected", 0)
-    n_total = bridge_counts.get("total", 0)
+    # Zero accepted bridges is a publishable result, so it must not also be what
+    # a missing bridge_report.json looks like. These were `.get(key, 0)`.
+    bridge_counts = _measured(bridge_summary, "counts", "bridge_report.json")
+    n_accepted = _measured(bridge_counts, "accepted", "bridge_report.json counts")
+    n_rejected = _measured(bridge_counts, "rejected", "bridge_report.json counts")
+    n_total = _measured(bridge_counts, "total", "bridge_report.json counts")
+
+    # The fold-level prose below is derived, never literal: see _ranked_folds.
+    strongest_fold, weakest_fold = _ranked_folds(fold_results)
+    weakest_note = WEAKEST_FOLD_NOTES.get(
+        weakest_fold["fold"], GENERIC_WEAKEST_FOLD_NOTE,
+    )
+    # hit@any is a top-1 measure — the top prediction matching any of a
+    # control's correct hubs. The limitations section used to render it as
+    # "hit@5 is {fold_results[0].get('hit_any', 0.6):.1%}", which both mislabeled
+    # the measure and invented 60% for any run that did not report it. A fold
+    # without the field now contributes no sentence at all.
+    weakest_hit_any = weakest_fold.get("hit_any")
+    if isinstance(weakest_hit_any, (int, float)):
+        weakest_hit_any_sentence = (
+            " Counting a hit against any of a control's correct hubs raises "
+            f"this fold to {weakest_hit_any:.1%} (hit@any)."
+        )
+    else:
+        weakest_hit_any_sentence = ""
 
     # The licence block comes from tract.licensing, not from a literal here.
     # This card declared `mit` while the dataset card declared `cc-by-sa-4.0`
@@ -312,14 +395,15 @@ This simulates the real use case: mapping a **brand-new framework** the model ha
 - **hit@any:** Accuracy when the control correctly maps to multiple hubs (since ~35% of controls belong to more than one hub, this is a fairer measure)
 - **n:** Number of controls in that framework's test set
 
-**What the numbers mean:**
-- **OWASP AI Exchange (76.2%):** Strong performance -- the model correctly assigns 3 out of 4 AI security controls to their right hub on the first try
-- **MITRE ATLAS (27.9%):** Weakest fold. ATLAS techniques are highly specific ("Adversarial Perturbation" vs. "Data Poisoning") and map to closely related hubs that are hard to disambiguate. The model often picks a neighboring hub rather than the exact one
-- **Micro average ({micro_hit1:.1%}):** Overall, the model's top prediction is correct about half the time -- and when accounting for multi-hub controls, accuracy is higher
+**What the numbers mean:** every figure below is computed from the folds in this
+run. Read them under the erratum at the top of this card.
+- **Strongest fold -- {strongest_fold['fold']} ({strongest_fold['hit1']:.1%} hit@1):** the model's top prediction is right most often on this framework's controls
+- **Weakest fold -- {weakest_fold['fold']} ({weakest_fold['hit1']:.1%} hit@1):** the hardest framework to place in this run; see [Limitations](#limitations-and-known-issues) for what is and is not known about why
+- **Micro average ({micro_hit1:.1%}):** the sample-weighted mean over {total_n} controls, so the larger folds dominate it. Read it against the interval below, not on its own
 
 ### Confidence Intervals
 
-All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{hit1_ci['ci_low']:.3f}, {hit1_ci['ci_high']:.3f}], computed by fold-stratified bootstrap over the per-fold hit@1 indicators, reflecting the relatively small evaluation set ({total_n} controls across 5 AI frameworks).
+All metrics include bootstrap confidence intervals (10,000 resamples, 95% CI). The aggregate hit@1 CI is [{hit1_ci['ci_low']:.3f}, {hit1_ci['ci_high']:.3f}], computed by fold-stratified bootstrap over the per-fold hit@1 indicators, reflecting the relatively small evaluation set ({total_n} controls across {n_folds} held-out frameworks).
 
 ---
 
@@ -524,7 +608,7 @@ for hub_id, hub in hierarchy["hubs"].items():
 
 ## Limitations and Known Issues
 
-1. **ATLAS fold performance ({fold_results[0]['hit1']:.1%} hit@1):** MITRE ATLAS techniques map to closely related hubs (e.g., "Data Poisoning" vs. "Adversarial Perturbation") that are hard to disambiguate. The model often predicts a neighboring hub rather than the exact one. hit@5 is {fold_results[0].get('hit_any', 0.6):.1%}, showing the correct hub is usually in the top 5.
+1. **Weakest fold -- {weakest_fold['fold']} ({weakest_fold['hit1']:.1%} hit@1):** {weakest_note}{weakest_hit_any_sentence}
 
 2. **Multi-hub controls (35%):** About 1 in 3 controls legitimately maps to more than one hub. hit@1 alone understates performance -- the hit@any column in the evaluation table is a fairer measure.
 
