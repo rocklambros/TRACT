@@ -38,9 +38,11 @@ def test_provision_falls_through_capacity_errors(
         lambda **_k: [("NVIDIA A100", 1.9), ("NVIDIA L40S", 0.9)],
     )
     tried: list[str] = []
+    images: list[str] = []
 
-    def _create(gpu_type_id: str, name: str) -> dict[str, Any]:
+    def _create(gpu_type_id: str, name: str, image: str) -> dict[str, Any]:
         tried.append(gpu_type_id)
+        images.append(image)
         if gpu_type_id == "NVIDIA A100":
             raise _Capacity("no capacity")
         return {"pod_id": "p1", "ip": "1.2.3.4", "port": 22,
@@ -54,6 +56,11 @@ def test_provision_falls_through_capacity_errors(
     # The driver's teardown and reporting read both of these off the pod dict.
     assert pod["role"] == "agentic-smoke"
     assert pod["usd_per_hour"] == 0.9
+    # The digest-pinned fleet image, never create_pod's py3.11 default. Taking
+    # the default produced a stack whose transformers could not import
+    # PreTrainedModel and killed the first run during bootstrap.
+    assert images == [smoke_on_pod.DOCKER_IMAGE] * 2
+    assert smoke_on_pod.DOCKER_IMAGE.startswith("runpod/pytorch@sha256:")
 
 
 def test_provision_reraises_non_capacity_errors(
@@ -66,7 +73,7 @@ def test_provision_reraises_non_capacity_errors(
     )
     tried: list[str] = []
 
-    def _create(gpu_type_id: str, name: str) -> dict[str, Any]:
+    def _create(gpu_type_id: str, name: str, image: str) -> dict[str, Any]:
         tried.append(gpu_type_id)
         raise PermissionError("bad api key")
 
@@ -92,7 +99,7 @@ def test_provision_refuses_when_every_candidate_is_out_of_capacity(
         lambda **_k: [("NVIDIA A100", 1.9), ("NVIDIA L40S", 0.9)],
     )
 
-    def _create(gpu_type_id: str, name: str) -> dict[str, Any]:
+    def _create(gpu_type_id: str, name: str, image: str) -> dict[str, Any]:
         raise _Capacity("no capacity")
 
     monkeypatch.setattr(smoke_on_pod, "create_pod", _create)

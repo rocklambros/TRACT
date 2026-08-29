@@ -35,6 +35,7 @@ from scripts.phase0.runpod_provision import (
     terminate_pod,
 )
 from scripts.phase1b.runpod_parallel import (
+    DOCKER_IMAGE,
     PROJECT_ROOT,
     _bootstrap_pod,
     _rsync_from,
@@ -71,7 +72,16 @@ def _provision() -> dict[str, Any]:
     for gpu_id, price in candidates:
         try:
             logger.info("Trying %s at $%.2f/hr", gpu_id, price)
-            pod = create_pod(gpu_type_id=gpu_id, name=POD_NAME)
+            # DOCKER_IMAGE, never create_pod's default. The default is
+            # runpod/pytorch:2.4.0-py3.11, and requirements-train.txt is pinned
+            # against the Python 3.12 inside the digest-pinned image. Taking
+            # the default installed a transformers/sentence-transformers pair
+            # that cannot import PreTrainedModel, and the bootstrap died on its
+            # own verification step. A fleet and a one-off pod that disagree
+            # about the image are not running the same stack.
+            pod = create_pod(
+                gpu_type_id=gpu_id, name=POD_NAME, image=DOCKER_IMAGE,
+            )
             pod["role"] = "agentic-smoke"
             pod["usd_per_hour"] = price
             logger.info("Pod %s up: %s:%s on %s (%s)", pod["pod_id"],
