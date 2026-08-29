@@ -742,8 +742,14 @@ def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]
     headline number instead of its share of the items.
     """
     fold_hit1s = [np.asarray(r["hit1_indicators"], dtype=float) for r in fold_results]
-    aggregate: dict[str, Any] = dict(fold_stratified_bootstrap_ci(fold_hit1s))
 
+    # The domain check runs BEFORE the bootstrap, not after. gate_decision
+    # already orders it this way and says why -- it checks the delta "before the
+    # family-wise interval below, so a second 10,000-resample pass is not spent
+    # on an array that was never a measurement" -- and this layer asserted the
+    # same invariant while paying the cost anyway: five folds x 10,000
+    # resamples, then a raise on the very next statement.
+    #
     # load_fold_results now refuses an indicator array that is not 0/1, but it
     # is not on every path into this function: run_experiment hands over the
     # in-memory dicts run_single_fold returned, which never touch a file and
@@ -752,7 +758,7 @@ def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]
     # states the invariant it can state on its own. A NaN mean fails this too,
     # since every comparison against NaN is false.
     low, high = HIT_RATE_BOUNDS
-    mean = float(aggregate["mean"])
+    mean = float(np.mean(np.concatenate(fold_hit1s))) if fold_hit1s else float("nan")
     if not low <= mean <= high:
         raise ValueError(
             f"Aggregate micro hit@1 is {mean!r}, outside [{low}, {high}]. It "
@@ -773,6 +779,16 @@ def aggregate_fold_results(fold_results: list[dict[str, Any]]) -> dict[str, Any]
             f"Aggregate macro hit@1 is {macro!r}, outside [{low}, {high}], "
             f"while the micro figure ({mean!r}) is inside it. At least one "
             "fold's indicators are not hit@1 measurements and pooling hid it."
+        )
+    # Only now, with both figures inside their domain, is the bootstrap worth
+    # 10,000 resamples per fold.
+    aggregate: dict[str, Any] = dict(fold_stratified_bootstrap_ci(fold_hit1s))
+    if abs(float(aggregate["mean"]) - mean) > 1e-9:
+        raise ValueError(
+            f"The bootstrap's pooled mean ({aggregate['mean']!r}) disagrees "
+            f"with the mean this function checked ({mean!r}). They are the same "
+            "quantity computed two ways, so a disagreement means the range "
+            "check above did not govern the number being reported."
         )
     aggregate["macro_mean"] = macro
     aggregate["n_folds"] = len(fold_hit1s)

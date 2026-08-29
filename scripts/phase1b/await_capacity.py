@@ -300,8 +300,19 @@ def survey() -> list[tuple[str, str]]:
     return [(g, stock_status(g)) for g in ACCEPTABLE_GPUS]
 
 
-def capacity_is_sufficient(readings: list[tuple[str, str]]) -> bool:
-    return any(status in SUFFICIENT_STOCK for _, status in readings)
+def sufficient_readings(
+    readings: list[tuple[str, str]],
+) -> list[tuple[str, str]]:
+    """The (gpu, status) readings that clear SUFFICIENT_STOCK.
+
+    Returns the list rather than a bool because every caller needs both facts:
+    whether to fire, and which parts to name in the log. This replaced a
+    `capacity_is_sufficient(...) -> bool` that nothing called -- main filtered
+    the same list inline because a bool could not tell it what to log, so the
+    rule had two definitions and only one of them ran.
+    """
+    return [(gpu, status) for gpu, status in readings
+            if status in SUFFICIENT_STOCK]
 
 
 def sweep_account() -> int:
@@ -655,7 +666,7 @@ def main(argv: list[str] | None = None) -> int:
     attempts = 0
     while time.monotonic() - started < MAX_WALL_SECONDS:
         readings = survey()
-        good = [(g, s) for g, s in readings if s in SUFFICIENT_STOCK]
+        good = sufficient_readings(readings)
         elapsed = int((time.monotonic() - started) // 60)
         logger.info("[%3d min] %s", elapsed,
                     "  ".join(f"{g.split()[1]}={s}" for g, s in readings))

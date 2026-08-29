@@ -429,3 +429,34 @@ def test_gate_a_expects_the_pod_count_of_the_arms_own_split(
     assert ac.gate_a_gpu_is_fast_enough("validation") is False, (
         "two pods against a five-fold validation roster is short three folds"
     )
+
+
+class TestSufficientReadings:
+    """The stock predicate, which decides whether to spend money.
+
+    It replaced a bool-returning `capacity_is_sufficient` that nothing called:
+    main needed the list to log which parts were available, so it filtered
+    inline and the named predicate went untested and unused.
+    """
+
+    def test_low_stock_does_not_fire(self) -> None:
+        assert ac.sufficient_readings([("NVIDIA H100 NVL", "Low")]) == []
+
+    def test_none_does_not_fire(self) -> None:
+        assert ac.sufficient_readings([("NVIDIA H100 NVL", "none")]) == []
+
+    def test_high_and_medium_both_fire(self) -> None:
+        readings = [("NVIDIA H100 NVL", "High"), ("NVIDIA A100 80GB PCIe", "Medium")]
+        assert ac.sufficient_readings(readings) == readings
+
+    def test_returns_only_the_sufficient_ones(self) -> None:
+        """The caller logs what it returns, so a Low part must not appear."""
+        good = ac.sufficient_readings([
+            ("NVIDIA H100 NVL", "Low"),
+            ("NVIDIA H200", "High"),
+            ("NVIDIA A100-SXM4-80GB", "none"),
+        ])
+        assert good == [("NVIDIA H200", "High")]
+
+    def test_empty_survey_does_not_fire(self) -> None:
+        assert ac.sufficient_readings([]) == []
