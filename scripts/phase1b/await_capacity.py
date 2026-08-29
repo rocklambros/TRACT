@@ -256,6 +256,13 @@ ARMS: Final[dict[str, Arm]] = {
     "A3": Arm("A3", "c2r_A3_prose_sw_qwen06b", "validation",
               ("--stopwords", "--base-model", "Qwen/Qwen3-Embedding-0.6B")),
     "A5": Arm("A5", "c2r_A5_title_bge", "validation", ("--no-prose",)),
+    # The single test round. A3 advanced by the tie-break at CAMPAIGN2.md:168-169
+    # -- both non-primary arms cleared A1 by more than the MDE, so the higher
+    # absolute validation hit@1 advances. Runs ONCE on the 147-item AI split and
+    # is unrecoverable: a second run would contaminate the split that the whole
+    # validation/test separation exists to protect.
+    "TEST": Arm("TEST", "c2r_TEST_A3_prose_sw_qwen06b", "test",
+                ("--stopwords", "--base-model", "Qwen/Qwen3-Embedding-0.6B")),
 }
 
 
