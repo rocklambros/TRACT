@@ -47,6 +47,7 @@ from tract.framework_identity import filter_set
 from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
 from tract.text_selection import ProseIndex, SelectionStats, apply_prose_to_corpus
+from tract.training.checkpoint import assert_checkpoint_is_inert
 from tract.training.evaluate import evaluate_on_fold
 from tract.training.firewall import build_all_hub_texts
 
@@ -185,6 +186,14 @@ def _score_one_model(
     max_seq_length: int,
 ) -> dict[str, Any]:
     """Score one fold checkpoint. Loads a model, so this runs on a pod."""
+    # This directory arrived by rsync from a rented GPU host -- collect() pulls
+    # the pod's whole results/phase1b/<config>/ tree with no include list -- and
+    # was being handed to the loader with nobody having looked inside it. The
+    # refusal runs before the sentence_transformers import, which is both the
+    # expensive step and the one that would execute a hostile modules.json
+    # entry.
+    assert_checkpoint_is_inert(model_dir)
+
     from sentence_transformers import SentenceTransformer
 
     stopwords = filter_set(
@@ -194,7 +203,11 @@ def _score_one_model(
         hierarchy, excluded_framework=held_out_framework, stopwords=stopwords,
     )
     logger.info("Loading %s", model_dir)
-    model = SentenceTransformer(str(model_dir))
+    # Stated rather than left to whatever the installed sentence-transformers
+    # defaults to, since this flag is what decides whether a config.json may
+    # pull code off the Hub. It is already the default and already passed
+    # explicitly by load_deployment_model; this pins it against a future flip.
+    model = SentenceTransformer(str(model_dir), trust_remote_code=False)
     model.max_seq_length = max_seq_length
 
     metrics, predictions, hit1 = evaluate_on_fold(

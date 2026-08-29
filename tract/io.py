@@ -7,13 +7,19 @@ the target via os.replace() — no partial writes on crash.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 from tract.config import PROJECT_ROOT
+
+# A megabyte at a time, so verifying a 1.3 GB checkpoint never needs the file
+# resident in memory. The value is the chunk tract.model_resolver already used;
+# it is named here because two more callers now share it.
+HASH_CHUNK_BYTES: Final[int] = 1024 * 1024
 
 
 def atomic_write_json(data: Any, path: Path | str) -> None:
@@ -142,6 +148,32 @@ def load_json(path: Path | str) -> Any:
     """
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def sha256_file(path: Path) -> str:
+    """Return the hex sha256 of *path*, read in HASH_CHUNK_BYTES chunks.
+
+    Lives here rather than beside its first caller because the second one
+    arrived in tract.cli, which has to stay importable in the base install. The
+    only chunked implementation was private to tract.model_resolver, and that
+    module reaches numpy through tract.inference -- numpy is in the phase0
+    extra, so importing it to hash one file would have broken `tract download`
+    on exactly the install that command exists to serve.
+
+    Args:
+        path: File to hash.
+
+    Returns:
+        Lowercase hex digest.
+
+    Raises:
+        OSError: If *path* cannot be read.
+    """
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(HASH_CHUNK_BYTES), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def repo_relative(path: Path) -> str:

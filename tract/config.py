@@ -790,6 +790,58 @@ TRACT_MODEL_SNAPSHOT_ALLOW_PATTERNS: Final[tuple[str, ...]] = (
     *HF_MODEL_FILES, *HF_DEPLOY_FILES, "cre_hierarchy.json",
 )
 
+# ── Pinned crosswalk dataset (`tract download`) ───────────────────────
+# The model above is fetched at a pinned revision AND checked against recorded
+# digests. crosswalk.db was fetched from a dataset repo's default branch with
+# neither -- a deliberate deferral (the lazy-download plan said in as many
+# words to leave the dataset download unchanged) that does not survive the
+# reason the model pins exist. A HuggingFace tag is mutable on a dataset repo
+# exactly as on a model repo, and crosswalk.db is the file every later `tract`
+# query reads, so whoever can move that tag rewrites the answers.
+#
+# These ship UNSET, and UNSET is not "no opinion, carry on": the default-repo
+# download REFUSES until a maintainer records both values. A check that waives
+# itself when its constant is empty leaves the fetch as unverified as it was
+# and says so nowhere. `tract download --model-only` and the lazy resolver
+# behind `tract assign` are unaffected.
+#
+# The digest is NOT copied off whatever crosswalk.db happens to sit in
+# results/phase1c/ on a developer's machine. That file's bytes have never been
+# confirmed equal to the published artifact, and pinning to a local file would
+# record the wrong thing with full confidence.
+#
+# Bump procedure, mirroring the model's:
+#   1. Push crosswalk.db to the dataset repo; note that repo's full commit SHA.
+#   2. python scripts/recompute_model_pins.py --dataset <that_sha>
+#      (fetches the published file and prints both constants; it also compares
+#      against any local copy so a divergence is seen before it is pinned)
+#   3. Replace the two constants below with the printed values; commit.
+#   tests/test_model_pins_consistency.py then holds them against the Hub in the
+#   CI "model-pins" job, which is what keeps this pin from rotting the way the
+#   original deferral did.
+TRACT_PIN_UNSET: Final[str] = "UNSET"
+TRACT_DATASET_PINNED_REVISION: Final[str] = TRACT_PIN_UNSET
+TRACT_CROSSWALK_DB_SHA256: Final[str] = TRACT_PIN_UNSET
+
+# Keyed by basename, matching TRACT_MODEL_PINNED_FILE_HASHES above, so a name
+# added to HF_DATABASE_FILES without a digest beside it is a lookup miss the
+# download path refuses on rather than a file that quietly skips the check.
+TRACT_DATASET_PINNED_FILE_HASHES: Final[dict[str, str]] = {
+    "crosswalk.db": TRACT_CROSSWALK_DB_SHA256,
+}
+
+# Environment overrides for the dataset fetch, named here so the CLI's refusal
+# messages and the code that reads them cannot drift apart. Unlike the model's
+# overrides, naming a different repo or revision does NOT by itself downgrade
+# to revision-trust: the operator must either supply the digest they expect
+# (TRACT_DATASET_SHA256) or say out loud that they want no check at all
+# (TRACT_DATASET_ALLOW_UNVERIFIED=1). One environment variable must not be able
+# to restore the unpinned fetch this pin exists to end.
+TRACT_DATASET_REPO_ID_ENV: Final[str] = "TRACT_DATASET_REPO_ID"
+TRACT_DATASET_REVISION_ENV: Final[str] = "TRACT_DATASET_REVISION"
+TRACT_DATASET_SHA256_ENV: Final[str] = "TRACT_DATASET_SHA256"
+TRACT_DATASET_ALLOW_UNVERIFIED_ENV: Final[str] = "TRACT_DATASET_ALLOW_UNVERIFIED"
+
 # ── CLI exit codes (scriptable failure classes) ───────────────────────
 EXIT_USER_ERROR: Final[int] = 2
 EXIT_OFFLINE: Final[int] = 3

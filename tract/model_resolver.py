@@ -6,7 +6,6 @@ Integrity (recorded sha256) is verified once per download, gated by a sentinel.
 """
 from __future__ import annotations
 
-import hashlib
 import logging
 import os
 from dataclasses import dataclass
@@ -17,6 +16,7 @@ from huggingface_hub.errors import LocalEntryNotFoundError, OfflineModeIsEnabled
 
 from tract import config
 from tract.inference import find_st_model_root, resolve_hierarchy_path
+from tract.io import sha256_file
 
 logger = logging.getLogger(__name__)
 
@@ -49,17 +49,9 @@ def _local_is_complete(model_dir: Path) -> bool:
     return True
 
 
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
 def _verify_pinned(snapshot: Path) -> None:
     for name, expected in config.TRACT_MODEL_PINNED_FILE_HASHES.items():
-        actual = _sha256(snapshot / name)
+        actual = sha256_file(snapshot / name)
         if actual != expected:
             raise ModelIntegrityError(
                 f"Integrity check failed for {name}: expected {expected}, got {actual}. "

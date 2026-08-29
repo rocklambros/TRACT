@@ -154,3 +154,35 @@ def test_pre_declared_thresholds_match_the_fixture(fixture_data: dict) -> None:
     assert condition["declared_before_any_campaign_2_arm_ran"] is True
     assert str(FAIL_AT_OR_BELOW) in condition["fail"]
     assert str(INVESTIGATE_MAX) in condition["investigate"]
+
+
+def test_a_refused_checkpoint_stops_before_the_model_stack_loads(
+    tmp_path, monkeypatch,
+) -> None:
+    """The pod-returned directory is inspected before anything imports torch.
+
+    Patched on the runner module, which is where the name it calls lives.
+    sentence_transformers is poisoned in sys.modules so that reaching the
+    import at all raises ImportError -- if the guard is moved back below it,
+    this test stops seeing ValueError.
+    """
+    import sys
+
+    import scripts.phase1b.run_agentic_smoke as runner
+
+    def _refuse(path):
+        raise ValueError(f"{path} holds pickle-format weights")
+
+    monkeypatch.setattr(runner, "assert_checkpoint_is_inert", _refuse)
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
+
+    with pytest.raises(ValueError, match="pickle-format weights"):
+        runner._score_one_model(
+            tmp_path / "model",
+            "OWASP Top 10 for Agentic Applications 2026",
+            [],
+            None,  # hierarchy: never reached, the guard is the first statement
+            [],
+            use_stopwords=True,
+            max_seq_length=512,
+        )

@@ -56,7 +56,7 @@ from tract.config import (
     RESTRICTED_FRAMEWORK_IDS,
     TRAINING_DIR,
 )
-from tract.io import atomic_write_text, repo_relative
+from tract.io import atomic_write_text, repo_relative, sha256_file
 from tract.text_selection import (
     ProseIndex,
     TextSelection,
@@ -223,7 +223,12 @@ class CorpusReport:
 
 
 def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """Delegates to tract.io.sha256_file, kept for the existing callers.
+
+    Same shape as _repo_relative below and for the same reason. This one also
+    read a whole corpus into memory to hash it; the shared helper chunks.
+    """
+    return sha256_file(path)
 
 
 def _repo_relative(path: Path) -> str:
