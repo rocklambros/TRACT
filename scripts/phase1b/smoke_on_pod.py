@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import shlex
 import sys
 import time
 from typing import Any, Final
@@ -137,13 +138,24 @@ def main() -> int:
 
         # Transfer root is the config directory, so relative paths inside it
         # never contain "results" and the bootstrap exclude cannot match them.
+        # shlex.quote on every crossing into a remote shell. _run_fold_on_pod
+        # quotes the same value at runpod_parallel.py:1262 and this path did
+        # not; a config name carrying a space silently split the mkdir into two
+        # arguments and the checkpoint probe then counted zero, aborting a run
+        # that had already paid for bootstrap.
+        quoted_name = shlex.quote(args.config_name)
         remote_config = f"/workspace/tract/results/phase1b/{args.config_name}/"
-        _ssh(ip, port, f"mkdir -p {remote_config}", deadline=deadline)
+        quoted_config = shlex.quote(remote_config)
+        _ssh(ip, port, f"mkdir -p {quoted_config}", deadline=deadline)
         _rsync_to(ip, port, f"{local_config}/", remote_config, deadline=deadline)
 
+        # The quoted prefix abuts an UNQUOTED glob: shlex.quote wraps the path
+        # in single quotes, and 'dir/'fold_* concatenates in the shell while
+        # leaving the wildcard for the shell to expand. Quoting the whole word
+        # would make it a literal filename and the probe would always count 0.
         probe = _ssh(
             ip, port,
-            f"ls -d {remote_config}fold_*/model/model 2>/dev/null | wc -l",
+            f"ls -d {quoted_config}fold_*/model/model 2>/dev/null | wc -l",
             deadline=deadline,
         )
         n_remote = (probe.stdout or "").strip().splitlines()[-1].strip()
@@ -155,10 +167,16 @@ def main() -> int:
             )
         logger.info("All %d checkpoints present on the pod", len(checkpoints))
 
+        # `set -o pipefail` is load-bearing, not decoration. _ssh runs this
+        # through `bash -s` and checks the exit status; without pipefail the
+        # status of `python ... | tail -40` is tail's, which is 0 whatever the
+        # python did. A run that raised on the pod -- missing overlay, fixture
+        # and corpus disagreeing, CUDA OOM -- returned success, and the failure
+        # only surfaced later as a confusing "did not come back".
         _ssh(ip, port, (
-            "cd /workspace/tract && USE_TF=0 PYTHONPATH=. "
+            "set -o pipefail && cd /workspace/tract && USE_TF=0 PYTHONPATH=. "
             "python -m scripts.phase1b.run_agentic_smoke "
-            f"--config-name {args.config_name}{flags} 2>&1 | tail -40"
+            f"--config-name {quoted_name}{flags} 2>&1 | tail -40"
         ), timeout=SSH_RUN_TIMEOUT_S, deadline=deadline)
 
         _rsync_from(

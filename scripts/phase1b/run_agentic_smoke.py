@@ -18,9 +18,19 @@ framework -- it has no links to hold out. Picking one would be an unregistered
 choice made after the results existed; scoring all five makes the spread across
 them part of the finding.
 
-Each model is evaluated against the hub texts it was TRAINED against, meaning
-its own fold's exclusion. Swapping in the unfiltered hub set would show the
-model hub text it never saw and would measure the swap as much as the model.
+`excluded_framework` is passed to build_all_hub_texts for each fold, but at the
+campaign's `hub_rep_format="path+name"` it changes NOTHING: hub text is
+`{hierarchy_path} | {name}`, entirely CRE-native, and firewall.py only consults
+the exclusion when standards sections are appended. Verified rather than
+assumed -- building the hub texts under all five fold exclusions and under no
+exclusion at all yields byte-identical output for all 522 hubs.
+
+So all five models here are scored against one hub set, and there is no
+"unfiltered set" to swap in. An earlier version of this docstring claimed the
+per-fold exclusion was doing work; it was not, and a reader would have taken a
+firewall as applied that cannot apply in this format. The argument is kept
+because it becomes live the moment `--hub-rep path+name+standards` is used, and
+dropping it would leave that future run silently unfirewalled.
 """
 
 from __future__ import annotations
@@ -141,6 +151,28 @@ def _build_eval_items(
             n_title, len(items),
         )
     return items
+
+
+def _held_out_framework(fold_dir: Path) -> str:
+    """The framework this fold held out, read from the record it wrote.
+
+    Reconstructing it from the directory name -- `fold_X` with underscores
+    turned back into spaces -- is lossy in both directions. It happens to
+    round-trip for the current five AI frameworks, which is exactly why the
+    mistake survives: `fold_NIST_AI_100-2` gives back "NIST AI 100-2" today,
+    and a framework whose display name contains an underscore, or a fold
+    directory written under a stricter slug rule, would give back a name that
+    matches nothing and silently disable whatever is keyed on it.
+    """
+    record = load_json(fold_dir / "fold_result.json")
+    name = record.get("held_out_framework")
+    if not name:
+        raise ValueError(
+            f"{fold_dir / 'fold_result.json'} records no held_out_framework. "
+            "The directory name is not a substitute: it is a slug, and "
+            "reversing a slug guesses. Re-run the fold or fix the record."
+        )
+    return str(name)
 
 
 def _score_one_model(
@@ -269,7 +301,7 @@ def main() -> int:
     per_fold = [
         _score_one_model(
             d / "model" / "model",
-            d.name[len("fold_"):].replace("_", " "),
+            _held_out_framework(d),
             items, hierarchy, hub_ids,
             use_stopwords=args.stopwords,
             max_seq_length=args.max_seq_length,
