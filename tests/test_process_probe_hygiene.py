@@ -622,9 +622,22 @@ def test_removing_the_real_guards_exclusions_reintroduces_both_violations() -> N
         mutated = mutated.replace(anchor, replacement)
 
     violations = _violations(_scan_text(guard, mutated))
-    assert [(site.line, site.rule) for site in violations] == [
-        (318, "proc-table-scan"),
-        (433, "proc-table-scan"),
+    # Asserted by CONTAINING FUNCTION, not by literal line number. The previous
+    # version pinned (318, ...) and (433, ...); adding a six-line constant to
+    # reaper_guard.py shifted both and failed this test for a reason that had
+    # nothing to do with process probes. A control that breaks on every edit
+    # above it gets edited to match, which is how a control stops controlling.
+    def _enclosing_def(line: int) -> str:
+        name = "<module>"
+        for i, text in enumerate(mutated.splitlines()[:line], start=1):
+            stripped = text.lstrip()
+            if stripped.startswith("def ") and text[: len(text) - len(stripped)] == "":
+                name = stripped[4:].split("(")[0]
+        return name
+
+    assert [(_enclosing_def(site.line), site.rule) for site in violations] == [
+        ("orchestrator_pids", "proc-table-scan"),
+        ("pod_training_state", "proc-table-scan"),
     ], (
         "the real orchestrator_pids and pod_training_state probes were stripped "
         "of their self-exclusions and the control did not notice:\n"

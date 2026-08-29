@@ -1335,21 +1335,34 @@ def _run_fold_on_pod(
     # then rsyncs the old results into a number nobody re-earned. The runbook
     # and the orchestrator's own failure message both tell an operator to
     # re-run `run`, so this is a documented path, not an exotic one.
-    if "already-launched" in (launched.stdout or ""):
+    # Exact match on the last line, not a substring scan of the whole stream.
+    # The launch echoes exactly one of two words, so `in` was both looser than
+    # needed and the same shape as the argv-substring defect the hygiene test
+    # exists to catch: any path or log line containing "already-launched"
+    # anywhere in stdout would have satisfied it.
+    launch_lines = (launched.stdout or "").strip().splitlines()
+    if launch_lines and launch_lines[-1].strip() == "already-launched":
         alive = _ssh(
             ip, port,
-            # /proc rather than pgrep: the shell running a pgrep carries the
-            # pattern in its own command line. Same defect, third occurrence.
-            "n=0; for d in /proc/[0-9]*; do "
-            'c=$(tr "\\0" " " < $d/cmdline 2>/dev/null); '
-            "case \"$c\" in *run_fold*) case \"$c\" in *\\$*) ;; "
-            "*python*) n=$((n+1));; esac;; esac; done; echo $n",
+            # Same probe shape as reaper_guard.pod_training_state, and for the
+            # same reason: a pgrep carries its own pattern in its own command
+            # line, so the probing shell answers about itself. $$ is excluded
+            # explicitly and the process is identified by its exe being python
+            # plus the run_fold MODULE path in argv, not by a loose substring.
+            "for p in /proc/[0-9]*; do "
+            '  pid=${p##*/}; [ "$pid" = "$$" ] && continue; '
+            "  exe=$(readlink -f $p/exe 2>/dev/null) || continue; "
+            '  case "${exe##*/}" in python*) ;; *) continue ;; esac; '
+            "  if tr '\\0' ' ' < $p/cmdline 2>/dev/null "
+            "     | grep -q 'scripts.phase1b.run_fold'; then "
+            "    echo BUSY; exit 0; fi; "
+            "done; echo IDLE",
             check=False, timeout=SSH_LAUNCH_TIMEOUT_S,
         )
-        n_trainers = (alive.stdout or "0").strip().splitlines()[-1].strip()
-        if n_trainers.isdigit() and int(n_trainers) > 0:
-            logger.info("[%s] Already running (%s trainer(s)); attaching to it",
-                        framework, n_trainers)
+        answer = (alive.stdout or "").strip().splitlines()
+        if answer and answer[-1] == "BUSY":
+            logger.info("[%s] A trainer is already running; attaching to it",
+                        framework)
         else:
             elapsed = time.time() - start
             logger.error(
