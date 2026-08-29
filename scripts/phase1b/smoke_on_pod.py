@@ -25,7 +25,6 @@ import argparse
 import logging
 import sys
 import time
-from pathlib import Path
 from typing import Any, Final
 
 from scripts.phase0.runpod_provision import (
@@ -36,7 +35,6 @@ from scripts.phase0.runpod_provision import (
 )
 from scripts.phase1b.runpod_parallel import (
     DOCKER_IMAGE,
-    PROJECT_ROOT,
     _bootstrap_pod,
     _rsync_from,
     _rsync_to,
