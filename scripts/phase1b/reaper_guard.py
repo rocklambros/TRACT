@@ -12,9 +12,19 @@
     systemctl --user list-timers 'tract-reaper*'
     systemctl --user stop 'tract-reaper*.timer'
 
-    # tell the guard the campaign is over, so the next quiet check disarms:
+    # tell a RUNNING guard the campaign is over, so the next quiet check
+    # disarms. If the timers are already stopped there is nothing running to
+    # tell, and stopping them is sufficient -- prefer that. NOTHING IN THIS
+    # REPOSITORY EVER REMOVES THIS FILE, _campaign_is_complete() is checked
+    # before the streak logic and returns without re-arming, and the units run
+    # with Linger=yes so it survives logout. Left in place, it silently
+    # disables the guard for the NEXT campaign, whose fleets then run with no
+    # independent spend bound at all:
     mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper"
     touch "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/campaign-complete"
+
+    # so before arming anything, check it is not still there:
+    ls "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/"
 
 WHY THIS EXISTS. The runbook says to schedule `reap --confirm` at T+8h, and the
 reasoning behind it is sound: `create_pod` sends no TTL, no auto-stop and no idle

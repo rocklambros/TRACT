@@ -888,3 +888,45 @@ class TestFleetHoldMarker:
             "a dry run reset the quiet streak; the next two real checks would "
             "re-arm instead of disarming"
         )
+
+
+def test_the_sentinel_disables_the_guard_and_nothing_removes_it() -> None:
+    """The stale-sentinel trap, pinned so the docs cannot drift back.
+
+    `campaign-complete` tells a RUNNING guard to stand down. It is checked
+    before the streak logic, it returns without re-arming, and the user units
+    run with Linger=yes so it outlives a logout. Nothing in this repository
+    removes it. Left behind, it silently disables the guard for the NEXT
+    campaign -- whose fleets then run with no independent spend bound, which is
+    the single failure this module exists to prevent.
+
+    Asserted rather than commented because the runbook told operators to create
+    it as the normal end-of-campaign step, and that instruction had to be
+    corrected after Campaign 2 rather than before it.
+    """
+    repo = Path(rg.__file__).resolve().parents[2]
+    tracked = subprocess.run(
+        ["git", "grep", "-l", rg.CAMPAIGN_COMPLETE_FILENAME],
+        capture_output=True, text=True, cwd=repo, check=False,
+    ).stdout.split()
+
+    # No code path removes it: unlink/remove/rm of the sentinel must not exist.
+    source = (repo / "scripts" / "phase1b" / "reaper_guard.py").read_text(
+        encoding="utf-8",
+    )
+    assert "campaign_complete.unlink" not in source
+    assert f'rm -f "${{XDG_RUNTIME_DIR:-/tmp}}/tract-reaper/{rg.CAMPAIGN_COMPLETE_FILENAME}"' not in source, (
+        "a removal appeared; if the sentinel is now self-clearing, this test "
+        "and the runbook's stand-down section both need rewriting"
+    )
+
+    # Every tracked file that names the sentinel must also carry the warning,
+    # so an operator reading any of them learns the hazard with the command.
+    for relative in tracked:
+        if not relative.endswith((".md", ".py")):
+            continue
+        body = (repo / relative).read_text(encoding="utf-8")
+        assert "NEXT campaign" in body or "next campaign" in body, (
+            f"{relative} names {rg.CAMPAIGN_COMPLETE_FILENAME} without warning "
+            "that it persists into the next campaign and disables the guard"
+        )

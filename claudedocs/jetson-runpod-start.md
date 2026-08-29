@@ -288,10 +288,18 @@ by design. Mitigations, all of which you apply before provisioning:
   the sentinel says it immediately:
 
   ```bash
-  mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper"
-  touch "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/campaign-complete"
   systemctl --user stop 'tract-reaper*.timer'
+  systemctl --user list-timers 'tract-reaper*' --all   # must print 0 timers
   ```
+
+  **Corrected 2026-08-28.** This block used to `touch` a `campaign-complete`
+  sentinel first. Nothing in the repository ever removes that file, the guard
+  checks it before its streak logic and returns without re-arming, and the user
+  units run with `Linger=yes` so it survives logout — so leaving it behind
+  disables the guard for the **next campaign**, whose fleets then run with no
+  independent spend bound. The sentinel is for telling a *running* guard to
+  stand down; once the timers are stopped there is nothing running to tell.
+  Before arming anything next time, check the directory is empty.
 
   `at` is not installed on the Jetson and cron cannot express a one-shot
   relative delay; the user manager is running with `Linger=yes`, so a transient

@@ -154,15 +154,41 @@ re-selected on it whatever it says.
 
 ## When the campaign is over
 
+**Stop the timers. Do not touch the sentinel.**
+
 ```bash
-mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper"
-touch "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/campaign-complete"
 systemctl --user stop 'tract-reaper*.timer'
+systemctl --user list-timers 'tract-reaper*' --all   # must print "0 timers listed"
+rm -f "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/quiet-streak.json"
 ```
 
-Without the sentinel the guard keeps re-arming for about six hours before its
-quiet streak decides the campaign is finished. That is the safe direction, but
-say so explicitly rather than waiting it out.
+This is a correction, made 2026-08-28 after standing Campaign 2 down. The
+previous version of this section began with
+
+```bash
+touch "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/campaign-complete"
+```
+
+and that is a trap. **Nothing in the repository ever removes that sentinel**,
+`reaper_guard.py` checks it BEFORE the streak logic and returns without
+re-arming, and the user units run with `Linger=yes`, so it survives logout. Arm
+a fleet for the next campaign in a session where it still exists and the guard
+dies on its first look — every fleet then runs with no independent spend bound,
+which is the one thing the guard exists to prevent.
+
+The sentinel is for telling a *running* guard to stand down. If the timers are
+already stopped, nothing is running to tell, and stopping them is sufficient:
+the guard cannot re-arm if it never fires. Clearing `quiet-streak.json` is
+housekeeping — it is a counter with a TTL, and a stale entry only ever makes the
+next campaign's guard slower to disarm, never faster.
+
+**Before the next campaign**, whatever this section said at the time:
+
+```bash
+ls "${XDG_RUNTIME_DIR:-/tmp}/tract-reaper/"    # must be empty or absent
+```
+
+A `campaign-complete` file sitting there is the failure above, waiting.
 
 ## If pods are left up
 
