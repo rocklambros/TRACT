@@ -7,13 +7,30 @@ import tract.model_resolver as mr
 from tract import config
 
 
+ST_MARKERS = ("modules.json", "config_sentence_transformers.json")
+
+
 def _make_snapshot(d: Path, hashes: dict[str, bytes]):
     d.mkdir(parents=True, exist_ok=True)
-    for name in ("modules.json", "config_sentence_transformers.json"):
+    for name in ST_MARKERS:
         (d / name).write_text("{}", encoding="utf-8")
     for name, content in hashes.items():
         (d / name).write_bytes(content)
     return d
+
+
+def _hashes_for(snapshot: Path) -> dict[str, str]:
+    """Recorded hashes covering EVERY file in the snapshot.
+
+    _verify_pinned now walks the snapshot and refuses a file it has no hash for,
+    so a fixture that writes six files and records four is asserting the old
+    permissive contract. Deriving the map from what was actually written keeps
+    the fixture honest as the marker set changes.
+    """
+    return {
+        p.relative_to(snapshot).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in sorted(snapshot.rglob("*")) if p.is_file()
+    }
 
 
 def _good_files():
@@ -46,8 +63,7 @@ def test_local_absent_triggers_pinned_download(tmp_path, monkeypatch):
     files = _good_files()
     _make_snapshot(snap, files)
     monkeypatch.setattr(config, "PHASE1D_DEPLOYMENT_MODEL_DIR", local)
-    monkeypatch.setattr(config, "TRACT_MODEL_PINNED_FILE_HASHES",
-                        {n: hashlib.sha256(c).hexdigest() for n, c in files.items()})
+    monkeypatch.setattr(config, "TRACT_MODEL_PINNED_FILE_HASHES", _hashes_for(snap))
     with patch.object(mr, "snapshot_download", return_value=str(snap)) as sd:
         result = mr.ensure_deployment_model()
         _, kwargs = sd.call_args
@@ -78,3 +94,46 @@ def test_offline_cold_cache_raises_offline(tmp_path, monkeypatch):
         with pytest.raises(mr.OfflineModelError) as e:
             mr.ensure_deployment_model()
     assert "HF_HUB_OFFLINE" in str(e.value) and config.HF_DEFAULT_REPO_ID in str(e.value)
+
+
+def test_an_unhashed_file_in_the_snapshot_is_refused(tmp_path, monkeypatch):
+    """Fail closed: a downloaded file with no recorded hash stops the load.
+
+    The old check iterated the hash MAP, so a file present in the snapshot but
+    absent from the map was never looked at -- which is how nine of the thirteen
+    published files, including modules.json and config.json, were consumed
+    unverified while the CLI reported a clean integrity check. Walking the
+    snapshot instead is only a real control if an unaccounted-for file is an
+    error rather than a shrug.
+    """
+    local = tmp_path / "deployment_model"
+    snap = tmp_path / "snap"
+    _make_snapshot(snap, _good_files())
+    recorded = _hashes_for(snap)
+    (snap / "surprise.json").write_text('{"added": "after the pins were taken"}',
+                                        encoding="utf-8")
+    monkeypatch.setattr(config, "PHASE1D_DEPLOYMENT_MODEL_DIR", local)
+    monkeypatch.setattr(config, "TRACT_MODEL_PINNED_FILE_HASHES", recorded)
+    with patch.object(mr, "snapshot_download", return_value=str(snap)):
+        with pytest.raises(mr.ModelIntegrityError, match="no recorded sha256"):
+            mr.ensure_deployment_model()
+
+
+def test_our_own_verify_sentinel_does_not_trip_the_sweep(tmp_path, monkeypatch):
+    """The carve-out, pinned. Without it the second run refuses our own model.
+
+    ensure_deployment_model writes .tract-verified-<revision> into the snapshot
+    AFTER _verify_pinned returns, so a sweep that fails closed on anything
+    unhashed passes once and then refuses forever. Found by running the new gate
+    against the real published snapshot; a guard that rejects the artifact it
+    protects gets deleted rather than fixed.
+    """
+    local = tmp_path / "deployment_model"
+    snap = tmp_path / "snap"
+    _make_snapshot(snap, _good_files())
+    monkeypatch.setattr(config, "PHASE1D_DEPLOYMENT_MODEL_DIR", local)
+    monkeypatch.setattr(config, "TRACT_MODEL_PINNED_FILE_HASHES", _hashes_for(snap))
+    with patch.object(mr, "snapshot_download", return_value=str(snap)):
+        mr.ensure_deployment_model()          # writes the sentinel
+        mr.ensure_deployment_model()          # must not refuse it on the way back
+    assert (snap / f"{mr.SENTINEL_PREFIX}{config.TRACT_MODEL_PINNED_REVISION}").exists()
