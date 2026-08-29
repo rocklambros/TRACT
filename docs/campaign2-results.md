@@ -10,6 +10,13 @@ listed in §11 rather than quietly applied.
 The binding pre-registration is `results/phase1b/CAMPAIGN2.md`. Every number
 below is recomputed from committed artifacts; nothing is quoted from memory.
 
+> **Amended 2026-08-29.** A second premortem, run against the *Campaign 3* plan,
+> found something in *this* campaign that neither this document nor the campaign
+> disclosed: TRACT rewrote the gold label on 25% of the test corpus before
+> scoring it. The headline in §1 is unchanged and correct as computed, but it is
+> no longer the only number that has to be reported. See **§13**, which is the
+> most important section in this file.
+
 ---
 
 ## 1. Headline
@@ -25,6 +32,7 @@ micro-averaged hit@1 over its own paired zero-shot baseline:
 | **micro delta** | **+0.1361** [+0.0476, +0.2245] |
 | n | 147, paired, fold-stratified bootstrap, 10,000 resamples |
 | macro delta (diagnostic, not the metric) | +0.1834 |
+| **co-primary, audit-untouched items only (§13)** | **+0.1000** [+0.000, +0.200], n=110 |
 
 **Gate 1 verdict table — all four booleans, because reporting one is how the
 last headline was withdrawn:**
@@ -328,3 +336,84 @@ to the campaign-1-era BGE model, and **A3 is not the shipped model**.
 should rotate through the roster; whether the eval needs ~890 AI items for the
 gate to be decidable as an interval criterion; and the OWASP Agentic parser's
 dropped Prevention sections.
+
+## 13. Undisclosed: TRACT rewrote 25% of the test gold before scoring it
+
+Found 2026-08-29 by the Campaign 3 premortem, not by this campaign. Every number
+here is reproducible with `python -m scripts.analysis.audit_stratified_delta`
+and locked by `tests/test_audit_disclosure.py`.
+
+### What was done
+
+`data/training/ai_link_audit.csv` is a link-by-link review of all 198 AI
+framework links — verdicts `correct` (133), `weak` (40), `wrong` (25).
+`scripts/phase0/curate_links.py` parses a replacement hub id out of each
+review's free-text `notes` column and applies it. The result is
+`data/training/audit_corrections_log.json`: **56 gold labels rewritten, one
+link excluded, 197 AI links surviving.**
+
+All 56 fall inside the four frameworks that make up the test split — `ATLAS`
+(22), `NIST AI 100-2` (24), `OWASP Top10 LLM` (5), `OWASP Top10 ML` (5). After
+the corpus deduplicates to items, **37 of the 147 test items (25.2%)** carry a
+gold label TRACT wrote rather than one OpenCRE curated.
+
+**The 4,208 general-security links received no such pass.** The test split got a
+gold-quality treatment the training corpus did not. That asymmetry is the
+disclosure; it appeared in no `.md` file and had no test through an entire
+campaign.
+
+### What it does to the gate
+
+| stratum | n | zero-shot | trained | delta | 95% CI | P(δ ≤ 0.10) |
+|---|---|---|---|---|---|---|
+| pooled (published headline) | 147 | 0.4558 | 0.5918 | +0.1361 | [+0.048, +0.225] | 0.205 |
+| audit-**touched** | 37 | 0.2162 | 0.4595 | **+0.2432** | [+0.081, +0.405] | 0.038 |
+| audit-**untouched** | 110 | 0.5364 | 0.6364 | **+0.1000** | [+0.000, +0.200] | **0.531** |
+
+A quarter of the items carry 45% of the headline. On the items TRACT did not
+relabel, **the delta is exactly the gate value and a coin flip on clearing it.**
+
+### The mechanism, and why the obvious objection fails
+
+The obvious objection is that the audit simply made the task easier. It did not,
+and that is the interesting part. Rescoring the *same* trained predictions
+against pristine pre-audit gold gives **0.5850 against 0.5918** — the audit is
+worth **+0.0068** in absolute accuracy, essentially nothing.
+
+It is the *baseline* the audit moves. 49 of the 56 corrections relocate gold
+from a sparsely-linked hub to a densely-linked one (median link degree
+**3.0 → 7.5**, mean 3.50 → 8.05), collapsing 56 links onto 26 distinct hubs.
+High-degree hubs carry more positives and appear in more training batches, so a
+fine-tuned model learns them well while a zero-shot encoder has no reason to
+prefer them. On touched items the zero-shot scores **0.2162** against 0.5364
+elsewhere.
+
+So the audit barely raises the numerator and substantially lowers the baseline.
+That inflates a **paired improvement** metric without inflating accuracy — which
+is precisely the metric Gate 1 is defined on.
+
+### What this does and does not establish
+
+**Does:** that the pooled +0.1361 cannot be reported alone. The audit-untouched
++0.1000 is a co-primary and belongs beside it wherever the headline appears.
+
+**Does not:** that the audit was wrong, or that it was performed to move the
+metric. 24 of 56 corrections carry verdict `wrong`, and re-reading a link and
+finding a better hub is legitimate work. The audit CSV carries **no model
+prediction, score, or ranking column** — the reviewer was shown the existing
+OpenCRE link and judged it, so this is a human relabel, not model-seeded
+circularity. Under the Campaign 3 provenance tiers that makes it **Tier 2**
+(independently human-authored), not Tier 3.
+
+But Tier 2 is still not Tier 1, and the Campaign 3 design's Tier-1 definition —
+"labels OpenCRE curated before TRACT existed" — is **factually false** for
+`hub_links_curated.jsonl`. Any gate denominator drawn from that file inherits
+the error.
+
+**Unresolved, and it needs the owner, not compute:** whether any TRACT model
+output was visible to the reviewer while the audit was performed. The artifact
+cannot answer this — the schema has no prediction column, but the file was first
+committed 2026-04-29, by which time Phase 0 zero-shot baselines existed. If a
+model was in the loop, these 56 corrections are Tier 3 by the project's own
+rule, and the contamination is downstream in published artifacts. **This
+question should be answered before the OpenCRE RFC cites any of them.**
