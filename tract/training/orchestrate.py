@@ -31,7 +31,6 @@ from scripts.phase0.common import (
 from tract.config import (
     FOLD_RESULT_FILENAME,
     max_anchor_chars,
-    MAX_ANCHOR_CHARS,
     PHASE1B_GATE_HIT1_DELTA,
     PHASE1B_RESULTS_DIR,
     PROCESSED_DIR,
@@ -63,6 +62,7 @@ from tract.text_selection import (
     SelectionStats,
     TextSelection,
     apply_prose_to_corpus,
+    canonical_framework,
     merged_corpus_path,
 )
 from tract.training.firewall import assert_firewall, build_all_hub_texts
@@ -179,12 +179,23 @@ def run_single_fold(
     output_dir: Path,
     standard_sections: dict[str, list[str]] | None = None,
     include_zero_shot: bool = False,
+    corpus_selection: SelectionStats | None = None,
 ) -> dict[str, Any]:
     """Train and evaluate one LOFO fold. Returns fold result dict.
 
     Args:
         include_zero_shot: Also evaluate the untrained base model on this fold,
             producing a per-item indicator array paired with the trained one.
+        corpus_selection: The stats `apply_prose_to_corpus` populated when it
+            built the anchors. Truncation used to be re-derived here from
+            `len(anchor) >= MAX_ANCHOR_CHARS`, which is wrong twice over:
+            `prepare_anchor` rstrips after cutting, so a truncated anchor can
+            end up SHORTER than the budget it was cut to, and the module
+            constant ignores `config.max_seq_length`. Across the Campaign 2
+            test round that heuristic reported 39 truncated eval anchors where
+            the real figure is 55. SelectionStats is keyed by framework and the
+            fold's framework is the one held out, so the corpus-wide object
+            carries exactly this fold's count.
     """
     logger.info("=== FOLD: %s ===", held_out_framework)
     fold_start = time.time()
@@ -281,8 +292,13 @@ def run_single_fold(
     fold_output = output_dir / f"fold_{held_out_framework.replace(' ', '_')}"
     fold_output.mkdir(parents=True, exist_ok=True)
 
-    # Recompute what the eval anchors actually resolved to, so the fold record
-    # can state it. Cheap: dictionary lookups over at most a few hundred items.
+    # What the eval anchors actually resolved to, so the fold record can state
+    # it. Sources are re-derived cheaply by lookup; TRUNCATION is not, because
+    # it cannot be recovered from the finished anchor -- prepare_anchor rstrips
+    # after cutting, so a truncated anchor may be shorter than its own budget.
+    # The authoritative flag is the one apply_prose_to_corpus recorded while
+    # doing the cutting, and it arrives via corpus_selection.
+    _anchor_budget = max_anchor_chars(config.max_seq_length)
     eval_selection = SelectionStats()
     for _item in eval_items:
         _sel = prose_index.lookup(
@@ -292,10 +308,23 @@ def run_single_fold(
             _item.framework_name,
             TextSelection(_item.control_text,
                           _sel.source if _sel else "title",
-                          len(_item.control_text) >= MAX_ANCHOR_CHARS),
+                          # Length-based fallback only when the caller supplied
+                          # no stats. It undercounts; the log says so rather
+                          # than presenting it as the same measurement.
+                          len(_item.control_text) >= _anchor_budget),
         )
     eval_selection.log_summary(f"Fold {held_out_framework} eval anchors")
-    n_truncated = eval_selection.n_truncated
+    if corpus_selection is not None:
+        n_truncated = corpus_selection.truncated_by_framework.get(
+            canonical_framework(held_out_framework), 0,
+        )
+    else:
+        n_truncated = eval_selection.n_truncated
+        logger.warning(
+            "Fold %s: no corpus SelectionStats supplied, so the truncation "
+            "count is the length heuristic and UNDERCOUNTS. Reported %d.",
+            held_out_framework, n_truncated,
+        )
 
     zero_shot: dict[str, Any] | None = None
     if include_zero_shot:
@@ -984,6 +1013,7 @@ def run_experiment(
     # apply_prose_to_corpus: building per arm lets the anchor change the item
     # count, which breaks the paired delta.
     corpus = build_evaluation_corpus(links, AI_FRAMEWORK_NAMES, {})
+    corpus_selection = SelectionStats()
     corpus = apply_prose_to_corpus(
         corpus,
         ProseIndex.load() if config.use_prose else None,
@@ -991,7 +1021,12 @@ def run_experiment(
             use_stopwords=config.use_stopword_filter,
             use_framework_identity=config.use_framework_identity_filter,
         ),
+        stats=corpus_selection,
         description_only=config.use_description_only,
+        # run_fold.py:256 passes this and this path did not, so the two
+        # entrypoints produced different eval anchors for any configuration
+        # that was not 512 tokens. They are supposed to be equivalent.
+        max_chars=max_anchor_chars(config.max_seq_length),
     )
 
     eval_by_fw: dict[str, list[EvalItem]] = {}
@@ -1017,6 +1052,7 @@ def run_experiment(
             hub_ids=hub_ids,
             output_dir=output_dir,
             include_zero_shot=include_zero_shot,
+            corpus_selection=corpus_selection,
         )
         fold_results.append(result)
 

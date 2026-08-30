@@ -410,13 +410,28 @@ But Tier 2 is still not Tier 1, and the Campaign 3 design's Tier-1 definition �
 `hub_links_curated.jsonl`. Any gate denominator drawn from that file inherits
 the error.
 
-**Unresolved, and it needs the owner, not compute:** whether any TRACT model
-output was visible to the reviewer while the audit was performed. The artifact
-cannot answer this — the schema has no prediction column, but the file was first
-committed 2026-04-29, by which time Phase 0 zero-shot baselines existed. If a
-model was in the loop, these 56 corrections are Tier 3 by the project's own
-rule, and the contamination is downstream in published artifacts. **This
-question should be answered before the OpenCRE RFC cites any of them.**
+**RESOLVED 2026-08-30, by the owner: no model output was visible to the reviewer
+while the audit was performed.** The 56 corrections are **Tier 2** —
+independently human-authored — not Tier 3. Nothing model-derived is downstream
+in the published dataset, the published model, the 411 assignments imported into
+the OpenCRE fork, or the Phase 5B canonical export. The tail risk that those
+artifacts were unrecallably contaminated is closed, and the OpenCRE RFC may cite
+these links.
+
+**It does not change the number.** Every figure in this section holds exactly as
+computed, because the mechanism has nothing to do with *who* wrote the labels.
+Moving 49 of 56 gold labels onto more densely linked hubs inflates a paired
+trained-minus-zero-shot delta whether a human, a model, or a coin chose the
+destination — fine-tuning learns high-degree hubs, a zero-shot encoder does not
+privilege them, and that asymmetry is arithmetic rather than provenance. The
+audit-untouched co-primary of **+0.1000 [0.000, 0.200]** stays the figure to
+report beside the pooled +0.1361.
+
+What the answer settles is which rule applies. Tier 2 is legitimate work that
+may be published and cited; it simply is not OpenCRE's taxonomy, so it cannot
+silently continue a comparison defined against OpenCRE's labels. That is why the
+test split is stratified rather than discarded, and why §3 of
+`results/phase1b/CAMPAIGN3.md` computes its primary on the untouched stratum.
 
 ## 14. The domain-shortcut hypothesis, tested and refuted
 

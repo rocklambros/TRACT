@@ -1347,6 +1347,22 @@ class TestTheRecordShowsWhereEachFoldRan:
             lambda p, meta=None: saved.append(p),
         )
 
+        # With the licensed overlay staged this is now REFUSED rather than
+        # warned about: _rsync_to would put ISO 27001 and ETSI prose on a
+        # third-party host, and a warning emitted after the pods exist cannot
+        # prevent that. The pods are still recorded so `teardown` can find them.
+        monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", "")
+        if rpp._require_secure_cloud():
+            with pytest.raises(RuntimeError, match="licensed corpus is staged"):
+                rpp.provision(folds=["MITRE ATLAS", "NIST AI 100-2"])
+            assert saved[-1] == pods, (
+                "the fleet must be recorded before the refusal, or teardown "
+                "has nothing to terminate"
+            )
+            return
+
+        # Public-corpus checkout: the tier still has to be recorded and called
+        # out, because the budget was priced on SECURE.
         with caplog.at_level("WARNING"):
             got = rpp.provision(folds=["MITRE ATLAS", "NIST AI 100-2"])
 
@@ -1354,7 +1370,35 @@ class TestTheRecordShowsWhereEachFoldRan:
         # provision records intent first, then the fleet it actually created.
         assert saved[-1] == pods
         assert "NIST AI 100-2" in caplog.text
-        assert "licensed" in caplog.text
+
+    def test_the_override_downgrades_the_refusal_to_a_warning(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """The licensing call belongs to the owner, and must be recordable."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [
+            {"pod_id": "a", "role": "MITRE ATLAS", "ip": "203.0.113.7",
+             "port": 22041, "cloud_type": "COMMUNITY"},
+        ]
+        monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", "1")
+        monkeypatch.setattr(rpp, "_preflight_training_stack", lambda: None)
+        monkeypatch.setattr(rpp, "_preflight_corpus", lambda: "d" * 64)
+        monkeypatch.setattr(rpp, "_preflight_tracking", lambda: None)
+        monkeypatch.setattr(rpp, "KNOWN_HOSTS_FILE", tmp_path / "kh")
+        monkeypatch.setattr(
+            rpp, "rank_available_gpus",
+            lambda **kwargs: [("NVIDIA H100 80GB HBM3", 3.29)],
+        )
+        monkeypatch.setattr(rpp, "get_gpu_price", lambda *a, **k: 3.29)
+        monkeypatch.setattr(rpp, "create_pods_parallel", lambda *a, **k: pods)
+        monkeypatch.setattr(rpp, "_save_pod_state", lambda p, meta=None: None)
+
+        with caplog.at_level("WARNING"):
+            got = rpp.provision(folds=["MITRE ATLAS"])
+        assert [p["cloud_type"] for p in got] == ["COMMUNITY"]
+        assert "licensing decision" in caplog.text
 
 
 class TestKnownHostsIsFreshEveryRound:
@@ -1857,13 +1901,48 @@ class TestBudgetPricesTheBootstrapItActuallyRuns:
         budget = self._budget(price=7.89, budget_usd=600.0)
         assert budget["worst_case_usd"] < 600.0
 
-    def test_the_most_expensive_permitted_part_still_admits_at_600(self) -> None:
-        """The $12/hr filter is the only bound on price, so price the ceiling."""
+    def test_the_most_expensive_permitted_part_admits_at_the_real_budget(
+        self,
+    ) -> None:
+        """The $12/hr filter is the only bound on price, so price the ceiling.
+
+        This asserted against a hardcoded $600 and passed by a $2 margin: at a
+        2h FOLD_TIMEOUT_S the ceiling priced to $598. Raising the fold ceiling
+        to 4h for the long-context rebaseline pushed it to $718, and the honest
+        reading is not that the test was wrong but that these three constants
+        are COUPLED -- price ceiling x reachable wall x fleet size must fit the
+        budget, so raising one means lowering another or raising the budget.
+
+        It is asserted against the configured BUDGET_USD now, so the coupling
+        is checked against the number that actually governs rather than a
+        scenario that has drifted from it. The margin is reported in the
+        message because a guard that passes by $2 is one constant away from
+        being a guard that does not.
+        """
         from scripts.phase1b import runpod_parallel as rp
 
         budget = self._budget(
-            price=rp.MAX_USD_PER_HOUR_PER_POD, budget_usd=600.0,
+            price=rp.MAX_USD_PER_HOUR_PER_POD, budget_usd=rp.BUDGET_USD,
         )
+        worst = budget["worst_case_usd"]
+        assert worst < rp.BUDGET_USD, (
+            f"the most expensive permitted part ({rp.MAX_USD_PER_HOUR_PER_POD} "
+            f"/hr) over the {budget['reachable_hours']:.1f}h the timeouts "
+            f"permit reaches ${worst:.2f}, above the ${rp.BUDGET_USD:.2f} "
+            "budget. Lower MAX_USD_PER_HOUR_PER_POD or FOLD_TIMEOUT_S, or "
+            "raise TRACT_RUNPOD_BUDGET_USD deliberately."
+        )
+
+    def test_the_campaign_price_still_admits_at_the_legacy_600_scenario(
+        self,
+    ) -> None:
+        """The realistic price must stay well inside the tighter old scenario.
+
+        Kept separately from the ceiling test above so that a regression at the
+        price we actually pay is distinguishable from one only reachable at the
+        filter's absolute limit.
+        """
+        budget = self._budget(price=7.89, budget_usd=600.0)
         assert budget["worst_case_usd"] < 600.0
 
 
@@ -2329,3 +2408,113 @@ class TestPhase0PodsCarryNoStandingCredential:
         pod = {"role": "small-a", "cloud_type": "COMMUNITY"}
         with pytest.raises(RuntimeError, match="Refusing to forward"):
             rp0._get_pod_env(pod, self.PHASE_C)
+
+
+class TestTheRunWindowCanFitAFold:
+    """MAX_RUN_HOURS must cover bootstrap plus one fold, or nothing can finish.
+
+    `_check_deadline` ABORTS the run when MAX_RUN_HOURS passes. A window
+    smaller than bootstrap + one fold therefore buys a fleet that is guaranteed
+    to be torn down mid-fold, with nothing collected and every pod billed for
+    the attempt. That is not a budget question -- it is a configuration that
+    cannot succeed on any input.
+
+    This became reachable when FOLD_TIMEOUT_S was raised for the long-context
+    rebaseline: 0.43h bootstrap + 8.00h fold against the then-current 6h window.
+    The failure would have surfaced only after five pods were provisioned.
+    """
+
+    # get_gpu_price shells out to `pass` for the API key, which does not exist
+    # on a CI runner. The price is irrelevant to a coherence check between two
+    # time constants, so it is stubbed rather than fetched.
+    def _budget(self, price: float = 3.29, n_pods: int = 5) -> dict:
+        from scripts.phase1b import runpod_parallel as rp
+
+        with patch.object(rp, "get_gpu_price", return_value=price):
+            return rp._check_budget("NVIDIA A100-SXM4-80GB", n_pods)
+
+    def test_the_shipped_constants_are_coherent(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        budget = self._budget()
+        needed = budget["bootstrap_hours"] + budget["fold_hours"]
+        assert needed <= rp.MAX_RUN_HOURS, (
+            f"bootstrap ({budget['bootstrap_hours']:.2f}h) plus one fold "
+            f"({budget['fold_hours']:.2f}h) needs {needed:.2f}h but "
+            f"MAX_RUN_HOURS is {rp.MAX_RUN_HOURS:.1f}h"
+        )
+
+    def test_an_incoherent_window_is_refused_before_provisioning(self) -> None:
+        """The guard must fire at _check_budget, not at the first timeout."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        with patch.object(rp, "MAX_RUN_HOURS", 1.0):
+            with pytest.raises(RuntimeError, match="could not finish a single fold"):
+                self._budget()
+
+
+class TestLicensedCorpusStaysOffCommunityHosts:
+    """A warning that fires after five pods exist is not a control.
+
+    `_rsync_to` ships the whole working tree -- `data/processed/licensed`
+    included -- to whichever host answered, and COMMUNITY is third-party
+    operators. On 2026-08-30 four of five folds landed on COMMUNITY and the
+    fleet had to be torn down by hand before bootstrap, because the tier check
+    ran AFTER provisioning and only logged.
+
+    The restriction is bound to the staged overlay rather than to a flag, so it
+    cannot be forgotten on the one run where it matters and does not obstruct a
+    public-corpus run where it does not.
+    """
+
+    def test_secure_is_required_while_the_overlay_is_staged(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+        from tract.text_selection import merged_corpus_path
+
+        if "licensed" not in merged_corpus_path().parts:
+            pytest.skip("licensed overlay is not staged in this checkout")
+        assert rp._require_secure_cloud() is True
+
+    def test_the_override_is_explicit_and_logged(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Shipping licensed text to COMMUNITY must be a recorded decision."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", "1")
+        with caplog.at_level("WARNING"):
+            assert rp._require_secure_cloud() is False
+        assert any("licensing decision" in r.message for r in caplog.records), (
+            "the override must say in the log what it permits"
+        )
+
+    def test_only_an_exact_1_overrides(
+        self, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """"true", "yes" and "0" must not silently disable the restriction."""
+        from scripts.phase1b import runpod_parallel as rp
+        from tract.text_selection import merged_corpus_path
+
+        if "licensed" not in merged_corpus_path().parts:
+            pytest.skip("licensed overlay is not staged in this checkout")
+        for value in ("0", "true", "yes", "", " "):
+            monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", value)
+            assert rp._require_secure_cloud() is True, (
+                f"{value!r} disabled the licensed-corpus restriction"
+            )
+
+    def test_create_pod_honours_the_restricted_tier_list(self) -> None:
+        """The tier list must reach the API call, not just the signature."""
+        import inspect
+
+        from scripts.phase0 import runpod_provision as rpp
+
+        source = inspect.getsource(rpp.create_pod)
+        assert "for cloud_type in allowed_cloud_types:" in source, (
+            "create_pod still iterates the module-level preference, so a "
+            "restricted list would be accepted and ignored"
+        )
+        parallel = inspect.getsource(rpp.create_pods_parallel)
+        assert "allowed_cloud_types=allowed_cloud_types" in parallel, (
+            "create_pods_parallel does not forward the restriction to its pods"
+        )

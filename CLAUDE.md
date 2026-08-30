@@ -164,10 +164,27 @@ claude-mem records observations as you work. These are valuable for continuity:
   - **The domain-shortcut hypothesis is refuted.** Handing the zero-shot encoder
     the whole 78-hub AI region free — 444 of 522 candidates deleted — moves one
     item in 147 (+0.0068). The gain is not candidate-set narrowing. §14.
-- **Campaign 3:** pre-registered in `results/phase1b/CAMPAIGN3.md` — binding
-  numeric thresholds, **no synthetic data in training or evaluation**, and a
-  stated MDE of 0.145 at n=940. Nothing has run. Three items block it and are
-  owner decisions, listed in §5 of that file.
+- **Campaign 3:** pre-registered in `results/phase1b/CAMPAIGN3.md`, **plus
+  Amendment 1 (2026-08-30) which corrects three things in it** — read the
+  amendment, not just the body. Binding numeric thresholds; **no synthetic data
+  in training or evaluation**; the n=940 power table is **wrong** (the permitted
+  frameworks hold 500 controls, so the ceiling is 721 and real power is 43–54%,
+  not 63%).
+  - **Owner decisions taken 2026-08-30:** the link audit was NOT model-informed
+    (Tier 2, published artifacts are clean); fix the anchor truncation and
+    **rebaseline**, retiring +0.1361 as a forward target; and fund curation.
+  - **Anchor-budget rebaseline in progress** as arm `C3TEST`
+    (`max_seq_length` 512 → 1024, batch stays 32). It is a **second run on the
+    held-out test split** — sanctioned, costed, and recorded in Amendment 1 §1.5.
+  - **Curation package:** `claudedocs/curation-package.md` (untracked) holds the
+    recruiting persona and the annotator handbook. Generate the blind packet
+    with `python -m scripts.build_curation_packet`. **Never send
+    `results/review/hub_reference.md`** — 400 of its hub descriptions are
+    LLM-written from the gold links and would make the round Tier 3.
+- **Provisioning constraint:** while the licensed overlay is staged, pods are
+  restricted to SECURE tier at create time (`_require_secure_cloud`), because
+  `_rsync_to` ships `data/processed/licensed` to whichever host answers.
+  `TRACT_RUNPOD_ALLOW_COMMUNITY=1` overrides and logs that it did.
 - **`results/review/review_export.json` is Tier 3 and quarantined.** 898
   model-proposed, human-ratified items; agrees with independent OpenCRE gold on
   only 47 of 63 overlapping items. Never a gate denominator. See

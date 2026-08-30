@@ -1,0 +1,478 @@
+[
+  {
+    "control_text": "Limiting user queries",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "187-083",
+    "predicted_top10": [
+      "187-083",
+      "028-728",
+      "341-076",
+      "058-443",
+      "177-260",
+      "538-770",
+      "470-731",
+      "789-320",
+      "732-148",
+      "586-842"
+    ]
+  },
+  {
+    "control_text": "Proposed by Lecuyer et al. [169] and further improved by Cohen et al. [79], randomized smoothing is a method that transforms any classifer",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "641-760",
+    "predicted_top10": [
+      "854-183",
+      "234-123",
+      "661-440",
+      "567-025",
+      "146-871",
+      "488-626",
+      "034-540",
+      "532-102",
+      "467-215",
+      "011-087"
+    ]
+  },
+  {
+    "control_text": "Detection techniques",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "433-442",
+      "887-750",
+      "613-286",
+      "761-417",
+      "011-322",
+      "732-148",
+      "637-021",
+      "058-083",
+      "802-101",
+      "011-087"
+    ]
+  },
+  {
+    "control_text": "Model availability violations are a disruption in service that can be caused by an attacker prompting a model with maliciously crafted inputs that increased computation or by overwhelming the system with a number of inputs that causes a denial of service to users. As noted in [122], attack vectors are particularly interesting when executed indirect prompt injection so that a resource rather than a registered user is the source of the availability violation. Availability attacks that increase computation make the model or service perform unusually slow [122]. In PredAI, most commonly done by optimizing sponge examples — an energy latency attack on neural networks [33]. , with recent LLMs, be done by simply instructing the model to complete a timesensitive task in the background, slowing the model down [122]. Denial-of-service attacks can indiscriminately render a model unusable (e.g., failure to generate helpful outputs) or specifically block certain (e.g., specific APIs) [122]. Attacker Techniques. Researchers demonstrated the attacks on a commercial RAG service [122] indirect prompt injection, in a resource to be searched or summarized contained instructions with certain characteristics: • Time-consuming background tasks. The prompt instructs the model to perform a time-consuming task prior to answering the request. The prompt itself can be brief and request looping behavior in evaluating models [122]. • Muting. attack exploits the fact that a model cannot fnish sentences when an <|endoftext|> token appears in the middle of a user’s request. By including a request to begin a sentence with token, a search agent, for example, return without any generated text [122]. • Inhibiting . In attack, an embedded prompt instructs the model that it is not permitted to use certain APIs (e.g., the search functionality for Bing Chat). selectively disarms key components of the service [122]. • Disrupting input or output. In attack, an indirect prompt injection instructs the model to replace characters in retrieved text with homoglyph equivalents, disrupting calls to APIs that depend on the text. Alternatively, the prompt can instruct the model to corrupt the of a query to in a useless retrieval or summary [122]. 45 January 2024",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "230-318",
+      "886-662",
+      "108-316",
+      "187-083",
+      "686-110",
+      "012-625",
+      "780-757",
+      "073-507",
+      "077-235",
+      "333-480"
+    ]
+  },
+  {
+    "control_text": "Filtering retrieved inputs",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "843-475",
+    "predicted_top10": [
+      "010-308",
+      "657-084",
+      "814-322",
+      "232-217",
+      "503-455",
+      "743-237",
+      "881-434",
+      "764-765",
+      "217-112",
+      "607-671"
+    ]
+  },
+  {
+    "control_text": "Studies on real-world security vulnerabilities against ML show that security is addressed comprehensively, including software, data and model supply chains, and network and storage systems [7, 292]. Since AI is software, it inherits of the vulnerabilities of the traditional software supply chain. , practical GenAI tasks begin with open-source models or data that typically out of for traditional cybersecurity. For example, ML repositories with the largest software vulnerability exposure TensorFlow and OpenCV [292].",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "881-234",
+      "883-173",
+      "701-654",
+      "852-770",
+      "582-035",
+      "423-055",
+      "364-516",
+      "803-457",
+      "780-757",
+      "637-021"
+    ]
+  },
+  {
+    "control_text": "AI supply chain attacks can be mitigated by supply chain assurance . For model fle dependencies, includes regular vulnerability scanning of the model artifacts in the ML pipeline [292], and by adopting safe model persistence formats safetensors. For webscale data dependencies, includes verifying web downloads by publishing (by the provider) cryptographic hashes and verifying (by the downloader) training data as a basic integrity check to ensure that domain hijacking not injected new sources of data the training dataset [46]. approach to mitigating risks with malicious image editing by large diffusion models is immunizing images to make them resistant to manipulation by models [254]. , approach requires an additional policy component to make it effective and practical.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "852-770",
+    "predicted_top10": [
+      "881-234",
+      "852-770",
+      "883-173",
+      "423-055",
+      "582-035",
+      "663-200",
+      "364-516",
+      "701-654",
+      "276-748",
+      "088-316"
+    ]
+  },
+  {
+    "control_text": "Although privacy long a concern, privacy attacks against aggregate information collected from user started with the seminal work of Dinur and Nissim [89] on DATA RECONSTRUCTION attacks. The goal of reconstruction attacks is to reverse engineer private information about an individual user record or sensitive critical data from access to aggregate information. More recently, data reconstruction attacks designed for binary and multi-class neural network classifers [39, 128]. privacy attack is that of MEMBERSHIP-INFERENCE ATTACKS in an adversary can a particular record included in the dataset for computing statistical information or training a machine learning model. Membership inference attacks were frst introduced by Homer et al. [130] for genomic data. Recent literature focuses on membership attacks against ML models in mostly black-box settings in adversaries query access to a trained ML model [43, 269, 333]. A privacy violation for MLaaS is model extraction attacks, are designed to extract information about an ML model such as architecture or model parameters [47, 58, 141, 298]. Property inference attacks [9, 61, 110, 195, 286, 346] aim to extract global information about a training dataset, such as the fraction of training examples with a certain sensitive attribute. discusses privacy attacks to data reconstruction, the memorization of training data, membership inference, model extraction, and property inference, as as mitigations for of attacks and open problems in designing general mitigation strategies.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "220-870",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "532-102",
+      "475-586",
+      "043-703",
+      "488-626",
+      "663-550",
+      "220-870",
+      "474-203",
+      "058-443"
+    ]
+  },
+  {
+    "control_text": "Introduced by Goodfellow et al. [120] and further developed by Madry et al. [194], adversarial training is a general method that augments the training data with adversarial examples generated iteratively during training using their correct labels. The stronger the adversarial attacks for generating adversarial examples are, the more resilient the trained model becomes. Interestingly, adversarial training in models with more semantic meaning than standard models [301], beneft usually comes at the cost of decreased model accuracy on clean data. Additionally, adversarial training is expensive to the iterative generation of adversarial examples during training.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "408-838",
+    "predicted_top10": [
+      "408-838",
+      "467-215",
+      "384-015",
+      "370-877",
+      "364-516",
+      "867-642",
+      "547-824",
+      "860-723",
+      "073-507",
+      "444-058"
+    ]
+  },
+  {
+    "control_text": "Training for alignment",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "533-635",
+      "118-775",
+      "428-544",
+      "244-750",
+      "860-723",
+      "563-088",
+      "225-553",
+      "635-851",
+      "833-030",
+      "261-010"
+    ]
+  },
+  {
+    "control_text": "In contrast to availability attacks, targeted poisoning attacks induce a change in the ML model’s prediction on a small number of targeted samples. If the adversary can control the labeling function of the training data, label fipping is an effective targeted poisoning attack. The adversary simply inserts several poisoned samples with the label, and the model learn the wrong label. Therefore, targeted poisoning attacks are mostly studied in the clean-label setting in the attacker not access to the labeling function. Several techniques for mounting clean-label targeted attacks proposed. Koh and Liang [160] showed infuence functions – a statistical method that determines the most infuential training samples for a prediction – can be leveraged for creating poisoned samples in the fne-tuning setting in a pre-trained model is fne-tuned on new data. Suciu et al. [283] designed StingRay, a targeted poisoning attack that modifes samples in feature space and adds poisoned samples to each mini batch of training. An optimization procedure based on feature collision crafted by Shafahi et al. [258] to generate clean-label targeted poisoning for fne-tuning and end-to-end learning. ConvexPolytope [352] and BullseyePolytope [2] optimized the poisoning samples against ensemble models, offers better advantages for attack transferability. MetaPoison [133] a meta-learning 23 January 2024 algorithm to optimize the poisoned samples, while Witches’ Brew [113] performs optimization by gradient alignment, resulting in a state-of-the-art targeted poisoning attack. All of the above attacks impact a small set of targeted samples that are selected by the attacker during training, and they only tested for continuous image datasets (with the exception of StingRay, requires adversarial control of a large fraction of the training set). Subpopulation poisoning attacks [144] were designed to poison samples from an entire subpopulation, defined by matching on a subset of features or creating clusters in representation space. Poisoned samples are generated using label fipping (for NLP and tabular modalities) or a frst-order optimization method (for continuous data, such as images). The attack generalizes to all samples in a subpopulation and requires minimal knowledge about the ML model and a small number of poisoned samples (proportional to the subpopulation size). Targeted poisoning attacks introduced for semi-supervised learning algorithms [42], such as MixMatch [22], FixMatch [275], and Unsupervised Data Augmentation (UDA) [324] in the adversary poisons a small fraction of the unlabeled training dataset to change the prediction on targeted samples at deployment time. Mitigations. Targeted poisoning attacks are notoriously challenging to defend against. Jagielski et al. [144] showed an impossibility for subpopulation poisoning attacks. To mitigate of the risks with such attacks, cybersecurity mechanisms for dataset provenance and integrity attestation [220] should be judiciously. Ma et al. [192] proposed the use of differential privacy (DP) as a defense ( follows directly from the definition of differential privacy), it is that differentially private ML models lower accuracy than standard models. The trade-off between robustness and accuracy needs to be considered in each application. If the application strong data privacy requirements, and differentially private training is for privacy, an additional beneft is protection against targeted poisoning attacks. , the robustness offered by DP starts to fade once the targeted attack requires poisoning samples (as in subpopulation poisoning attacks) the group privacy bound not provide meaningful guarantees for large poisoned sets.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "615-663",
+      "481-710",
+      "867-642",
+      "020-540",
+      "854-183",
+      "234-123",
+      "567-025",
+      "408-838",
+      "012-625",
+      "860-723"
+    ]
+  },
+  {
+    "control_text": "AI Supply Chain - Poisoning Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "701-654",
+      "881-234",
+      "555-083",
+      "481-710",
+      "852-770",
+      "613-285",
+      "615-663",
+      "423-055",
+      "883-173",
+      "803-457"
+    ]
+  },
+  {
+    "control_text": "Data reconstruction attacks are the most concerning privacy attacks as they the ability to recover an individual’s data from released aggregate information. Dinur and Nissim [89] were the frst to introduce reconstruction attacks that recover user data from linear statistics. Their original attack requires an exponential number of queries for reconstruction, subsequent work shown to perform reconstruction with a polynomial number of queries [96]. A survey of privacy attacks, including reconstruction attacks, is given by Dwork et al. [94]. More recently, the U.S. Census Bureau performed a large-scale study on the risk of data reconstruction attacks on census data [111], motivated the use of differential privacy in the decennial release of the U.S. Census in 2020. In the context of ML classifers, Fredrickson et al. [107] introduced model inversion attacks that reconstruct class representatives from the training data of an ML model. While model inversion generates semantically similar images with in the training set, it cannot directly reconstruct the training data of the model. Recently, Balle et al. [15] trained a reconstructor network that can recover a data sample from a neural network model, assuming a powerful adversary with information about all other training samples. Haim et al. [128] showed the training data of a binary neural network classifer can be reconstructed from access to the model parameters by leveraging theoretical insights about implicit bias 29 January 2024 in neural networks. work recently extended to reconstruct training samples of multi-class multi-layer perceptron classifers [39]. In relevant privacy attack, attribute inference, the attacker extracts a sensitive attribute of the training set, assuming partial knowledge about other features in the training data [147]. The ability to reconstruct training samples is partially explained by the tendency of neural networks to memorize their training data. Zhang et al. [341] discussed neural networks can memorize randomly selected datasets. Feldman [103] showed that the memorization of training labels is to achieving almost optimal generalization error in ML. Brown et al. [36] constructed two learning tasks based on next-symbol prediction and cluster labeling in memorization is required for high-accuracy learning. Feldman and Zhang empirically evaluated the beneft of memorization for generalization using an infuence estimation method [104]. We discuss data reconstruction attacks and their connection to memorization for generative AI in 3.3.1.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "532-102",
+      "475-586",
+      "488-626",
+      "011-087",
+      "663-550",
+      "043-703",
+      "058-443",
+      "563-186",
+      "141-385"
+    ]
+  },
+  {
+    "control_text": "In MLaaS scenarios, providers typically train large ML models using proprietary data and to keep the model architecture and parameters confdential. The goal of an attacker performing a model extraction attack is to extract information about the model architecture and parameters by submitting queries to the ML model trained by an MLaaS provider. The frst model stealing attacks were shown by Tramer at al. [298] on several online ML services for ML models, including logistic regression, decision trees, and neural networks. , Jagielski et al. [141] shown the exact extraction of ML models to be impossible. Instead, a functionally equivalent model can be reconstructed that is than the original model achieves similar performance at the prediction task. Jagielski et al. [141] shown that even the weaker task of extracting functionally equivalent models is NP-hard. Several techniques for mounting model extraction attacks introduced in the literature. The frst method is that of direct extraction based on the mathematical formulation of the operations performed in deep neural networks, allows the adversary to com- 31 January 2024 pute model weights algebraically [47, 141, 298]. A second technique explored in a series of papers is to use learning methods for extraction. For instance, active learning [58] can guide the queries to the ML model for more effcient extraction of model weights, and reinforcement learning can train an adaptive strategy that reduces the number of queries [231]. A third technique is the use of SIDE CHANNEL information for model extraction. Batina et al. [18] electromagnetic side channels to recover simple neural network models, while Rakin et al. [245] showed ROWHAMMER ATTACKS can be for model extraction of more complex convolutional neural network architectures. Note that model extraction is not an end goal a step towards other attacks. As the model weights and architecture become , attackers can launch more powerful attacks typical for the white-box or gray-box settings. Therefore, preventing model extraction can mitigate downstream attacks that depend on the attacker having knowledge of the model architecture and weights.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "141-385",
+      "034-540",
+      "474-203",
+      "663-550",
+      "342-781",
+      "805-126",
+      "267-786",
+      "182-732",
+      "788-323",
+      "532-102"
+    ]
+  },
+  {
+    "control_text": "The frst poisoning attacks discovered in cybersecurity applications were availability attacks against worm signature generation and spam classifers, indiscriminately impact the entire machine learning model and, in essence, a denial-of-service attack on users of the AI system. Perdisci et al. [236] generated suspicious fows with fake invariants that mislead the worm signature generation algorithm in Polygraph [224]. Nelson et al. [222] designed poisoning attacks against Bayes-based spam classifers, generate spam emails that contain long sequences of words appearing in legitimate emails to induce the misclassifcation of spam emails. Both of attacks were conducted the white-box setting in adversaries are aware of the ML training algorithm, feature representations, training datasets, and ML models. ML-based methods proposed 21 January 2024 for the detection of cybersecurity attacks targeting ICS. Such detectors are retrained using data collected during system operation to account for plant operational drift of the monitored signals. retraining procedure creates opportunities for an attacker to mimic the signals of corrupted sensors at training time and poison the learning process of the detector such that attacks remain undetected at deployment time [161]. A simple black-box poisoning attack strategy is LABEL FLIPPING, generates training examples with a victim label selected by the adversary [27]. method requires a large percentage of poisoning samples for mounting an availability attack, and it improved optimization-based poisoning attacks introduced for the frst time against SUPPORT VECTOR MACHINES (SVM) [28]. In approach, the attacker solves a bilevel optimization problem to the optimal poisoning samples that achieve the adversarial objective (i.e., maximize the hinge loss for SVM [28] or maximize the mean square error [MSE] for regression [143]). optimization-based poisoning attacks subsequently designed against linear regression [143] and neural networks [215], and they require white-box access to the model and training data. In gray-box adversarial settings, the most popular method for generating availability poisoning attacks is transferability, in poisoning samples are generated for a surrogate model and transferred to the model [85, 283]. A realistic threat model for supervised learning is that of clean-label poisoning attacks in adversaries can only control the training examples not their labels. models scenarios in the labeling process is external to the training algorithm, as in malware classification where binary fles can be submitted by attackers to threat intelligence platforms, and labeling is performed using anti-virus signatures or other external methods. Clean-label availability attacks introduced for neural network classifers by training a generative model and adding noise to training samples to maximize the adversarial objective [105]. A approach for clean-label poisoning is to use gradient alignment and minimally modify the training data [106]. Availability poisoning attacks designed for unsupervised learning against centroid-based anomaly detection [159] and behavioral clustering for malware [29]. In federated learning, an adversary can mount a model poisoning attack to induce availability violations in the globally trained model [101, 263, 264]. More details on model poisoning attacks are provided in 2.3.4. Mitigations. Availability poisoning attacks are usually detectable by monitoring the standard performance metrics of ML models – such as precision, recall, accuracy, F1 scores, and area the curve – as they a large degradation in the classifer metrics. Nevertheless, detecting attacks during the testing or deployment stages of ML is less desirable, and existing mitigations aim to proactively prevent attacks during the training stage to generate robust ML models. Among the existing mitigations, generally promising techniques : • Training data sanitization: methods leverage the insight that poisoned sam- 22 January 2024 ples are typically than regular training samples not controlled by adversaries. As such, data sanitization techniques are designed to clean the training set and remove the poisoned samples before the machine learning training is performed. Nelson et al. [222] propose the Region of Non-",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "481-710",
+      "615-663",
+      "867-642",
+      "020-540",
+      "854-183",
+      "234-123",
+      "061-753",
+      "803-457",
+      "738-144",
+      "860-723"
+    ]
+  },
+  {
+    "control_text": "In 2017, Gu et al. [124] proposed BadNets, the frst backdoor poisoning attack. They observed that image classifers can be poisoned by adding a small patch trigger in a subset of images at training time and changing their label to a class. The classifer learns to associate the trigger with the class, and any image – including the trigger or backdoor pattern – be misclassifed to the class at testing time. Concurrently, Chen et al. [69] introduced backdoor attacks in the trigger is blended the training data. Follow-up work introduced the concept of clean-label backdoor attacks [302] in the adversary is restricted in preserving the label of the poisoned examples. Clean-label attacks typically require more poisoning samples to be effective, the attack model is 24 January 2024 more realistic. In the last few years, backdoor attacks become more sophisticated and stealthy, making them harder to detect and mitigate. Latent backdoor attacks were designed to survive even model fne-tuning of the last few layers using clean data [331]. Backdoor Generating Network (BaN) [253] is a dynamic backdoor attack in the location of the trigger changes in the poisoned samples so that the model learns the trigger in a location-invariant manner. Functional triggers, a.k.a. FUNCTIONAL ATTACKS, are embedded throughout the image or change according to the input. For instance, Li et al. [176] steganography algorithms to hide the trigger in the training data. Liu et al. [186] introduced a clean-label attack that natural refection on images as a backdoor trigger. Wenger et al. [320] poisoned facial recognition systems by using physical objects as triggers, such as sunglasses and earrings. Other data modalities. While the majority of backdoor poisoning attacks are designed for computer vision applications, attack vector effective in other application domains with data modalities, such as audio, NLP, and cybersecurity settings. • Audio: In audio domains, Shi et al. [268] showed an adversary can inject an unnoticeable audio trigger live speech, is jointly optimized with the model during training. • NLP: In natural language processing, the construction of meaningful poisoning samples is more challenging as the text data is discrete, and the semantic meaning of sentences ideally be preserved for the attack to remain unnoticeable. Recent work shown that backdoor attacks in NLP domains are becoming feasible. For instance, Chen et al. [68] introduced semantic-preserving backdoors at the character, word, and sentence level for sentiment analysis and neural machine translation applications. Li et al. [175] generated hidden backdoors against transformer models using generative language models in three NLP tasks: toxic comment detection, neural machine translation, and question answering. • Cybersecurity: Early poisoning attacks in cybersecurity were designed against worm signature generation in 2006 [236] and spam detectors in 2008 [222], before rising interest in adversarial machine learning. More recently, Severi et al. [257] showed AI explainability techniques can be leveraged to generate clean-label poisoning attacks with small triggers against malware classifers. They attacked models (i.e., neural networks, gradient boosting, random forests, and SVMs), using three malware datasets: Ember for Windows PE fle classification, Contagio for PDF fle classification, and DREBIN for Android app classification. Jigsaw Puzzle [329] designed a backdoor poisoning attack for Android malware classifers that realizable software triggers harvested from benign code. Mitigations. The literature on backdoor attack mitigation is vast compared to other poisoning attacks. Below we discuss several classes of defenses, including data sanitization, 25 January 2024 trigger reconstruction, model inspection and sanitization, and their limitations. • Training Data Sanitization: Similar to poisoning availability attacks, training data sanitization can be applied to detecting backdoor poisoning attacks. For instance, outlier detection in the latent feature space [129, 238, 300] effective for convolutional neural networks for computer vision applications. Activation Clustering [62] performs clustering of training data in representation space with the goal of isolating the backdoored samples",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "234-123",
+      "615-663",
+      "481-710",
+      "867-642",
+      "020-540",
+      "854-183",
+      "555-083",
+      "788-323",
+      "567-025",
+      "444-058"
+    ]
+  },
+  {
+    "control_text": "Differential privacy",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "488-626",
+    "predicted_top10": [
+      "532-102",
+      "488-626",
+      "058-443",
+      "011-087",
+      "043-703",
+      "563-186",
+      "034-540",
+      "447-083",
+      "436-325",
+      "041-188"
+    ]
+  },
+  {
+    "control_text": "Prompt instruction and formatting techniques",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "106-447",
+    "predicted_top10": [
+      "787-638",
+      "036-275",
+      "843-475",
+      "106-447",
+      "820-877",
+      "004-517",
+      "503-455",
+      "636-660",
+      "010-308",
+      "802-101"
+    ]
+  },
+  {
+    "control_text": "An LLM moderator",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "205-522",
+    "predicted_top10": [
+      "205-522",
+      "860-723",
+      "202-604",
+      "755-340",
+      "810-884",
+      "663-200",
+      "547-824",
+      "364-516",
+      "333-480",
+      "436-325"
+    ]
+  },
+  {
+    "control_text": "method for certifying the adversarial robustness of a neural network is based on techniques from FORMAL METHODS. Reluplex satisfability modulo theories (SMT) solvers to verify the robustness of small feedforward neural networks [154]. AI2 is the frst verification method to convolutional neural networks using abstract interpretation techniques [112]. methods extended and scaled up to larger networks in follow-up verification systems, such as DeepPoly [274], ReluVal [313], and Fast Geometric Projections (FGP) [108]. Formal verification techniques significant potential for certifying neural network robustness, their main limitations are their lack of scalability, computational cost, and restriction in the type of supported operations. All of proposed mitigations exhibit inherent trade-offs between robustness and accuracy, and they come with additional computational costs during training. Therefore, designing ML models that resist evasion while maintaining accuracy remains an open problem.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "364-516",
+      "547-824",
+      "276-748",
+      "663-550",
+      "532-102",
+      "467-215",
+      "408-838",
+      "663-200",
+      "582-035",
+      "384-015"
+    ]
+  },
+  {
+    "control_text": "Poisoning Attacks",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "615-663",
+      "555-083",
+      "481-710",
+      "736-237",
+      "860-084",
+      "268-100",
+      "020-540",
+      "546-564",
+      "612-252",
+      "653-242"
+    ]
+  },
+  {
+    "control_text": "Integrity violations are threats that GenAI systems to become untrustworthy. AI chatbots exacerbated online misinformation, as demonstrated by the tendencies of Microsoft’s Bing and Google’s Bard to perpetuate each other’s sources of misinformation [307]. LLMs’ inability to gauge reliable sources of news and information can be exploited to produce factually unsound outputs. Attacker Techniques. Researchers demonstrated integrity attacks by manipulating the primary task of the LLM. is than the more common indirect prompt injection attacks that perform a malicious side task. • Manipulation. The model is prompted to provide incorrect summaries of the search (i.e., arbitrarily wrong summaries) when the wrong output is not chosen in advance [122]. The manipulation attack instructs the model to provide wrong answers and causes the model’s answer to make claims that contradict the cited sources [122]. Below are two examples of manipulation attacks: 1. Wrong summaries. A model can be prompted to produce adversarially chosen or arbitrarily wrong summaries of documents, emails, or search queries [122]. 2. Propagate disinformation. Search chatbots can be prompted to propagate disinformation by relying on or perpetuating untrustworthy news sources or the outputs of other search chatbots [307].",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "061-753",
+    "predicted_top10": [
+      "061-753",
+      "012-625",
+      "686-110",
+      "217-163",
+      "073-507",
+      "481-710",
+      "780-757",
+      "370-877",
+      "738-144",
+      "020-540"
+    ]
+  },
+  {
+    "control_text": "Reinforcement learning from human feedback (RLHF)",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "860-723",
+    "predicted_top10": [
+      "860-723",
+      "663-200",
+      "364-516",
+      "205-522",
+      "202-604",
+      "408-838",
+      "755-340",
+      "384-015",
+      "467-215",
+      "843-475"
+    ]
+  },
+  {
+    "control_text": "Model poisoning attacks attempt to directly modify the trained ML model to inject malicious functionality the model. In centralized learning, TrojNN [185] reverse engineers the trigger from a trained neural network and retrains the model by embedding the trigger in external data to poison it. Most model poisoning attacks designed in the federated learning setting in clients send local model updates to a server that aggregates them a global model. Compromised clients can send malicious updates to poison the global model. Model poisoning attacks can both availability and integrity violation in federated models: • Poisoning availability attacks that degrade the global model’s accuracy effective, they usually require a large percentage of clients to be the control of the adversary [101, 263]. • Targeted model poisoning attacks induce integrity violations on a small set of samples at testing time. They can be mounted by a model replacement or model boosting attack in the compromised client replaces the local model update according to the targeted objective [13, 23, 285]. • Backdoor model poisoning attacks introduce a trigger malicious client updates 27 January 2024 to induce the misclassifcation of all samples with the trigger at testing time [13, 23, 285, 312]. Most of backdoors are forgotten if the compromised clients do not regularly participate in training, the backdoor becomes more durable if injected in the lowest utilized model parameters [349]. Model poisoning attacks are possible in supply-chain scenarios where models or components of the model provided by suppliers are poisoned with malicious code. A recent supply-chain attack, Dropout Attack [336], shows an adversary manipulates the randomness in neural network training (in particular in dropout regularization), poison the model to decrease accuracy, precision, or recall on a set of targeted classes. Mitigations. To defend federated learning from model poisoning attacks, a variety of Byzantine-resilient aggregation rules designed and evaluated. Most of them attempt to identify and exclude the malicious updates when performing the aggregation at the server [3, 31, 40, 125, 203–205, 284, 334]. , motivated adversaries can bypass defenses by adding constraints in the attack generation optimization problem [13, 101, 263]. Gradient clipping and differential privacy the potential to mitigate model poisoning attacks to extent [13, 225, 285], they usually decrease accuracy and do not provide complete mitigation. For specific model poisoning vulnerabilities, such as backdoor attacks, are techniques for model inspection and sanitization, as discussed in 2.3.3. , mitigating supply-chain attacks in adversaries control the source code of the training algorithm or the ML hyperparameters, remains challenging. Program verification techniques in other domains (such as cryptographic protocol verification [241]) be adapted to setting, ML algorithms intrinsic randomness and non-deterministic behavior, enhances the diffculty of verification. Designing ML models robust in face of supply-chain vulnerabilities is a critical open problem that needs to be addressed by the community. 28 January 2024",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "481-710",
+    "predicted_top10": [
+      "481-710",
+      "020-540",
+      "867-642",
+      "615-663",
+      "701-654",
+      "854-183",
+      "234-123",
+      "661-440",
+      "061-753",
+      "073-507"
+    ]
+  },
+  {
+    "control_text": "A direct prompt injection occurs when a user injects text that is to alter the behavior of the LLM. Attacker goals. An attacker may a variety of goals with a prompt injection [182, 183, 265], such as: • Abuse. Attackers use direct prompt injections to bypass safeguards in order to create misinformation, propaganda, hurtful content, sexual content, malware (code), or phishing content. , the list of prohibited scenarios is explicitly safeguarded by the model creator [5, 121, 230]. A direct prompt injection for the purpose of model abuse is called a JAILBREAK. • Invade privacy. Attackers may wish to extract the system prompt or reveal private information provided to the model in the context not for unfltered access by the user. is discussed further in 3.3.1. 40 January 2024 Attacker techniques. Attacker techniques for launching direct prompt injection attacks are numerous tend to fall several broad categories [319]: • Gradient-based attacks are white-box optimization-based methods for designing jailbreaks that are very similar to the PredAI attacks discussed in 2.2.1. A gradient-based distributional attack an approximation to make the adversarial loss for generative transformer models differentiable, aims to minimize lexical changes by enforcing perceptibility and fuency BERTScore and perplexity [127]. HotFlip encodes modifications of text a binary vector and gradient steps to minimize adversarial loss [97]. Originally designed to create adversarial examples for PredAI language classifers (e.g., sentiment analysis), subsequent works leveraged HotFlip for GenAI using the trick: since autoregressive tokens generate a single token at a time, optimizing the frst generated token to produce an affrmative response is suffcient to prime the autoregressive generative process to complete a fully affrmative utterance [49]. Universal adversarial triggers are a special class of gradient-based attacks against generative models that seek to fnd input-agnostic prefxes (or suffxes) that, when included, produce the desired affrmative response regardless of the remainder of the input [308, 354]. That universal triggers transfer to other models makes open-source models — for is ready white-box access — feasible attack vectors for transferability attacks to closed systems where only API access is available [354]. • Manual methods for jailbreaking an LLM generally fall two categories: competing objectives and mismatched generalization [316]. methods exploit the model’s susceptibility to certain linguistic manipulations and extend beyond conventional adversarial inputs. In the of competing objectives, additional instructions are provided that compete with the instructions originally provided by the author. 1. Prefx injection: method involves prompting the model to commence responses with an affrmative confrmation. By conditioning the model to begin output in a predetermined manner, adversaries attempt to infuence subsequent language generation toward specific, predetermined patterns or behaviors. 2. Refusal suppression: Adversaries provide explicit instructions to the model, compelling it to avoid generating refusals or denials in output. By limiting or prohibiting the generation of negative responses, tactic aims to ensure the model’s compliance with the provided instructions, potentially compromising safety . 3. Style injection: In approach, adversaries instruct the model not to use long words or adopt a particular style. By constraining the model’s language to simplistic or non-professional tones, it aims to limit the sophistication or accuracy of the model’s responses, thereby potentially compromising overall performance. 41 January 2024 4. Role-play: Utilizing role-play strategies, such as “Do Anything Now” (DAN) or “Always Intelligent and Machiavellian” (AIM), adversaries guide the model to adopt specific personas or behavioral patterns that confict with the original intent. manipulation aims to exploit the model’s adaptability to varied roles or characteristics, potentially compromising adherence to safety protocols. Techniques in the mismatched generalization diverge significantly from any safety training or guardrails, positioning inputs to be out of distribution from the model’s standard training data. Approaches : 1. Special encoding:",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "686-110",
+      "012-625",
+      "536-158",
+      "370-877",
+      "073-507",
+      "483-253",
+      "843-475",
+      "780-757",
+      "061-753",
+      "020-540"
+    ]
+  },
+  {
+    "control_text": "A dominant use for LLMs is RETRIEVAL AUGMENTED GENERATION, depicted in Figure 3. Using LLMs in retrieval tasks blurred the data and instruction channels to an LLM. allows for attacker techniques that leverage the data channel to affect system operation, similar to decades-old SQL injection attacks. , the attacker not directly manipulate the LLM. INDIRECT PROMPT INJECTION attacks are enabled by RESOURCE CONTROL so that an attacker can indirectly (or remotely) inject system 44 January 2024 prompts without directly interacting with the RAG application [122]. As with direct prompt injection, indirect prompt injection attacks can in violations across the four categories of attacker goals: 1) availability violations, 2) integrity violations, 3) privacy compromises, and 4) abuse violations.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "012-625",
+    "predicted_top10": [
+      "012-625",
+      "686-110",
+      "483-253",
+      "780-757",
+      "536-158",
+      "073-507",
+      "020-540",
+      "843-475",
+      "061-753",
+      "370-877"
+    ]
+  },
+  {
+    "control_text": "The discovery of evasion attacks against machine learning models generated increased interest in adversarial machine learning, leading to significant growth in research space over the last decade. In an evasion attack, the adversary’s goal is to generate adversarial examples, are defined as testing samples whose classification can be changed at deployment time to an arbitrary class of the attacker’s choice with only minimal perturbation [287]. Early instances of evasion attacks date back to 1988 with the work of Kearns and Li [155], and to 2004, when Dalvi et al. [82], and Lowd and Meek [188] demonstrated the existence of adversarial examples for linear classifers in spam flters. Adversarial examples became even more intriguing to the research community when Szedegy et al. [287] showed that deep neural networks for image classification can be easily manipulated, and adversarial examples were visualized. In the context of image classification, the perturbation of the original sample must be small so that a human cannot observe the transformation of the input. Therefore, while the ML model can be tricked to classify the adversarial example in the class selected by the attacker, humans still recognize it as part of the original class. In 2013, Szedegy et al. [287] and Biggio et al. [26] independently discovered an effective method for generating adversarial examples against linear models and neural networks by applying gradient optimization to an adversarial objective function. Both of techniques require white-box access to the model and were improved by subsequent methods that generated adversarial examples with even smaller perturbations [10, 53, 194]. Adversarial examples are in more realistic black-box settings in attackers only obtain query access to the trained model. Even in the more challenging black-box setting in attackers obtain the model’s predicted labels or confidence scores, deep neural networks are still vulnerable to adversarial examples. Methods for creating adversarial examples in black-box settings zeroth-order optimization [66], discrete optimization [210], and Bayesian optimization [271], as as transferability, involves the white-box generation of adversarial examples on a model architecture before transferring them to the model [232, 233, 299]. Cybersecurity and image classifications were the frst application domains that showcased evasion attacks. , with the increasing interest in adversarial machine learning, ML technology in other application domains went scrutiny, including speech recognition [54], natural language processing [149], and video classification [177, 317]. Mitigating adversarial examples is a well-known challenge in the community and deserves additional research and investigation. The feld a history of publishing defenses evaluated relatively weak adversarial models that are subsequently broken by more powerful attacks, a process that appears to iterate in perpetuity. Mitigations to be evaluated against strong adaptive attacks, and for the rigorous evaluation of newly proposed mitigation techniques established [81, 297]. The most promising directions for mitigating the critical threat of evasion attacks are adversarial training [120, 194] (iteratively generating and inserting adversarial examples with their correct labels at train- 14 January 2024 ing time); certifed techniques, such as randomized smoothing [79] (evaluating ML prediction noise); and formal verification techniques [112, 154] (applying formal method techniques to verify the model’s output). Nevertheless, methods come with limitations, such as decreased accuracy for adversarial training and randomized smoothing, and computational complexity for formal methods. is an inherent trade-off between robustness and accuracy [296, 301, 342]. Similarly, are trade-offs between a model’s robustness and fairness guarantees [59]. discusses white-box and black-box evasion attack techniques, attack transferability, and the potential mitigation of adversarial examples in more detail.",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "370-877",
+      "408-838",
+      "467-215",
+      "384-015",
+      "364-516",
+      "011-322",
+      "073-507",
+      "686-110",
+      "803-457",
+      "860-723"
+    ]
+  },
+  {
+    "control_text": "Membership inference attacks expose private information about an individual, reconstruction or memorization attacks, and are still of great concern when releasing aggregate information or ML models trained on user data. In certain situations, determining that an individual is part of the training set already privacy implications, such as in a medical study of patients with a rare disease. Moreover, membership inference can be as a building block for mounting data extraction attacks [48, 51]. In membership inference, the attacker’s goal is to a particular record or data sample part of the training dataset for the statistical or ML algorithm. attacks were introduced by Homer et al. [130] for statistical computations on genomic data the name tracing attacks. Robust tracing attacks analyzed when an adversary gains access to noisy statistical information about the dataset [95]. In the last fve years, the literature the terminology membership inference for attacks against ML models. Most of the attacks in the literature are performed against deep neural networks for classification [43, 74, 171, 269, 332, 333]. Similar to other attacks in adversarial machine learning, membership inference can be performed in white-box settings [171, 218, 250] in attackers knowledge of the model’s architecture and parameters, most of the attacks developed for black-box settings in the adversary generates queries to the trained ML model [43, 74, 269, 332, 333]. The attacker’s success in membership inference formally defined using a cryptographically inspired privacy game in the attacker interacts with a challenger and needs to a sample in training the queried ML model [146, 252, 333]. In terms of techniques for mounting membership inference attacks, the lossbased attack by Yeom et al. [333] is one of the most effcient and widely method. Using the knowledge that the ML model minimizes the loss on training samples, the attack determines that a sample is part of training if loss is lower than a fxed threshold 30 January 2024 (selected as the average loss of training examples). Sablayrolles et al. [250] refned the lossbased attack by scaling the loss using a per-example threshold. popular technique introduced by Shokri et al. [269] is that of shadow models, trains a meta-classifer on examples in and out of the training set obtained from training thousands of shadow ML models on the same task as the original model. technique is generally expensive, and while it improve the simple loss-based attack, computational cost is high and requires access to samples from the distribution to train the shadow models. two techniques are at opposite ends of the spectrum in terms of their complexity, they perform similarly in terms of precision at low false positive rates [43]. An intermediary method that is obtains good performance in terms of the AREA THE CURVE (AUC) metric is the LiRA attack by Carlini et al. [43], trains a smaller number of shadow models to learn the distribution of model logits on examples in and out of the training set. Using the assumption that the model logit distributions are Gaussian, LiRA performs a hypothesis test for membership inference by estimating the mean and standard deviation of the Gaussian distributions. Ye et al. [332] designed a similar attack that performs a one-sided hypothesis test, not make any assumptions on the loss distribution achieves slightly lower performance than LiRA. Recently, Lopez et al. [187] propose a more effcient membership inference attack that requires training a single model to predict the quantiles of the confidence score distribution of the model attack. Membership inference attacks designed the stricter label-only threat model in the adversary only access to the predicted labels of the queried samples [74]. are several public privacy libraries that offer implementations of membership inference attacks: the TensorFlow Privacy library [278] and the ML Privacy Meter [214].",
+    "framework": "NIST AI 100-2",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "532-102",
+      "043-703",
+      "663-550",
+      "475-586",
+      "488-626",
+      "010-108",
+      "058-443",
+      "474-203"
+    ]
+  }
+]

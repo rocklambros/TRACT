@@ -301,6 +301,11 @@ def main() -> int:
             hub_ids=hub_ids,
             output_dir=output_dir,
             include_zero_shot=args.zero_shot,
+            # The stats apply_prose_to_corpus populated above. Without them the
+            # fold falls back to a length heuristic that undercounts truncation
+            # by 26% -- 39 reported against 55 real across Campaign 2's test
+            # round -- because prepare_anchor rstrips after cutting.
+            corpus_selection=selection_stats,
         )
     except BaseException:
         # Mark the run failed rather than leaving it displayed as running.
