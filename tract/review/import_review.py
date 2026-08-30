@@ -27,6 +27,24 @@ _PROVENANCE_SQL: Final[str] = (
     " AND provenance IN (" + ", ".join("?" * len(REVIEWABLE_PROVENANCE)) + ")"
 )
 
+# The provenance the export draws calibration items from. Deliberately outside
+# REVIEWABLE_PROVENANCE: a review decision must never rewrite the row that is
+# the control on that reviewer.
+CALIBRATION_PROVENANCE: Final[str] = "ground_truth_T1-AI"
+
+
+def _calibration_ids_from_db(conn: sqlite3.Connection) -> frozenset[int]:
+    """Assignment ids whose provenance marks them as calibration controls.
+
+    The reviewable query excludes this provenance, so any id in a review file
+    that carries it is a calibration item and nothing else can be.
+    """
+    rows = conn.execute(
+        "SELECT id FROM assignments WHERE provenance = ?",
+        (CALIBRATION_PROVENANCE,),
+    ).fetchall()
+    return frozenset(int(r["id"]) for r in rows)
+
 
 def _require_in_scope(cursor: sqlite3.Cursor, pred_id: int, action: str) -> None:
     """Refuse a decision that matched no in-scope row, rather than counting it.
@@ -96,12 +114,23 @@ def apply_review_decisions(
     skipped_pending = 0
     skipped_calibration = 0
 
+    calibration_ids = _calibration_ids_from_db(conn)
+
     try:
         for pred in predictions:
             pred_id: int = pred["id"]
             status: str = pred["status"]
 
-            if pred_id < 0:
+            # Calibration rows are identified from the store, not from a
+            # negative id in the returned document. The export now gives them
+            # real assignment ids so the reviewer cannot sort them out of their
+            # own worklist (F19), which means `pred_id < 0` no longer finds
+            # any of them -- and a calibration decision that reached the UPDATE
+            # would hit _require_in_scope and abort the entire import, because
+            # ground_truth_T1-AI is deliberately outside REVIEWABLE_PROVENANCE.
+            # Reviewers are supposed to answer these items; skipping them here
+            # is what keeps that from destroying the import.
+            if pred_id in calibration_ids:
                 skipped_calibration += 1
                 continue
 

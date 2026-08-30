@@ -177,11 +177,24 @@ def test_full_pipeline(mock_predictor_cls: MagicMock, tmp_path: Path) -> None:
     cal_path.write_text('{"global_threshold": 0.5}', encoding="utf-8")
     output_dir = tmp_path / "review_output"
 
-    metadata = generate_review_export(db_path, tmp_path / "model", output_dir, cal_path)
+    operator_dir = tmp_path / "operator"
+    metadata = generate_review_export(
+        db_path, tmp_path / "model", output_dir, cal_path,
+        operator_dir=operator_dir,
+    )
 
     export_path = output_dir / "review_export.json"
     assert export_path.exists()
     review_data = json.loads(export_path.read_text(encoding="utf-8"))
+
+    # Calibration items are no longer identifiable from the reviewer's file --
+    # they carry real assignment ids and a uniform provenance so the reviewer
+    # they audit cannot sort them out (F19). The operator sidecar is the only
+    # thing that names them, and this test is the operator.
+    sidecar = json.loads(
+        (operator_dir / "review_export.calibration.json").read_text(encoding="utf-8"),
+    )
+    calibration_ids = set(sidecar["calibration_ids"])
 
     # The review query excludes GT-confirmed overlaps.
     # A.1→hub-1 has opencre_ground_truth → AL(A.1→hub-1) EXCLUDED by NOT EXISTS
@@ -189,8 +202,12 @@ def test_full_pipeline(mock_predictor_cls: MagicMock, tmp_path: Path) -> None:
     # A.3→hub-3 no opencre_ground_truth → INCLUDED
     # B.1→hub-1 no opencre_ground_truth → INCLUDED
     # B.2→hub-4 no opencre_ground_truth → INCLUDED
-    real_preds = [p for p in review_data["predictions"] if p["id"] >= 0]
-    calibration_preds = [p for p in review_data["predictions"] if p["id"] < 0]
+    real_preds = [
+        p for p in review_data["predictions"] if p["id"] not in calibration_ids
+    ]
+    calibration_preds = [
+        p for p in review_data["predictions"] if p["id"] in calibration_ids
+    ]
 
     assert len(real_preds) == 4
     real_ctrl_ids = {p["control_id"] for p in real_preds}
@@ -200,7 +217,8 @@ def test_full_pipeline(mock_predictor_cls: MagicMock, tmp_path: Path) -> None:
 
     # Calibration items come from ground_truth_T1-AI (2 items, but we have < 20
     # so we get whatever is available).
-    assert all(p["id"] < 0 for p in calibration_preds)
+    assert calibration_preds
+    assert all(p["id"] > 0 for p in calibration_preds)
     assert all(p["status"] == "pending" for p in calibration_preds)
 
     # ── Step 3: Simulate expert review ───────────────────────────────
@@ -208,7 +226,7 @@ def test_full_pipeline(mock_predictor_cls: MagicMock, tmp_path: Path) -> None:
     assert len(pred_ids) == 4
 
     for pred in review_data["predictions"]:
-        if pred["id"] < 0:
+        if pred["id"] in calibration_ids:
             pred["status"] = "accepted"
         elif pred["id"] == pred_ids[0]:
             pred["status"] = "accepted"

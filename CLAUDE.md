@@ -143,7 +143,7 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
 - **Lazy Model Auto-Download:** COMPLETE — `tract assign` downloads the pinned model from HuggingFace on first use (sha256-verified, sentinel-gated), tolerates the published flat layout, and adds `tract --version`. Forces the PyTorch backend (`USE_TF=0` at import) to avoid a TensorFlow import deadlock in `sentence-transformers`. `assign --file` preserves input order and carries an `input_index`. Distinct exit codes: 2 user error, 3 offline, 4 integrity, 5 missing runtime.
-- **2,832 tests** (`pytest tests/ -q --collect-only`, 2026-08-28 — this line said 920, then 2,722, each long after the suite had moved, so re-derive it rather than trust it), 20 CLI subcommands
+- **2,944 tests** (`pytest tests/ -q --collect-only`, 2026-08-29 — this line said 920, then 2,722, then 2,832, each long after the suite had moved, so re-derive it rather than trust it), 20 CLI subcommands. 28 fail locally on `sentence-transformers==3.4.1`, which is outside the pinned set (3.2.0 / 5.7.0); `tests/test_st_compat.py` is the suite saying so. They pass in CI.
 - **Campaign 2 (LOFO re-run, 2026-08-28):** COMPLETE. Three validation arms
   (n=1,265) then one held-out AI test round (n=147). Test-round micro hit@1
   delta **+0.1361 [+0.0476, +0.2245]** over paired zero-shot, absolute 0.5918.
@@ -155,6 +155,23 @@ claude-mem records observations as you work. These are valuable for continuity:
   agentic smoke test FAILED at 1–2 of 6. Read `docs/campaign2-results.md` before
   quoting anything from this campaign; it lists which of the campaign's own
   commit messages were later superseded. A3 is **not** the shipped model.
+- **Campaign 2 amended (2026-08-29), two findings, both verified:**
+  - **25% of the test gold was rewritten by TRACT's own link audit** and was
+    disclosed nowhere. On the 110 audit-untouched items the delta is **+0.1000
+    [0.000, 0.200], P(δ ≤ 0.10) = 0.531** — report it as a co-primary beside the
+    pooled figure, never the pooled figure alone. `docs/campaign2-results.md`
+    §13; reproduce with `scripts/analysis/audit_stratified_delta.py`.
+  - **The domain-shortcut hypothesis is refuted.** Handing the zero-shot encoder
+    the whole 78-hub AI region free — 444 of 522 candidates deleted — moves one
+    item in 147 (+0.0068). The gain is not candidate-set narrowing. §14.
+- **Campaign 3:** pre-registered in `results/phase1b/CAMPAIGN3.md` — binding
+  numeric thresholds, **no synthetic data in training or evaluation**, and a
+  stated MDE of 0.145 at n=940. Nothing has run. Three items block it and are
+  owner decisions, listed in §5 of that file.
+- **`results/review/review_export.json` is Tier 3 and quarantined.** 898
+  model-proposed, human-ratified items; agrees with independent OpenCRE gold on
+  only 47 of 63 overlapping items. Never a gate denominator. See
+  `results/review/PROVENANCE.md`.
 - **No web UI.** TRACT is CLI + API only. No Dash dashboard.
 
 ## Commands

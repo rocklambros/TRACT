@@ -14,7 +14,7 @@ import random
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
     import sqlite3
@@ -36,11 +36,27 @@ from tract.io import load_json
 from tract.review.types import (
     AlternativeHub,
     ExportMetadata,
+    ExportSummary,
     ReviewExportDocument,
     ReviewItem,
 )
 
 logger = logging.getLogger(__name__)
+
+# Every item in the reviewer-facing file carries this, whatever its real
+# provenance. The reviewer is being asked one question -- does this control
+# belong on this hub -- and the answer does not depend on where the row came
+# from. What the true value DID do was name the calibration items: real work
+# said active_learning_round_2 or model_prediction, calibration said
+# ground_truth_T1-AI, and the reviewer whose attention those items measure
+# could sort on it. True provenance goes to the operator sidecar instead.
+REVIEWER_FACING_PROVENANCE: Final[str] = "review_candidate"
+
+# The sidecar is written OUTSIDE the export directory by default. The natural
+# way to hand review work over is to send the output directory; a key sitting
+# inside it would be sent along with the questions it answers.
+DEFAULT_OPERATOR_DIRNAME: Final[str] = "review_operator"
+CALIBRATION_SIDECAR_NAME: Final[str] = "review_export.calibration.json"
 
 # SQL to fetch assignments that need review:
 #   - provenance is active_learning_round_2 or model_prediction
@@ -152,7 +168,11 @@ def _generate_calibration_items(
 
     Runs inference to get model's genuine confidence for known-correct hubs.
     Uses stratified selection: easy (top-N) + hard (bottom-N) + random middle.
-    Returns list of prediction dicts with negative IDs.
+
+    Items carry their REAL assignment id and REVIEWER_FACING_PROVENANCE, so
+    nothing in the returned dicts distinguishes them from ordinary review work.
+    Callers that need to know which items these are read the operator sidecar
+    or the store, never the reviewer-facing file.
     """
     conn = get_connection(db_path)
     try:
@@ -205,7 +225,7 @@ def _generate_calibration_items(
     selected = easy + middle + hard
 
     calibration_items: list[ReviewItem] = []
-    for neg_id, (_, conf, row, text, preds) in enumerate(selected, start=1):
+    for (_, conf, row, text, preds) in selected:
         assigned_hub_id: str = row["hub_id"]
         text_quality = _compute_text_quality(len(text))
 
@@ -244,7 +264,13 @@ def _generate_calibration_items(
         hub_info = hub_meta.get(assigned_hub_id, {"name": assigned_hub_id, "path": ""})
 
         calibration_items.append({
-            "id": -neg_id,
+            # The real assignment id, not a synthetic negative one. A negative
+            # id sorted every calibration item out of the reviewer's file in a
+            # single pass, and the reviewer these items exist to audit is the
+            # one person who must not be able to do that. The id is genuine, so
+            # validate.py's existence check now covers these rows too instead
+            # of skipping them.
+            "id": row["id"],
             "control_id": row["control_id"],
             "framework_id": row["framework_id"],
             "framework_name": row["framework_name"],
@@ -260,7 +286,12 @@ def _generate_calibration_items(
             "in_conformal_set": in_conformal_set_val,
             "text_quality": text_quality,
             "review_priority": review_priority,
-            "provenance": row["provenance"],
+            # REVIEWER_FACING_PROVENANCE, not row["provenance"]. Every real
+            # item said active_learning_round_2 or model_prediction and every
+            # calibration item said ground_truth_T1-AI, which named them as
+            # plainly as the negative id did. The true value is not discarded:
+            # it goes to the operator sidecar. See _write_calibration_sidecar.
+            "provenance": REVIEWER_FACING_PROVENANCE,
             "alternative_hubs": alternative_hubs,
             "decision": None,
             "reviewer_hub_id": None,
@@ -282,7 +313,8 @@ def generate_review_export(
     calibration_path: Path,
     *,
     source: str = "local",
-) -> ExportMetadata:
+    operator_dir: Path | None = None,
+) -> ExportSummary:
     """Build reviewer-ready JSON from in-scope assignments.
 
     Queries unreviewed, non-GT-confirmed assignments, re-runs inference to
@@ -294,6 +326,10 @@ def generate_review_export(
         model_dir: Directory containing the deployment model and artifacts.
         output_dir: Directory to write review_export.json into.
         calibration_path: Path to calibration.json with global_threshold.
+        operator_dir: Where to write the calibration answer key. Defaults to a
+            sibling of output_dir, never inside it -- sending the reviewer the
+            export directory must not send them the key. Anything that reads
+            the key (review metrics, review import) needs this path.
         source: Model source identifier passed to TRACTPredictor ("local" or
             "download"). Defaults to "local".
 
@@ -344,16 +380,19 @@ def generate_review_export(
 
     if not rows:
         logger.warning("No assignments found for review export.")
+        # Same split as the populated path: calibration_items is returned to
+        # the operator and never written into the reviewer's file. Kept
+        # consistent even when the count is zero, so the field's absence is a
+        # property of the file format rather than of this particular run.
         metadata: ExportMetadata = {
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "model_version": model_version,
             "total_predictions": 0,
-            "calibration_items": 0,
             "framework_breakdown": {},
             "priority_breakdown": {"critical": 0, "careful": 0, "routine": 0},
         }
         _write_export(output_dir, {"metadata": metadata, "predictions": []})
-        return metadata
+        return {**metadata, "calibration_items": 0}
 
     # ── Re-run inference on all controls ─────────────────────────────────
     texts: list[str] = []
@@ -439,7 +478,11 @@ def generate_review_export(
             "in_conformal_set": in_conformal_set_val,
             "text_quality": text_quality,
             "review_priority": review_priority,
-            "provenance": row["provenance"],
+            # Uniform across every item in the reviewer-facing file. Emitting
+            # the true value here would re-create the tell in reverse: two
+            # values on the real items and a third on the calibration ones is
+            # just as separable as one value on each.
+            "provenance": REVIEWER_FACING_PROVENANCE,
             "alternative_hubs": alternative_hubs,
             "decision": None,
             "reviewer_hub_id": None,
@@ -454,26 +497,51 @@ def generate_review_export(
     calibration_items = _generate_calibration_items(
         db_path, predictor, global_threshold, hub_meta,
     )
+
+    # Interleaved, not appended. Appending put every calibration item in one
+    # contiguous run at the end of the array, so `tail` found the whole set
+    # without reading a single field.
+    #
+    # Sorted rather than shuffled, because the framework-then-section ordering
+    # is what makes the file reviewable -- related controls sit together. The
+    # sort key is (framework, section_id, id) rather than the previous
+    # (framework, id): assignment id records when a row was created, which
+    # correlates with provenance, so ordering by it re-clusters the calibration
+    # items inside each framework block. section_id is a property of the
+    # control and carries no such signal.
     predictions.extend(calibration_items)
+    predictions.sort(
+        key=lambda p: (p["framework_name"], p["section_id"], p["id"]),
+    )
 
     metadata = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "model_version": model_version,
         "total_predictions": len(predictions),
-        "calibration_items": len(calibration_items),
         "framework_breakdown": framework_breakdown,
         "priority_breakdown": priority_breakdown,
     }
 
+    # `calibration_items` is deliberately absent from `metadata` above: written
+    # into the reviewer's file it is a check-figure that turns a guess about
+    # which items are calibration into something verifiable. It is returned to
+    # the caller, which is the operator, and written to the sidecar.
     export_doc: ReviewExportDocument = {"metadata": metadata, "predictions": predictions}
     _write_export(output_dir, export_doc)
 
+    sidecar_path = _write_calibration_sidecar(
+        operator_dir if operator_dir is not None
+        else output_dir.parent / DEFAULT_OPERATOR_DIRNAME,
+        calibration_items,
+        model_version,
+    )
+
     logger.info(
-        "Review export written: %d predictions (%d calibration) (%s)",
-        len(predictions), len(calibration_items),
+        "Review export written: %d predictions (%d calibration, key at %s) (%s)",
+        len(predictions), len(calibration_items), sidecar_path,
         ", ".join(f"{k}={v}" for k, v in priority_breakdown.items()),
     )
-    return metadata
+    return {**metadata, "calibration_items": len(calibration_items)}
 
 
 def _write_export(output_dir: Path, data: ReviewExportDocument) -> Path:
@@ -510,3 +578,80 @@ def _write_export(output_dir: Path, data: ReviewExportDocument) -> Path:
 
     logger.debug("Atomically wrote review export to %s", target)
     return target
+
+
+def _write_calibration_sidecar(
+    operator_dir: Path,
+    calibration_items: list[ReviewItem],
+    model_version: str,
+) -> Path:
+    """Write the operator-only calibration key.
+
+    Holds everything the reviewer-facing export no longer says: which ids are
+    calibration items, what the known-correct hub is for each, and what their
+    real provenance was. Downstream consumers -- review metrics scoring
+    reviewer agreement, review import skipping these rows -- read this instead
+    of inferring membership from a negative id.
+
+    Written 0600. It is the answer key to a test whose validity depends on the
+    person being tested not having seen it, and the default location is outside
+    the export directory so that sending the reviewer their work does not send
+    them this.
+    """
+    operator_dir.mkdir(parents=True, exist_ok=True)
+    target = operator_dir / CALIBRATION_SIDECAR_NAME
+
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "model_version": model_version,
+        "n_calibration": len(calibration_items),
+        "calibration_ids": sorted(int(item["id"]) for item in calibration_items),
+        # Keyed by string because JSON object keys are strings; readers must
+        # look up str(id), and the test asserts that correspondence rather
+        # than trusting it.
+        "gold_hub_ids": {
+            str(item["id"]): item["assigned_hub_id"] for item in calibration_items
+        },
+        "true_provenance": {
+            str(item["id"]): "ground_truth_T1-AI" for item in calibration_items
+        },
+    }
+
+    fd, tmp_path = tempfile.mkstemp(
+        dir=operator_dir, prefix=".calibration.", suffix=".tmp",
+    )
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, sort_keys=True, indent=2, ensure_ascii=False)
+            fh.write("\n")
+        os.replace(tmp_path, target)
+    except Exception:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
+    logger.debug("Wrote calibration key for %d items to %s",
+                 len(calibration_items), target)
+    return target
+
+
+def load_calibration_ids(operator_dir: Path) -> frozenset[int]:
+    """Read the calibration id set written beside an export.
+
+    Raises rather than returning an empty set when the file is missing: an
+    empty set silently turns "skip calibration rows" into "skip nothing", and
+    the two failures look identical at the call site. A caller that genuinely
+    has no key should not be scoring calibration in the first place.
+    """
+    target = operator_dir / CALIBRATION_SIDECAR_NAME
+    if not target.is_file():
+        raise FileNotFoundError(
+            f"No calibration key at {target}. Reviewer agreement cannot be "
+            "scored and calibration rows cannot be skipped on import without "
+            "it; an absent key is not an empty one."
+        )
+    payload = json.loads(target.read_text(encoding="utf-8"))
+    return frozenset(int(i) for i in payload["calibration_ids"])

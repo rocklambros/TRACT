@@ -39,6 +39,53 @@ def _make_review_data(predictions: list[dict]) -> dict:
     }
 
 
+def _db(tmp_path: Path, calibration_ids: tuple[int, ...] = ()) -> Path:
+    """A real crosswalk DB where the given assignment ids are calibration rows.
+
+    `db_path` used to be documented as reserved for future use and the tests
+    passed a path with nothing behind it. It is load-bearing now: calibration
+    membership is read from the store rather than from a negative id in the
+    reviewed file, because the negative id was visible to the reviewer those
+    items exist to measure (F19).
+    """
+    from tract.crosswalk.schema import create_database, get_connection
+
+    db_path = tmp_path / "metrics.db"
+    if db_path.exists():
+        return db_path
+    create_database(db_path)
+    if not calibration_ids:
+        return db_path
+
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO frameworks (id, name, version, fetch_date, control_count) "
+            "VALUES ('fw_alpha', 'Alpha Framework', '1.0', '2026-05-01', 0)",
+        )
+        conn.execute(
+            "INSERT INTO hubs (id, name, path, parent_id) "
+            "VALUES ('cal-hub-1', 'Cal Hub', '/cal', NULL)",
+        )
+        for assignment_id in calibration_ids:
+            control_id = f"fw_alpha:cal-{assignment_id}"
+            conn.execute(
+                "INSERT INTO controls (id, framework_id, section_id, title) "
+                "VALUES (?, 'fw_alpha', ?, 'Calibration control')",
+                (control_id, f"CAL-{assignment_id}"),
+            )
+            conn.execute(
+                "INSERT INTO assignments (id, control_id, hub_id, confidence, "
+                "in_conformal_set, is_ood, provenance, model_version) "
+                "VALUES (?, ?, 'cal-hub-1', 1.0, 1, 0, 'ground_truth_T1-AI', 'v1')",
+                (assignment_id, control_id),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+    return db_path
+
+
 class TestOverallRates:
     def test_rates_computation(self, tmp_path: Path) -> None:
         preds = [
@@ -50,7 +97,7 @@ class TestOverallRates:
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
 
         assert result["overall"]["accepted"] == 3
         assert result["overall"]["rejected"] == 1
@@ -71,7 +118,7 @@ class TestPerFrameworkBreakdown:
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
 
         per_fw = result["per_framework"]
         assert "fw_alpha" in per_fw
@@ -86,13 +133,15 @@ class TestCalibrationQualityScore:
     def test_all_agree(self, tmp_path: Path) -> None:
         preds = [
             _make_prediction(1, status="accepted"),
-            _make_prediction(-1, status="accepted", assigned_hub_id="cal-hub-1"),
-            _make_prediction(-2, status="accepted", assigned_hub_id="cal-hub-2"),
-            _make_prediction(-3, status="accepted", assigned_hub_id="cal-hub-3"),
+            _make_prediction(901, status="accepted", assigned_hub_id="cal-hub-1"),
+            _make_prediction(902, status="accepted", assigned_hub_id="cal-hub-2"),
+            _make_prediction(903, status="accepted", assigned_hub_id="cal-hub-3"),
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(
+            _db(tmp_path, (901, 902, 903)), review_data, output,
+        )
 
         rq = result["reviewer_quality"]
         assert rq["quality_score"] == 1.0
@@ -102,13 +151,15 @@ class TestCalibrationQualityScore:
     def test_some_disagree(self, tmp_path: Path) -> None:
         preds = [
             _make_prediction(1, status="accepted"),
-            _make_prediction(-1, status="accepted", assigned_hub_id="cal-hub-1"),
-            _make_prediction(-2, status="reassigned", assigned_hub_id="cal-hub-2", reviewer_hub_id="alt-hub"),
-            _make_prediction(-3, status="rejected", assigned_hub_id="cal-hub-3"),
+            _make_prediction(901, status="accepted", assigned_hub_id="cal-hub-1"),
+            _make_prediction(902, status="reassigned", assigned_hub_id="cal-hub-2", reviewer_hub_id="alt-hub"),
+            _make_prediction(903, status="rejected", assigned_hub_id="cal-hub-3"),
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(
+            _db(tmp_path, (901, 902, 903)), review_data, output,
+        )
 
         rq = result["reviewer_quality"]
         assert rq["quality_score"] == pytest.approx(1 / 3, abs=0.01)
@@ -119,18 +170,20 @@ class TestCalibrationQualityScore:
 class TestCalibrationDisagreements:
     def test_disagreement_details(self, tmp_path: Path) -> None:
         preds = [
-            _make_prediction(-1, status="reassigned", assigned_hub_id="cal-hub-1", reviewer_hub_id="alt-hub"),
-            _make_prediction(-2, status="rejected", assigned_hub_id="cal-hub-2"),
+            _make_prediction(901, status="reassigned", assigned_hub_id="cal-hub-1", reviewer_hub_id="alt-hub"),
+            _make_prediction(902, status="rejected", assigned_hub_id="cal-hub-2"),
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(
+            _db(tmp_path, (901, 902)), review_data, output,
+        )
 
         disag = result["reviewer_quality"]["disagreements"]
         assert len(disag) == 2
         ids = {d["id"] for d in disag}
-        assert ids == {-1, -2}
-        reassigned_item = next(d for d in disag if d["id"] == -1)
+        assert ids == {901, 902}
+        reassigned_item = next(d for d in disag if d["id"] == 901)
         assert reassigned_item["status"] == "reassigned"
         assert reassigned_item["assigned_hub_id"] == "cal-hub-1"
         assert reassigned_item["reviewer_hub_id"] == "alt-hub"
@@ -147,7 +200,7 @@ class TestPartialReview:
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
 
         cov = result["coverage"]
         assert cov["total_predictions"] == 5
@@ -161,7 +214,7 @@ class TestImportRoundIncrements:
         preds = [_make_prediction(1, status="accepted")]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
         assert result["import_round"] == 1
 
     def test_second_round(self, tmp_path: Path) -> None:
@@ -169,8 +222,8 @@ class TestImportRoundIncrements:
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
 
-        compute_review_metrics(tmp_path / "db", review_data, output)
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        compute_review_metrics(_db(tmp_path), review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
         assert result["import_round"] == 2
 
     def test_third_round(self, tmp_path: Path) -> None:
@@ -178,9 +231,9 @@ class TestImportRoundIncrements:
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
 
-        compute_review_metrics(tmp_path / "db", review_data, output)
-        compute_review_metrics(tmp_path / "db", review_data, output)
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        compute_review_metrics(_db(tmp_path), review_data, output)
+        compute_review_metrics(_db(tmp_path), review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
         assert result["import_round"] == 3
 
 
@@ -194,7 +247,7 @@ class TestConfidenceAnalysis:
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
 
         ca = result["confidence_analysis"]
         assert ca["high_confidence"]["total"] == 2
@@ -211,7 +264,7 @@ class TestConfidenceAnalysis:
         ]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        result = compute_review_metrics(tmp_path / "db", review_data, output)
+        result = compute_review_metrics(_db(tmp_path), review_data, output)
 
         ca = result["confidence_analysis"]
         assert ca["ood_items"]["total"] == 2
@@ -224,7 +277,7 @@ class TestOutputFile:
         preds = [_make_prediction(1, status="accepted")]
         review_data = _make_review_data(preds)
         output = tmp_path / "metrics.json"
-        compute_review_metrics(tmp_path / "db", review_data, output)
+        compute_review_metrics(_db(tmp_path), review_data, output)
 
         assert output.exists()
         data = json.loads(output.read_text(encoding="utf-8"))

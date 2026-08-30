@@ -403,3 +403,93 @@ def test_no_tracked_export_csv_carries_an_overlay_framework_description() -> Non
         f"text of a framework whose licence does not permit redistribution. "
         f"Re-run the export, which now withholds it."
     )
+
+
+class TestCsvFormulaInjection:
+    """Framework-controlled text reaches a CSV an analyst opens in a spreadsheet.
+
+    `tract/crosswalk/export.py` already neutralises this for its own exporter.
+    This one went unguarded and has the higher exposure: its output is the
+    OpenCRE RFC deliverable, so the cell is opened by people outside the
+    project.
+
+    The remedy is NOT the same in every column, which is why this is not a
+    straight port of `neutralize_csv_cell`. OpenCRE's `parse_export_format()`
+    copies `|name` and `|description` verbatim into its database and never
+    evaluates them, so an apostrophe guard there is safe and cosmetic. It also
+    splits `CRE 0` on the separator to recover a hub id and reads `|id` as a
+    section identifier -- guarding those would corrupt a key rather than
+    protect a reader, so a formula-shaped identifier is refused instead.
+    """
+
+    @staticmethod
+    def _row(**over: object) -> dict:
+        row = {
+            "hub_id": "342-641",
+            "hub_name": "Anomalous AI input handling",
+            "framework_id": "mitre_atlas",
+            "section_id": "AML.M0008",
+            "title": "Validate AI Model",
+            "description": "Check the model for backdoor triggers.",
+        }
+        row.update(over)
+        return row
+
+    @pytest.mark.parametrize("payload", [
+        "=HYPERLINK(\"http://evil\",\"click\")",
+        "+1+1",
+        "-2+3",
+        "@SUM(1+1)",
+        "\t=1+1",
+        "\r=1+1",
+    ])
+    def test_formula_shaped_description_is_neutralised(self, payload: str) -> None:
+        out = generate_opencre_csv(
+            [self._row(description=payload)], "mitre_atlas",
+        )
+        cell = _description_cell(out)
+        assert not cell.startswith(("=", "+", "-", "@", "\t", "\r")), (
+            f"description cell still opens with a formula trigger: {cell!r}"
+        )
+        assert payload in cell, "the guard must prefix, not rewrite, the text"
+
+    def test_formula_shaped_title_is_neutralised(self) -> None:
+        out = generate_opencre_csv(
+            [self._row(title="=cmd|'/c calc'!A1")], "mitre_atlas",
+        )
+        assert "\n'=cmd" in out or ",'=cmd" in out or out.count("'=cmd") == 1
+
+    def test_a_number_is_not_given_an_apostrophe(self) -> None:
+        """A negative number in a cell is a number, not a formula."""
+        out = generate_opencre_csv(
+            [self._row(description="-0.5")], "mitre_atlas",
+        )
+        assert _description_cell(out) == "-0.5"
+
+    def test_formula_shaped_section_id_is_refused_not_escaped(self) -> None:
+        """Escaping a machine-parsed identifier corrupts it.
+
+        OpenCRE reads this column as the section id. `'=X` would be stored as
+        the identifier, so neither escaping nor passing it through is correct
+        and the export refuses.
+        """
+        with pytest.raises(ValueError, match="formula"):
+            generate_opencre_csv([self._row(section_id="=1+1")], "mitre_atlas")
+
+    def test_formula_shaped_hub_name_is_refused(self) -> None:
+        """CRE 0 is split on the separator to recover a hub id."""
+        with pytest.raises(ValueError, match="formula"):
+            generate_opencre_csv([self._row(hub_name="=1+1")], "mitre_atlas")
+
+    def test_ordinary_rows_are_untouched(self) -> None:
+        out = generate_opencre_csv([self._row()], "mitre_atlas")
+        assert "Check the model for backdoor triggers." in out
+        assert "'" not in _description_cell(out)
+
+
+def _description_cell(csv_text: str) -> str:
+    """The single data row's description column, parsed back out of the CSV."""
+    rows = list(csv.DictReader(StringIO(csv_text)))
+    assert len(rows) == 1, f"expected one data row, got {len(rows)}"
+    key = next(k for k in rows[0] if k.endswith("|description"))
+    return rows[0][key]

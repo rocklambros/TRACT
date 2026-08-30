@@ -441,6 +441,45 @@ criterion **and only that criterion**, with the interval result stated in the
 same breath. `TRACT_MODEL_PINNED_REVISION` is unchanged; the Campaign 2 arm is
 a research result, not the shipped model.
 
+##### Amended 2026-08-29, after a second premortem
+
+Two findings, both verified against the repository. Full treatment in
+`docs/campaign2-results.md` §13 and §14.
+
+- **TRACT rewrote the gold label on 25% of the test corpus before scoring it,
+  and disclosed it nowhere.** `data/training/audit_corrections_log.json` records
+  56 corrections, all inside the four test-split frameworks; after
+  deduplication that is 37 of 147 items. **On the 110 audit-untouched items the
+  delta is +0.1000 [0.000, 0.200] with P(true delta ≤ 0.10) = 0.531** — exactly
+  the gate value, and a coin flip on clearing it. A quarter of the items carry
+  45% of the headline. The pooled +0.1361 must be reported **with this
+  co-primary beside it**, never alone. The mechanism is not that the audit made
+  the task easier: against pristine gold the trained model scores 0.5850 vs
+  0.5918, worth +0.0068 in absolute accuracy. It is that 49 of 56 corrections
+  moved gold onto more densely linked hubs (median degree 3.0 → 7.5), which
+  fine-tuning learns and a zero-shot encoder does not privilege — inflating a
+  *paired* metric without inflating accuracy. Reproduce with
+  `scripts/analysis/audit_stratified_delta.py`.
+  **Open and not answerable from the artifact:** whether any model output was
+  visible to the reviewer who produced `ai_link_audit.csv`. It has no
+  prediction column, so this is a human relabel — Tier 2, not model-seeded —
+  but the question should be answered before the OpenCRE RFC cites these links.
+- **The domain-shortcut hypothesis is refuted.** The framework-hub graph splits
+  into exactly two connected components (380 hubs / 14 frameworks and 78 / 8)
+  with no AI/general labels supplied, all 147 test golds sit in the 78-hub side,
+  and a bare `\bAI\b` regex over the ranked hub text matches 78/78 AI hubs and
+  0/380 general ones — so a model could in principle score by detecting domain
+  rather than mapping meaning. **It does not.** Handing the zero-shot encoder
+  that region for free, deleting 444 of 522 candidates, moves **one item in
+  147** (+0.0068); four of five folds do not move at all. +0.1292 of the
+  +0.1361 is not domain detection. Combined with the non-echo concentration
+  above, the non-lexical, non-structural reading of this result is the surviving
+  one.
+
+Campaign 3 is pre-registered in `results/phase1b/CAMPAIGN3.md` with binding
+numeric thresholds, no synthetic data, and a stated MDE of 0.145 at n=940.
+Nothing has run.
+
 #### 6.4.1 Multi-Hub Training Pairs and Batch Sampling
 Controls legitimately map to multiple CRE hubs (multi-hop graph structure). These multi-hub text mappings are preserved as separate training pairs — never dropped or deduplicated across hubs. Deduplication occurs only within the same (text, hub) pair (case-insensitive), keeping the best quality tier.
 

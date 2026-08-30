@@ -31,7 +31,10 @@ def validate_review_json(
     - Top-level structure: metadata + predictions array
     - Every non-pending status is valid (accepted/reassigned/rejected)
     - Every reviewer_hub_id (on reassigned) is a valid hub ID in DB
-    - Every id matches an existing assignment (skip calibration items with id < 0)
+    - Every id matches an existing assignment. Calibration items used to be
+      exempt because they carried synthetic negative ids; they now carry real
+      assignment ids (F19), so this check covers them too and the negative-id
+      branch below survives only for files written before that change.
     - Warns (not fails) if pending items remain
     """
     errors: list[str] = []

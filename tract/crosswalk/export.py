@@ -29,7 +29,7 @@ CSV_FORMULA_TRIGGERS: Final[tuple[str, ...]] = ("=", "+", "-", "@", "\t", "\r")
 # legitimate shapes stay untouched: an identifier like "A-1" never reaches the
 # test at all, because the trigger is positional, and a string that parses as a
 # number ("-0.5", "-1") is passed through by the carve-out in
-# _neutralize_csv_cell.
+# neutralize_csv_cell.
 CSV_FORMULA_GUARD: Final[str] = "'"
 
 
@@ -89,7 +89,7 @@ def _export_json(db_path: Path, output_path: Path) -> Path:
     return output_path
 
 
-def _neutralize_csv_cell(value: object) -> object:
+def neutralize_csv_cell(value: object) -> object:
     """Return *value* with its formula trigger disarmed, if it has one.
 
     Applied at the CSV boundary and nowhere else. The stored string is the
@@ -145,7 +145,7 @@ def _export_csv(db_path: Path, output_path: Path) -> Path:
                 # Every column, not an enumerated subset: which of them hold
                 # attacker-influenced text changes whenever the schema does.
                 writer.writerow(
-                    {k: _neutralize_csv_cell(v) for k, v in dict(row).items()}
+                    {k: neutralize_csv_cell(v) for k, v in dict(row).items()}
                 )
         os.replace(tmp, output_path)
     except BaseException:

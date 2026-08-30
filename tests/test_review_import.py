@@ -193,12 +193,34 @@ class TestPendingSkipped:
 
 
 class TestCalibrationSkipped:
-    def test_negative_id_predictions_skipped(
+    def test_calibration_rows_are_skipped_by_provenance(
         self, review_import_db: Path, tmp_path: Path,
     ) -> None:
+        """Calibration membership is read from the store, not from a marker.
+
+        It used to be `id < 0`. That marker travelled in the reviewer's own
+        file, which is how the reviewer these items audit could pick them out
+        (F19). They now carry real assignment ids, so the only thing that still
+        distinguishes them is their `ground_truth_T1-AI` provenance in the
+        database -- which the reviewer never sees and cannot edit.
+        """
+        conn = get_connection(review_import_db)
+        conn.execute("PRAGMA foreign_keys=OFF")
+        cal_ids = []
+        for _ in range(2):
+            cur = conn.execute(
+                "INSERT INTO assignments "
+                "(control_id, hub_id, confidence, provenance, review_status) "
+                "VALUES (?, ?, ?, ?, ?)",
+                ("ctrl-1", "hub-2", 1.0, "ground_truth_T1-AI", "pending"),
+            )
+            cal_ids.append(int(cur.lastrowid or 0))
+        conn.commit()
+        conn.close()
+
         predictions = [
-            _make_prediction(-1, "accepted"),
-            _make_prediction(-5, "rejected"),
+            _make_prediction(cal_ids[0], "accepted"),
+            _make_prediction(cal_ids[1], "rejected"),
             _make_prediction(1, "accepted"),
         ]
         review_path = _write_review_json(tmp_path, predictions)
@@ -208,6 +230,19 @@ class TestCalibrationSkipped:
         assert result["skipped_calibration"] == 2
         assert result["accepted"] == 1
         assert result["total"] == 1
+
+        # The point of skipping: the answer key is not rewritten by the answers.
+        conn = get_connection(review_import_db)
+        try:
+            for cal_id in cal_ids:
+                hub, status = conn.execute(
+                    "SELECT hub_id, review_status FROM assignments WHERE id = ?",
+                    (cal_id,),
+                ).fetchone()
+                assert hub == "hub-2"
+                assert status == "pending"
+        finally:
+            conn.close()
 
 
 class TestIdempotent:
@@ -367,14 +402,28 @@ class TestReviewScopeIsEnforcedOnImport:
     def test_a_calibration_row_cannot_be_rewritten(
         self, review_import_db: Path, tmp_path: Path,
     ) -> None:
-        """The exact attack: the audited reviewer edits their own answer key."""
+        """The exact attack: the audited reviewer edits their own answer key.
+
+        The property is unchanged and the mechanism is not. Calibration rows
+        used to reach `_require_in_scope` and abort the whole import, because a
+        reviewer naming one could only be naming a row they were never sent.
+        They ARE sent now -- with real assignment ids, so that the reviewer
+        cannot sort them out of their own worklist (F19) -- and answering them
+        is the entire point, so the import skips them instead of refusing.
+
+        Either way the row is not rewritten, which is the property that
+        matters. Rows the reviewer genuinely was not given still abort: see
+        test_ground_truth_cannot_be_rewritten, which is the same attack with a
+        provenance that is never exported.
+        """
         victim = self._add_out_of_scope_row(review_import_db, "ground_truth_T1-AI")
         review = _write_review_json(
             tmp_path,
             [_make_prediction(victim, status="reassigned", reviewer_hub_id="hub-4")],
         )
-        with pytest.raises(ValueError, match="not an in-scope reviewable row"):
-            apply_review_decisions(review_import_db, review, "mallory")
+        result = apply_review_decisions(review_import_db, review, "mallory")
+        assert result["skipped_calibration"] == 1
+        assert result["reassigned"] == 0
 
         conn = get_connection(review_import_db)
         hub, status = conn.execute(

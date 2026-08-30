@@ -273,9 +273,15 @@ class TestJsonStructure:
         meta = data["metadata"]
         for key in (
             "generated_at", "model_version", "total_predictions",
-            "calibration_items", "framework_breakdown", "priority_breakdown",
+            "framework_breakdown", "priority_breakdown",
         ):
             assert key in meta, f"Missing metadata key: {key}"
+
+        # calibration_items is deliberately NOT here. In the reviewer's file it
+        # is a check-figure that turns a guess about which items are calibration
+        # into something verifiable (F19). It is still returned to the caller,
+        # who is the operator, and written to the operator sidecar.
+        assert "calibration_items" not in meta
 
         pb = meta["priority_breakdown"]
         for tier in ("critical", "careful", "routine"):
@@ -739,16 +745,34 @@ class TestCalibrationItems:
         )
         assert len(items) == 20
 
-    def test_all_negative_ids(
+    def test_ids_are_the_real_assignment_ids(
         self, calibration_db: Path, tmp_path: Path,
     ) -> None:
+        """Calibration items carry their true assignment id, not a synthetic one.
+
+        They used to be numbered -1..-20, which sorted every one of them out of
+        the reviewer's file in a single pass -- and the reviewer whose attention
+        these items measure is exactly the person who must not be able to do
+        that (F19). Blindness is asserted end-to-end in
+        tests/test_review_calibration_blind.py; this pins the id source.
+        """
         predictor = _make_calibration_predictor()
         items = _generate_calibration_items(
             calibration_db, predictor, 0.5, {},
         )
         ids = {item["id"] for item in items}
-        assert all(i < 0 for i in ids)
-        assert ids == set(range(-1, -21, -1))
+        assert all(i > 0 for i in ids), f"synthetic ids present: {sorted(ids)}"
+
+        conn = get_connection(calibration_db)
+        try:
+            known = {
+                r["id"] for r in conn.execute(
+                    "SELECT id FROM assignments WHERE provenance = 'ground_truth_T1-AI'",
+                )
+            }
+        finally:
+            conn.close()
+        assert ids <= known
 
     def test_stratified_selection(
         self, calibration_db: Path, tmp_path: Path,
@@ -818,14 +842,26 @@ class TestCalibrationItems:
             encoding="utf-8",
         )
 
+        operator_dir = tmp_path / "operator"
         result = generate_review_export(
             calibration_db, tmp_path / "model", tmp_path / "out", cal_path,
+            operator_dir=operator_dir,
         )
+        # Returned to the operator, absent from the reviewer's file.
         assert result["calibration_items"] == 20
 
         data = json.loads((tmp_path / "out" / "review_export.json").read_text(encoding="utf-8"))
-        negative_ids = [p for p in data["predictions"] if p["id"] < 0]
-        assert len(negative_ids) == 20
+        assert "calibration_items" not in data["metadata"]
+
+        # The count is recoverable only from the operator sidecar, which is the
+        # point: the reviewer's copy no longer says how many there are or which.
+        sidecar = json.loads(
+            (operator_dir / "review_export.calibration.json").read_text(encoding="utf-8"),
+        )
+        assert sidecar["n_calibration"] == 20
+        cal_ids = set(sidecar["calibration_ids"])
+        assert len(cal_ids) == 20
+        assert cal_ids <= {p["id"] for p in data["predictions"]}
 
     def test_no_gt_items_returns_empty(self, tmp_path: Path) -> None:
         """When no ground_truth_T1-AI exists, returns empty list."""
@@ -952,4 +988,7 @@ class TestGenerateReviewExportSourceForwarding:
         predictor.predict_batch.side_effect = mock_batch
         items = _generate_calibration_items(db_path, predictor, 0.5, {})
         assert len(items) == 5
-        assert all(item["id"] < 0 for item in items)
+        assert all(item["id"] > 0 for item in items), (
+            "calibration items must carry their real assignment id; a synthetic "
+            "negative one identifies them to the reviewer they audit (F19)"
+        )
