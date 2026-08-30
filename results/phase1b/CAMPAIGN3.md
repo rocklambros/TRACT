@@ -319,3 +319,47 @@ specified in `claudedocs/curation-package.md`.
   LLM-authored conditioned on the existing gold links. It is the obvious
   navigation aid to hand an annotator, and handing it over would make the round
   Tier 3 by §2's own rule.
+
+### 1.5 The rebaseline is a SECOND run on the held-out test split
+
+Recorded before it runs, not after.
+
+The whole point of a validation/test separation is that the test split is
+touched once. `scripts/phase1b/await_capacity.py` says so about the Campaign 2
+test round in as many words: *"Runs ONCE on the 147-item AI split and is
+unrecoverable: a second run would contaminate the split that the whole
+validation/test separation exists to protect."*
+
+The rebaseline runs that split again. That is a real cost and it is being paid
+deliberately.
+
+**Why it is sanctioned here.** The anchors change, so this is not a second draw
+on the same measurement — it is a different measurement on the same items. The
+old figure is being *retired* rather than competed against: +0.1361 stops being
+a forward target the moment the anchor budget moves, so there is no
+"best of two runs" to be had. And no arm selection occurs: one recipe,
+`n_configurations=1`, decided before the run.
+
+**What it costs anyway, stated plainly.** The 147 AI items have now been scored
+twice by the same recipe family. A third run would be much harder to justify,
+and any future claim on this split must disclose that it is not a
+never-before-seen set. If the rebaselined number comes out *higher* than
++0.1361, that fact alone is not evidence of improvement — it is one of two
+draws, and the honest reading is the one the pre-registered thresholds in §3
+give, not the comparison to the retired figure.
+
+**The one variable.** `max_seq_length` 512 → 1024, moving the anchor budget from
+2,150 to 4,300 characters and cutting eval truncation from 55 of 147 items.
+Batch size stays 32 deliberately: 2,048 tokens would force batch 24, and
+changing the batch changes MNRL's in-batch negatives, so a shift could not be
+attributed to context rather than to negatives. Everything else is byte-identical
+to `c2r_TEST_A3_prose_sw_qwen06b`.
+
+**Provisioning constraint discovered while running it.** SECURE-tier capacity
+would only yield 3 of the 5 pods on repeated attempts, and the natural
+workaround — running the folds in two batches with `--folds` — is refused by
+`run_folds`, correctly: a partial fleet produces a scoped result that would
+aggregate as though it were cross-validation. The fleet therefore waits for
+five-pod SECURE capacity rather than degrading. SECURE specifically, because
+the working tree carries the licensed ISO 27001 and ETSI corpus and `_rsync_to`
+ships it to whichever host answers.

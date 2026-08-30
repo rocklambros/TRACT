@@ -270,6 +270,27 @@ ARMS: Final[dict[str, Arm]] = {
     # validation/test separation exists to protect.
     "TEST": Arm("TEST", "c2r_TEST_A3_prose_sw_qwen06b", "test",
                 ("--stopwords", "--base-model", "Qwen/Qwen3-Embedding-0.6B")),
+    # Campaign 3's anchor-budget rebaseline. Same recipe as TEST above with one
+    # variable changed: max_seq_length 512 -> 1024, which moves the anchor
+    # character budget from 2,150 to 4,300 and cuts eval truncation from 55 of
+    # 147 items. Batch size stays 32, deliberately -- 2,048 would force batch 24
+    # and change MNRL's in-batch negatives, so the result could not attribute a
+    # shift to context rather than to negatives.
+    #
+    # THIS IS A SECOND RUN ON THE HELD-OUT TEST SPLIT, and the entry above says
+    # in as many words why that is normally forbidden. It is sanctioned here
+    # because the owner decided on 2026-08-30 to fix the truncation and retire
+    # the old baseline: the anchors change, so this is not a second draw on the
+    # same measurement, and +0.1361 stops being a forward target rather than
+    # becoming something to beat. No arm selection happens -- one recipe,
+    # n_configurations=1.
+    #
+    # The cost is real and is recorded in CAMPAIGN3.md Amendment 1: the split
+    # has now been used twice by the same recipe, and any future claim on it
+    # must say so.
+    "C3TEST": Arm("C3TEST", "c3_TEST_A3_prose_sw_qwen06b_seq1024", "test",
+                  ("--stopwords", "--base-model", "Qwen/Qwen3-Embedding-0.6B",
+                   "--max-seq-length", "1024")),
 }
 
 
