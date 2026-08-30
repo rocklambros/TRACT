@@ -1857,13 +1857,48 @@ class TestBudgetPricesTheBootstrapItActuallyRuns:
         budget = self._budget(price=7.89, budget_usd=600.0)
         assert budget["worst_case_usd"] < 600.0
 
-    def test_the_most_expensive_permitted_part_still_admits_at_600(self) -> None:
-        """The $12/hr filter is the only bound on price, so price the ceiling."""
+    def test_the_most_expensive_permitted_part_admits_at_the_real_budget(
+        self,
+    ) -> None:
+        """The $12/hr filter is the only bound on price, so price the ceiling.
+
+        This asserted against a hardcoded $600 and passed by a $2 margin: at a
+        2h FOLD_TIMEOUT_S the ceiling priced to $598. Raising the fold ceiling
+        to 4h for the long-context rebaseline pushed it to $718, and the honest
+        reading is not that the test was wrong but that these three constants
+        are COUPLED -- price ceiling x reachable wall x fleet size must fit the
+        budget, so raising one means lowering another or raising the budget.
+
+        It is asserted against the configured BUDGET_USD now, so the coupling
+        is checked against the number that actually governs rather than a
+        scenario that has drifted from it. The margin is reported in the
+        message because a guard that passes by $2 is one constant away from
+        being a guard that does not.
+        """
         from scripts.phase1b import runpod_parallel as rp
 
         budget = self._budget(
-            price=rp.MAX_USD_PER_HOUR_PER_POD, budget_usd=600.0,
+            price=rp.MAX_USD_PER_HOUR_PER_POD, budget_usd=rp.BUDGET_USD,
         )
+        worst = budget["worst_case_usd"]
+        assert worst < rp.BUDGET_USD, (
+            f"the most expensive permitted part ({rp.MAX_USD_PER_HOUR_PER_POD} "
+            f"/hr) over the {budget['reachable_hours']:.1f}h the timeouts "
+            f"permit reaches ${worst:.2f}, above the ${rp.BUDGET_USD:.2f} "
+            "budget. Lower MAX_USD_PER_HOUR_PER_POD or FOLD_TIMEOUT_S, or "
+            "raise TRACT_RUNPOD_BUDGET_USD deliberately."
+        )
+
+    def test_the_campaign_price_still_admits_at_the_legacy_600_scenario(
+        self,
+    ) -> None:
+        """The realistic price must stay well inside the tighter old scenario.
+
+        Kept separately from the ceiling test above so that a regression at the
+        price we actually pay is distinguishable from one only reachable at the
+        filter's absolute limit.
+        """
+        budget = self._budget(price=7.89, budget_usd=600.0)
         assert budget["worst_case_usd"] < 600.0
 
 
@@ -2329,3 +2364,37 @@ class TestPhase0PodsCarryNoStandingCredential:
         pod = {"role": "small-a", "cloud_type": "COMMUNITY"}
         with pytest.raises(RuntimeError, match="Refusing to forward"):
             rp0._get_pod_env(pod, self.PHASE_C)
+
+
+class TestTheRunWindowCanFitAFold:
+    """MAX_RUN_HOURS must cover bootstrap plus one fold, or nothing can finish.
+
+    `_check_deadline` ABORTS the run when MAX_RUN_HOURS passes. A window
+    smaller than bootstrap + one fold therefore buys a fleet that is guaranteed
+    to be torn down mid-fold, with nothing collected and every pod billed for
+    the attempt. That is not a budget question -- it is a configuration that
+    cannot succeed on any input.
+
+    This became reachable when FOLD_TIMEOUT_S was raised for the long-context
+    rebaseline: 0.43h bootstrap + 8.00h fold against the then-current 6h window.
+    The failure would have surfaced only after five pods were provisioned.
+    """
+
+    def test_the_shipped_constants_are_coherent(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+
+        budget = rp._check_budget("NVIDIA A100-SXM4-80GB", 5)
+        needed = budget["bootstrap_hours"] + budget["fold_hours"]
+        assert needed <= rp.MAX_RUN_HOURS, (
+            f"bootstrap ({budget['bootstrap_hours']:.2f}h) plus one fold "
+            f"({budget['fold_hours']:.2f}h) needs {needed:.2f}h but "
+            f"MAX_RUN_HOURS is {rp.MAX_RUN_HOURS:.1f}h"
+        )
+
+    def test_an_incoherent_window_is_refused_before_provisioning(self) -> None:
+        """The guard must fire at _check_budget, not at the first timeout."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        with patch.object(rp, "MAX_RUN_HOURS", 1.0):
+            with pytest.raises(RuntimeError, match="could not finish a single fold"):
+                rp._check_budget("NVIDIA A100-SXM4-80GB", 5)

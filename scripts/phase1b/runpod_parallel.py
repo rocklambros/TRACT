@@ -118,8 +118,14 @@ BUDGET_USD: Final[float] = float(os.environ.get("TRACT_RUNPOD_BUDGET_USD", "1000
 MAX_USD_PER_HOUR_PER_POD: Final[float] = float(
     os.environ.get("TRACT_RUNPOD_MAX_HOURLY", "12")
 )
-# Folds are expected in well under this; it is the wall the watchdog enforces.
-MAX_RUN_HOURS: Final[float] = float(os.environ.get("TRACT_RUNPOD_MAX_HOURS", "6"))
+# Folds are expected in well under this; it is the wall the watchdog enforces,
+# and _check_deadline ABORTS the run when it passes. It must therefore exceed
+# bootstrap + one fold, or a fleet is provisioned that cannot possibly finish --
+# see the coherence check in _check_budget. Raised from 6 alongside
+# FOLD_TIMEOUT_S for the long-context rebaseline; at a 4h fold ceiling, 6 left
+# only 1.57h of slack over bootstrap plus one fold, which a single retry
+# consumes.
+MAX_RUN_HOURS: Final[float] = float(os.environ.get("TRACT_RUNPOD_MAX_HOURS", "8"))
 # A campaign runs several arms on one fleet, each getting its own window. The
 # cap bounds the total: without it, "extend per arm" is no bound at all.
 MAX_DEADLINE_EXTENSIONS: Final[int] = int(
@@ -159,7 +165,24 @@ RSYNC_PULL_ATTEMPTS: Final[int] = 3
 RSYNC_PULL_BACKOFF_S: Final[int] = 10
 
 # One fold: LoRA training plus a paired zero-shot pass.
-FOLD_TIMEOUT_S: Final[int] = 7200
+#
+# Raised from 7200 for the anchor-budget rebaseline. 7200 was calibrated on
+# Campaign 2's 60-78 minute folds at max_seq_length=512. Attention is quadratic
+# in sequence length and padding is not free: at 512 a batch of 32 occupies
+# 16,384 slots, at 1,024 it occupies 32,768, so a 1,024-token arm runs roughly
+# twice the compute per step and four of the five test folds would cross the old
+# ceiling. The failure mode is the expensive one -- exceeding this abandons the
+# fold while the DETACHED trainer keeps running and keeps billing, so the run
+# loses its result and pays for it anyway.
+#
+# 14400 (4h) covers a 1,024-token fold -- roughly twice Campaign 2's 60-78
+# minutes -- with better than 50% margin. It is deliberately NOT sized for
+# 2,048: this constant is priced by _check_budget and multiplied by the fleet,
+# so an 8h ceiling put the worst case at $958 against the $600 budget
+# tests/test_runpod_safety.py holds it to. A 2,048-token arm needs its own
+# raise and its own budget conversation, which is the right place for that
+# trade to be visible.
+FOLD_TIMEOUT_S: Final[int] = 14400
 # The fold runs detached and the orchestrator polls for its exit sentinel.
 FOLD_POLL_INTERVAL_S: Final[int] = 60
 # Named apart from runpod_provision.SSH_POLL_TIMEOUT_S, which is the much
@@ -839,6 +862,22 @@ def _check_budget(gpu_type: str, n_pods: int) -> dict[str, Any]:
                 ladder_h, bootstrap_h)
     logger.info("  worst case = $%.2f against budget $%.2f",
                 worst_case, BUDGET_USD)
+
+    # Coherence, not thrift. _check_deadline ABORTS the run when MAX_RUN_HOURS
+    # passes, so a window that cannot fit bootstrap plus a single fold buys a
+    # fleet that is guaranteed to be torn down mid-fold with nothing collected
+    # and every pod billed for the attempt. Raising FOLD_TIMEOUT_S without
+    # raising this produced exactly that: 0.43h + 8.00h against a 6h window.
+    # Refuse at provision time, where it costs nothing.
+    minimum_window_h = bootstrap_h + fold_h
+    if minimum_window_h > MAX_RUN_HOURS:
+        raise RuntimeError(
+            f"Refusing to provision: bootstrap ({bootstrap_h:.2f}h) plus one "
+            f"fold ({fold_h:.2f}h) needs a {minimum_window_h:.2f}h window, but "
+            f"MAX_RUN_HOURS is {MAX_RUN_HOURS:.1f}h and _check_deadline aborts "
+            "the run when it passes. This fleet could not finish a single fold. "
+            "Raise TRACT_RUNPOD_MAX_HOURS or lower FOLD_TIMEOUT_S."
+        )
 
     if reachable_h > MAX_RUN_HOURS:
         logger.warning(

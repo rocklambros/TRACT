@@ -134,6 +134,17 @@ def build_training_pairs(
                 stats=selection_stats,
                 stopwords=stopwords,
                 description_only=description_only,
+                # Forwarding this is load-bearing and was missing. The parameter
+                # was declared, every caller computed it as
+                # max_anchor_chars(config.max_seq_length) and passed it in good
+                # faith, and it was dropped here -- so every training anchor was
+                # cut at the module-level MAX_ANCHOR_CHARS whatever the config
+                # asked for. Campaign 2 escaped it only because it ran at
+                # max_seq_length=512, where the two values coincide. Raising the
+                # budget without this would have lengthened EVAL anchors while
+                # training anchors stayed at 2,150, which is train/eval skew
+                # introduced by the flag meant to remove one.
+                max_chars=max_chars,
             ).text
         except ValueError:
             skipped += 1
