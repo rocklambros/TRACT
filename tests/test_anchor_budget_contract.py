@@ -33,6 +33,11 @@ import pytest
 
 from tract.config import MAX_ANCHOR_CHARS, PROCESSED_DIR, max_anchor_chars
 
+# `tract.training.data` imports torch at module scope, and CI's light `test`
+# job does not install it -- that is what the separate `training-stack` job is
+# for. Same convention as tests/test_branch_balancing.py.
+pytest.importorskip("torch")
+
 # Well under any real budget, so a forwarded value is unmistakable and a
 # dropped one is too.
 TINY_BUDGET: Final[int] = 400

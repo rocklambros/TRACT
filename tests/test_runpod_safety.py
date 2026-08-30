@@ -2424,10 +2424,19 @@ class TestTheRunWindowCanFitAFold:
     The failure would have surfaced only after five pods were provisioned.
     """
 
+    # get_gpu_price shells out to `pass` for the API key, which does not exist
+    # on a CI runner. The price is irrelevant to a coherence check between two
+    # time constants, so it is stubbed rather than fetched.
+    def _budget(self, price: float = 3.29, n_pods: int = 5) -> dict:
+        from scripts.phase1b import runpod_parallel as rp
+
+        with patch.object(rp, "get_gpu_price", return_value=price):
+            return rp._check_budget("NVIDIA A100-SXM4-80GB", n_pods)
+
     def test_the_shipped_constants_are_coherent(self) -> None:
         from scripts.phase1b import runpod_parallel as rp
 
-        budget = rp._check_budget("NVIDIA A100-SXM4-80GB", 5)
+        budget = self._budget()
         needed = budget["bootstrap_hours"] + budget["fold_hours"]
         assert needed <= rp.MAX_RUN_HOURS, (
             f"bootstrap ({budget['bootstrap_hours']:.2f}h) plus one fold "
@@ -2441,7 +2450,7 @@ class TestTheRunWindowCanFitAFold:
 
         with patch.object(rp, "MAX_RUN_HOURS", 1.0):
             with pytest.raises(RuntimeError, match="could not finish a single fold"):
-                rp._check_budget("NVIDIA A100-SXM4-80GB", 5)
+                self._budget()
 
 
 class TestLicensedCorpusStaysOffCommunityHosts:
