@@ -133,9 +133,14 @@ def build_control_sheet(output_dir: Path, framework_id: str) -> Path:
     NO ranking. If a future version adds any of those the round stops being
     Tier 2.
     """
-    corpus = json.loads(
-        (PROCESSED_DIR / "licensed" / "all_controls.json").read_text(encoding="utf-8"),
-    )
+    # merged_corpus_path, not the licensed path directly: it prefers the
+    # overlay where one is staged and falls back to the tracked corpus
+    # otherwise. Hardcoding the overlay made this unrunnable on any checkout
+    # without it, CI included, and none of the four curation targets is a
+    # RESTRICTED framework -- all four are in the tracked corpus too.
+    from tract.text_selection import merged_corpus_path  # noqa: PLC0415
+
+    corpus = json.loads(merged_corpus_path().read_text(encoding="utf-8"))
     frameworks = {f["framework_id"]: f for f in corpus["frameworks"]}
     if framework_id not in frameworks:
         raise ValueError(
