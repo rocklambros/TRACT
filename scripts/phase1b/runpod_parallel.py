@@ -43,6 +43,8 @@ from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
 from tract.training.data_quality import assert_corpus_matches_training_links
 from tract.io import atomic_write_json, load_json
 from scripts.phase0.runpod_provision import (
+    CLOUD_TYPE_PREFERENCE,
+    CLOUD_TYPE_SECURE,
     PRICE_CLOUD_TYPE,
     is_capacity_error,
     rank_available_gpus,
@@ -1057,6 +1059,35 @@ def _preflight_corpus() -> str:
     return digest
 
 
+def _require_secure_cloud() -> bool:
+    """Whether this checkout may only provision on SECURE hosts.
+
+    True when the licensed overlay is staged. `merged_corpus_path()` prefers
+    `data/processed/licensed/all_controls.json` and falls back to the tracked
+    corpus, and the overlay exists only where the restricted source does -- so
+    its presence is exactly the condition under which `_rsync_to` would put
+    ISO 27001 and ETSI prose on a rented host. Binding the restriction to that
+    file rather than to a flag means the control cannot be forgotten on the one
+    run where it matters, and does not obstruct a public-corpus run where it
+    does not.
+
+    TRACT_RUNPOD_ALLOW_COMMUNITY=1 overrides, for an operator who has decided
+    the exposure is acceptable. It is deliberately an explicit environment
+    variable and not a default: it is the owner's licensing call, not the
+    orchestrator's.
+    """
+    if os.environ.get("TRACT_RUNPOD_ALLOW_COMMUNITY", "").strip() == "1":
+        logger.warning(
+            "TRACT_RUNPOD_ALLOW_COMMUNITY=1: licensed corpus may be shipped to "
+            "COMMUNITY hosts. This is a licensing decision and it is being "
+            "recorded here."
+        )
+        return False
+    from tract.text_selection import merged_corpus_path
+
+    return "licensed" in merged_corpus_path().parts
+
+
 def provision(
     folds: list[str] | None = None, split: str = "test",
 ) -> list[dict[str, Any]]:
@@ -1138,6 +1169,14 @@ def provision(
                 # 20GB left no headroom and the failure mode is a fold dying
                 # late.
                 container_disk_gb=60,
+                # Refuse COMMUNITY at CREATE time when licensed corpus is
+                # staged, rather than noticing afterwards. A capacity shortfall
+                # then surfaces as "no SECURE capacity", which is a wait, not a
+                # licensing decision taken by default.
+                allowed_cloud_types=(
+                    (CLOUD_TYPE_SECURE,) if _require_secure_cloud()
+                    else CLOUD_TYPE_PREFERENCE
+                ),
             )
             break
         except Exception as exc:
@@ -1171,20 +1210,34 @@ def provision(
     })
     # create_pod carries the tier each pod landed on into the state file, so
     # the record now says WHERE every fold ran and not merely that it did.
-    # Called out here as well because the fallback is silent per pod and the
-    # thing that follows provisioning is _rsync_to, which ships the working
-    # tree -- data/processed/licensed included -- to whichever hosts answered.
+    #
+    # This used to be a warning only, which is the wrong instrument: it fires
+    # AFTER five pods exist, and the very next step is _rsync_to shipping the
+    # working tree -- data/processed/licensed included -- to whichever hosts
+    # answered. On 2026-08-30 four of five folds landed on COMMUNITY (third
+    # party operators) and the run had to be torn down by hand before bootstrap.
+    # A warning that arrives after the decision is not a control.
+    #
+    # _require_secure_cloud() now restricts the tier at create time whenever the
+    # licensed overlay is staged, so this branch is a backstop for the case
+    # where a pod records no tier at all.
     elsewhere = sorted(
         p["role"] for p in pods if p.get("cloud_type") != PRICE_CLOUD_TYPE
     )
     if elsewhere:
-        logger.warning(
-            "%d of %d fold(s) are on a cloud tier other than %s (or recorded "
-            "none): %s. The licensed corpus is rsynced to those hosts, and the "
-            "budget was priced on %s.",
-            len(elsewhere), len(pods), PRICE_CLOUD_TYPE, elsewhere,
-            PRICE_CLOUD_TYPE,
+        message = (
+            f"{len(elsewhere)} of {len(pods)} fold(s) are on a cloud tier other "
+            f"than {PRICE_CLOUD_TYPE} (or recorded none): {elsewhere}. The "
+            f"working tree is rsynced to those hosts and the budget was priced "
+            f"on {PRICE_CLOUD_TYPE}."
         )
+        if _require_secure_cloud():
+            raise RuntimeError(
+                message + " The licensed corpus is staged, so this is refused "
+                "rather than warned about. Pods have been recorded in "
+                ".pod_state.json; run `teardown` before retrying."
+            )
+        logger.warning("%s", message)
     logger.info("All %d pods provisioned and SSH-ready.", len(pods))
     return pods
 

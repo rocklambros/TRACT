@@ -278,8 +278,18 @@ def create_pod(
     gpu_count: int = 1,
     volume_gb: int = 50,
     container_disk_gb: int = 20,
+    allowed_cloud_types: tuple[str, ...] = CLOUD_TYPE_PREFERENCE,
 ) -> dict[str, Any]:
     """Create a RunPod pod with retry.
+
+    Args:
+        allowed_cloud_types: Tiers this pod may land on, in preference order.
+            Defaults to the full preference. Pass ``(CLOUD_TYPE_SECURE,)`` when
+            the working tree holds licensed third-party corpus: `_rsync_to`
+            ships `data/processed/licensed` to whichever host answered, and
+            COMMUNITY is third-party operators. The fallback used to be silent
+            in the sense that mattered -- it logged a warning AFTER five pods
+            existed, which is too late to be a decision.
 
     Returns {pod_id, ip, port, gpu_type, name, cloud_type}.
 
@@ -298,7 +308,7 @@ def create_pod(
         # we ASKED for is the fact worth recording, and it is known here without
         # depending on a field the REST payload may or may not carry.
         landed_cloud = ""
-        for cloud_type in CLOUD_TYPE_PREFERENCE:
+        for cloud_type in allowed_cloud_types:
             payload = {
                 "name": name,
                 "imageName": image,
@@ -424,11 +434,16 @@ def create_pods_parallel(
     volume_gb: int = 50,
     container_disk_gb: int = 20,
     max_workers: int = 8,
+    allowed_cloud_types: tuple[str, ...] = CLOUD_TYPE_PREFERENCE,
 ) -> list[dict[str, Any]]:
     """Create multiple RunPod pods concurrently.
 
     Each config dict must have 'name' and 'role' keys.
     Returns list of pod info dicts in same order as configs.
+
+    allowed_cloud_types is forwarded to every pod. Restricting it here is the
+    only place the restriction can be enforced BEFORE a host receives the
+    working tree.
     """
     import concurrent.futures
 
@@ -437,6 +452,7 @@ def create_pods_parallel(
             gpu_type_id, name=cfg["name"], image=image,
             gpu_count=gpu_count, volume_gb=volume_gb,
             container_disk_gb=container_disk_gb,
+            allowed_cloud_types=allowed_cloud_types,
         )
         pod["role"] = cfg["role"]
         # The one line that ties a fold to the host it will train on, so the

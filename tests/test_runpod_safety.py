@@ -1347,6 +1347,22 @@ class TestTheRecordShowsWhereEachFoldRan:
             lambda p, meta=None: saved.append(p),
         )
 
+        # With the licensed overlay staged this is now REFUSED rather than
+        # warned about: _rsync_to would put ISO 27001 and ETSI prose on a
+        # third-party host, and a warning emitted after the pods exist cannot
+        # prevent that. The pods are still recorded so `teardown` can find them.
+        monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", "")
+        if rpp._require_secure_cloud():
+            with pytest.raises(RuntimeError, match="licensed corpus is staged"):
+                rpp.provision(folds=["MITRE ATLAS", "NIST AI 100-2"])
+            assert saved[-1] == pods, (
+                "the fleet must be recorded before the refusal, or teardown "
+                "has nothing to terminate"
+            )
+            return
+
+        # Public-corpus checkout: the tier still has to be recorded and called
+        # out, because the budget was priced on SECURE.
         with caplog.at_level("WARNING"):
             got = rpp.provision(folds=["MITRE ATLAS", "NIST AI 100-2"])
 
@@ -1354,7 +1370,35 @@ class TestTheRecordShowsWhereEachFoldRan:
         # provision records intent first, then the fleet it actually created.
         assert saved[-1] == pods
         assert "NIST AI 100-2" in caplog.text
-        assert "licensed" in caplog.text
+
+    def test_the_override_downgrades_the_refusal_to_a_warning(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """The licensing call belongs to the owner, and must be recordable."""
+        from scripts.phase1b import runpod_parallel as rpp
+
+        pods = [
+            {"pod_id": "a", "role": "MITRE ATLAS", "ip": "203.0.113.7",
+             "port": 22041, "cloud_type": "COMMUNITY"},
+        ]
+        monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", "1")
+        monkeypatch.setattr(rpp, "_preflight_training_stack", lambda: None)
+        monkeypatch.setattr(rpp, "_preflight_corpus", lambda: "d" * 64)
+        monkeypatch.setattr(rpp, "_preflight_tracking", lambda: None)
+        monkeypatch.setattr(rpp, "KNOWN_HOSTS_FILE", tmp_path / "kh")
+        monkeypatch.setattr(
+            rpp, "rank_available_gpus",
+            lambda **kwargs: [("NVIDIA H100 80GB HBM3", 3.29)],
+        )
+        monkeypatch.setattr(rpp, "get_gpu_price", lambda *a, **k: 3.29)
+        monkeypatch.setattr(rpp, "create_pods_parallel", lambda *a, **k: pods)
+        monkeypatch.setattr(rpp, "_save_pod_state", lambda p, meta=None: None)
+
+        with caplog.at_level("WARNING"):
+            got = rpp.provision(folds=["MITRE ATLAS"])
+        assert [p["cloud_type"] for p in got] == ["COMMUNITY"]
+        assert "licensing decision" in caplog.text
 
 
 class TestKnownHostsIsFreshEveryRound:
@@ -2398,3 +2442,70 @@ class TestTheRunWindowCanFitAFold:
         with patch.object(rp, "MAX_RUN_HOURS", 1.0):
             with pytest.raises(RuntimeError, match="could not finish a single fold"):
                 rp._check_budget("NVIDIA A100-SXM4-80GB", 5)
+
+
+class TestLicensedCorpusStaysOffCommunityHosts:
+    """A warning that fires after five pods exist is not a control.
+
+    `_rsync_to` ships the whole working tree -- `data/processed/licensed`
+    included -- to whichever host answered, and COMMUNITY is third-party
+    operators. On 2026-08-30 four of five folds landed on COMMUNITY and the
+    fleet had to be torn down by hand before bootstrap, because the tier check
+    ran AFTER provisioning and only logged.
+
+    The restriction is bound to the staged overlay rather than to a flag, so it
+    cannot be forgotten on the one run where it matters and does not obstruct a
+    public-corpus run where it does not.
+    """
+
+    def test_secure_is_required_while_the_overlay_is_staged(self) -> None:
+        from scripts.phase1b import runpod_parallel as rp
+        from tract.text_selection import merged_corpus_path
+
+        if "licensed" not in merged_corpus_path().parts:
+            pytest.skip("licensed overlay is not staged in this checkout")
+        assert rp._require_secure_cloud() is True
+
+    def test_the_override_is_explicit_and_logged(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Shipping licensed text to COMMUNITY must be a recorded decision."""
+        from scripts.phase1b import runpod_parallel as rp
+
+        monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", "1")
+        with caplog.at_level("WARNING"):
+            assert rp._require_secure_cloud() is False
+        assert any("licensing decision" in r.message for r in caplog.records), (
+            "the override must say in the log what it permits"
+        )
+
+    def test_only_an_exact_1_overrides(
+        self, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """"true", "yes" and "0" must not silently disable the restriction."""
+        from scripts.phase1b import runpod_parallel as rp
+        from tract.text_selection import merged_corpus_path
+
+        if "licensed" not in merged_corpus_path().parts:
+            pytest.skip("licensed overlay is not staged in this checkout")
+        for value in ("0", "true", "yes", "", " "):
+            monkeypatch.setenv("TRACT_RUNPOD_ALLOW_COMMUNITY", value)
+            assert rp._require_secure_cloud() is True, (
+                f"{value!r} disabled the licensed-corpus restriction"
+            )
+
+    def test_create_pod_honours_the_restricted_tier_list(self) -> None:
+        """The tier list must reach the API call, not just the signature."""
+        import inspect
+
+        from scripts.phase0 import runpod_provision as rpp
+
+        source = inspect.getsource(rpp.create_pod)
+        assert "for cloud_type in allowed_cloud_types:" in source, (
+            "create_pod still iterates the module-level preference, so a "
+            "restricted list would be accepted and ignored"
+        )
+        parallel = inspect.getsource(rpp.create_pods_parallel)
+        assert "allowed_cloud_types=allowed_cloud_types" in parallel, (
+            "create_pods_parallel does not forward the restriction to its pods"
+        )
