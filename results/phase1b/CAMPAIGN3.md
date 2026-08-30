@@ -363,3 +363,27 @@ aggregate as though it were cross-validation. The fleet therefore waits for
 five-pod SECURE capacity rather than degrading. SECURE specifically, because
 the working tree carries the licensed ISO 27001 and ETSI corpus and `_rsync_to`
 ships it to whichever host answers.
+
+---
+
+## RESULT — arm C3TEST, 2026-08-30
+
+The anchor-budget rebaseline ran. Full treatment in
+`docs/campaign3-rebaseline.md`.
+
+| criterion | required | measured | verdict |
+|---|---|---|---|
+| Primary — Tier-1 delta | `P(δ ≤ 0.10) < 0.05` | 0.535 | **FAIL** |
+| Side condition — non-echo delta | point ≥ 0.10 and CI low > 0 | +0.1319 [+0.0220, +0.2418] | PASS |
+
+**Outcome table gives fail / pass → FAIL.** The side condition is reported as a
+diagnostic and never as the result.
+
+**The primary did not move.** +0.1000 at 512 tokens, +0.1000 at 1024, on the
+same 110 items, while truncation halved from 55 of 147 to 28. The extra context
+helped where the answer is already in the text — echo +0.1071 → +0.1607 — and
+hurt slightly where it is not: non-echo +0.1538 → +0.1319.
+
+The baseline this pre-registration is defined against is therefore the 1024-token
+run, and §4's SD of 0.5577 should be re-derived from it before any curated items
+are scored.
