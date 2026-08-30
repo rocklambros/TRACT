@@ -100,20 +100,19 @@ Two lessons, and the second is the one worth keeping:
 
 ## Still open
 
-1. **R3 has no numeric threshold.** It pre-registers a report, not a decision —
-   verbatim the defect that withdrew Campaign 2. No Campaign 3 arm should run
-   before `results/phase1b/CAMPAIGN3.md` commits to one.
-2. **R4.1 conflicts with R3.** 53 of 147 test anchors (36%) are truncated at the
-   2,150-char cap. Fixing text selection changes the eval anchors and makes any
-   Campaign 3 number non-comparable to +0.1361. Both documents want their own
-   thing and neither noticed. Owner decision.
-3. **The audit's provenance.** The CSV carries no prediction, score or ranking
-   column, so this is a human relabel — Tier 2, not model-seeded. Whether any
-   model output was *visible* to the reviewer is not answerable from the
-   artifact. One question to the owner, no compute, and it should be answered
-   before the OpenCRE RFC cites these links.
+1. ~~**R3 has no numeric threshold.**~~ **Closed.**
+   `results/phase1b/CAMPAIGN3.md` now commits to `P(δ ≤ 0.10) < 0.05` with a
+   binding non-echo floor and all four outcome combinations decided in advance.
+2. ~~**R4.1 conflicts with R3.**~~ **Decided 2026-08-30: fix the truncation and
+   rebaseline.** Both the paired zero-shot and the A3 recipe are being re-run
+   against the new anchors. The +0.1361 and +0.1000 figures become the
+   historical record of the old anchors rather than forward targets.
+3. ~~**The audit's provenance.**~~ **Resolved 2026-08-30 by the owner: no model
+   output was visible to the reviewer.** Tier 2, not Tier 3. Nothing
+   model-derived is downstream in published artifacts. The stratified figures
+   are unaffected — the inflation mechanism is arithmetic, not provenance.
 4. **The forge blob.** Licensed ISO text reachable via `refs/pull/73/head`,
    removable only by a GitHub Support request. No perspective attacked it and I
    did not verify it. It is the one item here that gets worse with external
    attention, and the RFC submission is exactly that — so the Support request
-   belongs *before* the RFC, not after.
+   belongs *before* the RFC, not after. **Still open.**

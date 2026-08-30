@@ -460,10 +460,14 @@ Two findings, both verified against the repository. Full treatment in
   fine-tuning learns and a zero-shot encoder does not privilege — inflating a
   *paired* metric without inflating accuracy. Reproduce with
   `scripts/analysis/audit_stratified_delta.py`.
-  **Open and not answerable from the artifact:** whether any model output was
-  visible to the reviewer who produced `ai_link_audit.csv`. It has no
-  prediction column, so this is a human relabel — Tier 2, not model-seeded —
-  but the question should be answered before the OpenCRE RFC cites these links.
+  **Resolved 2026-08-30 by the owner: no model output was visible to the
+  reviewer** who produced `ai_link_audit.csv`. The corrections are **Tier 2**,
+  independently human-authored, and nothing model-derived is downstream in the
+  published model, the published dataset, the OpenCRE fork import, or the Phase
+  5B export. The RFC may cite these links. This does **not** change the
+  stratified figures above: the inflation mechanism is arithmetic, not
+  provenance — relabelling toward high-degree hubs widens a paired delta
+  regardless of who chose the destination.
 - **The domain-shortcut hypothesis is refuted.** The framework-hub graph splits
   into exactly two connected components (380 hubs / 14 frameworks and 78 / 8)
   with no AI/general labels supplied, all 147 test golds sit in the 78-hub side,

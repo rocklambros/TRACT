@@ -153,23 +153,24 @@ undecided outcome at full curation is an acceptable return on ~25 expert-hours.
 
 These are not engineering tasks and are not resolved here.
 
-1. **`R4.1` versus comparability.** 53 of 147 test anchors (36%) are truncated at
-   the 2,150-char encoder budget; `csa_aicm`'s median `full_text` is 17,115
-   chars, so 100% of it truncates. Fixing text selection is correct and changes
-   the eval anchors, which makes any Campaign 3 number **non-comparable to
-   +0.1361**. Either freeze text selection and state the truncation, or fix it
-   and re-run both the paired zero-shot and the A3 recipe to establish a new
-   baseline. **Decide before curating, not after.**
-2. **Audit provenance.** Was any TRACT model output visible to the reviewer who
-   produced `ai_link_audit.csv`? The artifact cannot answer it — no prediction
-   column, but first committed 2026-04-29, after Phase 0 baselines existed. If a
-   model was in the loop, those 56 corrections are Tier 3 and the contamination
-   is already in published artifacts. **One question, no compute, and it should
-   be answered before the OpenCRE RFC cites these links.**
+1. **~~`R4.1` versus comparability.~~ DECIDED 2026-08-30: fix it and rebaseline.**
+   53 of 147 test anchors (36%) truncate at the 2,150-char budget. Text
+   selection is being fixed, and both the paired zero-shot and the A3 recipe
+   are being re-run to establish a new baseline. **Every figure in §0 and §4 of
+   this document is stated against the OLD anchors and must be re-derived
+   against the new ones before any Campaign 3 arm runs.** The +0.1361 and
+   +0.1000 comparisons are retired as forward targets; they remain the
+   historical record of what the old anchors produced.
+2. **~~Audit provenance.~~ RESOLVED 2026-08-30 by the owner: no model output was
+   visible to the reviewer.** The 56 corrections are **Tier 2**, not Tier 3.
+   Nothing model-derived is downstream in published artifacts and the OpenCRE
+   RFC may cite these links. The Tier-1/Tier-2 stratification in §2 and §3 is
+   unchanged: Tier 2 is legitimate but is not OpenCRE's taxonomy, so the primary
+   is still computed on the audit-untouched stratum.
 3. **The forge blob.** Licensed ISO text reachable via `refs/pull/73/head`,
    removable only by GitHub Support. It gets worse with external attention, and
    the RFC submission is exactly that — so the request belongs **before** the
-   RFC.
+   RFC. **Still open; still an owner action.**
 
 ## 6. Curation, if funded
 
