@@ -50,14 +50,11 @@ Loads a model, so it runs on a pod. Encode-only: no training, no gradients.
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import time
 from collections import defaultdict
-from pathlib import Path
 from typing import Any, Final
 
-import numpy as np
 
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
