@@ -465,9 +465,21 @@ Two findings, both verified against the repository. Full treatment in
   independently human-authored, and nothing model-derived is downstream in the
   published model, the published dataset, the OpenCRE fork import, or the Phase
   5B export. The RFC may cite these links. This does **not** change the
-  stratified figures above: the inflation mechanism is arithmetic, not
-  provenance — relabelling toward high-degree hubs widens a paired delta
-  regardless of who chose the destination.
+  stratified figures above.
+  **CORRECTED 2026-08-30 — the sentence that stood here explained why, and it
+  was wrong.** It read: *"the inflation mechanism is arithmetic, not provenance
+  — relabelling toward high-degree hubs widens a paired delta regardless of who
+  chose the destination."* The degree movement it rests on was measured on the
+  **post-audit** graph, where 56 corrections landing on 26 destination hubs
+  credit each destination with its own arrivals. On the **pre-audit** graph the
+  direction reverses: median **4.0 → 3.0**, and **20 of 56** move to a
+  higher-degree hub, not 49. Pinned by
+  `tests/test_degree_claim_corrected.py`; see
+  `docs/campaign3-audit-mechanism.md` §1 and `docs/campaign2-results.md` §13.
+  The **numbers** above never depended on it. What is withdrawn is the
+  downstream inference that human curation therefore cannot bias the gate — it
+  can, and `docs/campaign3-premortem-round1.md` §B1 records that the proposed
+  guard cannot even apply to the four frameworks curation would target.
 - **The domain-shortcut hypothesis is refuted.** The framework-hub graph splits
   into exactly two connected components (380 hubs / 14 frameworks and 78 / 8)
   with no AI/general labels supplied, all 147 test golds sit in the 78-hub side,
