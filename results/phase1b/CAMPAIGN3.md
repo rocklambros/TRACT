@@ -274,6 +274,33 @@ So, decided now:
 
 This spends the extra n when it is safe to spend and refuses when it is not.
 
+> **FLAGGED 2026-08-30 — this rule is insufficient, and fixing it is an OWNER
+> DECISION that must be taken before annotation begins. Not amended here.**
+>
+> The rule's premise — "a wrong label costs both arms equally in expectation" —
+> is measurably false on this corpus. Relabelling cost the zero-shot arm
+> **−0.3381** and the trained arm **−0.1678**, a 2:1 asymmetry. That asymmetry
+> is the inflation mechanism.
+>
+> Worse, the overlap test does not catch it. Applied to the audit-touched
+> stratum — the only relabelled stratum available to test against — Tier-1
+> (+0.1000 [0.0000, 0.2000]) and relabelled (+0.2703 [+0.1081, +0.4324])
+> **overlap**, so the rule licenses pooling: +0.1429 reported against a Tier-1
+> truth of +0.1000, with `P(δ ≤ 0.10)` moving 0.535 → 0.161.
+>
+> The C3TEST verdict is unaffected (FAIL on either figure). The exposure is to
+> a *future* curated round, where the Tier-2 stratum is larger and the rule
+> would be doing real work.
+>
+> Evidence and the worked example: `docs/campaign3-audit-mechanism.md` §6b.
+> Reproduce: `python -m scripts.analysis.audit_mechanism_probe`.
+>
+> This is deliberately left as a flag rather than a rewrite. Amending a binding
+> pre-registration after results exist is the failure mode this document was
+> written to prevent, and the replacement rule changes what a future gate can
+> conclude — that is the owner's call, and it must be pre-registered before any
+> curated item is scored.
+
 ### 1.3 The echo partition was not frozen, and the floor was set against the wrong number
 
 §3 specifies echo as "the union of title and full prose" and quotes +0.1531 on
