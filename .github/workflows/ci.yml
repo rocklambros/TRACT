@@ -20,10 +20,19 @@ jobs:
       - name: Install lint toolchain
         run: pip install -r requirements-lint.txt
 
+      # scripts/analysis/ is named file-by-file rather than as a directory:
+      # audit_traditional_links.py carries 16 pre-existing E741s and is not
+      # part of this scope. The four listed here are the evidence base for the
+      # Campaign 3 gate decision, so they are held to the same bar as the run
+      # path -- a spending decision should not rest on unlinted code.
       - name: Ruff check
         run: >
           ruff check tract/ parsers/ scripts/phase1a/ scripts/phase1b/
           scripts/phase0/runpod_provision.py scripts/phase1c/runpod_retrain.py
+          scripts/analysis/audit_stratified_delta.py
+          scripts/analysis/audit_mechanism_probe.py
+          scripts/analysis/gate_rule_candidates.py
+          scripts/analysis/gate_power_simulation.py
 
       # Everything the LOFO run executes. parsers/ was linted by ruff but never
       # type-checked, and scripts/phase1b/ was covered by neither -- which is
@@ -34,7 +43,11 @@ jobs:
         run: >
           mypy tract/ parsers/ scripts/phase1a/ scripts/phase1b/
           scripts/phase0/runpod_provision.py
-          scripts/phase1c/runpod_retrain.py --strict
+          scripts/phase1c/runpod_retrain.py
+          scripts/analysis/audit_stratified_delta.py
+          scripts/analysis/audit_mechanism_probe.py
+          scripts/analysis/gate_rule_candidates.py
+          scripts/analysis/gate_power_simulation.py --strict
 
   test:
     needs: lint
