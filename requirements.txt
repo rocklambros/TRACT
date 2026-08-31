@@ -39,7 +39,7 @@ huggingface_hub==0.36.2
 packaging==26.3
 
 # ML (Phase 2+)
-numpy==2.0.2
+numpy==2.4.6
 safetensors==0.7.0
 wandb==0.26.1
 hdbscan==0.8.42
