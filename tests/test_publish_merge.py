@@ -34,7 +34,13 @@ CARD_CALIBRATION: dict[str, float] = {
 
 CARD_ECE: dict[str, Any] = {"ece": 0.079, "ece_ci": {"ci_low": 0.049, "ci_high": 0.111}}
 
-CARD_BRIDGE: dict[str, Any] = {"counts": {"accepted": 5, "rejected": 58, "total": 63}}
+CARD_BRIDGE: dict[str, Any] = {
+    "counts": {"accepted": 5, "rejected": 58, "total": 63},
+    # Required: the card refuses to publish unmeasured classification counts.
+    "hub_classification": {
+        "ai_only": 83, "trad_only": 380, "naturally_bridged": 0, "unlinked": 59,
+    },
+}
 
 # PRD.md:380-402 withdrew the campaign-1 Gate 1 headline. These are the strings
 # that headline left in the card's prose: the two per-fold percentages, the

@@ -713,9 +713,25 @@ PHASE5_OPENCRE_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "opencre_export"
 
 # ── Phase 2B: Bridge Analysis ─────────────────────────────────────────
 
+# All eight AI-security frameworks in the corpus, not just the five that
+# rotate through the LOFO roster. ENISA, ETSI and BIML are AI/ML-security
+# frameworks -- ENISA maps to "AI model performance validation" and "Anomalous
+# AI input handling", BIML to "Data poisoning of train/finetune/augment" and
+# "Supply-chain model poisoning" -- and listing only the rotating five made
+# `classify_hubs` count them on the TRADITIONAL side. That is what produced the
+# published claim of 60 "naturally bridged" hubs whose worked example was
+# "Data poisoning (linked by both ATLAS and CWE)": MITRE ATLAS hubs and CWE
+# hubs intersect in ZERO hubs, and the traditional side of all of those bridges
+# came from ENISA (51), ETSI (28) and BIML (11) and from nothing else.
+#
+# Under this definition the AI and traditional hub regions are disjoint, which
+# is what PRD.md:58 and docs/campaign2-results.md §14 have always recorded.
+# Keep this set in step with AI_FRAMEWORK_NAMES; tests/test_ai_framework_sets.py
+# asserts they describe the same eight frameworks.
 BRIDGE_AI_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
     "mitre_atlas", "owasp_ai_exchange", "nist_ai_100_2",
     "owasp_llm_top10", "owasp_ml_top10",
+    "enisa", "etsi", "biml",
 })
 BRIDGE_TOP_K: Final[int] = 3
 BRIDGE_LLM_MODEL: Final[str] = "claude-sonnet-4-20250514"

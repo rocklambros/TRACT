@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 from tract.licensing import (
     LICENSE_TEXTS_DIR,
@@ -12,6 +12,14 @@ from tract.licensing import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# What the card published before the AI-framework definition was corrected.
+# Named rather than inlined because the card must now state what it is
+# retracting, and a retraction that does not quote the retracted figure is not
+# one. These are historical facts about a published artifact, not measurements.
+SUPERSEDED_AI_ONLY_COUNT: Final[int] = 21
+SUPERSEDED_BRIDGED_COUNT: Final[int] = 60
 
 
 def _measured(source: dict[str, Any], key: str, origin: str) -> Any:
@@ -174,6 +182,31 @@ def generate_model_card(
     n_accepted = _measured(bridge_counts, "accepted", "bridge_report.json counts")
     n_rejected = _measured(bridge_counts, "rejected", "bridge_report.json counts")
     n_total = _measured(bridge_counts, "total", "bridge_report.json counts")
+
+    # The hub-classification table below used to be four literals: 21 AI-only,
+    # 382 traditional-only, 60 naturally bridged, 59 unlinked, with the worked
+    # example `"Data poisoning" (linked by both ATLAS and CWE)`. Measured
+    # against the curated links, MITRE ATLAS hubs and CWE hubs intersect in
+    # ZERO hubs -- that example named a hub that does not exist. The 60 came
+    # from BRIDGE_AI_FRAMEWORK_IDS listing only the five rotating frameworks,
+    # so ENISA, ETSI and BIML were counted as traditional; every one of those
+    # "bridges" had its traditional side supplied by those three and by nothing
+    # else. Under the eight-framework definition the count is 0, which is what
+    # PRD.md:58 and docs/campaign2-results.md §14 have always recorded.
+    #
+    # Derived through _measured for the same reason every other figure here is:
+    # a card that will not build beats a card that invents its evidence.
+    classification = _measured(
+        bridge_summary, "hub_classification", "bridge_report.json",
+    )
+    origin = "bridge_report.json hub_classification"
+    n_ai_only = _measured(classification, "ai_only", origin)
+    n_trad_only = _measured(classification, "trad_only", origin)
+    n_bridged = _measured(classification, "naturally_bridged", origin)
+    n_unlinked = _measured(classification, "unlinked", origin)
+    n_similarity_pairs = n_ai_only * n_trad_only
+    n_bridged_superseded = SUPERSEDED_BRIDGED_COUNT
+    n_bridged_superseded_ai_only = SUPERSEDED_AI_ONLY_COUNT
 
     # The fold-level prose below is derived, never literal: see _ranked_folds.
     strongest_fold, weakest_fold = _ranked_folds(fold_results)
@@ -448,16 +481,24 @@ OOD predictions are marked with `[OOD]` in the output. **Treat OOD predictions w
 
 The CRE ontology contains 522 hubs. Some hubs are linked only by AI security frameworks (like MITRE ATLAS), some only by traditional frameworks (like NIST 800-53), and some by both:
 
-| Category | Count | Example |
+| Category | Count | What it means |
 |---|---|---|
-| AI-only | 21 | "Testing against evasion," "GenAI model alignment" |
-| Traditional-only | 382 | "Input validation," "Password policy" |
-| Naturally bridged (both) | 60 | "Data poisoning" (linked by both ATLAS and CWE) |
-| Unlinked (structural) | 59 | Internal grouping nodes without framework links |
+| AI-only | {n_ai_only} | Linked only by AI-security frameworks |
+| Traditional-only | {n_trad_only} | Linked only by traditional-security frameworks |
+| Naturally bridged (both) | {n_bridged} | Linked by at least one of each |
+| Unlinked (structural) | {n_unlinked} | Internal grouping nodes without framework links |
+
+**The AI and traditional hub regions are disjoint.** No framework link joins
+them, which is why bridge analysis is needed at all rather than being a
+convenience. An earlier version of this card reported {n_bridged_superseded}
+naturally bridged hubs with the example *"Data poisoning" (linked by both ATLAS
+and CWE)*. That was wrong and is **superseded**: MITRE ATLAS hubs and CWE hubs
+share no hub, and the count arose from classifying ENISA, ETSI and BIML — all
+three AI-security frameworks — on the traditional side.
 
 ### What Bridge Analysis Does
 
-For the 21 AI-only hubs, the model identifies which traditional hubs are conceptually closest using embedding similarity. For example:
+For the AI-only hubs, the model identifies which traditional hubs are conceptually closest using embedding similarity. For example:
 
 > "Human AI oversight" (AI-only) ←→ "Security governance regarding people" (traditional)
 > Cosine similarity: 0.774
@@ -466,8 +507,8 @@ Both hubs are about the same core concept: **humans must remain accountable for 
 
 ### Method and Review Process
 
-1. **Compute similarity matrix:** 21 AI-only hubs x 382 traditional-only hubs (8,022 pairs)
-2. **Extract top-3:** For each AI-only hub, take the 3 most similar traditional hubs (63 candidates total)
+1. **Compute similarity matrix:** {n_ai_only} AI-only hubs x {n_trad_only} traditional-only hubs ({n_similarity_pairs:,} pairs)
+2. **Extract top-3:** For each AI-only hub, take the 3 most similar traditional hubs
 3. **Expert review:** A human security expert reviewed all 63 candidates and accepted or rejected each based on domain knowledge -- the similarity score is a ranking signal, not an automatic classifier
 4. **Acceptance threshold:** Candidates above the 99th percentile of the full similarity matrix (cosine >= 0.45) were considered; 4 additional candidates were rejected for specious LLM-rationalized connections
 
@@ -476,6 +517,18 @@ Both hubs are about the same core concept: **humans must remain accountable for 
 - **Candidates evaluated:** {n_total}
 - **Accepted bridges:** {n_accepted} (recorded as bidirectional `related_hub_ids` in the hierarchy)
 - **Rejected:** {n_rejected}
+
+**Scope limitation.** The Phase 2B bridge round was run against
+{n_bridged_superseded_ai_only} AI-only hubs, the count produced by the
+superseded five-framework definition. Under the corrected definition there are
+{n_ai_only}, so the completed round covers roughly a quarter of the AI region.
+The accepted bridges stand; their coverage does not. Re-running the round
+against the full set is outstanding work, not a completed deliverable.
+
+**Provenance.** Bridge candidates were ranked by cosine similarity and the
+shortlist was reviewed by one human expert, so the accepted set was ratified in
+the presence of model output. Treat `related_hub_ids` as model-proposed and
+human-ratified, not as independently curated taxonomy.
 
 Accepted bridges are stored in `cre_hierarchy.json` as `related_hub_ids`. They represent **lateral conceptual connections** between AI and traditional security -- they do not change the hierarchical structure, model weights, or calibration.
 

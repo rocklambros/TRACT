@@ -30,6 +30,12 @@ def _make_candidates_data(candidates: list[dict]) -> dict:
         "method": "top_k_per_ai_hub",
         "top_k": 3,
         "similarity_stats": {"matrix_shape": [2, 3], "mean": 0.5},
+        # Required, not decorative: commit_bridges refuses without it, because
+        # the model card publishes these counts and used to hardcode them.
+        "hub_classification": {
+            "ai_only": 2, "trad_only": 3,
+            "naturally_bridged": 0, "unlinked": 1,
+        },
         "candidates": candidates,
         "negative_controls": [],
         "unclassified_leaf_hubs": [],
@@ -164,3 +170,53 @@ class TestCommitBridges:
         commit_bridges(candidates_data, hier_path, tmp_path / "report.json")
         hier = CREHierarchy.load(hier_path)
         assert "TRAD-1" in hier.hubs["AI-1"].related_hub_ids
+
+
+class TestReportCarriesHubClassification:
+    """bridge_report.json must record the hub classification it was built from.
+
+    The published model card renders an AI-only / traditional-only /
+    naturally-bridged table. Those four numbers used to be literals in the card
+    (21 / 382 / 60 / 59) and they were wrong -- the 60 came from counting
+    ENISA, ETSI and BIML as traditional frameworks. The card now refuses to
+    build without measured counts, so the report has to carry them, and the
+    candidates file has to carry them to the report.
+    """
+
+    def _candidates(self, classification=None) -> dict:
+        data = _make_candidates_data([
+            {"ai_hub_id": "AI-1", "trad_hub_id": "TRAD-1",
+             "cosine_similarity": 0.5, "rank_for_ai_hub": 1,
+             "description": "d", "status": "accepted", "reviewer_notes": ""},
+        ])
+        if classification is None:
+            data.pop("hub_classification", None)
+        else:
+            data["hub_classification"] = classification
+        return data
+
+    def test_report_carries_the_classification_from_the_candidates(
+        self, tmp_path,
+    ) -> None:
+        from tract.bridge.review import commit_bridges
+        hier = tmp_path / "cre_hierarchy.json"
+        hier.write_text(json.dumps(_make_hierarchy_data(["AI-1", "TRAD-1"])))
+        report_path = tmp_path / "bridge_report.json"
+        classification = {
+            "ai_only": 83, "trad_only": 380,
+            "naturally_bridged": 0, "unlinked": 59,
+        }
+        commit_bridges(self._candidates(classification), hier, report_path)
+        report = json.loads(report_path.read_text())
+        assert report["hub_classification"] == classification
+
+    def test_refuses_candidates_with_no_classification(self, tmp_path) -> None:
+        # Silently omitting it would push a KeyError into publish time, where
+        # the only symptom is a card that will not build.
+        from tract.bridge.review import commit_bridges
+        hier = tmp_path / "cre_hierarchy.json"
+        hier.write_text(json.dumps(_make_hierarchy_data(["AI-1", "TRAD-1"])))
+        with pytest.raises(ValueError, match="hub_classification"):
+            commit_bridges(
+                self._candidates(None), hier, tmp_path / "bridge_report.json",
+            )

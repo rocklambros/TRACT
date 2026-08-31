@@ -74,3 +74,57 @@ class TestClassifyHubs:
         assert result.unlinked == ["TOTALLY-NEW"]
         assert result.ai_only == []
         assert result.trad_only == []
+
+
+AI_SECURITY_FIXTURE = (
+    Path(__file__).parent / "fixtures" / "bridge_ai_security_hub_links.json"
+)
+
+AI_SECURITY_HUB_IDS = [
+    "AI-1", "ENISA-ONLY-1", "BIML-ONLY-1", "ETSI-ONLY-1", "TRAD-1", "BOTH-1",
+]
+
+
+class TestAiSecurityFrameworksAreNotTraditional:
+    """ENISA, BIML and ETSI are AI-security frameworks, not traditional ones.
+
+    They were absent from BRIDGE_AI_FRAMEWORK_IDS, so `classify_hubs` counted
+    them on the traditional side. That is what produced the published model
+    card's claim of 60 "naturally bridged" hubs with the worked example
+    "Data poisoning (linked by both ATLAS and CWE)" -- measured against the
+    curated links, MITRE ATLAS hubs and CWE hubs intersect in ZERO hubs, and
+    the traditional side of every one of those bridges came from ENISA, ETSI
+    or BIML. Under the eight-framework definition the count is 0, which is
+    what PRD.md:58 has said all along.
+    """
+
+    @pytest.fixture
+    def classification(self):
+        from tract.bridge.classify import classify_hubs
+        return classify_hubs(AI_SECURITY_FIXTURE, AI_SECURITY_HUB_IDS)
+
+    def test_a_hub_linked_only_by_ai_frameworks_is_not_a_bridge(
+        self, classification,
+    ) -> None:
+        # AI-1 is linked by MITRE ATLAS and ENISA. Both are AI-security, so
+        # this is not a bridge to traditional security.
+        assert "AI-1" not in classification.naturally_bridged
+        assert "AI-1" in classification.ai_only
+
+    def test_enisa_only_hub_is_ai_only(self, classification) -> None:
+        assert "ENISA-ONLY-1" in classification.ai_only
+
+    def test_biml_only_hub_is_ai_only(self, classification) -> None:
+        assert "BIML-ONLY-1" in classification.ai_only
+
+    def test_etsi_only_hub_is_ai_only(self, classification) -> None:
+        assert "ETSI-ONLY-1" in classification.ai_only
+
+    def test_a_genuine_ai_to_traditional_bridge_is_still_found(
+        self, classification,
+    ) -> None:
+        # BOTH-1 is MITRE ATLAS + ASVS. That is a real bridge and must survive.
+        assert classification.naturally_bridged == ["BOTH-1"]
+
+    def test_a_traditional_only_hub_is_unaffected(self, classification) -> None:
+        assert classification.trad_only == ["TRAD-1"]

@@ -21,6 +21,13 @@ def _setup_publish_workspace(tmp_path: Path) -> dict[str, Path]:
 
     bridge_report = {
         "counts": {"total": 2, "accepted": 1, "rejected": 1},
+        # Required: the model card refuses to publish a hub-classification
+        # table it did not measure. See tests/test_publish_model_card.py
+        # TestBridgeSectionIsMeasuredNotFabricated.
+        "hub_classification": {
+            "ai_only": 83, "trad_only": 380,
+            "naturally_bridged": 0, "unlinked": 59,
+        },
         "candidates": [
             {"ai_hub_id": "AI-1", "trad_hub_id": "T-1", "status": "accepted",
              "cosine_similarity": 0.7, "reviewer_notes": ""},

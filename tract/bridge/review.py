@@ -105,12 +105,29 @@ def commit_bridges(
         updated = CREHierarchy.model_validate(hier_data)
         updated.validate_integrity()
 
+    # The published model card renders these four counts. They were literals
+    # in the card (21 / 382 / 60 / 59) and the 60 was wrong: ENISA, ETSI and
+    # BIML were being counted as traditional frameworks, so hubs linked only by
+    # AI-security frameworks were reported as AI/traditional bridges. The card
+    # now refuses to build without measured counts, so the report must carry
+    # them. Raising here beats a KeyError at publish time, where the only
+    # symptom is a card that will not build.
+    if "hub_classification" not in candidates_data:
+        raise ValueError(
+            "bridge_candidates.json carries no 'hub_classification'. The "
+            "bridge report records the AI-only / traditional-only / bridged / "
+            "unlinked counts the model card publishes; regenerate the "
+            "candidates with tract.bridge.run_bridge_analysis rather than "
+            "committing a report whose classification is unknown."
+        )
+
     report = {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "parameters": {
             "method": candidates_data.get("method", "top_k_per_ai_hub"),
             "top_k": candidates_data.get("top_k", 3),
         },
+        "hub_classification": candidates_data["hub_classification"],
         "counts": {
             "total": len(candidates_data.get("candidates", [])),
             "accepted": len(accepted),
