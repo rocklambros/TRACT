@@ -483,6 +483,86 @@ does.
   different documents and may not.
 - Simulation error ≈ ±2.5pp per cell at 400 studies.
 
+### 6e-corrected-again — three errors in 6e-corrected, found at checkpoint 1
+
+**The section below is itself wrong in three places.** Premortem checkpoint 1
+measured each one. Read this block first; the section after it is kept for the
+record, not for its conclusions.
+
+**1. The surface prices an estimator no verdict uses, and the header says the
+opposite.** `results/phase1b/CAMPAIGN3.md` §3 binds the primary as a
+*fold-stratified* paired bootstrap — `_build_fold_index_matrix(fold_sizes, …)`
+in `tract/training/evaluate.py:154` holds fold sizes **fixed** and resamples
+items. `gate_power_simulation._pass_probability` resamples **frameworks**. That
+is the §6d random-effects rule, which §6d itself records as *not*
+pre-registered, and which Amendment 2 — withdrawn — proposed.
+
+The header below says the recomputation is "on the **right** estimand" and
+justifies it by *"the gate reports the item-weighted mean."* Two things were
+swapped in one edit and only one was disclosed: the **estimand** (macro → micro,
+correct and real) and the **estimator** (fixed-fold → random-effects,
+undisclosed). Measured at k=5, 110 items, 1,500 studies per cell:
+
+| μ | τ | §3 as pre-registered | what the surface reports |
+|---|---|---|---|
+| 0.20 | 0.00 | **65.4%** | 38.4% |
+| 0.20 | 0.37 | **48.9%** | 19.5% |
+| 0.25 | 0.00 | **94.3%** | 74.5% |
+
+So conclusion 2 below — *"80% power now needs μ ≈ 0.25 and τ ≤ 0.08 even at k=8
+with 552 items"* — **is false for the instrument the campaign is bound to**:
+94.3% at k=5 with 110 items, μ=0.25, τ=0.
+
+**2. The "anti-conservative" correction is backwards.** μ = 0.10 is not a null.
+The gate threshold applies to a study's *realised* micro delta, `Σnᵢδᵢ/Σnᵢ`, not
+to μ. At the observed fold weights:
+
+| τ | P(true micro delta > 0.10) |
+|---|---|
+| 0.00 | 0.000 |
+| 0.08 | **0.498** |
+| 0.20 | **0.500** |
+| 0.37 | **0.502** |
+
+At every τ > 0, **half the simulated studies have a genuinely true effect above
+the gate**. An 11.5% pass rate there is a *power* number, not a type-I rate, and
+a rule firing on 11.5% of studies when 50% are true positives is grossly
+**conservative**. At τ = 0 — the actual null — the surface reads **0.0275**,
+below the nominal 5%. The claim that "a PASS in that regime is more likely to be
+spurious" is the opposite of what was measured, and it was stated under a bold
+heading as the unsafe direction.
+
+**3. The τ null p-value is an artifact of a homogeneous discordant rate.** The
+null simulation imposes 0.30 on every fold. The observed rates are
+0.2381 / 0.3000 / 0.4545 / 0.5000 / **1.0000** — and the file's own docstring
+already records that fixing the pooled value *"understates within-fold variance
+on four of five folds."* Applying that caveat to the null as well as to power,
+20,000 replicates:
+
+| null | P(estimate ≥ 0.3702 \| true τ = 0) |
+|---|---|
+| pooled 0.30 *(as published)* | 0.043 |
+| **each fold at its own observed rate** | **0.391** |
+
+So *"sits at the 95.2nd percentile of the null"* becomes roughly the 60th. The
+honest statement is not that τ is significantly non-zero, nor that it is
+distinguishable from zero — it is that **the observed value is uninformative in
+both directions**, which is a stronger version of the same conclusion and does
+not rest on a p-value quoted to three decimals with a Monte-Carlo error of
+0.005.
+
+**Consequences.** `results/analysis/power_surface.json` is stale — it carries
+`realised_tau`/`realised_mu` keys the current code no longer emits, so it cannot
+have come from the committed script. It is regenerated, and the tables below are
+not to be quoted until they are re-derived under both estimators.
+
+**What survives from below:** the macro→micro estimand fix (real, and the fold
+sizes now match the design), the τ leave-one-fold-out span 0.0000–0.4446 (real,
+and the reason no design can be planned on τ), and the statement that Phase 2C
+does not fix τ.
+
+---
+
 ### 6e-corrected — recomputed 2026-09-01, on the right estimand
 
 Everything above in §6e was computed with an identical item count per fold,
