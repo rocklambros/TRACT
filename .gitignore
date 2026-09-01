@@ -7,6 +7,18 @@ models/
 results/*
 !results/corpus/
 !results/ceiling_study/
+# The Campaign 3 analysis outputs. Every figure in
+# docs/campaign3-audit-mechanism.md was hand-transcribed from stdout because
+# these scripts default to --out=None and results/* excluded anything they
+# wrote. A spending decision resting on numbers with no machine-readable
+# counterpart cannot be diffed, and a re-run six months later against a changed
+# corpus would be indistinguishable from a documentation error.
+#
+# Allowlisted to JSON only, for the same reason results/phase1b/ is: whatever
+# an analysis script grows into later defaults to excluded.
+!results/analysis/
+results/analysis/*
+!results/analysis/*.json
 # The LLM pre-pass is a proxy, not a ceiling. The runbook is explicit that "a
 # proxy labelled as a ceiling is the same category of error as the withdrawn
 # accuracy figure", and four files with LLM_PROXY in the name sitting beside the

@@ -483,6 +483,66 @@ does.
   different documents and may not.
 - Simulation error ≈ ±2.5pp per cell at 400 studies.
 
+### 6e-corrected — recomputed 2026-09-01, on the right estimand
+
+Everything above in §6e was computed with an identical item count per fold,
+which makes the statistic an **unweighted mean over frameworks**. The gate
+reports the **item-weighted** mean. On the real primary those are +0.2701 and
++0.1000 — either side of the 0.10 threshold. The surface was sizing a design for
+a number nobody reports.
+
+Recomputed with `pooled_delta` (micro), the observed fold sizes 63/30/11/4/2,
+τ swept to 0.37, and the clamp's effect reported. Machine-readable at
+`results/analysis/power_surface.json`.
+
+**Power at μ = 0.20:**
+
+| scenario | items | τ=0.00 | τ=0.05 | τ=0.08 | τ=0.12 | τ=0.16 | τ=0.20 | τ=0.28 | τ=0.37 |
+|---|---|---|---|---|---|---|---|---|---|
+| now (k=5) | 110 | 38% | 36% | 33% | 30% | 28% | 28% | 26% | 20% |
+| +items (k=5) | 340 | 78% | 69% | 55% | 44% | 35% | 33% | 29% | 24% |
+| +frameworks (k=8) | 184 | 62% | 63% | 50% | 39% | 38% | 29% | 26% | 18% |
+| +both (k=8) | 552 | 97% | 92% | 77% | 55% | 44% | 36% | 24% | 22% |
+
+**Three corrections to what §6e concluded.**
+
+1. **The calibration claim was wrong, and in the unsafe direction.** §6e reported
+   2–6% at μ = 0.10 and called the rule "calibrated at its nominal 5%."
+   Recomputed, the range is **1–12%**, reaching 12% at k=5, τ=0.37. The gate is
+   **anti-conservative when τ is large** — a PASS in that regime is more likely
+   to be spurious than the stated α implies.
+2. **80% power is further away than stated.** It now needs μ ≈ 0.25 *and*
+   τ ≤ 0.08 even at k=8 with 552 items. At μ = 0.20 only the largest design
+   reaches it, and only at τ ≤ 0.05.
+3. **Nothing reaches 80% at τ ≥ 0.16**, for any design, at any μ ≤ 0.25. The
+   ceiling there is 68%.
+
+### τ is not merely unidentified — it is barely distinguishable from zero
+
+Simulating at a **true τ of 0** with the real fold sizes and running the same
+method-of-moments estimator the data was measured with, 2,000 replicates:
+
+| | value |
+|---|---|
+| median estimate under true τ = 0 | **0.0000** |
+| fraction returning exactly 0.0000 | **52.5%** |
+| 95th percentile | **0.3641** |
+| **the corpus's observed estimate** | **0.3702** |
+| **P(estimate ≥ 0.3702 \| true τ = 0)** | **0.048** |
+
+The observed value sits at the 95.2nd percentile of the null. It clears p < 0.05
+by four thousandths, on an estimator that returns exactly zero half the time when
+the truth is zero, at fold sizes including one of n=2 and one of n=4.
+
+**No design can be planned on that.** The τ axis of the table above spans the
+entire plausible range and the data cannot narrow it.
+
+> **This is the limitation Phase 2C does not fix.** Bridge links add *training*
+> supervision; they do not add evaluation folds, so they leave τ exactly where it
+> is. Narrowing τ needs more evaluation frameworks with n ≥ 10 — a different
+> deliverable, and one the roster rotation only half-provides (§6g: three folds
+> of 33, 17 and 24, of which 91.9% of the gold hubs are already incumbent).
+
 ## 6f. Is the pooled paired-delta gate the right instrument?
 
 Four structural problems have accumulated, three of them measured here:
