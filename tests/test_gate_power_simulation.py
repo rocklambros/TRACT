@@ -23,32 +23,32 @@ from scripts.analysis.gate_power_simulation import (
 
 class TestSimulateStudy:
     def test_returns_k_frameworks_of_n_items(self) -> None:
-        folds = simulate_study(7, 40, 0.15, 0.05, DISCORDANT_RATE,
+        folds = simulate_study([40] * 7, 0.15, 0.05, DISCORDANT_RATE,
                                np.random.default_rng(0))
         assert len(folds) == 7
         assert all(len(f) == 40 for f in folds)
 
     def test_items_are_mcnemar_cells(self) -> None:
-        folds = simulate_study(3, 200, 0.15, 0.05, DISCORDANT_RATE,
+        folds = simulate_study([200] * 3, 0.15, 0.05, DISCORDANT_RATE,
                                np.random.default_rng(0))
         values = set(np.concatenate(folds).tolist())
         assert values <= {-1.0, 0.0, 1.0}
 
     def test_grand_mean_recovers_mu(self) -> None:
         # Many frameworks, many items: the pooled mean must land on mu.
-        folds = simulate_study(200, 400, 0.15, 0.05, DISCORDANT_RATE,
+        folds = simulate_study([400] * 200, 0.15, 0.05, DISCORDANT_RATE,
                                np.random.default_rng(1))
         assert np.concatenate(folds).mean() == pytest.approx(0.15, abs=0.01)
 
     def test_discordant_rate_is_preserved(self) -> None:
-        folds = simulate_study(100, 400, 0.15, 0.02, DISCORDANT_RATE,
+        folds = simulate_study([400] * 100, 0.15, 0.02, DISCORDANT_RATE,
                                np.random.default_rng(2))
         flat = np.concatenate(folds)
         assert float((flat != 0.0).mean()) == pytest.approx(
             DISCORDANT_RATE, abs=0.02)
 
     def test_tau_zero_makes_frameworks_identical_in_expectation(self) -> None:
-        folds = simulate_study(60, 500, 0.15, 0.0, DISCORDANT_RATE,
+        folds = simulate_study([500] * 60, 0.15, 0.0, DISCORDANT_RATE,
                                np.random.default_rng(3))
         spread = float(np.std([f.mean() for f in folds]))
         # With tau=0 the only spread is within-framework sampling noise,
@@ -57,15 +57,15 @@ class TestSimulateStudy:
 
     def test_larger_tau_produces_more_spread_between_frameworks(self) -> None:
         rng = np.random.default_rng(4)
-        low = simulate_study(60, 500, 0.15, 0.02, DISCORDANT_RATE, rng)
-        high = simulate_study(60, 500, 0.15, 0.20, DISCORDANT_RATE, rng)
+        low = simulate_study([500] * 60, 0.15, 0.02, DISCORDANT_RATE, rng)
+        high = simulate_study([500] * 60, 0.15, 0.20, DISCORDANT_RATE, rng)
         assert np.std([f.mean() for f in high]) > \
             np.std([f.mean() for f in low])
 
     def test_is_deterministic_for_a_seed(self) -> None:
-        a = simulate_study(5, 30, 0.15, 0.08, DISCORDANT_RATE,
+        a = simulate_study([30] * 5, 0.15, 0.08, DISCORDANT_RATE,
                            np.random.default_rng(9))
-        b = simulate_study(5, 30, 0.15, 0.08, DISCORDANT_RATE,
+        b = simulate_study([30] * 5, 0.15, 0.08, DISCORDANT_RATE,
                            np.random.default_rng(9))
         for x, y in zip(a, b, strict=True):
             np.testing.assert_array_equal(x, y)
@@ -91,19 +91,23 @@ class TestClusterBootstrapPass:
         tight = [np.array([1.0] * 20 + [0.0] * 30) for _ in range(9)]
         spread = [np.ones(50) if i < 4 else np.zeros(50) for i in range(9)]
         rng = np.random.default_rng(0)
-        tight_pass = sum(
-            cluster_bootstrap_pass(tight, 300, rng) for _ in range(5))
-        spread_pass = sum(
-            cluster_bootstrap_pass(spread, 300, rng) for _ in range(5))
-        assert tight_pass >= spread_pass
+        # Compare the pass PROBABILITY, not a 5-trial count. The count
+        # version was satisfied by 5 >= 5 and passed with cluster resampling
+        # deleted outright.
+        from scripts.analysis.gate_power_simulation import _pass_probability
+        tight_p = _pass_probability(tight, 2000, rng)
+        spread_p = _pass_probability(spread, 2000, rng)
+        assert spread_p > tight_p, (
+            "a spread-out set of frameworks must be HARDER to pass; "
+            f"tight P(delta<=gate)={tight_p:.3f} spread={spread_p:.3f}")
 
 
 class TestCalibration:
     def test_power_at_the_threshold_is_near_alpha(self) -> None:
         """The headline validity check: a true effect exactly at the gate
         threshold must pass at roughly the nominal rate, not more."""
-        power = power_at(
-            k=9, n_per=68, mu=GATE_THRESHOLD, tau=0.05,
+        power, _ = power_at(
+            [68] * 9, GATE_THRESHOLD, 0.05,
             n_studies=200, n_bootstrap=400, rng=np.random.default_rng(11),
         )
         assert power < 3 * GATE_ALPHA, (
@@ -113,12 +117,95 @@ class TestCalibration:
 
     def test_power_rises_with_the_true_effect(self) -> None:
         rng = np.random.default_rng(12)
-        low = power_at(9, 68, 0.15, 0.05, 150, 400, rng)
-        high = power_at(9, 68, 0.25, 0.05, 150, 400, rng)
+        low, _ = power_at([68] * 9, 0.15, 0.05, 150, 400, rng)
+        high, _ = power_at([68] * 9, 0.25, 0.05, 150, 400, rng)
         assert high > low
 
     def test_power_falls_as_between_framework_spread_grows(self) -> None:
         rng = np.random.default_rng(13)
-        tight = power_at(9, 68, 0.20, 0.02, 150, 400, rng)
-        loose = power_at(9, 68, 0.20, 0.20, 150, 400, rng)
+        tight, _ = power_at([68] * 9, 0.20, 0.02, 150, 400, rng)
+        loose, _ = power_at([68] * 9, 0.20, 0.20, 150, 400, rng)
         assert tight > loose
+
+
+class TestMeasuresTheGatesOwnEstimand:
+    """The simulation used equal n per fold, which makes it a MACRO average.
+
+    The gate reports the item-weighted MICRO average. On the real primary the
+    two differ by 0.1701 -- 1.7x the gate threshold: micro +0.1000 (the
+    published figure), macro +0.2701. A power surface computed on the macro
+    statistic sizes a design for a number nobody reports.
+    """
+
+    def test_pooled_delta_is_item_weighted(self) -> None:
+        from scripts.analysis.gate_power_simulation import pooled_delta
+        # 90 items at 0, 10 items at 1. micro = 0.10; macro would be 0.50.
+        folds = [np.zeros(90), np.ones(10)]
+        assert pooled_delta(folds) == pytest.approx(0.10)
+
+    def test_unequal_fold_sizes_are_honoured(self) -> None:
+        from scripts.analysis.gate_power_simulation import simulate_study
+        folds = simulate_study([63, 30, 11, 4, 2], 0.15, 0.05,
+                               DISCORDANT_RATE, np.random.default_rng(0))
+        assert [len(f) for f in folds] == [63, 30, 11, 4, 2]
+
+    def test_a_big_fold_dominates_the_pooled_estimate(self) -> None:
+        from scripts.analysis.gate_power_simulation import pooled_delta
+        # The real design is 63/30/11/4/2: OWASP AI Exchange alone is 57% of it.
+        big, small = np.zeros(63), np.ones(2)
+        assert pooled_delta([big, small]) < 0.05
+
+
+class TestReportsRealisedParameters:
+    """The clamp silently shrinks both mu and tau at the high end of the grid."""
+
+    def test_realised_mu_is_below_requested_when_the_clamp_binds(self) -> None:
+        from scripts.analysis.gate_power_simulation import (realised_parameters,
+                                                            simulate_study)
+        folds = simulate_study([200] * 400, 0.25, 0.20,
+                               DISCORDANT_RATE, np.random.default_rng(0))
+        realised = realised_parameters(folds)
+        assert realised["mu"] < 0.25
+        assert realised["clamped_fraction"] > 0.0
+
+    def test_no_clamping_when_the_effect_fits_inside_the_discordant_rate(
+        self,
+    ) -> None:
+        from scripts.analysis.gate_power_simulation import (realised_parameters,
+                                                            simulate_study)
+        folds = simulate_study([200] * 400, 0.05, 0.02,
+                               DISCORDANT_RATE, np.random.default_rng(0))
+        assert realised_parameters(folds)["clamped_fraction"] == 0.0
+
+    def test_the_grid_covers_the_corpuss_own_tau_estimate(self) -> None:
+        from scripts.analysis.gate_power_simulation import TAU_GRID
+        # docs/campaign3-audit-mechanism.md section 6e: tau = 0.3702 over all
+        # five folds. A grid stopping at 0.20 never simulates the branch that
+        # says the instrument should be replaced rather than re-powered.
+        assert max(TAU_GRID) >= 0.37
+
+
+class TestClusterResamplingActuallyHappens:
+    """Deleting framework resampling left the previous suite entirely green."""
+
+    def test_removing_framework_resampling_changes_the_result(self) -> None:
+        from scripts.analysis.gate_power_simulation import _pass_probability
+        # Every fold is internally CONSTANT, so resampling items within a fold
+        # cannot move its mean at all -- the item bootstrap has exactly zero
+        # variance here. All the uncertainty is between frameworks: one fold at
+        # 1.0 and eight at 0.0 give a pooled 40/360 = 0.111, just above the
+        # gate, and omitting the one fold that matters drops it to 0.0.
+        #
+        # This is the fixture the previous version needed and did not have.
+        # With mixed folds, item resampling supplies enough spread on its own to
+        # mask whether the cluster layer is running at all.
+        folds = [np.ones(40)] + [np.zeros(40) for _ in range(8)]
+        rng = np.random.default_rng(0)
+        with_clusters = _pass_probability(folds, 2000, rng,
+                                          resample_frameworks=True)
+        without = _pass_probability(folds, 2000, rng,
+                                    resample_frameworks=False)
+        assert abs(with_clusters - without) > 0.10, (
+            "cluster resampling made no difference -- the estimator is an "
+            "item bootstrap wearing the name of a cluster bootstrap"
+        )
