@@ -33,7 +33,17 @@ def _roster_ids() -> set[str]:
 
 class TestTheDefinitionsAgree:
 
-    def test_the_three_copies_of_ai_framework_names_are_identical(self) -> None:
+    def test_the_tiering_copy_matches_the_roster(self) -> None:
+        # data_quality imports cleanly; data.py pulls torch, so it is checked
+        # separately below under an importorskip. Splitting them keeps the
+        # containment guards -- the ones that would have caught the published
+        # bridge falsehood -- running on a CI runner that has no torch.
+        from scripts.phase0.common import AI_FRAMEWORK_NAMES as roster
+        from tract.training.data_quality import AI_FRAMEWORK_NAMES as tiering
+        assert roster == tiering
+
+    def test_the_training_pair_copy_matches_the_roster(self) -> None:
+        pytest.importorskip("torch", reason="tract.training.data imports torch")
         from scripts.phase0.common import AI_FRAMEWORK_NAMES as roster
         from tract.training.data import AI_FRAMEWORK_NAMES as pairs
         from tract.training.data_quality import AI_FRAMEWORK_NAMES as tiering

@@ -23,32 +23,32 @@ from scripts.analysis.gate_power_simulation import (
 
 class TestSimulateStudy:
     def test_returns_k_frameworks_of_n_items(self) -> None:
-        folds = simulate_study([40] * 7, 0.15, 0.05, DISCORDANT_RATE,
+        folds, _ = simulate_study([40] * 7, 0.15, 0.05, DISCORDANT_RATE,
                                np.random.default_rng(0))
         assert len(folds) == 7
         assert all(len(f) == 40 for f in folds)
 
     def test_items_are_mcnemar_cells(self) -> None:
-        folds = simulate_study([200] * 3, 0.15, 0.05, DISCORDANT_RATE,
+        folds, _ = simulate_study([200] * 3, 0.15, 0.05, DISCORDANT_RATE,
                                np.random.default_rng(0))
         values = set(np.concatenate(folds).tolist())
         assert values <= {-1.0, 0.0, 1.0}
 
     def test_grand_mean_recovers_mu(self) -> None:
         # Many frameworks, many items: the pooled mean must land on mu.
-        folds = simulate_study([400] * 200, 0.15, 0.05, DISCORDANT_RATE,
+        folds, _ = simulate_study([400] * 200, 0.15, 0.05, DISCORDANT_RATE,
                                np.random.default_rng(1))
         assert np.concatenate(folds).mean() == pytest.approx(0.15, abs=0.01)
 
     def test_discordant_rate_is_preserved(self) -> None:
-        folds = simulate_study([400] * 100, 0.15, 0.02, DISCORDANT_RATE,
+        folds, _ = simulate_study([400] * 100, 0.15, 0.02, DISCORDANT_RATE,
                                np.random.default_rng(2))
         flat = np.concatenate(folds)
         assert float((flat != 0.0).mean()) == pytest.approx(
             DISCORDANT_RATE, abs=0.02)
 
     def test_tau_zero_makes_frameworks_identical_in_expectation(self) -> None:
-        folds = simulate_study([500] * 60, 0.15, 0.0, DISCORDANT_RATE,
+        folds, _ = simulate_study([500] * 60, 0.15, 0.0, DISCORDANT_RATE,
                                np.random.default_rng(3))
         spread = float(np.std([f.mean() for f in folds]))
         # With tau=0 the only spread is within-framework sampling noise,
@@ -57,8 +57,8 @@ class TestSimulateStudy:
 
     def test_larger_tau_produces_more_spread_between_frameworks(self) -> None:
         rng = np.random.default_rng(4)
-        low = simulate_study([500] * 60, 0.15, 0.02, DISCORDANT_RATE, rng)
-        high = simulate_study([500] * 60, 0.15, 0.20, DISCORDANT_RATE, rng)
+        low, _ = simulate_study([500] * 60, 0.15, 0.02, DISCORDANT_RATE, rng)
+        high, _ = simulate_study([500] * 60, 0.15, 0.20, DISCORDANT_RATE, rng)
         assert np.std([f.mean() for f in high]) > \
             np.std([f.mean() for f in low])
 
@@ -145,7 +145,7 @@ class TestMeasuresTheGatesOwnEstimand:
 
     def test_unequal_fold_sizes_are_honoured(self) -> None:
         from scripts.analysis.gate_power_simulation import simulate_study
-        folds = simulate_study([63, 30, 11, 4, 2], 0.15, 0.05,
+        folds, _ = simulate_study([63, 30, 11, 4, 2], 0.15, 0.05,
                                DISCORDANT_RATE, np.random.default_rng(0))
         assert [len(f) for f in folds] == [63, 30, 11, 4, 2]
 
@@ -156,32 +156,20 @@ class TestMeasuresTheGatesOwnEstimand:
         assert pooled_delta([big, small]) < 0.05
 
 
-class TestReportsRealisedParameters:
-    """The clamp silently shrinks both mu and tau at the high end of the grid."""
+class TestTauGridCoversTheCorpusEstimate:
+    """The two clamp tests that lived here are superseded.
 
-    def test_realised_mu_is_below_requested_when_the_clamp_binds(self) -> None:
-        from scripts.analysis.gate_power_simulation import (realised_parameters,
-                                                            simulate_study)
-        folds = simulate_study([200] * 400, 0.25, 0.20,
-                               DISCORDANT_RATE, np.random.default_rng(0))
-        realised = realised_parameters(folds)
-        assert realised["mu"] < 0.25
-        assert realised["clamped_fraction"] > 0.0
-
-    def test_no_clamping_when_the_effect_fits_inside_the_discordant_rate(
-        self,
-    ) -> None:
-        from scripts.analysis.gate_power_simulation import (realised_parameters,
-                                                            simulate_study)
-        folds = simulate_study([200] * 400, 0.05, 0.02,
-                               DISCORDANT_RATE, np.random.default_rng(0))
-        assert realised_parameters(folds)["clamped_fraction"] == 0.0
+    They asserted against `realised_parameters`, which measured realised fold
+    means and was wrong in both directions -- see
+    TestDiagnosticsMeasureTheDrawNotTheOutcome, which replaces them with
+    assertions against the drawn deltas, where the clamp actually binds.
+    """
 
     def test_the_grid_covers_the_corpuss_own_tau_estimate(self) -> None:
         from scripts.analysis.gate_power_simulation import TAU_GRID
-        # docs/campaign3-audit-mechanism.md section 6e: tau = 0.3702 over all
-        # five folds. A grid stopping at 0.20 never simulates the branch that
-        # says the instrument should be replaced rather than re-powered.
+        # docs/campaign3-audit-mechanism.md 6e: tau = 0.3702 over all five
+        # folds. A grid stopping at 0.20 never simulates the branch that says
+        # the instrument should be replaced rather than re-powered.
         assert max(TAU_GRID) >= 0.37
 
 
@@ -209,3 +197,65 @@ class TestClusterResamplingActuallyHappens:
             "cluster resampling made no difference -- the estimator is an "
             "item bootstrap wearing the name of a cluster bootstrap"
         )
+
+
+class TestDiagnosticsMeasureTheDrawNotTheOutcome:
+    """`realised_parameters` measured fold MEANS, which is not what it claimed.
+
+    `clamped_fraction` counted realised fold means above the discordant rate.
+    The clamp binds on the DRAWN Normal(mu, tau) delta, before any items exist.
+    At the observed fold sizes -- two folds of n=2 and n=4 -- a fold mean clears
+    0.30 by sampling noise alone, so at mu=0.10, tau=0.00 it reported 0.148
+    where the true clamp probability is exactly 0.000.
+
+    `tau` had the mirror defect: the SD of observed fold means is
+    sqrt(tau^2 + within-fold noise), so it read ~0.20 when the true tau was 0.
+
+    Both were written into results/analysis/power_surface.json and cited in
+    docs/campaign3-audit-mechanism.md as "the clamp's effect reported". A reader
+    would conclude the tau=0 row already delivered tau ~ 0.20 and that the
+    design tolerates a tau the surface says it does not -- the round-1 pattern
+    of a diagnostic that flatters the design, inside the fix for it.
+    """
+
+    def test_no_clamping_is_reported_when_the_clamp_cannot_bind(self) -> None:
+        from scripts.analysis.gate_power_simulation import (DISCORDANT_RATE,
+                                                            OBSERVED_FOLD_SIZES,
+                                                            simulate_study)
+        # mu well inside the discordant rate, tau = 0: the drawn delta is
+        # always 0.10, so the clamp can never bind.
+        _, diag = simulate_study(OBSERVED_FOLD_SIZES, 0.10, 0.0,
+                                 DISCORDANT_RATE, np.random.default_rng(0))
+        assert diag["clamped_fraction"] == 0.0
+
+    def test_clamping_is_reported_when_it_does_bind(self) -> None:
+        from scripts.analysis.gate_power_simulation import (DISCORDANT_RATE,
+                                                            OBSERVED_FOLD_SIZES,
+                                                            simulate_study)
+        # mu above the discordant rate with tau = 0: it always binds.
+        _, diag = simulate_study(OBSERVED_FOLD_SIZES, 0.50, 0.0,
+                                 DISCORDANT_RATE, np.random.default_rng(0))
+        assert diag["clamped_fraction"] == 1.0
+
+    def test_drawn_tau_is_the_generating_tau_not_the_observed_spread(
+        self,
+    ) -> None:
+        from scripts.analysis.gate_power_simulation import (DISCORDANT_RATE,
+                                                            OBSERVED_FOLD_SIZES,
+                                                            simulate_study)
+        _, diag = simulate_study(OBSERVED_FOLD_SIZES, 0.10, 0.0,
+                                 DISCORDANT_RATE, np.random.default_rng(0))
+        # True tau is 0. The observed SD of fold means at these sizes is ~0.20.
+        assert diag["drawn_tau"] < 0.05
+
+    def test_fold_mean_spread_is_reported_separately_and_is_larger(
+        self,
+    ) -> None:
+        from scripts.analysis.gate_power_simulation import (DISCORDANT_RATE,
+                                                            OBSERVED_FOLD_SIZES,
+                                                            simulate_study)
+        # Reported, but never as "tau": a reader needs to know the observed
+        # spread is dominated by within-fold noise at these sizes.
+        _, diag = simulate_study(OBSERVED_FOLD_SIZES, 0.10, 0.0,
+                                 DISCORDANT_RATE, np.random.default_rng(0))
+        assert diag["fold_mean_spread"] > diag["drawn_tau"]

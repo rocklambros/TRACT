@@ -75,7 +75,13 @@ jobs:
       # integration test that can stand alone. This job never deselected them,
       # which nobody noticed while lint kept the job from starting.
       - name: Run tests
-        run: pytest tests/ -x -q --timeout=60 -m "not integration"
+        # No -x. With it, one failing test aborts the run and every test after
+        # it is silently not executed -- the suite reports "1 failed, 40 passed"
+        # and reads as a single known failure. That is issue #55's failure mode,
+        # and it recurred here: a test importing torch (absent from
+        # requirements.txt) stopped 2,690 tests from running while the job
+        # looked like an ordinary red.
+        run: pytest tests/ -q --timeout=60 -m "not integration"
 
   audit:
     runs-on: ubuntu-latest

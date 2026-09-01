@@ -27,7 +27,8 @@ WHAT THE ROUND-1 PREMORTEM FOUND, AND WHAT CHANGED HERE.
 
   * The clamp that keeps a framework's delta inside the discordant rate
     silently shrank both mu and tau at the high end, unreported. Every cell now
-    logs what it actually delivered via `realised_parameters`.
+    logs what it actually delivered via `DrawDiagnostics`, measured on
+    the drawn deltas rather than on realised fold means.
 
   * Deleting framework resampling outright left the test suite green. The
     resampling is now reachable through `_pass_probability`, and a test asserts
@@ -113,17 +114,33 @@ class PowerCell(TypedDict):
     k: int
     n_items: int
     power: float
-    realised_mu: float
-    realised_tau: float
+    drawn_mu: float
+    drawn_tau: float
     clamped_fraction: float
+    fold_mean_spread: float
 
 
-class RealisedParameters(TypedDict):
-    """What a simulated study actually delivered, after clamping."""
+class DrawDiagnostics(TypedDict):
+    """What the DATA-GENERATING PROCESS delivered, measured where it happens.
 
-    mu: float
-    tau: float
+    The previous version measured realised fold MEANS, which is a different
+    thing and wrong in both directions. `clamped_fraction` counted fold means
+    above the discordant rate, but the clamp binds on the drawn
+    Normal(mu, tau) delta before any items exist -- at fold sizes including
+    n=2 and n=4 a mean clears 0.30 by sampling noise, so it reported 0.148 at
+    mu=0.10, tau=0.00 where the true probability is exactly 0. And it called
+    the SD of fold means "tau", which is sqrt(tau^2 + within-fold noise) and
+    read ~0.20 when the true tau was 0.
+
+    `fold_mean_spread` is that observed SD, kept because it is genuinely
+    informative -- it is why tau cannot be estimated from five folds -- but
+    never again labelled tau.
+    """
+
+    drawn_mu: float
+    drawn_tau: float
     clamped_fraction: float
+    fold_mean_spread: float
 
 
 def pooled_delta(folds: list[NDArrayF]) -> float:
@@ -136,26 +153,10 @@ def pooled_delta(folds: list[NDArrayF]) -> float:
     return float(np.concatenate(folds).mean())
 
 
-def realised_parameters(folds: list[NDArrayF]) -> RealisedParameters:
-    """Report what the draw delivered, not what it was asked for.
-
-    `simulate_study` clamps a framework whose delta exceeds the discordant rate,
-    which shrinks both mu and tau. At mu=0.25, tau=0.20 the clamp binds on about
-    40% of framework draws. Unreported, that silently mislabels the axes of the
-    surface at exactly the cells the funding decision reads.
-    """
-    means = np.array([f.mean() for f in folds], dtype=float)
-    return RealisedParameters(
-        mu=float(means.mean()),
-        tau=float(means.std(ddof=1)) if len(means) > 1 else 0.0,
-        clamped_fraction=float((np.abs(means) > DISCORDANT_RATE).mean()),
-    )
-
-
 def simulate_study(
     fold_sizes: Sequence[int], mu: float, tau: float, discordant: float,
     rng: np.random.Generator,
-) -> list[NDArrayF]:
+) -> tuple[list[NDArrayF], DrawDiagnostics]:
     """Draw one study: one framework per entry in `fold_sizes`.
 
     Per-framework true deltas are Normal(mu, tau^2). Within a framework each
@@ -165,6 +166,8 @@ def simulate_study(
     the paired statistic actually depends on.
     """
     deltas = rng.normal(mu, tau, size=len(fold_sizes))
+    # Counted here, on the drawn delta, because here is where the clamp binds.
+    n_clamped = int((np.abs(deltas) > discordant).sum())
     folds: list[NDArrayF] = []
     for delta, n_items in zip(deltas, fold_sizes, strict=True):
         # p_win + p_loss = discordant, p_win - p_loss = delta.
@@ -172,7 +175,8 @@ def simulate_study(
         p_loss = (discordant - delta) / 2.0
         # A framework whose delta exceeds the discordant rate is infeasible;
         # clamp to the boundary rather than emitting negative probabilities.
-        # realised_parameters() reports how often this binds.
+        # DrawDiagnostics.clamped_fraction reports how often this binds,
+        # counted on the drawn delta above rather than on the fold mean.
         p_win = float(np.clip(p_win, 0.0, 1.0))
         p_loss = float(np.clip(p_loss, 0.0, 1.0 - p_win))
         draw = rng.random(n_items)
@@ -180,7 +184,13 @@ def simulate_study(
         item[draw < p_win] = 1.0
         item[(draw >= p_win) & (draw < p_win + p_loss)] = -1.0
         folds.append(item)
-    return folds
+    means = np.array([f.mean() for f in folds], dtype=float)
+    return folds, DrawDiagnostics(
+        drawn_mu=float(deltas.mean()),
+        drawn_tau=float(deltas.std(ddof=1)) if len(deltas) > 1 else 0.0,
+        clamped_fraction=n_clamped / len(deltas),
+        fold_mean_spread=float(means.std(ddof=1)) if len(means) > 1 else 0.0,
+    )
 
 
 def _pass_probability(
@@ -225,23 +235,25 @@ def cluster_bootstrap_pass(
 def power_at(
     fold_sizes: Sequence[int], mu: float, tau: float, n_studies: int,
     n_bootstrap: int, rng: np.random.Generator,
-) -> tuple[float, RealisedParameters]:
-    """Power, and the parameters the draws actually delivered."""
+) -> tuple[float, DrawDiagnostics]:
+    """Power, and what the draws actually delivered."""
     passes = 0
     mus: list[float] = []
     taus: list[float] = []
     clamped: list[float] = []
+    spreads: list[float] = []
     for _ in range(n_studies):
-        folds = simulate_study(fold_sizes, mu, tau, DISCORDANT_RATE, rng)
+        folds, diag = simulate_study(fold_sizes, mu, tau, DISCORDANT_RATE, rng)
         passes += cluster_bootstrap_pass(folds, n_bootstrap, rng)
-        realised = realised_parameters(folds)
-        mus.append(realised["mu"])
-        taus.append(realised["tau"])
-        clamped.append(realised["clamped_fraction"])
-    return passes / n_studies, RealisedParameters(
-        mu=float(np.mean(mus)),
-        tau=float(np.mean(taus)),
+        mus.append(diag["drawn_mu"])
+        taus.append(diag["drawn_tau"])
+        clamped.append(diag["clamped_fraction"])
+        spreads.append(diag["fold_mean_spread"])
+    return passes / n_studies, DrawDiagnostics(
+        drawn_mu=float(np.mean(mus)),
+        drawn_tau=float(np.mean(taus)),
         clamped_fraction=float(np.mean(clamped)),
+        fold_mean_spread=float(np.mean(spreads)),
     )
 
 
@@ -313,13 +325,14 @@ def main() -> int:
         for label, sizes in scenarios:
             row: list[float] = []
             for tau in TAU_GRID:
-                power, realised = power_at(
+                power, diag = power_at(
                     sizes, mu, tau, N_STUDIES, N_BOOTSTRAP, rng)
                 cells.append(PowerCell(
                     mu=mu, tau=tau, k=len(sizes), n_items=sum(sizes),
-                    power=power, realised_mu=realised["mu"],
-                    realised_tau=realised["tau"],
-                    clamped_fraction=realised["clamped_fraction"],
+                    power=power, drawn_mu=diag["drawn_mu"],
+                    drawn_tau=diag["drawn_tau"],
+                    clamped_fraction=diag["clamped_fraction"],
+                    fold_mean_spread=diag["fold_mean_spread"],
                 ))
                 row.append(power)
             line = "  {:<28}".format(label) + "".join(
@@ -328,14 +341,19 @@ def main() -> int:
         logger.info("")
 
     # The axes are only honest if the draws delivered what the labels claim.
-    logger.info("REALISED vs REQUESTED (the clamp shrinks both at high tau)")
-    logger.info("  %-10s %-10s %-12s %-12s %s",
-                "req mu", "req tau", "got mu", "got tau", "clamped")
+    logger.info("DRAWN vs REQUESTED, and the observed fold-mean spread")
+    logger.info("  fold_mean_spread is NOT tau: it is sqrt(tau^2 + within-fold")
+    logger.info("  noise), and at n=2/n=4 the noise term dominates. That is why")
+    logger.info("  tau cannot be estimated from five folds.")
+    logger.info("  %-9s %-9s %-11s %-11s %-9s %s",
+                "req mu", "req tau", "drawn mu", "drawn tau", "clamped",
+                "fold spread")
     for cell in cells:
-        if cell["clamped_fraction"] > 0.05 and cell["k"] == 5:
-            logger.info("  %-10.3f %-10.2f %-12.4f %-12.4f %.0f%%",
-                        cell["mu"], cell["tau"], cell["realised_mu"],
-                        cell["realised_tau"], 100 * cell["clamped_fraction"])
+        if cell["k"] == 5 and cell["tau"] in (0.00, 0.20, 0.37):
+            logger.info("  %-9.3f %-9.2f %-11.4f %-11.4f %-9.0f%% %.4f",
+                        cell["mu"], cell["tau"], cell["drawn_mu"],
+                        cell["drawn_tau"], 100 * cell["clamped_fraction"],
+                        cell["fold_mean_spread"])
 
     if args.out:
         _atomic_write_json(args.out, {
