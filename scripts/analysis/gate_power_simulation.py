@@ -149,6 +149,14 @@ def pooled_delta(folds: list[NDArrayF]) -> float:
     The gate reports `np.concatenate(folds).mean()`. A mean over per-fold means
     is a different statistic: on the real primary micro is +0.1000 and macro is
     +0.2701, either side of a 0.10 threshold.
+
+    This is the REFERENCE definition. `_pass_probability` carries a vectorised
+    sums/counts form of the same statistic, because materialising the
+    concatenation once per bootstrap replicate is ~800x slower. The two are
+    related only by that claim, so
+    `TestTheLiveEstimatorIsTheDocumentedOne` pins them together -- mutating the
+    fast path to a macro average previously left the entire suite green while
+    moving power by 20.5pp at mu=0.25.
     """
     return float(np.concatenate(folds).mean())
 
@@ -207,6 +215,23 @@ def _pass_probability(
     Fold sizes may differ, so the denominator is accumulated per draw rather
     than assumed constant -- that is what keeps this a micro average.
     """
+    # Refuse degenerate input rather than dividing by zero. Without this,
+    # sums/counts is nan, `nan <= threshold` is False, P(delta <= 0.10) reads
+    # 0.0, and `0.0 < GATE_ALPHA` returns a PASS -- the gate passing on no data.
+    # In a project whose record is three withdrawn passes, a silent PASS is the
+    # worst direction available.
+    if not folds:
+        raise ValueError(
+            "Refusing to evaluate the gate with no folds. A pass computed here "
+            "would be a division by zero read as P(delta <= threshold) = 0."
+        )
+    empty = [i for i, f in enumerate(folds) if len(f) == 0]
+    if empty:
+        raise ValueError(
+            f"Folds {empty} are empty. A fold with no items contributes no "
+            "denominator, so any draw selecting only such folds is a nan."
+        )
+
     k = len(folds)
     sums = np.zeros(n_bootstrap, dtype=float)
     counts = np.zeros(n_bootstrap, dtype=float)

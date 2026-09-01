@@ -110,7 +110,10 @@ class TestCalibration:
             [68] * 9, GATE_THRESHOLD, 0.05,
             n_studies=200, n_bootstrap=400, rng=np.random.default_rng(11),
         )
-        assert power < 3 * GATE_ALPHA, (
+        # A literal, not 3 * GATE_ALPHA. The relative form scales with the
+        # constant it is meant to validate, so inflating GATE_ALPHA tenfold
+        # passed this test unchanged.
+        assert power < 0.15, (
             f"gate fired at {power:.1%} when the true effect sits exactly on "
             f"the {GATE_THRESHOLD} threshold; the rule is anti-conservative"
         )
@@ -259,3 +262,67 @@ class TestDiagnosticsMeasureTheDrawNotTheOutcome:
         _, diag = simulate_study(OBSERVED_FOLD_SIZES, 0.10, 0.0,
                                  DISCORDANT_RATE, np.random.default_rng(0))
         assert diag["fold_mean_spread"] > diag["drawn_tau"]
+
+
+class TestTheGateRefusesDegenerateInput:
+    """`_pass_probability([])` returned 0.0 and the gate read that as a PASS.
+
+    `sums / counts` divides by zero, `nan <= threshold` is False, so
+    P(delta <= 0.10) reads 0.0 and `0.0 < GATE_ALPHA` is True. The gate passed
+    on no data at all. In a project whose history is three withdrawn passes, a
+    silent PASS is the worst available failure direction.
+
+    The sibling module already had this guard
+    (test_audit_mechanism_probe.py::test_empty_stratum_raises_rather_than_returning_nan).
+    """
+
+    def test_no_folds_raises_rather_than_passing(self) -> None:
+        from scripts.analysis.gate_power_simulation import _pass_probability
+        with pytest.raises(ValueError, match="no folds"):
+            _pass_probability([], 100, np.random.default_rng(0))
+
+    def test_an_empty_fold_raises(self) -> None:
+        from scripts.analysis.gate_power_simulation import _pass_probability
+        with pytest.raises(ValueError, match="empty"):
+            _pass_probability([np.ones(10), np.array([])], 100,
+                              np.random.default_rng(0))
+
+    def test_cluster_bootstrap_pass_does_not_pass_on_nothing(self) -> None:
+        with pytest.raises(ValueError):
+            cluster_bootstrap_pass([], 100, np.random.default_rng(0))
+
+
+class TestTheLiveEstimatorIsTheDocumentedOne:
+    """`pooled_delta` is named in the module docstring as "the estimator", but
+    nothing called it -- `_pass_probability` has its own vectorised
+    sums/counts reimplementation, and mutating THAT to a macro average left the
+    whole suite green while moving power by 20.5pp at mu=0.25.
+
+    The reference definition and the fast path are only related by prose, and
+    the macro/micro confusion this module exists to fix was itself an unasserted
+    prose invariant.
+    """
+
+    def test_the_fast_path_equals_the_reference_definition(self) -> None:
+        from scripts.analysis.gate_power_simulation import (_pass_probability,
+                                                            pooled_delta)
+        # Degenerate item bootstrap: with resample_frameworks=False and folds
+        # that are internally constant, every draw reproduces the folds exactly,
+        # so the fast path must return the reference statistic's own verdict.
+        folds = [np.ones(63), np.zeros(30), np.zeros(11), np.zeros(4),
+                 np.zeros(2)]
+        micro = pooled_delta(folds)
+        assert micro == pytest.approx(63 / 110)
+        # Every draw yields the same micro value, so P(<= threshold) is 0 or 1.
+        p = _pass_probability(folds, 200, np.random.default_rng(0),
+                              resample_frameworks=False)
+        assert p == pytest.approx(0.0 if micro > GATE_THRESHOLD else 1.0)
+
+    def test_a_big_fold_dominates_the_fast_path_too(self) -> None:
+        from scripts.analysis.gate_power_simulation import _pass_probability
+        # 63 zeros and 2 ones: micro = 2/65 = 0.031, below the gate. A macro
+        # average over the two folds would be 0.5 and above it.
+        folds = [np.zeros(63), np.ones(2)]
+        p = _pass_probability(folds, 400, np.random.default_rng(0),
+                              resample_frameworks=False)
+        assert p > 0.9, "the fast path is not item-weighted"

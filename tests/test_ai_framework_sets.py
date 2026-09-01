@@ -31,6 +31,30 @@ def _roster_ids() -> set[str]:
     return {AI_FRAMEWORK_ID_MAP[name] for name in AI_FRAMEWORK_NAMES}
 
 
+# The guard bodies, as functions, so the "would this catch a desync" tests can
+# run the SAME code against perturbed constants instead of asserting set
+# algebra about them. The previous version of that class asserted
+# `x not in (S - {x})`, which is true for every S including the empty set.
+def _ai_names() -> frozenset[str]:
+    from scripts.phase0.common import AI_FRAMEWORK_NAMES
+    return frozenset(AI_FRAMEWORK_NAMES)
+
+
+def containment_violations(roster: set[str], bridge: frozenset[str]) -> set[str]:
+    """Roster frameworks that bridge classification would call traditional."""
+    return roster - set(bridge)
+
+
+def missing_ai_security_ids(bridge: frozenset[str]) -> set[str]:
+    """The three non-rotating AI frameworks, if absent from bridge ids."""
+    return {f for f in ("enisa", "etsi", "biml") if f not in bridge}
+
+
+def packet_leaks(roster: set[str], excluded: frozenset[str]) -> set[str]:
+    """Roster frameworks that would illustrate hubs in the annotator sheet."""
+    return roster - set(excluded)
+
+
 class TestTheDefinitionsAgree:
 
     def test_the_tiering_copy_matches_the_roster(self) -> None:
@@ -60,7 +84,8 @@ class TestTheDefinitionsAgree:
 
     def test_every_roster_framework_counts_as_ai_for_bridging(self) -> None:
         from tract.config import BRIDGE_AI_FRAMEWORK_IDS
-        stragglers = _roster_ids() - BRIDGE_AI_FRAMEWORK_IDS
+        stragglers = containment_violations(
+            _roster_ids(), BRIDGE_AI_FRAMEWORK_IDS)
         assert not stragglers, (
             f"{stragglers} are AI frameworks for the LOFO roster but count as "
             "TRADITIONAL for bridge classification. That asymmetry is what put "
@@ -84,7 +109,8 @@ class TestTheDefinitionsAgree:
             EXCLUDED_ILLUSTRATION_FRAMEWORKS,
         )
         from scripts.phase0.common import AI_FRAMEWORK_NAMES
-        leaked = set(AI_FRAMEWORK_NAMES) - set(EXCLUDED_ILLUSTRATION_FRAMEWORKS)
+        leaked = packet_leaks(
+            set(AI_FRAMEWORK_NAMES), EXCLUDED_ILLUSTRATION_FRAMEWORKS)
         assert not leaked, (
             f"{leaked} would illustrate hubs in the annotator's reference "
             "sheet. That sheet is the answer key for the framework under test."
@@ -92,32 +118,55 @@ class TestTheDefinitionsAgree:
 
 
 class TestTheGuardCatchesADesync:
-    """A guard that has never failed may simply be unable to fail."""
+    """A guard that has never failed may simply be unable to fail.
 
-    def test_identity_comparison_catches_a_dropped_framework(self) -> None:
-        from scripts.phase0.common import AI_FRAMEWORK_NAMES as roster
-        desynced = frozenset(set(roster) - {"MITRE ATLAS"})
-        assert roster != desynced
+    The first version of this class could not fail either. Two of its three
+    tests asserted set algebra -- `x not in (S - {x})` holds for every S,
+    including the empty set and total garbage -- and the third was an INVERTED
+    TRIPWIRE: it asserted `({"UK DSIT"} | E) - E == {"UK DSIT"}`, which breaks
+    the moment somebody correctly adds UK DSIT to the exclusion set. An
+    engineer performing the remediation the test's own comment prescribes would
+    have seen a red test named "catches a new roster framework" and reverted
+    the fix, leaking the answer key for the framework under test.
 
-    def test_containment_comparison_catches_a_missing_bridge_id(self) -> None:
+    These run the actual guard bodies against deliberately desynced constants.
+    """
+
+    def test_containment_guard_fires_on_the_real_2026_08_defect(self) -> None:
         from tract.config import BRIDGE_AI_FRAMEWORK_IDS
-        # Reproduce the exact defect: drop the three non-rotating frameworks
-        # and confirm the containment check would have flagged it.
-        as_shipped_before_the_fix = frozenset(
-            BRIDGE_AI_FRAMEWORK_IDS - {"enisa", "etsi", "biml"})
-        for framework_id in ("enisa", "etsi", "biml"):
-            assert framework_id not in as_shipped_before_the_fix
+        as_shipped = frozenset(BRIDGE_AI_FRAMEWORK_IDS - {"enisa", "etsi", "biml"})
+        # The containment check alone did NOT catch it -- the roster's five were
+        # a subset of the old five. This records which guard actually fires.
+        assert containment_violations(_roster_ids(), as_shipped) == set()
+        assert missing_ai_security_ids(as_shipped) == {"enisa", "etsi", "biml"}
 
-    def test_packet_exclusion_check_catches_a_new_roster_framework(self) -> None:
+    def test_containment_guard_fires_when_a_roster_id_is_dropped(self) -> None:
+        from tract.config import BRIDGE_AI_FRAMEWORK_IDS
+        crippled = frozenset(BRIDGE_AI_FRAMEWORK_IDS - {"mitre_atlas"})
+        assert containment_violations(_roster_ids(), crippled) == {"mitre_atlas"}
+
+    def test_containment_guard_fires_on_an_empty_bridge_set(self) -> None:
+        assert containment_violations(_roster_ids(), frozenset()) == _roster_ids()
+
+    def test_packet_guard_fires_on_an_unexcluded_roster_framework(self) -> None:
         from scripts.build_curation_packet import (
             EXCLUDED_ILLUSTRATION_FRAMEWORKS,
         )
-        # The realistic future failure: a framework is added to the roster and
-        # not to the packet exclusion, so its own links illustrate the hubs it
-        # is being tested on. CAMPAIGN3 §6.5 already approves UK DSIT.
-        hypothetical_roster = {"UK DSIT"} | set(EXCLUDED_ILLUSTRATION_FRAMEWORKS)
-        leaked = hypothetical_roster - set(EXCLUDED_ILLUSTRATION_FRAMEWORKS)
-        assert leaked == {"UK DSIT"}
+        # A framework joins the LOFO roster and nobody adds it to the packet
+        # exclusion. CAMPAIGN3 §6.5 already approves UK DSIT.
+        roster = set(_ai_names()) | {"UK DSIT"}
+        assert packet_leaks(roster, EXCLUDED_ILLUSTRATION_FRAMEWORKS) == {
+            "UK DSIT"}
+
+    def test_packet_guard_goes_quiet_once_the_fix_is_applied(self) -> None:
+        # The property the previous version got backwards: applying the
+        # remediation must SILENCE the guard, not trip it.
+        from scripts.build_curation_packet import (
+            EXCLUDED_ILLUSTRATION_FRAMEWORKS,
+        )
+        roster = set(_ai_names()) | {"UK DSIT"}
+        fixed = frozenset(set(EXCLUDED_ILLUSTRATION_FRAMEWORKS) | {"UK DSIT"})
+        assert packet_leaks(roster, fixed) == set()
 
 
 class TestNamesAndIdsRoundTrip:
