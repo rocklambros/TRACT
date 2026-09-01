@@ -46,12 +46,17 @@ def _contrast(
     )
 
 
-# The real contrast from docs/campaign3-audit-mechanism.md §6b, to two more
-# places than the prose quotes. Any rule adopted for CAMPAIGN3 §1.2 must refuse
-# this one -- that is the whole selection criterion.
+# The real contrast from docs/campaign3-audit-mechanism.md §6b. Any rule adopted
+# for CAMPAIGN3 §1.2 must refuse this one -- that is the whole selection
+# criterion.
+#
+# ci_b's upper bound is 0.4324, the 500,000-draw reference. It was pinned here
+# as 0.4595 under a comment claiming it came from §6b; it did not. That value
+# was an artifact of make_contrast sharing one generator across both strata, and
+# pinning it made the test assert the defect.
 WORKED_EXAMPLE: Contrast = _contrast(
     delta_a=0.1000, delta_b=0.2703,
-    ci_a=(0.0000, 0.2000), ci_b=(0.1081, 0.4595),
+    ci_a=(0.0000, 0.2000), ci_b=(0.1081, 0.4324),
     diff=0.1703, diff_ci=(-0.0283, 0.3693),
     zs_a=0.5273, zs_b=0.1892,
     baseline_diff=-0.3381, baseline_diff_ci=(-0.4900, -0.1800),
@@ -169,3 +174,62 @@ class TestBootstrapHelpers:
         first = bootstrap_deltas(rows, 200, np.random.default_rng(7))
         second = bootstrap_deltas(rows, 200, np.random.default_rng(7))
         np.testing.assert_array_equal(first, second)
+
+
+class TestContrastIsOrderIndependent:
+    """`make_contrast` threaded one generator through both strata's bootstraps.
+
+    The second stratum drew from wherever the first left the stream, so the
+    reported interval depended on argument order. On the real audit contrast the
+    shipped order printed [+0.1081, +0.4595] while a 500,000-draw reference
+    gives +0.4324 -- the value docs/campaign3-audit-mechanism.md,
+    results/phase1b/CAMPAIGN3.md and this module's own docstring all state.
+
+    These use the real contrast rather than a synthetic one on purpose. A
+    synthetic stratum coarse enough to write by hand has stable percentiles and
+    hides the defect; it only bites where a percentile sits on a discrete jump,
+    which is exactly where the published bound sits
+    (P(delta >= 17/37) = 0.0226 against a 0.025 cut).
+    """
+
+    # The 97.5th percentile of the touched stratum, from 500,000 draws.
+    TOUCHED_CI_HIGH = 0.43243243243243246
+
+    @pytest.fixture
+    def strata(self):
+        from scripts.analysis.audit_mechanism_probe import build_rows
+        from tract.config import PHASE1B_RESULTS_DIR
+        run = PHASE1B_RESULTS_DIR / "c3_TEST_A3_prose_sw_qwen06b_seq1024"
+        if not (run / "fold_MITRE_ATLAS" / "fold_result.json").is_file():
+            pytest.skip("C3TEST fold results not present")
+        rows = build_rows(run)
+        return ([r for r in rows if not r["audit_touched"]],
+                [r for r in rows if r["audit_touched"]])
+
+    def test_intervals_do_not_depend_on_argument_order(self, strata) -> None:
+        from scripts.analysis.gate_rule_candidates import make_contrast
+        untouched, touched = strata
+        fwd = make_contrast(untouched, touched, 10000, np.random.default_rng(42))
+        rev = make_contrast(touched, untouched, 10000, np.random.default_rng(42))
+        assert fwd["ci_b"] == pytest.approx(rev["ci_a"], abs=1e-12)
+        assert fwd["ci_a"] == pytest.approx(rev["ci_b"], abs=1e-12)
+
+    def test_the_touched_upper_bound_is_the_published_one(self, strata) -> None:
+        from scripts.analysis.gate_rule_candidates import make_contrast
+        untouched, touched = strata
+        c = make_contrast(untouched, touched, 10000, np.random.default_rng(42))
+        assert c["ci_b"][1] == pytest.approx(self.TOUCHED_CI_HIGH, abs=1e-12), (
+            "the touched stratum's upper bound must be the 500k reference "
+            "value that every document states, not a stream artifact"
+        )
+
+    def test_an_upstream_draw_does_not_move_the_interval(self, strata) -> None:
+        from scripts.analysis.gate_rule_candidates import (bootstrap_deltas,
+                                                           make_contrast)
+        untouched, touched = strata
+        clean = make_contrast(untouched, touched, 10000,
+                              np.random.default_rng(42))
+        rng = np.random.default_rng(42)
+        bootstrap_deltas(untouched, 10000, rng)   # an unrelated upstream draw
+        after = make_contrast(untouched, touched, 10000, rng)
+        assert clean["ci_b"] == pytest.approx(after["ci_b"], abs=1e-12)

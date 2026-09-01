@@ -35,6 +35,7 @@ Read-only. Loads no model, provisions nothing. Deterministic: fixed seed.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import logging
 from collections import defaultdict
 from pathlib import Path
@@ -53,7 +54,16 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_RUN: Final[str] = "c3_TEST_A3_prose_sw_qwen06b_seq1024"
 
-N_RESAMPLES: Final[int] = 10_000
+# 100,000 rather than 10,000. The touched stratum's 97.5th percentile sits on a
+# discrete jump -- P(delta >= 17/37) = 0.0226 against a 0.025 cut -- so a
+# 10,000-draw estimate lands on the reference value for only 11 of 12 seeds, and
+# the shipped seed was one of the unlucky ones. Measured: 12 of 12 at 100,000.
+N_RESAMPLES: Final[int] = 100_000
+
+# Used only when a caller passes a generator whose SeedSequence carries no
+# integer entropy, which the stdlib allows. Never reached by this module's own
+# entry point.
+BOOTSTRAP_SEED_FALLBACK: Final[int] = 42
 # The null simulation runs a full bootstrap per replicate, so it uses a smaller
 # resample count. 2,000 is enough to place a permit/refuse boundary that is
 # never near the decision threshold for any candidate here.
@@ -155,6 +165,32 @@ def bootstrap_baselines(
     return acc / total
 
 
+def _stratum_rng(
+    rows: list[ProbeRow], parent: np.random.Generator, tag: int,
+) -> np.random.Generator:
+    """A generator determined by the stratum's contents, not by call order.
+
+    A stratum's interval should be a property of that stratum. Deriving the
+    stream from a hash of the rows makes it one: the same stratum draws the same
+    numbers whether it is passed first or second, and whatever was drawn before.
+    `tag` separates the delta stream from the baseline stream for one stratum.
+    """
+    payload = "|".join(
+        f"{r['fold_dir']}\x1f{r['section']}\x1f"
+        f"{r['trained_hit1']}\x1f{r['zero_shot_hit1']}"
+        for r in rows
+    )
+    digest = hashlib.sha256(payload.encode("utf-8")).digest()[:16]
+    # getattr rather than attribute access: numpy types seed_seq as the
+    # ISeedSequence protocol, which does not declare `entropy` even though
+    # SeedSequence carries it. The isinstance guard below is what makes the
+    # dynamic read safe, and it also covers a caller who built the generator
+    # from a bare BitGenerator.
+    entropy = getattr(parent.bit_generator.seed_seq, "entropy", None)
+    base = entropy if isinstance(entropy, int) else BOOTSTRAP_SEED_FALLBACK
+    return np.random.default_rng([base, int.from_bytes(digest, "big"), tag])
+
+
 def observed_delta(rows: list[ProbeRow]) -> float:
     return float(np.mean([r["trained_hit1"] - r["zero_shot_hit1"] for r in rows]))
 
@@ -168,11 +204,17 @@ def make_contrast(
     rng: np.random.Generator,
 ) -> Contrast:
     """Build the contrast a pooling rule sees. `a` is Tier-1, `b` is Tier-2."""
-    res_a = bootstrap_deltas(a, n_resamples, rng)
-    res_b = bootstrap_deltas(b, n_resamples, rng)
+    # Four independent streams, each determined by ITS OWN stratum's contents.
+    # Previously one generator was threaded through all four draws, so the
+    # second stratum started wherever the first stopped: the reported interval
+    # moved with argument order and with any unrelated upstream draw. On the
+    # real audit contrast that printed +0.4595 where the reference value is
+    # +0.4324, and the wrong one reached a test and three documents.
+    res_a = bootstrap_deltas(a, n_resamples, _stratum_rng(a, rng, 0))
+    res_b = bootstrap_deltas(b, n_resamples, _stratum_rng(b, rng, 0))
     diff = res_b - res_a
-    base_a = bootstrap_baselines(a, n_resamples, rng)
-    base_b = bootstrap_baselines(b, n_resamples, rng)
+    base_a = bootstrap_baselines(a, n_resamples, _stratum_rng(a, rng, 1))
+    base_b = bootstrap_baselines(b, n_resamples, _stratum_rng(b, rng, 1))
     base_diff = base_b - base_a
     # Two-sided: how much of the resampled baseline difference sits on the far
     # side of zero from the observed one.
@@ -455,8 +497,10 @@ def main() -> int:
     logger.info("PER-FRAMEWORK DELTAS on the audit-untouched stratum")
     logger.info("  (curation targets share NO framework with these folds, so a "
                 "curated")
-    logger.info("   Tier-2 is 100%% composition-shifted from Tier-1 by "
-                "construction)")
+    # Logged with an explicit %s: a bare "100%%" is only unescaped when the
+    # call has arguments, so with none it prints the doubled sign verbatim.
+    logger.info("%s", "   Tier-2 is 100% composition-shifted from Tier-1 by "
+                      "construction)")
     comp_rng = np.random.default_rng(SEED)
     per_fw = per_framework_deltas(tier1, N_RESAMPLES, comp_rng)
     for fold, (n, zs, delta, ci) in per_fw.items():
