@@ -148,3 +148,66 @@ class TestAtomicWrite:
             _atomic_write_json(target, {"bad": {1, 2, 3}})  # sets are not JSON
         assert json.loads(target.read_text(encoding="utf-8")) == {"good": 1}
         assert [p.name for p in tmp_path.iterdir()] == ["report.json"]
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+AUDIT_LOG = PROJECT_ROOT / "data" / "training" / "audit_corrections_log.json"
+
+
+@pytest.mark.skipif(not AUDIT_LOG.is_file(), reason="audit log absent")
+class TestEveryAuditDecisionIsAccountedFor:
+    """The audit made 65 decisions; the stratification read 56 of them.
+
+    `audit_corrections_log.json` carries three lists -- `corrections` (56),
+    `exclusions` (1) and `kept_weak` (8). Both probes keyed "audit_touched" off
+    `corrections` alone, so:
+
+    * the one EXCLUSION is invisible. It deleted an OWASP AI Exchange link
+      (`547-824`, verdict `wrong`), removing an item from that fold's
+      denominator. `docs/campaign3-audit-mechanism.md` §5 said "the audit never
+      touched OWASP AI Exchange at all" and built a robustness argument on it.
+    * the 8 KEPT-WEAK links were inspected and affirmed by the same auditor, yet
+      sit inside the Tier-1 "untouched" primary.
+
+    A future audit that excludes 20 links instead of 1 would leave the
+    stratification silently unchanged. These pin the reconciliation.
+    """
+
+    def _log(self) -> dict:
+        return json.loads(AUDIT_LOG.read_text(encoding="utf-8"))
+
+    def test_the_log_carries_three_decision_lists(self) -> None:
+        log = self._log()
+        for key in ("corrections", "exclusions", "kept_weak"):
+            assert key in log, f"{key} missing from the audit log"
+
+    def test_all_sixty_five_decisions_reconcile(self) -> None:
+        log = self._log()
+        assert len(log["corrections"]) == log["corrections_applied"] == 56
+        assert len(log["exclusions"]) == log["links_excluded"] == 1
+        assert len(log["kept_weak"]) == log["weak_kept_as_is"] == 8
+        total = (len(log["corrections"]) + len(log["exclusions"])
+                 + len(log["kept_weak"]))
+        assert total == 65
+
+    def test_the_exclusion_is_an_owasp_ai_exchange_link(self) -> None:
+        # The specific fact that makes the §5 claim false.
+        excluded = self._log()["exclusions"]
+        assert any(e["framework_id"] == "owasp_ai_exchange" for e in excluded)
+
+    def test_link_counts_reconcile_with_the_exclusion(self) -> None:
+        log = self._log()
+        assert (log["ai_links_original"] - log["ai_links_curated"]
+                == log["links_excluded"])
+
+    def test_load_audit_index_refuses_a_log_that_does_not_reconcile(
+        self, tmp_path, monkeypatch,
+    ) -> None:
+        import scripts.analysis.audit_mechanism_probe as probe
+        broken = dict(self._log())
+        broken["links_excluded"] = 99          # disagrees with len(exclusions)
+        path = tmp_path / "audit.json"
+        path.write_text(json.dumps(broken), encoding="utf-8")
+        monkeypatch.setattr(probe, "AUDIT_LOG_PATH", path)
+        with pytest.raises(ValueError, match="does not reconcile"):
+            probe.load_audit_index()

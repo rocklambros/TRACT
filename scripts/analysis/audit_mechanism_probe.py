@@ -191,11 +191,30 @@ def load_audit_index() -> dict[tuple[str, str], AuditEntry]:
         )
     log = json.loads(AUDIT_LOG_PATH.read_text(encoding="utf-8"))
     corrections = log["corrections"]
-    if len(corrections) != log["corrections_applied"]:
+
+    # The audit made 65 decisions across three lists, and this index is built
+    # from one of them. Reconciling all three is what stops the next audit
+    # changing the corpus in a way the stratification cannot see: an EXCLUSION
+    # deletes an eval item outright (the one on record removed an OWASP AI
+    # Exchange link) and a KEPT-WEAK link was inspected and affirmed, yet both
+    # look identical to "untouched" downstream.
+    #
+    # Only `corrections` feeds the touched set -- exclusions have no item left
+    # to mark and kept-weak links were not relabelled -- but a log whose counts
+    # disagree with its own lists is not one to stratify against.
+    checks = (
+        ("corrections", len(corrections), log["corrections_applied"]),
+        ("exclusions", len(log["exclusions"]), log["links_excluded"]),
+        ("kept_weak", len(log["kept_weak"]), log["weak_kept_as_is"]),
+    )
+    mismatched = [
+        f"{name}: {actual} records against {declared} declared"
+        for name, actual, declared in checks if actual != declared
+    ]
+    if mismatched:
         raise ValueError(
-            f"audit log says corrections_applied={log['corrections_applied']} "
-            f"but carries {len(corrections)} records. Refusing to probe a log "
-            "that disagrees with itself."
+            "audit log does not reconcile -- " + "; ".join(mismatched)
+            + ". Refusing to probe a log that disagrees with itself."
         )
     degree = Counter(link.cre_id for link in load_curated_links())
     index: dict[tuple[str, str], AuditEntry] = defaultdict(

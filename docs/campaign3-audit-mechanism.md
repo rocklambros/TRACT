@@ -173,7 +173,26 @@ representative sample of the test corpus:
 | OWASP Top10 for LLM | 2 | 1.8% |
 
 One framework supplies **57.3%** of the gate's denominator and **zero** touched
-items — the audit never touched OWASP AI Exchange at all. It is also the easiest
+items — the audit applied no *correction* to OWASP AI Exchange.
+
+> **CORRECTED.** An earlier version of this sentence read "the audit never
+> touched OWASP AI Exchange at all." That is false. The audit's `exclusions`
+> list deletes one OWASP AI Exchange link (`547-824`, "AI model bias testing",
+> verdict `wrong`, on the grounds that no suitable CRE hub exists for AI bias
+> testing). It removed an item from that fold's denominator rather than
+> relabelling one, which is why the corrections-only stratification cannot see
+> it. The log records 65 decisions in three lists — 56 corrections, 1 exclusion,
+> 8 kept-weak — and `audit_touched` was built from the first list alone. Five
+> kept-weak items therefore sit inside the Tier-1 "untouched" primary despite
+> having been inspected and affirmed by the same auditor.
+>
+> The magnitude is one item, so §4's fold-matched robustness check stands. The
+> definition gap does not: a future audit that excluded twenty links would leave
+> this stratification unchanged. `load_audit_index` now reconciles all three
+> lists and refuses a log that disagrees with itself
+> (`tests/test_audit_mechanism_probe.py::TestEveryAuditDecisionIsAccountedFor`).
+
+OWASP AI Exchange is also the easiest
 fold (zero-shot 0.6190 against 0.4043 across the folds the audit did touch).
 Stripping it drops the untouched delta from +0.1000 to +0.0851 and widens the
 interval through zero.
