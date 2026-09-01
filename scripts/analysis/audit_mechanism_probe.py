@@ -58,6 +58,7 @@ import logging
 import os
 import tempfile
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from pathlib import Path
 from typing import Final, TypedDict
 
@@ -120,6 +121,14 @@ class ProbeRow(TypedDict):
     # None for untouched items.
     verdict: str | None
     degree_change: float | None
+
+
+# The two gold-degree definitions H1 is measured under. They differ on 5 of 147
+# items and the test agrees under both, which is the point of carrying both.
+DEGREE_ACCESSORS: Final[tuple[tuple[str, Callable[["ProbeRow"], int]], ...]] = (
+    ("gold_degree_max", lambda row: row["gold_degree_max"]),
+    ("gold_degree_primary", lambda row: row["gold_degree_primary"]),
+)
 
 
 class DeltaStat(TypedDict):
@@ -365,10 +374,15 @@ def main() -> int:
     logger.info("")
     logger.info("H1  degree predicts delta generally (measured on UNTOUCHED only)")
     h1: dict[str, object] = {}
-    for key in ("gold_degree_max", "gold_degree_primary"):
-        median = float(np.median([r[key] for r in untouched]))  # type: ignore[literal-required]
-        high = [r for r in untouched if r[key] > median]  # type: ignore[literal-required]
-        low = [r for r in untouched if r[key] <= median]  # type: ignore[literal-required]
+    # Accessor functions rather than a variable TypedDict key. Indexing a
+    # TypedDict with a loop variable needs a literal-required ignore, and
+    # whether that ignore is *itself* an error depends on the mypy version --
+    # 1.11 requires it, 2.2 rejects it as unused. A lambda is version-agnostic
+    # and drops the suppression entirely.
+    for key, degree_of in DEGREE_ACCESSORS:
+        median = float(np.median([degree_of(r) for r in untouched]))
+        high = [r for r in untouched if degree_of(r) > median]
+        low = [r for r in untouched if degree_of(r) <= median]
         # Scored ONCE and reused. Calling score() twice on the same stratum
         # would advance the shared generator and log an interval that differs
         # from the one written to the report.

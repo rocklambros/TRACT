@@ -307,12 +307,27 @@ def inject_baseline_shift(
     chosen = set(rng.choice(np.array(hits), size=n_flip, replace=False).tolist())
     out: list[ProbeRow] = []
     for i, row in enumerate(rows):
-        if i in chosen:
-            flipped = dict(row)
-            flipped["zero_shot_hit1"] = 0
-            out.append(ProbeRow(**flipped))  # type: ignore[typeddict-item]
-        else:
+        if i not in chosen:
             out.append(row)
+            continue
+        # Constructed field by field rather than ProbeRow(**dict(row)). The
+        # unpacking form needs a typeddict-item suppression, and whether that
+        # suppression is itself an error depends on the mypy version -- 1.11
+        # requires it, 2.2 rejects it as unused. Explicit is version-agnostic,
+        # and it fails loudly if ProbeRow ever gains a field.
+        out.append(ProbeRow(
+            framework=row["framework"],
+            fold_dir=row["fold_dir"],
+            section=row["section"],
+            trained_hit1=row["trained_hit1"],
+            zero_shot_hit1=0,
+            audit_touched=row["audit_touched"],
+            gold_degree_max=row["gold_degree_max"],
+            gold_degree_primary=row["gold_degree_primary"],
+            n_valid_hubs=row["n_valid_hubs"],
+            verdict=row["verdict"],
+            degree_change=row["degree_change"],
+        ))
     return out
 
 
