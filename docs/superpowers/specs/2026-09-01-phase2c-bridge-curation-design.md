@@ -76,9 +76,15 @@ baseline                          eval corpus = 147 items, degree(342-641) = 6
 Consequences, and they are the reason this design was chosen over the
 alternatives considered in `docs/campaign3-premortem-round1.md`:
 
-- **No test-split draw is spent.** The 147 items are byte-identical. The roster
-  rotation would have spent draws three and four on a split Amendment 1 §1.5
-  already called near-exhausted.
+- **The eval corpus does not change.** The 147 items are byte-identical, so no
+  composition shift and no re-derivation of what the denominator contains.
+
+  **CORRECTED: this is not the same as spending no draw.** An earlier version of
+  this line claimed it was. `results/phase1b/CAMPAIGN3.md` Amendment 1 §1.5
+  defines the cost by *scoring*, not by changing: *"The 147 AI items have now
+  been scored twice by the same recipe family. A third run would be much harder
+  to justify."* Any gate that scores the split spends a draw whatever the items
+  are. D4 is now written so that Gate 2 does not touch the test split at all.
 - **No composition shift.** The denominator does not move, so the estimator does
   not have to price a change in eval-set makeup.
 - **Every prior run stays comparable.** Only the training corpus changes.
@@ -87,15 +93,34 @@ The cost is one retrain.
 
 ## 3. Design decisions
 
-### D1 — Purpose: product and evaluation, sequenced by eval weight
+### D1 — Purpose: product and evaluation. The sheet carries all 78 AI hubs.
 
-Both, with the evaluation benefit front-loaded so it can be measured before the
-rest is funded. Sequencing is by **eval weight**, not by gold/not-gold: 73 of 78
-AI hubs carry test gold, so that split narrows nothing, but weight is
-concentrated — the top 20 hubs carry 50% of eval-item slots and the top 40 carry
-76% (median 2 items per hub, max 7).
+**CORRECTED 2026-09-01 after premortem checkpoint 1. The original version of
+this decision was wrong twice.**
 
-**Stage 1 targets the top 20 AI hubs by eval weight.**
+It said *"Stage 1 targets the top 20 AI hubs by eval weight."* Two independent
+perspectives found the same fatal arithmetic: a link carries one `cre_id`, so a
+20-hub sheet can de-orphan at most 20 hubs, and Gate 1 (D4) requires **23**.
+A flawless annotator accepting every hub on the sheet would still fail the gate.
+The design terminated its own funding path, and the failure would have read as
+*"the domains are less connected than the product assumes"* — a substantive
+conclusion manufactured by a counting error.
+
+Worse, the ranking itself was a **selection rule derived from the held-out test
+split**: "eval weight" counts how often a hub appears as gold in the 147-item
+corpus that Gate 2 then scores. Choosing which hubs receive training supervision
+by counting test-set answers is the leakage shape that withdrew two previous
+campaigns, re-entering through the sampling frame rather than the corpus.
+
+> **The sheet carries all 78 AI hubs, unranked.** Cost is bounded by the 300
+> NIST 800-53 controls, not by the hub count — the annotator reads a control and
+> scans a hub list, so 78 rows grouped by branch costs little more than 20. No
+> hub is privileged, no test-set statistic informs the packet, and Gate 1's
+> ceiling becomes 78 rather than 20.
+
+Recorded because it was measured and is no longer used: 73 of 78 AI hubs carry
+test gold, the top 20 carry 50% of eval-item slots and the top 40 carry 76%
+(median 2, max 7). That concentration is why the ranking looked attractive.
 
 ### D2 — Task: framework-scoped sweep, NIST 800-53 first
 
@@ -140,18 +165,48 @@ Two gates, in order. **Both are declared here, before a single control has been
 read.**
 
 **Gate 1 — free, graph arithmetic, no model, no pods.**
-Strict-firewall orphan rate must fall from **78/78** to **≤ 55/78**. That is at
-least 23 AI hubs given real non-AI supervision — the top-20 target plus margin.
+Strict-firewall orphan rate must fall from **78/78** to **≤ 55/78**: at least 23
+AI hubs given real non-AI supervision. Reachable now that the sheet carries all
+78 hubs (D1); under the superseded 20-hub scope it was not.
 
-**Gate 2 — one retrain, ~$40.**
-Fires only if Gate 1 passes. Asks whether the model can *use* the supervision:
+Gate 1 counts hubs, so it is gameable by volume. Four quality conditions, all
+pre-registered here and all checkable by the importer without a model:
 
-- the strict all-AI firewall must leave a trainable task (train hit@1 > zero-shot
-  hit@1 on the held-out AI framework), and
-- τ must be estimable from something other than a two-item fold — specifically,
-  leave-one-fold-out on the τ estimator must not swing it by more than 0.15.
+- **≥ 40 distinct NIST 800-53 controls** contribute at least one accepted link.
+  Twenty-three links from one control is not a sweep.
+- **≤ 6 AI hubs per control.** A control that maps to a third of the AI region
+  is a judgement about the region, not the control.
+- **Confidence ≥ 2** on a 1–3 scale for a link to count toward Gate 1.
+- **≥ 15% of controls double-annotated**, with the agreement rate reported. Not
+  a threshold — a number that must exist and be published with the result.
+
+**Gate 2 — one retrain, ~$40, on the VALIDATION split.**
+
+**CORRECTED after premortem checkpoint 1.** The original Gate 2 had two defects.
+
+It required *"leave-one-fold-out on the τ estimator must not swing it by more
+than 0.15"* — a criterion **pre-registered to fail**. Bridge links add training
+supervision, not evaluation folds, so the fold sizes 63/30/11/4/2 are unchanged
+by construction, and `campaign3-audit-mechanism.md` §6e-corrected measures the
+LOFO swing at 0.3702 → 0.0000. This document says so itself, forty lines away.
+τ is not what Phase 2C changes, so it is not what Phase 2C is gated on.
+
+And it scored the **test** split, which spends a draw Amendment 1 §1.5 calls
+near-exhausted, while §2 claimed no draw was spent.
+
+> **Gate 2, restated.** Retrain under the **strict all-AI firewall** — every one
+> of the eight AI frameworks held out — and measure on the **validation** split
+> only. Pass if the trained arm beats its own paired zero-shot on the held-out
+> framework. That is the one question bridges can answer: before them the strict
+> firewall orphans 78/78 gold hubs and there is no trainable task at all.
 
 **Stage 2 funds only if both pass.**
+
+Explicitly **not** a gate, and not computed: whether the primary delta moves.
+The test split is not scored in Phase 2C at any point.
+
+**Not disclosed to annotators:** the numeric targets above. A population
+generating the data should not be told the quota it is generating against.
 
 Explicitly **not** a gate: whether the primary delta moves. Judging the round by
 the result it produced is the outcome-switching this project has done three
