@@ -81,8 +81,14 @@ def mine_hard_negatives(
 TIER_PRIORITY: dict[str, int] = {
     "T1": 0,
     "T1-AI": 1,
-    "T3": 2,
-    "AL": 3,
+    # Phase 2C bridge links. Human-authored, so ahead of T3; one annotator
+    # rather than independent OpenCRE curation, so behind T1 and T1-AI.
+    # Absent from this table a T2 link took the .get default of 99 and lost
+    # every dedup contest, including against automatically-linked records --
+    # the exact inversion the table exists to prevent.
+    "T2": 2,
+    "T3": 3,
+    "AL": 4,
 }
 
 

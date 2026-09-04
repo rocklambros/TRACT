@@ -580,6 +580,13 @@ PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70
 
+# Stamped into the `link_type` of every Phase 2C bridge link so that
+# assign_quality_tier returns T2 rather than falling through to T1. Held here
+# rather than in tract/bridge/ so tract/training/data_quality.py can read it
+# without importing the bridge package. Deliberately not "AutomaticallyLinkedTo",
+# which already denotes the deterministic CAPEC->CWE->CRE chain and tiers T3.
+BRIDGE_LINK_TYPE: Final[str] = "BridgeCurated"
+
 # results/phase1b/CAMPAIGN3.md Section 3, verbatim:
 #   PASS iff P(true delta <= 0.10) < 0.05.
 # Held here rather than inline because the alternative reading -- testing the

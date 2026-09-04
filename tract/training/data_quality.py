@@ -6,6 +6,8 @@ and computes data hash chain for provenance tracking.
 Quality tiers:
   T1     — Human LinkedTo with a resolved anchor (traditional frameworks)
   T1-AI  — Human-curated AI framework links
+  T2     — Phase 2C bridge links: human-authored, one annotator, no
+           model output shown. Not OpenCRE-curated.
   T3     — AutomaticallyLinkedTo with a resolved anchor
   DROPPED — No resolved anchor, or an anchor under the length floor
 
@@ -25,6 +27,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from tract.config import (
+    BRIDGE_LINK_TYPE,
     CONTESTED_RECOVERY_DEFAULT,
     CONTESTED_RECOVERY_FRAMEWORK_IDS,
     PHASE1B_MIN_ANCHOR_TEXT_LENGTH,
@@ -51,6 +54,10 @@ TRAINING_META_PATH: Final[Path] = TRAINING_DIR / "hub_links_training.meta.json"
 class QualityTier(enum.Enum):
     T1 = "T1"
     T1_AI = "T1-AI"
+    # Phase 2C bridge links: human-curated with no model output shown to the
+    # annotator. Weaker than T1, which asserts OpenCRE curated it independently
+    # of TRACT, and far stronger than T3.
+    T2 = "T2"
     T3 = "T3"
     AL = "AL"
     DROPPED = "DROPPED"
@@ -148,6 +155,15 @@ def assign_quality_tier(
 
     if len(resolved_text.strip()) < PHASE1B_MIN_ANCHOR_TEXT_LENGTH:
         return QualityTier.DROPPED
+
+    # Provenance is checked BEFORE framework identity, and the order matters.
+    # A bridge link names a traditional standard, so without this branch it
+    # falls through both tests below to T1 -- which asserts OpenCRE curated it
+    # independently of TRACT, when in fact a Phase 2C annotator authored it.
+    # Ahead of the AI check too: a bridge that happened to name an AI framework
+    # would otherwise be promoted to T1-AI and land in an AI gate denominator.
+    if link.get("link_type", "") == BRIDGE_LINK_TYPE:
+        return QualityTier.T2
 
     if link.get("standard_name", "") in AI_FRAMEWORK_NAMES:
         return QualityTier.T1_AI

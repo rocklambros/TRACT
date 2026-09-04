@@ -97,8 +97,9 @@ logger = logging.getLogger(__name__)
 _TIER_PRIORITY: Final[dict[str, int]] = {
     QualityTier.T1.value: 0,
     QualityTier.T1_AI.value: 1,
-    QualityTier.T3.value: 2,
-    QualityTier.AL.value: 3,
+    QualityTier.T2.value: 2,
+    QualityTier.T3.value: 3,
+    QualityTier.AL.value: 4,
 }
 
 Stratum = Literal["validation", "test"]
