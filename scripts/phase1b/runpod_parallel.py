@@ -1060,7 +1060,16 @@ def _preflight_corpus() -> str:
 
 
 def _require_secure_cloud() -> bool:
-    """Whether this checkout may only provision on SECURE hosts.
+    """Deprecated shim: the restriction now lives at the pod-creation boundary.
+
+    Kept so existing callers and tests keep working, but create_pod applies
+    require_secure_cloud() itself, so passing allowed_cloud_types here is belt
+    and braces rather than the control. See
+    scripts/phase0/runpod_provision.require_secure_cloud for why it moved.
+
+    Original docstring follows.
+
+    Whether this checkout may only provision on SECURE hosts.
 
     True when the licensed overlay is staged. `merged_corpus_path()` prefers
     `data/processed/licensed/all_controls.json` and falls back to the tracked
