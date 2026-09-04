@@ -45,7 +45,7 @@ Phase 2B is marked COMPLETE and produced 46 accepted bridges. They are:
 - **model-proposed** by cosine top-k and ratified in the model's presence —
   Tier 3 under `results/phase1b/CAMPAIGN3.md` §2, unusable as supervision;
 - computed over **21** AI-only hubs under the superseded five-framework
-  definition, against **83** under the corrected one.
+  definition, against **78** under the corrected one (83 is the PRE-AUDIT figure, from `hub_links_by_framework.json`; the curated set gives 78).
 
 ### 1.3 No shortcut exists (spike, 2026-09-01)
 

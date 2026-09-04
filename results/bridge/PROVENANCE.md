@@ -54,7 +54,22 @@ That is the same signature `results/review/PROVENANCE.md` quarantined
 The round ran over **21 AI-only hubs**, the count produced by the superseded
 five-framework definition of "AI framework" that also put a false bridge count
 on the model card. Under the corrected eight-framework definition there are
-**83**. The completed round therefore covers roughly a quarter of the AI region.
+**78**. The completed round therefore covers roughly a quarter of the AI region.
+
+**Corrected 2026-09-04.** This paragraph previously said 83, and attributed the
+difference to the framework definition. That is wrong twice. Holding the
+eight-framework definition constant and changing only the FILE:
+
+| link set | AI | traditional | bridged | AI-only |
+|---|---|---|---|---|
+| `hub_links_by_framework.json` (pre-audit) | 83 | 380 | 0 | **83** |
+| `hub_links_by_framework_curated.json` (post-audit) | 78 | 380 | 0 | **78** |
+
+So 83 vs 78 is a raw-vs-curated difference produced by the link audit, not by
+the definition. **78 is the operative count** — it is what the pre-registration,
+the packet, the model card and `tests/test_bridge_uses_curated_links.py` all
+use. The 21 came from the five-framework definition, which is a separate and
+genuine error.
 The accepted bridges stand on their own terms; their coverage does not.
 
 ## What this means for Phase 2C

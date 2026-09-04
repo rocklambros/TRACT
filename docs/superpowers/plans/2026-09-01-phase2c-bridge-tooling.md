@@ -1,5 +1,24 @@
 # Phase R + 2C-1 Implementation Plan
 
+> ## ⚠ SUPERSEDED — DO NOT EXECUTE AS WRITTEN
+>
+> Phase 2C-1 was built from this plan and then corrected. **Re-running it
+> reverts two fatal design fixes**, both found by premortem checkpoint 1 and
+> both since re-confirmed:
+>
+> - Task C5 instructs writing the τ leave-one-fold-out Gate 2. That criterion
+>   was **pre-registered to fail** — bridge links add training supervision, not
+>   evaluation folds, and the measured swing is 0.3702 → 0.0000. It was then
+>   replaced a second time, because its successor scored a split containing zero
+>   AI hubs.
+> - Tasks C3–C4 pass `top_n_hubs=20`. That scope makes Gate 1 unreachable (it
+>   needs 23 hubs and a link carries one `cre_id`) and selects hubs by a
+>   test-set statistic.
+>
+> **The binding document is `docs/phase2c-preregistration.md`.** Read it, not
+> this file. What shipped is recorded in `docs/campaign3-premortem-round3.md`.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix the defects the round-1 premortem confirmed in the Campaign 3 analysis code, then build the tooling for a traditional→AI bridge curation round that closes the supervision leak without touching the evaluation corpus.
@@ -540,7 +559,7 @@ FORBIDDEN = ("similarity", "cosine", "rank", "top_k", "suggested",
 
 
 def test_no_model_derived_column_anywhere(tmp_path) -> None:
-    build_bridge_packet(tmp_path, top_n_hubs=20, framework_id="nist_800_53")
+    build_bridge_packet(tmp_path, framework_id=  # SUPERSEDED: no top_n_hubs, "nist_800_53")
     for csv_path in tmp_path.glob("*.csv"):
         header = csv_path.read_text(encoding="utf-8").splitlines()[0].lower()
         for term in FORBIDDEN:
@@ -549,14 +568,14 @@ def test_no_model_derived_column_anywhere(tmp_path) -> None:
 
 def test_no_related_hub_ids_leak(tmp_path) -> None:
     """cre_hierarchy.json carries Phase 2B's 46 model-proposed edges."""
-    build_bridge_packet(tmp_path, top_n_hubs=20, framework_id="nist_800_53")
+    build_bridge_packet(tmp_path, framework_id=  # SUPERSEDED: no top_n_hubs, "nist_800_53")
     blob = " ".join(p.read_text(encoding="utf-8") for p in tmp_path.glob("*.csv"))
     assert "related_hub" not in blob.lower()
 
 
 def test_refuses_a_restricted_framework(tmp_path) -> None:
     with pytest.raises(ValueError, match="restricted"):
-        build_bridge_packet(tmp_path, top_n_hubs=20, framework_id="etsi")
+        build_bridge_packet(tmp_path, framework_id=  # SUPERSEDED: no top_n_hubs, "etsi")
 ```
 
 - [ ] **Step 2: Run, watch fail, implement, run again**
@@ -622,8 +641,8 @@ git commit -m "import reviewed bridge links with provenance enforced at the boun
 
 - [ ] **Step 1: Write it, committed before any annotation begins**
 
-Contents: D4's two gates verbatim (Gate 1 `≤ 55/78`; Gate 2 trainable task and
-τ leave-one-fold-out swing `≤ 0.15`), the measured baseline `78/78`, the
+Contents: D4's two gates verbatim (Gate 1 `≤ 55/78`; ~~Gate 2 trainable task and
+τ leave-one-fold-out swing `≤ 0.15`~~ **SUPERSEDED, see the banner**), the measured baseline `78/78`, the
 statement that the primary delta is explicitly **not** a gate, the annotator
 exclusion list including framework authorship, and what was known on the day it
 was written.

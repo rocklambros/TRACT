@@ -138,7 +138,7 @@ claude-mem records observations as you work. These are valuable for continuity:
 - **Phase 0 (Zero-Shot Baselines):** COMPLETE — Gates A+B passed
 - **Phase 1A–1D:** COMPLETE — model trained, 11 CLI subcommands, hub proposals. **The Gate 1 headline is WITHDRAWN (2026-08-15)** — the hit@1 figure that stood here passed on the point estimate only, mixed two runs, and did not generalize. Do not quote a Phase 1 accuracy number from memory; PRD.md §6.4 carries the withdrawal.
 - **Phase 2B (Bridge + HF Publication):** COMPLETE — 46/63 bridges accepted, model published to huggingface.co/rockCO78/tract-cre-assignment
-- **Phase 3 (Crosswalk Dataset):** COMPLETE — 5,238 assignments across 31 frameworks, expert-reviewed, published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset
+- **Phase 3 (Crosswalk Dataset):** COMPLETE — 5,238 assignments across 31 frameworks, published to huggingface.co/datasets/rockCO78/tract-crosswalk-dataset. **Not "expert-reviewed"** — the review pool is `review_export.json`, which this file quarantines as Tier 3 sixty lines below: 898 model-proposed items, human-ratified in the model's presence, agreeing with independent OpenCRE gold on 47 of 63 overlapping items.
 - **Phase 5A (Export Pipeline):** COMPLETE — 411 assignments imported into local OpenCRE fork
 - **Phase 5B (Canonical Export):** COMPLETE — per-framework JSON snapshots + changesets for OpenCRE RFC
 - **Framework Prep Pipeline:** COMPLETE — `tract prepare` + `tract validate` + ingest integration
@@ -173,14 +173,29 @@ claude-mem records observations as you work. These are valuable for continuity:
   - **Owner decisions taken 2026-08-30:** the link audit was NOT model-informed
     (Tier 2, published artifacts are clean); fix the anchor truncation and
     **rebaseline**, retiring +0.1361 as a forward target; and fund curation.
-  - **Anchor-budget rebaseline in progress** as arm `C3TEST`
-    (`max_seq_length` 512 → 1024, batch stays 32). It is a **second run on the
-    held-out test split** — sanctioned, costed, and recorded in Amendment 1 §1.5.
+  - **Anchor-budget rebaseline COMPLETE and FAILED**, arm `C3TEST`, 2026-08-30.
+    `max_seq_length` 512 → 1024 did not move the primary: `P(δ ≤ 0.10) = 0.535`
+    against the binding `< 0.05`. The side condition passed. It was a second run
+    on the held-out test split, sanctioned and recorded in Amendment 1 §1.5.
+    This line said "in progress" for five days after the verdict landed.
   - **Curation package:** `claudedocs/curation-package.md` (untracked) holds the
-    recruiting persona and the annotator handbook. Generate the blind packet
-    with `python -m scripts.build_curation_packet`. **Never send
-    `results/ceiling_study/hub_reference.md`** — 400 of its hub descriptions are
-    LLM-written from the gold links and would make the round Tier 3.
+    recruiting persona and the annotator handbook. It is a **volunteer** round.
+    **Never send `results/ceiling_study/hub_reference.md`** — 400 of its hub
+    descriptions are LLM-written from the gold links and would make the round
+    Tier 3. Annotators are told not to read this repository at all; it publicly
+    tracks that file, the curated gold links, and both Tier-3 exports.
+- **Phase 2C (traditional → AI bridge curation):** TOOLING BUILT, ROUND NOT RUN.
+  Binding pre-registration: `docs/phase2c-preregistration.md`. The AI and
+  traditional hub regions are disjoint — 78 AI hubs, all 78 orphaned under the
+  strict firewall — so the PRD's bridging capability has no supervision behind
+  it. Generate the packet with `python -m scripts.build_bridge_packet` (NOT
+  `build_curation_packet`, which is the Campaign 3 curation task over 522 hubs).
+  Import with `scripts.import_bridge_links`; Gate 1 is
+  `python -m scripts.analysis.gate1_report` — **not** `orphan_rate`, which is
+  the raw arithmetic and passes a sheet that violates three quality conditions.
+  Read `docs/campaign3-premortem-round3.md` before running anything: checkpoint
+  2 found seven Critical defects, and the ones fixed are listed there with the
+  ones still open.
 - **Provisioning constraint:** while the licensed overlay is staged, pods are
   restricted to SECURE tier at create time (`_require_secure_cloud`), because
   `_rsync_to` ships `data/processed/licensed` to whichever host answers.

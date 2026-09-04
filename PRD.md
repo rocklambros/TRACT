@@ -422,10 +422,15 @@ and the new number cannot be read apart:
 - **This is the same verdict pattern §6.4 withdrew a headline for.** Campaign 1:
   +0.1293 [0.0408, 0.2177]. Campaign 2: +0.1361 [0.0476, 0.2245]. Same n, same
   threshold, same three booleans.
-- **What is genuinely different:** the gain is concentrated in the 109 items
+- **What is genuinely different:** ~~the gain is concentrated in the 109 items
   whose anchor does not contain its own answer (+0.1743 [+0.073, +0.275]), while
-  the 38 lexical-echo items contribute +0.0263. Campaign 1's headline failed on
-  precisely that axis. This is the result's real defense, not the clause above.
+  the 38 lexical-echo items contribute +0.0263.~~ **RETIRED 2026-09-04.**
+  `CAMPAIGN3.md` §1.3 retires +0.1743/n=109 and +0.1531/n=98: both were computed
+  against truncated anchors that no longer exist, so the partition moved with
+  `max_seq_length`. Under the frozen, budget-independent partition the non-echo
+  stratum is **+0.1538 [+0.0440, +0.2637] on n=91**. The direction of the
+  argument survives — Campaign 1's headline failed on precisely this axis — but
+  the figures quoted here do not, and this was the result's stated real defense.
 - **Validation (n=1,265) does not support a general claim.** No arm cleared the
   gate; A1 (the primary) is significantly negative at −0.0609. Four of five
   validation folds are positive — the negative aggregate is driven by ASVS
@@ -493,8 +498,21 @@ Two findings, both verified against the repository. Full treatment in
   one.
 
 Campaign 3 is pre-registered in `results/phase1b/CAMPAIGN3.md` with binding
-numeric thresholds, no synthetic data, and a stated MDE of 0.145 at n=940.
-Nothing has run.
+numeric thresholds and no synthetic data.
+
+**Updated 2026-09-04. Two corrections to the sentence that stood here.**
+
+**The n=940 power table is withdrawn.** Amendment 1 §1.1 strikes it: the
+permitted frameworks hold 500 controls, so the ceiling is 721 and real power is
+**43–54%**, not the 63% claimed. *"No combination of the planned work reaches
+940."*
+
+**Campaign 3 has run, and its primary FAILED.** Arm C3TEST completed 2026-08-30
+(`CAMPAIGN3.md`, RESULT section): the anchor-budget rebaseline did not move the
+primary, and `P(δ ≤ 0.10) = 0.535` against the binding rule of `< 0.05`. The
+binding side condition passed. Phase 2C, pre-registered in
+`docs/phase2c-preregistration.md`, is not a retry of that gate and does not
+report on it.
 
 #### 6.4.1 Multi-Hub Training Pairs and Batch Sampling
 Controls legitimately map to multiple CRE hubs (multi-hop graph structure). These multi-hub text mappings are preserved as separate training pairs — never dropped or deduplicated across hubs. Deduplication occurs only within the same (text, hub) pair (case-insensitive), keeping the best quality tier.
