@@ -130,3 +130,76 @@ class TestTheSourceStillSaysWhatTheCorrectionClaims:
     ) -> None:
         assert "0.572 [0.510, 0.632]" in panel
         assert "0.660 [0.599, 0.716]" in panel
+
+
+class TestItIsAVolunteerRound:
+    """The handbook was written for a paid contractor; the round recruits volunteers.
+
+    It carried rates, a budget in thousands, "get the attestation signed before
+    you pay", and "before you invoice". Handing that to a volunteer asks them to
+    bill for work the document prices at $2,500-7,000, and then not to. That is
+    the "volunteers felt misused" failure reached without anyone intending it.
+    """
+
+    def test_no_invoicing_step(self, package_text: str) -> None:
+        assert "invoice" not in package_text.lower().replace(
+            "nobody invoices", ""
+        ), "the handbook still asks a volunteer to invoice"
+
+    def test_no_hourly_rate(self, package_text: str) -> None:
+        for rate in ("100–200", "100-200", "/hr", "per hour"):
+            assert rate not in package_text, f"handbook still quotes {rate!r}"
+
+    def test_no_budget_in_currency(self, package_text: str) -> None:
+        for figure in ("$2,500", "$7,000", "$400", "$1,200"):
+            assert figure not in package_text, f"handbook still quotes {figure}"
+
+    def test_it_says_plainly_that_it_is_a_volunteer_round(
+        self, package_text: str
+    ) -> None:
+        assert "volunteer round" in package_text.lower()
+
+
+class TestTheThroughputFigureIsNotPresentedAsMeasured:
+    """The one remaining fabricated quantitative claim, and the one applied to
+    the person.
+
+    The handbook attributed 1-3 minutes per item to "the project's own
+    annotation study". `results/ceiling_study/README.md` says the opposite in
+    its own words: "Nothing here is timed, this is only so you can plan the
+    session." Its §1.6 forbids exactly this for agreement -- "an annotator
+    managed against a fabricated threshold" -- and then did it for throughput.
+    """
+
+    def test_it_does_not_attribute_timing_to_an_annotation_study(
+        self, package_text: str
+    ) -> None:
+        lowered = package_text.lower()
+        idx = lowered.find("annotation study")
+        while idx != -1:
+            window = lowered[max(0, idx - 400) : idx + 400]
+            assert "minute" not in window, (
+                "a timing figure sits beside the phrase 'annotation study'. "
+                "The cited source states that nothing in it was timed."
+            )
+            idx = lowered.find("annotation study", idx + 1)
+
+    def test_it_states_that_no_rate_has_been_measured(
+        self, package_text: str
+    ) -> None:
+        assert "no per-item rate has" in package_text.lower()
+
+    def test_it_does_not_call_a_faster_pace_keyword_matching(
+        self, package_text: str
+    ) -> None:
+        """That line turned a planning guess into a performance judgement."""
+        assert "faster than that means keyword" not in package_text.lower()
+
+    def test_the_source_still_says_nothing_was_timed(self) -> None:
+        """Guards the correction against its own source drifting."""
+        from tract.config import PROJECT_ROOT
+
+        readme = PROJECT_ROOT / "results" / "ceiling_study" / "README.md"
+        if not readme.is_file():
+            pytest.skip(f"{readme} absent")
+        assert "Nothing here is timed" in readme.read_text(encoding="utf-8")
