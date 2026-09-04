@@ -56,7 +56,9 @@ FORBIDDEN_HEADER_TERMS = (
 @pytest.fixture(scope="module")
 def packet(tmp_path_factory: pytest.TempPathFactory) -> Path:
     out = tmp_path_factory.mktemp("packet")
-    build_bridge_packet(out, framework_id="nist_800_53")
+    build_bridge_packet(
+        out, framework_id="nist_800_53", allow_undetermined=True
+    )
     return out
 
 
@@ -185,16 +187,16 @@ class TestNoModelOutputByValue:
 
 class TestItRefusesLicensedFrameworks:
     def test_refuses_a_restricted_framework(self, tmp_path: Path) -> None:
-        with pytest.raises(ValueError, match="restricted"):
+        with pytest.raises(ValueError, match="redistribut"):
             build_bridge_packet(tmp_path, framework_id="etsi")
 
     def test_refuses_the_other_restricted_framework(self, tmp_path: Path) -> None:
-        with pytest.raises(ValueError, match="restricted"):
+        with pytest.raises(ValueError, match="redistribut"):
             build_bridge_packet(tmp_path, framework_id="iso_27001")
 
     def test_it_refuses_before_reading_any_prose(self, tmp_path: Path) -> None:
         """The check must precede the read, or the prose is already in memory."""
-        with pytest.raises(ValueError, match="restricted"):
+        with pytest.raises(ValueError, match="redistribut"):
             build_bridge_packet(tmp_path, framework_id="etsi")
         assert not list(tmp_path.glob("*.csv")), (
             "A refused framework still wrote sheets; the guard runs too late."

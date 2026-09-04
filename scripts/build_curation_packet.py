@@ -42,6 +42,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Final
 
+from tract.licensing import refuse_external_redistribution
 from tract.config import PROCESSED_DIR
 
 logger = logging.getLogger(__name__)
@@ -126,18 +127,32 @@ def build_hub_sheet(output_dir: Path) -> Path:
     return target
 
 
-def build_control_sheet(output_dir: Path, framework_id: str) -> Path:
+def build_control_sheet(
+    output_dir: Path, framework_id: str, *, allow_undetermined: bool = False
+) -> Path:
     """The controls to annotate, one row each, with a blank answer column.
 
     Deliberately carries NO model prediction, NO confidence, NO shortlist and
     NO ranking. If a future version adds any of those the round stops being
     Tier 2.
     """
+    # Before the corpus is opened, so refused prose never enters memory.
+    #
+    # This check did not exist. The comment that stood here reasoned that "none
+    # of the four curation targets is a RESTRICTED framework", which is the
+    # wrong tier: RESTRICTED/OVERLAY answers whether text may be COMMITTED,
+    # not whether it may be SENT to a third party. csa_aicm is a default target
+    # of this script, its recorded licence is "Proprietary ... no
+    # redistribution", and the curation handbook instructs the owner to run
+    # this command before mailing sheets to an outside annotator.
+    refuse_external_redistribution(
+        framework_id, allow_undetermined=allow_undetermined
+    )
+
     # merged_corpus_path, not the licensed path directly: it prefers the
     # overlay where one is staged and falls back to the tracked corpus
     # otherwise. Hardcoding the overlay made this unrunnable on any checkout
-    # without it, CI included, and none of the four curation targets is a
-    # RESTRICTED framework -- all four are in the tracked corpus too.
+    # without it, CI included.
     from tract.text_selection import merged_corpus_path  # noqa: PLC0415
 
     corpus = json.loads(merged_corpus_path().read_text(encoding="utf-8"))
@@ -174,6 +189,33 @@ def build_control_sheet(output_dir: Path, framework_id: str) -> Path:
     return target
 
 
+def build_curation_packet(
+    output_dir: Path,
+    frameworks: list[str] | None = None,
+    *,
+    allow_undetermined: bool = False,
+) -> list[Path]:
+    """Emit the curation packet, refusing the whole set before writing any of it.
+
+    Every framework is checked FIRST. A partial packet -- the permitted subset
+    written, the refused one skipped -- is the shape that gets mailed by
+    mistake, so one refusal fails the call.
+    """
+    targets = list(CURATION_TARGETS) if frameworks is None else list(frameworks)
+    for framework_id in targets:
+        refuse_external_redistribution(
+            framework_id, allow_undetermined=allow_undetermined
+        )
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    sheets = [build_hub_sheet(output_dir)]
+    sheets.extend(
+        build_control_sheet(output_dir, f, allow_undetermined=allow_undetermined)
+        for f in targets
+    )
+    return sheets
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -182,20 +224,29 @@ def main() -> int:
              "working tree that the annotator does not get.",
     )
     parser.add_argument(
+        "--allow-undetermined",
+        action="store_true",
+        help=(
+            "Redistribute frameworks whose licence this repository records as "
+            "UNDETERMINED (aiuc_1, nist_ai_rmf among the defaults). Cannot "
+            "unlock csa_aicm, whose prohibition is recorded."
+        ),
+    )
+    parser.add_argument(
         "--frameworks", nargs="*", default=list(CURATION_TARGETS),
         help=f"Frameworks to build sheets for. Default: {', '.join(CURATION_TARGETS)}",
     )
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-
-    hub_sheet = build_hub_sheet(args.output_dir)
-    sheets = [build_control_sheet(args.output_dir, f) for f in args.frameworks]
+    sheets = build_curation_packet(
+        args.output_dir,
+        args.frameworks,
+        allow_undetermined=args.allow_undetermined,
+    )
 
     logger.info("")
     logger.info("Packet written to %s", args.output_dir.resolve())
-    logger.info("  %s", hub_sheet.name)
     for sheet in sheets:
         logger.info("  %s", sheet.name)
     logger.info("")

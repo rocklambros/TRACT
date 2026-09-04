@@ -31,12 +31,13 @@ import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final
+from typing import Literal, Final
 
 from tract.config import (
     FRAMEWORK_LICENSES,
     OVERLAY_FRAMEWORK_IDS,
     PROJECT_ROOT,
+    REDISTRIBUTION_RESERVED_FRAMEWORK_IDS,
     UNDETERMINED_LICENSE,
 )
 
@@ -395,6 +396,88 @@ FINGERPRINT_PATH: Final[Path] = (
 # If any framework is ever added to the overlay, it is fingerprinted. That is
 # now the whole rule, with no exceptions to read.
 FINGERPRINT_EXCLUDED_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset()
+
+
+RedistributionStatus = Literal["permitted", "reserved", "undetermined"]
+
+
+def redistribution_status(framework_id: str) -> RedistributionStatus:
+    """Three states, because "forbidden" and "nobody checked" are different facts.
+
+    Redistribution is a DIFFERENT question from git-tracking, and this
+    repository has a constant for each. RESTRICTED/OVERLAY answers "may this
+    text exist in the tree"; REDISTRIBUTION_RESERVED answers this one. They are
+    not nested:
+
+        REDISTRIBUTION_RESERVED : csa_aicm, csa_ccm, etsi, iso_27001
+        OVERLAY                 : dsomm, etsi, iso_27001
+
+    So a guard built on OVERLAY -- which is what one packet builder used, and
+    the other lacked entirely -- permits both CSA frameworks, and csa_aicm's
+    recorded licence is "Proprietary ... no redistribution".
+
+    "undetermined" is not "permitted". tract/config.py states the reason
+    against itself: guessing a permissive licence for a source that never
+    granted one is the mistake the licence table exists to make visible. It is
+    separated from "reserved" because it is resolvable -- an owner can
+    adjudicate it -- whereas a recorded prohibition is not.
+    """
+    if (
+        framework_id in REDISTRIBUTION_RESERVED_FRAMEWORK_IDS
+        or framework_id in OVERLAY_FRAMEWORK_IDS
+    ):
+        return "reserved"
+    licence = FRAMEWORK_LICENSES.get(framework_id)
+    if licence is None or licence == UNDETERMINED_LICENSE:
+        return "undetermined"
+    return "permitted"
+
+
+def externally_redistributable(framework_id: str) -> bool:
+    """True only for a framework with a recorded permissive licence."""
+    return redistribution_status(framework_id) == "permitted"
+
+
+def refuse_external_redistribution(
+    framework_id: str, *, allow_undetermined: bool = False
+) -> None:
+    """Raise unless this framework's prose may leave the project.
+
+    Call BEFORE reading any prose, so refused text never enters memory.
+
+    `allow_undetermined` is the owner's acknowledgement that they have checked
+    a source whose terms this repository never recorded. It cannot unlock a
+    `reserved` framework, because that prohibition is recorded rather than
+    unknown -- an override there would be overriding a fact, not a gap.
+    """
+    status = redistribution_status(framework_id)
+    if status == "permitted":
+        return
+    if status == "undetermined" and allow_undetermined:
+        logger.warning(
+            "Redistributing %s under an UNDETERMINED licence on explicit "
+            "acknowledgement. Record the adjudication in tract/config.py so "
+            "the next caller does not have to make this decision again.",
+            framework_id,
+        )
+        return
+
+    licence = FRAMEWORK_LICENSES.get(framework_id, "unknown framework id")
+    if status == "reserved":
+        raise ValueError(
+            f"{framework_id!r} may not be redistributed outside the project. "
+            f"Recorded licence: {licence!r}. An annotator packet is "
+            f"redistribution -- the prose goes to a person outside the "
+            f"project. This is a recorded prohibition and has no override; if "
+            f"a written grant covering named annotators exists, record it in "
+            f"tract/config.py."
+        )
+    raise ValueError(
+        f"{framework_id!r} has an UNDETERMINED licence, so it may not be "
+        f"redistributed by default. Nobody has adjudicated its terms. Either "
+        f"record them in tract/config.py, or pass allow_undetermined=True to "
+        f"state that you have checked them yourself."
+    )
 
 
 def fingerprinted_framework_ids() -> frozenset[str]:

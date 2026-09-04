@@ -40,10 +40,10 @@ from typing import Final
 
 from tract.config import (
     BRIDGE_AI_FRAMEWORK_IDS,
-    OVERLAY_FRAMEWORK_IDS,
     PROCESSED_DIR,
     TRAINING_DIR,
 )
+from tract.licensing import refuse_external_redistribution
 
 logger = logging.getLogger(__name__)
 
@@ -145,20 +145,23 @@ def build_control_sheet(path: Path, framework_id: str) -> int:
     return rows
 
 
-def build_bridge_packet(out_dir: Path, framework_id: str) -> None:
+def build_bridge_packet(
+    out_dir: Path, framework_id: str, *, allow_undetermined: bool = False
+) -> None:
     """Emit the packet for one framework into `out_dir`.
 
     Raises before reading any prose when the framework is restricted, so
     licensed text never enters memory on a refused call.
     """
-    # OVERLAY_FRAMEWORK_IDS, not the narrower RESTRICTED_FRAMEWORK_IDS: a
-    # packet redistributes prose to people outside the project, so the
-    # conditionally-licensed sources (dsomm, GPL-3.0-only) are refused too.
-    if framework_id in OVERLAY_FRAMEWORK_IDS:
-        raise ValueError(
-            f"{framework_id!r} is a restricted framework. Its prose is "
-            "licensed and may not be redistributed in an annotator packet."
-        )
+    # Before any prose is read. This used to test OVERLAY_FRAMEWORK_IDS, on
+    # the reasoning that a packet is external redistribution and so needs a
+    # wider set than RESTRICTED. The reasoning was right and the constant was
+    # wrong: OVERLAY is the git-TRACKING tier, and it omits csa_aicm and
+    # csa_ccm, which REDISTRIBUTION_RESERVED_FRAMEWORK_IDS names precisely
+    # because they may not be sent to a third party.
+    refuse_external_redistribution(
+        framework_id, allow_undetermined=allow_undetermined
+    )
 
     payload = json.loads(
         (PROCESSED_DIR / "all_controls.json").read_text(encoding="utf-8")
@@ -183,13 +186,28 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("out_dir", type=Path, help="Directory to write the packet.")
     parser.add_argument(
+        "--allow-undetermined",
+        action="store_true",
+        help=(
+            "Redistribute a framework whose licence this repository records as "
+            "UNDETERMINED. Required for the D2 default, nist_800_53: its terms "
+            "were never adjudicated here, though nist_800_63 and nist_ssdf are "
+            "recorded as US Government works not subject to copyright. Cannot "
+            "unlock a framework with a recorded prohibition."
+        ),
+    )
+    parser.add_argument(
         "--framework-id",
         default="nist_800_53",
         help="Framework whose controls the annotator maps (D2: NIST 800-53 first).",
     )
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    build_bridge_packet(args.out_dir, framework_id=args.framework_id)
+    build_bridge_packet(
+        args.out_dir,
+        framework_id=args.framework_id,
+        allow_undetermined=args.allow_undetermined,
+    )
     return 0
 
 
