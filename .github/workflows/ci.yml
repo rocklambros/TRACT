@@ -30,7 +30,7 @@ jobs:
           ruff check tract/ parsers/ scripts/phase1a/ scripts/phase1b/
           scripts/phase0/runpod_provision.py scripts/phase1c/runpod_retrain.py
           scripts/analysis/audit_stratified_delta.py
-          scripts/analysis/audit_mechanism_probe.py
+          scripts/analysis/audit_mechanism_probe.py scripts/analysis/orphan_rate.py
           scripts/analysis/gate_rule_candidates.py
           scripts/analysis/gate_power_simulation.py
 
@@ -45,7 +45,7 @@ jobs:
           scripts/phase0/runpod_provision.py
           scripts/phase1c/runpod_retrain.py
           scripts/analysis/audit_stratified_delta.py
-          scripts/analysis/audit_mechanism_probe.py
+          scripts/analysis/audit_mechanism_probe.py scripts/analysis/orphan_rate.py
           scripts/analysis/gate_rule_candidates.py
           scripts/analysis/gate_power_simulation.py --strict
 
