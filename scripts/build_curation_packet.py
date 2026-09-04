@@ -7,7 +7,7 @@ makes the whole round Tier 3 and worthless for the gate, so the packet is
 generated rather than assembled by hand, and every column traces to a source
 this module names.
 
-THE TRAP THIS EXISTS TO AVOID. `results/review/hub_reference.md` is the obvious
+THE TRAP THIS EXISTS TO AVOID. `results/ceiling_study/hub_reference.md` is the obvious
 navigation aid to hand an annotator: it already exists, it covers all 522 hubs,
 and it reads well. 400 of its hub descriptions were written by an LLM
 conditioned on the gold links. Handing it over would quietly convert the round
@@ -200,7 +200,7 @@ def main() -> int:
         logger.info("  %s", sheet.name)
     logger.info("")
     logger.info("NOTHING in this packet is model-derived. Do not add "
-                "results/review/hub_reference.md: 400 of its hub descriptions "
+                "results/ceiling_study/hub_reference.md: 400 of its hub descriptions "
                 "were LLM-written from the gold links and would make the round "
                 "Tier 3.")
     return 0

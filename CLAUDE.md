@@ -179,7 +179,7 @@ claude-mem records observations as you work. These are valuable for continuity:
   - **Curation package:** `claudedocs/curation-package.md` (untracked) holds the
     recruiting persona and the annotator handbook. Generate the blind packet
     with `python -m scripts.build_curation_packet`. **Never send
-    `results/review/hub_reference.md`** — 400 of its hub descriptions are
+    `results/ceiling_study/hub_reference.md`** — 400 of its hub descriptions are
     LLM-written from the gold links and would make the round Tier 3.
 - **Provisioning constraint:** while the licensed overlay is staged, pods are
   restricted to SECURE tier at create time (`_require_secure_cloud`), because

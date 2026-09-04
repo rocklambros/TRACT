@@ -5,7 +5,7 @@ artifact in the packet makes the whole round Tier 3 and useless for the gate in
 `results/phase1b/CAMPAIGN3.md`, and the cost is paid before anyone notices --
 the labels look identical either way.
 
-The specific trap: `results/review/hub_reference.md` covers all 522 hubs, reads
+The specific trap: `results/ceiling_study/hub_reference.md` covers all 522 hubs, reads
 well, and is the obvious thing to send. 400 of its hub descriptions were written
 by an LLM conditioned on the gold links.
 """
