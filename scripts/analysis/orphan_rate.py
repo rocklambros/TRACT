@@ -127,7 +127,12 @@ def main() -> int:
         "--bridge",
         type=Path,
         default=None,
-        help="Optional Tier-2 bridge link JSONL to include.",
+        help=(
+            "Tier-2 bridge link JSONL to include. NOTE: this counts EVERY "
+            "link, including those below the Gate 1 confidence floor, because "
+            "this module is the raw graph arithmetic. It is not the gate. Use "
+            "scripts/analysis/gate1_report.py for a Gate 1 verdict."
+        ),
     )
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -139,6 +144,14 @@ def main() -> int:
         bridge = load_bridge_links(args.bridge)
         pairs = pairs + bridge_link_pairs(bridge)
         logger.info("Included %d bridge links from %s", len(bridge), args.bridge)
+        logger.warning(
+            "This is the raw orphan rate over ALL links, with no confidence "
+            "floor applied. It is NOT the Gate 1 verdict: Gate 1 also binds "
+            "Q1-Q4, and a corpus of low-confidence links moves this number "
+            "while counting for nothing. Run "
+            "`python -m scripts.analysis.gate1_report %s` instead.",
+            args.bridge,
+        )
 
     orphaned, total = strict_firewall_orphans(pairs)
     logger.info(

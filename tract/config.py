@@ -595,6 +595,29 @@ TIER_PRIORITY: Final[dict[str, int]] = {
     "AL": 4,      # active-learning acceptance
 }
 
+# ── Phase 2C gates ────────────────────────────────────────────────────────
+# docs/phase2c-preregistration.md Section 2, verbatim. Held here rather than
+# read from the markdown so a mismatch between the two is a test failure
+# instead of a reading. Every one of these existed only as prose until
+# checkpoint 2 demonstrated that a one-control sheet mapping AC-1 onto all 78
+# hub ids -- copied from the packet's own first column, confidence 1, rationale
+# "." -- takes the orphan rate from 78/78 to 0/78 while violating three of them
+# with no code objecting.
+PHASE2C_GATE1_MAX_ORPHANS: Final[int] = 55
+PHASE2C_GATE1_MIN_DEORPHANED: Final[int] = 23
+# Q1: distinct controls that must contribute at least one accepted link.
+# 23 links from one control is not a sweep.
+PHASE2C_Q1_MIN_DISTINCT_CONTROLS: Final[int] = 40
+# Q2: a control mapping to more than this many AI hubs is making a judgement
+# about the region, not about the control.
+PHASE2C_Q2_MAX_HUBS_PER_CONTROL: Final[int] = 6
+# Q3: a link below this does not count toward Gate 1. Low-confidence links are
+# data, not evidence.
+PHASE2C_Q3_CONFIDENCE_FLOOR: Final[int] = 2
+# Q4: fraction of controls that must be annotated by two people. Not a
+# threshold on the agreement rate -- a requirement that the number exist.
+PHASE2C_Q4_MIN_DOUBLE_ANNOTATED: Final[float] = 0.15
+
 # Stamped into the `link_type` of every Phase 2C bridge link so that
 # assign_quality_tier returns T2 rather than falling through to T1. Held here
 # rather than in tract/bridge/ so tract/training/data_quality.py can read it

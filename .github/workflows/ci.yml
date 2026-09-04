@@ -32,6 +32,7 @@ jobs:
           scripts/analysis/audit_stratified_delta.py
           scripts/analysis/audit_mechanism_probe.py
           scripts/analysis/orphan_rate.py
+          scripts/analysis/gate1_report.py
           scripts/build_bridge_packet.py
           scripts/import_bridge_links.py
           scripts/analysis/gate_rule_candidates.py
@@ -50,6 +51,7 @@ jobs:
           scripts/analysis/audit_stratified_delta.py
           scripts/analysis/audit_mechanism_probe.py
           scripts/analysis/orphan_rate.py
+          scripts/analysis/gate1_report.py
           scripts/build_bridge_packet.py
           scripts/import_bridge_links.py
           scripts/analysis/gate_rule_candidates.py
