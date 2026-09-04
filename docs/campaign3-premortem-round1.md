@@ -191,9 +191,14 @@ inflated 3.1× — the same defect class the document catalogues in others.
   at all"* (§5) is false — and AIX is 57.3% of the primary. 5 kept-weak items sit
   inside the Tier-1 stratum despite having been inspected.
 - **B3 (High, Likely) — rotating the roster is confounded with a 4× multi-label
-  shift.** Multi-label share: incumbents 8.8%, candidates 36.5% (ENISA alone
+  shift.** ~~Multi-label share: incumbents 8.8%, candidates 36.5% (ENISA alone
   51.5%). Single-label delta +0.1165 vs multi-label −0.1429;
-  difference **P(≤0)=0.044** — better established than the H3 split the whole
+  difference **P(≤0)=0.044** — better established than the H3 split the whole~~
+  **PARTIALLY RETRACTED 2026-09-04 — see the correction at the end of this
+  file. The composition figures hold; the delta split does not reproduce on any
+  committed run and its sign reverses on four of six.** Original text struck
+  through, not deleted, because remediation item 10 was written from it. The
+  strikethrough continues to the end of the bullet: the H3 split the whole
   document rests on. §6b pre-registers "the delta will probably fall" and
   attributes it to supervision donors; label density predicts it equally well and
   the two are not separable after the fact.
@@ -370,3 +375,65 @@ fixable by remediation:
   general / intersection 0, orchestrator-verified). It *can* be closed by
   creating traditional→AI links, which is the (NEW) option — and B1 is the
   strongest argument for it, because those frameworks have original gold.
+
+
+---
+
+## Correction, 2026-09-04 — B3's delta split does not reproduce
+
+**The composition half of B3 is correct.** Multi-label share among incumbent
+frameworks is 13 of 147 = **8.8%**, exactly as stated, and the candidate-roster
+figures are a property of those frameworks rather than of any run.
+
+**The delta half is not.** B3 reports single-label +0.1165 against multi-label
+**−0.1429**, difference **P(≤0)=0.044**, and calls it "better established than
+the H3 split the whole document rests on". Measured over every committed run
+that carries a complete five-fold set:
+
+| run | single | multi (n=13) | P(≤0) |
+|---|---|---|---|
+| `c2r_TEST_A3_prose_sw_qwen06b` | +0.1493 | +0.0000 | 0.073 |
+| `c3_TEST_A3_prose_sw_qwen06b_seq1024` | +0.1567 | +0.0000 | 0.167 |
+| `lofo_prose` | +0.0672 | **+0.2308** | 0.955 |
+| `lofo_prose_desconly` | +0.0746 | **+0.2308** | 0.937 |
+| `lofo_prose_stopwords` | +0.0522 | **+0.3077** | 0.987 |
+| `lofo_title_only` | +0.1119 | **+0.3077** | 0.957 |
+
+The multi-label delta is **never negative**. On four of six runs it is *larger*
+than the single-label delta — the opposite of the claimed direction — and no run
+comes near P(≤0)=0.044. The claimed −0.1429 is exactly −1/7, a value an n=13
+stratum cannot produce.
+
+### What this changes
+
+**Remediation item 10** — "pre-register multi-label density as a covariate, or
+the predicted delta drop is uninterpretable" — rests on the refuted half. There
+is no evidential basis for predicting that roster rotation depresses the delta,
+and pre-registering a directional covariate on a number that does not reproduce
+would repeat the error the pre-registration exists to prevent.
+
+### What survives, and it is worth keeping
+
+The confound is real and **does not depend on sign**. If the roster moves
+multi-label density from 8.8% to 36.5%, and multi-label items behave differently
+in *either* direction, the pooled delta moves for compositional reasons. On the
+campaign's own test run the two strata differ by more than 0.15.
+
+So multi-label density should be **disclosed and stratified**, not predicted:
+report the multi-label share of any new roster alongside the stratified deltas,
+and treat a pooled movement as uninterpretable until the stratified figures are
+shown. That is the defensible form of item 10 and it costs nothing to run.
+
+`tests/test_multilabel_covariate_claim.py` holds this correction from both
+sides — it re-measures every qualifying run and goes red if any of them ever
+does reproduce the negative split, at which point item 10 should be re-opened
+rather than the test deleted.
+
+### Note on this correction
+
+This is the third round in which a round's own findings contained an error, and
+the second in which the error was a diagnostic that flattered the argument being
+made. B3's number was more favourable to its conclusion than any measurement
+supports, and it was quoted as *better established* than the finding it was
+being compared to. Nothing in the round-1 process would have caught it, because
+nobody re-ran it.
