@@ -22,7 +22,7 @@ import json
 import logging
 import os
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Final
 
@@ -47,6 +47,7 @@ AI_FRAMEWORK_NAMES: Final[frozenset[str]] = frozenset({
 })
 
 CURATED_PATH: Final[Path] = TRAINING_DIR / "hub_links_curated.jsonl"
+BRIDGE_PATH: Final[Path] = TRAINING_DIR / "hub_links_bridge.jsonl"
 TRAINING_OUTPUT_PATH: Final[Path] = TRAINING_DIR / "hub_links_training.jsonl"
 TRAINING_META_PATH: Final[Path] = TRAINING_DIR / "hub_links_training.meta.json"
 
@@ -103,6 +104,10 @@ class FilterReport:
     # false-provenance defect this field exists to close.
     corpus_path: str | None
     corpus_sha256: str | None
+    # How many Tier-2 bridge links were merged in. 0, never None, when no
+    # bridge corpus was read: "none present" and "field not written" have to
+    # stay distinguishable in an artifact.
+    n_bridge: int = 0
 
     @property
     def n_dropped(self) -> int:
@@ -246,7 +251,11 @@ def _artifact_sha256(path: Path) -> str | None:
 
 
 def fold_input_digests(
-    *, with_prose: bool, with_stopwords: bool, with_framework_identity: bool,
+    *,
+    with_prose: bool,
+    with_stopwords: bool,
+    with_framework_identity: bool,
+    bridge_path: Path | None = None,
 ) -> dict[str, str | None]:
     """The digests that pin the data one fold read.
 
@@ -275,6 +284,13 @@ def fold_input_digests(
 
     return {
         "curated_links_sha256": _artifact_sha256(CURATED_PATH),
+        # None when the run read no bridge corpus. Without this, two runs over
+        # different bridge corpora agree on git_sha, config and every other
+        # digest while disagreeing on the metric, and no artifact can say which
+        # corpus produced which number.
+        "bridge_links_sha256": (
+            _artifact_sha256(bridge_path) if bridge_path is not None else None
+        ),
         "all_controls_sha256": merged_corpus_sha256() if with_prose else None,
         "stopwords_sha256": (
             _artifact_sha256(STOPWORDS_PATH) if with_stopwords else None
@@ -291,6 +307,7 @@ def curated_link_filter_report(
     index: ProseIndex | None = None,
     *,
     recover_contested: bool = CONTESTED_RECOVERY_DEFAULT,
+    bridge_path: Path | None = None,
 ) -> tuple[FilterReport, str]:
     """Load the curated links and run the anchor gate over them.
 
@@ -298,8 +315,23 @@ def curated_link_filter_report(
     rather than repeating the tier call beside its own loop, which is how the
     two pools stopped agreeing.
 
+    `bridge_path` merges a Phase 2C Tier-2 corpus. It is the ONLY route by
+    which bridge links reach training, and it is here rather than in a caller
+    for the reason this function exists: one gate implementation. The merge
+    happens BEFORE the anchor gate, so a bridge link faces the same
+    resolvable-anchor floor as every other link -- a Tier-2 tag is not an
+    exemption.
+
+    Absent by default, so no existing caller changes. A path that does not
+    resolve RAISES rather than training bridge-free: a silent fallback would
+    report a null result as a measured one, which is the failure this whole
+    phase exists to avoid.
+
     Returns:
         (report, sha256 of the raw curated records).
+
+    Raises:
+        FileNotFoundError: if `bridge_path` is given and does not exist.
     """
     p = path or CURATED_PATH
     raw_links: list[dict[str, str]] = []
@@ -309,12 +341,28 @@ def curated_link_filter_report(
             if line:
                 raw_links.append(json.loads(line))
 
+    # Hashed BEFORE the merge, so the curated digest keeps meaning "the curated
+    # file" across bridge and non-bridge runs. The bridge corpus is pinned
+    # separately by fold_input_digests.
     raw_hash = compute_data_hash(raw_links)
     logger.info("Loaded %d curated links (hash=%s)", len(raw_links), raw_hash[:16])
+
+    n_bridge = 0
+    if bridge_path is not None:
+        from tract.bridge.links import bridge_training_records, load_bridge_links
+
+        bridge = load_bridge_links(bridge_path)
+        bridge_records = bridge_training_records(bridge)
+        n_bridge = len(bridge_records)
+        raw_links = raw_links + bridge_records
+        logger.info(
+            "Merged %d Tier-2 bridge links from %s", n_bridge, bridge_path,
+        )
 
     report = filter_training_links(
         raw_links, index or ProseIndex.load(), recover_contested=recover_contested,
     )
+    report = replace(report, n_bridge=n_bridge)
     logger.info(
         "After the anchor gate: %d usable links (dropped %d) against %s",
         len(report.kept), report.n_dropped, report.corpus_path,
@@ -324,6 +372,8 @@ def curated_link_filter_report(
 
 def load_and_filter_curated_links(
     path: Path | None = None,
+    *,
+    bridge_path: Path | None = None,
 ) -> tuple[list[TieredLink], str]:
     """Load curated links, filter by the resolved anchor, return with data hash.
 
@@ -335,7 +385,7 @@ def load_and_filter_curated_links(
     Returns:
         Tuple of (filtered links with tiers, SHA-256 hash of raw data).
     """
-    report, raw_hash = curated_link_filter_report(path)
+    report, raw_hash = curated_link_filter_report(path, bridge_path=bridge_path)
     return report.kept, raw_hash
 
 

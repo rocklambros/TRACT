@@ -27,7 +27,7 @@ from tract.framework_identity import FRAMEWORK_IDENTITY_PATH
 from tract.io import repo_relative
 from tract.stopwords import STOPWORDS_PATH
 from tract.text_selection import merged_corpus_path
-from tract.training.data_quality import CURATED_PATH
+from tract.training.data_quality import BRIDGE_PATH, CURATED_PATH
 
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results"
 
@@ -66,6 +66,11 @@ def tracked_inputs() -> dict[str, Path]:
         # a token set rebuilt between one fold and the next was invisible to the
         # one instrument whose whole job is to notice that.
         "framework_identity_sha256": FRAMEWORK_IDENTITY_PATH,
+        # Phase 2C. Absent on a run that used no bridge corpus, in which case
+        # the fold records None and _artifact_sha256 returns None here too, so
+        # the two agree. Present, it is what distinguishes two runs that agree
+        # on every other digest and disagree on the metric.
+        "bridge_links_sha256": BRIDGE_PATH,
     }
 
 

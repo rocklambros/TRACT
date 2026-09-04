@@ -226,7 +226,11 @@ def main() -> int:
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    tiered_links, raw_hash = load_and_filter_curated_links()
+    tiered_links, raw_hash = load_and_filter_curated_links(
+        bridge_path=(
+            Path(config.bridge_links_path) if config.bridge_links_path else None
+        )
+    )
     hierarchy = CREHierarchy.model_validate(
         load_json(PROCESSED_DIR / "cre_hierarchy.json")
     )

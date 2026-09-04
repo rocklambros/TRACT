@@ -425,6 +425,9 @@ def run_single_fold(
         with_prose=prose_index is not None,
         with_stopwords=config.use_stopword_filter,
         with_framework_identity=config.use_framework_identity_filter,
+        bridge_path=(
+            Path(config.bridge_links_path) if config.bridge_links_path else None
+        ),
     )
     atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
 
@@ -1024,7 +1027,12 @@ def run_experiment(
     logger.info("Starting experiment: %s", config.name)
     exp_start = time.time()
 
-    tiered_links, raw_hash = load_and_filter_curated_links()
+    bridge_path = (
+        Path(config.bridge_links_path) if config.bridge_links_path else None
+    )
+    tiered_links, raw_hash = load_and_filter_curated_links(
+        bridge_path=bridge_path
+    )
 
     hierarchy = CREHierarchy.model_validate(load_json(PROCESSED_DIR / "cre_hierarchy.json"))
     hub_ids = sorted(hierarchy.hubs.keys())
