@@ -53,6 +53,7 @@ asked for. Deterministic: fixed seed, sorted output.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -90,7 +91,10 @@ FOLD_DIRS: Final[dict[str, str]] = {
     "OWASP Top10 for ML": "fold_OWASP_Top10_for_ML",
 }
 
-N_RESAMPLES: Final[int] = 10_000
+# 100,000, not 10,000. At 10k the sibling module reproduced its reference
+# contrast on 11 of 12 seeds; at 100k, on 12 of 12. This module publishes
+# intervals into a results document, so it takes the count shown to be stable.
+N_RESAMPLES: Final[int] = 100_000
 BOOTSTRAP_SEED: Final[int] = 42
 CI_LOW_PCT: Final[float] = 2.5
 CI_HIGH_PCT: Final[float] = 97.5
@@ -290,6 +294,36 @@ def build_rows(run_dir: Path) -> list[ProbeRow]:
     return rows
 
 
+def _stratum_rng(
+    rows: list[ProbeRow], parent: np.random.Generator, tag: int = 0,
+) -> np.random.Generator:
+    """A generator determined by the stratum's contents, not by call order.
+
+    Ported from `gate_rule_candidates`, where the defect it fixes was measured:
+    one generator threaded through several strata makes each stratum's draws
+    depend on how many draws every prior stratum consumed, and the reported
+    interval then moves with argument order and with any unrelated upstream
+    draw. There that printed +0.4595 where the 500k reference is +0.4324.
+
+    This module had the same shape and publishes into
+    docs/campaign3-audit-mechanism.md, so it takes the same fix.
+    """
+    payload = "|".join(
+        f"{r['fold_dir']}\x1f{r['section']}\x1f"
+        f"{r['trained_hit1']}\x1f{r['zero_shot_hit1']}"
+        for r in rows
+    )
+    digest = hashlib.sha256(payload.encode("utf-8")).digest()[:16]
+    # getattr rather than attribute access: numpy types seed_seq as the
+    # ISeedSequence protocol, which does not declare `entropy` even though
+    # SeedSequence carries it. The isinstance guard is what makes the dynamic
+    # read safe, and it also covers a caller who built the generator from a
+    # bare BitGenerator.
+    entropy = getattr(parent.bit_generator.seed_seq, "entropy", None)
+    base = entropy if isinstance(entropy, int) else BOOTSTRAP_SEED
+    return np.random.default_rng([base, int.from_bytes(digest, "big"), tag])
+
+
 def delta_distribution(
     rows: list[ProbeRow], rng: np.random.Generator,
 ) -> tuple[float, np.ndarray[tuple[int, ...], np.dtype[np.float64]]]:
@@ -298,6 +332,10 @@ def delta_distribution(
     Resamples within fold and concatenates, matching the campaign's own
     `paired_bootstrap_delta`, so intervals here are comparable to published
     ones rather than being a second, differently-shaped estimator.
+
+    `rng` is a PARENT: the stream actually drawn from is derived from the
+    stratum's own contents via `_stratum_rng`, so this stratum's interval is
+    the same whether it is computed first, last, or after an unrelated draw.
     """
     if not rows:
         raise ValueError("Refusing to bootstrap an empty stratum.")
@@ -308,11 +346,17 @@ def delta_distribution(
         )
     folds = [np.array(v, dtype=float) for v in by_fold.values()]
     observed = float(np.concatenate(folds).mean())
-    resampled = np.empty(N_RESAMPLES, dtype=float)
-    for i in range(N_RESAMPLES):
-        drawn = [f[rng.integers(0, len(f), len(f))] for f in folds]
-        resampled[i] = np.concatenate(drawn).mean()
-    return observed, resampled
+    stream = _stratum_rng(rows, rng)
+    # Vectorised per fold and accumulated as sums, rather than concatenating
+    # inside a Python loop. Summing then dividing by the total item count is
+    # exactly the mean of the concatenation, and at N_RESAMPLES=100,000 the
+    # loop form is too slow to run.
+    total = sum(len(f) for f in folds)
+    acc = np.zeros(N_RESAMPLES, dtype=float)
+    for fold in folds:
+        idx = stream.integers(0, len(fold), (N_RESAMPLES, len(fold)))
+        acc += fold[idx].sum(axis=1)
+    return observed, acc / total
 
 
 def score(rows: list[ProbeRow], rng: np.random.Generator) -> DeltaStat:

@@ -52,8 +52,8 @@ story and equally consistent with several others.
 > So §3's three hypothesis tests are the expensive route to a conclusion one
 > line of arithmetic delivers. Worse, all three return
 > `established_at_alpha: False` against this file's own `ALPHA = 0.05`
-> (H1 P=0.459, H2 P=0.581, H3 P=0.064), yet §4 below says *"Overturned: the
-> explanation"* flatly and installs a replacement reading on the P=0.064
+> (H1 P=0.463, H2 P=0.587, H3 P=0.066), yet §4 below says *"Overturned: the
+> explanation"* flatly and installs a replacement reading on the P=0.066
 > contrast the probe itself labels SUGGESTIVE ONLY.
 >
 > **The conclusion stands; the warrant given for it does not.** Read §3 as
@@ -118,7 +118,7 @@ larger delta.
 |---|---|---|---|---|---|
 | verdict = **wrong** (genuine error) | 20 | 0.2000 | 0.3500 | +0.1500 [−0.0500, +0.3500] | +4.0 |
 | verdict = **weak** (discretionary) | 17 | 0.1765 | 0.5882 | **+0.4118** [+0.1176, +0.7059] | +2.0 |
-| **difference (weak − wrong)** | | | | **+0.2618 [−0.0735, +0.5971]**, P(≤0)=0.064 | |
+| **difference (weak − wrong)** | | | | **+0.2618 [−0.0735, +0.5971]**, P(≤0)=0.066 | |
 
 Doubly damning for the arithmetic story: the stratum with the **larger delta**
 had the **smaller degree change**.
@@ -143,8 +143,8 @@ not shrink it:
 |---|---|
 | touched | +0.2703 [+0.1081, +0.4324] |
 | untouched, as published (all folds) | +0.1000 [+0.0000, +0.2000] |
-| untouched, fold-matched to touched | +0.0851 [−0.0644, +0.2340] |
-| **touched − untouched, fold-matched** | **+0.1852 [−0.0523, +0.4209]**, P(≤0)=0.061 |
+| untouched, fold-matched to touched | +0.0851 [−0.0851, +0.2553] |
+| **touched − untouched, fold-matched** | **+0.1852 [−0.0523, +0.4267]**, P(≤0)=0.063 |
 
 So the audit stratification remains the right thing to report. What changes is
 what it means.
@@ -800,3 +800,46 @@ no trainable task at all.
   will also differ in framework composition, which R6 does not test for. The
   57.3% OWASP AI Exchange concentration in §5 is a separate exposure and needs
   its own guard.
+
+---
+
+## 8. Estimator correction, 2026-09-04 — every interval in this file was recomputed
+
+**The point estimates did not move. Five intervals and p-values did, in the
+third decimal. No verdict in this file changed.**
+
+`audit_mechanism_probe.py` produced every figure here by threading **one**
+`np.random.Generator` through each `score()` and `contrast()` call in sequence.
+A stratum's draws therefore depended on how many draws every prior stratum had
+consumed, so a published interval moved with the order the strata happened to
+be computed in and with any unrelated upstream draw.
+
+This is the identical defect that was found and fixed in the sibling module
+`gate_rule_candidates.py`, where it was *measured*: it printed **+0.4595** for a
+contrast whose 500,000-resample reference value is **+0.4324**. The fix there —
+deriving each stratum's stream from a SHA-256 hash of its own contents, so a
+stratum's interval is a property of that stratum — was not carried across at the
+time. It is now (`_stratum_rng`), together with the resample count: 10,000, the
+setting under which the sibling's artifact was measured, reproduced its
+reference on 11 of 12 seeds; 100,000 reproduced it on 12 of 12. This module
+publishes into a results document, so it takes the count shown to be stable.
+
+| figure | as first published | corrected |
+|---|---|---|
+| H1 contrast, P(≤0) | 0.459 | **0.463** |
+| H2 contrast, P(≤0) | 0.581 | **0.587** |
+| H3 contrast, P(≤0) | 0.064 | **0.066** |
+| untouched, fold-matched, CI | [−0.0644, +0.2340] | **[−0.0851, +0.2553]** |
+| touched − untouched fold-matched | [−0.0523, +0.4209], P=0.061 | **[−0.0523, +0.4267], P=0.063** |
+
+The headline primary is **unchanged and exact**: untouched n=110,
+**+0.1000 [+0.0000, +0.2000]**. H1, H2 and H3 all remain `SUGGESTIVE ONLY`
+against `ALPHA = 0.05`, so §3's reading and §4's conclusion stand as written.
+
+`tests/test_probe_order_independence.py` pins the property. Note for anyone
+extending those tests: the first version of its three `score()` tests compared
+`ci_low`/`ci_high` and **passed against the unfixed code** — on a binary
+fixture the 2.5th percentile is discrete and lands on the same value whichever
+stream produced it. They discriminate only when asserting on the full resample
+distribution. A test of a randomness property that compares two summary
+percentiles is probably not testing anything.
