@@ -1808,7 +1808,14 @@ def _cmd_bridge(args: argparse.Namespace) -> None:
 
         run_bridge_analysis(
             artifacts_path=PHASE1D_ARTIFACTS_PATH,
-            hub_links_path=TRAINING_DIR / "hub_links_by_framework.json",
+            # The CURATED grouped file, not the raw one. They differ -- raw is
+            # 83 AI hubs / 463 total, curated is 78 / 458 -- and everything
+            # else in the project (training, evaluation, the gate denominator,
+            # load_curated_links) uses the curated set. Reading the raw file
+            # here meant the Phase 2B bridge analysis, its recorded hub
+            # classification, and the counts published on the model card all
+            # described a corpus the audit had already changed.
+            hub_links_path=TRAINING_DIR / "hub_links_by_framework_curated.json",
             hierarchy_path=PROCESSED_DIR / "cre_hierarchy.json",
             output_dir=Path(args.output_dir),
             top_k=args.top_k,

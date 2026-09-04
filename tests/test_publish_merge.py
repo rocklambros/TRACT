@@ -38,7 +38,7 @@ CARD_BRIDGE: dict[str, Any] = {
     "counts": {"accepted": 5, "rejected": 58, "total": 63},
     # Required: the card refuses to publish unmeasured classification counts.
     "hub_classification": {
-        "ai_only": 83, "trad_only": 380, "naturally_bridged": 0, "unlinked": 59,
+        "ai_only": 78, "trad_only": 380, "naturally_bridged": 0, "unlinked": 64,
     },
 }
 

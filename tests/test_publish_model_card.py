@@ -34,7 +34,7 @@ SAMPLE_ECE = {"ece": 0.079, "ece_ci": {"ci_low": 0.049, "ci_high": 0.111}}
 SAMPLE_BRIDGE = {
     "counts": {"accepted": 5, "rejected": 58, "total": 63},
     "hub_classification": {
-        "ai_only": 83, "trad_only": 380, "naturally_bridged": 0, "unlinked": 59,
+        "ai_only": 78, "trad_only": 380, "naturally_bridged": 0, "unlinked": 64,
     },
 }
 
@@ -258,7 +258,7 @@ class TestBridgeSectionIsMeasuredNotFabricated:
     """
 
     CLASSIFICATION = {
-        "ai_only": 83, "trad_only": 380, "naturally_bridged": 0, "unlinked": 59,
+        "ai_only": 78, "trad_only": 380, "naturally_bridged": 0, "unlinked": 64,
     }
 
     def _card(self, tmp_path, classification=None):
@@ -289,10 +289,10 @@ class TestBridgeSectionIsMeasuredNotFabricated:
 
     def test_renders_the_measured_classification_counts(self, tmp_path) -> None:
         card = self._card(tmp_path, self.CLASSIFICATION)
-        assert "| AI-only | 83 |" in card
+        assert "| AI-only | 78 |" in card
         assert "| Traditional-only | 380 |" in card
         assert "| Naturally bridged (both) | 0 |" in card
-        assert "| Unlinked (structural) | 59 |" in card
+        assert "| Unlinked (structural) | 64 |" in card
 
     def test_does_not_carry_the_superseded_literal_counts(self, tmp_path) -> None:
         card = self._card(tmp_path, self.CLASSIFICATION)
@@ -306,8 +306,8 @@ class TestBridgeSectionIsMeasuredNotFabricated:
         # (8,022 pairs)" as literals, so it disagreed with the table above it
         # the moment either number moved.
         card = " ".join(self._card(tmp_path, self.CLASSIFICATION).split())
-        assert "83 AI-only hubs x 380 traditional-only hubs" in card
-        assert "31,540 pairs" in card
+        assert "78 AI-only hubs x 380 traditional-only hubs" in card
+        assert "29,640 pairs" in card
 
     def test_refuses_to_build_without_a_measured_classification(
         self, tmp_path,

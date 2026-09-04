@@ -25,8 +25,8 @@ def _setup_publish_workspace(tmp_path: Path) -> dict[str, Path]:
         # table it did not measure. See tests/test_publish_model_card.py
         # TestBridgeSectionIsMeasuredNotFabricated.
         "hub_classification": {
-            "ai_only": 83, "trad_only": 380,
-            "naturally_bridged": 0, "unlinked": 59,
+            "ai_only": 78, "trad_only": 380,
+            "naturally_bridged": 0, "unlinked": 64,
         },
         "candidates": [
             {"ai_hub_id": "AI-1", "trad_hub_id": "T-1", "status": "accepted",
