@@ -241,7 +241,7 @@ times.
 
 | path | responsibility |
 |---|---|
-| `scripts/build_bridge_packet.py` | Emit the annotator packet: AI hub sheet (top-N by eval weight) + NIST 800-53 control sheet. Model-free by construction. |
+| `scripts/build_bridge_packet.py` | Emit the annotator packet: AI hub sheet (**all 78, unranked** — A1 removed the top-N-by-eval-weight scoping as both unpassable and test-set-derived) + NIST 800-53 control sheet. Model-free by construction. |
 | `tract/bridge/links.py` | `load_bridge_links()`, `merge_bridge_links()`, the `BridgeLink` type, tier tagging |
 | `scripts/import_bridge_links.py` | Validate a filled CSV, refuse malformed/duplicate/unknown ids, write `hub_links_bridge.jsonl` atomically |
 | `scripts/analysis/orphan_rate.py` | Gate 1: strict-firewall orphan rate, before and after |
