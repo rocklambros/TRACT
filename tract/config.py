@@ -580,6 +580,14 @@ PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70
 
+# results/phase1b/CAMPAIGN3.md Section 3, verbatim:
+#   PASS iff P(true delta <= 0.10) < 0.05.
+# Held here rather than inline because the alternative reading -- testing the
+# lower bound of a two-sided 95% interval against the same threshold -- is the
+# SAME rule at alpha 0.025, and the two were used interchangeably in three
+# campaign write-ups. Naming the alpha makes the substitution visible.
+PREREGISTERED_GATE_ALPHA: Final[float] = 0.05
+
 PHASE1B_SOFT_FLOOR_LARGE: Final[float] = -0.05
 PHASE1B_SOFT_FLOOR_NIST: Final[float] = -0.10
 
