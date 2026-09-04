@@ -580,6 +580,21 @@ PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70
 
+# Preference order when two links collapse onto one anchor and only one pair can
+# be kept. Lower wins. Held here, not in tract/training/data.py, because
+# tract/ceiling_study.py needs the same order and must run without torch --
+# importing it from there pulled in torch, sentence-transformers and datasets.
+# It was previously duplicated for exactly that reason, and the duplicate then
+# drifted: neither copy learned about T2, and the lookup defaults to 99, so a
+# human-authored bridge link would have lost every contest to an automatic one.
+TIER_PRIORITY: Final[dict[str, int]] = {
+    "T1": 0,      # OpenCRE-curated, independently of TRACT
+    "T1-AI": 1,   # human-curated AI framework link
+    "T2": 2,      # Phase 2C bridge link: human-authored, one annotator
+    "T3": 3,      # AutomaticallyLinkedTo
+    "AL": 4,      # active-learning acceptance
+}
+
 # Stamped into the `link_type` of every Phase 2C bridge link so that
 # assign_quality_tier returns T2 rather than falling through to T1. Held here
 # rather than in tract/bridge/ so tract/training/data_quality.py can read it

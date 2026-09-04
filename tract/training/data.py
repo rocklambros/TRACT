@@ -18,6 +18,7 @@ import numpy as np
 import torch
 from datasets import Dataset
 
+from tract.config import TIER_PRIORITY
 from tract.hierarchy import CREHierarchy
 from tract.text_selection import ProseIndex, SelectionStats, select_control_text
 from tract.training.data_quality import TieredLink
@@ -76,22 +77,6 @@ def mine_hard_negatives(
             seen.add(neg_id)
             deduped.append(neg_id)
     return deduped[:n]
-
-
-TIER_PRIORITY: dict[str, int] = {
-    "T1": 0,
-    "T1-AI": 1,
-    # Phase 2C bridge links. Human-authored, so ahead of T3; one annotator
-    # rather than independent OpenCRE curation, so behind T1 and T1-AI.
-    # Absent from this table a T2 link took the .get default of 99 and lost
-    # every dedup contest, including against automatically-linked records --
-    # the exact inversion the table exists to prevent.
-    "T2": 2,
-    "T3": 3,
-    "AL": 4,
-}
-
-
 def build_training_pairs(
     tiered_links: list[TieredLink],
     hub_texts: dict[str, str],

@@ -80,13 +80,37 @@ jobs:
       # artifacts are not in the repo. The model-pins job below runs the one
       # integration test that can stand alone. This job never deselected them,
       # which nobody noticed while lint kept the job from starting.
+      # Removing -x was necessary and not sufficient. A test module that raises
+      # on IMPORT fails at collection, and pytest aborts the entire run on a
+      # collection error whatever -x says. That is how this job once executed
+      # 15 tests out of ~3,150 while reading as an ordinary red: two new test
+      # modules imported tract.training.orchestrate and tract.training.data,
+      # both of which pull in torch, which is not in requirements.txt.
+      #
+      # So the count is asserted before the run. A collection error, a bad
+      # conftest or a mis-scoped -m now fails with a message naming the cause
+      # instead of turning into a small red that looks like a known failure.
+      - name: Assert the suite is fully collected
+        run: |
+          COLLECTED=$(pytest tests/ -q --collect-only -m "not integration" 2>/dev/null \
+            | tail -1 | grep -oE '^[0-9]+' || echo 0)
+          echo "collected: $COLLECTED"
+          # Measured: 3,225 collected with the full stack, 3,043 with torch,
+          # datasets, transformers, sentence-transformers and peft all blocked
+          # (a harsher environment than this runner). The floor catches a
+          # collapse -- the real incident collected 15 -- without false-failing
+          # on ordinary churn.
+          if [ "$COLLECTED" -lt 2900 ]; then
+            echo "::error::Only $COLLECTED tests collected, expected >= 2900."
+            echo "A test module probably raised at import. Re-run collection to see it:"
+            pytest tests/ -q --collect-only -m "not integration" 2>&1 | tail -40
+            exit 1
+          fi
+
       - name: Run tests
         # No -x. With it, one failing test aborts the run and every test after
         # it is silently not executed -- the suite reports "1 failed, 40 passed"
-        # and reads as a single known failure. That is issue #55's failure mode,
-        # and it recurred here: a test importing torch (absent from
-        # requirements.txt) stopped 2,690 tests from running while the job
-        # looked like an ordinary red.
+        # and reads as a single known failure. That is issue #55's failure mode.
         run: pytest tests/ -q --timeout=60 -m "not integration"
 
   audit:

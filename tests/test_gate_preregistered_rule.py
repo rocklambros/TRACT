@@ -22,9 +22,24 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from tract.config import PHASE1B_GATE_HIT1_DELTA
+from tract.config import PHASE1B_GATE_HIT1_DELTA, PREREGISTERED_GATE_ALPHA
 from tract.training.evaluate import paired_bootstrap_delta
-from tract.training.orchestrate import PREREGISTERED_GATE_ALPHA, gate_decision
+
+
+def _gate_decision():  # type: ignore[no-untyped-def]
+    """Import gate_decision lazily; tract.training.orchestrate pulls in torch.
+
+    Module-level it would raise at COLLECTION on a runner without torch, and
+    pytest aborts the entire run on a collection error -- which is how this
+    repository once executed 15 tests while reading as an ordinary red. The
+    alpha and the bootstrap both live in torch-free modules, so most of this
+    file runs everywhere; only the tests that call gate_decision skip.
+    """
+    pytest.importorskip("torch", reason="tract.training.orchestrate needs it")
+    pytest.importorskip("datasets", reason="tract.training.orchestrate needs it")
+    from tract.training.orchestrate import gate_decision
+
+    return gate_decision
 
 
 def _folds(
@@ -95,11 +110,11 @@ class TestGateDecisionImplementsSectionThree:
         ]
 
     def test_reports_the_bound_probability(self) -> None:
-        d = gate_decision(self._records(0.40, 0.60, 200))
+        d = _gate_decision()(self._records(0.40, 0.60, 200))
         assert "p_delta_le_threshold" in d
 
     def test_reports_the_preregistered_verdict(self) -> None:
-        d = gate_decision(self._records(0.40, 0.60, 200))
+        d = _gate_decision()(self._records(0.40, 0.60, 200))
         assert "preregistered_pass" in d
 
     def test_the_verdict_applies_alpha_005_not_0025(self) -> None:
@@ -111,7 +126,7 @@ class TestGateDecisionImplementsSectionThree:
         assert PREREGISTERED_GATE_ALPHA == 0.05
 
     def test_verdict_agrees_with_the_probability_it_is_derived_from(self) -> None:
-        d = gate_decision(self._records(0.40, 0.60, 200))
+        d = _gate_decision()(self._records(0.40, 0.60, 200))
         assert d["preregistered_pass"] == (
             d["p_delta_le_threshold"] < PREREGISTERED_GATE_ALPHA
         )
@@ -122,7 +137,7 @@ class TestGateDecisionImplementsSectionThree:
         An explicit `p_delta_le_zero` key makes the two hypotheses
         distinguishable without reading the bootstrap source.
         """
-        d = gate_decision(self._records(0.40, 0.60, 200))
+        d = _gate_decision()(self._records(0.40, 0.60, 200))
         assert d["p_delta_le_zero"] == pytest.approx(d["p_value"])
 
 
@@ -154,6 +169,6 @@ class TestTheTwoRulesDisagreeInTheAlphaBand:
         records = TestGateDecisionImplementsSectionThree._records(
             0.40, 0.58, 400, seed=seed
         )
-        d = gate_decision(records)
+        d = _gate_decision()(records)
         assert d["preregistered_pass"] is True
         assert d["ci_low_pass"] is False
