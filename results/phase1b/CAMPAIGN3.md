@@ -332,6 +332,34 @@ The binding floor stays at **point estimate ≥ 0.10 and CI low > 0**, now
 evaluated on this partition. The historical +0.1743/n=109 and +0.1531/n=98
 figures are retired; both were computed against anchors that no longer exist.
 
+> **Amendment note, 2026-09-04 — the run artifact does not carry this partition,
+> and the field that looks like it carries the retired number.**
+>
+> `tract/training/echo.py` computes the frozen partition, and nothing in
+> production calls it. What a run writes is `lexical_overlap` from
+> `compute_lexical_overlap`, which splits **per arm against that arm's own
+> truncated anchors** — the budget-dependent ruler this section replaced. Its
+> docstring is explicit that a cross-arm comparison "belongs to analysis, not to
+> the per-run record", so the function is right about itself. The hazard is the
+> naming: the field is `hit_at_1_non_echo`, it sits in `aggregate_metrics.json`
+> where a reader looks for the side condition, and its denominator is
+> **n=109** — the figure retired two paragraphs above.
+>
+> So the binding side condition currently has no implementation that writes an
+> artifact. This is the same shape as the §3 gate probability, which no library
+> code computed until 2026-09-04 either. Until it is wired,
+> **`lexical_overlap.hit_at_1_non_echo` must not be quoted as the side
+> condition.** `tests/test_echo_partition_identity.py` holds both ends: it goes
+> red if the two denominators converge silently, and red again the day the
+> frozen partition acquires a production caller, at which point this note should
+> name the field that carries it.
+>
+> The partition's key was also corrected the same day. It was keyed on
+> `(framework_name, section_id)`, which is not unique — 5 keys collide across 13
+> of 147 items, and one mixed group forced **2 non-echo items into the echo
+> stratum**. It is now keyed on corpus index, which `apply_prose_to_corpus`
+> makes item-exact by guaranteeing "same items, same order".
+
 ### 1.4 Two hazards recorded for the curation round
 
 Neither changes the gate, and both change how the round must be run. They are

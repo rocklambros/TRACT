@@ -77,41 +77,60 @@ def is_echo(anchor: str, hub_name: str) -> bool:
     return bool(hub_words) and hub_words <= content_words(anchor)
 
 
-def frozen_echo_keys(
+def frozen_echo_indices(
     corpus: list[Any],
     hierarchy: CREHierarchy,
     prose_index: Any | None,
     stopwords: frozenset[str] | None,
-) -> set[tuple[str, str]]:
-    """(framework_name, section_id) for every item that is echo under ANY text.
+) -> frozenset[int]:
+    """Corpus indices of every item that is echo under ANY text it could present.
 
     Union of two partitions: the item's title, and its full prose with no
     length budget. `corpus` must be the title-keyed corpus that
     `build_evaluation_corpus` returns, BEFORE prose is applied -- item identity
     is fixed from titles, and this function needs both forms.
 
-    Keyed on (framework, section) rather than section alone: section ids are not
-    unique across frameworks in this corpus, and collapsing them undercounts.
+    KEYED ON INDEX, not on (framework_name, section_id). That key is not unique:
+    on the live 147-item corpus 5 keys collide across 13 items, and one group --
+    ('NIST AI 100-2', 'Sec. 2.2.4'), statuses [False, True, False] -- is mixed,
+    so keying on it forced two non-echo items into the echo stratum. The
+    binding side condition is evaluated on the non-echo stratum at n=91, where
+    two items are not nothing, and the collision rate roughly triples under the
+    roster proposed for the next round.
+
+    An index is usable here only because `apply_prose_to_corpus` guarantees
+    "same items, same order, same ground truth" and changes `control_text`
+    alone. That guarantee is why a key containing the text cannot be used to
+    match an item across the two forms, and why the index can.
     """
     from tract.text_selection import apply_prose_to_corpus
 
     names = {hub_id: node.name for hub_id, node in hierarchy.hubs.items()}
 
-    def keys_for(items: list[Any]) -> set[tuple[str, str]]:
-        return {
-            (item.framework_name, item.section_id)
-            for item in items
+    def indices_for(items: list[Any]) -> frozenset[int]:
+        return frozenset(
+            idx
+            for idx, item in enumerate(items)
             if is_echo(item.control_text, names.get(item.ground_truth_hub_id, ""))
-        }
-
-    title_echo = keys_for(corpus)
-    prose_echo: set[tuple[str, str]] = set()
-    if prose_index is not None:
-        prose_echo = keys_for(
-            apply_prose_to_corpus(
-                corpus, prose_index, stopwords, max_chars=UNTRUNCATED,
-            )
         )
+
+    title_echo = indices_for(corpus)
+    prose_echo: frozenset[int] = frozenset()
+    if prose_index is not None:
+        prose_items = apply_prose_to_corpus(
+            corpus, prose_index, stopwords, max_chars=UNTRUNCATED,
+        )
+        if len(prose_items) != len(corpus):
+            # Indices are only an identity while the two lists are aligned.
+            # apply_prose_to_corpus documents that they are; check it rather
+            # than trust it, because a silent misalignment would shift the
+            # partition by an offset and still look like a plausible result.
+            raise ValueError(
+                f"Prose corpus has {len(prose_items)} items against "
+                f"{len(corpus)} title items. Index identity does not hold, so "
+                "the frozen partition cannot be computed."
+            )
+        prose_echo = indices_for(prose_items)
 
     frozen = title_echo | prose_echo
     logger.info(
