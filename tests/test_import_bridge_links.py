@@ -129,8 +129,13 @@ class TestItRefusesBadRows:
                 _import(_csv(tmp_path, confidence=value), tmp_path / "o.jsonl")
 
     def test_accepts_every_value_on_the_scale(self, tmp_path: Path) -> None:
+        # One output per value: the importer now refuses to overwrite, because
+        # a second annotator's sheet used to destroy the first's silently.
         for value in ("1", "2", "3"):
-            _import(_csv(tmp_path, confidence=value), tmp_path / "o.jsonl")
+            _import(
+                _csv(tmp_path, confidence=value, name=f"s{value}.csv"),
+                tmp_path / f"o{value}.jsonl",
+            )
 
     def test_the_scale_matches_the_gate_one_floor(self) -> None:
         """The floor must sit inside the scale or it can never bind."""

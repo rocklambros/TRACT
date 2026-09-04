@@ -210,3 +210,10 @@ claudedocs/*
 # never arrives. Tracked deliberately and by name, which keeps the rest of
 # claudedocs/ the scratch space it was meant to be.
 !claudedocs/jetson-runpod-start.md
+
+# Phase 2C bridge corpora. Every record carries a named annotator and their
+# free text, and the default output lands in a tracked directory. Publishing a
+# volunteer's identity and verbatim words to a public repository is not a
+# decision an import command should make.
+data/training/hub_links_bridge*.jsonl
+data/training/hub_links_bridge*.reviewed.json
