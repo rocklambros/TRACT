@@ -123,8 +123,25 @@ class TestItRefusesBadRows:
             _import(_csv(tmp_path, duplicate=True), tmp_path / "o.jsonl")
 
     def test_refuses_a_confidence_outside_the_scale(self, tmp_path: Path) -> None:
-        with pytest.raises(ValueError, match="confidence"):
-            _import(_csv(tmp_path, confidence="7"), tmp_path / "o.jsonl")
+        """D4 sets a 1-3 scale. 4 and 5 are off it, not merely high."""
+        for value in ("0", "4", "5", "7"):
+            with pytest.raises(ValueError, match="confidence"):
+                _import(_csv(tmp_path, confidence=value), tmp_path / "o.jsonl")
+
+    def test_accepts_every_value_on_the_scale(self, tmp_path: Path) -> None:
+        for value in ("1", "2", "3"):
+            _import(_csv(tmp_path, confidence=value), tmp_path / "o.jsonl")
+
+    def test_the_scale_matches_the_gate_one_floor(self) -> None:
+        """The floor must sit inside the scale or it can never bind."""
+        from scripts.import_bridge_links import (
+            CONFIDENCE_MAX,
+            CONFIDENCE_MIN,
+            GATE1_CONFIDENCE_FLOOR,
+        )
+
+        assert CONFIDENCE_MIN < GATE1_CONFIDENCE_FLOOR <= CONFIDENCE_MAX
+        assert (CONFIDENCE_MIN, CONFIDENCE_MAX) == (1, 3)
 
     def test_refuses_a_non_numeric_confidence(self, tmp_path: Path) -> None:
         with pytest.raises(ValueError, match="confidence"):

@@ -37,9 +37,15 @@ REQUIRED_COLUMNS: Final[tuple[str, ...]] = (
     "control_id", "cre_id", "confidence", "rationale",
 )
 
-# The annotator sheet's confidence scale, inclusive.
+# The annotator sheet's confidence scale, inclusive. 1-3, per design decision
+# D4, which also sets the Gate 1 counting floor at >= 2. Not 1-5: a wider scale
+# here would silently admit values the gate's floor was never calibrated
+# against.
 CONFIDENCE_MIN: Final[int] = 1
-CONFIDENCE_MAX: Final[int] = 5
+CONFIDENCE_MAX: Final[int] = 3
+# A link below this does not count toward Gate 1. Enforced at reporting time,
+# not at import: a low-confidence link is data, it just is not evidence.
+GATE1_CONFIDENCE_FLOOR: Final[int] = 2
 
 
 def _known_hub_ids() -> frozenset[str]:
