@@ -271,6 +271,33 @@ own author recalls the intended mapping rather than judging it. Screening adds a
 disclosure question covering both the AI frameworks in the corpus and NIST
 800-53.
 
+### 4.4 Constraint: `hub_rep_format="path+name+standards"` stays unreachable
+
+Bridge links create a route by which this phase's own supervision reaches its
+own evaluation, and **the hub firewall does not close it.**
+
+`build_firewalled_hub_text(include_standards=True)` appends the standard
+sections linked to a hub, dropping only those of the held-out framework. Once
+traditional controls link to AI hubs, an AI hub carries NIST 800-53 sections.
+Hold out MITRE ATLAS and score it: those sections are not ATLAS, so the filter
+keeps them and `assert_firewall` passes. Nothing raises, and bridge-derived
+text is sitting in the representations the fold is scored against.
+
+The firewall is not broken. It is scoped to held-out-framework leakage, which
+is a different property from "the supervision under test must not reach the
+evaluation". Only the first one has an assertion behind it.
+
+This is prospective, not live: no caller supplies `standard_sections`, so
+`run_single_fold` raises on the format and the declared A3 ablation arm in
+`scripts/phase1b/ablation.py` has never run. **Phase 2C must not change that.**
+Enabling the standards format requires a bridge-exclusion rule designed first —
+hub text at evaluation time must not incorporate sections that arrived over a
+bridge link, because those links are the thing being measured.
+
+`tests/test_standards_format_bridge_exposure.py` holds the line: it fails the
+day a caller supplies `standard_sections`, and it demonstrates the clean
+firewall pass rather than describing it.
+
 ## 5. Testing
 
 Every claim above that a test can hold, a test holds:
