@@ -81,26 +81,26 @@ class TestPublishHFCLIParsing:
     def test_subcommand_exists(self) -> None:
         from tract.cli import build_parser
         parser = build_parser()
-        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo"])
+        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--zero-shot-results", "zs.json"])
         assert args.command == "publish-hf"
         assert args.repo_id == "test/repo"
 
     def test_dry_run_flag(self) -> None:
         from tract.cli import build_parser
         parser = build_parser()
-        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--dry-run"])
+        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--zero-shot-results", "zs.json", "--dry-run"])
         assert args.dry_run is True
 
     def test_skip_upload_flag(self) -> None:
         from tract.cli import build_parser
         parser = build_parser()
-        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--skip-upload"])
+        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--zero-shot-results", "zs.json", "--skip-upload"])
         assert args.skip_upload is True
 
     def test_gpu_hours_param(self) -> None:
         from tract.cli import build_parser
         parser = build_parser()
-        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--gpu-hours", "2.5"])
+        args = parser.parse_args(["publish-hf", "--repo-id", "test/repo", "--zero-shot-results", "zs.json", "--gpu-hours", "2.5"])
         assert args.gpu_hours == 2.5
 
 
@@ -234,6 +234,6 @@ class TestAIBOMValidationPin:
     def test_flags_default_to_off_and_unpinned(self) -> None:
         from tract.cli import build_parser
 
-        args = build_parser().parse_args(["publish-hf", "--repo-id", "test/repo"])
+        args = build_parser().parse_args(["publish-hf", "--repo-id", "test/repo", "--zero-shot-results", "zs.json"])
         assert args.validate_aibom is False
         assert args.aibom_commit == ""

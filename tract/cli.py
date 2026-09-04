@@ -449,8 +449,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Publish model to HuggingFace Hub",
         epilog=(
             "Examples:\n"
-            "  tract publish-hf --repo-id rockCO78/tract-cre-assignment --dry-run\n"
-            "  tract publish-hf --repo-id rockCO78/tract-cre-assignment\n"
+            "  tract publish-hf --repo-id rockCO78/tract-cre-assignment \\\n"
+            "      --zero-shot-results results/phase1b/<campaign>/aggregate_metrics.json \\\n"
+            "      --dry-run\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -459,6 +460,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_publish.add_argument("--dry-run", action="store_true", help="Build + scan, no upload")
     p_publish.add_argument("--skip-upload", action="store_true", help="Build + scan only")
     p_publish.add_argument("--gpu-hours", type=float, default=0.0, help="GPU training hours for model card")
+    p_publish.add_argument(
+        "--zero-shot-results", required=True,
+        help=("Path to the PAIRED per-fold zero-shot baseline for the campaign "
+              "being published (an aggregate_metrics.json with a per_framework "
+              "block). The card's Zero-shot and Delta columns are computed from "
+              "it. Required and not defaulted: which zero-shot run pairs with a "
+              "given campaign cannot be inferred from the artifacts -- "
+              "aggregate_metrics.json records model, hub_format and firewalled "
+              "and no campaign identifier -- and the five values this replaced "
+              "were hardcoded constants that published a comparison nobody ran."),
+    )
     p_publish.add_argument(
         "--validate-aibom", action="store_true",
         help=("Run the third-party AIBOM validator: clones aibom-generator at "
@@ -1678,8 +1690,13 @@ def _cmd_publish_hf(args: argparse.Namespace) -> None:
     model_dir = PHASE1D_DEPLOYMENT_MODEL_DIR / "model" / "model"
     bridge_report = BRIDGE_OUTPUT_DIR / "bridge_report.json"
 
+    # The baseline is forwarded, not defaulted. Calling this with two
+    # arguments made _load_fold_results raise every time, so publish-hf had no
+    # working path at all -- the guard was correct and the caller could never
+    # satisfy it.
     fold_results = _load_fold_results(
         PHASE1B_TEXTAWARE_RESULTS_DIR, PHASE1B_CORRECTED_METRICS_PATH,
+        Path(args.zero_shot_results),
     )
 
     publish_to_huggingface(
