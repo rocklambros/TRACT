@@ -366,3 +366,47 @@ And the round's own value is untested. As gated, the modal outcome is a FAIL
 that publishes nothing, and the design itself names it *"most likely"*. Nothing
 commits to publishing the corpus or the agreement number either way, so a
 volunteer's work currently has no guaranteed deliverable.
+
+---
+
+## H. Remediation status, 2026-09-06
+
+Recorded here rather than in a commit message, because the open column is what
+the next reader needs and it is the column that goes stale silently.
+
+### Closed
+
+| | finding | how |
+|---|---|---|
+| A1 | bridge links had no training consumer | merged in `curated_link_filter_report`, pinned by `bridge_links_sha256`, reachable via `run_fold --bridge-links` |
+| A2/A3 | Gate 2 scored a split with zero AI hubs, on a criterion a bridge-free arm passes 11/15 | restated on ENISA + BIML (50 items, 32 AI-only gold hubs), `ci_low > 0` against a bridge-free arm, power table stated in advance |
+| A4 | Gate 1's four conditions were prose | `scripts/analysis/gate1_report.py`; the 15-minute attack sheet now fails all five |
+| A5 | curation packet redistributed proprietary CSA prose | shared three-state guard on `REDISTRIBUTION_RESERVED`, hub sheet included |
+| A6 | CI ran 15 tests of 3,150 | lazy imports plus a collection floor; CI green on 3.11 and 3.12 |
+| A7 | Tier-3 rows live in the OpenCRE export | filter is an allowlist; PRD claim corrected to what the export carries |
+| B1 | blinding asserted against a public repo | annotators told not to read it; the unachievable half of the claim withdrawn |
+| B3/B4 | second import destroyed the first; no sanitisation | refuses without `--replace`; sanitised, with formula and bidi payloads refused |
+| B7 | fabricated throughput figure | marked a planning guess; the source says nothing was timed |
+| B8 | five documents disagreeing | reconciled, with the executable plan file banner-marked |
+| — | licence guard bypassable by case or whitespace | normalised; unknown ids raise |
+| — | Gate 1 unpassable under the prescribed workflow (Q4 structurally 0) | reads a directory of per-annotator corpora; Q2 keyed per annotator |
+| — | formula guard checked raw text, stored sanitised text | checks run on the stored result; five bypasses pinned |
+
+### Open
+
+| | finding | why it is still open |
+|---|---|---|
+| B2 | the handbook describes a different round | needs a Phase 2C handbook written against the packet that exists. `NONE` is now importable, which was the sharp edge |
+| B5 | CAMPAIGN3 §1.3's table is the retired key partition (56/91, not 54/93) | restating it changes a published side-condition figure; wants the owner's eye |
+| B6 | `preregistered_pass` uncorrected for selection, and no Tier-1 stratum | changes a gate's arithmetic; belongs with a run, not a merge |
+| C1 | `_build_fold_index_matrix` has the order dependence the probe fixed | moves every published interval; belongs with a rebaseline |
+| C2 | the echo index guard is a length check, blind to reordering | mutation-proven; cheap, but touches the frozen partition |
+| C5 | CSA AICM launderable as `csa_ccm` (203 of 243 shared control ids) | needs a packet-manifest digest on each link |
+| C6 | the packet's 78 hubs **are** the eval gold hub set | a disclosure, not a code fix |
+| C7/C8 | no packet lineage; `~$40` enforced nowhere | operational, before the round rather than before the merge |
+| C9/C10 | no consent or attribution statement; the handbook gives away a stratum | lands with B2 |
+| — | `results/bridge/` 46 Tier-3 edges still in `cre_hierarchy.json` with no per-edge marker | owner decision, deferred since round 1 |
+
+**None of the open items blocks the merge.** Every one of them blocks *running
+the round*, which is the correct place for that line to sit: the branch ships
+tooling and a pre-registration, and the round has not started.
