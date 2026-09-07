@@ -29,6 +29,7 @@ Read-only. Loads no model, writes nothing unless asked for JSON output.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 from collections import defaultdict
 from pathlib import Path
@@ -80,39 +81,106 @@ class Condition(TypedDict):
     submitted: float
     threshold: float
     passed: bool
-    # Q4 only: the human-human agreement rate, or None when fewer than two
-    # annotators worked the same control. None is not zero.
+    # Q4 only. All None when fewer than two annotators worked the same control:
+    # one person cannot agree with themselves, and a fabricated 1.0 in the
+    # project's first human-human measurement would be worse than an absence.
+    #
+    # `agreement` is kept as the both-linked figure for readers of earlier
+    # artifacts. `cohen_kappa` is the headline, because a raw rate on a task
+    # where most answers are NONE reads high at chance-level skill.
     agreement: float | None
+    cohen_kappa: float | None
+    agreement_both_linked: float | None
+    agreement_either_linked: float | None
+    n_both_linked: int
+    n_same_hub: int
+    n_one_linked_only: int
 
 
-def _q4(counting: list[BridgeLink], submitted: list[BridgeLink]) -> Condition:
-    """Double-annotation rate, and the agreement among the overlap.
+def _q4(
+    counting: list[BridgeLink],
+    submitted: list[BridgeLink],
+    reviewed_by: dict[str, int] | None = None,
+) -> Condition:
+    """Double-annotation rate, and agreement under every defensible denominator.
 
-    Agreement is over the SET of hubs two annotators gave the same control --
-    Jaccard, so partial overlap is partial credit. It is `None` when no control
-    was worked by two people, because one person cannot agree with themselves
-    and a rate of 1.0 there would be a fabricated number in the one place the
-    pre-registration calls this project's first human-human measurement.
+    A single agreement number on this task is a CHOICE OF DENOMINATOR, and the
+    choice has to be visible rather than made silently. Measured on the first
+    real round:
+
+        both linked, same hub          23   agree
+        both linked, different hub      3   disagree
+        one linked, other said NONE    28   disagree
+        both said NONE                242   trivially agree
+
+    Jaccard over "controls both linked" gives 23/26 = 0.885 and drops the 28 --
+    the largest disagreement category. Counting NONE-NONE gives 265/300 = 0.883,
+    which is the negative-class inflation the pre-registration named in advance:
+    "the negative class dominates and raw agreement will read ~95% at
+    chance-level skill". The same data chance-corrected gives kappa = 0.539.
+
+    So `cohen_kappa` is the headline -- it is what the pre-registration asked
+    for -- and the raw figures sit beside it labelled by their denominator.
+
+    Everything is None, never 1.0 or 0.0, when fewer than two annotators worked
+    the same control. One person cannot agree with themselves, and this is the
+    project's first human-human measurement.
     """
     by_control: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
     for link in counting:
         by_control[link.section_id][link.annotator_id].add(link.cre_id)
 
-    doubled = {
-        control: annotators
-        for control, annotators in by_control.items()
-        if len(annotators) >= 2
-    }
+    doubled = {c: a for c, a in by_control.items() if len(a) >= 2}
     rate = len(doubled) / len(by_control) if by_control else 0.0
 
-    agreement: float | None = None
-    if doubled:
-        scores: list[float] = []
-        for annotators in doubled.values():
-            sets = sorted(annotators.values(), key=len, reverse=True)[:2]
-            union = sets[0] | sets[1]
-            scores.append(len(sets[0] & sets[1]) / len(union) if union else 0.0)
-        agreement = sum(scores) / len(scores)
+    annotators = sorted({link.annotator_id for link in counting})
+    kappa: float | None = None
+    both_linked_agreement: float | None = None
+    either_linked_agreement: float | None = None
+    n_both = n_same = n_one_only = 0
+
+    if len(annotators) >= 2:
+        # The two most productive annotators. A pairwise statistic needs a pair;
+        # with three or more this is the pair with the most overlap to report on.
+        a_id, b_id = annotators[0], annotators[1]
+        linked: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
+        for link in counting:
+            linked[link.annotator_id][link.section_id].add(link.cre_id)
+
+        a_links, b_links = linked[a_id], linked[b_id]
+        both = set(a_links) & set(b_links)
+        n_both = len(both)
+        n_same = sum(1 for c in both if a_links[c] == b_links[c])
+        n_one_only = len(set(a_links) ^ set(b_links))
+
+        if n_both:
+            both_linked_agreement = n_same / n_both
+        if n_both + n_one_only:
+            either_linked_agreement = n_same / (n_both + n_one_only)
+
+        # Cohen's kappa on the LINK / NO-LINK decision, over every control the
+        # annotators REVIEWED -- which is not the same as the controls that
+        # produced links.
+        #
+        # The corpus holds links only; a NONE judgement is not a link, so it is
+        # recorded in the .reviewed.json sidecar instead. Deriving the
+        # population from the links alone gave kappa = -0.1033 on the first real
+        # round, because the ~242 controls both annotators judged NONE were
+        # invisible and the population collapsed to the 54 where at least one
+        # linked. With the true denominator the same data gives 0.54. A kappa
+        # computed on the wrong population is as wrong as the flattering raw
+        # rate, just in the other direction.
+        n = min(reviewed_by.values()) if reviewed_by else 0
+        if n:
+            a_yes, b_yes = len(a_links), len(b_links)
+            both_yes = len(both)
+            observed = (both_yes + (n - a_yes - b_yes + both_yes)) / n
+            expected = (
+                (a_yes / n) * (b_yes / n)
+                + ((n - a_yes) / n) * ((n - b_yes) / n)
+            )
+            if expected < 1.0:
+                kappa = (observed - expected) / (1.0 - expected)
 
     submitted_controls: dict[str, set[str]] = defaultdict(set)
     for link in submitted:
@@ -128,19 +196,23 @@ def _q4(counting: list[BridgeLink], submitted: list[BridgeLink]) -> Condition:
         submitted=submitted_rate,
         threshold=PHASE2C_Q4_MIN_DOUBLE_ANNOTATED,
         passed=rate >= PHASE2C_Q4_MIN_DOUBLE_ANNOTATED,
-        agreement=agreement,
+        agreement=both_linked_agreement,
+        cohen_kappa=kappa,
+        agreement_both_linked=both_linked_agreement,
+        agreement_either_linked=either_linked_agreement,
+        n_both_linked=n_both,
+        n_same_hub=n_same,
+        n_one_linked_only=n_one_only,
     )
 
 
 def _resolve(bridge_path: Path) -> list[Path]:
     """One file, or every corpus in a directory.
 
-    The importer refuses to overwrite and tells the operator to write one file
-    per annotator. This function read one path with no merge, so Q4 -- which
-    counts annotators WITHIN a corpus -- was structurally 0.0 under the exact
-    workflow the importer prescribes. A flawless single-annotator round failed
-    Gate 1 on a condition it could not satisfy, and the only way to satisfy it
-    was a manual concatenation the tooling never mentioned.
+    The importer refuses to overwrite and writes one file per annotator. This
+    read one path with no merge, so Q4 -- which counts annotators WITHIN a
+    corpus -- was structurally 0.0 under the exact workflow the importer
+    prescribes.
     """
     if bridge_path.is_dir():
         found = sorted(bridge_path.glob("*.jsonl"))
@@ -149,11 +221,10 @@ def _resolve(bridge_path: Path) -> list[Path]:
                 f"{bridge_path} is a directory with no .jsonl corpus in it. "
                 f"Per-annotator corpora belong in {BRIDGE_CORPUS_DIR}."
             )
-        # Refuse the parent. data/training/ holds hub_links.jsonl,
-        # hub_links_curated.jsonl and hub_links_training.jsonl -- the GOLD link
-        # files -- so globbing it hands gold to a bridge loader. It fails
-        # loudly on a missing field, but the operator is left reading a schema
-        # error instead of being told they pointed at the wrong directory.
+        # Refuse the parent. data/training/ holds the curated GOLD link files,
+        # so globbing it hands gold to a bridge loader -- which fails on a
+        # missing field, leaving the operator reading a schema error instead of
+        # being told they pointed at the wrong directory.
         gold = [p for p in found if p.name in GOLD_LINK_FILENAMES]
         if gold:
             raise ValueError(
@@ -164,6 +235,24 @@ def _resolve(bridge_path: Path) -> list[Path]:
             )
         return found
     return [bridge_path]
+
+
+def _reviewed_counts(sources: list[Path]) -> dict[str, int]:
+    """How many controls each annotator actually reviewed.
+
+    From the .reviewed.json sidecars the importer writes. This is the
+    denominator the corpus itself cannot supply: a NONE judgement is not a link,
+    so it appears in no .jsonl, and without these counts an agreement statistic
+    sees only the controls where somebody linked.
+    """
+    counts: dict[str, int] = {}
+    for source in sources:
+        sidecar = source.with_suffix(".reviewed.json")
+        if not sidecar.is_file():
+            continue
+        payload = json.loads(sidecar.read_text(encoding="utf-8"))
+        counts[payload["annotator_id"]] = int(payload["n_reviewed"])
+    return counts
 
 
 def gate1_report(bridge_path: Path) -> dict[str, Any]:
@@ -234,6 +323,12 @@ def gate1_report(bridge_path: Path) -> dict[str, Any]:
             threshold=PHASE2C_Q1_MIN_DISTINCT_CONTROLS,
             passed=distinct_controls >= PHASE2C_Q1_MIN_DISTINCT_CONTROLS,
             agreement=None,
+            cohen_kappa=None,
+            agreement_both_linked=None,
+            agreement_either_linked=None,
+            n_both_linked=0,
+            n_same_hub=0,
+            n_one_linked_only=0,
         ),
         "Q2_max_hubs_per_control": Condition(
             value=max_hubs,
@@ -246,6 +341,12 @@ def gate1_report(bridge_path: Path) -> dict[str, Any]:
             threshold=PHASE2C_Q2_MAX_HUBS_PER_CONTROL,
             passed=submitted_max_hubs <= PHASE2C_Q2_MAX_HUBS_PER_CONTROL,
             agreement=None,
+            cohen_kappa=None,
+            agreement_both_linked=None,
+            agreement_either_linked=None,
+            n_both_linked=0,
+            n_same_hub=0,
+            n_one_linked_only=0,
         ),
         "Q3_confidence_floor": Condition(
             value=len(counting),
@@ -256,8 +357,14 @@ def gate1_report(bridge_path: Path) -> dict[str, Any]:
             # floor has no evidence in it at all.
             passed=bool(counting),
             agreement=None,
+            cohen_kappa=None,
+            agreement_both_linked=None,
+            agreement_either_linked=None,
+            n_both_linked=0,
+            n_same_hub=0,
+            n_one_linked_only=0,
         ),
-        "Q4_double_annotated": _q4(counting, links),
+        "Q4_double_annotated": _q4(counting, links, _reviewed_counts(sources)),
     }
 
     orphan_reduction_passed = (
@@ -307,12 +414,25 @@ def _log(report: dict[str, Any]) -> None:
             condition["threshold"],
             "PASS" if condition["passed"] else "FAIL",
         )
-    agreement = report["conditions"]["Q4_double_annotated"]["agreement"]
-    logger.info(
-        "  human-human agreement    : %s",
-        "not measured (fewer than two annotators on any control)"
-        if agreement is None else f"{agreement:.4f}",
-    )
+    q4 = report["conditions"]["Q4_double_annotated"]
+    if q4["cohen_kappa"] is None:
+        logger.info(
+            "  human-human agreement    : not measured (fewer than two "
+            "annotators on any control)"
+        )
+    else:
+        # The kappa first, because a raw rate on a task where most answers are
+        # NONE reads high at chance-level skill. The denominators follow, so
+        # nobody has to guess which one a quoted figure came from.
+        logger.info("  human-human agreement (Cohen's kappa, link decision): "
+                    "%.4f", q4["cohen_kappa"])
+        logger.info("    same hub, of %d both linked          : %.4f",
+                    q4["n_both_linked"], q4["agreement_both_linked"])
+        logger.info("    same hub, of %d either linked        : %.4f",
+                    q4["n_both_linked"] + q4["n_one_linked_only"],
+                    q4["agreement_either_linked"])
+        logger.info("    %d controls one linked and the other did not",
+                    q4["n_one_linked_only"])
     logger.info("  GATE 1: %s", "PASS" if report["passed"] else "FAIL")
     logger.info("=" * 66)
 

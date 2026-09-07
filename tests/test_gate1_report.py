@@ -372,3 +372,97 @@ class TestItRefusesTheGoldDirectory:
 
         assert "BRIDGE_CORPUS_DIR" in inspect.getsource(main)
         assert BRIDGE_CORPUS_DIR.name == "bridge"
+
+
+class TestQ4ReportsAgreementHonestly:
+    """The headline agreement figure was the most flattering denominator.
+
+    Measured on the real round: 23 controls both annotators linked to the SAME
+    hub, 3 to different hubs, **28 where one linked and the other said NONE**,
+    and 242 where both said NONE.
+
+    Jaccard over "controls both linked" gives 23/26 = 0.8846 and silently drops
+    the 28 -- the largest disagreement category. Counting NONE-NONE gives
+    265/300 = 0.8833, which is the negative-class inflation the
+    pre-registration named in advance: "the negative class dominates and raw
+    agreement will read ~95% at chance-level skill". Chance-corrected, the same
+    data gives Cohen's kappa = 0.539.
+
+    So Q4 reports the kappa as the headline and every denominator beside it. A
+    single agreement number on this task is a choice of denominator, and the
+    choice must be visible rather than made silently.
+    """
+
+    @pytest.fixture()
+    def two_annotators(self, tmp_path: Path) -> Path:
+        """Reproduces the real round's shape at small scale."""
+        hubs = _hubs(10)
+        d = tmp_path / "bridge"
+        d.mkdir()
+        a: list[BridgeLink] = []
+        b: list[BridgeLink] = []
+        for i in range(40):          # both link, same hub -> agreement
+            a.append(_link(f"AC-{i}", hubs[i % 10], annotator="a1"))
+            b.append(_link(f"AC-{i}", hubs[i % 10], annotator="a2"))
+        for i in range(40, 45):      # both link, different hub -> disagreement
+            a.append(_link(f"AC-{i}", hubs[0], annotator="a1"))
+            b.append(_link(f"AC-{i}", hubs[1], annotator="a2"))
+        for i in range(45, 55):      # only a1 links -> disagreement, was dropped
+            a.append(_link(f"AC-{i}", hubs[2], annotator="a1"))
+        _write(d, a).rename(d / "a1.jsonl")
+        _write(d, b).rename(d / "a2.jsonl")
+        # The sidecars the importer writes. Without them there is no reviewed
+        # denominator, and kappa is correctly None -- a corpus holds links only,
+        # so the controls judged NONE are invisible to it.
+        for who, n_linked in (("a1", 55), ("a2", 45)):
+            (d / f"{who}.reviewed.json").write_text(
+                json.dumps({
+                    "annotator_id": who, "created_at": "2026-09-07T12:00:00Z",
+                    "framework_id": "nist_800_53", "n_reviewed": 300,
+                    "n_linked": n_linked, "n_no_hub": 300 - n_linked,
+                    "no_hub_controls": [],
+                }),
+                encoding="utf-8",
+            )
+        return d
+
+    def test_it_reports_a_chance_corrected_figure(
+        self, two_annotators: Path
+    ) -> None:
+        q = gate1_report(two_annotators)["conditions"]["Q4_double_annotated"]
+        assert q["cohen_kappa"] is not None, (
+            "the pre-registration asks for a chance-corrected figure; raw "
+            "agreement on a task dominated by NONE reads high at chance skill"
+        )
+
+    def test_it_reports_every_denominator(self, two_annotators: Path) -> None:
+        q = gate1_report(two_annotators)["conditions"]["Q4_double_annotated"]
+        for key in ("agreement_both_linked", "agreement_either_linked",
+                    "n_both_linked", "n_one_linked_only", "n_same_hub"):
+            assert key in q, f"Q4 omits {key}"
+
+    def test_the_excluded_disagreements_are_counted_and_visible(
+        self, two_annotators: Path
+    ) -> None:
+        """The 10 controls only one annotator linked must be reported."""
+        q = gate1_report(two_annotators)["conditions"]["Q4_double_annotated"]
+        assert q["n_one_linked_only"] == 10
+
+    def test_the_two_denominators_actually_differ_here(
+        self, two_annotators: Path
+    ) -> None:
+        """If they were equal the distinction would be decorative."""
+        q = gate1_report(two_annotators)["conditions"]["Q4_double_annotated"]
+        assert q["agreement_both_linked"] > q["agreement_either_linked"], (
+            "the both-linked denominator must be the more flattering one, or "
+            "this test is not exercising the case it was written for"
+        )
+
+    def test_a_single_annotator_still_reports_nothing(
+        self, tmp_path: Path
+    ) -> None:
+        """One person cannot agree with themselves, in any denominator."""
+        links = [_link(f"AC-{i}", _hubs(5)[i % 5]) for i in range(45)]
+        q = gate1_report(_write(tmp_path, links))["conditions"]["Q4_double_annotated"]
+        assert q["cohen_kappa"] is None
+        assert q["agreement_both_linked"] is None
