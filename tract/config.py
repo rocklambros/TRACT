@@ -198,6 +198,14 @@ PROSE_LICENCE_ADJUDICATED_PERMISSIVE: Final[frozenset[str]] = frozenset({
     "eu_gpai_cop",  # "Published for public use"
     "nist_800_63",  # US Government work, not subject to domestic copyright
     "nist_ssdf",    # US Government work, not subject to domestic copyright
+    # Adjudicated 2026-09-06 by the owner, on the same basis as the two above:
+    # all four are NIST publications authored by US federal employees. The table
+    # had recorded two of the six and left four UNDETERMINED, which blocked the
+    # Phase 2C annotator packet whose default framework is nist_800_53.
+    "nist_800_53",
+    "nist_ai_100_2",
+    "nist_ai_600_1",
+    "nist_ai_rmf",
 })
 
 # Reserved by the publisher AND ruled redistributable for this project by the
