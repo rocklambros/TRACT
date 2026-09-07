@@ -420,6 +420,14 @@ def assert_checkpoint_is_inert(checkpoint_dir: Path) -> None:
                     f"contains. Re-save the checkpoint as safetensors."
                 )
 
+    # codeql[py/clear-text-logging-sensitive-data]
+    # False positive on the identifier, not the value. CodeQL's sensitive-data
+    # heuristic matches the NAME `TRUSTED_MODULE_NAMESPACE`; the value is the
+    # module-level Final[str] "sentence_transformers." -- a public package name
+    # prefix, fixed at import, never derived from input and never a credential.
+    # The other three operands are a directory path, an int counter and the
+    # literal "modules.json". Verified 2026-09-07 against alert #2, which has
+    # been open on main since 2026-08-29.
     logger.debug(
         "Vetted %s as inert: %d %s validated against %s",
         checkpoint_dir, modules_vetted, MODULES_CONFIG_NAME,
