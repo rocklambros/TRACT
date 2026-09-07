@@ -198,6 +198,14 @@ PROSE_LICENCE_ADJUDICATED_PERMISSIVE: Final[frozenset[str]] = frozenset({
     "eu_gpai_cop",  # "Published for public use"
     "nist_800_63",  # US Government work, not subject to domestic copyright
     "nist_ssdf",    # US Government work, not subject to domestic copyright
+    # Adjudicated 2026-09-06 by the owner, on the same basis as the two above:
+    # all four are NIST publications authored by US federal employees. The table
+    # had recorded two of the six and left four UNDETERMINED, which blocked the
+    # Phase 2C annotator packet whose default framework is nist_800_53.
+    "nist_800_53",
+    "nist_ai_100_2",
+    "nist_ai_600_1",
+    "nist_ai_rmf",
 })
 
 # Reserved by the publisher AND ruled redistributable for this project by the
@@ -252,6 +260,13 @@ HOLDOUT_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
 # entry here is missing from NOTICE. A new ingest cannot skip the question.
 UNDETERMINED_LICENSE: Final[str] = "UNDETERMINED"
 
+# Adjudicated 2026-09-06 by the repository owner: nist_800_53, nist_ai_100_2,
+# nist_ai_600_1 and nist_ai_rmf carry the same terms as nist_800_63 and
+# nist_ssdf, which were already recorded. All six are NIST publications authored
+# by US federal employees. The table had been internally inconsistent for one
+# publisher, and the four unadjudicated entries blocked the Phase 2C annotator
+# packet, whose default framework is nist_800_53.
+
 FRAMEWORK_LICENSES: Final[dict[str, str]] = {
     "aiuc_1": UNDETERMINED_LICENSE,
     "asvs": "CC-BY-SA-4.0",
@@ -288,14 +303,26 @@ FRAMEWORK_LICENSES: Final[dict[str, str]] = {
         "licence, no reproduction without prior written permission."
     ),
     "mitre_atlas": "Apache-2.0",
-    "nist_800_53": UNDETERMINED_LICENSE,
+    "nist_800_53": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
     "nist_800_63": (
         "US Government work, not subject to copyright in the United States. "
         "Attribution appreciated by NIST."
     ),
-    "nist_ai_100_2": UNDETERMINED_LICENSE,
-    "nist_ai_600_1": UNDETERMINED_LICENSE,
-    "nist_ai_rmf": UNDETERMINED_LICENSE,
+    "nist_ai_100_2": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
+    "nist_ai_600_1": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
+    "nist_ai_rmf": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
     "nist_ssdf": (
         "US Government work, not subject to copyright in the United States. "
         "Attribution appreciated by NIST."
@@ -580,6 +607,59 @@ PHASE1B_GATE_HIT1_DELTA: Final[float] = 0.10
 PHASE1B_GATE_HIT1_MIN: Final[float] = 0.516
 PHASE1B_GATE_HIT5_MIN: Final[float] = 0.70
 
+# Preference order when two links collapse onto one anchor and only one pair can
+# be kept. Lower wins. Held here, not in tract/training/data.py, because
+# tract/ceiling_study.py needs the same order and must run without torch --
+# importing it from there pulled in torch, sentence-transformers and datasets.
+# It was previously duplicated for exactly that reason, and the duplicate then
+# drifted: neither copy learned about T2, and the lookup defaults to 99, so a
+# human-authored bridge link would have lost every contest to an automatic one.
+TIER_PRIORITY: Final[dict[str, int]] = {
+    "T1": 0,      # OpenCRE-curated, independently of TRACT
+    "T1-AI": 1,   # human-curated AI framework link
+    "T2": 2,      # Phase 2C bridge link: human-authored, one annotator
+    "T3": 3,      # AutomaticallyLinkedTo
+    "AL": 4,      # active-learning acceptance
+}
+
+# ── Phase 2C gates ────────────────────────────────────────────────────────
+# docs/phase2c-preregistration.md Section 2, verbatim. Held here rather than
+# read from the markdown so a mismatch between the two is a test failure
+# instead of a reading. Every one of these existed only as prose until
+# checkpoint 2 demonstrated that a one-control sheet mapping AC-1 onto all 78
+# hub ids -- copied from the packet's own first column, confidence 1, rationale
+# "." -- takes the orphan rate from 78/78 to 0/78 while violating three of them
+# with no code objecting.
+PHASE2C_GATE1_MAX_ORPHANS: Final[int] = 55
+PHASE2C_GATE1_MIN_DEORPHANED: Final[int] = 23
+# Q1: distinct controls that must contribute at least one accepted link.
+# 23 links from one control is not a sweep.
+PHASE2C_Q1_MIN_DISTINCT_CONTROLS: Final[int] = 40
+# Q2: a control mapping to more than this many AI hubs is making a judgement
+# about the region, not about the control.
+PHASE2C_Q2_MAX_HUBS_PER_CONTROL: Final[int] = 6
+# Q3: a link below this does not count toward Gate 1. Low-confidence links are
+# data, not evidence.
+PHASE2C_Q3_CONFIDENCE_FLOOR: Final[int] = 2
+# Q4: fraction of controls that must be annotated by two people. Not a
+# threshold on the agreement rate -- a requirement that the number exist.
+PHASE2C_Q4_MIN_DOUBLE_ANNOTATED: Final[float] = 0.15
+
+# Stamped into the `link_type` of every Phase 2C bridge link so that
+# assign_quality_tier returns T2 rather than falling through to T1. Held here
+# rather than in tract/bridge/ so tract/training/data_quality.py can read it
+# without importing the bridge package. Deliberately not "AutomaticallyLinkedTo",
+# which already denotes the deterministic CAPEC->CWE->CRE chain and tiers T3.
+BRIDGE_LINK_TYPE: Final[str] = "BridgeCurated"
+
+# results/phase1b/CAMPAIGN3.md Section 3, verbatim:
+#   PASS iff P(true delta <= 0.10) < 0.05.
+# Held here rather than inline because the alternative reading -- testing the
+# lower bound of a two-sided 95% interval against the same threshold -- is the
+# SAME rule at alpha 0.025, and the two were used interchangeably in three
+# campaign write-ups. Naming the alpha makes the substitution visible.
+PREREGISTERED_GATE_ALPHA: Final[float] = 0.05
+
 PHASE1B_SOFT_FLOOR_LARGE: Final[float] = -0.05
 PHASE1B_SOFT_FLOOR_NIST: Final[float] = -0.10
 
@@ -705,6 +785,29 @@ PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES: Final[dict[str, float]] = {
 PHASE5_OPENCRE_STALENESS_URL: Final[str] = "https://opencre.org/rest/v1/root_cres"
 PHASE5_OPENCRE_STALENESS_TIMEOUT_S: Final[int] = 30
 PHASE5_GROUND_TRUTH_PROVENANCE: Final[str] = "ground_truth_T1-AI"
+
+# What the OpenCRE export is permitted to carry. An ALLOWLIST, because the
+# previous filter was `provenance != ground_truth_T1-AI` -- a blocklist of one,
+# which let every other provenance through by default. Measured on
+# results/phase1c/crosswalk.db: 558 active_learning_round_2 rows passed every
+# clause, against PRD.md's claim that "nothing model-derived is downstream in
+# ... the OpenCRE fork import, or the Phase 5B export".
+#
+# active_learning_round_2 IS model-derived and IS exported. That is a deliberate
+# owner decision recorded 2026-09-06, and the PRD sentence was corrected to
+# match rather than the rows being dropped. What changed is that the export now
+# names what it permits, and refuses a provenance nobody has classified.
+PHASE5_EXPORTABLE_PROVENANCES: Final[frozenset[str]] = frozenset({
+    "active_learning_round_2",
+})
+
+# Provenances the export deliberately withholds. Kept beside the allowlist so
+# that "known and excluded" and "never classified" stay distinguishable: an
+# unrecognised value raises rather than being silently dropped OR silently
+# shipped.
+PHASE5_WITHHELD_PROVENANCES: Final[frozenset[str]] = frozenset({
+    PHASE5_GROUND_TRUTH_PROVENANCE,
+})
 PHASE5_CANONICAL_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "canonical_export"
 # Default output of `tract export --opencre`. Named here rather than repeated
 # as "./opencre_export" at two CLI call sites, so the gitignore gate and the
@@ -713,9 +816,25 @@ PHASE5_OPENCRE_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "opencre_export"
 
 # ── Phase 2B: Bridge Analysis ─────────────────────────────────────────
 
+# All eight AI-security frameworks in the corpus, not just the five that
+# rotate through the LOFO roster. ENISA, ETSI and BIML are AI/ML-security
+# frameworks -- ENISA maps to "AI model performance validation" and "Anomalous
+# AI input handling", BIML to "Data poisoning of train/finetune/augment" and
+# "Supply-chain model poisoning" -- and listing only the rotating five made
+# `classify_hubs` count them on the TRADITIONAL side. That is what produced the
+# published claim of 60 "naturally bridged" hubs whose worked example was
+# "Data poisoning (linked by both ATLAS and CWE)": MITRE ATLAS hubs and CWE
+# hubs intersect in ZERO hubs, and the traditional side of all of those bridges
+# came from ENISA (51), ETSI (28) and BIML (11) and from nothing else.
+#
+# Under this definition the AI and traditional hub regions are disjoint, which
+# is what PRD.md:58 and docs/campaign2-results.md §14 have always recorded.
+# Keep this set in step with AI_FRAMEWORK_NAMES; tests/test_ai_framework_sets.py
+# asserts they describe the same eight frameworks.
 BRIDGE_AI_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
     "mitre_atlas", "owasp_ai_exchange", "nist_ai_100_2",
     "owasp_llm_top10", "owasp_ml_top10",
+    "enisa", "etsi", "biml",
 })
 BRIDGE_TOP_K: Final[int] = 3
 BRIDGE_LLM_MODEL: Final[str] = "claude-sonnet-4-20250514"

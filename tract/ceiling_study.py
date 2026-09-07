@@ -68,6 +68,7 @@ from pathlib import Path
 from typing import Any, Final, Literal, Mapping, TypedDict
 
 from tract.config import (
+    TIER_PRIORITY,
     CEILING_STUDY_N_ITEMS,
     CEILING_STUDY_NEW_DIR,
     CEILING_STUDY_PINNED_ITEMS,
@@ -82,7 +83,6 @@ from tract.hierarchy import CREHierarchy
 from tract.io import load_json
 from tract.text_selection import ProseIndex, select_control_text
 from tract.training.data_quality import (
-    QualityTier,
     assign_quality_tier,
     curated_link_filter_report,
 )
@@ -94,12 +94,10 @@ logger = logging.getLogger(__name__)
 # LinkedTo over AutomaticallyLinkedTo. Duplicated rather than imported
 # because tract.training.data pulls in torch, sentence-transformers and
 # datasets, and this module has to run without a GPU or those packages.
-_TIER_PRIORITY: Final[dict[str, int]] = {
-    QualityTier.T1.value: 0,
-    QualityTier.T1_AI.value: 1,
-    QualityTier.T3.value: 2,
-    QualityTier.AL.value: 3,
-}
+# The single definition lives in tract.config. The local copy existed only
+# because importing tract.training.data pulls in torch, and it then drifted:
+# neither copy learned about T2.
+_TIER_PRIORITY: Final[dict[str, int]] = TIER_PRIORITY
 
 Stratum = Literal["validation", "test"]
 

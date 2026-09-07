@@ -18,6 +18,7 @@ import numpy as np
 import torch
 from datasets import Dataset
 
+from tract.config import TIER_PRIORITY
 from tract.hierarchy import CREHierarchy
 from tract.text_selection import ProseIndex, SelectionStats, select_control_text
 from tract.training.data_quality import TieredLink
@@ -76,16 +77,6 @@ def mine_hard_negatives(
             seen.add(neg_id)
             deduped.append(neg_id)
     return deduped[:n]
-
-
-TIER_PRIORITY: dict[str, int] = {
-    "T1": 0,
-    "T1-AI": 1,
-    "T3": 2,
-    "AL": 3,
-}
-
-
 def build_training_pairs(
     tiered_links: list[TieredLink],
     hub_texts: dict[str, str],

@@ -274,6 +274,33 @@ So, decided now:
 
 This spends the extra n when it is safe to spend and refuses when it is not.
 
+> **FLAGGED 2026-08-30 — this rule is insufficient, and fixing it is an OWNER
+> DECISION that must be taken before annotation begins. Not amended here.**
+>
+> The rule's premise — "a wrong label costs both arms equally in expectation" —
+> is measurably false on this corpus. Relabelling cost the zero-shot arm
+> **−0.3381** and the trained arm **−0.1678**, a 2:1 asymmetry. That asymmetry
+> is the inflation mechanism.
+>
+> Worse, the overlap test does not catch it. Applied to the audit-touched
+> stratum — the only relabelled stratum available to test against — Tier-1
+> (+0.1000 [0.0000, 0.2000]) and relabelled (+0.2703 [+0.1081, +0.4324])
+> **overlap**, so the rule licenses pooling: +0.1429 reported against a Tier-1
+> truth of +0.1000, with `P(δ ≤ 0.10)` moving 0.535 → 0.161.
+>
+> The C3TEST verdict is unaffected (FAIL on either figure). The exposure is to
+> a *future* curated round, where the Tier-2 stratum is larger and the rule
+> would be doing real work.
+>
+> Evidence and the worked example: `docs/campaign3-audit-mechanism.md` §6b.
+> Reproduce: `python -m scripts.analysis.audit_mechanism_probe`.
+>
+> This is deliberately left as a flag rather than a rewrite. Amending a binding
+> pre-registration after results exist is the failure mode this document was
+> written to prevent, and the replacement rule changes what a future gate can
+> conclude — that is the owner's call, and it must be pre-registered before any
+> curated item is scored.
+
 ### 1.3 The echo partition was not frozen, and the floor was set against the wrong number
 
 §3 specifies echo as "the union of title and full prose" and quotes +0.1531 on
@@ -304,6 +331,34 @@ Restated against Campaign 2's committed indicators under the frozen partition:
 The binding floor stays at **point estimate ≥ 0.10 and CI low > 0**, now
 evaluated on this partition. The historical +0.1743/n=109 and +0.1531/n=98
 figures are retired; both were computed against anchors that no longer exist.
+
+> **Amendment note, 2026-09-04 — the run artifact does not carry this partition,
+> and the field that looks like it carries the retired number.**
+>
+> `tract/training/echo.py` computes the frozen partition, and nothing in
+> production calls it. What a run writes is `lexical_overlap` from
+> `compute_lexical_overlap`, which splits **per arm against that arm's own
+> truncated anchors** — the budget-dependent ruler this section replaced. Its
+> docstring is explicit that a cross-arm comparison "belongs to analysis, not to
+> the per-run record", so the function is right about itself. The hazard is the
+> naming: the field is `hit_at_1_non_echo`, it sits in `aggregate_metrics.json`
+> where a reader looks for the side condition, and its denominator is
+> **n=109** — the figure retired two paragraphs above.
+>
+> So the binding side condition currently has no implementation that writes an
+> artifact. This is the same shape as the §3 gate probability, which no library
+> code computed until 2026-09-04 either. Until it is wired,
+> **`lexical_overlap.hit_at_1_non_echo` must not be quoted as the side
+> condition.** `tests/test_echo_partition_identity.py` holds both ends: it goes
+> red if the two denominators converge silently, and red again the day the
+> frozen partition acquires a production caller, at which point this note should
+> name the field that carries it.
+>
+> The partition's key was also corrected the same day. It was keyed on
+> `(framework_name, section_id)`, which is not unique — 5 keys collide across 13
+> of 147 items, and one mixed group forced **2 non-echo items into the echo
+> stratum**. It is now keyed on corpus index, which `apply_prose_to_corpus`
+> makes item-exact by guaranteeing "same items, same order".
 
 ### 1.4 Two hazards recorded for the curation round
 

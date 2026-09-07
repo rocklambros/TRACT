@@ -173,11 +173,20 @@ def paired_bootstrap_delta(
     n_resamples: int = PHASE1B_BOOTSTRAP_N_RESAMPLES,
     ci_level: float = PHASE1B_BOOTSTRAP_CI_LEVEL,
     seed: int = PHASE1B_BOOTSTRAP_SEED,
+    threshold: float = 0.0,
 ) -> dict[str, float]:
     """Paired bootstrap CI for difference (B - A), vectorized.
 
     Per-item deltas within each fold, fold-stratified resampling.
     Pairing cancels item-level difficulty for reduced variance.
+
+    ``threshold`` selects the hypothesis the returned tail probability is
+    about. ``p_delta_le_threshold`` is P(delta <= threshold) under the
+    bootstrap distribution, which at the default of 0.0 is the familiar
+    "no better than baseline" p-value and at 0.10 is the quantity
+    CAMPAIGN3.md Section 3 binds the gate to. Only the caller knows which
+    hypothesis it is testing, so the default changes nothing and the gate
+    passes its own threshold explicitly.
     """
     if len(fold_values_a) != len(fold_values_b):
         raise ValueError(
@@ -206,6 +215,7 @@ def paired_bootstrap_delta(
         "ci_low": float(np.percentile(boot_delta_means, 100 * alpha)),
         "ci_high": float(np.percentile(boot_delta_means, 100 * (1 - alpha))),
         "p_value": p_value,
+        "p_delta_le_threshold": float(np.mean(boot_delta_means <= threshold)),
     }
 
 

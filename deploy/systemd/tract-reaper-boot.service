@@ -1,0 +1,63 @@
+; TRACT RunPod reaper guard — boot recovery.
+;
+; WHY THIS EXISTS. reaper_guard is armed with `systemd-run --user`, which
+; creates a TRANSIENT unit. Transient units do not survive a reboot. The guard
+; is the only spend bound that survives an orchestrator death — `create_pod`
+; sends no TTL, no auto-stop and no idle timeout, and folds run under
+; `setsid nohup`, so a pod trains happily while the machine that launched it is
+; gone. Lose power mid-campaign and both the orchestrator AND its bound
+; disappear together; the fleet then bills until a human opens the RunPod
+; console.
+;
+; That is not hypothetical: this machine lost power on 2026-08-30. It happened
+; to land 72 minutes after teardown, so nothing was billing. Move it earlier
+; and the exposure is unbounded.
+;
+; Running the guard unconditionally at boot is safe. It stands down when an
+; orchestrator process is alive, and again when none of this run's pods are
+; running. It reaps only when the orchestrator is gone AND pods are still
+; billing — precisely the post-reboot case.
+;
+; INSTALL (this is an owner decision; the file is inert until enabled):
+;   mkdir -p ~/.config/systemd/user
+;   cp deploy/systemd/tract-reaper-boot.service ~/.config/systemd/user/
+;   # WorkingDirectory below assumes ~/github_projects/TRACT — edit if not.
+;   systemctl --user daemon-reload
+;   systemctl --user enable tract-reaper-boot.service
+;   loginctl enable-linger "$USER"   # so user units run without a login
+;
+; VERIFY:
+;   systemctl --user is-enabled tract-reaper-boot.service   # -> enabled
+;   systemctl --user start tract-reaper-boot.service        # dry run now
+;   journalctl --user -u tract-reaper-boot.service -n 50
+;
+; This does NOT replace the T+8h `systemd-run` arming during a campaign. It is
+; the floor under it: that one bounds a long-running campaign, this one bounds
+; a campaign whose machine died.
+
+[Unit]
+Description=TRACT RunPod reaper guard (boot recovery)
+Documentation=file:scripts/phase1b/reaper_guard.py
+; The guard's first action is a RunPod API call. Firing before the network is
+; up turns the spend bound into a no-op that logs a failure and exits 0.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/github_projects/TRACT
+; USE_TF=0 everywhere a module under tract/ is imported: a TensorFlow import
+; deadlock in sentence-transformers would hang the guard indefinitely, which
+; is indistinguishable from having no guard.
+Environment=USE_TF=0
+; reaper_guard, never `reap` directly. `reap` has no liveness check and sweeps
+; the account by pod name when the state file is missing — and the state file
+; being missing is exactly the situation after a reboot.
+ExecStart=/usr/bin/env python3 -m scripts.phase1b.reaper_guard --confirm
+; A failed guard must be visible, not silent. Exit non-zero is recorded in the
+; journal rather than swallowed.
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

@@ -146,11 +146,11 @@ the two disagree or if a framework appears in either without the other.
 | eu_gpai_cop | (c) European Commission. Published for public use. | https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai |
 | iso_27001 | Proprietary. (c) ISO/IEC 2022, all rights reserved. Single-user store licence, no reproduction without prior written permission. | https://www.iso.org/standard/27001 |
 | mitre_atlas | Apache-2.0 | https://github.com/mitre-atlas/atlas-data |
-| nist_800_53 | UNDETERMINED | https://github.com/usnistgov/oscal-content |
+| nist_800_53 | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://github.com/usnistgov/oscal-content |
 | nist_800_63 | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://pages.nist.gov/800-63-3/sp800-63b.html |
-| nist_ai_100_2 | UNDETERMINED | https://doi.org/10.6028/NIST.AI.100-2e2023 |
-| nist_ai_600_1 | UNDETERMINED | https://doi.org/10.6028/NIST.AI.600-1 |
-| nist_ai_rmf | UNDETERMINED | https://doi.org/10.6028/NIST.AI.100-1 |
+| nist_ai_100_2 | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://doi.org/10.6028/NIST.AI.100-2e2023 |
+| nist_ai_600_1 | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://doi.org/10.6028/NIST.AI.600-1 |
+| nist_ai_rmf | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://doi.org/10.6028/NIST.AI.100-1 |
 | nist_ssdf | US Government work, not subject to copyright in the United States. Attribution appreciated by NIST. | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218.pdf |
 | owasp_agentic_top10 | CC-BY-SA-4.0 | https://genai.owasp.org |
 | owasp_ai_exchange | UNDETERMINED | https://owaspai.org |

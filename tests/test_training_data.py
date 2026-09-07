@@ -393,7 +393,9 @@ class TestPairsToDataset:
 def test_tier_priority_includes_al() -> None:
     from tract.training.data import TIER_PRIORITY
     assert "AL" in TIER_PRIORITY
-    assert TIER_PRIORITY["AL"] == 3
+    # The invariant is the ORDER, not the absolute rank -- inserting T2
+    # renumbered AL without changing what the table expresses.
+    assert TIER_PRIORITY["AL"] == max(TIER_PRIORITY.values())
 
 
 class TestSamplerAttributeContract:

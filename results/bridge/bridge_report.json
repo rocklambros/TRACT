@@ -385,6 +385,12 @@
     "total": 63
   },
   "created_at": "2026-05-03T10:43:02.756192+00:00",
+  "hub_classification": {
+    "ai_only": 78,
+    "naturally_bridged": 0,
+    "trad_only": 380,
+    "unlinked": 64
+  },
   "parameters": {
     "method": "top_k_per_ai_hub",
     "top_k": 3

@@ -107,6 +107,16 @@ def run_bridge_analysis(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "method": "top_k_per_ai_hub",
         "top_k": top_k,
+        # Persisted, not merely logged. The model card publishes these four
+        # counts; before this they were literals in the card and one of them
+        # (60 "naturally bridged") was wrong. commit_bridges carries them into
+        # bridge_report.json, which is what the card reads.
+        "hub_classification": {
+            "ai_only": len(classification.ai_only),
+            "trad_only": len(classification.trad_only),
+            "naturally_bridged": len(classification.naturally_bridged),
+            "unlinked": len(classification.unlinked),
+        },
         "similarity_stats": stats,
         "candidates": candidates,
         "negative_controls": negatives,

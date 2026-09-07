@@ -18,7 +18,7 @@ import json
 import pytest
 
 from tract.config import PROCESSED_DIR, max_anchor_chars
-from tract.training.echo import UNTRUNCATED, frozen_echo_keys, is_echo
+from tract.training.echo import UNTRUNCATED, frozen_echo_indices, is_echo
 
 
 @pytest.fixture(scope="module")
@@ -65,10 +65,10 @@ class TestThePartitionDoesNotMoveWithTheBudget:
 
     def test_identical_at_every_anchor_budget(self, pieces) -> None:  # type: ignore[no-untyped-def]
         corpus, hierarchy, prose, stopwords = pieces
-        reference = frozen_echo_keys(corpus, hierarchy, prose, stopwords)
+        reference = frozen_echo_indices(corpus, hierarchy, prose, stopwords)
         assert reference, "no echo items found; fixture is not exercising this"
         for seq_len in (512, 1024, 2048, 4096):
-            again = frozen_echo_keys(corpus, hierarchy, prose, stopwords)
+            again = frozen_echo_indices(corpus, hierarchy, prose, stopwords)
             assert again == reference, (
                 f"partition changed at max_seq_length={seq_len} "
                 f"(budget {max_anchor_chars(seq_len)} chars)"
@@ -114,14 +114,14 @@ class TestThePartitionDoesNotMoveWithTheBudget:
 
         corpus, hierarchy, prose, stopwords = pieces
         names = {h: n.name for h, n in hierarchy.hubs.items()}
-        frozen = frozen_echo_keys(corpus, hierarchy, prose, stopwords)
+        frozen = frozen_echo_indices(corpus, hierarchy, prose, stopwords)
 
         for seq_len in (512, 1024, 2048):
             items = apply_prose_to_corpus(
                 corpus, prose, stopwords, max_chars=max_anchor_chars(seq_len),
             )
             at_budget = {
-                (i.framework_name, i.section_id) for i in items
+                idx for idx, i in enumerate(items)
                 if is_echo(i.control_text, names.get(i.ground_truth_hub_id, ""))
             }
             assert at_budget <= frozen, (

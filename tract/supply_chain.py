@@ -308,6 +308,29 @@ AUDIT_SUPPRESSIONS: Final[tuple[AuditSuppression, ...]] = (
             "default path. Fixed in transformers 5.5.0."
         ),
     ),
+    AuditSuppression(
+        vuln_id="CVE-2026-9856",
+        package="transformers",
+        expires=date(2026, 11, 17),
+        reason=(
+            "Path traversal to arbitrary file write in save_pretrained on "
+            "PreTrainedTokenizerBase and ProcessorMixin: keys of a downloaded "
+            "chat_template dict are used directly as filenames. The attack "
+            "needs an attacker-published Hub repo whose tokenizer the victim "
+            "then SAVES. TRACT's only save_pretrained call is "
+            "config.save_pretrained in tract/training/checkpoint.py, on a "
+            "PretrainedConfig, which writes no chat_template file. The one "
+            "SentenceTransformer.save() -- tract/training/loop.py:381 via "
+            "save_sentence_transformer -- writes a model TRACT has just "
+            "trained, and inference downloads are sha256-verified against "
+            "TRACT_MODEL_PINNED_FILE_HASHES by tract/model_resolver.py. "
+            "Residual and bounded: a compromise of the upstream base-model repo "
+            "at training time on a pod would reach the tokenizer save. Fixed in "
+            "transformers 5.10.0, which needs huggingface-hub >= 1.3.0 against "
+            "tract's huggingface_hub>=0.24,<1 and is independently capped by "
+            "sentence-transformers 3.2.0 -- the same wall as the four above."
+        ),
+    ),
 )
 
 

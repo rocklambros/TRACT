@@ -106,6 +106,19 @@ which is consistent with additional text adding distractors faster than signal.
 the anchor budget touches the mechanism described in
 `docs/campaign2-results.md` §13.
 
+> **AMENDED 2026-08-30.** The *effect* above is confirmed and survives
+> fold-matching (+0.1852 [−0.0523, +0.4209] against untouched items drawn from
+> the same folds). The *mechanism* referred to here is refuted — degree fails
+> all three of its own predictions on these very artifacts. See
+> `docs/campaign3-audit-mechanism.md`.
+>
+> That probe also found something this section should have reported: the
+> published primary is **57.3% OWASP AI Exchange** (63 of 110 items), the
+> easiest fold and the only one the audit never touched. Dropping it moves the
+> untouched delta +0.1000 → +0.0851 with the interval crossing zero. The
+> primary's stability across 512→1024 should be read with that composition in
+> view.
+
 ## 5. What it does not establish
 
 It does not show that context length is irrelevant in general — only that going

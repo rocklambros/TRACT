@@ -20,10 +20,23 @@ jobs:
       - name: Install lint toolchain
         run: pip install -r requirements-lint.txt
 
+      # scripts/analysis/ is named file-by-file rather than as a directory:
+      # audit_traditional_links.py carries 16 pre-existing E741s and is not
+      # part of this scope. The four listed here are the evidence base for the
+      # Campaign 3 gate decision, so they are held to the same bar as the run
+      # path -- a spending decision should not rest on unlinted code.
       - name: Ruff check
         run: >
           ruff check tract/ parsers/ scripts/phase1a/ scripts/phase1b/
           scripts/phase0/runpod_provision.py scripts/phase1c/runpod_retrain.py
+          scripts/analysis/audit_stratified_delta.py
+          scripts/analysis/audit_mechanism_probe.py
+          scripts/analysis/orphan_rate.py
+          scripts/analysis/gate1_report.py
+          scripts/build_bridge_packet.py
+          scripts/import_bridge_links.py
+          scripts/analysis/gate_rule_candidates.py
+          scripts/analysis/gate_power_simulation.py
 
       # Everything the LOFO run executes. parsers/ was linted by ruff but never
       # type-checked, and scripts/phase1b/ was covered by neither -- which is
@@ -34,7 +47,15 @@ jobs:
         run: >
           mypy tract/ parsers/ scripts/phase1a/ scripts/phase1b/
           scripts/phase0/runpod_provision.py
-          scripts/phase1c/runpod_retrain.py --strict
+          scripts/phase1c/runpod_retrain.py
+          scripts/analysis/audit_stratified_delta.py
+          scripts/analysis/audit_mechanism_probe.py
+          scripts/analysis/orphan_rate.py
+          scripts/analysis/gate1_report.py
+          scripts/build_bridge_packet.py
+          scripts/import_bridge_links.py
+          scripts/analysis/gate_rule_candidates.py
+          scripts/analysis/gate_power_simulation.py --strict
 
   test:
     needs: lint
@@ -61,8 +82,38 @@ jobs:
       # artifacts are not in the repo. The model-pins job below runs the one
       # integration test that can stand alone. This job never deselected them,
       # which nobody noticed while lint kept the job from starting.
+      # Removing -x was necessary and not sufficient. A test module that raises
+      # on IMPORT fails at collection, and pytest aborts the entire run on a
+      # collection error whatever -x says. That is how this job once executed
+      # 15 tests out of ~3,150 while reading as an ordinary red: two new test
+      # modules imported tract.training.orchestrate and tract.training.data,
+      # both of which pull in torch, which is not in requirements.txt.
+      #
+      # So the count is asserted before the run. A collection error, a bad
+      # conftest or a mis-scoped -m now fails with a message naming the cause
+      # instead of turning into a small red that looks like a known failure.
+      - name: Assert the suite is fully collected
+        run: |
+          COLLECTED=$(pytest tests/ -q --collect-only -m "not integration" 2>/dev/null \
+            | tail -1 | grep -oE '^[0-9]+' || echo 0)
+          echo "collected: $COLLECTED"
+          # Measured: 3,225 collected with the full stack, 3,043 with torch,
+          # datasets, transformers, sentence-transformers and peft all blocked
+          # (a harsher environment than this runner). The floor catches a
+          # collapse -- the real incident collected 15 -- without false-failing
+          # on ordinary churn.
+          if [ "$COLLECTED" -lt 2900 ]; then
+            echo "::error::Only $COLLECTED tests collected, expected >= 2900."
+            echo "A test module probably raised at import. Re-run collection to see it:"
+            pytest tests/ -q --collect-only -m "not integration" 2>&1 | tail -40
+            exit 1
+          fi
+
       - name: Run tests
-        run: pytest tests/ -x -q --timeout=60 -m "not integration"
+        # No -x. With it, one failing test aborts the run and every test after
+        # it is silently not executed -- the suite reports "1 failed, 40 passed"
+        # and reads as a single known failure. That is issue #55's failure mode.
+        run: pytest tests/ -q --timeout=60 -m "not integration"
 
   audit:
     runs-on: ubuntu-latest
@@ -87,7 +138,7 @@ jobs:
       # also fails if requirements-ml.txt stops resolving, which keeps the pin
       # from rotting silently.
       #
-      # The four --ignore-vuln ids are not a blanket suppression. Each is one
+      # The five --ignore-vuln ids are not a blanket suppression. Each is one
       # transformers advisory whose fix landed in the 5.x line, which requires
       # huggingface-hub >= 1.3.0 against tract's own `huggingface_hub>=0.24,<1`
       # core dependency, and which sentence-transformers 3.2.0 independently
@@ -102,7 +153,8 @@ jobs:
             --ignore-vuln PYSEC-2025-217 \
             --ignore-vuln PYSEC-2026-2288 \
             --ignore-vuln PYSEC-2026-2289 \
-            --ignore-vuln PYSEC-2026-2290
+            --ignore-vuln PYSEC-2026-2290 \
+            --ignore-vuln CVE-2026-9856
   model-pins:
     runs-on: ubuntu-latest
     steps:

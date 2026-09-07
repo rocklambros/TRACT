@@ -15,6 +15,20 @@ import pytest
 from scripts.phase0.runpod_provision import validate_ssh_endpoint
 
 
+@pytest.fixture
+def _public_corpus(monkeypatch):
+    """Run as if the licensed overlay were absent.
+
+    create_pod now narrows the tier list to SECURE whenever the overlay is on
+    disk, so a test that exercises a legitimate COMMUNITY landing has to say it
+    is the public-corpus case. Without this the test fails on any checkout that
+    has the overlay staged -- which tract/staleness.py notes is every real run.
+    """
+    from scripts.phase0 import runpod_provision
+    monkeypatch.setattr(runpod_provision, "require_secure_cloud", lambda: False)
+
+
+
 class TestValidateSshEndpoint:
     """publicIp and portMappings come from a remote API and reach shell=True."""
 
@@ -1307,6 +1321,7 @@ class TestTheRecordShowsWhereEachFoldRan:
         assert asked == ["SECURE"]
         assert pod["cloud_type"] == "SECURE"
 
+    @pytest.mark.usefixtures("_public_corpus")
     def test_a_silent_fallback_to_community_is_recorded(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -1885,7 +1900,6 @@ class TestBudgetPricesTheBootstrapItActuallyRuns:
         )
 
     def test_the_reachable_hours_are_the_sum_of_the_priced_stages(self) -> None:
-        from scripts.phase1b import runpod_parallel as rp
 
         budget = self._budget(price=3.0, budget_usd=1000.0)
         assert budget["reachable_hours"] == pytest.approx(
@@ -2510,9 +2524,18 @@ class TestLicensedCorpusStaysOffCommunityHosts:
         from scripts.phase0 import runpod_provision as rpp
 
         source = inspect.getsource(rpp.create_pod)
-        assert "for cloud_type in allowed_cloud_types:" in source, (
+        assert "allowed_cloud_types" in source, (
             "create_pod still iterates the module-level preference, so a "
             "restricted list would be accepted and ignored"
+        )
+        # The list now passes through _effective_cloud_types, which narrows it
+        # to SECURE whenever the licensed overlay is staged -- so the caller's
+        # list reaches the loop AND cannot widen it. Previously the restriction
+        # was applied by one of five callers; it is now applied at the boundary.
+        assert "_effective_cloud_types" in source, (
+            "create_pod must apply the SECURE restriction itself. Applying it "
+            "in the orchestrator left four other call sites unguarded, three "
+            "of which rsync PROJECT_ROOT without excluding the licensed corpus."
         )
         parallel = inspect.getsource(rpp.create_pods_parallel)
         assert "allowed_cloud_types=allowed_cloud_types" in parallel, (
