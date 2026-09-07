@@ -234,14 +234,18 @@ tract bridge --top-k 3                           # Generate bridge candidates
 tract bridge --commit --candidates <path>         # Commit reviewed bridges to hierarchy
 
 # HuggingFace publication (Phase 2B)
-tract publish-hf --repo-id <repo> --dry-run       # Build staging dir without upload
-tract publish-hf --repo-id <repo> --gpu-hours N   # Full publish
+tract publish-hf --repo-id <repo> --zero-shot-results <path> --dry-run   # Staging only
+# --zero-shot-results is REQUIRED: which zero-shot run pairs with a campaign
+# cannot be inferred from the artifacts, and defaulting it publishes a
+# comparison nobody ran. Note --dry-run still merges the LoRA adapter, so it
+# loads a model and must run on a pod.
+tract publish-hf --repo-id <repo> --zero-shot-results <path> --gpu-hours <hours>
 
 # Phase 3 — Review & Dataset Publication
 tract import-ground-truth                          # Import OpenCRE ground truth into crosswalk.db
 tract review-export                                # Export predictions for expert review
-tract review-validate <path>                       # Validate reviewed JSON
-tract review-import <path>                         # Apply review decisions to crosswalk.db
+tract review-validate --input <path>               # Validate reviewed JSON
+tract review-import --input <path> --reviewer <name>   # Apply review decisions
 tract publish-dataset --repo-id <repo>             # Bundle and upload dataset to HuggingFace
 
 # Phase 5B — Canonical Export (OpenCRE RFC)

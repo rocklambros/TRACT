@@ -76,7 +76,7 @@ git clone https://github.com/rocklambros/TRACT.git
 cd TRACT
 pip install -e ".[dev]"
 tract prepare --file examples/sample_framework.csv --framework-id demo --name "Demo Framework"
-tract validate --file demo_prepared.json
+tract validate --file examples/sample_framework_prepared.json
 ```
 
 **Full assignment workflow** — `tract assign` downloads the model on first use, no manual setup:
