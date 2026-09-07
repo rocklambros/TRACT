@@ -202,3 +202,69 @@ class TestItDoesNotDiscloseTheTargets:
         assert target not in part_two, (
             f"Part 2 is what the annotator receives and it discloses {target!r}."
         )
+
+
+class TestTheStatedCountsMatchTheRealPacket:
+    """The handbook now quotes concrete numbers, so they must be derived.
+
+    A figure typed into a document drifts the moment the corpus changes, and
+    this project has a long record of exactly that -- a test count that was
+    wrong three times, a campaign verdict that read "in progress" for five days
+    after it failed. These tests build the real packet and compare.
+    """
+
+    @pytest.fixture(scope="class")
+    def packet(self, tmp_path_factory: pytest.TempPathFactory):  # type: ignore[no-untyped-def]
+        from scripts.build_bridge_packet import build_bridge_packet
+
+        out = tmp_path_factory.mktemp("handbook_packet")
+        build_bridge_packet(out, framework_id="nist_800_53")
+        return out
+
+    def test_the_hub_count_is_the_packet_s(self, text: str, packet) -> None:  # type: ignore[no-untyped-def]
+        import csv
+
+        with (packet / "ai_hubs.csv").open(encoding="utf-8") as handle:
+            hubs = list(csv.DictReader(handle))
+        assert f"**{len(hubs)}** AI hubs" in text or f"All {len(hubs)} hubs" in text
+
+    def test_the_control_count_is_the_packet_s(self, text: str, packet) -> None:  # type: ignore[no-untyped-def]
+        import csv
+
+        with (packet / "annotate.csv").open(encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        assert f"**{len(rows)}** controls" in text
+        assert f"{len(rows)} rows" in text
+
+    def test_the_branch_table_matches(self, text: str, packet) -> None:  # type: ignore[no-untyped-def]
+        """The four branch counts are quoted in Part 1 and Part 2."""
+        import csv
+        from collections import Counter
+
+        with (packet / "ai_hubs.csv").open(encoding="utf-8") as handle:
+            counts = Counter(row["branch"] for row in csv.DictReader(handle))
+        for branch, n in counts.items():
+            assert f"| {n} | {branch} |" in text, (
+                f"the handbook's branch table omits or misstates "
+                f"{branch!r} ({n} hubs)"
+            )
+
+    def test_it_claims_no_truncation_and_that_is_true(
+        self, text: str, packet
+    ) -> None:  # type: ignore[no-untyped-def]
+        """The handbook tells the coordinator to report truncated controls."""
+        import csv
+
+        assert "none is truncated" in text.lower()
+        with (packet / "annotate.csv").open(encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        assert not [r for r in rows if len(r["control_text"]) == 2000]
+
+    def test_the_worked_example_control_exists(self, text: str, packet) -> None:  # type: ignore[no-untyped-def]
+        """AC-3 is quoted verbatim; it must still be in the packet."""
+        import csv
+
+        assert "AC-3 Access Enforcement" in text
+        with (packet / "annotate.csv").open(encoding="utf-8") as handle:
+            titles = {r["control_id"]: r["control_title"] for r in csv.DictReader(handle)}
+        assert titles.get("AC-3") == "AC-3 Access Enforcement"

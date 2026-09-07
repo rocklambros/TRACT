@@ -69,16 +69,43 @@ tell them the pilot alone is useful, and let them stop.
 ## 1.5 Generating and sending the packet
 
 ```bash
-python -m scripts.build_bridge_packet ./packet --framework-id nist_800_53
+python -m scripts.build_bridge_packet ~/tract-packets/phase2c-nist_800_53 \
+  --framework-id nist_800_53
 ```
 
-Three files. Send **all three and nothing else**:
+Write it **outside the repository working tree** — the annotator gets the
+packet, not the repo, and a packet inside the tree is one `git add -A` from
+being committed.
 
-| file | what it is |
+No `--allow-undetermined` is needed: NIST 800-53's licence was adjudicated
+2026-09-06 as a US Government work not subject to copyright. If the command
+refuses a framework, it is right; do not work around it.
+
+Three files, **all three and nothing else**. Measured from the generated
+packet, 2026-09-07:
+
+| file | size | what it is |
+|---|---|---|
+| `ai_hubs.csv` | 17 KB | all **78** AI hubs — `hub_id, hub_name, hierarchy_path, branch` |
+| `controls.csv` | 452 KB | read-only reference of the **300** controls |
+| `annotate.csv` | 453 KB | **the sheet they fill** — the same 300 controls with empty answer columns |
+
+The 78 hubs sit in four branches, which is worth knowing when you brief someone:
+
+| hubs | branch |
 |---|---|
-| `ai_hubs.csv` | all 78 AI hubs — `hub_id, hub_name, hierarchy_path, branch` |
-| `controls.csv` | read-only reference of the controls |
-| `annotate.csv` | **the sheet they fill** — control text beside empty answer columns |
+| 46 | Technical application security controls |
+| 24 | Cross-cutting concerns |
+| 5 | Development processes for security |
+| 3 | Governance processes for security |
+
+Control text runs 290-5,508 characters, median 1,212, and **none is truncated**.
+That took a fix: `all_controls.json` caps `description` at 2,000 characters, so
+58 of the 300 controls used to arrive cut mid-word - one ended *"Procedures can
+be documente"*. The builder now takes the longer of `description` and
+`full_text`, recovering about 58 KB of prose. If you ever see a control ending
+mid-word, stop and report it; the annotator is being asked to judge a control
+they cannot read.
 
 **Never send `results/ceiling_study/hub_reference.md`.** 400 of its hub
 descriptions were written by an LLM conditioned on the existing gold links.
@@ -144,9 +171,22 @@ before you start.
 
 | file | what to do with it |
 |---|---|
-| `ai_hubs.csv` | **Read this.** All 78 hubs you may choose from, with their place in the tree. |
-| `controls.csv` | Reference copy of the controls. You do not need to edit it. |
-| `annotate.csv` | **This is your worksheet.** Fill the last three columns. |
+| `ai_hubs.csv` | **Read this first.** All 78 hubs you may choose from, with their place in the tree. |
+| `controls.csv` | Reference copy of the 300 controls. You do not need to edit it. |
+| `annotate.csv` | **This is your worksheet.** 300 rows. Fill the last three columns. |
+
+A hub row looks like this:
+
+```
+hub_id   hub_name                              branch
+010-108  Obscuring confidence in AI output     Technical application security controls
+011-087  Testing against membership inference  Development processes for security
+012-625  Indirect prompt injection             Cross-cutting concerns
+```
+
+The `branch` tells you roughly where a hub lives. Most of the 78 (46 of them)
+are technical application controls; 24 are cross-cutting; the remaining 8 are
+about development or governance process.
 
 `annotate.csv` has one row per control. The first three columns are the
 control — its id, title and full text. The last three are yours:
@@ -180,6 +220,15 @@ point of ambiguity. The text is in your sheet for this reason.
 the hub with matching words. "Boundary protection" and "network segmentation"
 share no words and may be the same idea; "model" appears in hubs that have
 nothing to do with each other.
+
+A worked example from your own sheet. `AC-3 Access Enforcement` reads *"Enforce
+approved authorizations for logical access to information and system resources
+in accordance with applicable access control policies."* Ask what it is for:
+making sure only permitted actors reach a resource. Now look for an AI hub with
+that purpose. If one is genuinely about enforcing authorization on an AI
+system's resources, that is your answer. If the nearest candidate is a hub about
+something like obscuring model confidence, that shares no purpose with AC-3 and
+the answer is `NONE`. Do not map it because both happen to mention access.
 
 **3. `NONE` is a real, correct and expected answer.** Most NIST 800-53 controls
 are about traditional IT security and have no AI-specific hub. Writing `NONE`
