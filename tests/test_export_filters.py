@@ -1,125 +1,192 @@
-"""Tests for OpenCRE export filter pipeline."""
+"""`tract export` accepted four filter flags and ignored all of them.
+
+`_cmd_export` called `export_crosswalk(db, output_path, fmt=fmt)`, whose
+signature takes no filters at all. `--hub`, `--min-confidence` and `--status`
+were read nowhere in the package, and `--framework` was honoured only on the
+`--opencre` branch.
+
+Measured before the fix: `tract export --format csv --framework mitre_atlas`
+exited 0 and wrote **636 rows across 6 frameworks**, only 260 of them ATLAS. Two
+runs with contradictory filters produced byte-identical output.
+
+That is worse than a crash. A crash sends the user to the docs; silently wrong
+output gets used. `--framework` is the CLI epilog's own worked example.
+
+The `--status` default also mattered: the JSON path hardcoded
+`review_status = 'accepted'` while the CSV path applied no status filter, so the
+same flag meant different things depending on `--format`.
+"""
+
 from __future__ import annotations
+
+import csv
+import json
+import sqlite3
+from pathlib import Path
 
 import pytest
 
-from tract.crosswalk.schema import create_database
-from tract.crosswalk.store import (
-    insert_assignments,
-    insert_controls,
-    insert_frameworks,
-    insert_hubs,
-)
+from tract.config import PHASE1C_CROSSWALK_DB_PATH
+from tract.crosswalk.export import export_crosswalk
 
 
-@pytest.fixture
-def filter_db(tmp_path):
-    db_path = tmp_path / "filter_test.db"
-    create_database(db_path)
-    insert_frameworks(db_path, [
-        {"id": "fw1", "name": "FW1", "version": "1.0", "fetch_date": "2026-04-30", "control_count": 5},
-        {"id": "fw2", "name": "FW2", "version": "1.0", "fetch_date": "2026-04-30", "control_count": 2},
-    ])
-    insert_hubs(db_path, [
-        {"id": "h1", "name": "Hub 1", "path": "R > H1", "parent_id": None},
-        {"id": "h2", "name": "Hub 2", "path": "R > H2", "parent_id": None},
-    ])
-    insert_controls(db_path, [
-        {"id": "fw1:c1", "framework_id": "fw1", "section_id": "c1", "title": "C1", "description": "D1", "full_text": None},
-        {"id": "fw1:c2", "framework_id": "fw1", "section_id": "c2", "title": "C2", "description": "D2", "full_text": None},
-        {"id": "fw1:c3", "framework_id": "fw1", "section_id": "c3", "title": "C3", "description": "D3", "full_text": None},
-        {"id": "fw1:c4", "framework_id": "fw1", "section_id": "c4", "title": "C4", "description": "D4", "full_text": None},
-        {"id": "fw1:c5", "framework_id": "fw1", "section_id": "c5", "title": "C5", "description": "D5", "full_text": None},
-        {"id": "fw2:c1", "framework_id": "fw2", "section_id": "c1", "title": "C1", "description": "D1", "full_text": None},
-        {"id": "fw2:c2", "framework_id": "fw2", "section_id": "c2", "title": "C2", "description": "D2", "full_text": None},
-    ])
-    insert_assignments(db_path, [
-        {"control_id": "fw1:c1", "hub_id": "h1", "confidence": 0.9, "in_conformal_set": 1, "is_ood": 0,
-         "provenance": "ground_truth_T1-AI", "source_link_id": None, "model_version": "v1", "review_status": "ground_truth"},
-        {"control_id": "fw1:c2", "hub_id": "h1", "confidence": 0.6, "in_conformal_set": 1, "is_ood": 0,
-         "provenance": "active_learning_round_2", "source_link_id": None, "model_version": "v1", "review_status": "accepted"},
-        {"control_id": "fw1:c3", "hub_id": "h2", "confidence": 0.25, "in_conformal_set": 0, "is_ood": 0,
-         "provenance": "active_learning_round_2", "source_link_id": None, "model_version": "v1", "review_status": "accepted"},
-        {"control_id": "fw1:c4", "hub_id": "h1", "confidence": 0.5, "in_conformal_set": 0, "is_ood": 1,
-         "provenance": "active_learning_round_2", "source_link_id": None, "model_version": "v1", "review_status": "accepted"},
-        {"control_id": "fw1:c5", "hub_id": "h1", "confidence": None, "in_conformal_set": 0, "is_ood": 0,
-         "provenance": "active_learning_round_2", "source_link_id": None, "model_version": "v1", "review_status": "accepted"},
-        {"control_id": "fw2:c1", "hub_id": "h2", "confidence": 0.7, "in_conformal_set": 1, "is_ood": 0,
-         "provenance": "active_learning_round_2", "source_link_id": None, "model_version": "v1", "review_status": "accepted"},
-        {"control_id": "fw2:c2", "hub_id": "h1", "confidence": 0.8, "in_conformal_set": 1, "is_ood": 0,
-         "provenance": "active_learning_round_2", "source_link_id": None, "model_version": "v1", "review_status": "pending"},
-    ])
-    return db_path
+@pytest.fixture(scope="module")
+def db() -> Path:
+    if not PHASE1C_CROSSWALK_DB_PATH.is_file():
+        pytest.skip(f"{PHASE1C_CROSSWALK_DB_PATH} absent")
+    return PHASE1C_CROSSWALK_DB_PATH
 
 
-class TestFilterPipeline:
-    def test_excludes_ground_truth(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.0, confidence_overrides={})
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw1:c1" not in control_ids
+@pytest.fixture(scope="module")
+def a_framework(db: Path) -> str:
+    """A framework id that is present but is not the only one."""
+    conn = sqlite3.connect(db)
+    try:
+        rows = conn.execute(
+            "SELECT f.id, COUNT(*) FROM assignments a "
+            "JOIN controls c ON a.control_id = c.id "
+            "JOIN frameworks f ON c.framework_id = f.id "
+            "GROUP BY f.id ORDER BY 2 DESC"
+        ).fetchall()
+    finally:
+        conn.close()
+    assert len(rows) > 1, "one framework only; a filter test would be vacuous"
+    return str(rows[0][0])
 
-    def test_excludes_null_confidence(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.0, confidence_overrides={})
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw1:c5" not in control_ids
 
-    def test_excludes_ood(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.0, confidence_overrides={})
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw1:c4" not in control_ids
+def _csv_rows(path: Path) -> list[dict[str, str]]:
+    with path.open(encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
 
-    def test_excludes_below_global_floor(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.30, confidence_overrides={})
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw1:c3" not in control_ids
 
-    def test_keeps_above_global_floor(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.30, confidence_overrides={})
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw1:c2" in control_ids
-        assert "fw2:c1" in control_ids
-
-    def test_excludes_non_accepted(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.0, confidence_overrides={})
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw2:c2" not in control_ids
-
-    def test_per_framework_override(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(
-            filter_db, confidence_floor=0.30, confidence_overrides={"fw1": 0.65},
+class TestTheFilterActuallyFilters:
+    def test_framework_filter_narrows_the_csv(
+        self, db: Path, a_framework: str, tmp_path: Path
+    ) -> None:
+        """The load-bearing one. Unfiltered this returned every framework."""
+        unfiltered = export_crosswalk(db, tmp_path / "all.csv", fmt="csv")
+        filtered = export_crosswalk(
+            db, tmp_path / "one.csv", fmt="csv", framework=a_framework
         )
-        control_ids = {r["control_id"] for r in rows}
-        assert "fw1:c2" not in control_ids
-        assert "fw2:c1" in control_ids
+        all_rows = _csv_rows(unfiltered)
+        one_rows = _csv_rows(filtered)
 
-    def test_returns_required_columns(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.0, confidence_overrides={})
-        assert len(rows) > 0
-        required_keys = {"control_id", "hub_id", "hub_name", "confidence",
-                         "framework_id", "section_id", "title", "description"}
-        assert required_keys.issubset(set(rows[0].keys()))
-
-    def test_filter_stats_counts(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments, compute_filter_stats
-        rows = query_exportable_assignments(filter_db, confidence_floor=0.30, confidence_overrides={})
-        stats = compute_filter_stats(filter_db, rows, confidence_floor=0.30, confidence_overrides={})
-        assert stats["fw1"]["exported"] == 1
-        assert stats["fw1"]["excluded_ground_truth"] == 1
-        assert stats["fw1"]["excluded_confidence"] >= 1
-        assert stats["fw1"]["excluded_ood"] == 1
-
-    def test_framework_filter(self, filter_db) -> None:
-        from tract.export.filters import query_exportable_assignments
-        rows = query_exportable_assignments(
-            filter_db, confidence_floor=0.0, confidence_overrides={}, framework_filter="fw2",
+        assert len(all_rows) > len(one_rows) > 0, (
+            "the filter removed nothing, so it is being ignored"
         )
-        framework_ids = {r["framework_id"] for r in rows}
-        assert framework_ids == {"fw2"}
+        assert len({row["framework"] for row in one_rows}) == 1
+
+    def test_min_confidence_narrows_the_csv(
+        self, db: Path, tmp_path: Path
+    ) -> None:
+        low = _csv_rows(
+            export_crosswalk(db, tmp_path / "lo.csv", fmt="csv", min_confidence=0.0)
+        )
+        high = _csv_rows(
+            export_crosswalk(db, tmp_path / "hi.csv", fmt="csv", min_confidence=0.95)
+        )
+        assert len(low) > len(high), "min_confidence removed nothing"
+        for row in high:
+            if row["confidence"]:
+                assert float(row["confidence"]) >= 0.95
+
+    def test_status_filter_narrows_the_csv(self, db: Path, tmp_path: Path) -> None:
+        every = _csv_rows(
+            export_crosswalk(db, tmp_path / "any.csv", fmt="csv", status="all")
+        )
+        accepted = _csv_rows(
+            export_crosswalk(db, tmp_path / "acc.csv", fmt="csv", status="accepted")
+        )
+        assert len(every) >= len(accepted) > 0
+        assert {row["review_status"] for row in accepted} == {"accepted"}
+
+    def test_hub_filter_narrows_the_csv(self, db: Path, tmp_path: Path) -> None:
+        rows = _csv_rows(export_crosswalk(db, tmp_path / "a.csv", fmt="csv"))
+        hub = rows[0]["hub_id"]
+        only = _csv_rows(
+            export_crosswalk(db, tmp_path / "h.csv", fmt="csv", hub=hub)
+        )
+        assert 0 < len(only) < len(rows)
+        assert {row["hub_id"] for row in only} == {hub}
+
+    def test_two_different_filters_do_not_produce_identical_output(
+        self, db: Path, a_framework: str, tmp_path: Path
+    ) -> None:
+        """The symptom as a user would meet it.
+
+        Before the fix, contradictory filters produced byte-identical files.
+        """
+        one = export_crosswalk(
+            db, tmp_path / "1.csv", fmt="csv", framework=a_framework
+        )
+        two = export_crosswalk(db, tmp_path / "2.csv", fmt="csv", min_confidence=0.99)
+        assert one.read_bytes() != two.read_bytes()
+
+
+class TestTheJsonPathFiltersToo:
+    def test_framework_filter_narrows_the_json(
+        self, db: Path, a_framework: str, tmp_path: Path
+    ) -> None:
+        every = json.loads(
+            export_crosswalk(db, tmp_path / "a.json", fmt="json").read_text(
+                encoding="utf-8"
+            )
+        )
+        one = json.loads(
+            export_crosswalk(
+                db, tmp_path / "b.json", fmt="json", framework=a_framework
+            ).read_text(encoding="utf-8")
+        )
+        assert len(one) == 1
+        assert len(every) > 1
+
+    def test_status_means_the_same_thing_in_both_formats(
+        self, db: Path, tmp_path: Path
+    ) -> None:
+        """The JSON path hardcoded 'accepted'; the CSV path filtered nothing.
+
+        So `--status` meant different things depending on `--format`, and
+        neither honoured what the user asked for.
+        """
+        json_rows = json.loads(
+            export_crosswalk(
+                db, tmp_path / "a.json", fmt="json", status="accepted"
+            ).read_text(encoding="utf-8")
+        )
+        csv_rows = _csv_rows(
+            export_crosswalk(db, tmp_path / "a.csv", fmt="csv", status="accepted")
+        )
+        json_pairs = {
+            (control, entry["hub_id"])
+            for framework in json_rows.values()
+            for control, entries in framework.items()
+            for entry in entries
+        }
+        csv_pairs = {(row["control_id"], row["hub_id"]) for row in csv_rows}
+        assert json_pairs == csv_pairs
+
+
+class TestNothingIsSilentlyIgnored:
+    def test_every_documented_filter_is_a_parameter(self) -> None:
+        """A flag the CLI accepts and the exporter cannot see is the defect."""
+        import inspect
+
+        params = set(inspect.signature(export_crosswalk).parameters)
+        for name in ("framework", "hub", "min_confidence", "status"):
+            assert name in params, (
+                f"`tract export --{name.replace('_', '-')}` is accepted by the "
+                "parser but export_crosswalk has no such parameter, so it is "
+                "silently ignored."
+            )
+
+    def test_the_cli_forwards_all_of_them(self) -> None:
+        import inspect
+
+        from tract import cli
+
+        source = inspect.getsource(cli._cmd_export)
+        for name in ("framework", "hub", "min_confidence", "status"):
+            assert name in source, (
+                f"_cmd_export never mentions {name}, so the flag is parsed and "
+                "dropped."
+            )

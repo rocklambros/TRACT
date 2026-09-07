@@ -57,6 +57,19 @@ CONTROL_FIELDS: Final[tuple[str, ...]] = (
     "control_id", "control_title", "control_text",
 )
 
+# The sheet the annotator actually works in: the control's text beside empty
+# answer columns, in one file. Before this existed the packet emitted only the
+# three reference fields above while the importer required control_id, cre_id,
+# confidence and rationale -- an overlap of exactly one column -- so a volunteer
+# had to invent the response format and the import then rejected it.
+ANNOTATION_SHEET_NAME: Final[str] = "annotate.csv"
+
+# Empty on emission, always. Anything in an answer column is a suggestion, and a
+# suggestion makes the round Tier 3.
+ANSWER_FIELDS: Final[tuple[str, ...]] = ("cre_id", "confidence", "rationale")
+
+ANNOTATION_FIELDS: Final[tuple[str, ...]] = CONTROL_FIELDS + ANSWER_FIELDS
+
 CURATED_BY_FRAMEWORK_PATH: Final[Path] = (
     TRAINING_DIR / "hub_links_by_framework_curated.json"
 )
@@ -145,6 +158,38 @@ def build_control_sheet(path: Path, framework_id: str) -> int:
     return rows
 
 
+def build_annotation_sheet(path: Path, framework_id: str) -> int:
+    """Write the fillable sheet: control text beside empty answer columns.
+
+    One file, so the annotator does not transcribe between a reference sheet
+    and an answer sheet. `controls.csv` stays as the read-only reference.
+
+    The answer columns are named exactly as `import_bridge_links` requires, so
+    a filled sheet imports without an intermediate step. A round-trip test
+    carries a real packet through a real fill to a real import, because both
+    sides were previously tested in isolation and the join by nobody.
+    """
+    payload = json.loads(
+        (PROCESSED_DIR / "all_controls.json").read_text(encoding="utf-8")
+    )
+    framework = {f["framework_id"]: f for f in payload["frameworks"]}[framework_id]
+
+    rows = 0
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(ANNOTATION_FIELDS))
+        writer.writeheader()
+        for control in framework["controls"]:
+            writer.writerow({
+                "control_id": control.get("control_id", ""),
+                "control_title": (control.get("title") or "").strip(),
+                "control_text": (control.get("description") or "").strip(),
+                # Empty, every one. See ANSWER_FIELDS.
+                **dict.fromkeys(ANSWER_FIELDS, ""),
+            })
+            rows += 1
+    return rows
+
+
 def build_bridge_packet(
     out_dir: Path, framework_id: str, *, allow_undetermined: bool = False
 ) -> None:
@@ -176,9 +221,10 @@ def build_bridge_packet(
     out_dir.mkdir(parents=True, exist_ok=True)
     n_hubs = build_hub_sheet(out_dir / HUB_SHEET_NAME)
     n_controls = build_control_sheet(out_dir / CONTROL_SHEET_NAME, framework_id)
+    n_rows = build_annotation_sheet(out_dir / ANNOTATION_SHEET_NAME, framework_id)
     logger.info(
-        "Packet written to %s: %d AI hubs, %d %s controls.",
-        out_dir, n_hubs, n_controls, framework_id,
+        "Packet written to %s: %d AI hubs, %d %s controls, %d annotation rows.",
+        out_dir, n_hubs, n_controls, framework_id, n_rows,
     )
 
 

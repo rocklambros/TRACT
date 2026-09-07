@@ -235,6 +235,22 @@ wanted, the answer key has to move — making the repository private for the
 duration, or relocating `hub_reference.md` and the review/bridge exports — and
 that is an owner decision this document records rather than makes.
 
+## 5b. What the annotator receives
+
+`docs/phase2c-annotator-handbook.md`, tracked and in CI, and the three files
+`scripts/build_bridge_packet.py` emits. Nothing else.
+
+It is a **different document** from `claudedocs/curation-package.md`, which
+describes the Campaign 3 curation round: AI controls across 522 hubs, with
+answer columns this round's importer does not read. Sending that handbook with
+this packet produces a sheet that cannot be imported.
+
+The handbook is tracked on purpose. The curation one is gitignored, which is how
+it escaped a thirteen-file correction sweep and kept three fabricated claims.
+`tests/test_phase2c_handbook.py` checks its load-bearing statements against the
+tooling itself -- the file names, the answer columns, the confidence scale, the
+NONE sentinel -- so the handbook cannot drift from the packet.
+
 ## 6. Annotator exclusions
 
 Beyond `claudedocs/curation-package.md` §1.3's exclusion of anyone who has worked

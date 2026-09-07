@@ -75,11 +75,20 @@ logger = logging.getLogger(__name__)
 def _require_inference_runtime() -> None:
     """Fail fast (before any download) if the phase0 inference runtime is missing."""
     import importlib.util
-    if (importlib.util.find_spec("torch") is None
-            or importlib.util.find_spec("sentence_transformers") is None):
-        print("Inference needs the phase0 runtime: pip install 'tract[phase0]'",
-              file=sys.stderr)
-        sys.exit(EXIT_MISSING_RUNTIME)
+
+    # numpy belongs here as much as torch does: tract/inference.py imports it
+    # at module level and it ships only in the phase0 extra, so on a base
+    # install it is exactly as absent. Omitting it made the documented exit 5
+    # unreachable for numpy -- the import raised ModuleNotFoundError and the
+    # user got exit 1 with a traceback instead of an install instruction.
+    for module in ("torch", "sentence_transformers", "numpy"):
+        if importlib.util.find_spec(module) is None:
+            print(
+                f"Inference needs the phase0 runtime ({module} is missing): "
+                "pip install 'tract[phase0]'",
+                file=sys.stderr,
+            )
+            sys.exit(EXIT_MISSING_RUNTIME)
 
 
 def _resolve_model_or_exit() -> ResolvedModel:
@@ -735,12 +744,10 @@ def _cmd_download(args: argparse.Namespace) -> None:
 
 
 def _cmd_assign(args: argparse.Namespace) -> None:
-    from tract.inference import TRACTPredictor
-
-    _require_inference_runtime()
-    resolved = _resolve_model_or_exit()
-    predictor = TRACTPredictor(resolved.path, source=resolved.source)
-
+    # Cheap validation first. This block used to sit AFTER the predictor was
+    # constructed, so a mistyped --file cost a ~1.3 GB model load before
+    # "File not found" -- and on a fresh machine, a download before it.
+    file_path: Path | None = None
     if args.file:
         file_path = Path(args.file)
         if not file_path.exists():
@@ -753,6 +760,16 @@ def _cmd_assign(args: argparse.Namespace) -> None:
             )
             sys.exit(EXIT_USER_ERROR)
 
+    # The guard BEFORE the import it guards. Importing first meant the import
+    # raised on a base install and the guard never spoke, so the documented
+    # exit 5 and its install instruction were unreachable.
+    _require_inference_runtime()
+    from tract.inference import TRACTPredictor
+
+    resolved = _resolve_model_or_exit()
+    predictor = TRACTPredictor(resolved.path, source=resolved.source)
+
+    if file_path is not None:
         raw_lines = file_path.read_text(encoding="utf-8").splitlines()
         # Preserve 1-based source-file line numbers; strip only to detect blank lines,
         # then store the stripped text as the canonical control string.
@@ -1212,7 +1229,18 @@ def _cmd_export(args: argparse.Namespace) -> None:
         fmt = "json"
 
     output_path = Path(args.output) if args.output else Path(f"crosswalk_export.{args.format}")
-    export_crosswalk(PHASE1C_CROSSWALK_DB_PATH, output_path, fmt=fmt)
+    # Every documented filter is forwarded. They were parsed and dropped, so
+    # `tract export --framework mitre_atlas` returned all six frameworks and two
+    # contradictory invocations wrote byte-identical files.
+    export_crosswalk(
+        PHASE1C_CROSSWALK_DB_PATH,
+        output_path,
+        fmt=fmt,
+        framework=getattr(args, "framework", None),
+        hub=getattr(args, "hub", None),
+        min_confidence=getattr(args, "min_confidence", None),
+        status=getattr(args, "status", None),
+    )
     print(f"Exported to {output_path}")
 
 
