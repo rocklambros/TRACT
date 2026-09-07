@@ -33,22 +33,94 @@ CSV_FORMULA_TRIGGERS: Final[tuple[str, ...]] = ("=", "+", "-", "@", "\t", "\r")
 CSV_FORMULA_GUARD: Final[str] = "'"
 
 
-def export_crosswalk(db_path: Path, output_path: Path, fmt: str = "json") -> Path:
+def export_crosswalk(
+    db_path: Path,
+    output_path: Path,
+    fmt: str = "json",
+    *,
+    framework: str | None = None,
+    hub: str | None = None,
+    min_confidence: float | None = None,
+    status: str | None = None,
+) -> Path:
     """Export assignments from the crosswalk database.
 
-    JSON format exports only accepted assignments grouped by framework.
-    CSV format exports all assignments with full metadata.
+    JSON groups by framework name; CSV carries full metadata per row.
+
+    The four filters correspond to `tract export`'s documented flags. They
+    previously did not exist: the CLI accepted `--framework`, `--hub`,
+    `--min-confidence` and `--status` and passed none of them here, so
+    `tract export --framework mitre_atlas` returned every framework and two
+    contradictory invocations produced byte-identical files. Silently wrong
+    output is worse than a crash, because it gets used.
+
+    `status=None` preserves each format's historical default -- accepted for
+    JSON, everything for CSV -- so an existing caller sees no change. Pass
+    `status="all"` for no status predicate in either.
     """
     if fmt == "json":
-        return _export_json(db_path, output_path)
+        return _export_json(
+            db_path, output_path,
+            framework=framework, hub=hub,
+            min_confidence=min_confidence,
+            status="accepted" if status is None else status,
+        )
     elif fmt == "csv":
-        return _export_csv(db_path, output_path)
+        return _export_csv(
+            db_path, output_path,
+            framework=framework, hub=hub,
+            min_confidence=min_confidence,
+            status="all" if status is None else status,
+        )
     else:
         raise ValueError(f"Unsupported format: {fmt!r}. Use 'json' or 'csv'.")
 
 
-def _export_json(db_path: Path, output_path: Path) -> Path:
-    """Export accepted assignments as JSON grouped by framework name."""
+
+def _build_filters(
+    framework: str | None,
+    hub: str | None,
+    min_confidence: float | None,
+    status: str | None,
+) -> tuple[str, list[object]]:
+    """SQL predicates and parameters for the documented export filters.
+
+    Shared by both formats, because they previously disagreed: the JSON path
+    hardcoded `review_status = 'accepted'` while the CSV path applied no status
+    filter at all, so `--status` meant different things depending on `--format`
+    and neither honoured what the user asked for.
+
+    `status="all"` means no status predicate. Every filter is parameterised;
+    none is interpolated.
+    """
+    clauses: list[str] = []
+    params: list[object] = []
+    if framework:
+        clauses.append("f.id = ?")
+        params.append(framework)
+    if hub:
+        clauses.append("a.hub_id = ?")
+        params.append(hub)
+    if min_confidence is not None:
+        clauses.append("a.confidence IS NOT NULL AND a.confidence >= ?")
+        params.append(min_confidence)
+    if status and status != "all":
+        clauses.append("a.review_status = ?")
+        params.append(status)
+    return (" AND ".join(clauses), params)
+
+
+def _export_json(
+    db_path: Path,
+    output_path: Path,
+    *,
+    framework: str | None = None,
+    hub: str | None = None,
+    min_confidence: float | None = None,
+    status: str | None = "accepted",
+) -> Path:
+    """Export assignments as JSON grouped by framework name."""
+    where, params = _build_filters(framework, hub, min_confidence, status)
     conn = get_connection(db_path)
     try:
         rows = conn.execute(
@@ -57,8 +129,9 @@ def _export_json(db_path: Path, output_path: Path) -> Path:
             "FROM assignments a "
             "JOIN controls c ON a.control_id = c.id "
             "JOIN frameworks f ON c.framework_id = f.id "
-            "WHERE a.review_status = 'accepted' "
-            "ORDER BY f.name, a.control_id, a.hub_id"
+            + (f"WHERE {where} " if where else "")
+            + "ORDER BY f.name, a.control_id, a.hub_id",
+            params,
         ).fetchall()
     finally:
         conn.close()
@@ -116,8 +189,17 @@ def neutralize_csv_cell(value: object) -> object:
     return value
 
 
-def _export_csv(db_path: Path, output_path: Path) -> Path:
-    """Export all assignments as CSV with full metadata."""
+def _export_csv(
+    db_path: Path,
+    output_path: Path,
+    *,
+    framework: str | None = None,
+    hub: str | None = None,
+    min_confidence: float | None = None,
+    status: str | None = "all",
+) -> Path:
+    """Export assignments as CSV with full metadata."""
+    where, params = _build_filters(framework, hub, min_confidence, status)
     conn = get_connection(db_path)
     try:
         rows = conn.execute(
@@ -127,7 +209,9 @@ def _export_csv(db_path: Path, output_path: Path) -> Path:
             "FROM assignments a "
             "JOIN controls c ON a.control_id = c.id "
             "JOIN frameworks f ON c.framework_id = f.id "
-            "ORDER BY f.name, a.control_id"
+            + (f"WHERE {where} " if where else "")
+            + "ORDER BY f.name, a.control_id",
+            params,
         ).fetchall()
     finally:
         conn.close()
