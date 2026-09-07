@@ -37,6 +37,15 @@ REQUIRED_COLUMNS: Final[tuple[str, ...]] = (
     "control_id", "cre_id", "confidence", "rationale",
 )
 
+# Columns the packet ships for the annotator's benefit and this importer
+# ignores. Named explicitly rather than tolerated as a wildcard: the
+# unknown-column refusal below exists because a misspelled header silently
+# discards annotator judgements, and "ignore anything I do not recognise" is
+# that defect restated. Anything outside REQUIRED | CONTEXT is still refused.
+CONTEXT_COLUMNS: Final[frozenset[str]] = frozenset({
+    "control_title", "control_text",
+})
+
 # The annotator sheet's confidence scale, inclusive. 1-3, per design decision
 # D4, which also sets the Gate 1 counting floor at >= 2. Not 1-5: a wider scale
 # here would silently admit values the gate's floor was never calibrated
@@ -221,7 +230,9 @@ def import_bridge_links(
         # Refused, not ignored. The JSONL loader rejects unknown FIELDS for the
         # same reason, and this is the boundary facing the spreadsheet, so it is
         # where a second-hub column or a typo'd header actually shows up.
-        unknown_columns = set(present_columns) - set(REQUIRED_COLUMNS)
+        unknown_columns = (
+            set(present_columns) - set(REQUIRED_COLUMNS) - CONTEXT_COLUMNS
+        )
         if unknown_columns:
             raise ValueError(
                 f"{source}: unknown column(s) {sorted(unknown_columns)}. "

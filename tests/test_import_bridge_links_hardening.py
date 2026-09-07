@@ -286,3 +286,58 @@ class TestTheFormulaGuardCannotBeBypassed:
         for line in out.read_text(encoding="utf-8").splitlines():
             stored = json.loads(line)["rationale"]
             assert stored[:1] not in ("=", "+", "-", "@")
+
+
+class TestContextColumnsAreNamedNotWildcarded:
+    """The packet ships context columns; unknown ones must still be refused.
+
+    Permitting `control_title` and `control_text` was necessary for the
+    round-trip -- the annotation sheet carries the control's text beside the
+    answer -- and the lazy way to do it is to stop checking unknown columns at
+    all. That would restore the defect the check exists for: a misspelled
+    header silently discarding annotator judgements.
+    """
+
+    def test_a_context_column_is_accepted(self, tmp_path: Path) -> None:
+        path = tmp_path / "ctx.csv"
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=[
+                    "control_id", "control_title", "control_text",
+                    "cre_id", "confidence", "rationale",
+                ],
+            )
+            writer.writeheader()
+            writer.writerow({**_row(), "control_title": "t", "control_text": "x"})
+        assert len(_import(path, tmp_path / "o.jsonl")) == 1
+
+    def test_a_genuinely_unknown_column_is_still_refused(
+        self, tmp_path: Path
+    ) -> None:
+        path = tmp_path / "typo.csv"
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=[
+                    "control_id", "cre_id", "confidence", "rationale",
+                    "ANSWER_second_hub",
+                ],
+            )
+            writer.writeheader()
+            writer.writerow({**_row(), "ANSWER_second_hub": "111-111"})
+        with pytest.raises(ValueError, match="ANSWER_second_hub"):
+            _import(path, tmp_path / "o.jsonl")
+
+    def test_the_permitted_set_is_exactly_what_the_packet_ships(self) -> None:
+        """Bind the two, so widening one does not silently widen the other."""
+        from scripts.build_bridge_packet import ANSWER_FIELDS, CONTROL_FIELDS
+        from scripts.import_bridge_links import CONTEXT_COLUMNS, REQUIRED_COLUMNS
+
+        shipped = set(CONTROL_FIELDS) | set(ANSWER_FIELDS)
+        readable = set(REQUIRED_COLUMNS) | CONTEXT_COLUMNS
+        assert shipped == readable, (
+            f"The packet ships {sorted(shipped)} and the importer reads "
+            f"{sorted(readable)}. A filled packet must import without an "
+            "intermediate step."
+        )
