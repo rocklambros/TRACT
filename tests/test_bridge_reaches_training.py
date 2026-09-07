@@ -233,22 +233,27 @@ class TestTheFlagReachesTheConfig:
     """
 
     def test_run_fold_accepts_bridge_links(self) -> None:
-        import importlib
+        """Read the source; do not import it.
 
-        module = importlib.import_module("scripts.phase1b.run_fold")
-        parser = module.build_parser() if hasattr(module, "build_parser") else None
-        if parser is None:
-            source = Path(module.__file__ or "").read_text(encoding="utf-8")
-            assert '"--bridge-links"' in source, (
-                "run_fold.py exposes no --bridge-links flag, so a fold cannot "
-                "be told to use a bridge corpus."
-            )
-            assert "bridge_links_path" in source, (
-                "the flag exists but is not forwarded into TrainingConfig."
-            )
-        else:
-            args = parser.parse_args(["--framework", "X", "--bridge-links", "b.jsonl"])
-            assert args.bridge_links == "b.jsonl"
+        scripts/phase1b/run_fold.py imports torch, which is absent from CI's
+        requirements. Importing it here made this test the only red in an
+        otherwise green suite -- better than the collection error that once
+        aborted 3,000 tests, and still avoidable. The property under test is
+        that the flag exists and is forwarded, which the source answers.
+        """
+        from tract.config import PROJECT_ROOT
+
+        source = (
+            PROJECT_ROOT / "scripts" / "phase1b" / "run_fold.py"
+        ).read_text(encoding="utf-8")
+        assert '"--bridge-links"' in source, (
+            "run_fold.py exposes no --bridge-links flag, so a fold cannot be "
+            "told to use a bridge corpus and Gate 2's treatment arm is not "
+            "expressible."
+        )
+        assert "bridge_links_path" in source, (
+            "the flag exists but is not forwarded into TrainingConfig."
+        )
 
     def test_the_config_field_survives_a_round_trip(self) -> None:
         from tract.training.config import TrainingConfig
