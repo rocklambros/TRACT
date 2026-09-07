@@ -266,8 +266,8 @@ class TestThePrescribedWorkflowCanActuallyPass:
         ]
         d = tmp_path / "corpora"
         d.mkdir()
-        _write(d, a1).rename(d / "hub_links_bridge.a1.jsonl")
-        _write(d, a2).rename(d / "hub_links_bridge.a2.jsonl")
+        _write(d, a1).rename(d / "a1.jsonl")
+        _write(d, a2).rename(d / "a2.jsonl")
         return d
 
     def test_a_directory_of_per_annotator_corpora_is_read(
@@ -319,3 +319,56 @@ class TestThePrescribedWorkflowCanActuallyPass:
         d.mkdir()
         with pytest.raises(ValueError, match="no .jsonl"):
             gate1_report(d)
+
+
+class TestItRefusesTheGoldDirectory:
+    """`data/training/` holds the gold link files, not bridge corpora.
+
+    Gate 1 reads a directory and globs *.jsonl. The handbook originally told
+    the coordinator to point it at `data/training/`, which holds
+    hub_links.jsonl, hub_links_curated.jsonl and hub_links_training.jsonl -- so
+    it handed the CURATED GOLD LINKS to a bridge loader.
+
+    It failed, because the loader validates its fields, but the operator was
+    left reading `missing required field(s) ['annotator_id', 'confidence',
+    'created_at', 'rationale', 'tier']` instead of being told they had pointed
+    at the wrong directory.
+    """
+
+    def test_a_directory_of_gold_links_is_refused_by_name(
+        self, tmp_path: Path
+    ) -> None:
+        for name in ("hub_links.jsonl", "hub_links_curated.jsonl"):
+            (tmp_path / name).write_text('{"cre_id": "1"}\n', encoding="utf-8")
+        with pytest.raises(ValueError, match="not a bridge corpus directory"):
+            gate1_report(tmp_path)
+
+    def test_the_error_names_where_to_point_instead(self, tmp_path: Path) -> None:
+        (tmp_path / "hub_links_training.jsonl").write_text("{}\n", encoding="utf-8")
+        with pytest.raises(ValueError) as excinfo:
+            gate1_report(tmp_path)
+        assert "bridge" in str(excinfo.value), (
+            "the refusal must tell the operator which directory to use"
+        )
+
+    def test_a_real_bridge_directory_is_still_accepted(
+        self, tmp_path: Path
+    ) -> None:
+        """Guards the guard: refusing everything would pass the tests above."""
+        hubs = _hubs(30)
+        d = tmp_path / "bridge"
+        d.mkdir()
+        _write(d, [_link(f"AC-{i}", hubs[i % 30]) for i in range(45)]).rename(
+            d / "vol-01.jsonl"
+        )
+        assert gate1_report(d)["n_links_total"] == 45
+
+    def test_the_default_is_the_bridge_directory(self) -> None:
+        """A bare `gate1_report` must not need the operator to remember a path."""
+        import inspect
+
+        from scripts.analysis.gate1_report import main
+        from tract.config import BRIDGE_CORPUS_DIR
+
+        assert "BRIDGE_CORPUS_DIR" in inspect.getsource(main)
+        assert BRIDGE_CORPUS_DIR.name == "bridge"

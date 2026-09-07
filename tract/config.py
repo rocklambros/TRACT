@@ -645,6 +645,15 @@ PHASE2C_Q3_CONFIDENCE_FLOOR: Final[int] = 2
 # threshold on the agreement rate -- a requirement that the number exist.
 PHASE2C_Q4_MIN_DOUBLE_ANNOTATED: Final[float] = 0.15
 
+# Where per-annotator Tier-2 bridge corpora live: one <annotator_id>.jsonl per
+# person, with an <annotator_id>.reviewed.json sidecar beside it.
+#
+# A SUBDIRECTORY, not data/training/ itself. Gate 1 reads a directory and globs
+# *.jsonl, and data/training/ already holds hub_links.jsonl,
+# hub_links_curated.jsonl and hub_links_training.jsonl -- the gold link files.
+# Pointing the gate at the parent made it try to load gold as bridge corpora.
+BRIDGE_CORPUS_DIR: Final[Path] = TRAINING_DIR / "bridge"
+
 # Stamped into the `link_type` of every Phase 2C bridge link so that
 # assign_quality_tier returns T2 rather than falling through to T1. Held here
 # rather than in tract/bridge/ so tract/training/data_quality.py can read it

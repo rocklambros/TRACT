@@ -338,7 +338,7 @@ def main() -> None:
     logger.info("Wrote corrections log to %s", CORRECTIONS_LOG)
 
     print(f"\n{'='*60}")
-    print(f"CURATION COMPLETE")
+    print("CURATION COMPLETE")
     print(f"  Original:   {log['original_total']} total links ({log['ai_links_original']} AI)")
     print(f"  Curated:    {log['curated_total']} total links ({ai_curated} AI)")
     print(f"  Corrected:  {len(corrections)} links remapped to better hubs")
