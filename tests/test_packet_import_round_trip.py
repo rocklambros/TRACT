@@ -188,3 +188,77 @@ class TestTheReferenceSheetStillCarriesNoAnswers:
         with (packet / "controls.csv").open(encoding="utf-8") as handle:
             header = set(csv.DictReader(handle).fieldnames or [])
         assert header == {"control_id", "control_title", "control_text"}
+
+
+class TestThePacketCarriesTheFullestTextAvailable:
+    """19% of the packet was truncated mid-word before this.
+
+    `all_controls.json` caps `description` at 2,000 characters, so 58 of the 300
+    NIST 800-53 controls ended mid-word -- one finishes "Procedures can be
+    documente". An annotator reading that is judging a control on partial text,
+    and the whole task is a judgement about what the control is FOR.
+
+    Every one of those 58 carries a `full_text` field that is longer (median
+    +535 characters, up to +3,508), and across the framework `full_text` is
+    never shorter than `description`. So preferring it recovers the truncated
+    ones with no case where it loses anything.
+
+    CLAUDE.md already required this: "Consider all available prose, always.
+    Prefer a control's full text over its title everywhere text is selected."
+    """
+
+    def test_no_control_text_is_cut_at_the_description_cap(
+        self, packet: Path
+    ) -> None:
+        with (packet / ANNOTATION_SHEET_NAME).open(encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        at_cap = [r for r in rows if len(r["control_text"]) == 2000]
+        assert not at_cap, (
+            f"{len(at_cap)} controls sit at exactly the 2,000-character "
+            "description cap, so they are truncated mid-sentence. Prefer "
+            "full_text where it is longer."
+        )
+
+    def test_it_matches_the_longest_text_the_corpus_holds(
+        self, packet: Path
+    ) -> None:
+        """Checked against the source, not against a copied expectation."""
+        import json
+
+        from tract.config import PROCESSED_DIR
+
+        corpus = json.loads(
+            (PROCESSED_DIR / "all_controls.json").read_text(encoding="utf-8")
+        )
+        framework = next(
+            f for f in corpus["frameworks"] if f["framework_id"] == FRAMEWORK
+        )
+        longest = {
+            c["control_id"]: max(
+                (c.get("description") or "").strip(),
+                (c.get("full_text") or "").strip(),
+                key=len,
+            )
+            for c in framework["controls"]
+        }
+        with (packet / ANNOTATION_SHEET_NAME).open(encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+
+        short = [
+            r["control_id"] for r in rows
+            if len(r["control_text"]) < len(longest.get(r["control_id"], ""))
+        ]
+        assert not short, (
+            f"{len(short)} controls carry less text than the corpus holds for "
+            f"them, e.g. {short[:5]}"
+        )
+
+    def test_the_reference_sheet_agrees_with_the_annotation_sheet(
+        self, packet: Path
+    ) -> None:
+        """Two sheets showing the same control differently is worse than one."""
+        with (packet / "controls.csv").open(encoding="utf-8") as handle:
+            reference = {r["control_id"]: r["control_text"] for r in csv.DictReader(handle)}
+        with (packet / ANNOTATION_SHEET_NAME).open(encoding="utf-8") as handle:
+            annotation = {r["control_id"]: r["control_text"] for r in csv.DictReader(handle)}
+        assert reference == annotation

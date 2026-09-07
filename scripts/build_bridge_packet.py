@@ -152,10 +152,31 @@ def build_control_sheet(path: Path, framework_id: str) -> int:
                 # Full prose, per CLAUDE.md: the title is a last resort, not a
                 # default. An annotator mapping titles is doing a different and
                 # easier task than the one the model is scored on.
-                "control_text": control.get("description", ""),
+                "control_text": control_prose(control),
             })
             rows += 1
     return rows
+
+
+def control_prose(control: dict[str, object]) -> str:
+    """The fullest text the corpus holds for one control.
+
+    `description` is capped at 2,000 characters by the parser's sanitiser, which
+    cuts 58 of NIST 800-53's 300 controls mid-word -- one ends "Procedures can
+    be documente". An annotator reading that is judging a control on partial
+    text, and judging what the control is FOR is the entire task.
+
+    Every one of those 58 carries a longer `full_text` (median +535 characters,
+    up to +3,508), and across the framework `full_text` is never shorter than
+    `description`, so taking the longer of the two recovers them with no case
+    where it loses anything.
+
+    CLAUDE.md: "Consider all available prose, always. Prefer a control's full
+    text over its title everywhere text is selected."
+    """
+    description = str(control.get("description") or "").strip()
+    full_text = str(control.get("full_text") or "").strip()
+    return max(description, full_text, key=len)
 
 
 def build_annotation_sheet(path: Path, framework_id: str) -> int:
@@ -182,7 +203,7 @@ def build_annotation_sheet(path: Path, framework_id: str) -> int:
             writer.writerow({
                 "control_id": control.get("control_id", ""),
                 "control_title": (control.get("title") or "").strip(),
-                "control_text": (control.get("description") or "").strip(),
+                "control_text": control_prose(control),
                 # Empty, every one. See ANSWER_FIELDS.
                 **dict.fromkeys(ANSWER_FIELDS, ""),
             })
