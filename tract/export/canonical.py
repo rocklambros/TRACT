@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from tract.config import OVERLAY_FRAMEWORK_IDS
+from tract.config import OVERLAY_FRAMEWORK_IDS, PHASE5_EXPORTABLE_PROVENANCES
 from tract.crosswalk.schema import get_connection
 # Re-exported at this module's old import path on purpose. The implementation
 # moved to tract.licensing so `tract export --opencre` could share it instead
@@ -62,6 +62,16 @@ CREATE INDEX IF NOT EXISTS idx_export_history_fw
 """
 
 
+
+def _allowed_provenances() -> tuple[str, ...]:
+    """The export allowlist, sorted so a query is deterministic."""
+    return tuple(sorted(PHASE5_EXPORTABLE_PROVENANCES))
+
+
+def _allow_placeholders() -> str:
+    return ", ".join("?" for _ in _allowed_provenances())
+
+
 def ensure_export_history_table(db_path: Path) -> None:
     """Create the export_history table if it does not exist."""
     conn = get_connection(db_path)
@@ -79,7 +89,7 @@ def _query_canonical_assignments(
     confidence_overrides: dict[str, float],
 ) -> list[dict[str, Any]]:
     """Query assignments passing all export filters, returning fields needed for canonical export."""
-    from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE
+    from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE  # noqa: F401
 
     conn = get_connection(db_path)
     try:
@@ -92,13 +102,19 @@ def _query_canonical_assignments(
             "JOIN controls c ON a.control_id = c.id "
             "JOIN hubs h ON a.hub_id = h.id "
             "WHERE a.review_status = 'accepted' "
-            "AND a.provenance != ? "
+            # ALLOWLIST, not `!= ground_truth`. That was a blocklist of one:
+            # it excluded a single value and admitted every other provenance by
+            # default, which is how 558 model-derived active_learning_round_2
+            # rows came to pass every clause while PRD.md claimed nothing
+            # model-derived was downstream. An unclassified provenance is now
+            # excluded rather than shipped, and the caller asserts none exists.
+            f"AND a.provenance IN ({_allow_placeholders()}) "
             "AND a.confidence IS NOT NULL "
             "AND a.is_ood != 1 "
             "AND c.framework_id = ? "
             "AND a.confidence >= ? "
             "ORDER BY a.hub_id, c.section_id",
-            [PHASE5_GROUND_TRUTH_PROVENANCE, framework_id, floor],
+            [*_allowed_provenances(), framework_id, floor],
         ).fetchall()
         return [dict(r) for r in rows]
     finally:

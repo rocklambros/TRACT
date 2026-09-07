@@ -777,6 +777,29 @@ PHASE5_OPENCRE_EXPORT_CONFIDENCE_OVERRIDES: Final[dict[str, float]] = {
 PHASE5_OPENCRE_STALENESS_URL: Final[str] = "https://opencre.org/rest/v1/root_cres"
 PHASE5_OPENCRE_STALENESS_TIMEOUT_S: Final[int] = 30
 PHASE5_GROUND_TRUTH_PROVENANCE: Final[str] = "ground_truth_T1-AI"
+
+# What the OpenCRE export is permitted to carry. An ALLOWLIST, because the
+# previous filter was `provenance != ground_truth_T1-AI` -- a blocklist of one,
+# which let every other provenance through by default. Measured on
+# results/phase1c/crosswalk.db: 558 active_learning_round_2 rows passed every
+# clause, against PRD.md's claim that "nothing model-derived is downstream in
+# ... the OpenCRE fork import, or the Phase 5B export".
+#
+# active_learning_round_2 IS model-derived and IS exported. That is a deliberate
+# owner decision recorded 2026-09-06, and the PRD sentence was corrected to
+# match rather than the rows being dropped. What changed is that the export now
+# names what it permits, and refuses a provenance nobody has classified.
+PHASE5_EXPORTABLE_PROVENANCES: Final[frozenset[str]] = frozenset({
+    "active_learning_round_2",
+})
+
+# Provenances the export deliberately withholds. Kept beside the allowlist so
+# that "known and excluded" and "never classified" stay distinguishable: an
+# unrecognised value raises rather than being silently dropped OR silently
+# shipped.
+PHASE5_WITHHELD_PROVENANCES: Final[frozenset[str]] = frozenset({
+    PHASE5_GROUND_TRUTH_PROVENANCE,
+})
 PHASE5_CANONICAL_EXPORT_DIR: Final[Path] = PROJECT_ROOT / "canonical_export"
 # Default output of `tract export --opencre`. Named here rather than repeated
 # as "./opencre_export" at two CLI call sites, so the gitignore gate and the

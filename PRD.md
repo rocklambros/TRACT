@@ -467,10 +467,25 @@ Two findings, both verified against the repository. Full treatment in
   `scripts/analysis/audit_stratified_delta.py`.
   **Resolved 2026-08-30 by the owner: no model output was visible to the
   reviewer** who produced `ai_link_audit.csv`. The corrections are **Tier 2**,
-  independently human-authored, and nothing model-derived is downstream in the
-  published model, the published dataset, the OpenCRE fork import, or the Phase
-  5B export. The RFC may cite these links. This does **not** change the
-  stratified figures above.
+  independently human-authored. The RFC may cite these links. This does **not**
+  change the stratified figures above.
+
+  **CORRECTED 2026-09-06.** This sentence continued *"and nothing model-derived
+  is downstream in the published model, the published dataset, the OpenCRE fork
+  import, or the Phase 5B export"*. The last two clauses were false. The export
+  filtered on `provenance != 'ground_truth_T1-AI'` — a blocklist of one, which
+  admitted every other provenance by default — and **551 rows of
+  `active_learning_round_2`, which is model-derived, passed every clause**. The
+  claim was about the audit corrections, which are clean; it over-reached into
+  the export, which is not.
+
+  The filter is now an allowlist (`PHASE5_EXPORTABLE_PROVENANCES`) that names
+  what it permits and excludes anything unclassified, with a test asserting
+  every provenance in `crosswalk.db` is classified one way or the other. The
+  rows were **not** dropped: exporting active-learning output is an owner
+  decision taken 2026-09-06, and the sentence was corrected to match the export
+  rather than the export changed to match the sentence. Anyone preparing the
+  OpenCRE RFC needs to know it carries them.
   **CORRECTED 2026-08-30 — the sentence that stood here explained why, and it
   was wrong.** It read: *"the inflation mechanism is arithmetic, not provenance
   — relabelling toward high-degree hubs widens a paired delta regardless of who
