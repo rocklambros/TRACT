@@ -217,3 +217,7 @@ claudedocs/*
 # decision an import command should make.
 data/training/hub_links_bridge*.jsonl
 data/training/hub_links_bridge*.reviewed.json
+# Per-annotator Tier-2 corpora. One <annotator_id>.jsonl per person plus a
+# .reviewed.json sidecar. Same reason: each record carries a named annotator
+# and their verbatim free text.
+data/training/bridge/

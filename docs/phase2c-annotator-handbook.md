@@ -131,30 +131,71 @@ Sending it makes every label Tier 3 and the round unusable for either gate.
 The packet builder refuses frameworks whose prose may not be redistributed. If
 it raises, it is right — do not work around it.
 
-## 1.6 Receiving the work back
+## 1.6 What you save, where, per annotator
+
+**Every annotator gets the same packet.** Nothing is per-person on the way out.
+
+| goes out to each annotator | |
+|---|---|
+| `ai_hubs.csv` | the 78 hubs |
+| `controls.csv` | the 300 controls, read-only reference |
+| `annotate.csv` | their blank worksheet |
+| Part 2 of this handbook | their instructions |
+
+Keep `manifest.json`. Do not send it.
+
+**One file comes back per annotator:** their filled `annotate.csv`. Rename it
+so you can tell them apart — `vol-01_filled.csv` — and import each separately:
 
 ```bash
-python -m scripts.import_bridge_links filled.csv \
-  --output data/training/hub_links_bridge.<annotator_id>.jsonl \
+python -m scripts.import_bridge_links vol-01_filled.csv \
   --framework-id nist_800_53 \
-  --annotator-id <annotator_id> \
+  --annotator-id vol-01 \
   --created-at 2026-09-07T12:00:00Z
 ```
 
-**One file per annotator.** The importer refuses to overwrite, and the gate
-reads a directory of them. Writing two annotators to one path used to destroy
-the first silently.
+That writes **two files per annotator**, into `data/training/bridge/`:
 
-Then:
+| file | what it holds |
+|---|---|
+| `vol-01.jsonl` | their accepted Tier-2 links |
+| `vol-01.reviewed.json` | how many controls they worked, and which they judged `NONE` |
 
-```bash
-python -m scripts.analysis.gate1_report data/training/
+So after three volunteers the directory holds six files:
+
+```
+data/training/bridge/
+├── vol-01.jsonl          ├── vol-01.reviewed.json
+├── vol-02.jsonl          ├── vol-02.reviewed.json
+└── vol-03.jsonl          └── vol-03.reviewed.json
 ```
 
-That reports the orphan reduction **and** all four quality conditions, and exits
-non-zero on FAIL. Do not use `orphan_rate --bridge` for a verdict — it is the
-raw arithmetic, counts every link at any confidence, and will pass a sheet that
+**One file per annotator is not a convention, it is the mechanism.** The
+importer refuses to overwrite an existing corpus, so a second import to one
+path stops rather than destroying the first person's work. And Q4 — the
+double-annotation rate and this project's first human–human agreement number —
+is computed *across* the files in that directory. Concatenating them by hand
+breaks Q2, which measures hubs per control **per annotator**.
+
+The `.reviewed.json` sidecars are the denominator. Without them, a volunteer who
+worked 300 controls and found few links looks identical in the record to one who
+worked 40.
+
+Then run Gate 1 with no arguments — it defaults to that directory:
+
+```bash
+python -m scripts.analysis.gate1_report
+```
+
+It reports the orphan reduction **and** all four quality conditions, and exits
+non-zero on FAIL. Two things not to do: don't point it at `data/training/`
+itself — that holds the curated gold link files, and it will refuse and tell you
+so — and don't use `orphan_rate --bridge` for a verdict. That is the raw
+arithmetic, counts every link at any confidence, and will pass a sheet that
 violates three conditions.
+
+Nothing in `data/training/bridge/` is committed. It is gitignored, because every
+record carries a named annotator and their verbatim free text.
 
 ## 1.7 Two annotators on an overlap
 

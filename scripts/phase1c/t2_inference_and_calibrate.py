@@ -48,7 +48,6 @@ from tract.config import (
     PHASE1C_ECE_BOOTSTRAP_N,
     PHASE1C_ECE_N_BINS,
     PHASE1C_ECE_THRESHOLD,
-    PHASE1C_OOD_SEPARATION_GATE,
     PHASE1C_RESULTS_DIR,
     PHASE1C_T_GAP_WARNING,
     PHASE1C_UNMAPPED_FRAMEWORKS,
@@ -58,7 +57,7 @@ from tract.config import (
 from tract.crosswalk.store import insert_assignments
 from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
-from tract.training.data_quality import QualityTier, TieredLink, load_and_filter_curated_links
+from tract.training.data_quality import QualityTier, TieredLink
 from tract.training.firewall import build_all_hub_texts
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")

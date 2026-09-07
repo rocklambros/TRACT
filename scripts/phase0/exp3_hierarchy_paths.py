@@ -29,8 +29,6 @@ from scripts.phase0.common import (
     load_curated_links,
     load_opencre_cres,
     load_parsed_controls,
-    log_aggregate_metrics,
-    log_fold_metrics,
     ndcg_at_k,
     reciprocal_rank,
     save_results,

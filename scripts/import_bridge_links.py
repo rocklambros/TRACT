@@ -26,12 +26,16 @@ from pathlib import Path
 from typing import Final
 
 from tract.bridge.links import BridgeLink
-from tract.config import PROCESSED_DIR, TRAINING_DIR
+from tract.config import BRIDGE_CORPUS_DIR, PROCESSED_DIR, TRAINING_DIR
 from tract.io import atomic_write_json, atomic_write_text
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_OUTPUT_PATH: Final[Path] = TRAINING_DIR / "hub_links_bridge.jsonl"
+# No default. One corpus per annotator, under BRIDGE_CORPUS_DIR, because a
+# single shared default is what let a second annotator's import destroy the
+# first's -- and because Gate 1 reads that directory and would otherwise glob
+# the gold link files sitting in data/training/.
+DEFAULT_OUTPUT_DIR: Final[Path] = BRIDGE_CORPUS_DIR
 
 REQUIRED_COLUMNS: Final[tuple[str, ...]] = (
     "control_id", "cre_id", "confidence", "rationale",
@@ -357,8 +361,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path, help="Filled annotator CSV.")
     parser.add_argument(
-        "--output", type=Path, default=DEFAULT_OUTPUT_PATH,
-        help="Where to write the Tier-2 bridge corpus.",
+        "--output", type=Path, default=None,
+        help=(
+            "Where to write this annotator's Tier-2 corpus. Defaults to "
+            f"{DEFAULT_OUTPUT_DIR}/<annotator-id>.jsonl -- one file per person, "
+            "in a directory of their own, which is what Gate 1 reads."
+        ),
     )
     parser.add_argument(
         "--framework-id", default="nist_800_53",
@@ -382,9 +390,15 @@ def main() -> int:
     )
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    # One corpus per annotator, in the bridge directory, unless overridden.
+    output = args.output
+    if output is None:
+        DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        output = DEFAULT_OUTPUT_DIR / f"{args.annotator_id}.jsonl"
+
     import_bridge_links(
         args.source,
-        args.output,
+        output,
         framework_id=args.framework_id,
         annotator_id=args.annotator_id,
         created_at=args.created_at,

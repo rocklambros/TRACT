@@ -24,13 +24,11 @@ import json
 import logging
 import subprocess
 import time
-from pathlib import Path
 
 import numpy as np
 import torch
 
 from tract.active_learning.deploy import select_holdout
-from tract.active_learning.train_deploy import prepare_deployment_training_data
 from tract.calibration.diagnostics import bootstrap_ece, expected_calibration_error
 from tract.calibration.temperature import calibrate_similarities, fit_t_lofo
 from tract.config import (

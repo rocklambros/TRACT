@@ -32,7 +32,7 @@ import argparse
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import Any, Final, TypedDict
 
 from scripts.analysis.orphan_rate import (
     bridge_link_pairs,
@@ -41,6 +41,7 @@ from scripts.analysis.orphan_rate import (
 )
 from tract.bridge.links import BridgeLink, load_bridge_links
 from tract.config import (
+    BRIDGE_CORPUS_DIR,
     PHASE2C_GATE1_MAX_ORPHANS,
     PHASE2C_GATE1_MIN_DEORPHANED,
     PHASE2C_Q1_MIN_DISTINCT_CONTROLS,
@@ -51,6 +52,16 @@ from tract.config import (
 from tract.io import atomic_write_json
 
 logger = logging.getLogger(__name__)
+
+# The curated gold link files that live in data/training/. Named EXACTLY rather
+# than matched by a "hub_links" prefix: a prefix also catches a legitimately
+# named bridge corpus, and a guard that refuses valid input gets removed by
+# whoever hits it.
+GOLD_LINK_FILENAMES: Final[frozenset[str]] = frozenset({
+    "hub_links.jsonl",
+    "hub_links_curated.jsonl",
+    "hub_links_training.jsonl",
+})
 
 
 class Condition(TypedDict):
@@ -135,7 +146,21 @@ def _resolve(bridge_path: Path) -> list[Path]:
         found = sorted(bridge_path.glob("*.jsonl"))
         if not found:
             raise ValueError(
-                f"{bridge_path} is a directory with no .jsonl corpus in it."
+                f"{bridge_path} is a directory with no .jsonl corpus in it. "
+                f"Per-annotator corpora belong in {BRIDGE_CORPUS_DIR}."
+            )
+        # Refuse the parent. data/training/ holds hub_links.jsonl,
+        # hub_links_curated.jsonl and hub_links_training.jsonl -- the GOLD link
+        # files -- so globbing it hands gold to a bridge loader. It fails
+        # loudly on a missing field, but the operator is left reading a schema
+        # error instead of being told they pointed at the wrong directory.
+        gold = [p for p in found if p.name in GOLD_LINK_FILENAMES]
+        if gold:
+            raise ValueError(
+                f"{bridge_path} contains the curated gold link files "
+                f"({', '.join(p.name for p in gold)}), so it is not a bridge "
+                f"corpus directory. Point Gate 1 at {BRIDGE_CORPUS_DIR}, which "
+                "holds one <annotator_id>.jsonl per annotator."
             )
         return found
     return [bridge_path]
@@ -294,7 +319,13 @@ def _log(report: dict[str, Any]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("bridge", type=Path, help="Tier-2 bridge link JSONL.")
+    parser.add_argument(
+        "bridge", type=Path, nargs="?", default=BRIDGE_CORPUS_DIR,
+        help=(
+            "A Tier-2 bridge corpus, or a DIRECTORY of per-annotator corpora. "
+            "Defaults to the bridge corpus directory."
+        ),
+    )
     parser.add_argument(
         "--out", type=Path, default=None, help="Write the report as JSON here."
     )
