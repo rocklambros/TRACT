@@ -1,0 +1,12 @@
+{
+  "built_at": "2026-09-07T12:12:45+00:00",
+  "files": {
+    "ai_hubs.csv": "ad5835de89713a7005c46e8d441f0f0994cb80ff0d8d8d3bb52f99629aab6081",
+    "annotate.csv": "533d54e2c0c7e420ce0cf67226d8e24964d85a090944ef64248cd4ede557291f",
+    "controls.csv": "12654a6fa643ab7d04448fba1833a0eb8a630a6a199f870b04d6c949538e4e47"
+  },
+  "framework_id": "nist_800_53",
+  "git_sha": "695e0f7",
+  "n_controls": 300,
+  "n_hubs": 78
+}
