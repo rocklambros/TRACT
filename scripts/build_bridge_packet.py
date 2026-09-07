@@ -33,16 +33,20 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Final
 
 from tract.config import (
     BRIDGE_AI_FRAMEWORK_IDS,
+    PROJECT_ROOT,
     PROCESSED_DIR,
     TRAINING_DIR,
 )
+from tract.io import atomic_write_json
 from tract.licensing import refuse_external_redistribution
 
 logger = logging.getLogger(__name__)
@@ -63,6 +67,13 @@ CONTROL_FIELDS: Final[tuple[str, ...]] = (
 # confidence and rationale -- an overlap of exactly one column -- so a volunteer
 # had to invent the response format and the import then rejected it.
 ANNOTATION_SHEET_NAME: Final[str] = "annotate.csv"
+
+# Provenance for the round. A returning sheet could not previously be tied to
+# the packet it came from: if the hub roster shifts between builds -- which is
+# what this round is for -- nothing recorded which 78 hubs a given annotator
+# actually saw. The manifest also names the framework, which is what lets a test
+# refuse a COMMITTED packet whose prose may not be redistributed.
+MANIFEST_NAME: Final[str] = "manifest.json"
 
 # Empty on emission, always. Anything in an answer column is a suggestion, and a
 # suggestion makes the round Tier 3.
@@ -211,6 +222,45 @@ def build_annotation_sheet(path: Path, framework_id: str) -> int:
     return rows
 
 
+def write_manifest(out_dir: Path, framework_id: str, n_hubs: int, n_controls: int) -> Path:
+    """Record what this packet is, and pin its bytes.
+
+    Metadata only -- no control prose. The digests let a filled sheet be tied to
+    the exact packet an annotator was sent, and `framework_id` is what
+    `tests/test_packet_manifest.py` checks against the licence table before
+    allowing a packet to stay committed.
+    """
+    files = {}
+    for name in (HUB_SHEET_NAME, CONTROL_SHEET_NAME, ANNOTATION_SHEET_NAME):
+        files[name] = hashlib.sha256((out_dir / name).read_bytes()).hexdigest()
+
+    manifest = {
+        "framework_id": framework_id,
+        "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "git_sha": _git_sha(),
+        "n_hubs": n_hubs,
+        "n_controls": n_controls,
+        "files": files,
+    }
+    path = out_dir / MANIFEST_NAME
+    atomic_write_json(manifest, path)
+    return path
+
+
+def _git_sha() -> str:
+    """Short SHA of the tree that built this packet, or "unknown"."""
+    import subprocess
+
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=10, cwd=str(PROJECT_ROOT),
+        )
+        return result.stdout.strip() if result.returncode == 0 else "unknown"
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+
+
 def build_bridge_packet(
     out_dir: Path, framework_id: str, *, allow_undetermined: bool = False
 ) -> None:
@@ -243,6 +293,7 @@ def build_bridge_packet(
     n_hubs = build_hub_sheet(out_dir / HUB_SHEET_NAME)
     n_controls = build_control_sheet(out_dir / CONTROL_SHEET_NAME, framework_id)
     n_rows = build_annotation_sheet(out_dir / ANNOTATION_SHEET_NAME, framework_id)
+    write_manifest(out_dir, framework_id, n_hubs, n_controls)
     logger.info(
         "Packet written to %s: %d AI hubs, %d %s controls, %d annotation rows.",
         out_dir, n_hubs, n_controls, framework_id, n_rows,

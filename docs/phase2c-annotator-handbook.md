@@ -73,9 +73,20 @@ python -m scripts.build_bridge_packet ~/tract-packets/phase2c-nist_800_53 \
   --framework-id nist_800_53
 ```
 
-Write it **outside the repository working tree** — the annotator gets the
-packet, not the repo, and a packet inside the tree is one `git add -A` from
-being committed.
+**Where to write it.** By default, outside the repository working tree — the
+annotator gets the packet, not the repo, and a packet inside the tree is one
+`git add -A` from being committed.
+
+The exception is a packet you deliberately intend to distribute, which is
+committed under `packets/` so a coordinator on another machine can `git clone`
+rather than rebuild. `packets/phase2c-nist_800_53/` is one: NIST 800-53's
+licence was checked before it went in. **That is a property of NIST 800-53, not
+of packets** — a `csa_aicm`, `csa_ccm`, `etsi`, `iso_27001` or `dsomm` packet
+may not be committed, and the fingerprint gate will not catch it because it
+fingerprints only the last three. `tests/test_packet_manifest.py` is the guard
+that will. See `packets/README.md`.
+
+If you have not deliberately checked the licence, write it outside the tree.
 
 No `--allow-undetermined` is needed: NIST 800-53's licence was adjudicated
 2026-09-06 as a US Government work not subject to copyright. If the command
@@ -89,6 +100,12 @@ packet, 2026-09-07:
 | `ai_hubs.csv` | 17 KB | all **78** AI hubs — `hub_id, hub_name, hierarchy_path, branch` |
 | `controls.csv` | 452 KB | read-only reference of the **300** controls |
 | `annotate.csv` | 453 KB | **the sheet they fill** — the same 300 controls with empty answer columns |
+
+A fourth file, `manifest.json`, is written beside them. **Keep it; do not send
+it.** It records the framework, the build time, the git SHA of the tree that
+built the packet, and a sha256 of each CSV — so a sheet that comes back can be
+tied to the exact bytes that went out. Without it, if the hub roster changes
+between builds, nothing records which 78 hubs a given annotator actually saw.
 
 The 78 hubs sit in four branches, which is worth knowing when you brief someone:
 
