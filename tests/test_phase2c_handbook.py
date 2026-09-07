@@ -14,6 +14,7 @@ the right packet produces a sheet that cannot import.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Final
 
@@ -134,13 +135,32 @@ class TestTheVolunteerTermsAreStated:
 
 class TestTheBlindingInstructionIsPresent:
     """B1: the previous handbook forbade opencre.org and never named this repo,
-    which is public and tracks the answer key."""
+    which is public and tracks the answer key.
 
-    def test_it_names_the_repository(self, text: str) -> None:
-        assert "github.com/rocklambros/TRACT" in text
+    These match the INSTRUCTION, not the bare domain. Two reasons. A domain
+    mentioned anywhere in the file would satisfy `"opencre.org" in text` --
+    including in a sentence recommending it -- so the substring check was the
+    weaker assertion. And CodeQL flags a bare domain substring test as
+    py/incomplete-url-substring-sanitization, which is a false positive here
+    (nothing is sanitising a URL) but is worth not writing in the first place.
+    """
 
-    def test_it_still_names_opencre(self, text: str) -> None:
-        assert "opencre.org" in text
+    # The instruction and the source must appear together, in that order.
+    _FORBIDS = "do not read.{0,600}?%s"
+
+    @pytest.mark.parametrize(
+        "source",
+        [r"github\.com/rocklambros/TRACT", r"opencre\.org"],
+        ids=["repository", "opencre"],
+    )
+    def test_the_do_not_read_instruction_names_the_source(
+        self, text: str, source: str
+    ) -> None:
+        pattern = re.compile(self._FORBIDS % source, re.IGNORECASE | re.DOTALL)
+        assert pattern.search(text), (
+            f"the handbook does not tell the annotator not to read {source}. "
+            "Naming a source somewhere in the file is not an instruction."
+        )
 
     def test_it_warns_against_the_llm_written_hub_reference(self, text: str) -> None:
         assert "results/ceiling_study/hub_reference.md" in text
