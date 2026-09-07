@@ -9,7 +9,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from tract.crosswalk.schema import get_connection
+from tract.crosswalk.schema import migrate_schema, get_connection
 from tract.licensing import (
     PUBLISHED_LICENSE_ID,
     PUBLISHED_LICENSE_LINK,
@@ -90,6 +90,23 @@ def _build_crosswalk_jsonl(db_path: Path, output_path: Path) -> int:
 
     Returns row count after dedup.
     """
+    # The PUBLISHED crosswalk.db predates reviewer_notes and original_hub_id,
+    # which _CROSSWALK_QUERY selects. SCHEMA_SQL declares them and
+    # migrate_schema adds them, but its only caller was the review-import path
+    # -- so a user who ran `tract download` and then the documented
+    # `tract publish-dataset` got an unhandled OperationalError, with --dry-run
+    # and --skip-upload no help because this query runs before either is read.
+    #
+    # migrate_schema is idempotent (ALTER TABLE guarded by a column check) and
+    # returns the columns it added, so this is a no-op on an already-current
+    # database.
+    added = migrate_schema(db_path)
+    if added:
+        logger.info(
+            "Migrated %s before bundling: added %s",
+            db_path, ", ".join(added),
+        )
+
     conn = get_connection(db_path)
     try:
         rows = conn.execute(_CROSSWALK_QUERY).fetchall()
