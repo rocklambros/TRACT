@@ -121,9 +121,48 @@ def _q4(counting: list[BridgeLink], submitted: list[BridgeLink]) -> Condition:
     )
 
 
+def _resolve(bridge_path: Path) -> list[Path]:
+    """One file, or every corpus in a directory.
+
+    The importer refuses to overwrite and tells the operator to write one file
+    per annotator. This function read one path with no merge, so Q4 -- which
+    counts annotators WITHIN a corpus -- was structurally 0.0 under the exact
+    workflow the importer prescribes. A flawless single-annotator round failed
+    Gate 1 on a condition it could not satisfy, and the only way to satisfy it
+    was a manual concatenation the tooling never mentioned.
+    """
+    if bridge_path.is_dir():
+        found = sorted(bridge_path.glob("*.jsonl"))
+        if not found:
+            raise ValueError(
+                f"{bridge_path} is a directory with no .jsonl corpus in it."
+            )
+        return found
+    return [bridge_path]
+
+
 def gate1_report(bridge_path: Path) -> dict[str, Any]:
-    """Compute Gate 1 in full. Returns the report; raises rather than guessing."""
-    links = load_bridge_links(bridge_path)
+    """Compute Gate 1 in full. Returns the report; raises rather than guessing.
+
+    `bridge_path` may be a single corpus or a DIRECTORY of per-annotator
+    corpora, which is the layout the importer prescribes.
+    """
+    sources = _resolve(bridge_path)
+    links: list[BridgeLink] = []
+    seen: set[tuple[str, str, str]] = set()
+    for source in sources:
+        for link in load_bridge_links(source):
+            # Re-importing the same sheet under two names would otherwise
+            # double the apparent overlap and inflate Q4.
+            key = (link.annotator_id, link.section_id, link.cre_id)
+            if key in seen:
+                raise ValueError(
+                    f"{source}: {link.annotator_id!r} already recorded "
+                    f"{link.section_id!r} -> {link.cre_id!r} in another "
+                    "corpus. Two files hold the same annotator's sheet."
+                )
+            seen.add(key)
+            links.append(link)
     if not links:
         raise ValueError(
             f"{bridge_path} holds no links. A Gate 1 verdict over an empty "
@@ -137,10 +176,21 @@ def gate1_report(bridge_path: Path) -> dict[str, Any]:
     ]
 
     def _shape(subset: list[BridgeLink]) -> tuple[int, int]:
-        by_control: dict[str, set[str]] = defaultdict(set)
+        """(distinct controls, max hubs one ANNOTATOR gave one control).
+
+        Q2 is keyed on (control, annotator), not on control alone. Keyed on
+        control it measures the UNION across annotators -- so two people giving
+        four hubs each to the same control, neither exceeding the limit of six,
+        measure 8 and FAIL. Since Q4 mandates a double-annotated overlap, the
+        two conditions were computed on incompatible groupings and satisfying
+        one broke the other.
+        """
+        controls: set[str] = set()
+        by_pair: dict[tuple[str, str], set[str]] = defaultdict(set)
         for link in subset:
-            by_control[link.section_id].add(link.cre_id)
-        return len(by_control), max((len(v) for v in by_control.values()), default=0)
+            controls.add(link.section_id)
+            by_pair[(link.section_id, link.annotator_id)].add(link.cre_id)
+        return len(controls), max((len(v) for v in by_pair.values()), default=0)
 
     distinct_controls, max_hubs = _shape(counting)
     submitted_controls, submitted_max_hubs = _shape(links)
@@ -192,6 +242,7 @@ def gate1_report(bridge_path: Path) -> dict[str, Any]:
 
     return {
         "bridge_path": str(bridge_path),
+        "sources": [str(p) for p in sources],
         "n_links_total": len(links),
         "n_links_counting": len(counting),
         "n_annotators": len({link.annotator_id for link in counting}),

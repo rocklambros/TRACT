@@ -422,20 +422,42 @@ def redistribution_status(framework_id: str) -> RedistributionStatus:
     separated from "reserved" because it is resolvable -- an owner can
     adjudicate it -- whereas a recorded prohibition is not.
     """
+    # Normalised first. Without it 'CSA_AICM', 'csa_aicm ' and ' csa_aicm' all
+    # missed the reserved set and landed in "undetermined" -- which IS
+    # overridable, so a recorded prohibition became bypassable by whitespace or
+    # a capital letter.
+    framework_id = framework_id.strip().lower()
+
     if (
         framework_id in REDISTRIBUTION_RESERVED_FRAMEWORK_IDS
         or framework_id in OVERLAY_FRAMEWORK_IDS
     ):
         return "reserved"
     licence = FRAMEWORK_LICENSES.get(framework_id)
-    if licence is None or licence == UNDETERMINED_LICENSE:
+    if licence is None:
+        # Not "undetermined": an id this table has never heard of is a typo or a
+        # framework nobody adjudicated, and routing it to the resolvable bucket
+        # lets --allow-undetermined wave through a name that means nothing.
+        raise KeyError(
+            f"{framework_id!r} is not in FRAMEWORK_LICENSES. Add it with its "
+            "terms before redistributing anything from it."
+        )
+    if licence == UNDETERMINED_LICENSE:
         return "undetermined"
     return "permitted"
 
 
 def externally_redistributable(framework_id: str) -> bool:
-    """True only for a framework with a recorded permissive licence."""
-    return redistribution_status(framework_id) == "permitted"
+    """True only for a framework with a recorded permissive licence.
+
+    An unknown framework id returns False rather than propagating the KeyError,
+    because callers use this to FILTER. `refuse_external_redistribution` is the
+    one that raises, and it is what guards a boundary.
+    """
+    try:
+        return redistribution_status(framework_id) == "permitted"
+    except KeyError:
+        return False
 
 
 def refuse_external_redistribution(
@@ -450,7 +472,17 @@ def refuse_external_redistribution(
     `reserved` framework, because that prohibition is recorded rather than
     unknown -- an override there would be overriding a fact, not a gap.
     """
-    status = redistribution_status(framework_id)
+    try:
+        status = redistribution_status(framework_id)
+    except KeyError as exc:
+        # A guard at a boundary raises the boundary's error type. KeyError
+        # escaping here reads as an internal lookup bug rather than as a
+        # refusal, and callers of this function catch ValueError.
+        raise ValueError(
+            f"{framework_id!r} has no entry in the licence table, so its terms "
+            "are unknown. Record them in tract/config.py before redistributing "
+            "anything from it."
+        ) from exc
     if status == "permitted":
         return
     if status == "undetermined" and allow_undetermined:

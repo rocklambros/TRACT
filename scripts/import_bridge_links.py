@@ -117,28 +117,36 @@ def _clean_rationale(raw: str, where: str) -> str:
             f"{where}: rationale is too long -- {len(raw)} characters "
             f"against a {RATIONALE_MAX_CHARS} limit."
         )
-    if raw[:1] in FORMULA_PREFIXES:
-        raise ValueError(
-            f"{where}: rationale begins with {raw[:1]!r}, which a spreadsheet "
-            "executes as a formula when a reviewer opens the file."
-        )
-    if BIDI_CONTROLS & set(raw):
-        raise ValueError(
-            f"{where}: rationale contains a bidirectional override, which "
-            "changes how it reads to a human without changing what is stored."
-        )
+
     # sanitize_text strips null bytes and zero-width characters but leaves the
     # rest of C0 -- BEL, and ESC, which begins every ANSI sequence. A reviewer
     # reading these in a terminal is the channel that matters, so they go here
     # rather than in the shared helper, which many callers rely on to be a
-    # text-normaliser and not a control-character filter.
-    stripped = "".join(
-        ch for ch in raw if ord(ch) >= 0x20 or ch in "\t\n"
-    )
+    # text normaliser and not a control-character filter.
+    stripped = "".join(ch for ch in raw if ord(ch) >= 0x20 or ch in "\t\n")
     try:
-        return sanitize_text(stripped, max_length=RATIONALE_MAX_CHARS)
+        cleaned = sanitize_text(stripped, max_length=RATIONALE_MAX_CHARS)
     except ValueError as exc:
         raise ValueError(f"{where}: rationale is empty after cleaning.") from exc
+
+    # The prefix and bidi checks run on the CLEANED text, not the raw text.
+    # Checking raw first was bypassable: sanitize_text strips zero-width
+    # characters and HTML, so "\u200b=HYPERLINK(...)" and "<b></b>=cmd|..."
+    # both failed the raw check and were then stored WITH a leading "=".
+    # Whatever is stored is what a reviewer's spreadsheet opens, so that is
+    # what has to be tested.
+    if cleaned[:1] in FORMULA_PREFIXES:
+        raise ValueError(
+            f"{where}: rationale begins with {cleaned[:1]!r} once cleaned, "
+            "which a spreadsheet executes as a formula when a reviewer opens "
+            "the file."
+        )
+    if BIDI_CONTROLS & set(cleaned):
+        raise ValueError(
+            f"{where}: rationale contains a bidirectional override, which "
+            "changes how it reads to a human without changing what is stored."
+        )
+    return cleaned
 
 
 def _standard_name(framework_id: str) -> str:

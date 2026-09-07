@@ -241,3 +241,81 @@ class TestThresholdsMatchThePreRegistration:
         assert f"≤ {PHASE2C_Q2_MAX_HUBS_PER_CONTROL} AI hubs" in text
         assert f"confidence ≥ {PHASE2C_Q3_CONFIDENCE_FLOOR}" in text
         assert f"≥ {int(PHASE2C_Q4_MIN_DOUBLE_ANNOTATED * 100)}%" in text
+
+
+class TestThePrescribedWorkflowCanActuallyPass:
+    """The importer and the gate contradicted each other.
+
+    `import_bridge_links` refuses to overwrite and tells the operator to write
+    one file per annotator. `gate1_report` read ONE path with no merge, and Q4
+    counts annotators WITHIN a corpus -- so under the prescribed workflow Q4 was
+    structurally 0.0 and a flawless round failed on a condition it could not
+    satisfy. The only way to satisfy it was a manual concatenation the tooling
+    never mentioned, and that concatenation then broke Q2, which measured the
+    union of every annotator's hubs for a control rather than each annotator's.
+    """
+
+    @pytest.fixture()
+    def per_annotator_dir(self, tmp_path: Path) -> Path:
+        hubs = _hubs(30)
+        a1 = [
+            _link(f"AC-{i}", hubs[i % len(hubs)], annotator="a1") for i in range(45)
+        ]
+        a2 = [
+            _link(f"AC-{i}", hubs[i % len(hubs)], annotator="a2") for i in range(9)
+        ]
+        d = tmp_path / "corpora"
+        d.mkdir()
+        _write(d, a1).rename(d / "hub_links_bridge.a1.jsonl")
+        _write(d, a2).rename(d / "hub_links_bridge.a2.jsonl")
+        return d
+
+    def test_a_directory_of_per_annotator_corpora_is_read(
+        self, per_annotator_dir: Path
+    ) -> None:
+        report = gate1_report(per_annotator_dir)
+        assert len(report["sources"]) == 2
+        assert report["n_annotators"] == 2
+
+    def test_q4_is_satisfiable_under_the_prescribed_workflow(
+        self, per_annotator_dir: Path
+    ) -> None:
+        """The load-bearing one. This was structurally impossible before."""
+        q = gate1_report(per_annotator_dir)["conditions"]["Q4_double_annotated"]
+        assert q["value"] == pytest.approx(9 / 45)
+        assert q["passed"] is True
+        assert q["agreement"] is not None
+
+    def test_q2_measures_one_annotator_not_the_union(self, tmp_path: Path) -> None:
+        """Two annotators, four hubs each, same control. Neither exceeds 6.
+
+        Keyed on control alone this measures 8 and fails. Since Q4 mandates the
+        overlap, that made the two conditions mutually unsatisfiable.
+        """
+        hubs = _hubs(8)
+        links = [_link("AC-1", h, annotator="a1") for h in hubs[:4]]
+        links += [_link("AC-1", h, annotator="a2") for h in hubs[4:8]]
+        links += [
+            _link(f"AC-{i}", hubs[i % 8], annotator="a1") for i in range(2, 46)
+        ]
+        q = gate1_report(_write(tmp_path, links))["conditions"][
+            "Q2_max_hubs_per_control"
+        ]
+        assert q["value"] == 4, "each annotator gave four hubs, not eight"
+        assert q["passed"] is True
+
+    def test_the_same_annotator_twice_is_refused(self, tmp_path: Path) -> None:
+        """Re-importing one sheet under two names would inflate the overlap."""
+        d = tmp_path / "corpora"
+        d.mkdir()
+        links = [_link("AC-1", _hubs(1)[0], annotator="a1")]
+        _write(d, links).rename(d / "one.jsonl")
+        _write(d, links).rename(d / "two.jsonl")
+        with pytest.raises(ValueError, match="already recorded"):
+            gate1_report(d)
+
+    def test_an_empty_directory_raises(self, tmp_path: Path) -> None:
+        d = tmp_path / "empty"
+        d.mkdir()
+        with pytest.raises(ValueError, match="no .jsonl"):
+            gate1_report(d)

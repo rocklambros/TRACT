@@ -172,3 +172,62 @@ class TestTheTwoRulesDisagreeInTheAlphaBand:
         d = _gate_decision()(records)
         assert d["preregistered_pass"] is True
         assert d["ci_low_pass"] is False
+
+
+class TestVerdictsAgreeCoversEveryVerdict:
+    """It compared two of four, so it could report agreement while dissenting.
+
+    `verdicts_agree` was `point_estimate_pass == ci_low_pass`. `gate_decision`
+    publishes four verdicts, and the two it ignored -- `preregistered_pass` and
+    `familywise_pass` -- are the strict ones. Campaign 2's shape is exactly
+    "point estimate passes, everything stricter does not", so a flag that
+    reports agreement there is reporting the opposite of what happened.
+    """
+
+    @staticmethod
+    def _records(baseline: float, trained: float, n: int):  # type: ignore[no-untyped-def]
+        return TestGateDecisionImplementsSectionThree._records(baseline, trained, n)
+
+    def test_it_is_false_when_any_verdict_dissents(self) -> None:
+        """Find a study where the four do not all agree, and assert it says so."""
+        gate = _gate_decision()
+        for rate in (0.52, 0.54, 0.56, 0.58, 0.60, 0.62):
+            d = gate(self._records(0.40, rate, 300))
+            verdicts = {
+                d["point_estimate_pass"],
+                d["ci_low_pass"],
+                d["preregistered_pass"],
+                d["familywise_pass"],
+            }
+            if len(verdicts) > 1:
+                assert d["verdicts_agree"] is False, (
+                    f"verdicts {verdicts} disagree but verdicts_agree is True"
+                )
+                return
+        pytest.skip("no disagreeing study found across the sampled rates")
+
+    def test_it_is_true_only_when_all_four_agree(self) -> None:
+        gate = _gate_decision()
+        d = gate(self._records(0.40, 0.95, 300))
+        if d["verdicts_agree"]:
+            assert (
+                d["point_estimate_pass"]
+                == d["ci_low_pass"]
+                == d["preregistered_pass"]
+                == d["familywise_pass"]
+            )
+
+    def test_the_log_no_longer_calls_the_point_estimate_pre_registered(self) -> None:
+        """Two different verdicts shared one name across the log and the JSON.
+
+        The artifact key `preregistered_pass` is the Section 3 rule; the log
+        line labelled `pre-registered` was `point_estimate_pass`. A reader
+        correlating the two would mismatch them.
+        """
+
+        from tract.config import PROJECT_ROOT
+
+        source = (PROJECT_ROOT / "tract" / "training" / "orchestrate.py").read_text(
+            encoding="utf-8"
+        )
+        assert '"  pre-registered   : %s' not in source

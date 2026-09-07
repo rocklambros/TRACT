@@ -973,7 +973,16 @@ def gate_decision(
         "paired": True,
         "point_estimate_pass": point_estimate_pass,
         "ci_low_pass": ci_low_pass,
-        "verdicts_agree": point_estimate_pass == ci_low_pass,
+        # All FOUR, not two. It previously compared only the point estimate and
+        # the CI bound, so it could report agreement while preregistered_pass
+        # and familywise_pass dissented -- which is precisely the Campaign 2
+        # shape: point estimate passes, everything stricter does not.
+        "verdicts_agree": len({
+            point_estimate_pass,
+            ci_low_pass,
+            preregistered_pass,
+            bool(corrected["ci_low"] > threshold),
+        }) == 1,
         "macro_delta": float(np.mean(deltas)),
         "worst_fold": worst_framework,
         "worst_fold_delta": per_fold[worst_framework]["delta"],
@@ -990,7 +999,7 @@ def gate_decision(
     logger.info("  macro delta      : %+.4f", decision["macro_delta"])
     logger.info("  worst fold       : %s %+.4f",
                 worst_framework, decision["worst_fold_delta"])
-    logger.info("  pre-registered   : %s  (delta %.4f %s %.2f)",
+    logger.info("  point estimate   : %s  (delta %.4f %s %.2f)",
                 "PASS" if point_estimate_pass else "FAIL",
                 paired["delta_mean"], ">" if point_estimate_pass else "<=", threshold)
     logger.info("  CI lower bound   : %s  (ci_low %.4f %s %.2f)  [alpha 0.025]",

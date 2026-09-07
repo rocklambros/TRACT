@@ -42,8 +42,11 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Final
 
-from tract.licensing import refuse_external_redistribution
-from tract.config import PROCESSED_DIR
+from tract.licensing import (
+    externally_redistributable,
+    refuse_external_redistribution,
+)
+from tract.config import OPENCRE_FRAMEWORK_ID_MAP, PROCESSED_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +97,19 @@ def build_hub_sheet(output_dir: Path) -> Path:
 
     examples: dict[str, list[str]] = defaultdict(list)
     for link in load_curated_links():
+        # Two independent filters, conflated until 2026-09-06.
+        #
+        # The first is about CONTAMINATION: an AI framework's section name in a
+        # hub's example list hands the annotator part of the answer.
         if link.standard_name in EXCLUDED_ILLUSTRATION_FRAMEWORKS:
+            continue
+        # The second is about REDISTRIBUTION, and did not exist. This sheet
+        # ships to the same external annotator as the control sheets, and it
+        # carried 45 ISO 27001 rows ("ISO 27001: Secure coding", ...) and 11
+        # DSOMM rows, because the blocklist above is a display-name list that
+        # never named them. Keyed on framework id, so it cannot miss an alias.
+        framework_id = OPENCRE_FRAMEWORK_ID_MAP.get(link.standard_name)
+        if framework_id is None or not externally_redistributable(framework_id):
             continue
         bucket = examples[link.cre_id]
         label = f"{link.standard_name}: {link.section_name}"

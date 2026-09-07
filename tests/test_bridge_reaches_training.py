@@ -220,3 +220,44 @@ class TestProvenanceRecordsWhichCorpusWasUsed:
         a = _digests(bridge_path=bridge_file)["bridge_links_sha256"]
         b = _digests(bridge_path=other)["bridge_links_sha256"]
         assert a is not None and b is not None and a != b
+
+
+class TestTheFlagReachesTheConfig:
+    """Plumbing without a CLI flag is plumbing nothing can use.
+
+    `TrainingConfig.bridge_links_path` reached `curated_link_filter_report`,
+    `fold_input_digests` and `staleness`, and `run_fold.py` -- which is how
+    `runpod_parallel` invokes a fold -- had no argument to set it. So every
+    fold ran with `bridge_path=None` and Gate 2's treatment arm was not
+    expressible. The wiring commit stopped one argument short.
+    """
+
+    def test_run_fold_accepts_bridge_links(self) -> None:
+        import importlib
+
+        module = importlib.import_module("scripts.phase1b.run_fold")
+        parser = module.build_parser() if hasattr(module, "build_parser") else None
+        if parser is None:
+            source = Path(module.__file__ or "").read_text(encoding="utf-8")
+            assert '"--bridge-links"' in source, (
+                "run_fold.py exposes no --bridge-links flag, so a fold cannot "
+                "be told to use a bridge corpus."
+            )
+            assert "bridge_links_path" in source, (
+                "the flag exists but is not forwarded into TrainingConfig."
+            )
+        else:
+            args = parser.parse_args(["--framework", "X", "--bridge-links", "b.jsonl"])
+            assert args.bridge_links == "b.jsonl"
+
+    def test_the_config_field_survives_a_round_trip(self) -> None:
+        from tract.training.config import TrainingConfig
+
+        config = TrainingConfig(name="t", bridge_links_path="b.jsonl")
+        assert config.to_dict()["bridge_links_path"] == "b.jsonl"
+
+    def test_the_default_is_none_so_a_fold_is_bridge_free(self) -> None:
+        """The comparator arm must be the default, not something to remember."""
+        from tract.training.config import TrainingConfig
+
+        assert TrainingConfig(name="t").bridge_links_path is None

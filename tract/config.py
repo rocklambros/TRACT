@@ -252,6 +252,13 @@ HOLDOUT_FRAMEWORK_IDS: Final[frozenset[str]] = frozenset({
 # entry here is missing from NOTICE. A new ingest cannot skip the question.
 UNDETERMINED_LICENSE: Final[str] = "UNDETERMINED"
 
+# Adjudicated 2026-09-06 by the repository owner: nist_800_53, nist_ai_100_2,
+# nist_ai_600_1 and nist_ai_rmf carry the same terms as nist_800_63 and
+# nist_ssdf, which were already recorded. All six are NIST publications authored
+# by US federal employees. The table had been internally inconsistent for one
+# publisher, and the four unadjudicated entries blocked the Phase 2C annotator
+# packet, whose default framework is nist_800_53.
+
 FRAMEWORK_LICENSES: Final[dict[str, str]] = {
     "aiuc_1": UNDETERMINED_LICENSE,
     "asvs": "CC-BY-SA-4.0",
@@ -288,14 +295,26 @@ FRAMEWORK_LICENSES: Final[dict[str, str]] = {
         "licence, no reproduction without prior written permission."
     ),
     "mitre_atlas": "Apache-2.0",
-    "nist_800_53": UNDETERMINED_LICENSE,
+    "nist_800_53": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
     "nist_800_63": (
         "US Government work, not subject to copyright in the United States. "
         "Attribution appreciated by NIST."
     ),
-    "nist_ai_100_2": UNDETERMINED_LICENSE,
-    "nist_ai_600_1": UNDETERMINED_LICENSE,
-    "nist_ai_rmf": UNDETERMINED_LICENSE,
+    "nist_ai_100_2": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
+    "nist_ai_600_1": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
+    "nist_ai_rmf": (
+        "US Government work, not subject to copyright in the United States. "
+        "Attribution appreciated by NIST."
+    ),
     "nist_ssdf": (
         "US Government work, not subject to copyright in the United States. "
         "Attribution appreciated by NIST."

