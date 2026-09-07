@@ -9,11 +9,33 @@ test; it was found by an adversarial premortem, not by the campaign.
 
 That matters because the corrections are not neutral with respect to the metric.
 49 of 56 move the gold label from a less-linked hub to a more-linked one (median
-link degree 3.0 -> 7.5), collapsing 56 links onto 26 distinct hubs. Fine-tuning
-learns high-degree hubs best -- they carry more positives and appear in more
-batches -- while a zero-shot encoder has no reason to prefer them. So relabelling
-toward high-degree hubs mechanically widens a *paired* trained-minus-zero-shot
-delta without meaningfully raising absolute accuracy.
+link degree 3.0 -> 7.5), collapsing 56 links onto 26 distinct hubs.
+
+CORRECTED 2026-08-30: that degree statistic is an artifact of WHEN it is
+measured, and `describe_corrections` below still computes it the contaminated
+way. Degree is counted over the curated file the corrections were already
+applied to, so each of the 26 destination hubs is credited with the ~2.15
+corrections that landed on it while each source is drained. On the PRE-AUDIT
+graph the direction reverses: median 4.0 -> 3.0, and 20 of 56 move to a
+higher-degree hub rather than 49. See `tests/test_degree_claim_corrected.py`,
+which pins both numbers, and `docs/campaign3-audit-mechanism.md` §1.
+
+The note under `describe_corrections` calls the bias "+1 per correction". That
+is wrong in magnitude and one-sided: the effect is ~2.15 per destination and it
+drains the sources at the same time.
+
+SUPERSEDED 2026-08-30 -- the paragraph that stood here explained the effect by
+hub degree: "fine-tuning learns high-degree hubs best [...] so relabelling toward
+high-degree hubs mechanically widens a *paired* delta." That explanation is
+refuted by `scripts/analysis/audit_mechanism_probe.py`, which tests its three
+predictions on the same artifacts and finds none supported. Decisively: among
+audit-UNTOUCHED items, high-degree gold does not depress the zero-shot baseline
+(0.5091 vs 0.5455 low-degree), so degree cannot produce the touched stratum's
+0.1892. See `docs/campaign3-audit-mechanism.md`.
+
+Nothing this script computes depended on that explanation, and every number it
+reports is unchanged. The stratification below stands; only the causal story
+attached to it was wrong.
 
 Both halves of that prediction hold, and the second is the one worth stating.
 Against pristine pre-audit gold the trained model scores 0.5850 rather than

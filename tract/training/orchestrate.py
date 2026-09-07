@@ -32,6 +32,7 @@ from tract.config import (
     FOLD_RESULT_FILENAME,
     max_anchor_chars,
     PHASE1B_GATE_HIT1_DELTA,
+    PREREGISTERED_GATE_ALPHA,
     PHASE1B_RESULTS_DIR,
     PROCESSED_DIR,
 )
@@ -424,6 +425,9 @@ def run_single_fold(
         with_prose=prose_index is not None,
         with_stopwords=config.use_stopword_filter,
         with_framework_identity=config.use_framework_identity_filter,
+        bridge_path=(
+            Path(config.bridge_links_path) if config.bridge_links_path else None
+        ),
     )
     atomic_write_json(fold_record, fold_output / FOLD_RESULT_FILENAME)
 
@@ -881,8 +885,11 @@ def gate_decision(
         np.asarray(r["zero_shot"]["hit1_indicators"], dtype=float)
         for r in fold_results
     ]
-    # paired_bootstrap_delta reports B - A, so the baseline is A.
-    paired = paired_bootstrap_delta(baseline, trained)
+    # paired_bootstrap_delta reports B - A, so the baseline is A. The threshold
+    # is passed so the returned tail probability is about the gate's own
+    # hypothesis; left at the default it would answer P(delta <= 0), which is
+    # what `p_value` has always been and is not what Section 3 binds.
+    paired = paired_bootstrap_delta(baseline, trained, threshold=threshold)
     # The third statement of the same invariant, at the layer that publishes
     # the verdict. run_experiment calls this with in-memory fold dicts that
     # passed through neither the loader nor the aggregate, and the 7.0 replay
@@ -934,6 +941,13 @@ def gate_decision(
     alpha_effective = 1.0 - (1.0 - 0.05) ** (1.0 / n_configurations)
     point_estimate_pass = bool(paired["delta_mean"] > threshold)
     ci_low_pass = bool(paired["ci_low"] > threshold)
+    # CAMPAIGN3.md Section 3: PASS iff P(true delta <= 0.10) < 0.05. This is a
+    # THIRD verdict, not a restatement of either above it. `ci_low_pass` tests
+    # the 2.5th percentile of a two-sided 95% interval against the threshold,
+    # which is this same rule at alpha 0.025 -- strictly harder than the
+    # document binds, and reported under a name that does not say so.
+    p_delta_le_threshold = float(paired["p_delta_le_threshold"])
+    preregistered_pass = bool(p_delta_le_threshold < PREREGISTERED_GATE_ALPHA)
 
     decision = {
         "threshold": threshold,
@@ -950,10 +964,25 @@ def gate_decision(
         "familywise_pass": bool(corrected["ci_low"] > threshold),
         "selection_optimistic": bool(n_configurations > 1),
         "p_value": paired["p_value"],
+        # Same number as `p_value`, under a name that says which hypothesis it
+        # is about. `p_value` is kept for readers of older artifacts.
+        "p_delta_le_zero": paired["p_value"],
+        "p_delta_le_threshold": p_delta_le_threshold,
+        "preregistered_alpha": PREREGISTERED_GATE_ALPHA,
+        "preregistered_pass": preregistered_pass,
         "paired": True,
         "point_estimate_pass": point_estimate_pass,
         "ci_low_pass": ci_low_pass,
-        "verdicts_agree": point_estimate_pass == ci_low_pass,
+        # All FOUR, not two. It previously compared only the point estimate and
+        # the CI bound, so it could report agreement while preregistered_pass
+        # and familywise_pass dissented -- which is precisely the Campaign 2
+        # shape: point estimate passes, everything stricter does not.
+        "verdicts_agree": len({
+            point_estimate_pass,
+            ci_low_pass,
+            preregistered_pass,
+            bool(corrected["ci_low"] > threshold),
+        }) == 1,
         "macro_delta": float(np.mean(deltas)),
         "worst_fold": worst_framework,
         "worst_fold_delta": per_fold[worst_framework]["delta"],
@@ -970,12 +999,16 @@ def gate_decision(
     logger.info("  macro delta      : %+.4f", decision["macro_delta"])
     logger.info("  worst fold       : %s %+.4f",
                 worst_framework, decision["worst_fold_delta"])
-    logger.info("  pre-registered   : %s  (delta %.4f %s %.2f)",
+    logger.info("  point estimate   : %s  (delta %.4f %s %.2f)",
                 "PASS" if point_estimate_pass else "FAIL",
                 paired["delta_mean"], ">" if point_estimate_pass else "<=", threshold)
-    logger.info("  CI lower bound   : %s  (ci_low %.4f %s %.2f)",
+    logger.info("  CI lower bound   : %s  (ci_low %.4f %s %.2f)  [alpha 0.025]",
                 "PASS" if ci_low_pass else "FAIL",
                 paired["ci_low"], ">" if ci_low_pass else "<=", threshold)
+    logger.info("  CAMPAIGN3 §3     : %s  (P(delta <= %.2f) = %.4f %s %.3f)",
+                "PASS" if preregistered_pass else "FAIL",
+                threshold, p_delta_le_threshold,
+                "<" if preregistered_pass else ">=", PREREGISTERED_GATE_ALPHA)
     if not decision["verdicts_agree"]:
         logger.warning(
             "  VERDICTS DISAGREE: the point estimate clears the gate but its "
@@ -1003,7 +1036,12 @@ def run_experiment(
     logger.info("Starting experiment: %s", config.name)
     exp_start = time.time()
 
-    tiered_links, raw_hash = load_and_filter_curated_links()
+    bridge_path = (
+        Path(config.bridge_links_path) if config.bridge_links_path else None
+    )
+    tiered_links, raw_hash = load_and_filter_curated_links(
+        bridge_path=bridge_path
+    )
 
     hierarchy = CREHierarchy.model_validate(load_json(PROCESSED_DIR / "cre_hierarchy.json"))
     hub_ids = sorted(hierarchy.hubs.keys())

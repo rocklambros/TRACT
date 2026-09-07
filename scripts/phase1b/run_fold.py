@@ -154,6 +154,14 @@ def main() -> int:
                              "16-arm winner selection-optimistic, and at n=147 "
                              "the minimum detectable effect is 11.4 hit@1 "
                              "points against effects of 1-3.")
+    parser.add_argument(
+        "--bridge-links", default=None,
+        help="Path to a Phase 2C Tier-2 bridge corpus to merge into training. "
+             "Without this flag a fold trains bridge-free, which is the "
+             "comparator arm for Gate 2, not the treatment arm. The corpus is "
+             "pinned in the fold record as bridge_links_sha256 so the two arms "
+             "are distinguishable in their artifacts.",
+    )
     parser.add_argument("--hub-rep", default=None,
                         choices=("path+name", "path+name+desc",
                                  "path+name+standards"),
@@ -219,6 +227,10 @@ def main() -> int:
         **({"branch_balance_temperature": args.branch_balance}
            if args.branch_balance is not None else {}),
         **({"hub_rep_format": args.hub_rep} if args.hub_rep else {}),
+        **(
+            {"bridge_links_path": args.bridge_links}
+            if args.bridge_links else {}
+        ),
     )
     output_dir = (
         Path(args.output_dir) if args.output_dir
@@ -226,7 +238,11 @@ def main() -> int:
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    tiered_links, raw_hash = load_and_filter_curated_links()
+    tiered_links, raw_hash = load_and_filter_curated_links(
+        bridge_path=(
+            Path(config.bridge_links_path) if config.bridge_links_path else None
+        )
+    )
     hierarchy = CREHierarchy.model_validate(
         load_json(PROCESSED_DIR / "cre_hierarchy.json")
     )

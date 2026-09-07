@@ -422,10 +422,15 @@ and the new number cannot be read apart:
 - **This is the same verdict pattern §6.4 withdrew a headline for.** Campaign 1:
   +0.1293 [0.0408, 0.2177]. Campaign 2: +0.1361 [0.0476, 0.2245]. Same n, same
   threshold, same three booleans.
-- **What is genuinely different:** the gain is concentrated in the 109 items
+- **What is genuinely different:** ~~the gain is concentrated in the 109 items
   whose anchor does not contain its own answer (+0.1743 [+0.073, +0.275]), while
-  the 38 lexical-echo items contribute +0.0263. Campaign 1's headline failed on
-  precisely that axis. This is the result's real defense, not the clause above.
+  the 38 lexical-echo items contribute +0.0263.~~ **RETIRED 2026-09-04.**
+  `CAMPAIGN3.md` §1.3 retires +0.1743/n=109 and +0.1531/n=98: both were computed
+  against truncated anchors that no longer exist, so the partition moved with
+  `max_seq_length`. Under the frozen, budget-independent partition the non-echo
+  stratum is **+0.1538 [+0.0440, +0.2637] on n=91**. The direction of the
+  argument survives — Campaign 1's headline failed on precisely this axis — but
+  the figures quoted here do not, and this was the result's stated real defense.
 - **Validation (n=1,265) does not support a general claim.** No arm cleared the
   gate; A1 (the primary) is significantly negative at −0.0609. Four of five
   validation folds are positive — the negative aggregate is driven by ASVS
@@ -462,12 +467,39 @@ Two findings, both verified against the repository. Full treatment in
   `scripts/analysis/audit_stratified_delta.py`.
   **Resolved 2026-08-30 by the owner: no model output was visible to the
   reviewer** who produced `ai_link_audit.csv`. The corrections are **Tier 2**,
-  independently human-authored, and nothing model-derived is downstream in the
-  published model, the published dataset, the OpenCRE fork import, or the Phase
-  5B export. The RFC may cite these links. This does **not** change the
-  stratified figures above: the inflation mechanism is arithmetic, not
-  provenance — relabelling toward high-degree hubs widens a paired delta
-  regardless of who chose the destination.
+  independently human-authored. The RFC may cite these links. This does **not**
+  change the stratified figures above.
+
+  **CORRECTED 2026-09-06.** This sentence continued *"and nothing model-derived
+  is downstream in the published model, the published dataset, the OpenCRE fork
+  import, or the Phase 5B export"*. The last two clauses were false. The export
+  filtered on `provenance != 'ground_truth_T1-AI'` — a blocklist of one, which
+  admitted every other provenance by default — and **551 rows of
+  `active_learning_round_2`, which is model-derived, passed every clause**. The
+  claim was about the audit corrections, which are clean; it over-reached into
+  the export, which is not.
+
+  The filter is now an allowlist (`PHASE5_EXPORTABLE_PROVENANCES`) that names
+  what it permits and excludes anything unclassified, with a test asserting
+  every provenance in `crosswalk.db` is classified one way or the other. The
+  rows were **not** dropped: exporting active-learning output is an owner
+  decision taken 2026-09-06, and the sentence was corrected to match the export
+  rather than the export changed to match the sentence. Anyone preparing the
+  OpenCRE RFC needs to know it carries them.
+  **CORRECTED 2026-08-30 — the sentence that stood here explained why, and it
+  was wrong.** It read: *"the inflation mechanism is arithmetic, not provenance
+  — relabelling toward high-degree hubs widens a paired delta regardless of who
+  chose the destination."* The degree movement it rests on was measured on the
+  **post-audit** graph, where 56 corrections landing on 26 destination hubs
+  credit each destination with its own arrivals. On the **pre-audit** graph the
+  direction reverses: median **4.0 → 3.0**, and **20 of 56** move to a
+  higher-degree hub, not 49. Pinned by
+  `tests/test_degree_claim_corrected.py`; see
+  `docs/campaign3-audit-mechanism.md` §1 and `docs/campaign2-results.md` §13.
+  The **numbers** above never depended on it. What is withdrawn is the
+  downstream inference that human curation therefore cannot bias the gate — it
+  can, and `docs/campaign3-premortem-round1.md` §B1 records that the proposed
+  guard cannot even apply to the four frameworks curation would target.
 - **The domain-shortcut hypothesis is refuted.** The framework-hub graph splits
   into exactly two connected components (380 hubs / 14 frameworks and 78 / 8)
   with no AI/general labels supplied, all 147 test golds sit in the 78-hub side,
@@ -481,8 +513,21 @@ Two findings, both verified against the repository. Full treatment in
   one.
 
 Campaign 3 is pre-registered in `results/phase1b/CAMPAIGN3.md` with binding
-numeric thresholds, no synthetic data, and a stated MDE of 0.145 at n=940.
-Nothing has run.
+numeric thresholds and no synthetic data.
+
+**Updated 2026-09-04. Two corrections to the sentence that stood here.**
+
+**The n=940 power table is withdrawn.** Amendment 1 §1.1 strikes it: the
+permitted frameworks hold 500 controls, so the ceiling is 721 and real power is
+**43–54%**, not the 63% claimed. *"No combination of the planned work reaches
+940."*
+
+**Campaign 3 has run, and its primary FAILED.** Arm C3TEST completed 2026-08-30
+(`CAMPAIGN3.md`, RESULT section): the anchor-budget rebaseline did not move the
+primary, and `P(δ ≤ 0.10) = 0.535` against the binding rule of `< 0.05`. The
+binding side condition passed. Phase 2C, pre-registered in
+`docs/phase2c-preregistration.md`, is not a retry of that gate and does not
+report on it.
 
 #### 6.4.1 Multi-Hub Training Pairs and Batch Sampling
 Controls legitimately map to multiple CRE hubs (multi-hop graph structure). These multi-hub text mappings are preserved as separate training pairs — never dropped or deduplicated across hubs. Deduplication occurs only within the same (text, hub) pair (case-insensitive), keeping the best quality tier.

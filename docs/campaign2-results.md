@@ -375,6 +375,19 @@ relabel, **the delta is exactly the gate value and a coin flip on clearing it.**
 
 ### The mechanism, and why the obvious objection fails
 
+> **SUPERSEDED 2026-08-30 — the mechanism below is refuted; the effect is not.**
+> The degree explanation in this subsection makes three testable predictions and
+> fails all three, measured on the committed C3TEST artifacts. Chiefly: among
+> audit-**untouched** items, high-degree gold does *not* depress the zero-shot
+> baseline (0.5091 vs 0.5455 for low-degree), so degree cannot be what drives
+> the touched stratum's 0.1892. See `docs/campaign3-audit-mechanism.md`;
+> reproduce with `python -m scripts.analysis.audit_mechanism_probe`.
+>
+> **The stratification and the co-primary +0.1000 stand unchanged.** What does
+> not stand is the inference drawn from this mechanism elsewhere — that the
+> inflation is "arithmetic, not provenance" and therefore that human curation
+> cannot introduce a new bias into the gate. It can.
+
 The obvious objection is that the audit simply made the task easier. It did not,
 and that is the interesting part. Rescoring the *same* trained predictions
 against pristine pre-audit gold gives **0.5850 against 0.5918** — the audit is
@@ -383,6 +396,28 @@ worth **+0.0068** in absolute accuracy, essentially nothing.
 It is the *baseline* the audit moves. 49 of the 56 corrections relocate gold
 from a sparsely-linked hub to a densely-linked one (median link degree
 **3.0 → 7.5**, mean 3.50 → 8.05), collapsing 56 links onto 26 distinct hubs.
+
+> **CORRECTED 2026-08-30 — that degree statistic is an artifact of when it was
+> measured.** Degree was counted over `hub_links_curated.jsonl`, the file the
+> corrections had *already been applied to*. Because 56 corrections land on 26
+> destination hubs, each destination is credited with the corrections that
+> arrived there and each source is drained by them. Recomputed on the
+> **pre-audit** graph the direction reverses:
+>
+> | degree basis | median old → new | moved to higher |
+> |---|---|---|
+> | post-audit (as published above) | 3.0 → 7.5 | 49 of 56 |
+> | **pre-audit (correct)** | **4.0 → 3.0** | **20 of 56** |
+>
+> `scripts/analysis/audit_stratified_delta.py` disclosed the contamination but
+> priced it at "+1 per correction"; 56/26 ≈ 2.15 corrections per destination,
+> so the true factor is larger and two-sided. Pinned by
+> `tests/test_degree_claim_corrected.py`.
+>
+> **The stratified deltas in this section are unaffected** — none of them was
+> computed from degree. What falls is the *explanation*, which
+> `docs/campaign3-audit-mechanism.md` then spent three underpowered tests
+> refuting when one recomputation would have done it.
 High-degree hubs carry more positives and appear in more training batches, so a
 fine-tuned model learns them well while a zero-shot encoder has no reason to
 prefer them. On touched items the zero-shot scores **0.2162** against 0.5364
@@ -419,13 +454,21 @@ artifacts were unrecallably contaminated is closed, and the OpenCRE RFC may cite
 these links.
 
 **It does not change the number.** Every figure in this section holds exactly as
-computed, because the mechanism has nothing to do with *who* wrote the labels.
-Moving 49 of 56 gold labels onto more densely linked hubs inflates a paired
-trained-minus-zero-shot delta whether a human, a model, or a coin chose the
-destination — fine-tuning learns high-degree hubs, a zero-shot encoder does not
-privilege them, and that asymmetry is arithmetic rather than provenance. The
-audit-untouched co-primary of **+0.1000 [0.000, 0.200]** stays the figure to
-report beside the pooled +0.1361.
+computed, and the audit-untouched co-primary of **+0.1000 [0.000, 0.200]** stays
+the figure to report beside the pooled +0.1361.
+
+> **CORRECTED 2026-08-30.** This paragraph originally justified that conclusion
+> with the degree mechanism — "inflates a paired delta whether a human, a model,
+> or a coin chose the destination [...] arithmetic rather than provenance."
+> **That justification is refuted** (`docs/campaign3-audit-mechanism.md`). The
+> effect concentrates in *discretionary* reassignments (verdict `weak`, delta
+> **+0.4118**) rather than in genuine error corrections (verdict `wrong`,
+> **+0.1500**), and does not scale with the degree change it was attributed to.
+> Who picks the destination is exactly what is *not* ruled out.
+>
+> The **numbers** in this section are unaffected — they never depended on the
+> mechanism. What is withdrawn is the downstream inference that human curation
+> is therefore safe for a paired gate.
 
 What the answer settles is which rule applies. Tier 2 is legitimate work that
 may be published and cited; it simply is not OpenCRE's taxonomy, so it cannot

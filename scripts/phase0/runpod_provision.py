@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import socket
 import subprocess
@@ -271,6 +272,62 @@ def validate_ssh_endpoint(ip: str, port: int) -> tuple[str, int]:
     return str(address), int(port)
 
 
+
+def require_secure_cloud() -> bool:
+    """Whether this checkout may only provision on SECURE hosts.
+
+    True when the licensed overlay is staged. `merged_corpus_path()` prefers
+    `data/processed/licensed/all_controls.json` and falls back to the tracked
+    corpus, and the overlay exists only where the restricted source does -- so
+    its presence is exactly the condition under which an rsync of the working
+    tree would put ISO 27001 and ETSI prose on a rented host. Binding the
+    restriction to that file rather than to a flag means the control cannot be
+    forgotten on the run where it matters, and does not obstruct a
+    public-corpus run where it does not.
+
+    TRACT_RUNPOD_ALLOW_COMMUNITY=1 overrides, for an operator who has decided
+    the exposure is acceptable. It is deliberately an explicit environment
+    variable and not a default: it is the owner's licensing call, not the
+    orchestrator's.
+
+    THIS LIVES HERE, not in the orchestrator, because it was previously
+    consulted at exactly one of five pod-creation call sites. The other four --
+    the Phase 1C retrain, the agentic smoke test, the domain-shortcut probe and
+    the Phase 0 fleet -- took the permissive default, and three of them rsync
+    PROJECT_ROOT with an exclude list that does not name data/processed/licensed.
+    Two are campaign instruments, not adjacent tooling. A control applied at one
+    caller is not a control; it belongs at the boundary that creates the pod.
+    """
+    if os.environ.get("TRACT_RUNPOD_ALLOW_COMMUNITY", "").strip() == "1":
+        logger.warning(
+            "TRACT_RUNPOD_ALLOW_COMMUNITY=1: licensed corpus may be shipped to "
+            "COMMUNITY hosts. This is a licensing decision and it is being "
+            "recorded here."
+        )
+        return False
+    from tract.text_selection import merged_corpus_path
+
+    return "licensed" in merged_corpus_path().parts
+
+
+def _effective_cloud_types(requested: tuple[str, ...]) -> tuple[str, ...]:
+    """Narrow a caller's requested tiers to SECURE when the overlay is staged.
+
+    Narrowing rather than raising: a caller asking for the permissive default
+    has not made a licensing decision, it has simply not thought about one, and
+    the safe reading of that is SECURE. An operator who HAS decided sets
+    TRACT_RUNPOD_ALLOW_COMMUNITY=1, which require_secure_cloud() logs.
+    """
+    if not require_secure_cloud():
+        return requested
+    if tuple(requested) != (CLOUD_TYPE_SECURE,):
+        logger.info(
+            "Licensed overlay is staged: narrowing requested cloud tiers %s "
+            "to SECURE only.", requested,
+        )
+    return (CLOUD_TYPE_SECURE,)
+
+
 def create_pod(
     gpu_type_id: str,
     name: str,
@@ -308,7 +365,7 @@ def create_pod(
         # we ASKED for is the fact worth recording, and it is known here without
         # depending on a field the REST payload may or may not carry.
         landed_cloud = ""
-        for cloud_type in allowed_cloud_types:
+        for cloud_type in _effective_cloud_types(tuple(allowed_cloud_types)):
             payload = {
                 "name": name,
                 "imageName": image,

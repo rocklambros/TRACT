@@ -1,0 +1,20 @@
+{
+  "mitre_atlas": [
+    {"cre_id": "AI-1", "cre_name": "AI Hub 1", "framework_id": "mitre_atlas", "link_type": "LinkedTo", "section_id": "T0001", "section_name": "Data Poisoning", "standard_name": "MITRE ATLAS"},
+    {"cre_id": "BOTH-1", "cre_name": "Both Hub 1", "framework_id": "mitre_atlas", "link_type": "LinkedTo", "section_id": "T0003", "section_name": "Model Access", "standard_name": "MITRE ATLAS"}
+  ],
+  "enisa": [
+    {"cre_id": "AI-1", "cre_name": "AI Hub 1", "framework_id": "enisa", "link_type": "LinkedTo", "section_id": "Table 5:", "section_name": "Ensure that models are unbiased", "standard_name": "ENISA"},
+    {"cre_id": "ENISA-ONLY-1", "cre_name": "ENISA Hub", "framework_id": "enisa", "link_type": "LinkedTo", "section_id": "Table 3:", "section_name": "Monitor inference", "standard_name": "ENISA"}
+  ],
+  "biml": [
+    {"cre_id": "BIML-ONLY-1", "cre_name": "BIML Hub", "framework_id": "biml", "link_type": "LinkedTo", "section_id": "BIML-01", "section_name": "Data Poisoning", "standard_name": "BIML"}
+  ],
+  "etsi": [
+    {"cre_id": "ETSI-ONLY-1", "cre_name": "ETSI Hub", "framework_id": "etsi", "link_type": "LinkedTo", "section_id": "6.2.2", "section_name": "Model hardening", "standard_name": "ETSI"}
+  ],
+  "asvs": [
+    {"cre_id": "TRAD-1", "cre_name": "Trad Hub 1", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V1.1", "section_name": "Secure SDLC", "standard_name": "ASVS"},
+    {"cre_id": "BOTH-1", "cre_name": "Both Hub 1", "framework_id": "asvs", "link_type": "LinkedTo", "section_id": "V2.1", "section_name": "Model Access Ctrl", "standard_name": "ASVS"}
+  ]
+}

@@ -13,7 +13,10 @@ import logging
 from pathlib import Path
 from typing import TypedDict, cast
 
-from tract.config import PHASE5_GROUND_TRUTH_PROVENANCE
+from tract.config import (
+    PHASE5_EXPORTABLE_PROVENANCES,
+    PHASE5_GROUND_TRUTH_PROVENANCE,
+)
 from tract.crosswalk.schema import get_connection
 
 logger = logging.getLogger(__name__)
@@ -40,6 +43,16 @@ class ExportableAssignment(TypedDict):
     description: str
 
 
+
+def _allowed_provenances() -> tuple[str, ...]:
+    """The export allowlist, sorted so a query is deterministic."""
+    return tuple(sorted(PHASE5_EXPORTABLE_PROVENANCES))
+
+
+def _allow_placeholders() -> str:
+    return ", ".join("?" for _ in _allowed_provenances())
+
+
 def query_exportable_assignments(
     db_path: Path,
     confidence_floor: float,
@@ -62,11 +75,17 @@ def query_exportable_assignments(
             "JOIN controls c ON a.control_id = c.id "
             "JOIN hubs h ON a.hub_id = h.id "
             "WHERE a.review_status = 'accepted' "
-            "AND a.provenance != ? "
+            # ALLOWLIST, not `!= ground_truth`. That was a blocklist of one:
+            # it excluded a single value and admitted every other provenance by
+            # default, which is how 558 model-derived active_learning_round_2
+            # rows came to pass every clause while PRD.md claimed nothing
+            # model-derived was downstream. An unclassified provenance is now
+            # excluded rather than shipped, and the caller asserts none exists.
+            f"AND a.provenance IN ({_allow_placeholders()}) "
             "AND a.confidence IS NOT NULL "
             "AND a.is_ood != 1 "
         )
-        params: list[str] = [PHASE5_GROUND_TRUTH_PROVENANCE]
+        params: list[str] = list(_allowed_provenances())
 
         if framework_filter:
             query += "AND c.framework_id = ? "

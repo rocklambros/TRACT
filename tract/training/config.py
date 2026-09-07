@@ -75,6 +75,13 @@ class TrainingConfig:
     gradient_checkpointing: bool = True
 
     hub_rep_format: str = "path+name"
+
+    # Phase 2C. Path to a Tier-2 bridge corpus to merge into training, or None.
+    # Recorded in to_dict() so a run's supervision can be reconstructed from
+    # its checkpoint metadata: a bridge run and a bridge-free one are otherwise
+    # indistinguishable in every artifact they write.
+    bridge_links_path: str | None = None
+
     data_hash: str = ""
 
     # Text-selection arms. Both are recorded in to_dict(), so a run's anchors
@@ -158,6 +165,7 @@ class TrainingConfig:
             "branch_balance_temperature": self.branch_balance_temperature,
             "gradient_checkpointing": self.gradient_checkpointing,
             "hub_rep_format": self.hub_rep_format,
+            "bridge_links_path": self.bridge_links_path,
             "use_prose": self.use_prose,
             "use_stopword_filter": self.use_stopword_filter,
             "use_framework_identity_filter": self.use_framework_identity_filter,

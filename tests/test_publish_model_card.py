@@ -28,7 +28,15 @@ SAMPLE_CALIBRATION = {
 
 SAMPLE_ECE = {"ece": 0.079, "ece_ci": {"ci_low": 0.049, "ci_high": 0.111}}
 
-SAMPLE_BRIDGE = {"counts": {"accepted": 5, "rejected": 58, "total": 63}}
+# hub_classification is required, not optional: the card refuses to publish a
+# hub-classification table it did not measure. See
+# TestBridgeSectionIsMeasuredNotFabricated for why.
+SAMPLE_BRIDGE = {
+    "counts": {"accepted": 5, "rejected": 58, "total": 63},
+    "hub_classification": {
+        "ai_only": 78, "trad_only": 380, "naturally_bridged": 0, "unlinked": 64,
+    },
+}
 
 
 class TestGenerateModelCard:
@@ -231,3 +239,85 @@ class TestErratumSurvivesRegeneration:
         assert "13 of 20" in card
         assert "Inter-rater reliability is not measured" in card
         assert "imported rather than reviewed here" in card
+
+
+class TestBridgeSectionIsMeasuredNotFabricated:
+    """The hub-classification table was hardcoded prose, and it was wrong.
+
+    The published card carried `| Naturally bridged (both) | 60 | "Data
+    poisoning" (linked by both ATLAS and CWE) |`. Measured against the curated
+    links, MITRE ATLAS hubs and CWE hubs intersect in ZERO hubs, so the worked
+    example named a hub that does not exist. The 60 came from
+    BRIDGE_AI_FRAMEWORK_IDS listing only the five rotating frameworks, which
+    put ENISA, ETSI and BIML on the traditional side; under the eight-framework
+    definition the count is 0, as PRD.md:58 has always said.
+
+    These pin the same contract the rest of this module already enforces via
+    `_measured`: a published figure comes from a measurement, or the card
+    refuses to build.
+    """
+
+    CLASSIFICATION = {
+        "ai_only": 78, "trad_only": 380, "naturally_bridged": 0, "unlinked": 64,
+    }
+
+    def _card(self, tmp_path, classification=None):
+        from tract.publish.model_card import generate_model_card
+        summary = dict(SAMPLE_BRIDGE)
+        if classification is None:
+            summary.pop("hub_classification", None)
+        else:
+            summary["hub_classification"] = classification
+        generate_model_card(
+            tmp_path, fold_results=SAMPLE_FOLD_RESULTS,
+            calibration=SAMPLE_CALIBRATION, ece_data=SAMPLE_ECE,
+            bridge_summary=summary, gpu_hours=2.5,
+        )
+        return (tmp_path / "README.md").read_text()
+
+    def test_does_not_present_the_atlas_cwe_example_as_fact(
+        self, tmp_path,
+    ) -> None:
+        # The retraction is allowed — required, even — to quote the claim it
+        # withdraws. What must never reappear is the claim standing alone as a
+        # table example, which is how it was published.
+        card = " ".join(self._card(tmp_path, self.CLASSIFICATION).split())
+        assert "| Naturally bridged (both) | 60 |" not in card
+        if "ATLAS and CWE" in card:
+            assert "superseded" in card.lower()
+            assert "was wrong" in card.lower()
+
+    def test_renders_the_measured_classification_counts(self, tmp_path) -> None:
+        card = self._card(tmp_path, self.CLASSIFICATION)
+        assert "| AI-only | 78 |" in card
+        assert "| Traditional-only | 380 |" in card
+        assert "| Naturally bridged (both) | 0 |" in card
+        assert "| Unlinked (structural) | 64 |" in card
+
+    def test_does_not_carry_the_superseded_literal_counts(self, tmp_path) -> None:
+        card = self._card(tmp_path, self.CLASSIFICATION)
+        assert "| AI-only | 21 |" not in card
+        assert "| Naturally bridged (both) | 60 |" not in card
+
+    def test_similarity_matrix_shape_follows_the_measured_counts(
+        self, tmp_path,
+    ) -> None:
+        # The method section said "21 AI-only hubs x 382 traditional-only hubs
+        # (8,022 pairs)" as literals, so it disagreed with the table above it
+        # the moment either number moved.
+        card = " ".join(self._card(tmp_path, self.CLASSIFICATION).split())
+        assert "78 AI-only hubs x 380 traditional-only hubs" in card
+        assert "29,640 pairs" in card
+
+    def test_refuses_to_build_without_a_measured_classification(
+        self, tmp_path,
+    ) -> None:
+        with pytest.raises(ValueError, match="hub_classification"):
+            self._card(tmp_path, None)
+
+    def test_discloses_that_phase2b_ran_under_the_old_definition(
+        self, tmp_path,
+    ) -> None:
+        card = " ".join(self._card(tmp_path, self.CLASSIFICATION).split())
+        assert "21 AI-only hubs" in card
+        assert "superseded" in card.lower()

@@ -7,6 +7,18 @@ models/
 results/*
 !results/corpus/
 !results/ceiling_study/
+# The Campaign 3 analysis outputs. Every figure in
+# docs/campaign3-audit-mechanism.md was hand-transcribed from stdout because
+# these scripts default to --out=None and results/* excluded anything they
+# wrote. A spending decision resting on numbers with no machine-readable
+# counterpart cannot be diffed, and a re-run six months later against a changed
+# corpus would be indistinguishable from a documentation error.
+#
+# Allowlisted to JSON only, for the same reason results/phase1b/ is: whatever
+# an analysis script grows into later defaults to excluded.
+!results/analysis/
+results/analysis/*
+!results/analysis/*.json
 # The LLM pre-pass is a proxy, not a ceiling. The runbook is explicit that "a
 # proxy labelled as a ceiling is the same category of error as the withdrawn
 # accuracy figure", and four files with LLM_PROXY in the name sitting beside the
@@ -198,3 +210,10 @@ claudedocs/*
 # never arrives. Tracked deliberately and by name, which keeps the rest of
 # claudedocs/ the scratch space it was meant to be.
 !claudedocs/jetson-runpod-start.md
+
+# Phase 2C bridge corpora. Every record carries a named annotator and their
+# free text, and the default output lands in a tracked directory. Publishing a
+# volunteer's identity and verbatim words to a public repository is not a
+# decision an import command should make.
+data/training/hub_links_bridge*.jsonl
+data/training/hub_links_bridge*.reviewed.json

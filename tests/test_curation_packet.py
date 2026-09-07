@@ -5,7 +5,7 @@ artifact in the packet makes the whole round Tier 3 and useless for the gate in
 `results/phase1b/CAMPAIGN3.md`, and the cost is paid before anyone notices --
 the labels look identical either way.
 
-The specific trap: `results/review/hub_reference.md` covers all 522 hubs, reads
+The specific trap: `results/ceiling_study/hub_reference.md` covers all 522 hubs, reads
 well, and is the obvious thing to send. 400 of its hub descriptions were written
 by an LLM conditioned on the gold links.
 """
@@ -28,7 +28,11 @@ from scripts.build_curation_packet import (
 def packet(tmp_path_factory: pytest.TempPathFactory) -> Path:
     out = tmp_path_factory.mktemp("packet")
     build_hub_sheet(out)
-    build_control_sheet(out, "csa_aicm")
+    # cosai (CC-BY-4.0) is the only default curation target that may be
+    # redistributed. csa_aicm, which these tests used, is recorded
+    # "Proprietary ... no redistribution" and is now refused outright --
+    # see tests/test_external_redistribution_guard.py.
+    build_control_sheet(out, "cosai")
     return out
 
 
@@ -88,7 +92,7 @@ class TestHubSheetIsNotModelDerived:
 
 class TestControlSheetCarriesNoAnswer:
     def test_answer_columns_are_empty(self, packet: Path) -> None:
-        rows = _rows(packet / "annotate_csa_aicm.csv")
+        rows = _rows(packet / "annotate_cosai.csv")
         assert rows
         for row in rows:
             for column, value in row.items():
@@ -104,7 +108,7 @@ class TestControlSheetCarriesNoAnswer:
         A future edit adding `predicted_hub` or `model_confidence` would keep
         every ANSWER column empty and still make the round Tier 3.
         """
-        with (packet / "annotate_csa_aicm.csv").open(encoding="utf-8") as handle:
+        with (packet / "annotate_cosai.csv").open(encoding="utf-8") as handle:
             header = handle.readline().lower()
         for forbidden in (
             "predict", "confidence_score", "similarity", "rank", "top_k",
@@ -119,12 +123,12 @@ class TestControlSheetCarriesNoAnswer:
             )
 
     def test_every_control_is_present_and_numbered(self, packet: Path) -> None:
-        rows = _rows(packet / "annotate_csa_aicm.csv")
-        assert len(rows) == 243, f"csa_aicm has 243 controls, sheet has {len(rows)}"
-        assert [int(r["row"]) for r in rows] == list(range(1, 244))
+        rows = _rows(packet / "annotate_cosai.csv")
+        assert len(rows) == 55, f"cosai has 55 controls, sheet has {len(rows)}"
+        assert [int(r["row"]) for r in rows] == list(range(1, 56))
 
     def test_every_control_carries_readable_text(self, packet: Path) -> None:
         """An empty statement is an unanswerable row that still costs time."""
-        rows = _rows(packet / "annotate_csa_aicm.csv")
+        rows = _rows(packet / "annotate_cosai.csv")
         empty = [r["control_id"] for r in rows if len(r["control_statement"]) < 20]
         assert not empty, f"controls with no usable statement: {empty[:5]}"
