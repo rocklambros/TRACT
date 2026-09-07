@@ -341,3 +341,55 @@ class TestContextColumnsAreNamedNotWildcarded:
             f"{sorted(readable)}. A filled packet must import without an "
             "intermediate step."
         )
+
+
+class TestTheSidecarCarriesNoIdentity:
+    """A filename is where an annotator's identity ends up by accident.
+
+    The sidecar recorded `"source": str(source)` -- the full path of the input
+    CSV, which carries the operator's home directory and whatever the sheet was
+    named. If a returning file is `jane_smith_annotations.csv`, that name was
+    preserved in an artifact.
+
+    The round is pseudonymous by design: `annotator_id` is required because a
+    Tier-2 link is a claim someone stands behind, but nothing requires it to be
+    a real name. A recorded path defeats that without anyone choosing to.
+    """
+
+    def test_it_records_no_filesystem_path(self, tmp_path: Path) -> None:
+        out = tmp_path / "o.jsonl"
+        src = _sheet(tmp_path, [_row()], name="jane_smith_annotations.csv")
+        _import(src, out)
+        payload = json.loads(
+            out.with_suffix(".reviewed.json").read_text(encoding="utf-8")
+        )
+        blob = json.dumps(payload)
+        assert "jane_smith" not in blob, "the sheet's filename reached the sidecar"
+        assert str(tmp_path) not in blob, "an absolute path reached the sidecar"
+        assert "source" not in payload, "the path field is gone entirely"
+
+    def test_it_records_a_digest_instead(self, tmp_path: Path) -> None:
+        """Lineage survives: a digest ties the corpus to the exact bytes."""
+        import hashlib
+
+        out = tmp_path / "o.jsonl"
+        src = _sheet(tmp_path, [_row()])
+        _import(src, out)
+        payload = json.loads(
+            out.with_suffix(".reviewed.json").read_text(encoding="utf-8")
+        )
+        assert payload["source_sha256"] == hashlib.sha256(
+            src.read_bytes()
+        ).hexdigest()
+
+    def test_two_different_sheets_get_different_digests(
+        self, tmp_path: Path
+    ) -> None:
+        a = tmp_path / "a.jsonl"
+        b = tmp_path / "b.jsonl"
+        _import(_sheet(tmp_path, [_row()], name="a.csv"), a)
+        _import(_sheet(tmp_path, [_row(rationale="a different judgement")],
+                       name="b.csv"), b)
+        da = json.loads(a.with_suffix(".reviewed.json").read_text(encoding="utf-8"))
+        db = json.loads(b.with_suffix(".reviewed.json").read_text(encoding="utf-8"))
+        assert da["source_sha256"] != db["source_sha256"]
