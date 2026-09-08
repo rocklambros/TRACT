@@ -51,7 +51,7 @@ dev = [
 ]
 phase0 = [
     "torch>=2.2,<3",
-    "transformers>=4.40,<5",
+    "transformers>=5.16.1,<6",
     "sentence-transformers>=3.0,<6",
     "anthropic>=0.99.0,<1",
     "numpy>=1.26,<3",

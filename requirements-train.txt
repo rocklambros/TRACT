@@ -51,7 +51,7 @@
 # tokenizers is pinned rather than left transitive because a patch release
 # changes tokenization, which changes embeddings, which changes hit@1.
 torch==2.13.0
-transformers==4.57.6
+transformers==5.16.1
 sentence-transformers==5.7.0
 tokenizers==0.22.2
 
