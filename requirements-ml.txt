@@ -58,7 +58,7 @@
 # suppressed advisories open.
 torch==2.13.0
 transformers==4.57.6
-sentence-transformers==3.2.0
+sentence-transformers==6.0.0
 tokenizers==0.22.2
 
 # --- Calibration and clustering ---
