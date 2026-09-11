@@ -37,7 +37,7 @@ import time
 from pathlib import Path
 from typing import Any, Final
 
-from tract.config import FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
+from tract.config import POD_RSYNC_EXCLUDES, FOLD_RESULT_FILENAME, PHASE1B_BASE_MODEL, PROCESSED_DIR
 # Lightweight on purpose: data_quality pulls neither torch nor datasets, so the
 # operator's machine can enforce the corpus gate without a training stack.
 from tract.training.data_quality import assert_corpus_matches_training_links
@@ -571,14 +571,14 @@ def _rsync_to(
     # '..pod_state.json.<rand>.tmp' if the orchestrator is killed mid-write, and
     # reap parks unparseable bytes at '.pod_state.json.corrupt'. Neither name is
     # matched by the exclude that exists for the file they are copies of.
-    excludes = " ".join(f"--exclude={pat!r}" for pat in (
-        "__pycache__", "*.pyc", ".git", "results", ".mypy_cache", "models",
-        "wandb", ".wandb", ".env", "*.db", "data/raw", ".claude", "venv",
-        ".venv", ".pod_state.json", ".pod_state.json.*", "*.tmp",
-        ".runpod_known_hosts", "build",
-        ".ipynb_checkpoints", ".pytest_cache", ".ruff_cache", "*.egg-info",
-        ".DS_Store",
-    ))
+    # POD_RSYNC_EXCLUDES, shared with runpod_retrain. The .pod_state entries
+    # are a glob now rather than two literals: '.pod_state.json' and
+    # '.pod_state.json.*' matched neither '.pod_state_0r.json' nor
+    # scripts/phase1c/.pod_state_retrain.json, so a live fleet roster -- every
+    # pod's ip, port and id, world-readable -- shipped to every pod it listed.
+    # Owning one then disclosed the rest, which is the exact harm the original
+    # exclude was written for.
+    excludes = " ".join(f"--exclude={pat!r}" for pat in POD_RSYNC_EXCLUDES)
     # --timeout and --partial are the twenty characters this direction was
     # missing while its sibling had them. The idle timer abandons a transfer
     # that has stopped moving bytes instead of waiting out the process wall,

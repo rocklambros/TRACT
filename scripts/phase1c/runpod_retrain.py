@@ -14,6 +14,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+
+from tract.config import POD_RSYNC_EXCLUDES
 import os
 import subprocess
 import time
@@ -109,15 +111,15 @@ def _ssh(
 
 
 def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
+    # POD_RSYNC_EXCLUDES, shared with runpod_parallel rather than hand-copied.
+    # This list used to be a near-duplicate whose own comment admitted the first
+    # divergence -- it omitted .env, *.db, data/raw and .claude, so crosswalk.db
+    # shipped to every pod. It also excluded only results/phase0 and
+    # results/phase1b, which let the Tier-3 quarantined review export and the
+    # ceiling study's LLM-written hub descriptions through.
+    excludes = " ".join(f"--exclude={pat!r}" for pat in POD_RSYNC_EXCLUDES)
     cmd = (
-        # Mirrors runpod_parallel's list. This one omitted .env, *.db,
-        # data/raw and .claude, so crosswalk.db shipped to every pod.
-        f"rsync -rltz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
-        f"--exclude='.mypy_cache' --exclude='models' "
-        f"--exclude='wandb' --exclude='.wandb' --exclude='.env' "
-        f"--exclude='*.db' --exclude='data/raw' --exclude='.claude' "
-        f"--exclude='venv' --exclude='.venv' --exclude='.pod_state*' "
-        f"--exclude='results/phase0' --exclude='results/phase1b' "
+        f"rsync -rltz {excludes} "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     logger.info("[rsync to] %s:%d %s", ip, port, remote_path)

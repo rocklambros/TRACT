@@ -662,6 +662,37 @@ BRIDGE_CORPUS_DIR: Final[Path] = TRAINING_DIR / "bridge"
 # all while the draft plan named it as an arm.
 BRIDGE_CORPUS_DIR_R2: Final[Path] = TRAINING_DIR / "bridge-r2"
 
+# What must never be rsynced to a rented pod. ONE list, imported by both
+# orchestrators. `runpod_retrain._rsync_to` carried a hand-copied near-duplicate
+# whose comment already admitted the first divergence -- it omitted `.env`,
+# `*.db`, `data/raw` and `.claude`, so crosswalk.db shipped to every pod. A
+# second copy diverges again; a shared constant cannot.
+#
+# Three additions beyond what the two lists had in common:
+#
+#   * data/training/bridge/ and bridge-r2/ -- the RAW per-annotator rounds. The
+#     merged corpus an arm trains on is shipped deliberately (and only to a
+#     SECURE host, which require_secure_cloud now enforces on its presence);
+#     the raw rounds and their .reviewed.json sidecars are never read on a pod.
+#   * claudedocs -- gitignored scratch, which is exactly where a "who is vol-02
+#     again?" note gets written. It carries no identities today; that is
+#     accidental rather than enforced, and it is on the rsync path.
+#   * results wholesale -- runpod_retrain excluded only results/phase0 and
+#     results/phase1b, so results/review/review_export.json (Tier 3,
+#     quarantined, never a gate denominator) and
+#     results/ceiling_study/hub_reference.md (400 LLM-written hub descriptions
+#     that CLAUDE.md forbids sending anywhere) both went to the pod. Nothing on
+#     a pod reads any of it.
+POD_RSYNC_EXCLUDES: Final[tuple[str, ...]] = (
+    "__pycache__", "*.pyc", ".git", "results", ".mypy_cache", "models",
+    "wandb", ".wandb", ".env", "*.db", "data/raw", ".claude", "venv",
+    ".venv", ".pod_state*", "*.tmp", ".runpod_known_hosts", "build",
+    ".ipynb_checkpoints", ".pytest_cache", ".ruff_cache", "*.egg-info",
+    ".DS_Store",
+    "data/training/bridge", "data/training/bridge-r2",
+    "claudedocs", "hub_proposals", "docs/session-prompts.md",
+)
+
 # ── Phase 2C Gate 2 ───────────────────────────────────────────────────────
 # docs/phase2c-preregistration.md Amendment 1, verbatim. Gate 1 has held its
 # thresholds here since checkpoint 2; Gate 2 held none of them anywhere, so the

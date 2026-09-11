@@ -1086,16 +1086,26 @@ class TestPodStateIsWrittenAtomically:
     def test_the_atomic_temp_file_is_never_shipped_to_a_pod(self) -> None:
         """`.pod_state.json` is excluded because it names every pod's address.
 
-        atomic_write_json writes `..pod_state.json.<rand>.tmp` beside it, which
-        the existing exclude does not match, and a killed orchestrator leaves
-        that temp behind. The corrupt sidecar reap keeps is the same class.
+        atomic_write_json writes `..pod_state.json.<rand>.tmp` beside it, and a
+        killed orchestrator leaves that temp behind. The corrupt sidecar reap
+        keeps is the same class.
+
+        This used to grep the orchestrator's source for the two literal
+        patterns `"*.tmp"` and `".pod_state.json.*"`, which passed while
+        `.pod_state_0r.json` and `scripts/phase1c/.pod_state_retrain.json` --
+        both live fleet rosters holding every pod's ip, port and id -- matched
+        neither and shipped. It pinned the fix rather than the property. The
+        property lives in tests/test_pod_rsync_excludes.py now; this asserts
+        the shared list is what the orchestrator uses.
         """
+        from tract.config import POD_RSYNC_EXCLUDES
+
         source = Path("scripts/phase1b/runpod_parallel.py").read_text(
             encoding="utf-8"
         )
-        excludes = source.split("excludes = ")[1].split("))")[0]
-        assert '"*.tmp"' in excludes
-        assert '".pod_state.json.*"' in excludes
+        assert "POD_RSYNC_EXCLUDES" in source
+        assert "*.tmp" in POD_RSYNC_EXCLUDES
+        assert ".pod_state*" in POD_RSYNC_EXCLUDES
 
 
 class TestReapSurvivesACorruptStateFile:

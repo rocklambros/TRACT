@@ -300,14 +300,42 @@ def require_secure_cloud() -> bool:
     """
     if os.environ.get("TRACT_RUNPOD_ALLOW_COMMUNITY", "").strip() == "1":
         logger.warning(
-            "TRACT_RUNPOD_ALLOW_COMMUNITY=1: licensed corpus may be shipped to "
-            "COMMUNITY hosts. This is a licensing decision and it is being "
-            "recorded here."
+            "TRACT_RUNPOD_ALLOW_COMMUNITY=1: licensed corpus AND volunteer "
+            "annotator text may be shipped to COMMUNITY hosts. This is a "
+            "licensing and privacy decision and it is being recorded here."
         )
         return False
     from tract.text_selection import merged_corpus_path
 
-    return "licensed" in merged_corpus_path().parts
+    if "licensed" in merged_corpus_path().parts:
+        return True
+
+    # The bridge corpora, added for Phase 2C. The licensed-overlay trigger above
+    # is a property of the CHECKOUT, and the bridge corpora are gitignored -- so
+    # on a fresh clone (which is how the orchestrating host gets this
+    # repository) the overlay is absent, this returned False, COMMUNITY came
+    # back into the preference list, and the operator hand-copied the annotator
+    # corpus in anyway because the run cannot start without it. Two volunteers'
+    # pseudonymised judgements and verbatim rationales would then have gone to
+    # whichever third-party host answered. The precedent is in this file's own
+    # history: four of five folds once landed on COMMUNITY.
+    return any(_bridge_corpus_present())
+
+
+def _bridge_corpus_present() -> list[bool]:
+    """Whether any Phase 2C annotator corpus exists in this checkout.
+
+    Checked by existence rather than by content: an empty directory is not a
+    corpus, and a directory holding one volunteer's file is.
+    """
+    from tract.config import BRIDGE_CORPUS_DIR, BRIDGE_CORPUS_DIR_R2, TRAINING_DIR
+
+    found = [
+        directory.is_dir() and any(directory.glob("*.jsonl"))
+        for directory in (BRIDGE_CORPUS_DIR, BRIDGE_CORPUS_DIR_R2)
+    ]
+    found.append(any(TRAINING_DIR.glob("hub_links_bridge*.jsonl")))
+    return found
 
 
 def _effective_cloud_types(requested: tuple[str, ...]) -> tuple[str, ...]:
