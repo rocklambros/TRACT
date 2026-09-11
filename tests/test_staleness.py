@@ -65,10 +65,33 @@ class TestTheCheckItself:
         wrong = {field: "0" * 64 for field in TRACKED_INPUTS}
         status = check_result(_result(tmp_path / "fold_result.json", wrong))
         assert status.is_stale
-        assert len(status.stale) == sum(1 for p in TRACKED_INPUTS.values() if p.exists())
+        # EVERY recorded digest is stale, not merely those whose file survives.
+        # This used to read `if p.exists()`, which encoded the defect it was
+        # meant to guard: a digest naming an absent file took the `current is
+        # None` branch and was skipped, so the result reported FRESH -- the
+        # strongest available claim -- on a file nobody could read. That is how
+        # the bridge digest came to verify nothing at all, since the path it
+        # named has never existed.
+        assert len(status.stale) == len(TRACKED_INPUTS)
         for item in status.stale:
             assert item.recorded == "0" * 64
             assert item.current != item.recorded
+
+    def test_a_recorded_digest_for_an_absent_file_is_stale_not_fresh(
+        self, tmp_path: Path
+    ) -> None:
+        """Named separately, because it is the case that silently passed.
+
+        `current` says `<absent>` rather than a digest, so an operator reading
+        the report is not left thinking the bytes merely changed.
+        """
+        status = check_result(
+            _result(tmp_path / "fold_result.json", {"bridge_links_sha256": "0" * 64})
+        )
+        entry = next(
+            s for s in status.stale if s.field == "bridge_links_sha256"
+        )
+        assert entry.current == "<absent>"
 
     def test_a_result_with_no_inputs_block_is_uncheckable(
         self, tmp_path: Path

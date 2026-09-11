@@ -11,6 +11,7 @@ Orchestrates the full Phase 1B pipeline:
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import math
 import os
@@ -31,10 +32,12 @@ from scripts.phase0.common import (
 from tract.config import (
     FOLD_RESULT_FILENAME,
     max_anchor_chars,
+    OPENCRE_FRAMEWORK_ID_MAP,
     PHASE1B_GATE_HIT1_DELTA,
     PREREGISTERED_GATE_ALPHA,
     PHASE1B_RESULTS_DIR,
     PROCESSED_DIR,
+    RESTRICTED_FRAMEWORK_IDS,
 )
 from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
@@ -71,6 +74,50 @@ from tract.training.loop import save_checkpoint, train_model
 from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
+
+
+def prediction_record(
+    *,
+    control_text: str,
+    ground_truth_hub_id: str,
+    predicted_top10: list[str],
+    framework_name: str,
+) -> dict[str, Any]:
+    """One row of predictions.json, with restricted prose withheld.
+
+    `results/phase1b/**/*.json` is negated back into tracking by .gitignore, so
+    whatever lands here is committed to a CC0 repository. That was harmless
+    while the AI eval roster held only unrestricted frameworks. Gate 2 scores
+    ETSI, which is in RESTRICTED_FRAMEWORK_IDS, and a verbatim ETSI clause in a
+    tracked file is a rights claim this project cannot make on behalf of every
+    downstream fork -- the thing tract/licensing.py exists to prevent.
+
+    Nothing is lost by withholding it. The control text is in this file for one
+    real purpose: proving two arms scored the same items in the same order
+    before a paired interval is computed between them. `control_text_sha256`
+    does that strictly better, because it is comparable without being readable,
+    and it is written for every framework so alignment still works across a
+    redacted arm and an unredacted one.
+
+    An unrecognised framework name is treated as UNRESTRICTED, deliberately.
+    Erring the other way would silently redact every framework added later and
+    the loss would look like normal behaviour.
+    """
+    framework_id = OPENCRE_FRAMEWORK_ID_MAP.get(framework_name, "")
+    restricted = framework_id in RESTRICTED_FRAMEWORK_IDS
+    record: dict[str, Any] = {
+        "control_text_sha256": hashlib.sha256(
+            control_text.encode("utf-8")
+        ).hexdigest(),
+        "control_text_redacted": restricted,
+        "ground_truth_hub_id": ground_truth_hub_id,
+        "predicted_top10": predicted_top10,
+        "framework": framework_name,
+    }
+    if not restricted:
+        record["control_text"] = control_text
+    return record
+
 
 # FOLD_RESULT_FILENAME moved to tract.config; this module imports it above and
 # uses it below. Import it FROM tract.config, not from here -- mypy --strict
@@ -114,6 +161,14 @@ ARM_DEFINING_KEYS: tuple[str, ...] = (
     # semantic hub descriptions would have averaged with one matching a bare
     # label -- the two most different experiments this project can run.
     "hub_rep_format",
+    # WHICH bridge corpus, or none. This is the Gate 2 treatment itself, and it
+    # was absent from this list while a three-arm plan was being written: A0 and
+    # A1 produced the same arm key, so load_fold_results would have aggregated a
+    # bridge-free fold beside a bridge-trained one without objecting. It was
+    # saved only by the `inputs` digest check further down, i.e. by accident,
+    # one layer away. The structural test that exists to catch omissions here
+    # scanned only `use_*` booleans, so a `str | None` field slipped past it.
+    "bridge_links_path",
 )
 
 # hit@1 is an indicator: for each eval item the top-ranked hub either was a
@@ -365,14 +420,15 @@ def run_single_fold(
 
     save_checkpoint(model, config, metrics, fold_output / "model", _get_git_sha())
 
-    pred_data = []
-    for item, pred in zip(eval_items, predictions):
-        pred_data.append({
-            "control_text": item.control_text,
-            "ground_truth_hub_id": item.ground_truth_hub_id,
-            "predicted_top10": pred[:10],
-            "framework": item.framework_name,
-        })
+    pred_data = [
+        prediction_record(
+            control_text=item.control_text,
+            ground_truth_hub_id=item.ground_truth_hub_id,
+            predicted_top10=pred[:10],
+            framework_name=item.framework_name,
+        )
+        for item, pred in zip(eval_items, predictions)
+    ]
     atomic_write_json(pred_data, fold_output / "predictions.json")
     atomic_write_json(metrics, fold_output / "metrics.json")
 
