@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 import math
 from collections import defaultdict
+from collections.abc import Collection
 from dataclasses import dataclass
 from typing import Any, ClassVar, Iterator
 
@@ -77,10 +78,35 @@ def mine_hard_negatives(
             seen.add(neg_id)
             deduped.append(neg_id)
     return deduped[:n]
+
+
+def excluded_framework_set(
+    excluded: str | Collection[str] | None,
+) -> frozenset[str]:
+    """Normalise a held-out framework name, or a set of them, into a set.
+
+    The exclusion used to be `standard_name == excluded_framework`, which is
+    correct for one name and SILENTLY WRONG for a set: `"ENISA" == {"ENISA"}`
+    is False, so a caller holding out the whole AI region would have excluded
+    nothing, trained on every framework it claimed to firewall, scored around
+    0.9, and produced a fold record indistinguishable from an honest one.
+
+    Widening the type and normalising here means both forms are correct at the
+    one place the comparison happens. An empty string keeps its old meaning --
+    absent, not a framework named "" -- because the previous guard was
+    `if excluded_framework and ...`.
+    """
+    if not excluded:
+        return frozenset()
+    if isinstance(excluded, str):
+        return frozenset({excluded})
+    return frozenset(excluded)
+
+
 def build_training_pairs(
     tiered_links: list[TieredLink],
     hub_texts: dict[str, str],
-    excluded_framework: str | None = None,
+    excluded_framework: str | Collection[str] | None = None,
     prose_index: ProseIndex | None = None,
     stopwords: frozenset[str] | None = None,
     description_only: bool = False,
@@ -108,12 +134,17 @@ def build_training_pairs(
     raw_pairs: list[TrainingPair] = []
     skipped = 0
     selection_stats = SelectionStats()
+    excluded = excluded_framework_set(excluded_framework)
 
     for tiered in tiered_links:
         link = tiered.link
         standard_name = link.get("standard_name", "")
 
-        if excluded_framework and standard_name == excluded_framework:
+        # Set membership, not equality. See excluded_framework_set: the old
+        # `== excluded_framework` was permanently False for a set, so a
+        # multi-framework firewall would have been a no-op that reported
+        # success.
+        if standard_name in excluded:
             continue
 
         try:
@@ -188,7 +219,7 @@ def build_training_pairs(
     logger.info(
         "Built %d training pairs (excluded=%s): %d raw, %d deduped, "
         "%d texts map to multiple hubs (handled by sampler)",
-        len(pairs), excluded_framework, len(raw_pairs), n_deduped,
+        len(pairs), sorted(excluded) or None, len(raw_pairs), n_deduped,
         n_multi_hub_texts,
     )
     return pairs

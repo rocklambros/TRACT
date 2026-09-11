@@ -1,7 +1,7 @@
 {
   "_total_after_sanity": 78,
   "ai_hubs_total": 78,
-  "bridge_path": "/home/rock/github_projects/TRACT/data/training/bridge",
+  "bridge_path": "data/training/bridge",
   "conditions": {
     "Q1_distinct_controls": {
       "agreement": null,
@@ -65,7 +65,7 @@
   "orphans_before": 78,
   "passed": true,
   "sources": [
-    "/home/rock/github_projects/TRACT/data/training/bridge/vol-01.jsonl",
-    "/home/rock/github_projects/TRACT/data/training/bridge/vol-02.jsonl"
+    "data/training/bridge/vol-01.jsonl",
+    "data/training/bridge/vol-02.jsonl"
   ]
 }

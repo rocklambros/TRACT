@@ -17,7 +17,7 @@ import math
 import os
 import subprocess
 import time
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from pathlib import Path
 from typing import Any, Final
 
@@ -44,6 +44,7 @@ from tract.io import atomic_write_json, load_json
 from tract.training.config import TrainingConfig
 from tract.training.data import (
     build_training_pairs,
+    excluded_framework_set,
     pairs_to_dataset,
 )
 from tract.training.data_quality import (
@@ -69,7 +70,11 @@ from tract.text_selection import (
     canonical_framework,
     merged_corpus_path,
 )
-from tract.training.firewall import assert_firewall, build_all_hub_texts
+from tract.training.firewall import (
+    assert_exclusion_fired,
+    assert_firewall,
+    build_all_hub_texts,
+)
 from tract.training.loop import save_checkpoint, train_model
 from tract.training.data_quality import TieredLink
 
@@ -236,6 +241,7 @@ def run_single_fold(
     standard_sections: dict[str, list[str]] | None = None,
     include_zero_shot: bool = False,
     corpus_selection: SelectionStats | None = None,
+    excluded_frameworks: Collection[str] | None = None,
 ) -> dict[str, Any]:
     """Train and evaluate one LOFO fold. Returns fold result dict.
 
@@ -252,8 +258,24 @@ def run_single_fold(
             the real figure is 55. SelectionStats is keyed by framework and the
             fold's framework is the one held out, so the corpus-wide object
             carries exactly this fold's count.
+        excluded_frameworks: What the FIREWALL removes, which is not always what
+            the fold is NAMED after. Defaults to {held_out_framework}, so every
+            ordinary LOFO caller is unchanged. Gate 2 passes all eight AI
+            frameworks while naming the fold after the one being scored, because
+            the AI and traditional hub regions are disjoint: leaving any AI
+            framework in training supplies exactly the positives the bridge
+            corpus is bought to provide, and `--framework ENISA` alone leaves 52
+            of 56 scored hubs supervised while writing a record that looks
+            firewalled.
     """
-    logger.info("=== FOLD: %s ===", held_out_framework)
+    excluded = excluded_framework_set(
+        excluded_frameworks if excluded_frameworks is not None
+        else held_out_framework
+    )
+    logger.info(
+        "=== FOLD: %s (firewall holds out %s) ===",
+        held_out_framework, sorted(excluded),
+    )
     fold_start = time.time()
 
     include_desc = config.hub_rep_format == "path+name+desc"
@@ -300,7 +322,7 @@ def run_single_fold(
 
     hub_texts = build_all_hub_texts(
         hierarchy,
-        excluded_framework=held_out_framework,
+        excluded_framework=excluded,
         include_description=include_desc,
         descriptions=descriptions,
         include_standards=include_standards,
@@ -319,7 +341,7 @@ def run_single_fold(
     if include_standards or include_desc:
         base_hub_texts = build_all_hub_texts(
             hierarchy,
-            excluded_framework=held_out_framework,
+            excluded_framework=excluded,
             include_description=False,
             include_standards=False,
             stopwords=stopwords,
@@ -333,16 +355,21 @@ def run_single_fold(
 
         hub_names = {filter_stopwords(name, stopwords) for name in hub_names}
     assert_firewall(
-        hub_texts, eval_items, held_out_framework, base_hub_texts,
+        hub_texts, eval_items, excluded, base_hub_texts,
         hub_names=hub_names,
     )
 
     pairs = build_training_pairs(
-        tiered_links, hub_texts, excluded_framework=held_out_framework,
+        tiered_links, hub_texts, excluded_framework=excluded,
         prose_index=prose_index, stopwords=stopwords,
         description_only=config.use_description_only,
         max_chars=max_anchor_chars(config.max_seq_length),
     )
+    # The converse assertion. assert_firewall above checks that held-out control
+    # text did not leak INTO hub representations; nothing checked that the
+    # exclusion removed the training links it named. Both failure modes are
+    # silent and both produce a record shaped like an honest one.
+    assert_exclusion_fired(pairs, tiered_links, excluded)
     dataset = pairs_to_dataset(pairs, hierarchy, hub_texts, n_hard_negatives=config.hard_negatives)
 
     fold_output = output_dir / f"fold_{held_out_framework.replace(' ', '_')}"
@@ -437,6 +464,12 @@ def run_single_fold(
 
     result: dict[str, Any] = {
         "held_out_framework": held_out_framework,
+        # What the firewall ACTUALLY removed, which is not always what the fold
+        # is named after. Recorded because it was previously recorded nowhere:
+        # a one-framework holdout and an eight-framework holdout produced
+        # records identical in shape, so a run that left 52 of 56 scored hubs
+        # supervised was indistinguishable from a strict one after the fact.
+        "excluded_frameworks": sorted(excluded),
         "metrics": metrics,
         "predictions": predictions,
         "hit1_indicators": hit1_indicators,

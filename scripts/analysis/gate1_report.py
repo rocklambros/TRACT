@@ -50,7 +50,7 @@ from tract.config import (
     PHASE2C_Q3_CONFIDENCE_FLOOR,
     PHASE2C_Q4_MIN_DOUBLE_ANNOTATED,
 )
-from tract.io import atomic_write_json
+from tract.io import atomic_write_json, repo_relative
 
 logger = logging.getLogger(__name__)
 
@@ -373,7 +373,11 @@ def gate1_report(bridge_path: Path) -> dict[str, Any]:
     )
 
     return {
-        "bridge_path": str(bridge_path),
+        # repo-relative: this report is tracked now (results/phase2c/*.json was
+        # excluded by results/* until the Gate 2 work, so an absolute path in it
+        # was never checked), and an artifact naming one machine's home
+        # directory resolves nowhere else.
+        "bridge_path": repo_relative(bridge_path),
         "sources": [str(p) for p in sources],
         "n_links_total": len(links),
         "n_links_counting": len(counting),

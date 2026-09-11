@@ -29,6 +29,8 @@ from tract.config import (
     max_anchor_chars,
     LOFO_WANDB_ENTITY,
     LOFO_WANDB_PROJECT,
+    PHASE2C_GATE2_EVAL_FRAMEWORKS,
+    PHASE2C_GATE2_HELD_OUT,
     PROCESSED_DIR,
 )
 from tract.hierarchy import CREHierarchy
@@ -106,6 +108,15 @@ def _campaign_label(config: TrainingConfig) -> str:
         label += f"-seq{config.max_seq_length}"
     if config.hub_rep_format != "path+name":
         label += "-" + config.hub_rep_format.replace("path+name+", "")
+    # WHICH bridge corpus. Without this the Gate 2 arms -- bridge-free,
+    # round-2, placebo -- share a campaign label, hence a stable_run_id, hence
+    # one WandB run and one output directory, and each overwrites the last.
+    # The corpus filename is the arm identity, so it is what the label carries.
+    if config.bridge_links_path:
+        stem = Path(config.bridge_links_path).name
+        for prefix, suffix in (("hub_links_bridge.", ""), ("", ".jsonl")):
+            stem = stem.removeprefix(prefix).removesuffix(suffix)
+        label += f"-bridge_{stem}"
     return label
 
 
@@ -144,7 +155,7 @@ def main() -> int:
     parser.add_argument("--max-seq-length", type=int, default=None,
                         help="Encoder token budget. The anchor character cut "
                              "is derived from it.")
-    parser.add_argument("--split", choices=("test", "validation"),
+    parser.add_argument("--split", choices=("test", "validation", "gate2"),
                         default="test",
                         help="test: LOFO over the 5 AI frameworks, the "
                              "pre-registered 147-item set PRD 6.4 reports. "
@@ -206,10 +217,31 @@ def main() -> int:
     # The eval population follows the split. A typo would otherwise hold out
     # nothing, train on everything and report an inflated score against an
     # empty eval set, so the name is checked against the split's own roster.
-    eval_frameworks = (
-        set(AI_FRAMEWORK_NAMES) if args.split == "test"
-        else validation_frameworks()
-    )
+    if args.split == "test":
+        eval_frameworks = set(AI_FRAMEWORK_NAMES)
+    elif args.split == "gate2":
+        eval_frameworks = set(PHASE2C_GATE2_EVAL_FRAMEWORKS)
+    else:
+        eval_frameworks = validation_frameworks()
+
+    # THE 2AM REFUSAL. `validation_frameworks()` is everything minus the FIVE
+    # -name AI roster, so it contains ENISA, ETSI and BIML. Before this,
+    # `--split validation --framework ENISA` ran, passed every guard, held out
+    # ENISA alone, left the other seven AI frameworks in training -- 52 of 56
+    # scored hubs still supervised -- and wrote a fold record indistinguishable
+    # from a strictly firewalled one. It is the cheap path that exists when the
+    # expensive one is not built yet, and it answers a different question while
+    # looking like an answer to this one.
+    if args.split == "validation" and args.framework in PHASE2C_GATE2_HELD_OUT:
+        raise ValueError(
+            f"{args.framework!r} is an AI framework and cannot be scored under "
+            f"--split validation, which holds out ONE framework and leaves the "
+            f"rest of the AI region in training. Gate 2 requires the strict "
+            f"all-AI firewall: use --split gate2, which holds out "
+            f"{sorted(PHASE2C_GATE2_HELD_OUT)}. See "
+            "docs/phase2c-gate2-plan.md."
+        )
+
     if args.framework not in eval_frameworks:
         raise ValueError(
             f"Unknown framework {args.framework!r} for split "
@@ -322,6 +354,12 @@ def main() -> int:
             # by 26% -- 39 reported against 55 real across Campaign 2's test
             # round -- because prepare_anchor rstrips after cutting.
             corpus_selection=selection_stats,
+            # Gate 2 holds out the whole AI region while naming the fold after
+            # the framework being scored. Every other split holds out exactly
+            # the fold's own framework, which is what None means here.
+            excluded_frameworks=(
+                PHASE2C_GATE2_HELD_OUT if args.split == "gate2" else None
+            ),
         )
     except BaseException:
         # Mark the run failed rather than leaving it displayed as running.

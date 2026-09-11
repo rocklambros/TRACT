@@ -52,7 +52,7 @@ from tract.config import (
     PHASE2C_Q3_CONFIDENCE_FLOOR,
     TRAINING_DIR,
 )
-from tract.io import atomic_write_json
+from tract.io import atomic_write_json, repo_relative
 
 logger = logging.getLogger(__name__)
 
@@ -220,10 +220,15 @@ def build_manifest(
     record pointing at content no third party can obtain. This manifest is the
     digest's public referent.
     """
+    # repo-RELATIVE, both of them. The default --out is derived from
+    # TRAINING_DIR, which is absolute, so the first manifest this script wrote
+    # carried "/home/rock/github_projects/TRACT/..." into a committed artifact
+    # -- a path that resolves on exactly one machine, and the reason
+    # tests/test_io.py guards every tracked JSON file for this.
     manifest: dict[str, object] = {
         "round_label": round_label,
-        "round_dir": str(round_dir),
-        "corpus_path": str(corpus_path),
+        "round_dir": repo_relative(round_dir),
+        "corpus_path": repo_relative(corpus_path),
         "corpus_sha256": _sha256(corpus_path),
         "git_sha": _git_sha(),
         "source_files": {
