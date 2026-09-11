@@ -71,11 +71,21 @@ PREDICTIONS_NAME: Final[str] = "predictions.json"
 
 @dataclass(frozen=True)
 class FoldRecord:
-    """One framework's scored items within one arm."""
+    """One scored population within one arm.
+
+    `item_frameworks` is per ITEM, not per fold. Gate 2 trains ONE model per arm
+    and scores all 74 items with it, because the difference-in-differences needs
+    the exposed and unexposed strata to come from the SAME model -- scoring each
+    framework with its own separately-trained model would put training-draw
+    variance BETWEEN the strata, which is precisely the variance the DiD exists
+    to cancel. So one fold here carries three frameworks, and the stratification
+    has to read each item's own.
+    """
 
     framework: str
     indicators: NDArray[np.floating[Any]]
     item_keys: tuple[str, ...]
+    item_frameworks: tuple[str, ...]
     excluded_frameworks: tuple[str, ...]
 
 
@@ -134,6 +144,9 @@ def load_arm(arm_dir: Path) -> ArmRecord:
             )
         predictions = json.loads(predictions_path.read_text(encoding="utf-8"))
         keys = tuple(_item_key(row, i) for i, row in enumerate(predictions))
+        item_frameworks = tuple(
+            str(row.get("framework") or framework) for row in predictions
+        )
 
         indicators = np.asarray(payload["hit1_indicators"], dtype=float)
         if len(indicators) != len(keys):
@@ -146,6 +159,7 @@ def load_arm(arm_dir: Path) -> ArmRecord:
             framework=framework,
             indicators=indicators,
             item_keys=keys,
+            item_frameworks=item_frameworks,
             excluded_frameworks=tuple(
                 sorted(payload.get("excluded_frameworks") or [])
             ),
@@ -250,17 +264,28 @@ def compute_did(
     """
     verify_alignment(a, b)
 
-    cells: dict[tuple[str, bool], NDArray[np.floating[Any]]] = {}
-    per_framework: dict[str, float] = {}
-    for framework in a.frameworks:
-        fa, fb = a.folds[framework], b.folds[framework]
+    # Stratified on each ITEM's framework and its exposure, not on the fold it
+    # was written under. Gate 2 puts all three frameworks in one fold, because
+    # both strata must come from one trained model.
+    grouped: dict[tuple[str, bool], list[float]] = {}
+    by_framework: dict[str, list[float]] = {}
+    for fold_name in a.frameworks:
+        fa, fb = a.folds[fold_name], b.folds[fold_name]
         deltas = fb.indicators - fa.indicators
-        per_framework[framework] = float(np.mean(deltas))
-        mask = np.array([k in exposed_keys for k in fa.item_keys])
-        for is_exposed in (True, False):
-            selected = deltas[mask if is_exposed else ~mask]
-            if len(selected):
-                cells[(framework, is_exposed)] = selected
+        for delta, key, framework in zip(
+            deltas, fa.item_keys, fa.item_frameworks
+        ):
+            grouped.setdefault(
+                (framework, key in exposed_keys), []
+            ).append(float(delta))
+            by_framework.setdefault(framework, []).append(float(delta))
+
+    cells: dict[tuple[str, bool], NDArray[np.floating[Any]]] = {
+        k: np.asarray(v, dtype=float) for k, v in sorted(grouped.items())
+    }
+    per_framework = {
+        k: float(np.mean(v)) for k, v in sorted(by_framework.items())
+    }
 
     exposed_cells = [v for (_, e), v in cells.items() if e]
     unexposed_cells = [v for (_, e), v in cells.items() if not e]

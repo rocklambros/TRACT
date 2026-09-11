@@ -16,6 +16,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+from typing import Final
 
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
@@ -74,6 +75,13 @@ def _arm_label(config: TrainingConfig) -> str:
     if config.use_framework_identity_filter:
         parts.append("fwid")
     return "-".join(parts)
+
+
+# The sentinel --framework value for Gate 2, and the name its single fold is
+# written under. One model per arm scores all three frameworks, so no single
+# framework name describes the fold.
+GATE2_ALL_FRAMEWORKS: Final[str] = "ALL"
+GATE2_FOLD_LABEL: Final[str] = "gate2"
 
 
 def validation_frameworks() -> set[str]:
@@ -242,7 +250,26 @@ def main() -> int:
             "docs/phase2c-gate2-plan.md."
         )
 
-    if args.framework not in eval_frameworks:
+    # Gate 2 scores ALL of its frameworks with ONE trained model, and the
+    # sentinel is required rather than defaulted so nobody scores a single
+    # framework by habit and gets a different experiment.
+    #
+    # The reason is the primary estimand. Gate 2's criterion is a
+    # difference-in-differences between exposed and unexposed items, and those
+    # two strata must come from the SAME model -- training once per framework
+    # would put training-draw variance BETWEEN the strata, which is exactly the
+    # variance the DiD exists to cancel. Two same-arm runs in this repository
+    # differ by 19% per-item discordance, so that is not a small confound.
+    if args.split == "gate2":
+        if args.framework != GATE2_ALL_FRAMEWORKS:
+            raise ValueError(
+                f"--split gate2 requires --framework {GATE2_ALL_FRAMEWORKS}. "
+                f"Scoring one framework on its own trains a separate model per "
+                "stratum, and the difference-in-differences then measures "
+                "training-draw drift between them rather than the bridge "
+                "corpus. See docs/phase2c-gate2-plan.md section 5."
+            )
+    elif args.framework not in eval_frameworks:
         raise ValueError(
             f"Unknown framework {args.framework!r} for split "
             f"{args.split!r}. Expected one of: {sorted(eval_frameworks)}"
@@ -304,7 +331,15 @@ def main() -> int:
         max_chars=max_anchor_chars(config.max_seq_length),
     )
     selection_stats.log_summary("Eval items")
-    eval_items = [i for i in corpus if i.framework_name == args.framework]
+    if args.split == "gate2":
+        eval_items = [
+            i for i in corpus
+            if i.framework_name in PHASE2C_GATE2_EVAL_FRAMEWORKS
+        ]
+        fold_label = GATE2_FOLD_LABEL
+    else:
+        eval_items = [i for i in corpus if i.framework_name == args.framework]
+        fold_label = args.framework
     if not eval_items:
         raise ValueError(
             f"No eval items for {args.framework!r}. The fold would score "
@@ -312,7 +347,7 @@ def main() -> int:
         )
 
     logger.info("Fold %s: %d eval items, raw_hash=%s",
-                args.framework, len(eval_items), raw_hash)
+                fold_label, len(eval_items), raw_hash)
 
     # The arm is a runtime flag on one commit, so it has to be in the run name
     # and the tags. Two arms landing as indistinguishable runs is the same
@@ -323,26 +358,26 @@ def main() -> int:
         run = init_run(
             project=args.wandb_project,
             entity=LOFO_WANDB_ENTITY,
-            name=f"{arm}/{args.framework}",
+            name=f"{arm}/{fold_label}",
             config={
                 **config.to_dict(),
-                "held_out_framework": args.framework,
+                "held_out_framework": fold_label,
                 "arm": arm,
                 "n_eval_items": len(eval_items),
                 "curated_links_hash": raw_hash,
                 "eval_prose_fraction": selection_stats.prose_fraction,
             },
-            tags=[arm, args.framework, "lofo"],
+            tags=[arm, fold_label, "lofo"],
             # Same key the orchestrator uses, so a pod-side run and a
             # later `track` of the same fold are one run, not two.
-            run_id=stable_run_id(args.config_name, arm, args.framework),
+            run_id=stable_run_id(args.config_name, arm, fold_label),
         )
 
     exit_code = 0
     try:
         result = run_single_fold(
             config=config,
-            held_out_framework=args.framework,
+            held_out_framework=fold_label,
             tiered_links=tiered_links,
             hierarchy=hierarchy,
             eval_items=eval_items,
@@ -369,14 +404,14 @@ def main() -> int:
         finish_run(run, exit_code=1)
         raise
 
-    fold_dir = output_dir / f"fold_{args.framework.replace(' ', '_')}"
+    fold_dir = output_dir / f"fold_{fold_label.replace(' ', '_')}"
     # Log the persisted record, not the in-memory result: the record is what
     # aggregation reads, so tracking and aggregation cannot disagree.
     log_fold(run, load_json(fold_dir / FOLD_RESULT_FILENAME))
     finish_run(run, exit_code=exit_code)
 
     logger.info("FOLD COMPLETE: %s hit@1=%.4f -> %s",
-                args.framework, result["metrics"]["hit_at_1"],
+                fold_label, result["metrics"]["hit_at_1"],
                 fold_dir / FOLD_RESULT_FILENAME)
     return 0
 
