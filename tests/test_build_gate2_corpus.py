@@ -283,3 +283,69 @@ class TestAgainstTheRealCorpus:
 def test_stats_is_a_dataclass_not_a_dict() -> None:
     """Domain objects are typed here; CLAUDE.md forbids bare dicts for them."""
     assert CorpusStats.__dataclass_fields__  # type: ignore[attr-defined]
+
+
+class TestTheWithdrawalMechanism:
+    """The handbook promised a right to withdraw before publication.
+
+    The annotators are anonymous by their own request, so there is no channel
+    to solicit an individual acknowledgement -- asking would require the named
+    person anonymity removes. The promise is therefore kept by being
+    MECHANICALLY POSSIBLE: one contributor comes out of the derived corpus,
+    the source record stays intact, and Gate 1 re-runs against the remainder.
+    """
+
+    def test_an_excluded_annotators_links_are_gone(self, tmp_path: Path) -> None:
+        d = _round(
+            tmp_path,
+            **{"vol-01": [_link("AC-1", "010-108")],
+               "vol-02": [_link("SI-4", "020-200", annotator="vol-02")]},
+        )
+        links, stats = merge_round(
+            d, min_confidence=2, exclude_annotators=frozenset({"vol-01"})
+        )
+        assert [b.section_id for b in links] == ["SI-4"]
+        assert stats.withdrawn == {"vol-01": 1}
+        assert "vol-01" not in stats.per_annotator_raw
+
+    def test_the_source_file_is_not_destroyed(self, tmp_path: Path) -> None:
+        """Withdrawal removes a contribution from the corpus, not the record.
+
+        Deleting the file would work and would also erase what was submitted,
+        which the Gate 1 report already depends on.
+        """
+        d = _round(
+            tmp_path,
+            **{"vol-01": [_link("AC-1", "010-108")],
+               "vol-02": [_link("SI-4", "020-200", annotator="vol-02")]},
+        )
+        merge_round(d, min_confidence=2,
+                    exclude_annotators=frozenset({"vol-01"}))
+        assert (d / "vol-01.jsonl").is_file()
+
+    def test_excluding_everyone_raises_rather_than_shipping_a_null(
+        self, tmp_path: Path
+    ) -> None:
+        d = _round(tmp_path, **{"vol-01": [_link("AC-1", "010-108")]})
+        with pytest.raises(ValueError, match="no links at all"):
+            merge_round(d, min_confidence=2,
+                        exclude_annotators=frozenset({"vol-01"}))
+
+    def test_an_unknown_pseudonym_raises(self, tmp_path: Path) -> None:
+        """A withdrawal that silently excluded nobody is worse than an error."""
+        d = _round(
+            tmp_path,
+            **{"vol-01": [_link("AC-1", "010-108")],
+               "vol-02": [_link("SI-4", "020-200", annotator="vol-02")]},
+        )
+        with pytest.raises(ValueError, match="match no file"):
+            merge_round(d, min_confidence=2,
+                        exclude_annotators=frozenset({"vol-99"}))
+
+    def test_no_exclusion_records_an_empty_withdrawn_map(
+        self, tmp_path: Path
+    ) -> None:
+        """Not None. `0, never None` is the convention FilterReport.n_bridge set."""
+        d = _round(tmp_path, **{"vol-01": [_link("AC-1", "010-108")]})
+        _, stats = merge_round(d, min_confidence=2)
+        assert stats.withdrawn == {}

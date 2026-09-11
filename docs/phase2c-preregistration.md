@@ -410,12 +410,39 @@ published unconditionally, as Stage-1 work, and are committed before the first
 pod.** This reverses §7's implicit dependency of publication on Stage 2 funding.
 Checkpoint-2 open item Gov W8 is closed by this clause.
 
-## 1.6 — The withdrawal window closes before training
+## 1.6 — The withdrawal right, under anonymity
 
 The annotator handbook promises "a right to withdraw their contribution before
-publication." Training is irreversible: a dataset can be re-cut, a checkpoint
-cannot. **No arm is trained until both annotators have been told, in writing,
-that the window is closing and have acknowledged it.**
+publication." An earlier draft of this amendment required both annotators to
+acknowledge, in writing, that the window was closing before any arm trained.
+**That requirement is withdrawn, and this is the reasoning, recorded here rather
+than left to memory.**
+
+**The annotators are anonymous by their own request**, and the round was built to
+keep them so: `results/phase2c/*` carries pseudonyms only, the importer stores a
+`source_sha256` rather than a path so the filename cannot leak an identity, and
+no pseudonym-to-person mapping exists anywhere in this repository. Soliciting an
+individual acknowledgement would require a channel to a named person, which is
+the thing anonymity removes.
+
+Anonymity also reduces what the right is protecting. The withdrawal right
+principally guards against someone's **identified** work being published against
+their will. A pseudonym no reader can resolve does not carry that exposure.
+
+What survives, and what does not:
+
+- **The published corpus can be re-cut.** `scripts/build_gate2_corpus.py` takes
+  `--exclude-annotator`, so one contributor's links can be removed and Gate 1
+  re-run against the remainder. A withdrawal arriving through whatever channel
+  returned the sheets can be honoured for the dataset and the upstream OpenCRE
+  proposal.
+- **A trained checkpoint cannot.** Supervision is in the weights. If a
+  withdrawal arrives after Gate 2 has run, the corpus and the dataset are
+  re-cut; the delta and its interval were computed on a corpus that no longer
+  exists, and the write-up must say so rather than quietly stand.
+
+That asymmetry is the honest cost of proceeding, and it is accepted here
+deliberately rather than discovered later.
 
 ## 1.7 — Gate 2's criterion had no implementation; §8's reproduction command is wrong
 

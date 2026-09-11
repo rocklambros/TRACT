@@ -41,7 +41,7 @@ import hashlib
 import json
 import logging
 import subprocess
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass, field as dataclass_field
 from pathlib import Path
 from typing import Final
 
@@ -86,6 +86,10 @@ class CorpusStats:
     n_distinct_controls: int
     n_distinct_hubs: int
     per_annotator_raw: dict[str, int]
+    # Contributors removed at their own request. Recorded rather than silent:
+    # a corpus that shrank without saying why cannot be reconciled with the
+    # Gate 1 report that preceded it.
+    withdrawn: dict[str, int] = dataclass_field(default_factory=dict)
 
 
 def _sha256(path: Path) -> str:
@@ -110,7 +114,10 @@ def _sort_key(link: BridgeLink) -> tuple[str, str, str, str]:
 
 
 def merge_round(
-    round_dir: Path, *, min_confidence: int = PHASE2C_Q3_CONFIDENCE_FLOOR
+    round_dir: Path,
+    *,
+    min_confidence: int = PHASE2C_Q3_CONFIDENCE_FLOOR,
+    exclude_annotators: frozenset[str] = frozenset(),
 ) -> tuple[list[BridgeLink], CorpusStats]:
     """One round directory -> a deterministic, floored, deduplicated link list.
 
@@ -118,6 +125,15 @@ def merge_round(
     here -- an empty directory, a gold file, a malformed record -- produces a
     smaller corpus that trains successfully and reports success, which is the
     shape of a finding nobody catches for six months.
+
+    `exclude_annotators` is the withdrawal mechanism. The handbook promised
+    contributors "a right to withdraw their contribution before publication",
+    and the annotators are anonymous by request -- so there is no channel to
+    solicit an acknowledgement, and the promise has to be kept by being
+    MECHANICALLY POSSIBLE rather than by being individually confirmed. Removing
+    the file would work too, but that destroys the record of what was submitted;
+    this keeps the source intact and takes the contributor out of the derived
+    corpus, which is the artifact that gets published.
     """
     if not round_dir.is_dir():
         raise ValueError(f"{round_dir} is not a directory")
@@ -139,10 +155,31 @@ def merge_round(
 
     raw: list[BridgeLink] = []
     per_annotator: dict[str, int] = {}
+    withdrawn: dict[str, int] = {}
     for source in sources:
         links = load_bridge_links(source)
+        if source.stem in exclude_annotators:
+            withdrawn[source.stem] = len(links)
+            logger.warning(
+                "Excluding %s (%d links): withdrawn contribution.",
+                source.stem, len(links),
+            )
+            continue
         per_annotator[source.stem] = len(links)
         raw.extend(links)
+
+    if exclude_annotators and not raw:
+        raise ValueError(
+            f"Excluding {sorted(exclude_annotators)} leaves no links at all. "
+            "An empty corpus trains with no bridge supervision and reports "
+            "success; re-run Gate 1 and stop rather than shipping a null."
+        )
+    if unknown := exclude_annotators - {p.stem for p in sources}:
+        raise ValueError(
+            f"--exclude-annotator named {sorted(unknown)}, which match no file "
+            f"in {round_dir}. A withdrawal that silently excluded nobody is "
+            "worse than an error."
+        )
 
     kept_floor = [b for b in raw if b.confidence >= min_confidence]
 
@@ -190,6 +227,7 @@ def merge_round(
         n_distinct_controls=len({b.section_id for b in merged}),
         n_distinct_hubs=len({b.cre_id for b in merged}),
         per_annotator_raw=per_annotator,
+        withdrawn=withdrawn,
     )
     return merged, stats
 
@@ -256,6 +294,18 @@ def main() -> int:
     )
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument(
+        "--exclude-annotator", action="append", default=[],
+        help=(
+            "Pseudonym to remove, repeatable. The withdrawal mechanism: the "
+            "handbook promised a right to withdraw before publication, and the "
+            "annotators are anonymous by request, so the promise is kept by "
+            "being possible rather than by being individually confirmed. Note "
+            "that a TRAINED CHECKPOINT cannot be un-trained -- re-cutting the "
+            "corpus after a run means the published delta was computed on a "
+            "corpus that no longer exists, and the write-up must say so."
+        ),
+    )
+    parser.add_argument(
         "--min-confidence", type=int, default=PHASE2C_Q3_CONFIDENCE_FLOOR,
         help="Q3 floor. Applied HERE, on the training path -- it previously "
              "existed only in the gate reporter.",
@@ -266,7 +316,11 @@ def main() -> int:
     out = args.out or (
         TRAINING_DIR / f"hub_links_bridge.{args.round_label}.jsonl"
     )
-    links, stats = merge_round(args.round_dir, min_confidence=args.min_confidence)
+    links, stats = merge_round(
+        args.round_dir,
+        min_confidence=args.min_confidence,
+        exclude_annotators=frozenset(args.exclude_annotator),
+    )
     write_corpus(links, out)
     manifest = build_manifest(
         round_label=args.round_label, round_dir=args.round_dir,
@@ -285,6 +339,8 @@ def main() -> int:
                 stats.n_conflicting_controls)
     logger.info("  distinct controls / hubs: %d / %d",
                 stats.n_distinct_controls, stats.n_distinct_hubs)
+    if stats.withdrawn:
+        logger.warning("  WITHDRAWN              : %s", stats.withdrawn)
     logger.info("  sha256                 : %s", manifest["corpus_sha256"])
     logger.info("")
     logger.info("  corpus   -> %s  (gitignored: carries pseudonyms and prose)", out)
