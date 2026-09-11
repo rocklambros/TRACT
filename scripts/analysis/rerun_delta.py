@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import logging
 import math
 from pathlib import Path
@@ -60,6 +61,43 @@ class AnnotatorDelta(TypedDict):
     direction: str
 
 
+def answers_from_corpus(corpus_dir: Path, annotator: str) -> dict[str, str]:
+    """One annotator's full link/NONE decision, from the IMPORTED corpus.
+
+    The imported corpus is the durable record; an inbox CSV is transient. That
+    distinction is not theoretical -- round 1's vol-02.csv was overwritten by
+    round 2's file (identical sha256, later mtime), and the baseline survived
+    only because it had been imported.
+
+    Reconstruction is exact: the .jsonl holds every link, the sidecar's
+    `no_hub_controls` holds every NONE, and the two sum to n_reviewed. A
+    mismatch raises rather than silently reporting a partial population as a
+    whole one.
+    """
+    links = [
+        json.loads(line)
+        for line in (corpus_dir / f"{annotator}.jsonl").read_text(
+            encoding="utf-8"
+        ).splitlines()
+        if line.strip()
+    ]
+    sidecar = json.loads(
+        (corpus_dir / f"{annotator}.reviewed.json").read_text(encoding="utf-8")
+    )
+    answers = {link["section_id"]: link["cre_id"] for link in links}
+    for control in sidecar["no_hub_controls"]:
+        answers[control] = NO_HUB
+
+    expected = int(sidecar["n_reviewed"])
+    if len(answers) != expected:
+        raise ValueError(
+            f"{annotator}: reconstructed {len(answers)} decisions from the "
+            f"corpus but the sidecar records {expected} reviewed. The corpus "
+            "and its sidecar disagree, so the population is not recoverable."
+        )
+    return answers
+
+
 def _answers(path: Path) -> dict[str, str]:
     with path.open(encoding="utf-8") as handle:
         return {
@@ -83,9 +121,20 @@ def _mcnemar_exact(b: int, c: int) -> float | None:
     return float(min(1.0, 2.0 * tail))
 
 
-def compare(round1: Path, round2: Path, annotator: str) -> AnnotatorDelta:
-    """Paired comparison for one annotator."""
-    a = _answers(round1 / f"{annotator}.csv")
+def compare(
+    round1: Path, round2: Path, annotator: str, *, round1_is_corpus: bool = False
+) -> AnnotatorDelta:
+    """Paired comparison for one annotator.
+
+    `round1_is_corpus` reads the baseline from an imported corpus directory
+    rather than from a filled CSV. Prefer it: the corpus is the durable record
+    and an inbox file can be overwritten, which is exactly what happened to
+    round 1's vol-02.
+    """
+    a = (
+        answers_from_corpus(round1, annotator) if round1_is_corpus
+        else _answers(round1 / f"{annotator}.csv")
+    )
     b = _answers(round2 / f"{annotator}.csv")
     common = sorted(set(a) & set(b))
     if not common:
@@ -150,12 +199,25 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--annotator", action="append", required=True)
     parser.add_argument("--round1", type=Path, default=DEFAULT_ROUND1)
+    parser.add_argument(
+        "--round1-corpus", action="store_true",
+        help=(
+            "Read the round-1 baseline from an imported corpus directory "
+            "(<annotator>.jsonl plus sidecar) instead of a filled CSV. Prefer "
+            "this: the corpus is the durable record and an inbox CSV can be "
+            "overwritten."
+        ),
+    )
     parser.add_argument("--round2", type=Path, default=DEFAULT_ROUND2)
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-    deltas = [compare(args.round1, args.round2, a) for a in args.annotator]
+    deltas = [
+        compare(args.round1, args.round2, a,
+                round1_is_corpus=args.round1_corpus)
+        for a in args.annotator
+    ]
 
     logger.info("=" * 66)
     logger.info("ROUND 2 vs ROUND 1 -- did removing the biased sentence move answers?")

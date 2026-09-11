@@ -221,3 +221,4 @@ data/training/hub_links_bridge*.reviewed.json
 # .reviewed.json sidecar. Same reason: each record carries a named annotator
 # and their verbatim free text.
 data/training/bridge/
+data/training/bridge-r2/
