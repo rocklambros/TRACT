@@ -9,6 +9,8 @@ Implements:
 """
 from __future__ import annotations
 
+import hashlib
+
 import logging
 from typing import Any
 
@@ -102,12 +104,50 @@ def extract_similarity_matrix(
     }
 
 
+def _fold_rng(
+    fold: NDArray[np.floating[Any]], seed: int
+) -> np.random.Generator:
+    """A generator determined by the fold's CONTENTS, not by its position.
+
+    The same construction `scripts/analysis/gate_rule_candidates._stratum_rng`
+    uses, for the same reason: a fold's resamples should be a property of that
+    fold, so it draws the same numbers whether it is passed first or third and
+    whatever was drawn before it.
+
+    Two folds with byte-identical values would share a stream. In practice no
+    two folds have identical indicator arrays, and for a pooled mean the
+    coupling would be benign; keying on position instead is what this function
+    exists to avoid.
+    """
+    digest = hashlib.sha256(np.ascontiguousarray(fold).tobytes()).digest()[:16]
+    return np.random.default_rng([seed, int.from_bytes(digest, "big")])
+
+
 def _build_fold_index_matrix(
-    fold_sizes: list[int],
+    folds: list[NDArray[np.floating[Any]]],
     n_resamples: int,
-    rng: np.random.Generator,
+    seed: int,
 ) -> tuple[NDArray[np.intp], list[NDArray[np.intp]]]:
     """Pre-generate all bootstrap resampling indices in one shot.
+
+    ONE INDEPENDENT STREAM PER FOLD, keyed to that fold's contents. This used to
+    draw every fold from a single shared generator, which made fold k's
+    resamples depend on how many values folds 0..k-1 had consumed: the same data
+    with the folds listed in a different order produced different interval
+    endpoints. Premortem checkpoint 2 recorded it (item C1) with a measured
+    spread of 0.0162 in p and left it open as something that "moves every
+    published interval".
+
+    That was tolerable while the gate rule was `P(delta <= 0.10) < 0.05`
+    evaluated at 0.535 -- nowhere near its threshold. Phase 2C Gate 2's rule is
+    `ci_low > 0`: a BOUNDARY test, on a small evaluation, where 0.0162 is the
+    difference between PASS and FAIL on identical data.
+
+    The estimand is unchanged and a given seed is still fully deterministic.
+    What changes is that the particular Monte Carlo draw no longer depends on
+    the order the caller happened to list the folds in, so an interval computed
+    before this is the same quantity from a different draw, not a different
+    quantity.
 
     Returns:
         full_indices: (n_resamples, total_n) index array into concatenated fold values
@@ -115,8 +155,11 @@ def _build_fold_index_matrix(
     """
     per_fold_indices: list[NDArray[np.intp]] = []
     offset = 0
-    for fold_size in fold_sizes:
-        fold_idx = rng.integers(0, fold_size, size=(n_resamples, fold_size))
+    for fold in folds:
+        fold_size = len(fold)
+        fold_idx = _fold_rng(fold, seed).integers(
+            0, fold_size, size=(n_resamples, fold_size)
+        )
         per_fold_indices.append(fold_idx + offset)
         offset += fold_size
 
@@ -146,12 +189,12 @@ def fold_stratified_bootstrap_ci(
         if len(fv) == 0:
             raise ValueError(f"Fold {i} is empty")
 
-    rng = np.random.default_rng(seed)
     all_values = np.concatenate(fold_values)
     total_n = len(all_values)
-    fold_sizes = [len(fv) for fv in fold_values]
 
-    full_indices, _ = _build_fold_index_matrix(fold_sizes, n_resamples, rng)
+    full_indices, _ = _build_fold_index_matrix(
+        fold_values, n_resamples, seed
+    )
 
     resampled = all_values[full_indices]
     boot_means = resampled.mean(axis=1)
@@ -196,13 +239,14 @@ def paired_bootstrap_delta(
         if len(va) != len(vb):
             raise ValueError(f"Fold {i} size mismatch: {len(va)} vs {len(vb)}")
 
-    rng = np.random.default_rng(seed)
-
     fold_deltas = [vb - va for va, vb in zip(fold_values_a, fold_values_b)]
     all_deltas = np.concatenate(fold_deltas)
-    fold_sizes = [len(d) for d in fold_deltas]
 
-    full_indices, _ = _build_fold_index_matrix(fold_sizes, n_resamples, rng)
+    # Keyed on the DELTAS, so a fold's stream follows the contrast it carries
+    # rather than the order the caller listed the arms in.
+    full_indices, _ = _build_fold_index_matrix(
+        fold_deltas, n_resamples, seed
+    )
 
     resampled = all_deltas[full_indices]
     boot_delta_means = resampled.mean(axis=1)
