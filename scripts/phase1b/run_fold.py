@@ -191,6 +191,18 @@ def main() -> int:
                              "path+name+desc be measured; it never has been, "
                              "because this flag did not exist on the RunPod "
                              "path and CLAUDE.md forbids the local one.")
+    parser.add_argument(
+        "--seed", type=int, default=None,
+        help=(
+            "Training seed. Gate 2's noise-floor arm is the comparator re-run "
+            "at a different seed and nothing else, so that |A0' - A0| measures "
+            "what two identical configurations differ by. Without it a delta "
+            "has no scale: two same-arm runs in this repository differ by 19%% "
+            "per-item discordance. Give each seed its own --config-name -- seed "
+            "is deliberately NOT arm-defining, so two seeds under one name "
+            "would share an output directory and overwrite each other."
+        ),
+    )
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Temperature flattening the CRE-branch "
                              "distribution during batch ordering. 0 disables "
@@ -286,6 +298,7 @@ def main() -> int:
         **({"branch_balance_temperature": args.branch_balance}
            if args.branch_balance is not None else {}),
         **({"hub_rep_format": args.hub_rep} if args.hub_rep else {}),
+        **({"seed": args.seed} if args.seed is not None else {}),
         **(
             {"bridge_links_path": args.bridge_links}
             if args.bridge_links else {}
