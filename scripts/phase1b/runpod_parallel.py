@@ -2067,11 +2067,14 @@ def reap(confirm: bool = False) -> None:
     # four because their names were not in POD_CONFIGS. They had to be
     # terminated by hand.
     known_ids = {p["pod_id"] for p in pods if p.get("pod_id")}
-    expected_names = {
-        config["name"]
-        for split in ("test", "validation")
-        for config in select_pod_configs(None, split)
-    }
+    # ONE source of pod names, shared with reaper_guard. This expression was
+    # duplicated here, so the two could -- and did -- disagree about what
+    # exists: the single-pod Phase 2C trainer was in neither, and the guard's
+    # docstring said fixing this "belongs in runpod_parallel.py and is not this
+    # file's call to make". It is this file, and this is the call.
+    from scripts.phase1b.reaper_guard import expected_pod_names
+
+    expected_names = expected_pod_names()
     orphans = [
         p for p in get_running_pods()
         if p.get("name") in expected_names and p.get("id") not in known_ids

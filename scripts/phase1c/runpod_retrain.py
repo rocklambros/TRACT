@@ -138,6 +138,29 @@ def _save_pod_state(pod: dict[str, Any]) -> None:
     logger.info("Pod state saved to %s", POD_STATE_FILE)
 
 
+# This name must be in expected_pod_names(), which both reaper_guard and reap
+# now read. It used to be "tract-p1c-retrain", which neither swept -- the
+# families were tract-p1b-fold* and tract-p1b-val-fold* -- so a dead
+# orchestrator left it billing with no recovery path. Deliberately NOT given a
+# tract-p1b-val- prefix to sneak into the existing family: that prefix means
+# "a validation fold" and the count of them is an invariant elsewhere.
+POD_NAME: Final[str] = "tract-p2c-gate2"
+
+# A ceiling, because find_fastest_available's fallback is "largest VRAM wins",
+# which its own docstring warns "can select a part several times the rate of an
+# H100". runpod_parallel has always passed one; this module never did.
+MAX_USD_PER_HOUR: Final[float] = float(
+    os.environ.get("TRACT_RETRAIN_MAX_USD_PER_HOUR", "4.0")
+)
+
+# A wall clock. Nothing here bounded total runtime, so a hung training step
+# billed until someone noticed. At the last recorded SECURE H100 rate that is
+# about $79/day.
+MAX_RUN_HOURS: Final[float] = float(
+    os.environ.get("TRACT_RETRAIN_MAX_RUN_HOURS", "12")
+)
+
+
 def _load_pod_state() -> dict[str, Any]:
     if not POD_STATE_FILE.exists():
         raise FileNotFoundError(f"No pod state file at {POD_STATE_FILE} — run 'provision' first")
@@ -146,12 +169,17 @@ def _load_pod_state() -> dict[str, Any]:
 
 
 def provision() -> dict[str, Any]:
-    logger.info("Finding fastest available GPU (>= 48GB VRAM)...")
-    gpu_type = find_fastest_available(min_vram_gb=48)
+    logger.info(
+        "Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
+        MAX_USD_PER_HOUR,
+    )
+    gpu_type = find_fastest_available(
+        min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR
+    )
     logger.info("Selected GPU: %s", gpu_type)
 
     pod = create_pod(
-        gpu_type, name="tract-p1c-retrain",
+        gpu_type, name=POD_NAME,
         image=DOCKER_IMAGE, volume_gb=50, container_disk_gb=20,
     )
 
@@ -258,15 +286,47 @@ def teardown() -> None:
 
 
 def full_pipeline(round_num: int) -> None:
+    """Provision, train, collect, and ALWAYS tear down.
+
+    The teardown used to be the last statement of a bare sequence, so any raise
+    between provision and it orphaned a billing pod -- and `_ssh` in this module
+    has no retry ladder, so one transient SSH error was enough. The reaper could
+    not recover it either: the pod name sat outside the swept family, and a live
+    retrain did not register as an orchestrator, so the guard read the fleet as
+    empty and disarmed after three quiet checks while the pod trained.
+
+    `finally` rather than `except Exception`, deliberately. KeyboardInterrupt
+    derives from BaseException, and Ctrl-C at 2am is the most likely way this is
+    interrupted -- the case where an operator is watching and would most expect
+    the pod to go away.
+    """
     logger.info("=" * 60)
     logger.info("PHASE 1C RETRAIN ROUND %d (RunPod)", round_num)
+    logger.info("  price ceiling  : $%.2f/hr", MAX_USD_PER_HOUR)
+    logger.info("  wall clock     : %.1f h", MAX_RUN_HOURS)
     logger.info("=" * 60)
     start = time.time()
+    deadline = start + MAX_RUN_HOURS * 3600
+    results_are_safe = False
 
-    provision()
-    run_retrain(round_num)
-    collect(round_num)
-    teardown()
+    try:
+        provision()
+        run_retrain(round_num)
+        if time.time() > deadline:
+            raise TimeoutError(
+                f"Retrain exceeded its {MAX_RUN_HOURS}h wall clock. Tearing "
+                "down rather than billing on."
+            )
+        collect(round_num)
+        results_are_safe = True
+    finally:
+        if not results_are_safe:
+            logger.error(
+                "Pipeline did not reach a safe state. Tearing the pod down "
+                "anyway -- an un-collected result is lost either way, and a "
+                "pod nobody is watching is not."
+            )
+        teardown()
 
     elapsed = time.time() - start
     logger.info("Total pipeline time: %.1fm", elapsed / 60)
