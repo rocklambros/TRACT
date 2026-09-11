@@ -131,3 +131,46 @@ class TestCollectFailureIsNotSilent:
         assert "results_are_safe" in source or "raise" in source, (
             "a collect failure must be visible before the pod is destroyed"
         )
+
+
+class TestEveryDriverIsRecognised:
+    """A driver the guard cannot name gets its own pod reaped mid-run.
+
+    The decision branch reaps when NO orchestrator is alive and pods ARE
+    running. `tract-p2c-gate2` is in expected_pod_names(), so
+    running_pod_count() sees it -- which means a runner missing from the
+    orchestrator set produces exactly the reap condition, and the guard
+    destroys the work it exists to bound. The failure is silent and it is
+    destructive in both directions: omit an entry and a live run dies, make it
+    over-broad and the guard stands down forever.
+    """
+
+    @pytest.mark.parametrize("module", [
+        "scripts.phase1b.runpod_parallel",
+        "scripts.phase1c.runpod_retrain",
+        "scripts.phase2c.run_gate2",
+    ])
+    def test_each_driver_registers(self, module: str) -> None:
+        from scripts.phase1b.reaper_guard import _is_orchestrator_argv
+
+        assert _is_orchestrator_argv(["python3", "-m", module, "full"])
+
+    @pytest.mark.parametrize("argv", [
+        ["vim", "scripts/phase2c/run_gate2.py"],
+        ["python3", "-m", "pytest"],
+        ["python3", "-c", "import scripts.phase2c.run_gate2"],
+        ["grep", "-r", "runpod_parallel", "."],
+    ])
+    def test_merely_mentioning_a_driver_does_not_register(
+        self, argv: list[str]
+    ) -> None:
+        from scripts.phase1b.reaper_guard import _is_orchestrator_argv
+
+        assert not _is_orchestrator_argv(argv)
+
+    def test_every_driver_module_has_a_swept_pod_name(self) -> None:
+        """A driver whose pod is unswept has no recovery path when it dies."""
+        from scripts.phase1b.reaper_guard import expected_pod_names
+        from scripts.phase1c.runpod_retrain import POD_NAME
+
+        assert POD_NAME in expected_pod_names()

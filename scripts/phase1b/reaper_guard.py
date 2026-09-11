@@ -146,6 +146,25 @@ ORCHESTRATOR_SCRIPT: Final[str] = "runpod_parallel.py"
 RETRAIN_MODULE: Final[str] = "scripts.phase1c.runpod_retrain"
 RETRAIN_SCRIPT: Final[str] = "runpod_retrain.py"
 
+# Phase 2C Gate 2's runner. Adding it is not optional politeness: the branch
+# below reaps when NO orchestrator is alive and pods ARE running, so a driver
+# this set does not name has its own pod terminated mid-run -- the guard
+# destroying the work it exists to bound. tract-p2c-gate2 is in
+# expected_pod_names(), so running_pod_count() sees the pod; without the module
+# here, pids would be empty and that is exactly the reap condition.
+GATE2_MODULE: Final[str] = "scripts.phase2c.run_gate2"
+GATE2_SCRIPT: Final[str] = "run_gate2.py"
+
+# Every argv shape that means "a driver is alive". One set, because the failure
+# mode of forgetting an entry is silent and destructive in both directions:
+# omitted, the guard reaps a live run; over-broad, it stands down forever.
+ORCHESTRATOR_MODULES: Final[frozenset[str]] = frozenset({
+    ORCHESTRATOR_MODULE, RETRAIN_MODULE, GATE2_MODULE,
+})
+ORCHESTRATOR_SCRIPTS: Final[frozenset[str]] = frozenset({
+    ORCHESTRATOR_SCRIPT, RETRAIN_SCRIPT, GATE2_SCRIPT,
+})
+
 # python3, python3.12, python3.13t (free-threaded). Matched on the BASENAME of
 # argv[0], so an absolute interpreter path from `command -v python3` or
 # sys.executable resolves the same as a bare word.
@@ -293,12 +312,10 @@ def _is_orchestrator_argv(argv: list[str]) -> bool:
         return False
     target = _python_target(argv)
     if target.kind == "module":
-        if target.name not in (ORCHESTRATOR_MODULE, RETRAIN_MODULE):
+        if target.name not in ORCHESTRATOR_MODULES:
             return False
     elif target.kind == "script":
-        if Path(target.name).name not in (
-            ORCHESTRATOR_SCRIPT, RETRAIN_SCRIPT
-        ):
+        if Path(target.name).name not in ORCHESTRATOR_SCRIPTS:
             return False
     else:
         # A REPL or a `-c` one-liner is not the pipeline.

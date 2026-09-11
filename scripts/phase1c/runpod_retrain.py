@@ -127,7 +127,16 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
 
 
 def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
-    cmd = f"rsync -rltz -e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
+    # --safe-links drops any symlink pointing outside the transfer. Without it a
+    # compromised pod can ship `x -> ~/.ssh` and a later pass writes through it,
+    # which turns retrieving results into an arbitrary write on the operator's
+    # machine. runpod_parallel's pull has carried this since the hardening pass;
+    # this one did not, and it is the direction that reads from a rented host.
+    # -l is kept because the tree may hold internal links.
+    cmd = (
+        f"rsync -rltz --safe-links "
+        f"-e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
+    )
     logger.info("[rsync from] %s:%d %s", ip, port, remote_path)
     subprocess.run(cmd, shell=True, check=True, timeout=600)
 
