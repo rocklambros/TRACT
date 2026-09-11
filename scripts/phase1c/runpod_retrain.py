@@ -76,6 +76,11 @@ def _get_pod_env() -> dict[str, str]:
             env[var] = _get_credential(cred)
         except Exception as e:
             logger.warning("Could not get %s: %s", cred, e)
+    # Temporaries onto the VOLUME, not the container disk. The default /tmp is
+    # on the container overlay, which a multi-arm sequence exhausts -- and
+    # RunPod surfaces that as EIO, not ENOSPC, so it reads like a disk fault
+    # mid-training rather than a capacity problem between arms.
+    env["TMPDIR"] = POD_TMPDIR
     return env
 
 
@@ -155,12 +160,23 @@ def _save_pod_state(pod: dict[str, Any]) -> None:
 # "a validation fold" and the count of them is an invariant elsewhere.
 POD_NAME: Final[str] = "tract-p2c-gate2"
 
+# On the 50GB volume rather than the container disk. See CONTAINER_DISK_GB.
+POD_TMPDIR: Final[str] = "/workspace/tmp"
+
 # A ceiling, because find_fastest_available's fallback is "largest VRAM wins",
 # which its own docstring warns "can select a part several times the rate of an
 # H100". runpod_parallel has always passed one; this module never did.
 MAX_USD_PER_HOUR: Final[float] = float(
     os.environ.get("TRACT_RETRAIN_MAX_USD_PER_HOUR", "4.0")
 )
+
+# The container disk, which is NOT the 50GB volume. /tmp lives here, and a
+# multi-arm sequence fills it: HuggingFace, datasets and torch all stage
+# temporaries there, and nothing cleans up between arms. RunPod's overlay
+# reports exhaustion as EIO rather than ENOSPC, so the symptom is
+# "OSError: [Errno 5] Input/output error: '/tmp/tmpb09e0afm'" at 95% of a
+# 50-minute training run, which reads like a hardware fault and is not one.
+CONTAINER_DISK_GB: Final[int] = 60
 
 # A wall clock. Nothing here bounded total runtime, so a hung training step
 # billed until someone noticed. At the last recorded SECURE H100 rate that is
@@ -189,7 +205,8 @@ def provision() -> dict[str, Any]:
 
     pod = create_pod(
         gpu_type, name=POD_NAME,
-        image=DOCKER_IMAGE, volume_gb=50, container_disk_gb=20,
+        image=DOCKER_IMAGE, volume_gb=50,
+        container_disk_gb=CONTAINER_DISK_GB,
     )
 
     _save_pod_state(pod)
@@ -203,6 +220,7 @@ def _bootstrap(pod: dict[str, Any]) -> None:
 
     _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1", check=False)
 
+    _ssh(ip, port, f"mkdir -p {POD_TMPDIR}")
     _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
 
     _ssh(ip, port, (

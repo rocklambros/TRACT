@@ -44,6 +44,7 @@ from typing import Any, Final
 from scripts.phase1c.runpod_retrain import (
     MAX_RUN_HOURS,
     MAX_USD_PER_HOUR,
+    POD_TMPDIR,
     _bootstrap,
     _get_pod_env,
     _load_pod_state,
@@ -226,6 +227,20 @@ def run_arm(arm: Arm) -> None:
             "next arm, which would overwrite the pod-side directory."
         )
     logger.info("Arm %s collected to %s", arm.name, local)
+
+    # Reclaim the pod's disk now that this arm is safely local. Four arms in
+    # sequence exhausted the container disk on the first attempt -- A1 died at
+    # 95% of a 50-minute run with EIO on /tmp -- and the intermediate
+    # checkpoints are the bulk of it. Only fold_result.json, predictions.json
+    # and metrics.json are needed after collection, and all three are already
+    # on this machine.
+    _ssh(ip, port, (
+        f"rm -rf /workspace/tract/results/phase1b/{arm.config_name}/fold_*/checkpoint-* "
+        f"/workspace/tract/results/phase1b/{arm.config_name}/fold_*/model "
+        f"&& rm -rf {POD_TMPDIR}/* || true"
+    ), check=False)
+    logger.info("Arm %s: pod-side checkpoints and temporaries cleared",
+                arm.name)
 
 
 def full_pipeline(round_label: str) -> None:
