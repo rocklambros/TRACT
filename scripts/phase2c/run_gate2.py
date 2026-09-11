@@ -39,7 +39,7 @@ import logging
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from scripts.phase1c.runpod_retrain import (
     MAX_RUN_HOURS,
@@ -98,12 +98,29 @@ def gate2_arms(round_label: str = "r2") -> list[Arm]:
 
 
 def _remote_command(arm: Arm) -> str:
+    """The remote invocation, with two things the first run got wrong.
+
+    `mkdir -p results/phase1b` because POD_RSYNC_EXCLUDES excludes `results`
+    wholesale -- correctly, since it holds the Tier-3 quarantined export and the
+    ceiling study's LLM-written descriptions, and nothing on a pod reads any of
+    it. But that means /workspace/tract/results does not exist, so `tee` failed
+    to open its log the instant the arm started. The first Gate 2 attempt
+    trained for 44 minutes and then died on that, having evaluated nothing.
+
+    `set -o pipefail` because without it a pipeline returns the exit code of
+    `tee`, not of python. The first attempt failed loudly only because tee was
+    the thing that broke; the reverse -- training dies, tee writes an empty log
+    and exits 0 -- would have reported SUCCESS and collected nothing, which is
+    the far more expensive direction.
+    """
     bridge = (
         f"--bridge-links {arm.bridge_corpus.relative_to(PROJECT_ROOT)} "
         if arm.bridge_corpus else ""
     )
     return (
+        "set -o pipefail && "
         "cd /workspace/tract && "
+        f"mkdir -p results/phase1b && "
         "python -m scripts.phase1b.run_fold "
         "--split gate2 --framework ALL "
         f"--config-name {arm.config_name} "
@@ -145,6 +162,37 @@ def preflight(arms: list[Arm]) -> None:
         "Preflight OK: %d arms, eval=%s",
         len(arms), sorted(PHASE2C_GATE2_EVAL_FRAMEWORKS),
     )
+
+
+def remote_preflight(pod: dict[str, Any], arms: list[Arm]) -> None:
+    """Prove the pod can run an arm before spending 45 minutes finding out.
+
+    The first Gate 2 attempt trained for 44 minutes and died writing its log,
+    because `results/` is excluded from the rsync and so the directory did not
+    exist. Every check here costs about ten seconds and would have caught it:
+    the point is that an arm's FIRST failure should be cheap, and a training
+    step is the most expensive place to discover a missing directory.
+    """
+    ip, port = str(pod["ip"]), int(pod["port"])
+    corpora = " ".join(
+        str(arm.bridge_corpus.relative_to(PROJECT_ROOT))
+        for arm in arms if arm.bridge_corpus is not None
+    )
+    _ssh(ip, port, (
+        "set -o pipefail && cd /workspace/tract && "
+        # The directory the rsync deliberately does not ship.
+        "mkdir -p results/phase1b && test -d results/phase1b && "
+        # The corpora each treatment arm reads. load_bridge_links raises on a
+        # missing file, which on a pod means a dead arm and a billing GPU.
+        f"for f in {corpora}; do test -s \"$f\" || "
+        "{ echo \"MISSING CORPUS: $f\"; exit 1; }; done && "
+        # The module imports, so a syntax or import error is not discovered
+        # after the model is loaded.
+        "python -c 'import scripts.phase1b.run_fold' && "
+        "echo REMOTE_PREFLIGHT_OK"
+    ), timeout=300)
+    logger.info("Remote preflight OK: results dir, %d corpora, imports clean",
+                len([a for a in arms if a.bridge_corpus]))
 
 
 def run_arm(arm: Arm) -> None:
@@ -197,7 +245,12 @@ def full_pipeline(round_label: str) -> None:
     completed: list[str] = []
     try:
         provision()
-        _bootstrap(_load_pod_state())
+        pod = _load_pod_state()
+        _bootstrap(pod)
+        # Belt as well as braces: every arm's command creates this too, but a
+        # directory the rsync deliberately does not ship should exist before
+        # anything tries to write into it.
+        remote_preflight(pod, arms)
         for arm in arms:
             if time.time() > deadline:
                 raise TimeoutError(
