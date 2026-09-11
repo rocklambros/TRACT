@@ -654,6 +654,59 @@ PHASE2C_Q4_MIN_DOUBLE_ANNOTATED: Final[float] = 0.15
 # Pointing the gate at the parent made it try to load gold as bridge corpora.
 BRIDGE_CORPUS_DIR: Final[Path] = TRAINING_DIR / "bridge"
 
+# Round 2: the same 300 controls re-annotated by the same two people after
+# docs/phase2c-results.md identified a sentence in the round-1 handbook that
+# stated the answer distribution before the annotator had read anything. A
+# strict superset of round 1 -- 106 NONE->link, 0 reversals, 0 hub changes.
+# Amendment 1 makes this the corpus of record; there was no constant for it at
+# all while the draft plan named it as an arm.
+BRIDGE_CORPUS_DIR_R2: Final[Path] = TRAINING_DIR / "bridge-r2"
+
+# ── Phase 2C Gate 2 ───────────────────────────────────────────────────────
+# docs/phase2c-preregistration.md Amendment 1, verbatim. Gate 1 has held its
+# thresholds here since checkpoint 2; Gate 2 held none of them anywhere, so the
+# eval set, the threshold and the arm roster existed only as prose in a file
+# that was untracked when the premortem opened. A test asserts each of these
+# appears in the pre-registration, so the gate and the document cannot drift.
+
+# The comparison is arm-vs-arm at zero, NOT trained-vs-zero-shot at 0.10.
+# gate_decision() implements the latter and emits it under the key "gate";
+# quoting that field as Gate 2 is the single most likely way to report a verdict
+# nobody computed. PHASE2C_GATE2_THRESHOLD exists so the two cannot be confused.
+PHASE2C_GATE2_THRESHOLD: Final[float] = 0.0
+
+# ENISA + BIML + ETSI. The pre-registration's original ENISA+BIML pair gave 50
+# items of which the corpus could reach 18, all ENISA -- BIML's 17 items had
+# zero exposure at the counting floor and could only contribute noise. ETSI
+# raises exposure to 27 of 74 AND spans the exposed stratum across two
+# frameworks. Admitted only with the predictions.json redaction (ETSI is in
+# RESTRICTED_FRAMEWORK_IDS and results/phase1b/**/*.json is tracked).
+PHASE2C_GATE2_EVAL_FRAMEWORKS: Final[frozenset[str]] = frozenset(
+    {"ENISA", "BIML", "ETSI"}
+)
+
+# Held out together, not one at a time. run_single_fold took a singular
+# `held_out_framework: str`, and `--split validation --framework ENISA` runs
+# today, holds out ENISA alone, leaves the other seven AI frameworks in
+# training, and writes a record indistinguishable from a firewalled one -- with
+# 52 of 56 scored hubs still supervised.
+#
+# These are `standard_name` values as they appear in hub_links_curated.jsonl,
+# NOT the framework ids in BRIDGE_AI_FRAMEWORK_IDS. The two vocabularies differ
+# and the exclusion matches on standard_name, so a plausible-looking wrong name
+# ("OWASP LLM Top 10" for "OWASP Top10 for LLM") excludes nothing and trains on
+# the framework it claims to hold out. tests/test_gate2_constants.py asserts
+# every name below resolves against the real corpus.
+PHASE2C_GATE2_HELD_OUT: Final[frozenset[str]] = frozenset(
+    {"ENISA", "BIML", "ETSI", "MITRE ATLAS", "NIST AI 100-2",
+     "OWASP AI Exchange", "OWASP Top10 for LLM", "OWASP Top10 for ML"}
+)
+
+# Two bridge-bearing configurations are compared against the comparator
+# (primary A1 vs A0, secondary A1 vs A0R). A0' is the noise floor, not a
+# hypothesis test, and does not enter the family.
+PHASE2C_GATE2_N_CONFIGURATIONS: Final[int] = 2
+
 # Stamped into the `link_type` of every Phase 2C bridge link so that
 # assign_quality_tier returns T2 rather than falling through to T1. Held here
 # rather than in tract/bridge/ so tract/training/data_quality.py can read it

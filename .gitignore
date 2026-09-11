@@ -19,6 +19,21 @@ results/*
 !results/analysis/
 results/analysis/*
 !results/analysis/*.json
+# Phase 2C's verdicts. `results/*` excluded these, so the two Gate 1 reports
+# that the Gate 2 plan calls "already decided and not reopened" were untracked
+# on one machine, alongside the corpus manifest that is the only public referent
+# for the `bridge_links_sha256` a fold record carries. A digest whose content
+# nobody else can obtain is not provenance, and a gate verdict that exists only
+# in stdout cannot be diffed against the run that supersedes it.
+#
+# JSON and Markdown only, for the same reason results/phase1b/ is allowlisted:
+# the annotator corpora themselves stay out (they carry pseudonyms and verbatim
+# rationales, see data/training/bridge* below), and any binary an analysis
+# script grows into later defaults to excluded.
+!results/phase2c/
+results/phase2c/*
+!results/phase2c/*.json
+!results/phase2c/*.md
 # The LLM pre-pass is a proxy, not a ceiling. The runbook is explicit that "a
 # proxy labelled as a ceiling is the same category of error as the withdrawn
 # accuracy figure", and four files with LLM_PROXY in the name sitting beside the
