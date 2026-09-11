@@ -120,7 +120,14 @@ class TestNoDriftFromTheDocuments:
             "A0R",
             "noise-floor arm A0",
             "NO VERDICT",
-            "withdrawal window",
+            # The withdrawal right, as it actually stands. An earlier draft
+            # required both annotators to acknowledge a closing window in
+            # writing; that was withdrawn because they are anonymous by their
+            # own request and soliciting an acknowledgement needs the named
+            # person anonymity removes. The promise is kept mechanically
+            # instead, and the part that CANNOT be kept is recorded.
+            "--exclude-annotator",
+            "A trained checkpoint cannot",
         ],
     )
     def test_preregistration_records_the_amendment(self, needle: str) -> None:
