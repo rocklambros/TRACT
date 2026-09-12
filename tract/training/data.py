@@ -23,6 +23,7 @@ from tract.config import TIER_PRIORITY
 from tract.hierarchy import CREHierarchy
 from tract.text_selection import ProseIndex, SelectionStats, select_control_text
 from tract.training.data_quality import TieredLink
+from tract.training.firewall import excluded_framework_set
 from tract.training.st_compat import resolve_symbol
 
 logger = logging.getLogger(__name__)
@@ -78,29 +79,6 @@ def mine_hard_negatives(
             seen.add(neg_id)
             deduped.append(neg_id)
     return deduped[:n]
-
-
-def excluded_framework_set(
-    excluded: str | Collection[str] | None,
-) -> frozenset[str]:
-    """Normalise a held-out framework name, or a set of them, into a set.
-
-    The exclusion used to be `standard_name == excluded_framework`, which is
-    correct for one name and SILENTLY WRONG for a set: `"ENISA" == {"ENISA"}`
-    is False, so a caller holding out the whole AI region would have excluded
-    nothing, trained on every framework it claimed to firewall, scored around
-    0.9, and produced a fold record indistinguishable from an honest one.
-
-    Widening the type and normalising here means both forms are correct at the
-    one place the comparison happens. An empty string keeps its old meaning --
-    absent, not a framework named "" -- because the previous guard was
-    `if excluded_framework and ...`.
-    """
-    if not excluded:
-        return frozenset()
-    if isinstance(excluded, str):
-        return frozenset({excluded})
-    return frozenset(excluded)
 
 
 def build_training_pairs(

@@ -24,13 +24,31 @@ class HasControlText(Protocol):
 def excluded_framework_set(
     excluded: str | Collection[str] | None,
 ) -> frozenset[str]:
-    """Re-exported from tract.training.data so this module has no import cycle.
+    """Normalise a held-out framework name, or a set of them, into a set.
 
-    See the definition there for why equality was replaced by set membership.
+    The exclusion used to be `standard_name == excluded_framework`, which is
+    correct for one name and SILENTLY WRONG for a set: `"ENISA" == {"ENISA"}`
+    is False, so a caller holding out the whole AI region would have excluded
+    nothing, trained on every framework it claimed to firewall, scored around
+    0.9, and produced a fold record indistinguishable from an honest one.
+
+    DEFINED HERE, not imported from tract.training.data, and that is not a
+    style choice. This module is deliberately torch-free -- tests/test_firewall.py
+    and tests/test_standards_format_bridge_exposure.py run on CI's lite runner,
+    which has no phase0 extra. A previous version of this function delegated to
+    tract.training.data, which imports torch, so calling `assert_firewall`
+    raised ModuleNotFoundError on CI for seven tests that had never needed
+    torch. `tract.training.data` imports this instead; the dependency runs one
+    way only.
+
+    An empty string keeps its old meaning -- absent, not a framework named ""
+    -- because the previous guard was `if excluded_framework and ...`.
     """
-    from tract.training.data import excluded_framework_set as _impl
-
-    return _impl(excluded)
+    if not excluded:
+        return frozenset()
+    if isinstance(excluded, str):
+        return frozenset({excluded})
+    return frozenset(excluded)
 
 
 def assert_exclusion_fired(

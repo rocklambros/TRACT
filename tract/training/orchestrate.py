@@ -44,7 +44,6 @@ from tract.io import atomic_write_json, load_json
 from tract.training.config import TrainingConfig
 from tract.training.data import (
     build_training_pairs,
-    excluded_framework_set,
     pairs_to_dataset,
 )
 from tract.training.data_quality import (
@@ -74,6 +73,7 @@ from tract.training.firewall import (
     assert_exclusion_fired,
     assert_firewall,
     build_all_hub_texts,
+    excluded_framework_set,
 )
 from tract.training.loop import save_checkpoint, train_model
 from tract.training.data_quality import TieredLink
