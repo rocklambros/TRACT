@@ -184,7 +184,20 @@ claude-mem records observations as you work. These are valuable for continuity:
     descriptions are LLM-written from the gold links and would make the round
     Tier 3. Annotators are told not to read this repository at all; it publicly
     tracks that file, the curated gold links, and both Tier-3 exports.
-- **Phase 2C (traditional → AI bridge curation):** TOOLING BUILT, ROUND NOT RUN.
+- **Phase 2C (traditional → AI bridge curation):** ROUND RUN, GATE 1 PASSED
+  TWICE, **GATE 2 RETURNED NO VERDICT (2026-09-11)**. Read
+  `docs/phase2c-primer.md` first — it is the cold-pickup doc and it names the
+  traps. Gate 2's noise floor (two arms differing only in seed) moved the
+  statistic further than the treatment did, 0.1064 vs 0.1009, so the instrument
+  could not resolve the effect. That is a claim about the measurement, not the
+  corpus. Do not quote the primary DiD, the pooled delta or the secondary as a
+  result about the bridge links. `docs/phase2c-gate2-results.md` is the
+  write-up; next work is a multi-seed re-run (3–5 seeds, ~$37 at the measured
+  $2.45/arm), NOT a third annotation round.
+  **`gate_decision()` is not Gate 2** — it is trained-vs-zero-shot at 0.10, and
+  its output sits in `aggregate_metrics.json` under the key `gate` where a
+  reader looks for a verdict. Use `scripts/analysis/gate2_delta.py`.
+  Historic note, still true of the tooling:
   Binding pre-registration: `docs/phase2c-preregistration.md`. The AI and
   traditional hub regions are disjoint — 78 AI hubs, all 78 orphaned under the
   strict firewall — so the PRD's bridging capability has no supervision behind
