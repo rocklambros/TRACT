@@ -1,0 +1,25 @@
+{
+  "ci_high": 0.26004728132387706,
+  "ci_low": -0.0425531914893617,
+  "comparator": "results/phase1b/gate2_A0",
+  "comparator_bridge_sha256": null,
+  "delta_exposed": 0.037037037037037035,
+  "delta_unexposed": -0.06382978723404255,
+  "did": 0.10086682427107958,
+  "label": "A1 vs A0 (PRIMARY)",
+  "n_configurations": 2,
+  "n_exposed": 27,
+  "n_resamples": 10000,
+  "n_unexposed": 47,
+  "p_did_le_threshold": 0.0976,
+  "per_framework": {
+    "BIML": -0.058823529411764705,
+    "ENISA": -0.030303030303030304,
+    "ETSI": 0.0
+  },
+  "pooled_delta": -0.02702702702702703,
+  "threshold": 0.0,
+  "treatment": "results/phase1b/gate2_A1",
+  "treatment_bridge_sha256": "9754b451b5b8ef3b8cd0f0a1a6839286c7c2e31c67ebbc0c8c3f3aedb6598bd7",
+  "verdict": "FAIL"
+}

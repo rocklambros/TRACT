@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import logging
 from dataclasses import asdict
@@ -340,7 +341,12 @@ def import_bridge_links(
             "annotator_id": annotator_id,
             "created_at": created_at,
             "framework_id": framework_id,
-            "source": str(source),
+            # A DIGEST, not the path. The path recorded the operator's home
+            # directory and the sheet's filename, and a filename is a place an
+            # annotator's identity ends up by accident. A sha256 is also the
+            # stronger lineage record: it ties this corpus to the exact bytes
+            # received, which a filename never did.
+            "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "n_reviewed": len(reviewed),
             "n_linked": len(accepted),
             "n_no_hub": len(no_hub),

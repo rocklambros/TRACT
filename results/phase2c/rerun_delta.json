@@ -1,0 +1,31 @@
+{
+  "annotators": [
+    {
+      "annotator": "vol-01",
+      "direction": "toward linking (the direction removing the sentence predicts)",
+      "hub_changed": 0,
+      "link_to_none": 0,
+      "mcnemar_p": 4.1359030627651384e-25,
+      "n_common": 300,
+      "none_to_link": 82,
+      "r1_linked": 40,
+      "r2_linked": 122,
+      "unchanged": 218
+    },
+    {
+      "annotator": "vol-02",
+      "direction": "toward linking (the direction removing the sentence predicts)",
+      "hub_changed": 0,
+      "link_to_none": 0,
+      "mcnemar_p": 1.1920928955078125e-07,
+      "n_common": 300,
+      "none_to_link": 24,
+      "r1_linked": 46,
+      "r2_linked": 70,
+      "unchanged": 276
+    }
+  ],
+  "pooled_link_to_none": 0,
+  "pooled_mcnemar_p": 2.465190328815662e-32,
+  "pooled_none_to_link": 106
+}

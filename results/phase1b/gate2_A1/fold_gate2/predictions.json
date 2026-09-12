@@ -1,0 +1,1384 @@
+[
+  {
+    "control_text": "Define dashboards of key indicators integrating security indicators (peaks of change in model behavior etc.) to follow-up the proper functioning of the model regarding the business case, in particular to allow rapid identification of anomalies.",
+    "control_text_redacted": false,
+    "control_text_sha256": "b838579797d7f3510a34acaecd98609cecd9d4a0d1683ac90081bf2eec22b0d8",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "547-824",
+    "predicted_top10": [
+      "058-083",
+      "745-356",
+      "464-513",
+      "307-242",
+      "547-824",
+      "217-168",
+      "703-813",
+      "205-522",
+      "068-102",
+      "842-876"
+    ]
+  },
+  {
+    "control_text": "ML is a rapidly evolving field, especially regarding its cybersecurity. Regular checking of new attacks and defenses must be integrated into the processes for maintaining security level applications. The security level should thus be regularly assessed too.",
+    "control_text_redacted": false,
+    "control_text_sha256": "96550d0b7d22edf7ea31a63d2200167d2caaf895bde923c627d2fea0c457765b",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "547-824",
+    "predicted_top10": [
+      "307-242",
+      "464-513",
+      "803-457",
+      "077-235",
+      "745-356",
+      "205-522",
+      "635-851",
+      "364-516",
+      "613-286",
+      "481-710"
+    ]
+  },
+  {
+    "control_text": "The introduction of bias in ML algorithms will not be detailed because it is not the topic of the publication. However, some techniques can be used to mitigate bias: verify the training dataset is representative enough regarding the business case, check the relevance of the attributes used to make decisions etc.",
+    "control_text_redacted": false,
+    "control_text_sha256": "a76986a1fae965e5c8f7eb0e16e6ab43fa1f25e444efe45c08ceddf8f0350ff4",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "547-824",
+    "predicted_top10": [
+      "788-323",
+      "467-215",
+      "077-235",
+      "034-540",
+      "532-102",
+      "686-110",
+      "010-108",
+      "012-625",
+      "854-183",
+      "567-025"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "e39a008e794f6b22905599f07019af9263690f7f2ba1d09bf86d76120a4c70b5",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "187-083",
+    "predicted_top10": [
+      "077-235",
+      "663-550",
+      "034-540",
+      "182-732",
+      "342-781",
+      "141-385",
+      "474-203",
+      "630-573",
+      "788-323",
+      "268-088"
+    ]
+  },
+  {
+    "control_text": "As all applications, those using ML must comply with defined policies regarding identity management (e.g. ensure all users are integrated in the departure process), authentication (e.g. passwords complexity, use of Multi-Factors Authentication (MFA), access restriction) and access control (e.g. RBAC model, connection context). Underlying security requirements must be applied to all ML application components (e.g. model configuration, host infrastructures, training data).",
+    "control_text_redacted": false,
+    "control_text_sha256": "75787498192589bd1ce44b06932f6c685aa756f39ae2d20e4857a6bf668eca21",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "715-644",
+    "predicted_top10": [
+      "636-660",
+      "724-770",
+      "686-110",
+      "012-625",
+      "004-517",
+      "847-247",
+      "708-355",
+      "866-553",
+      "854-643",
+      "220-442"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "57df76eda143cc02c108c580126f7d44b96b229a5d617484833e4a49406b2b89",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "467-215",
+      "370-877",
+      "713-683",
+      "743-110",
+      "408-838",
+      "227-045",
+      "663-550",
+      "637-021",
+      "832-555",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "Input-based detection tools can be of interest to identify whether a given input has been modified by an attacker or not. One example, in the case of Deep Neural Networks (DNNs), is to add a neural subnetwork to an architecture trained to detect adversarial examples.",
+    "control_text_redacted": false,
+    "control_text_sha256": "1bf46c1cc05be26beaf89e55fbbc086524d77ec6237556a3e7cb36f36c308e00",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "342-641",
+    "predicted_top10": [
+      "307-507",
+      "467-215",
+      "663-550",
+      "426-842",
+      "567-025",
+      "483-883",
+      "456-636",
+      "637-021",
+      "370-877",
+      "077-235"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "4c968e0f6d1bd78cbbbf7793853e3d78ad8e261896deb0d0f1309b33c1c98789",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "520-617",
+      "581-525",
+      "543-621",
+      "772-358",
+      "641-760",
+      "463-577",
+      "764-765",
+      "270-634",
+      "342-641",
+      "106-447"
+    ]
+  },
+  {
+    "control_text": "Adding a step to modify the model's inputs (e.g. data randomisation which consists in adding random noise to each piece of data), can improve the robustness of the model to attacks. Such steps can make it more difficult for an attacker to understand the functioning of the algorithm and thus to manipulate it and reduce the impacts of an attack. This security control can be applied during training or model deployment stages.",
+    "control_text_redacted": false,
+    "control_text_sha256": "c50c2dcac074e63eb62b6baecfd5b46448a399c8884f7b8c11db8ac9a179e2d8",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "761-417",
+    "predicted_top10": [
+      "664-571",
+      "567-025",
+      "542-488",
+      "542-270",
+      "027-210",
+      "206-254",
+      "467-215",
+      "727-043",
+      "036-275",
+      "622-835"
+    ]
+  },
+  {
+    "control_text": "Controlling the information (like its verbosity) provided by the model by applying basic cybersecurity hygiene rules is a way of limiting the techniques that an attacker can use to build adversarial examples. One of the basic rules of hygiene, for example, is to reduce the information of the output determined by the model to the maximum, or by profile making the request. For example: considering a classification application, it would consist of communicating only the predicted class to the users of solution, not the associated probability. However, it remains notable that in many cases, research has shown that minimal information is sufficient to mount attacks.",
+    "control_text_redacted": false,
+    "control_text_sha256": "048d778cf2272c2b569de48bab84cbd67a0649de62241f70570ef4ca92f6de16",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "204-272",
+    "predicted_top10": [
+      "713-683",
+      "308-515",
+      "227-045",
+      "743-110",
+      "663-550",
+      "208-805",
+      "044-202",
+      "067-050",
+      "615-744",
+      "612-252"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "76eed0eb6fef1894277c68843ce9401b4e913a5b7a3f12cdee90fd414629c070",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "010-108",
+    "predicted_top10": [
+      "034-540",
+      "011-087",
+      "077-235",
+      "010-108",
+      "713-683",
+      "663-550",
+      "044-202",
+      "346-640",
+      "467-215",
+      "370-877"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "9943c33a024c9949f120204f8419de7a417a9d2270941704c6a08b10d5d0d0d0",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "146-871",
+    "predicted_top10": [
+      "146-871",
+      "807-565",
+      "715-681",
+      "158-874",
+      "082-530",
+      "027-555",
+      "103-707",
+      "076-470",
+      "240-464",
+      "604-025"
+    ]
+  },
+  {
+    "control_text": "Some model designs can be more robust than others against attacks. For instance, ensemble methods like bagging can mitigate the impact of poisoning (during the training phase). Another example is defensive distillation, which may allow deep neural networks to better deal with evasion attacks.",
+    "control_text_redacted": false,
+    "control_text_sha256": "2e1347319f2f0b139aa98246d9e2264013b42db119bfbfdb1fbffcff3f0a37a3",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "146-871",
+    "predicted_top10": [
+      "788-323",
+      "077-235",
+      "467-215",
+      "433-442",
+      "146-871",
+      "803-457",
+      "068-102",
+      "601-182",
+      "547-824",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "ML is a field in which the use of open-source elements is widespread (e.g., data for training, including labeled ones, models). The trust level of the different sources used should be assessed to prevent using compromise ones. For example: the project wants to use labeled images from a public library. Are the contributors sufficiently trusted to have confidence in the contained images or the quality of their labelling?",
+    "control_text_redacted": false,
+    "control_text_sha256": "67f7185730b10022c4441f33e9ceb464384fc6acea91358c6534b079d57742db",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "307-507",
+      "777-470",
+      "483-883",
+      "481-710",
+      "663-550",
+      "456-636",
+      "701-654",
+      "020-540",
+      "342-781",
+      "077-235"
+    ]
+  },
+  {
+    "control_text": "As all applications, those using ML must comply with third parties’ security requirements if their context involves suppliers.",
+    "control_text_redacted": false,
+    "control_text_sha256": "056fa51c1ced68fb90ae8c51af6e1e2a1433b43be0493feb9ab15dc5d53978d1",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "881-234",
+    "predicted_top10": [
+      "701-654",
+      "613-285",
+      "852-770",
+      "881-234",
+      "883-173",
+      "423-055",
+      "863-521",
+      "867-642",
+      "307-507",
+      "020-540"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "ae7bed8d1ef335ca317a60ba4d913e403687a6ca154f5879abb44b2177d99a6a",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "852-770",
+    "predicted_top10": [
+      "041-188",
+      "732-148",
+      "058-083",
+      "010-678",
+      "112-648",
+      "433-442",
+      "613-286",
+      "161-451",
+      "836-068",
+      "464-513"
+    ]
+  },
+  {
+    "control_text": "Data must be checked to ensure they will suit the model and limit the ingestion of malicious data: - Evaluate the trust level of the sources to check it's appropriate in the context of the application - Protect their integrity along the whole data supply chain - Their format and consistence are verified - Their content is checked for anomalies, automatically or manually (e.g. selective human control) - In the case of labeled data, the issuer of the label is trusted.",
+    "control_text_redacted": false,
+    "control_text_sha256": "249eb3a86cf99df705a6aefa5a8c925459d18222d25ac9ea8db9148dfcc9e0d8",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "423-055",
+    "predicted_top10": [
+      "510-324",
+      "854-643",
+      "342-781",
+      "663-550",
+      "043-703",
+      "356-282",
+      "474-203",
+      "217-168",
+      "041-188",
+      "204-272"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "264842a86509f1884ae9c473542527220e7974adba977e57a14c34bb13b9375a",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "384-015",
+    "predicted_top10": [
+      "233-748",
+      "760-764",
+      "788-323",
+      "613-286",
+      "276-748",
+      "077-235",
+      "182-732",
+      "474-203",
+      "686-110",
+      "433-442"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "c433550947b5313a96086822fb2e16afd9262713c850aa8b071b08626536d3f7",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "467-215",
+    "predicted_top10": [
+      "661-440",
+      "467-215",
+      "788-323",
+      "077-235",
+      "146-871",
+      "148-227",
+      "058-083",
+      "616-305",
+      "058-527",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "The transferability property can be used to force adversarial examples from a substitution model to evade another. The ease of transferring an adversarial example from a model to another depends on the family of algorithms. One possible defense is thus to choose an algorithm family that is less sensitive to the transferability of adversarial examples.",
+    "control_text_redacted": false,
+    "control_text_sha256": "5484abca5cefb89c6b700302fb4736d795f8ad9d8a91892221e23a1eb5b130d4",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "467-215",
+    "predicted_top10": [
+      "467-215",
+      "370-877",
+      "307-507",
+      "663-550",
+      "822-100",
+      "567-025",
+      "637-021",
+      "612-252",
+      "034-540",
+      "782-234"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "aeb028dd48395be184247d9759b328f1d9bdb0c0bfc53cc45261f338c7043a9a",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "408-838",
+    "predicted_top10": [
+      "467-215",
+      "408-838",
+      "567-025",
+      "244-750",
+      "428-544",
+      "444-058",
+      "234-123",
+      "034-540",
+      "661-440",
+      "384-015"
+    ]
+  },
+  {
+    "control_text": "Include adversarial examples to the algorithm's training to enable it to be more resilient to such attacks. Depending on the application domain and ambient conditions, such training could be done continuously.",
+    "control_text_redacted": false,
+    "control_text_sha256": "49c2ace56b0dcf3b0a6bedf7eafbb2132bd6372afc011842a802757df95c7748",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "408-838",
+    "predicted_top10": [
+      "467-215",
+      "408-838",
+      "370-877",
+      "663-550",
+      "068-102",
+      "011-322",
+      "141-385",
+      "073-507",
+      "567-025",
+      "803-457"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "6058007e5ce1753bfed9946075e9a69e25ba6de8ebd27b166021383f4847de50",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "041-188",
+    "predicted_top10": [
+      "074-873",
+      "362-550",
+      "488-626",
+      "041-188",
+      "161-451",
+      "571-640",
+      "510-324",
+      "205-522",
+      "356-282",
+      "732-148"
+    ]
+  },
+  {
+    "control_text": "Removing suspicious samples from the training and testing dataset can help prevent poisoning attacks. Some methods exist to identify those that could cause strange behavior of the algorithm.",
+    "control_text_redacted": false,
+    "control_text_sha256": "84f4fc9597556ff909cb3ae433fca4df4ea29eef2aec797e6ab20aee76403214",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "041-188",
+    "predicted_top10": [
+      "613-286",
+      "663-550",
+      "020-540",
+      "182-732",
+      "433-442",
+      "043-703",
+      "867-642",
+      "481-710",
+      "488-626",
+      "141-385"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "0819c88e6d86e548b7a9500063dd63850849a657a23d14604b5030c88ad2b047",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "637-021",
+    "predicted_top10": [
+      "637-021",
+      "182-732",
+      "782-234",
+      "077-235",
+      "467-215",
+      "474-203",
+      "780-757",
+      "020-540",
+      "822-100",
+      "686-110"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "1ed2cda355b1bf61a24c7e97d28ab2d05db5d7d0f1c2505d396fa0fdc10f36bf",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "020-540",
+      "867-642",
+      "077-235",
+      "780-757",
+      "481-710",
+      "686-110",
+      "782-234",
+      "012-625",
+      "788-323",
+      "467-215"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "7862153aa5e25d06a442e628a6a88c679ca6bf1fef98b0f5fb20f34e14fe845a",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "020-540",
+      "867-642",
+      "481-710",
+      "077-235",
+      "615-663",
+      "788-323",
+      "333-480",
+      "780-757",
+      "701-654",
+      "555-083"
+    ]
+  },
+  {
+    "control_text": "A type of attack in which the attacker altered data or model to modify the ML algorithm's behavior in a chosen direction (e.g. to sabotage its results, to insert a backdoor). It is as if the attacker conditioned the algorithm according to its motivations. Such attacks are also called causative attacks. Example: massively indicating to an image recognition algorithm that images of dogs are indeed cats to lead it to interpret it this way.",
+    "control_text_redacted": false,
+    "control_text_sha256": "6fdc98b5f50ee7241050631c2c489dbe9e10a19e3bb4f5a53719b9bd3b17e044",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "782-234",
+      "307-507",
+      "653-242",
+      "806-367",
+      "611-051",
+      "646-462",
+      "764-507",
+      "314-131",
+      "822-100",
+      "567-025"
+    ]
+  },
+  {
+    "control_text": "An attack in which the attacker corrupts the labels of training data. This sub-threat is specific to Supervised Learning.",
+    "control_text_redacted": false,
+    "control_text_sha256": "296e2ed236bbec479c6419b7ba80673f4551181c52b3483392d3c5a9c84696f2",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "307-507",
+      "567-025",
+      "426-842",
+      "456-636",
+      "483-883",
+      "612-252",
+      "782-234",
+      "467-215",
+      "664-080",
+      "742-056"
+    ]
+  },
+  {
+    "control_text": "All of the first three components in our generic model (raw data in the world, dataset assembly, and datasets) are subject to poisoning attacks whereby an attacker intentionally manipulates data in any or all of the three first components, possibly in a coordinated fashion, to cause ML training to go awry. In some sense, this is a risk related both to data sensitivity and to the fact that the data themselves carry so much of the water in an ML system. Data poisoning attacks require special attention. In particular, ML engineers should consider what fraction of the training data an attacker can control and to what extent.12:alfeld",
+    "control_text_redacted": false,
+    "control_text_sha256": "c383a12896166c6cf0b868c8b1121e04dfa870418290e714a2a14e2d1e1db699",
+    "framework": "BIML",
+    "ground_truth_hub_id": "615-663",
+    "predicted_top10": [
+      "660-052",
+      "307-507",
+      "630-573",
+      "867-642",
+      "746-705",
+      "020-540",
+      "860-084",
+      "670-660",
+      "463-820",
+      "782-234"
+    ]
+  },
+  {
+    "control_text": "This threat refers to the compromise of a component or developing tool of the ML application. Example: compromise of one of the open-source libraries used by the developers to implement the ML algorithm.",
+    "control_text_redacted": false,
+    "control_text_sha256": "86444d0033420d5a53cc0de3470ac398dfca9cea501d157d9917a8f30d158192",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "838-636",
+      "547-283",
+      "777-470",
+      "715-223",
+      "867-642",
+      "020-540",
+      "860-084",
+      "577-260",
+      "715-334",
+      "154-031"
+    ]
+  },
+  {
+    "control_text": "Many ML systems are constructed by tuning an already trained base model so that its somewhat generic capabilities are fine-tuned with a round of specialized training. A transfer attack presents an important risk in this situation. In cases where the pretrained model is widely available, an attacker may be able to devise attacks using it that will be robust enough to succeed against your (unavailable to the attacker) tuned task-specific model. You should also consider whether the ML system you are fine-tuning could possibly be a Trojan that includes sneaky ML behavior that is unanticipated.13:mcgraw",
+    "control_text_redacted": false,
+    "control_text_sha256": "f2f5c37fd1d2cf49fc2e1a80e39ae629824c4578c92e05d70e86e4aa4381f1c8",
+    "framework": "BIML",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "660-052",
+      "822-100",
+      "344-611",
+      "180-488",
+      "860-084",
+      "670-660",
+      "515-021",
+      "611-158",
+      "660-867",
+      "801-310"
+    ]
+  },
+  {
+    "control_text": "Model transfer leads to the possibility that what is being reused may be a Trojaned (or otherwise damaged) version of the model being sought out.7:shokri",
+    "control_text_redacted": false,
+    "control_text_sha256": "debf39afd1182a3bdecbe3a567aaa4ddfd7b643c1dff4cdea3ac5f0f3a8b8f0e",
+    "framework": "BIML",
+    "ground_truth_hub_id": "701-654",
+    "predicted_top10": [
+      "663-550",
+      "182-732",
+      "342-781",
+      "863-521",
+      "832-555",
+      "613-286",
+      "474-203",
+      "433-442",
+      "141-385",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "This threat refers to a leak of data manipulated by ML algorithms. This data leakage can be explained by an inadequate access control, a handling error of the project team or simply because sometimes the entity that owns the model and the entity that owns the data are distinct. To train the model, it is often necessary for the data to be accessed by the model provider. This involve sharing the data and thus share sensitive data with a third party.",
+    "control_text_redacted": false,
+    "control_text_sha256": "5bfba4d07d5a24e2fafcfe4bad29987aff9ef68324c0debdc3e968721d45287d",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "757-271",
+      "801-310",
+      "117-371",
+      "660-052",
+      "612-252",
+      "273-600",
+      "670-660",
+      "443-447",
+      "540-566",
+      "082-327"
+    ]
+  },
+  {
+    "control_text": "Preserving data confidentiality in an LLM is more challenging than in some other ML situations since the foundation model is built in a black box fashion out of underspecified training sets and is designed to model the data itself (i.e., become the data), aiming to reproduce similar data in a generative way. Recall that if an ML system is trained up on illegal, confidential, or sensitive data, it will have some aspects of those data built right into it through training. Attacks to extract sensitive and confidential information from ML systems (indirectly through normal use) are well known.10 See [LLMtop10:8:data ownership].",
+    "control_text_redacted": false,
+    "control_text_sha256": "7c0360d1e0eb62c64e8ae1ec0d2d0fc07f63fc426339bd88633b01fe15ea3467",
+    "framework": "BIML",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "036-275",
+      "782-234",
+      "474-203",
+      "182-732",
+      "860-084",
+      "307-507",
+      "141-385",
+      "663-550",
+      "267-786",
+      "342-781"
+    ]
+  },
+  {
+    "control_text": "LLM foundation models are in a state of legal flux as of the time of this writing. Various lawsuits may have a catastrophic impact on current approaches. Many of the concerns orbit around confidential and privacy-related information scraped off the Internet for training purposes. Copyright law and GDPR are directly relevant. See [LLMtop10:8:data ownership].",
+    "control_text_redacted": false,
+    "control_text_sha256": "9c1c049f67f69cd519a413f7de28b2ec8a1fcaa3658317baea1d558e60de0357",
+    "framework": "BIML",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "546-564",
+      "766-162",
+      "307-242",
+      "510-324",
+      "646-285",
+      "745-356",
+      "247-250",
+      "635-851",
+      "077-235",
+      "068-102"
+    ]
+  },
+  {
+    "control_text": "LLM foundation models are run on hosted, remote servers. Care must be taken to protect these machines against ML-related attacks (not to mention the usual pile of computer security stuff). Water, heat dissipation, and electricity are all important aspects of making ML work. Plan for what happens to your LLM application if the net goes down or if a physical attack on servers occurs.",
+    "control_text_redacted": false,
+    "control_text_sha256": "ac6349cd15fc071d02ece6a7737261e1994e6339974b936d214ee21dfc778ddd",
+    "framework": "BIML",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "660-052",
+      "233-748",
+      "180-488",
+      "473-177",
+      "486-813",
+      "263-184",
+      "866-553",
+      "286-500",
+      "148-853",
+      "708-355"
+    ]
+  },
+  {
+    "control_text": "Data are stored and managed in an insecure fashion. Who has access to the data pool, and why? Access controls can help mitigate this risk, but such controls are not really feasible when utilizing public data sources. This kind of risk brings to mind early attempts to create mathematically random data for cryptographic security through combining sets of inputs that could ultimately be influenced by an attacker (such as process id, network packet arrival time, and so on). Needless to say, entropy pools controlled by an attacker are low entropy indeed. Ask yourself what happens when an attacker controls your data sources.",
+    "control_text_redacted": false,
+    "control_text_sha256": "69895d71f7212609d57453314f6f884b97643f8e47698d31e563f36bef6ae6fe",
+    "framework": "BIML",
+    "ground_truth_hub_id": "044-202",
+    "predicted_top10": [
+      "275-483",
+      "307-111",
+      "614-353",
+      "482-866",
+      "267-468",
+      "640-364",
+      "650-560",
+      "224-321",
+      "664-571",
+      "704-530"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "5308301ff1ea9a2dc3fa8a92e61550e80ccab6ff738bd873d0949cf9cd60b834",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "307-507",
+      "663-550",
+      "182-732",
+      "474-203",
+      "141-385",
+      "637-021",
+      "782-234",
+      "743-110",
+      "077-235",
+      "788-323"
+    ]
+  },
+  {
+    "control_text": "Training up an ML system is not free. Stealing ML system knowledge is possible through direct input/output observation. This is akin to reversing the model.",
+    "control_text_redacted": false,
+    "control_text_sha256": "3076f991144fb4d8c88c1a275beb628f4707585aeaf82693c3538bdf58e2b66f",
+    "framework": "BIML",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "663-550",
+      "182-732",
+      "068-102",
+      "822-100",
+      "034-540",
+      "832-555",
+      "077-235",
+      "342-781",
+      "782-234",
+      "141-385"
+    ]
+  },
+  {
+    "control_text": "This threat refers to a leak of the internals (i.e. parameter values) of the ML model. This model leakage could occur because of human error or contraction with a third party with a too low security level.",
+    "control_text_redacted": false,
+    "control_text_sha256": "de8d50fc38a56fa4d37e3b114a0bf9554d5a7b079b4556102b42b57e01f01df5",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "141-385",
+    "predicted_top10": [
+      "182-732",
+      "867-642",
+      "342-781",
+      "020-540",
+      "344-611",
+      "077-235",
+      "663-550",
+      "822-100",
+      "036-275",
+      "780-757"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "9b32f975e631b901ade24079452dda51f9a7d194c73a4fb5aa62369d3b678079",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "234-123",
+    "predicted_top10": [
+      "034-540",
+      "077-235",
+      "686-110",
+      "481-710",
+      "073-507",
+      "788-323",
+      "012-625",
+      "738-144",
+      "020-540",
+      "803-457"
+    ]
+  },
+  {
+    "control_text": "Before moving the model to production and then on a regular basis, the model should be evaluated to ensure it has not been poisoned. This differs from the security control “Use methods to clean the training dataset from suspicious samples”. Indeed, here, it’s the model itself that is evaluated. For example: deep learning classification algorithms can be checked for poisoning using the STRIP18 technique. The principle is to disturb the inputs and observe the randomness of the predictions.",
+    "control_text_redacted": false,
+    "control_text_sha256": "943ab2be85ea5f284fdc74939347bfb9cae608ea565b92a5296999bb1f80b7d2",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "234-123",
+    "predicted_top10": [
+      "663-550",
+      "020-540",
+      "182-732",
+      "867-642",
+      "481-710",
+      "077-235",
+      "342-781",
+      "532-102",
+      "832-555",
+      "433-442"
+    ]
+  },
+  {
+    "control_text": "Using a set of training data expansion techniques (e.g. data augmentation) addresses the lack of data and improves the robustness of the model to poisoning attacks by diluting their impact. It is notable, however, that this security control more specifically addresses poisoning attacks that aim to reduce the performance of the model than those that seek to establish a backdoor. Moreover, one needs to ensure the reliability of the sources used to augment the dataset.",
+    "control_text_redacted": false,
+    "control_text_sha256": "e55c942eede5ee36d3282744b152d78e3a808e717f1c442b09edd7e1f4649de6",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "444-058",
+    "predicted_top10": [
+      "788-323",
+      "077-235",
+      "467-215",
+      "738-144",
+      "020-540",
+      "444-058",
+      "567-025",
+      "663-550",
+      "481-710",
+      "867-642"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "61d7cdee4c2614c90ff262777c47794d1e1b119088ab1f181e8775c8c92177a2",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "788-323",
+    "predicted_top10": [
+      "854-183",
+      "788-323",
+      "538-446",
+      "630-573",
+      "467-215",
+      "058-443",
+      "217-112",
+      "831-570",
+      "130-550",
+      "433-442"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "7916b633a8bcb889c296590c7ee1f380eecc39fede32007b4cd6ec0648c33b94",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "854-183",
+    "predicted_top10": [
+      "428-544",
+      "533-635",
+      "444-058",
+      "234-123",
+      "010-678",
+      "244-750",
+      "146-871",
+      "520-617",
+      "202-604",
+      "427-113"
+    ]
+  },
+  {
+    "control_text": "This defense consists of limiting the information about the model when it is not necessary. More precisely, it aims at taking the necessary actions in order to reduce the information available on the model such as information on the training data set or any other information that could be used by an attacker (e.g., not publishing the model in open source). Of course, there is a trade-off between security and the fact that stakeholders (e.g., users, ML teams) sometimes want open source models. However, it remains notable that in many cases, research has shown that minimal information is sufficient to mount attacks.",
+    "control_text_redacted": false,
+    "control_text_sha256": "7a44f6eb282e13fee7d5b65b67fc7274ec52168cdb098a39216bb831480e220e",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "818-434",
+    "predicted_top10": [
+      "713-683",
+      "743-110",
+      "227-045",
+      "308-515",
+      "663-550",
+      "818-434",
+      "208-805",
+      "182-732",
+      "068-102",
+      "834-645"
+    ]
+  },
+  {
+    "control_text": "Differential privacy (DP) is a strong, mathematical definition of privacy in the context of statistical and ML analysis. According to this mathematical definition, DP is a criterion of privacy protection, which many tools for analysing sensitive personal information have been devised to satisfy. It is noticeable that this security control can greatly reduce the performance of the model. It is therefore important to estimate the need for data or model protection. Example: Differential privacy makes it possible for technology companies to collect and share aggregate information about user habits, while maintaining the privacy of individual users.",
+    "control_text_redacted": false,
+    "control_text_sha256": "41108e75963ecf5aee74e9e492a82ab0b99def40b61a206a913f16a7647502b7",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "058-443",
+    "predicted_top10": [
+      "447-083",
+      "044-202",
+      "362-550",
+      "034-540",
+      "082-327",
+      "765-788",
+      "227-045",
+      "612-252",
+      "267-786",
+      "475-586"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "0424fc76f135c3deb263f29de7f034301d9aa93f14c1873a5c824846a16c60a7",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "488-626",
+    "predicted_top10": [
+      "810-884",
+      "637-021",
+      "362-550",
+      "044-202",
+      "227-045",
+      "447-083",
+      "308-515",
+      "713-683",
+      "402-133",
+      "834-645"
+    ]
+  },
+  {
+    "control_text": "Federated learning is a set of training techniques that trains a model on several decentraliser servers containing local data samples, without exchanging their data samples. This avoids the need to transfer the data and/or entrust it to an untrusted third party and thus helps to preserve the privacy of the data.",
+    "control_text_redacted": false,
+    "control_text_sha256": "8c775075216dacd4138d8cd1628b3625285976656f2c15a209651a47ab8be7c1",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "661-440",
+    "predicted_top10": [
+      "661-440",
+      "224-321",
+      "663-550",
+      "267-468",
+      "482-866",
+      "467-215",
+      "670-660",
+      "077-772",
+      "848-711",
+      "141-385"
+    ]
+  },
+  {
+    "control_text": "Define access rights management using a RBAC (Role Based Access Control) model respecting the least privileged principle. This should cover all components of the ML model (e.g. host infrastructures) and allow for the protection of resources such as the model (e.g. its configuration, its code) and the data it used (e.g. training data). It is notable that the roles to be included also concern the end user. For example: the end user who can submit inputs to the model should not be able to have access to its configuration.",
+    "control_text_redacted": false,
+    "control_text_sha256": "4fdabecd6f9719080550b97bcbebbe579a7fb6ada755e393610c4bd64bb9ed62",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "220-442",
+    "predicted_top10": [
+      "801-310",
+      "757-271",
+      "117-371",
+      "123-124",
+      "540-566",
+      "128-128",
+      "220-442",
+      "273-600",
+      "817-808",
+      "724-770"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "cbda08505f59430334f8deac6a088c32b3a95bf6ab4f7869ff20f17b35e31baa",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "805-126",
+    "predicted_top10": [
+      "036-275",
+      "182-732",
+      "801-310",
+      "117-371",
+      "757-271",
+      "820-878",
+      "822-100",
+      "344-611",
+      "742-431",
+      "663-550"
+    ]
+  },
+  {
+    "control_text": "As all applications, those using ML must comply with data security requirements to ensure the overall lifecycle of the data they use will be secured (e.g. description of data lifecycle and associated controls, data classification, protection of data at rest and in transit, use of appropriate cryptographic means, data quality controls).",
+    "control_text_redacted": false,
+    "control_text_sha256": "389a61510a3e06d48da1be76af68b08a8cccfc559505a292654ec3935dfb9de7",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "768-532",
+    "predicted_top10": [
+      "074-873",
+      "004-517",
+      "780-757",
+      "635-851",
+      "866-553",
+      "510-324",
+      "020-540",
+      "867-642",
+      "607-671",
+      "762-616"
+    ]
+  },
+  {
+    "control_text": "As all applications, those using ML can be subject to regulations and laws (e.g., depending on collected data). Such assessment must be done as soon as possible during the project phase, and should be regularly updated thereafter as regulations are rapidly evolving (e.g., an AI Act has been proposed at the European level).",
+    "control_text_redacted": false,
+    "control_text_sha256": "ba396b83596f938d4db7279bb9af3fac88cde08428e080c9b22df6c71cb2bfd6",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "646-285",
+    "predicted_top10": [
+      "307-242",
+      "205-522",
+      "745-356",
+      "464-513",
+      "547-824",
+      "077-235",
+      "217-168",
+      "546-564",
+      "364-516",
+      "481-710"
+    ]
+  },
+  {
+    "control_text": "ML considerations should be added to awareness programs for concerned stakeholders and they must all receive cybersecurity awareness training: - Global cybersecurity awareness training including best practices to prevent attackers compromising the ML application. - Manipulation of potentially sensitive data or data subject to regulatory restrictions. - Configurations to prevent applications being vulnerable - ML-specific attack awareness",
+    "control_text_redacted": false,
+    "control_text_sha256": "3931b7007f02a80640804d5b54f67291e2c49924d05c9370b5f03e8d2097a21f",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "533-635",
+    "predicted_top10": [
+      "533-635",
+      "244-750",
+      "428-544",
+      "635-851",
+      "220-870",
+      "475-586",
+      "464-513",
+      "803-457",
+      "364-516",
+      "261-010"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "8663dc85ac2d3c84bd59db7a2596a0d85ba15c29ab91a188a4ad7279813866c0",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "364-516",
+    "predicted_top10": [
+      "467-215",
+      "623-550",
+      "233-748",
+      "307-507",
+      "276-748",
+      "130-171",
+      "732-148",
+      "370-877",
+      "854-643",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "As always in security, a malicious insider in an ML system can wreak havoc. Note for the record that data poisoning attacks (especially those that subtly bias a training set) can already be hard to spot. A malicious insider who wishes not to get caught would do well to hide in the data poisoning weeds.",
+    "control_text_redacted": false,
+    "control_text_sha256": "668c4c3655e5bd60b4c38285507032d0b48d7665515b1008dc808bf7e3e500a9",
+    "framework": "BIML",
+    "ground_truth_hub_id": "020-540",
+    "predicted_top10": [
+      "233-748",
+      "867-642",
+      "182-732",
+      "801-310",
+      "020-540",
+      "757-271",
+      "860-084",
+      "117-371",
+      "832-555",
+      "611-158"
+    ]
+  },
+  {
+    "control_text": "A trained ML system that takes as its input data from outside may be purposefully manipulated by an attacker. To think about why anybody would bother to do this, consider that the attacker may be someone under scrutiny by an ML algorithm (a loan seeker, a political dissident, a person to be authenticated, etc).",
+    "control_text_redacted": false,
+    "control_text_sha256": "a4e0beb3ac2878431b9b3920f83bf36bca3b3414bfd639cdd0b63093d8f01ec7",
+    "framework": "BIML",
+    "ground_truth_hub_id": "020-540",
+    "predicted_top10": [
+      "307-507",
+      "782-234",
+      "467-215",
+      "653-242",
+      "551-400",
+      "611-051",
+      "663-550",
+      "532-102",
+      "314-131",
+      "426-842"
+    ]
+  },
+  {
+    "control_text": "An attacker tweaks the output stream directly. This will impact the larger system in which the ML subsystem is encompassed. There are many ways to do this kind of thing. Probably the most common attack would be to interpose between the output stream and the receiver. Because models are sometimes opaque, unverified output may simply be used with little scrutiny, meaning that an interposing attacker may have an easy time hiding in plain sight.",
+    "control_text_redacted": false,
+    "control_text_sha256": "ea4e8ee864d420c119c5cc931ef66e79b168c039b84b15b05648f68e17fb015d",
+    "framework": "BIML",
+    "ground_truth_hub_id": "020-540",
+    "predicted_top10": [
+      "307-507",
+      "782-234",
+      "344-611",
+      "822-100",
+      "806-367",
+      "780-757",
+      "611-158",
+      "646-462",
+      "347-352",
+      "036-275"
+    ]
+  },
+  {
+    "control_text": "This threat refers to the possibility of leakage of all or partial information about the model.12 Example: the outputs of a ML algorithm are so verbose that they give information about its configuration (or leakage of sensitive data)",
+    "control_text_redacted": false,
+    "control_text_sha256": "451da38ade97b26ef7fed3d50ee5dd6aea19842160cfb31e754d4beb5a3e5335",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "220-870",
+    "predicted_top10": [
+      "182-732",
+      "342-781",
+      "663-550",
+      "832-555",
+      "068-102",
+      "474-203",
+      "308-515",
+      "822-100",
+      "818-434",
+      "613-286"
+    ]
+  },
+  {
+    "control_text": "A type of attack in which the attacker works on the ML algorithm's inputs to find small perturbations leading to large modification of its outputs (e.g. decision errors). It is as if the attacker created an optical illusion for the algorithm. Such modified inputs are often called adversarial examples. Example: the projection of images on a house could lead the algorithm of an autonomous car to take the decision to suddenly make it brake.",
+    "control_text_redacted": false,
+    "control_text_sha256": "0303e545503d94b1da8281f9530aabfe109a7ad5fda2081d2f039660cd1f27a4",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "073-507",
+    "predicted_top10": [
+      "467-215",
+      "370-877",
+      "307-507",
+      "567-025",
+      "822-100",
+      "782-234",
+      "653-242",
+      "646-462",
+      "612-252",
+      "806-367"
+    ]
+  },
+  {
+    "control_text": "In some cases, the attacker has access to information (model, model parameters, etc.) that can allow him to directly build adversarial examples. One example is to directly use the model's gradient to find the best perturbation to add to the input data to evade the model.",
+    "control_text_redacted": false,
+    "control_text_sha256": "32e9f58049bb4d5ed3a272be607daf47fb29dec21a90cdf53a974167336bb33e",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "073-507",
+    "predicted_top10": [
+      "467-215",
+      "370-877",
+      "307-507",
+      "612-252",
+      "743-110",
+      "663-550",
+      "713-683",
+      "227-045",
+      "782-234",
+      "664-080"
+    ]
+  },
+  {
+    "control_text": "One of the most important categories of computer security risks is malicious input. The LLM version of malicious input has come to be known as prompt injection. In fact, you can think of prompt injection as the analog of adversarial examples in the ML vision situation. And as was the case with adversarial examples, prompt injection discussions tend to swamp out all other risks in peoples’ imaginations. This leads directly to an over-emphasis on red teaming (to the detriment of the field). All that said, playing around with LLM prompts is really fun and can be very enlightening. It is extremely unlikely that LLM behavior can be completely controlled through prompting alone. The stochastic nature of the basic LLM interface exacerbates this control issue. An LLM may seem to “do the right thing” sometimes and go completely off the rails with the very same prompts at other times. That makes LLM verification a challenge at best and an impossibility at worst. Much of what’s called “red teaming” in AI really amounts to prompt manipulation. See [LLMtop10:5:prompt manipulation].",
+    "control_text_redacted": false,
+    "control_text_sha256": "65b6d5ad0a834db979926128b2d8df69bd24a54b4b15a49c855616769c8f157f",
+    "framework": "BIML",
+    "ground_truth_hub_id": "686-110",
+    "predicted_top10": [
+      "344-611",
+      "686-110",
+      "012-625",
+      "822-100",
+      "036-275",
+      "843-475",
+      "780-757",
+      "106-447",
+      "817-808",
+      "540-566"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "0acc968da60733481c60774f994ec2f85f6c55794cdeb48f3a77a59e6c889a42",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "011-322",
+      "370-877",
+      "384-015",
+      "761-417",
+      "408-838",
+      "467-215",
+      "141-385",
+      "227-045",
+      "713-683",
+      "743-110"
+    ]
+  },
+  {
+    "control_text": "One of the most important categories of computer security risks is malicious input. The ML version of malicious input has come to be known as adversarial examples. While important, adversarial examples have received so much attention that they swamp out all other risks in most people’s imagination.16:yuan",
+    "control_text_redacted": false,
+    "control_text_sha256": "3806c8ed6bc66b5de6b3444a32ad3efb4fdcf60c9ca0bae8145129635253eea0",
+    "framework": "BIML",
+    "ground_truth_hub_id": "370-877",
+    "predicted_top10": [
+      "822-100",
+      "036-275",
+      "020-540",
+      "867-642",
+      "780-757",
+      "782-234",
+      "077-235",
+      "611-158",
+      "344-611",
+      "481-710"
+    ]
+  },
+  {
+    "control_text": "One of the challenges in the ML literature is an over-reliance on “empirical” experiments to determine model parameters and an under-reliance on understanding why an ML system actually does what it does. ML systems have a number of hyperparameters, including, for example, learning rate and momentum in a gradient descent system. These parameters are those model settings not updated during learning (you can think of them as model configuration settings). Setting and tuning hyperparameters is somewhat of a black art subject to attacker influence. If an attacker can twiddle hyperparameters (tweaking, hiding, or even introducing them), bad things will happen. (Also see [inference:3:hyperparameters].)",
+    "control_text_redacted": false,
+    "control_text_sha256": "3233f27371df68aa6b1ae98af8a625db6e54c6db8a17d76948bd8ee4e62cd9a6",
+    "framework": "BIML",
+    "ground_truth_hub_id": "867-642",
+    "predicted_top10": [
+      "822-100",
+      "467-215",
+      "068-102",
+      "663-550",
+      "854-183",
+      "036-275",
+      "344-611",
+      "567-025",
+      "010-108",
+      "788-323"
+    ]
+  },
+  {
+    "control_text": "In the case of transfer learning (see [data:2:transfer]) an attacker may intentionally post or ship or otherwise cause a target to use incorrect settings in a public model. Because of the open nature of ML algorithm and parameter sharing, this risk is particularly acute among ML practitioners who naively think “nobody would ever do that.”",
+    "control_text_redacted": false,
+    "control_text_sha256": "fb29245b64f98b9a038b8875b3147df4badf6f1ac19d10929f2b1c1414a6b7ba",
+    "framework": "BIML",
+    "ground_truth_hub_id": "867-642",
+    "predicted_top10": [
+      "307-507",
+      "347-352",
+      "551-400",
+      "370-877",
+      "664-080",
+      "612-252",
+      "426-842",
+      "082-327",
+      "540-566",
+      "782-234"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "84205b748587b71f70a482c542a8ffe627c8e346562aa4f3d669a78bcf548c54",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "467-215",
+      "034-540",
+      "077-235",
+      "782-234",
+      "474-203",
+      "567-025",
+      "141-385",
+      "637-021",
+      "686-110",
+      "044-202"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "04ebd85b97d68c88d55f14126dbbb84125a6d92540cc3ede7d20ec147515f892",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "011-087",
+      "034-540",
+      "813-610",
+      "646-227",
+      "713-683",
+      "404-126",
+      "743-110",
+      "227-045",
+      "551-400",
+      "816-631"
+    ]
+  },
+  {
+    "control_text": "LLMs learn (and sometimes directly memorize) a great deal about training input, some of which is possibly sensitive (see [raw:5:data confidentiality]), and store a representation internally that may include sensitive information. Be aware of the output your model produces and how it may reveal sensitive aspects of its training data and its prompting data.",
+    "control_text_redacted": false,
+    "control_text_sha256": "95156db3bcc00c650c92123903210b14328e83a0a0f266fe6cc73d866e67b827",
+    "framework": "BIML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "068-102",
+      "036-275",
+      "822-100",
+      "077-235",
+      "034-540",
+      "467-215",
+      "820-878",
+      "782-234",
+      "044-202",
+      "077-772"
+    ]
+  },
+  {
+    "control_text": "Most ML algorithms learn a great deal about input, some of which is possibly sensitive (see [raw:1:data confidentiality]), and store a representation internally that may include sensitive information. Algorithm choice can help control this risk, but be aware of the output your model produces and how it may reveal sensitive aspects of its training data. When it comes to sensitive data, one promising approach in privacy-preserving ML is differential privacy which we discuss below.",
+    "control_text_redacted": false,
+    "control_text_sha256": "ed814d14bee39b9e8ed71c33420a6a7db9659150bf130bd7f20ea656344d391a",
+    "framework": "BIML",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "467-215",
+      "034-540",
+      "077-235",
+      "447-083",
+      "782-234",
+      "044-202",
+      "488-626",
+      "475-586",
+      "474-203",
+      "356-282"
+    ]
+  },
+  {
+    "control_text": "A type of attack in which the attacker explores a model by providing a series of carefully crafted inputs and observing outputs. These attacks can be previous steps to more harmful types, evasion or poisoning for example. It is as if the attacker made the model talk to then better compromise it or to obtain information204 about it (e.g. model extraction) or its training data (e.g. membership inferences attacks and Inversion attacks). Example: an attacker studies the set of input- output pairs and uses the results to retrieve training data.",
+    "control_text_redacted": false,
+    "control_text_sha256": "2c2024851f1f7adf16ca34a08716d4085d17dca95a6a841905dfe9a0bdabff8f",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "034-540",
+    "predicted_top10": [
+      "822-100",
+      "068-102",
+      "663-550",
+      "820-878",
+      "370-877",
+      "036-275",
+      "713-683",
+      "725-682",
+      "782-234",
+      "162-655"
+    ]
+  },
+  {
+    "control_text_redacted": true,
+    "control_text_sha256": "d0edf77bc0e6137bd41d16e2e397226a43b7445226d187ea77ce6da2b110e6ce",
+    "framework": "ETSI",
+    "ground_truth_hub_id": "077-772",
+    "predicted_top10": [
+      "043-703",
+      "488-626",
+      "538-446",
+      "782-234",
+      "058-443",
+      "041-188",
+      "204-272",
+      "764-507",
+      "077-235",
+      "563-186"
+    ]
+  },
+  {
+    "control_text": "ML algorithms usually consider input data in a defined format to make their predictions. Thus, a denial of service could be caused by input data whose format is inappropriate. It may also happen that a malicious user of the model constructs an input data (a sponge example) specifically designed to increase the computation time of the model and thus potentially cause a denial of service.",
+    "control_text_redacted": false,
+    "control_text_sha256": "e11c53b61456cf68ee5ecf6dab5c8cd2218f920b8ff19952adccb8affbc21298",
+    "framework": "ENISA",
+    "ground_truth_hub_id": "230-318",
+    "predicted_top10": [
+      "653-242",
+      "660-052",
+      "782-234",
+      "611-051",
+      "746-705",
+      "146-706",
+      "463-820",
+      "630-573",
+      "314-131",
+      "831-570"
+    ]
+  }
+]

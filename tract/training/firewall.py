@@ -8,6 +8,7 @@ both components come from CRE structure, not framework text.
 from __future__ import annotations
 
 import logging
+from collections.abc import Collection
 from typing import Any, Protocol
 
 from tract.hierarchy import CREHierarchy
@@ -20,10 +21,93 @@ class HasControlText(Protocol):
     framework: str
 
 
+def excluded_framework_set(
+    excluded: str | Collection[str] | None,
+) -> frozenset[str]:
+    """Normalise a held-out framework name, or a set of them, into a set.
+
+    The exclusion used to be `standard_name == excluded_framework`, which is
+    correct for one name and SILENTLY WRONG for a set: `"ENISA" == {"ENISA"}`
+    is False, so a caller holding out the whole AI region would have excluded
+    nothing, trained on every framework it claimed to firewall, scored around
+    0.9, and produced a fold record indistinguishable from an honest one.
+
+    DEFINED HERE, not imported from tract.training.data, and that is not a
+    style choice. This module is deliberately torch-free -- tests/test_firewall.py
+    and tests/test_standards_format_bridge_exposure.py run on CI's lite runner,
+    which has no phase0 extra. A previous version of this function delegated to
+    tract.training.data, which imports torch, so calling `assert_firewall`
+    raised ModuleNotFoundError on CI for seven tests that had never needed
+    torch. `tract.training.data` imports this instead; the dependency runs one
+    way only.
+
+    An empty string keeps its old meaning -- absent, not a framework named ""
+    -- because the previous guard was `if excluded_framework and ...`.
+    """
+    if not excluded:
+        return frozenset()
+    if isinstance(excluded, str):
+        return frozenset({excluded})
+    return frozenset(excluded)
+
+
+def assert_exclusion_fired(
+    pairs: list[Any],
+    tiered_links: list[Any],
+    excluded: Collection[str],
+) -> None:
+    """Assert the firewall actually removed the frameworks it named.
+
+    Two failure modes, both silent, both producing a fold record shaped exactly
+    like an honest one.
+
+    **A name that matches nothing.** A typo, a roster that drifted from the
+    corpus spelling ("OWASP LLM Top 10" for "OWASP Top10 for LLM"), or a set
+    passed where a string was compared. Nothing is removed, everything trains,
+    hit@1 lands around 0.9, and no downstream instrument objects.
+
+    **A framework that survived the filter anyway.** Cheaper to check directly
+    than to reason about: no surviving training pair may name an excluded
+    framework.
+
+    Raises rather than logs. A firewall that did not fire has invalidated the
+    run, and continuing produces a number whose only defect is being far too
+    good.
+    """
+    excluded_set = excluded_framework_set(excluded)
+    if not excluded_set:
+        return
+
+    survived = sorted({p.framework for p in pairs} & excluded_set)
+    if survived:
+        raise AssertionError(
+            f"Firewall breach: training pairs still carry excluded "
+            f"framework(s) {survived}. The exclusion set was "
+            f"{sorted(excluded_set)}."
+        )
+
+    n_matching = sum(
+        1 for t in tiered_links
+        if t.link.get("standard_name", "") in excluded_set
+    )
+    if n_matching == 0:
+        raise AssertionError(
+            f"Firewall exclusion matched no links at all. Holding out "
+            f"{sorted(excluded_set)} removed 0 of {len(tiered_links)} links, "
+            "so the run trained on everything it claimed to firewall. The "
+            "usual cause is a framework name that does not match the corpus "
+            "spelling of `standard_name`."
+        )
+    logger.info(
+        "Firewall exclusion verified: %d links removed for %s, %d pairs remain",
+        n_matching, sorted(excluded_set), len(pairs),
+    )
+
+
 def build_firewalled_hub_text(
     hub_id: str,
     hierarchy: CREHierarchy,
-    excluded_framework: str | None = None,
+    excluded_framework: str | Collection[str] | None = None,
     include_description: bool = False,
     descriptions: dict[str, str] | None = None,
     include_standards: bool = False,
@@ -50,10 +134,11 @@ def build_firewalled_hub_text(
         text = f"{text}: {descriptions[hub_id]}"
 
     if include_standards and standard_sections and hub_id in standard_sections:
+        excluded = excluded_framework_set(excluded_framework)
         sections = [
             s
             for s in standard_sections[hub_id]
-            if excluded_framework is None or excluded_framework not in s
+            if not any(name in s for name in excluded)
         ]
         if sections:
             text = f"{text}. Standards: {', '.join(sorted(sections))}"
@@ -68,7 +153,7 @@ def build_firewalled_hub_text(
 
 def build_all_hub_texts(
     hierarchy: CREHierarchy,
-    excluded_framework: str | None = None,
+    excluded_framework: str | Collection[str] | None = None,
     include_description: bool = False,
     descriptions: dict[str, str] | None = None,
     include_standards: bool = False,
@@ -94,7 +179,7 @@ def build_all_hub_texts(
 def assert_firewall(
     hub_texts: dict[str, str],
     eval_items: list[Any],
-    held_out_framework: str,
+    held_out_framework: str | Collection[str],
     base_hub_texts: dict[str, str] | None = None,
     hub_names: set[str] | None = None,
 ) -> None:
@@ -175,7 +260,8 @@ def assert_firewall(
             if control_text in haystack:
                 raise AssertionError(
                     f"Firewall breach: control '{control_text[:50]}' "
-                    f"(framework={held_out_framework}) found in hub {hub_id} "
+                    f"(held out={sorted(excluded_framework_set(held_out_framework))}) "
+                    f"found in hub {hub_id} "
                     f"{where}"
                 )
     logger.info(

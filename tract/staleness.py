@@ -18,9 +18,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from tract.config import PROJECT_ROOT
 from tract.framework_identity import FRAMEWORK_IDENTITY_PATH
@@ -32,7 +33,9 @@ from tract.training.data_quality import BRIDGE_PATH, CURATED_PATH
 RESULTS_DIR: Final[Path] = PROJECT_ROOT / "results"
 
 
-def tracked_inputs() -> dict[str, Path]:
+def tracked_inputs(
+    payload: Mapping[str, Any] | None = None,
+) -> dict[str, Path]:
     """The file each digest in a fold's ``inputs`` block describes.
 
     Keyed by the field name in fold_result.json["inputs"], so a field that
@@ -66,12 +69,29 @@ def tracked_inputs() -> dict[str, Path]:
         # a token set rebuilt between one fold and the next was invisible to the
         # one instrument whose whole job is to notice that.
         "framework_identity_sha256": FRAMEWORK_IDENTITY_PATH,
-        # Phase 2C. Absent on a run that used no bridge corpus, in which case
-        # the fold records None and _artifact_sha256 returns None here too, so
-        # the two agree. Present, it is what distinguishes two runs that agree
-        # on every other digest and disagree on the metric.
-        "bridge_links_sha256": BRIDGE_PATH,
+        # Phase 2C. Resolved from the fold's OWN config, because there is no
+        # single bridge corpus: Gate 2 compares arms that differ in nothing but
+        # which one they read. This used to be the constant below, which names a
+        # file that does not exist -- _digest returned None, check_result skips
+        # a None comparison, and the check was dead. Staging each arm's corpus
+        # at that one path instead would have been worse: the file ends up
+        # holding the last arm's bytes, and aggregating the first arm then
+        # reports the honest run as stale.
+        "bridge_links_sha256": _bridge_path_for(payload),
     }
+
+
+def _bridge_path_for(payload: Mapping[str, Any] | None) -> Path:
+    """Which bridge corpus a fold record says it read.
+
+    Falls back to BRIDGE_PATH when there is no record to ask -- describe() and
+    is_checkable want the field NAMES and never hash anything.
+    """
+    if payload is None:
+        return BRIDGE_PATH
+    config = payload.get("config") or {}
+    recorded = config.get("bridge_links_path")
+    return Path(recorded) if recorded else BRIDGE_PATH
 
 
 # The import-time snapshot, for callers that want the field NAMES rather than a
@@ -121,6 +141,18 @@ def _digest(path: Path) -> str | None:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _declares_no_bridge(payload: Mapping[str, Any]) -> bool:
+    """True when the record positively states it trained without a corpus.
+
+    Distinguished from a record that predates the field entirely: that one has
+    no `config` block naming `bridge_links_path` at all, and stays unrecorded.
+    """
+    config = payload.get("config")
+    if not isinstance(config, Mapping):
+        return False
+    return "bridge_links_path" in config and config["bridge_links_path"] is None
+
+
 def check_result(result_path: Path) -> ResultStatus:
     """Compare one fold_result.json's recorded input digests against the files."""
     payload = json.loads(result_path.read_text(encoding="utf-8"))
@@ -130,13 +162,33 @@ def check_result(result_path: Path) -> ResultStatus:
     # Resolved here rather than read from the snapshot above, so that a check
     # run after the overlay was staged hashes the corpus the fold actually
     # read. See tracked_inputs().
-    for field, path in tracked_inputs().items():
+    for field, path in tracked_inputs(payload).items():
         recorded = inputs.get(field)
         if not recorded:
+            # A bridge-free arm records None on purpose: it read no corpus, and
+            # its config says so. That is a fact about the run, not a gap in the
+            # record, and counting it as unrecorded conflates "this arm used no
+            # bridge links" with "this record predates the field" -- which then
+            # understates is_checkable for every comparator arm Gate 2 runs.
+            if field == "bridge_links_sha256" and _declares_no_bridge(payload):
+                continue
             unrecorded.append(field)
             continue
         current = _digest(path)
-        if current is not None and current != recorded:
+        if current is None:
+            # Recorded a digest, and the file it names is gone. Previously this
+            # branch was skipped, which reported the result as FRESH -- the
+            # strongest possible claim -- on the strength of a file nobody could
+            # read. That is how the bridge check came to verify nothing.
+            stale.append(
+                StaleInput(
+                    field=field,
+                    path=repo_relative(path),
+                    recorded=str(recorded),
+                    current="<absent>",
+                )
+            )
+        elif current != recorded:
             stale.append(
                 StaleInput(
                     field=field,

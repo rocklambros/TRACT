@@ -137,6 +137,34 @@ NON_FLEET_ACTIONS: Final[frozenset[str]] = frozenset(
 ORCHESTRATOR_MODULE: Final[str] = "scripts.phase1b.runpod_parallel"
 ORCHESTRATOR_SCRIPT: Final[str] = "runpod_parallel.py"
 
+# The single-pod trainer is an orchestrator too. It was not, and the consequence
+# was worse than an omission: running_pod_count() could not name its pod, so it
+# returned 0; the guard read 0 pods with no orchestrator alive as "the campaign
+# is over"; and it DISARMED after three quiet checks, roughly six hours, while
+# the pod trained. A guard that stands down during the run it is guarding is
+# worse than no guard, because the operator believes it is armed.
+RETRAIN_MODULE: Final[str] = "scripts.phase1c.runpod_retrain"
+RETRAIN_SCRIPT: Final[str] = "runpod_retrain.py"
+
+# Phase 2C Gate 2's runner. Adding it is not optional politeness: the branch
+# below reaps when NO orchestrator is alive and pods ARE running, so a driver
+# this set does not name has its own pod terminated mid-run -- the guard
+# destroying the work it exists to bound. tract-p2c-gate2 is in
+# expected_pod_names(), so running_pod_count() sees the pod; without the module
+# here, pids would be empty and that is exactly the reap condition.
+GATE2_MODULE: Final[str] = "scripts.phase2c.run_gate2"
+GATE2_SCRIPT: Final[str] = "run_gate2.py"
+
+# Every argv shape that means "a driver is alive". One set, because the failure
+# mode of forgetting an entry is silent and destructive in both directions:
+# omitted, the guard reaps a live run; over-broad, it stands down forever.
+ORCHESTRATOR_MODULES: Final[frozenset[str]] = frozenset({
+    ORCHESTRATOR_MODULE, RETRAIN_MODULE, GATE2_MODULE,
+})
+ORCHESTRATOR_SCRIPTS: Final[frozenset[str]] = frozenset({
+    ORCHESTRATOR_SCRIPT, RETRAIN_SCRIPT, GATE2_SCRIPT,
+})
+
 # python3, python3.12, python3.13t (free-threaded). Matched on the BASENAME of
 # argv[0], so an absolute interpreter path from `command -v python3` or
 # sys.executable resolves the same as a bare word.
@@ -284,10 +312,10 @@ def _is_orchestrator_argv(argv: list[str]) -> bool:
         return False
     target = _python_target(argv)
     if target.kind == "module":
-        if target.name != ORCHESTRATOR_MODULE:
+        if target.name not in ORCHESTRATOR_MODULES:
             return False
     elif target.kind == "script":
-        if Path(target.name).name != ORCHESTRATOR_SCRIPT:
+        if Path(target.name).name not in ORCHESTRATOR_SCRIPTS:
             return False
     else:
         # A REPL or a `-c` one-liner is not the pipeline.
@@ -364,11 +392,17 @@ def expected_pod_names() -> set[str]:
     first, and this guard only calls it once pods are confirmed running.
     """
     from scripts.phase1b.runpod_parallel import select_pod_configs
+    from scripts.phase1c.runpod_retrain import POD_NAME as RETRAIN_POD_NAME
 
     return {
         config["name"]
         for split in ("test", "validation")
         for config in select_pod_configs(None, split)
+    } | {
+        # The single-pod trainer, which Phase 2C Gate 2 runs four times. Its pod
+        # was named outside every family this swept, so it was invisible to the
+        # one command that cleans up after a dead orchestrator.
+        RETRAIN_POD_NAME,
     }
 
 

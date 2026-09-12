@@ -1,0 +1,71 @@
+{
+  "_total_after_sanity": 78,
+  "ai_hubs_total": 78,
+  "bridge_path": "data/training/bridge",
+  "conditions": {
+    "Q1_distinct_controls": {
+      "agreement": null,
+      "agreement_both_linked": null,
+      "agreement_either_linked": null,
+      "cohen_kappa": null,
+      "n_both_linked": 0,
+      "n_one_linked_only": 0,
+      "n_same_hub": 0,
+      "passed": true,
+      "submitted": 58,
+      "threshold": 40,
+      "value": 54
+    },
+    "Q2_max_hubs_per_control": {
+      "agreement": null,
+      "agreement_both_linked": null,
+      "agreement_either_linked": null,
+      "cohen_kappa": null,
+      "n_both_linked": 0,
+      "n_one_linked_only": 0,
+      "n_same_hub": 0,
+      "passed": true,
+      "submitted": 1,
+      "threshold": 6,
+      "value": 1
+    },
+    "Q3_confidence_floor": {
+      "agreement": null,
+      "agreement_both_linked": null,
+      "agreement_either_linked": null,
+      "cohen_kappa": null,
+      "n_both_linked": 0,
+      "n_one_linked_only": 0,
+      "n_same_hub": 0,
+      "passed": true,
+      "submitted": 86,
+      "threshold": 2,
+      "value": 80
+    },
+    "Q4_double_annotated": {
+      "agreement": 0.8846153846153846,
+      "agreement_both_linked": 0.8846153846153846,
+      "agreement_either_linked": 0.42592592592592593,
+      "cohen_kappa": 0.596774193548387,
+      "n_both_linked": 26,
+      "n_one_linked_only": 28,
+      "n_same_hub": 23,
+      "passed": true,
+      "submitted": 0.4827586206896552,
+      "threshold": 0.15,
+      "value": 0.48148148148148145
+    }
+  },
+  "deorphaned": 28,
+  "n_annotators": 2,
+  "n_links_counting": 80,
+  "n_links_total": 86,
+  "orphan_reduction_passed": true,
+  "orphans_after": 50,
+  "orphans_before": 78,
+  "passed": true,
+  "sources": [
+    "data/training/bridge/vol-01.jsonl",
+    "data/training/bridge/vol-02.jsonl"
+  ]
+}

@@ -301,3 +301,180 @@ USE_TF=0 python -m pytest tests/test_bridge_links.py -q
 USE_TF=0 python -m pytest tests/test_bridge_packet.py -q
 USE_TF=0 python -m pytest tests/test_external_redistribution_guard.py -q
 ```
+
+---
+
+# Amendment 1 — 2026-09-11
+
+**Dated, committed before any Gate 2 arm has been trained, and stating what was
+already known when it was written.** That last clause is the one that matters:
+Campaign 2's authorising clause was added eight days after its arm results
+existed, and that is why its headline does not carry the weight it appears to.
+
+## What was known when this was written
+
+- **Gate 1 passed twice** — round 1 (28 de-orphaned, κ 0.597) and round 2 (31
+  de-orphaned, κ 0.508), against a threshold of 23.
+- **A second annotation round was run** on the same 300 controls with the same
+  two annotators, after `docs/phase2c-results.md` identified a sentence in the
+  round-1 handbook that stated the answer distribution before the annotator had
+  read anything. Round 2 is a strict superset: 106 `NONE`→link, 0 reversals, 0
+  hub changes. That round was run outside this document; recording it here is
+  part of this amendment.
+- **No Gate 2 arm has been trained.** No model has seen a bridge corpus. The
+  numbers below come from committed artifacts and non-model code only.
+- **An adversarial premortem was run** against the Gate 2 execution plan and is
+  committed at `docs/phase2c-premortem-gate2.md`. It refuted three load-bearing
+  properties of §3 as written. This amendment is that premortem's remediation.
+
+## 1.1 — §3's evaluation population was measurably unable to see the treatment
+
+§3 above says ENISA + BIML give "exactly the population bridges are bought to
+supervise." Re-derived from committed artifacts, that is not so:
+
+```
+eval: 50 items (ENISA 33, BIML 17); 32 ground_truth hubs; 56 valid_hub_ids (SCORED)
+round 1 conf>=2: 16/50 exposed to any bridge positive   {'ENISA': 16}
+round 2 conf>=2: 18/50 exposed                          {'ENISA': 18}
+```
+
+**BIML has zero exposure at the counting floor** — 34% of the denominator could
+only ever contribute noise. §3's "32 distinct gold hubs" is also the wrong
+denominator: `evaluate.py:355-365` scores against `valid_hub_ids`, of which there
+are 56.
+
+**Amended:** the evaluation is **ENISA + BIML + ETSI, 74 items over 62 scored
+hubs**, and the primary estimand is a **difference-in-differences over a
+pre-registered exposure partition** (27 exposed / 47 unexposed), committed as
+`results/phase2c/gate2_strata.json` before the first pod. BIML is retained as a
+declared **negative control**, not as signal.
+
+**ETSI's exclusion is reversed.** §3 excluded it because "its prose is licensed."
+The licence restricts *redistribution*, not scoring, and the training path
+already reads the licensed overlay. ETSI's gold is audit-untouched Tier 1. It is
+admitted **conditional on** `predictions.json` storing `control_text_sha256`
+rather than verbatim text for restricted frameworks — without that fix, adding
+ETSI would commit ETSI control statements into a CC0 repository through
+`.gitignore:43`, and ETSI must then be dropped rather than shipped.
+
+## 1.2 — The comparator in §3 is degenerate, and a placebo arm is added
+
+§3's bridge-free comparator has, under the strict all-AI firewall, **zero
+training positives for all 56 scored hubs**, because the two hub regions are
+disjoint. `ci_low > 0` against it licenses only "some supervision beats none."
+
+**Amended:** a fourth arm **A0R** is added — a random, size- and
+framework-matched assignment of NIST 800-53 controls to the same AI hubs under a
+declared seed. `A1 − A0R` is the secondary criterion and is what distinguishes
+the annotators' judgment from the mere arrival of AI-region positives.
+
+## 1.3 — The stated interval does not contain the dominant variance
+
+`paired_bootstrap_delta` resamples items within folds. Two trained arms are two
+draws from a training procedure, and that variance is absent from the interval.
+Measured between two committed same-arm runs whose zero-shot indicators are
+byte-identical: **19.1% per-item discordance, fold-drift SD 13.5pp**, at which
+the nominal 2.5% false-PASS rate is **13.4%**.
+
+**Amended:** the primary estimand is the DiD, which cancels global training-draw
+drift, and a **noise-floor arm A0′** (bridge-free, seed+1) is added. If
+`|DiD(A0′, A0)| ≥ DiD(A1, A0)` the round returns **NO VERDICT** — the instrument
+could not resolve the effect — rather than a FAIL.
+
+## 1.4 — Arms, cost, and multiplicity
+
+§3 budgets "one retrain, ~$40." **Amended to four retrains**: A0, A0′, A1, A0R.
+
+*Measured after the fact and corrected here: the four arms cost **~$12 total**,
+49 minutes each on a SECURE H100. The estimate above, and the "~$40" it
+inherited, were high by more than an order of magnitude. That matters because
+the inflated figure is what made a four-arm design look expensive enough to
+argue about, and it would have distorted the next scoping decision the same
+way.* The justification is 1.2 and 1.3 — without the placebo a PASS is
+near-tautological, and without the noise floor no delta is readable. There is no
+round-1 arm: the two corpora differ by 2 eval items of exposure, so the contrast
+buys nothing and carries two training-draw variances.
+
+`n_configurations = 2`. The outcome table in `docs/phase2c-gate2-plan.md` §5 is
+binding and covers every combination, including primary-FAIL/secondary-PASS,
+which resolves to FAIL.
+
+## 1.5 — The shipped corpus is round 2, and it ships regardless of verdict
+
+**Amended:** the corpus of record is the **round-2 union**, with round membership
+as a per-link field. Round 1 is nested inside it, so nothing is lost and both
+volunteers' full contribution is carried. The draft plan's selection of round 1
+rested on the link/no-link κ, which `docs/phase2c-results.md:117-120` forbids
+citing without its denominator and which this project has documented as moved by
+the round-1 instruction wording; hub agreement, the statistic that decides
+whether a link is correct, is 0.8909 (n=55) for round 2 against 0.8846 (n=26) for
+round 1. The draft's other ground — "zero of the 106 additions is confidence 3" —
+is blind to the 86 retained links, seven of which moved 2→3.
+
+**The corpus, its manifest, the agreement figures and both Gate 1 reports are
+published unconditionally, as Stage-1 work, and are committed before the first
+pod.** This reverses §7's implicit dependency of publication on Stage 2 funding.
+Checkpoint-2 open item Gov W8 is closed by this clause.
+
+## 1.6 — The withdrawal right, under anonymity
+
+The annotator handbook promises "a right to withdraw their contribution before
+publication." An earlier draft of this amendment required both annotators to
+acknowledge, in writing, that the window was closing before any arm trained.
+**That requirement is withdrawn, and this is the reasoning, recorded here rather
+than left to memory.**
+
+**The annotators are anonymous by their own request**, and the round was built to
+keep them so: `results/phase2c/*` carries pseudonyms only, the importer stores a
+`source_sha256` rather than a path so the filename cannot leak an identity, and
+no pseudonym-to-person mapping exists anywhere in this repository. Soliciting an
+individual acknowledgement would require a channel to a named person, which is
+the thing anonymity removes.
+
+Anonymity also reduces what the right is protecting. The withdrawal right
+principally guards against someone's **identified** work being published against
+their will. A pseudonym no reader can resolve does not carry that exposure.
+
+What survives, and what does not:
+
+- **The published corpus can be re-cut.** `scripts/build_gate2_corpus.py` takes
+  `--exclude-annotator`, so one contributor's links can be removed and Gate 1
+  re-run against the remainder. A withdrawal arriving through whatever channel
+  returned the sheets can be honoured for the dataset and the upstream OpenCRE
+  proposal.
+- **A trained checkpoint cannot.** Supervision is in the weights. If a
+  withdrawal arrives after Gate 2 has run, the corpus and the dataset are
+  re-cut; the delta and its interval were computed on a corpus that no longer
+  exists, and the write-up must say so rather than quietly stand.
+
+That asymmetry is the honest cost of proceeding, and it is accepted here
+deliberately rather than discovered later.
+
+## 1.7 — Gate 2's criterion had no implementation; §8's reproduction command is wrong
+
+`gate_decision` is hardwired to a zero-shot baseline at threshold 0.10 — the
+comparator §3 retires — and no function pairs two training arms.
+`scripts/analysis/gate2_delta.py` is added for that purpose and must assert item
+alignment and that the arms differ only in `bridge_links_sha256`.
+
+§8's command names `data/training/hub_links_bridge.jsonl`, **which does not
+exist**; the corpora are per-annotator directories, and the confidence floor is
+applied only in the gate reporter, never on the training path. Corrected
+commands:
+
+```bash
+python -m scripts.analysis.gate1_report data/training/bridge
+python -m scripts.analysis.gate1_report data/training/bridge-r2
+```
+
+## 1.8 — Open checkpoint-2 items that block this run
+
+C1 (`_build_fold_index_matrix` order dependence, measured spread 0.0162 in p) and
+B6 (`preregistered_pass` uncorrected for selection) must be closed before the
+first pod. C1 matters here more than it did for Campaign 3 because `ci_low > 0`
+is a boundary test.
+
+C6 — the annotator hub sheet was built from `BRIDGE_AI_FRAMEWORK_IDS`, which
+includes the eval frameworks — is **disclosed and not fixed**. A PASS licenses
+"bridges aimed at this hub region help on this hub region," not "bridges
+generalize."

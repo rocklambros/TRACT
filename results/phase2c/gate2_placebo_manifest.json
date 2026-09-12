@@ -1,0 +1,16 @@
+{
+  "corpus_path": "data/training/hub_links_bridge.placebo.jsonl",
+  "corpus_sha256": "5a9d0b67fa2f5313168217106ee604b298efb87fe944d4f8608651532aabb7e5",
+  "git_sha": "0c811334ef7fd1bf8c517f98c5564f8b892f53cd",
+  "hub_distribution_matches_real": true,
+  "n_distinct_controls": 99,
+  "n_distinct_hubs": 31,
+  "n_edges": 124,
+  "n_edges_real": 124,
+  "overlap_with_real_corpus": 0,
+  "real_corpus_path": "data/training/hub_links_bridge.r2.jsonl",
+  "real_corpus_sha256": "9754b451b5b8ef3b8cd0f0a1a6839286c7c2e31c67ebbc0c8c3f3aedb6598bd7",
+  "round_label": "placebo",
+  "seed": 20260911,
+  "source_standard": "NIST 800-53 v5"
+}

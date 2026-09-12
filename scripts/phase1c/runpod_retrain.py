@@ -14,6 +14,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+
+from tract.config import POD_RSYNC_EXCLUDES
 import os
 import subprocess
 import time
@@ -74,6 +76,11 @@ def _get_pod_env() -> dict[str, str]:
             env[var] = _get_credential(cred)
         except Exception as e:
             logger.warning("Could not get %s: %s", cred, e)
+    # Temporaries onto the VOLUME, not the container disk. The default /tmp is
+    # on the container overlay, which a multi-arm sequence exhausts -- and
+    # RunPod surfaces that as EIO, not ENOSPC, so it reads like a disk fault
+    # mid-training rather than a capacity problem between arms.
+    env["TMPDIR"] = POD_TMPDIR
     return env
 
 
@@ -109,15 +116,15 @@ def _ssh(
 
 
 def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
+    # POD_RSYNC_EXCLUDES, shared with runpod_parallel rather than hand-copied.
+    # This list used to be a near-duplicate whose own comment admitted the first
+    # divergence -- it omitted .env, *.db, data/raw and .claude, so crosswalk.db
+    # shipped to every pod. It also excluded only results/phase0 and
+    # results/phase1b, which let the Tier-3 quarantined review export and the
+    # ceiling study's LLM-written hub descriptions through.
+    excludes = " ".join(f"--exclude={pat!r}" for pat in POD_RSYNC_EXCLUDES)
     cmd = (
-        # Mirrors runpod_parallel's list. This one omitted .env, *.db,
-        # data/raw and .claude, so crosswalk.db shipped to every pod.
-        f"rsync -rltz --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' "
-        f"--exclude='.mypy_cache' --exclude='models' "
-        f"--exclude='wandb' --exclude='.wandb' --exclude='.env' "
-        f"--exclude='*.db' --exclude='data/raw' --exclude='.claude' "
-        f"--exclude='venv' --exclude='.venv' --exclude='.pod_state*' "
-        f"--exclude='results/phase0' --exclude='results/phase1b' "
+        f"rsync -rltz {excludes} "
         f"-e 'ssh {SSH_OPTS} -p {port}' {local_path} root@{ip}:{remote_path}"
     )
     logger.info("[rsync to] %s:%d %s", ip, port, remote_path)
@@ -125,7 +132,16 @@ def _rsync_to(ip: str, port: int, local_path: str, remote_path: str) -> None:
 
 
 def _rsync_from(ip: str, port: int, remote_path: str, local_path: str) -> None:
-    cmd = f"rsync -rltz -e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
+    # --safe-links drops any symlink pointing outside the transfer. Without it a
+    # compromised pod can ship `x -> ~/.ssh` and a later pass writes through it,
+    # which turns retrieving results into an arbitrary write on the operator's
+    # machine. runpod_parallel's pull has carried this since the hardening pass;
+    # this one did not, and it is the direction that reads from a rented host.
+    # -l is kept because the tree may hold internal links.
+    cmd = (
+        f"rsync -rltz --safe-links "
+        f"-e 'ssh {SSH_OPTS} -p {port}' root@{ip}:{remote_path} {local_path}"
+    )
     logger.info("[rsync from] %s:%d %s", ip, port, remote_path)
     subprocess.run(cmd, shell=True, check=True, timeout=600)
 
@@ -136,6 +152,40 @@ def _save_pod_state(pod: dict[str, Any]) -> None:
     logger.info("Pod state saved to %s", POD_STATE_FILE)
 
 
+# This name must be in expected_pod_names(), which both reaper_guard and reap
+# now read. It used to be "tract-p1c-retrain", which neither swept -- the
+# families were tract-p1b-fold* and tract-p1b-val-fold* -- so a dead
+# orchestrator left it billing with no recovery path. Deliberately NOT given a
+# tract-p1b-val- prefix to sneak into the existing family: that prefix means
+# "a validation fold" and the count of them is an invariant elsewhere.
+POD_NAME: Final[str] = "tract-p2c-gate2"
+
+# On the 50GB volume rather than the container disk. See CONTAINER_DISK_GB.
+POD_TMPDIR: Final[str] = "/workspace/tmp"
+
+# A ceiling, because find_fastest_available's fallback is "largest VRAM wins",
+# which its own docstring warns "can select a part several times the rate of an
+# H100". runpod_parallel has always passed one; this module never did.
+MAX_USD_PER_HOUR: Final[float] = float(
+    os.environ.get("TRACT_RETRAIN_MAX_USD_PER_HOUR", "4.0")
+)
+
+# The container disk, which is NOT the 50GB volume. /tmp lives here, and a
+# multi-arm sequence fills it: HuggingFace, datasets and torch all stage
+# temporaries there, and nothing cleans up between arms. RunPod's overlay
+# reports exhaustion as EIO rather than ENOSPC, so the symptom is
+# "OSError: [Errno 5] Input/output error: '/tmp/tmpb09e0afm'" at 95% of a
+# 50-minute training run, which reads like a hardware fault and is not one.
+CONTAINER_DISK_GB: Final[int] = 60
+
+# A wall clock. Nothing here bounded total runtime, so a hung training step
+# billed until someone noticed. At the last recorded SECURE H100 rate that is
+# about $79/day.
+MAX_RUN_HOURS: Final[float] = float(
+    os.environ.get("TRACT_RETRAIN_MAX_RUN_HOURS", "12")
+)
+
+
 def _load_pod_state() -> dict[str, Any]:
     if not POD_STATE_FILE.exists():
         raise FileNotFoundError(f"No pod state file at {POD_STATE_FILE} — run 'provision' first")
@@ -144,13 +194,19 @@ def _load_pod_state() -> dict[str, Any]:
 
 
 def provision() -> dict[str, Any]:
-    logger.info("Finding fastest available GPU (>= 48GB VRAM)...")
-    gpu_type = find_fastest_available(min_vram_gb=48)
+    logger.info(
+        "Finding fastest available GPU (>= 48GB VRAM, <= $%.2f/hr)...",
+        MAX_USD_PER_HOUR,
+    )
+    gpu_type = find_fastest_available(
+        min_vram_gb=48, max_usd_per_hour=MAX_USD_PER_HOUR
+    )
     logger.info("Selected GPU: %s", gpu_type)
 
     pod = create_pod(
-        gpu_type, name="tract-p1c-retrain",
-        image=DOCKER_IMAGE, volume_gb=50, container_disk_gb=20,
+        gpu_type, name=POD_NAME,
+        image=DOCKER_IMAGE, volume_gb=50,
+        container_disk_gb=CONTAINER_DISK_GB,
     )
 
     _save_pod_state(pod)
@@ -164,6 +220,7 @@ def _bootstrap(pod: dict[str, Any]) -> None:
 
     _ssh(ip, port, "apt-get update -qq && apt-get install -y -qq rsync > /dev/null 2>&1", check=False)
 
+    _ssh(ip, port, f"mkdir -p {POD_TMPDIR}")
     _rsync_to(ip, port, f"{PROJECT_ROOT}/", "/workspace/tract/")
 
     _ssh(ip, port, (
@@ -256,15 +313,47 @@ def teardown() -> None:
 
 
 def full_pipeline(round_num: int) -> None:
+    """Provision, train, collect, and ALWAYS tear down.
+
+    The teardown used to be the last statement of a bare sequence, so any raise
+    between provision and it orphaned a billing pod -- and `_ssh` in this module
+    has no retry ladder, so one transient SSH error was enough. The reaper could
+    not recover it either: the pod name sat outside the swept family, and a live
+    retrain did not register as an orchestrator, so the guard read the fleet as
+    empty and disarmed after three quiet checks while the pod trained.
+
+    `finally` rather than `except Exception`, deliberately. KeyboardInterrupt
+    derives from BaseException, and Ctrl-C at 2am is the most likely way this is
+    interrupted -- the case where an operator is watching and would most expect
+    the pod to go away.
+    """
     logger.info("=" * 60)
     logger.info("PHASE 1C RETRAIN ROUND %d (RunPod)", round_num)
+    logger.info("  price ceiling  : $%.2f/hr", MAX_USD_PER_HOUR)
+    logger.info("  wall clock     : %.1f h", MAX_RUN_HOURS)
     logger.info("=" * 60)
     start = time.time()
+    deadline = start + MAX_RUN_HOURS * 3600
+    results_are_safe = False
 
-    provision()
-    run_retrain(round_num)
-    collect(round_num)
-    teardown()
+    try:
+        provision()
+        run_retrain(round_num)
+        if time.time() > deadline:
+            raise TimeoutError(
+                f"Retrain exceeded its {MAX_RUN_HOURS}h wall clock. Tearing "
+                "down rather than billing on."
+            )
+        collect(round_num)
+        results_are_safe = True
+    finally:
+        if not results_are_safe:
+            logger.error(
+                "Pipeline did not reach a safe state. Tearing the pod down "
+                "anyway -- an un-collected result is lost either way, and a "
+                "pod nobody is watching is not."
+            )
+        teardown()
 
     elapsed = time.time() - start
     logger.info("Total pipeline time: %.1fm", elapsed / 60)

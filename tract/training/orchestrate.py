@@ -11,12 +11,13 @@ Orchestrates the full Phase 1B pipeline:
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import math
 import os
 import subprocess
 import time
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from pathlib import Path
 from typing import Any, Final
 
@@ -31,10 +32,12 @@ from scripts.phase0.common import (
 from tract.config import (
     FOLD_RESULT_FILENAME,
     max_anchor_chars,
+    OPENCRE_FRAMEWORK_ID_MAP,
     PHASE1B_GATE_HIT1_DELTA,
     PREREGISTERED_GATE_ALPHA,
     PHASE1B_RESULTS_DIR,
     PROCESSED_DIR,
+    RESTRICTED_FRAMEWORK_IDS,
 )
 from tract.hierarchy import CREHierarchy
 from tract.io import atomic_write_json, load_json
@@ -66,11 +69,60 @@ from tract.text_selection import (
     canonical_framework,
     merged_corpus_path,
 )
-from tract.training.firewall import assert_firewall, build_all_hub_texts
+from tract.training.firewall import (
+    assert_exclusion_fired,
+    assert_firewall,
+    build_all_hub_texts,
+    excluded_framework_set,
+)
 from tract.training.loop import save_checkpoint, train_model
 from tract.training.data_quality import TieredLink
 
 logger = logging.getLogger(__name__)
+
+
+def prediction_record(
+    *,
+    control_text: str,
+    ground_truth_hub_id: str,
+    predicted_top10: list[str],
+    framework_name: str,
+) -> dict[str, Any]:
+    """One row of predictions.json, with restricted prose withheld.
+
+    `results/phase1b/**/*.json` is negated back into tracking by .gitignore, so
+    whatever lands here is committed to a CC0 repository. That was harmless
+    while the AI eval roster held only unrestricted frameworks. Gate 2 scores
+    ETSI, which is in RESTRICTED_FRAMEWORK_IDS, and a verbatim ETSI clause in a
+    tracked file is a rights claim this project cannot make on behalf of every
+    downstream fork -- the thing tract/licensing.py exists to prevent.
+
+    Nothing is lost by withholding it. The control text is in this file for one
+    real purpose: proving two arms scored the same items in the same order
+    before a paired interval is computed between them. `control_text_sha256`
+    does that strictly better, because it is comparable without being readable,
+    and it is written for every framework so alignment still works across a
+    redacted arm and an unredacted one.
+
+    An unrecognised framework name is treated as UNRESTRICTED, deliberately.
+    Erring the other way would silently redact every framework added later and
+    the loss would look like normal behaviour.
+    """
+    framework_id = OPENCRE_FRAMEWORK_ID_MAP.get(framework_name, "")
+    restricted = framework_id in RESTRICTED_FRAMEWORK_IDS
+    record: dict[str, Any] = {
+        "control_text_sha256": hashlib.sha256(
+            control_text.encode("utf-8")
+        ).hexdigest(),
+        "control_text_redacted": restricted,
+        "ground_truth_hub_id": ground_truth_hub_id,
+        "predicted_top10": predicted_top10,
+        "framework": framework_name,
+    }
+    if not restricted:
+        record["control_text"] = control_text
+    return record
+
 
 # FOLD_RESULT_FILENAME moved to tract.config; this module imports it above and
 # uses it below. Import it FROM tract.config, not from here -- mypy --strict
@@ -114,6 +166,14 @@ ARM_DEFINING_KEYS: tuple[str, ...] = (
     # semantic hub descriptions would have averaged with one matching a bare
     # label -- the two most different experiments this project can run.
     "hub_rep_format",
+    # WHICH bridge corpus, or none. This is the Gate 2 treatment itself, and it
+    # was absent from this list while a three-arm plan was being written: A0 and
+    # A1 produced the same arm key, so load_fold_results would have aggregated a
+    # bridge-free fold beside a bridge-trained one without objecting. It was
+    # saved only by the `inputs` digest check further down, i.e. by accident,
+    # one layer away. The structural test that exists to catch omissions here
+    # scanned only `use_*` booleans, so a `str | None` field slipped past it.
+    "bridge_links_path",
 )
 
 # hit@1 is an indicator: for each eval item the top-ranked hub either was a
@@ -181,6 +241,7 @@ def run_single_fold(
     standard_sections: dict[str, list[str]] | None = None,
     include_zero_shot: bool = False,
     corpus_selection: SelectionStats | None = None,
+    excluded_frameworks: Collection[str] | None = None,
 ) -> dict[str, Any]:
     """Train and evaluate one LOFO fold. Returns fold result dict.
 
@@ -197,8 +258,24 @@ def run_single_fold(
             the real figure is 55. SelectionStats is keyed by framework and the
             fold's framework is the one held out, so the corpus-wide object
             carries exactly this fold's count.
+        excluded_frameworks: What the FIREWALL removes, which is not always what
+            the fold is NAMED after. Defaults to {held_out_framework}, so every
+            ordinary LOFO caller is unchanged. Gate 2 passes all eight AI
+            frameworks while naming the fold after the one being scored, because
+            the AI and traditional hub regions are disjoint: leaving any AI
+            framework in training supplies exactly the positives the bridge
+            corpus is bought to provide, and `--framework ENISA` alone leaves 52
+            of 56 scored hubs supervised while writing a record that looks
+            firewalled.
     """
-    logger.info("=== FOLD: %s ===", held_out_framework)
+    excluded = excluded_framework_set(
+        excluded_frameworks if excluded_frameworks is not None
+        else held_out_framework
+    )
+    logger.info(
+        "=== FOLD: %s (firewall holds out %s) ===",
+        held_out_framework, sorted(excluded),
+    )
     fold_start = time.time()
 
     include_desc = config.hub_rep_format == "path+name+desc"
@@ -245,7 +322,7 @@ def run_single_fold(
 
     hub_texts = build_all_hub_texts(
         hierarchy,
-        excluded_framework=held_out_framework,
+        excluded_framework=excluded,
         include_description=include_desc,
         descriptions=descriptions,
         include_standards=include_standards,
@@ -264,7 +341,7 @@ def run_single_fold(
     if include_standards or include_desc:
         base_hub_texts = build_all_hub_texts(
             hierarchy,
-            excluded_framework=held_out_framework,
+            excluded_framework=excluded,
             include_description=False,
             include_standards=False,
             stopwords=stopwords,
@@ -278,16 +355,21 @@ def run_single_fold(
 
         hub_names = {filter_stopwords(name, stopwords) for name in hub_names}
     assert_firewall(
-        hub_texts, eval_items, held_out_framework, base_hub_texts,
+        hub_texts, eval_items, excluded, base_hub_texts,
         hub_names=hub_names,
     )
 
     pairs = build_training_pairs(
-        tiered_links, hub_texts, excluded_framework=held_out_framework,
+        tiered_links, hub_texts, excluded_framework=excluded,
         prose_index=prose_index, stopwords=stopwords,
         description_only=config.use_description_only,
         max_chars=max_anchor_chars(config.max_seq_length),
     )
+    # The converse assertion. assert_firewall above checks that held-out control
+    # text did not leak INTO hub representations; nothing checked that the
+    # exclusion removed the training links it named. Both failure modes are
+    # silent and both produce a record shaped like an honest one.
+    assert_exclusion_fired(pairs, tiered_links, excluded)
     dataset = pairs_to_dataset(pairs, hierarchy, hub_texts, n_hard_negatives=config.hard_negatives)
 
     fold_output = output_dir / f"fold_{held_out_framework.replace(' ', '_')}"
@@ -365,14 +447,15 @@ def run_single_fold(
 
     save_checkpoint(model, config, metrics, fold_output / "model", _get_git_sha())
 
-    pred_data = []
-    for item, pred in zip(eval_items, predictions):
-        pred_data.append({
-            "control_text": item.control_text,
-            "ground_truth_hub_id": item.ground_truth_hub_id,
-            "predicted_top10": pred[:10],
-            "framework": item.framework_name,
-        })
+    pred_data = [
+        prediction_record(
+            control_text=item.control_text,
+            ground_truth_hub_id=item.ground_truth_hub_id,
+            predicted_top10=pred[:10],
+            framework_name=item.framework_name,
+        )
+        for item, pred in zip(eval_items, predictions)
+    ]
     atomic_write_json(pred_data, fold_output / "predictions.json")
     atomic_write_json(metrics, fold_output / "metrics.json")
 
@@ -381,6 +464,12 @@ def run_single_fold(
 
     result: dict[str, Any] = {
         "held_out_framework": held_out_framework,
+        # What the firewall ACTUALLY removed, which is not always what the fold
+        # is named after. Recorded because it was previously recorded nowhere:
+        # a one-framework holdout and an eight-framework holdout produced
+        # records identical in shape, so a run that left 52 of 56 scored hubs
+        # supervised was indistinguishable from a strict one after the fact.
+        "excluded_frameworks": sorted(excluded),
         "metrics": metrics,
         "predictions": predictions,
         "hit1_indicators": hit1_indicators,

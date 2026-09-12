@@ -412,6 +412,39 @@ class TestArmSeparation:
             f"TrainingConfig has boolean use_* flags {sorted(arm_flags)} not "
             f"covered by the guard {sorted(ARM_DEFINING_KEYS)}"
         )
+
+        # The use_* scan above is necessary and was not sufficient. It matched
+        # only booleans whose name begins "use_", so `bridge_links_path` -- a
+        # `str | None` naming WHICH bridge corpus trained, i.e. the entire Gate
+        # 2 treatment -- sat outside ARM_DEFINING_KEYS while a three-arm plan
+        # was being written, and this test passed over the hole.
+        #
+        # So the rule is inverted: every serialized field is arm-defining
+        # unless it is named here as deliberately not. Adding a field to
+        # TrainingConfig now forces that decision instead of defaulting to
+        # "invisible to the aggregation guard".
+        NOT_ARM_DEFINING = {
+            # Identity and provenance, not configuration.
+            "name", "data_hash", "seed", "checkpoint_path",
+            "base_model_revision",
+            # Optimisation knobs. Two runs differing only in batch size are the
+            # same experiment run at different throughput; the project has
+            # never treated these as separate arms.
+            "batch_size", "gradient_checkpointing", "learning_rate",
+            "max_epochs", "max_grad_norm", "warmup_ratio", "weight_decay",
+            "lora_rank", "lora_alpha", "lora_dropout", "lora_target_modules",
+            # Derived from, or duplicative of, flags already in the guard.
+            "control_text_source", "hard_negatives", "sampling_temperature",
+            "training_data",
+        }
+        uncovered = set(serialized) - set(ARM_DEFINING_KEYS) - NOT_ARM_DEFINING
+        assert not uncovered, (
+            f"TrainingConfig fields {sorted(uncovered)} are neither arm-defining "
+            "nor explicitly excused. A field that changes what a run IS but is "
+            "absent from ARM_DEFINING_KEYS lets two different experiments "
+            "aggregate into one number that describes neither. Add it to "
+            "ARM_DEFINING_KEYS, or to NOT_ARM_DEFINING with a reason."
+        )
         # Everything that changes what a run IS, beyond the anchor arms.
         for key in ("branch_balance_temperature", "base_model", "max_seq_length"):
             assert key in ARM_DEFINING_KEYS, (

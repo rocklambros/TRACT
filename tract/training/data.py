@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 import math
 from collections import defaultdict
+from collections.abc import Collection
 from dataclasses import dataclass
 from typing import Any, ClassVar, Iterator
 
@@ -22,6 +23,7 @@ from tract.config import TIER_PRIORITY
 from tract.hierarchy import CREHierarchy
 from tract.text_selection import ProseIndex, SelectionStats, select_control_text
 from tract.training.data_quality import TieredLink
+from tract.training.firewall import excluded_framework_set
 from tract.training.st_compat import resolve_symbol
 
 logger = logging.getLogger(__name__)
@@ -77,10 +79,12 @@ def mine_hard_negatives(
             seen.add(neg_id)
             deduped.append(neg_id)
     return deduped[:n]
+
+
 def build_training_pairs(
     tiered_links: list[TieredLink],
     hub_texts: dict[str, str],
-    excluded_framework: str | None = None,
+    excluded_framework: str | Collection[str] | None = None,
     prose_index: ProseIndex | None = None,
     stopwords: frozenset[str] | None = None,
     description_only: bool = False,
@@ -108,12 +112,17 @@ def build_training_pairs(
     raw_pairs: list[TrainingPair] = []
     skipped = 0
     selection_stats = SelectionStats()
+    excluded = excluded_framework_set(excluded_framework)
 
     for tiered in tiered_links:
         link = tiered.link
         standard_name = link.get("standard_name", "")
 
-        if excluded_framework and standard_name == excluded_framework:
+        # Set membership, not equality. See excluded_framework_set: the old
+        # `== excluded_framework` was permanently False for a set, so a
+        # multi-framework firewall would have been a no-op that reported
+        # success.
+        if standard_name in excluded:
             continue
 
         try:
@@ -188,7 +197,7 @@ def build_training_pairs(
     logger.info(
         "Built %d training pairs (excluded=%s): %d raw, %d deduped, "
         "%d texts map to multiple hubs (handled by sampler)",
-        len(pairs), excluded_framework, len(raw_pairs), n_deduped,
+        len(pairs), sorted(excluded) or None, len(raw_pairs), n_deduped,
         n_multi_hub_texts,
     )
     return pairs

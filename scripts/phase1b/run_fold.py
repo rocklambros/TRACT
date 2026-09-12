@@ -16,6 +16,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+from typing import Final
 
 from scripts.phase0.common import (
     AI_FRAMEWORK_NAMES,
@@ -29,6 +30,8 @@ from tract.config import (
     max_anchor_chars,
     LOFO_WANDB_ENTITY,
     LOFO_WANDB_PROJECT,
+    PHASE2C_GATE2_EVAL_FRAMEWORKS,
+    PHASE2C_GATE2_HELD_OUT,
     PROCESSED_DIR,
 )
 from tract.hierarchy import CREHierarchy
@@ -74,6 +77,13 @@ def _arm_label(config: TrainingConfig) -> str:
     return "-".join(parts)
 
 
+# The sentinel --framework value for Gate 2, and the name its single fold is
+# written under. One model per arm scores all three frameworks, so no single
+# framework name describes the fold.
+GATE2_ALL_FRAMEWORKS: Final[str] = "ALL"
+GATE2_FOLD_LABEL: Final[str] = "gate2"
+
+
 def validation_frameworks() -> set[str]:
     """Every framework that is NOT part of the pre-registered AI test set.
 
@@ -106,6 +116,15 @@ def _campaign_label(config: TrainingConfig) -> str:
         label += f"-seq{config.max_seq_length}"
     if config.hub_rep_format != "path+name":
         label += "-" + config.hub_rep_format.replace("path+name+", "")
+    # WHICH bridge corpus. Without this the Gate 2 arms -- bridge-free,
+    # round-2, placebo -- share a campaign label, hence a stable_run_id, hence
+    # one WandB run and one output directory, and each overwrites the last.
+    # The corpus filename is the arm identity, so it is what the label carries.
+    if config.bridge_links_path:
+        stem = Path(config.bridge_links_path).name
+        for prefix, suffix in (("hub_links_bridge.", ""), ("", ".jsonl")):
+            stem = stem.removeprefix(prefix).removesuffix(suffix)
+        label += f"-bridge_{stem}"
     return label
 
 
@@ -144,7 +163,7 @@ def main() -> int:
     parser.add_argument("--max-seq-length", type=int, default=None,
                         help="Encoder token budget. The anchor character cut "
                              "is derived from it.")
-    parser.add_argument("--split", choices=("test", "validation"),
+    parser.add_argument("--split", choices=("test", "validation", "gate2"),
                         default="test",
                         help="test: LOFO over the 5 AI frameworks, the "
                              "pre-registered 147-item set PRD 6.4 reports. "
@@ -172,6 +191,18 @@ def main() -> int:
                              "path+name+desc be measured; it never has been, "
                              "because this flag did not exist on the RunPod "
                              "path and CLAUDE.md forbids the local one.")
+    parser.add_argument(
+        "--seed", type=int, default=None,
+        help=(
+            "Training seed. Gate 2's noise-floor arm is the comparator re-run "
+            "at a different seed and nothing else, so that |A0' - A0| measures "
+            "what two identical configurations differ by. Without it a delta "
+            "has no scale: two same-arm runs in this repository differ by 19%% "
+            "per-item discordance. Give each seed its own --config-name -- seed "
+            "is deliberately NOT arm-defining, so two seeds under one name "
+            "would share an output directory and overwrite each other."
+        ),
+    )
     parser.add_argument("--branch-balance", type=float, default=None,
                         help="Temperature flattening the CRE-branch "
                              "distribution during batch ordering. 0 disables "
@@ -206,11 +237,51 @@ def main() -> int:
     # The eval population follows the split. A typo would otherwise hold out
     # nothing, train on everything and report an inflated score against an
     # empty eval set, so the name is checked against the split's own roster.
-    eval_frameworks = (
-        set(AI_FRAMEWORK_NAMES) if args.split == "test"
-        else validation_frameworks()
-    )
-    if args.framework not in eval_frameworks:
+    if args.split == "test":
+        eval_frameworks = set(AI_FRAMEWORK_NAMES)
+    elif args.split == "gate2":
+        eval_frameworks = set(PHASE2C_GATE2_EVAL_FRAMEWORKS)
+    else:
+        eval_frameworks = validation_frameworks()
+
+    # THE 2AM REFUSAL. `validation_frameworks()` is everything minus the FIVE
+    # -name AI roster, so it contains ENISA, ETSI and BIML. Before this,
+    # `--split validation --framework ENISA` ran, passed every guard, held out
+    # ENISA alone, left the other seven AI frameworks in training -- 52 of 56
+    # scored hubs still supervised -- and wrote a fold record indistinguishable
+    # from a strictly firewalled one. It is the cheap path that exists when the
+    # expensive one is not built yet, and it answers a different question while
+    # looking like an answer to this one.
+    if args.split == "validation" and args.framework in PHASE2C_GATE2_HELD_OUT:
+        raise ValueError(
+            f"{args.framework!r} is an AI framework and cannot be scored under "
+            f"--split validation, which holds out ONE framework and leaves the "
+            f"rest of the AI region in training. Gate 2 requires the strict "
+            f"all-AI firewall: use --split gate2, which holds out "
+            f"{sorted(PHASE2C_GATE2_HELD_OUT)}. See "
+            "docs/phase2c-gate2-plan.md."
+        )
+
+    # Gate 2 scores ALL of its frameworks with ONE trained model, and the
+    # sentinel is required rather than defaulted so nobody scores a single
+    # framework by habit and gets a different experiment.
+    #
+    # The reason is the primary estimand. Gate 2's criterion is a
+    # difference-in-differences between exposed and unexposed items, and those
+    # two strata must come from the SAME model -- training once per framework
+    # would put training-draw variance BETWEEN the strata, which is exactly the
+    # variance the DiD exists to cancel. Two same-arm runs in this repository
+    # differ by 19% per-item discordance, so that is not a small confound.
+    if args.split == "gate2":
+        if args.framework != GATE2_ALL_FRAMEWORKS:
+            raise ValueError(
+                f"--split gate2 requires --framework {GATE2_ALL_FRAMEWORKS}. "
+                f"Scoring one framework on its own trains a separate model per "
+                "stratum, and the difference-in-differences then measures "
+                "training-draw drift between them rather than the bridge "
+                "corpus. See docs/phase2c-gate2-plan.md section 5."
+            )
+    elif args.framework not in eval_frameworks:
         raise ValueError(
             f"Unknown framework {args.framework!r} for split "
             f"{args.split!r}. Expected one of: {sorted(eval_frameworks)}"
@@ -227,6 +298,7 @@ def main() -> int:
         **({"branch_balance_temperature": args.branch_balance}
            if args.branch_balance is not None else {}),
         **({"hub_rep_format": args.hub_rep} if args.hub_rep else {}),
+        **({"seed": args.seed} if args.seed is not None else {}),
         **(
             {"bridge_links_path": args.bridge_links}
             if args.bridge_links else {}
@@ -272,7 +344,15 @@ def main() -> int:
         max_chars=max_anchor_chars(config.max_seq_length),
     )
     selection_stats.log_summary("Eval items")
-    eval_items = [i for i in corpus if i.framework_name == args.framework]
+    if args.split == "gate2":
+        eval_items = [
+            i for i in corpus
+            if i.framework_name in PHASE2C_GATE2_EVAL_FRAMEWORKS
+        ]
+        fold_label = GATE2_FOLD_LABEL
+    else:
+        eval_items = [i for i in corpus if i.framework_name == args.framework]
+        fold_label = args.framework
     if not eval_items:
         raise ValueError(
             f"No eval items for {args.framework!r}. The fold would score "
@@ -280,7 +360,7 @@ def main() -> int:
         )
 
     logger.info("Fold %s: %d eval items, raw_hash=%s",
-                args.framework, len(eval_items), raw_hash)
+                fold_label, len(eval_items), raw_hash)
 
     # The arm is a runtime flag on one commit, so it has to be in the run name
     # and the tags. Two arms landing as indistinguishable runs is the same
@@ -291,26 +371,26 @@ def main() -> int:
         run = init_run(
             project=args.wandb_project,
             entity=LOFO_WANDB_ENTITY,
-            name=f"{arm}/{args.framework}",
+            name=f"{arm}/{fold_label}",
             config={
                 **config.to_dict(),
-                "held_out_framework": args.framework,
+                "held_out_framework": fold_label,
                 "arm": arm,
                 "n_eval_items": len(eval_items),
                 "curated_links_hash": raw_hash,
                 "eval_prose_fraction": selection_stats.prose_fraction,
             },
-            tags=[arm, args.framework, "lofo"],
+            tags=[arm, fold_label, "lofo"],
             # Same key the orchestrator uses, so a pod-side run and a
             # later `track` of the same fold are one run, not two.
-            run_id=stable_run_id(args.config_name, arm, args.framework),
+            run_id=stable_run_id(args.config_name, arm, fold_label),
         )
 
     exit_code = 0
     try:
         result = run_single_fold(
             config=config,
-            held_out_framework=args.framework,
+            held_out_framework=fold_label,
             tiered_links=tiered_links,
             hierarchy=hierarchy,
             eval_items=eval_items,
@@ -322,6 +402,12 @@ def main() -> int:
             # by 26% -- 39 reported against 55 real across Campaign 2's test
             # round -- because prepare_anchor rstrips after cutting.
             corpus_selection=selection_stats,
+            # Gate 2 holds out the whole AI region while naming the fold after
+            # the framework being scored. Every other split holds out exactly
+            # the fold's own framework, which is what None means here.
+            excluded_frameworks=(
+                PHASE2C_GATE2_HELD_OUT if args.split == "gate2" else None
+            ),
         )
     except BaseException:
         # Mark the run failed rather than leaving it displayed as running.
@@ -331,14 +417,14 @@ def main() -> int:
         finish_run(run, exit_code=1)
         raise
 
-    fold_dir = output_dir / f"fold_{args.framework.replace(' ', '_')}"
+    fold_dir = output_dir / f"fold_{fold_label.replace(' ', '_')}"
     # Log the persisted record, not the in-memory result: the record is what
     # aggregation reads, so tracking and aggregation cannot disagree.
     log_fold(run, load_json(fold_dir / FOLD_RESULT_FILENAME))
     finish_run(run, exit_code=exit_code)
 
     logger.info("FOLD COMPLETE: %s hit@1=%.4f -> %s",
-                args.framework, result["metrics"]["hit_at_1"],
+                fold_label, result["metrics"]["hit_at_1"],
                 fold_dir / FOLD_RESULT_FILENAME)
     return 0
 

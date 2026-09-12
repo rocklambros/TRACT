@@ -377,6 +377,10 @@ class TestExpectedPodNames:
             "tract-p1b-fold3", "tract-p1b-fold4",
             "tract-p1b-val-fold0", "tract-p1b-val-fold1", "tract-p1b-val-fold2",
             "tract-p1b-val-fold3", "tract-p1b-val-fold4",
+            # The single-pod trainer, which Phase 2C Gate 2 runs four times. It
+            # was swept by nothing: a dead orchestrator left it billing, and
+            # the guard could not even see it to stay armed.
+            "tract-p2c-gate2",
         }
 
     def test_validation_pods_are_not_missing(self) -> None:
@@ -384,7 +388,11 @@ class TestExpectedPodNames:
         names = rg.expected_pod_names()
 
         assert len([n for n in names if n.startswith("tract-p1b-val-")]) == 5
-        assert len([n for n in names if not n.startswith("tract-p1b-val-")]) == 5
+        assert len([n for n in names if n.startswith("tract-p1b-fold")]) == 5
+        # The retrain pod is deliberately outside both fold families, because
+        # "tract-p1b-val-" means "a validation fold" and its count is checked
+        # above. Being swept does not require sharing a prefix.
+        assert "tract-p2c-gate2" in names
 
 
 @pytest.fixture
