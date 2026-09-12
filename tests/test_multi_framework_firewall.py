@@ -23,6 +23,14 @@ from __future__ import annotations
 
 import pytest
 
+# CI's `test` job runs WITHOUT the phase0 extra, so torch is absent there. A
+# module-level ImportError is a COLLECTION error, which aborts the whole run
+# regardless of -x -- this exact pair of files once reduced a 3,150-test CI run
+# to 15. The guard has to come before any import that reaches torch, which for
+# tract.training.* is all of them.
+pytest.importorskip("torch", reason="needs the phase0 extra")
+pytest.importorskip("datasets", reason="needs the phase0 extra")
+
 from tract.training.data import build_training_pairs, excluded_framework_set
 from tract.training.data_quality import QualityTier, TieredLink
 from tract.training.firewall import assert_exclusion_fired
