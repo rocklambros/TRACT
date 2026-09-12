@@ -96,6 +96,7 @@ class ArmRecord:
     path: str
     bridge_links_path: str | None
     bridge_links_sha256: str | None
+    seed: int | None
     folds: dict[str, FoldRecord]
 
     @property
@@ -131,6 +132,7 @@ def load_arm(arm_dir: Path) -> ArmRecord:
     folds: dict[str, FoldRecord] = {}
     bridge_path: str | None = None
     bridge_sha: str | None = None
+    seed: int | None = None
     seen_config = False
 
     for result_path in sorted(arm_dir.glob(f"fold_*/{FOLD_RESULT_NAME}")):
@@ -170,6 +172,7 @@ def load_arm(arm_dir: Path) -> ArmRecord:
             bridge_sha = (payload.get("inputs") or {}).get(
                 "bridge_links_sha256"
             )
+            seed = config.get("seed")
             seen_config = True
         elif config.get("bridge_links_path") != bridge_path:
             raise ValueError(
@@ -184,6 +187,7 @@ def load_arm(arm_dir: Path) -> ArmRecord:
         path=repo_relative(arm_dir),
         bridge_links_path=bridge_path,
         bridge_links_sha256=bridge_sha,
+        seed=seed,
         folds=folds,
     )
 
@@ -235,12 +239,29 @@ def verify_alignment(a: ArmRecord, b: ArmRecord) -> None:
                 f"{list(fb.excluded_frameworks)}). Arms that held out different "
                 "frameworks are not each other's counterfactual."
             )
-    if a.bridge_links_sha256 == b.bridge_links_sha256:
+    # EXACTLY ONE difference. Two arms that differ in nothing are not a
+    # contrast; two that differ in both corpus and seed produce a delta nobody
+    # can attribute.
+    #
+    # The first version of this checked only the corpus, and refused the NOISE
+    # FLOOR -- which is deliberately the same corpus at a different seed, and is
+    # the one contrast that tells you whether any other delta is readable. A
+    # guard that blocks the measurement of its own instrument's precision is
+    # worse than no guard, because the run has already been paid for.
+    same_corpus = a.bridge_links_sha256 == b.bridge_links_sha256
+    same_seed = a.seed == b.seed
+    if same_corpus and same_seed:
         raise ValueError(
-            "Both arms read the same bridge corpus "
-            f"({a.bridge_links_sha256!r}). The treatment and its comparator "
-            "must differ in exactly the bridge links and nothing else; here "
-            "they differ in nothing."
+            f"The arms differ in nothing: both read bridge corpus "
+            f"{a.bridge_links_sha256!r} at seed {a.seed!r}. There is no "
+            "contrast between them."
+        )
+    if not same_corpus and not same_seed:
+        raise ValueError(
+            f"The arms differ in BOTH corpus ({a.bridge_links_sha256!r} vs "
+            f"{b.bridge_links_sha256!r}) and seed ({a.seed!r} vs {b.seed!r}). "
+            "A delta across two simultaneous changes is attributable to "
+            "neither."
         )
 
 

@@ -45,6 +45,7 @@ def _arm(
     hits: dict[str, list[float]],
     bridge: str | None,
     texts: dict[str, list[str]] | None = None,
+    seed: int = 42,
 ) -> Path:
     """Write a minimal two-fold arm directory."""
     root = tmp_path / name
@@ -60,7 +61,8 @@ def _arm(
                 "excluded_frameworks": ["ENISA", "BIML", "ETSI"],
                 "hit1_indicators": indicators,
                 "n_eval_items": len(indicators),
-                "config": {"name": name, "bridge_links_path": bridge},
+                "config": {"name": name, "bridge_links_path": bridge,
+                           "seed": seed},
                 "inputs": {"bridge_links_sha256": (
                     "a" * 64 if bridge else None
                 )},
@@ -105,15 +107,40 @@ class TestAlignment:
         with pytest.raises(ValueError, match="folds"):
             verify_alignment(a, b)
 
-    def test_two_arms_with_the_same_corpus_are_refused(
+    def test_arms_differing_in_nothing_are_refused(
         self, tmp_path: Path
     ) -> None:
-        """Not a comparison. Both arms read the same bridge corpus."""
+        """Same corpus AND same seed is not a comparison."""
         a = load_arm(_arm(tmp_path, "a0", hits={"ENISA": [1.0]},
-                          bridge="r2.jsonl"))
+                          bridge="r2.jsonl", seed=42))
         b = load_arm(_arm(tmp_path, "a1", hits={"ENISA": [0.0]},
-                          bridge="r2.jsonl"))
-        with pytest.raises(ValueError, match="same bridge corpus"):
+                          bridge="r2.jsonl", seed=42))
+        with pytest.raises(ValueError, match="differ in nothing"):
+            verify_alignment(a, b)
+
+    def test_a_seed_only_contrast_is_allowed(self, tmp_path: Path) -> None:
+        """THE NOISE FLOOR. Same corpus, different seed, true effect zero.
+
+        The first version of this guard checked the corpus alone and refused
+        exactly this -- the one contrast that says whether any other delta is
+        readable. A guard that blocks the measurement of its own instrument's
+        precision is worse than no guard, because the run is already paid for.
+        """
+        a = load_arm(_arm(tmp_path, "a0", hits={"ENISA": [1.0, 0.0]},
+                          bridge=None, seed=42))
+        b = load_arm(_arm(tmp_path, "a0p", hits={"ENISA": [1.0, 1.0]},
+                          bridge=None, seed=43))
+        verify_alignment(a, b)
+
+    def test_differing_in_both_corpus_and_seed_is_refused(
+        self, tmp_path: Path
+    ) -> None:
+        """A delta across two simultaneous changes is attributable to neither."""
+        a = load_arm(_arm(tmp_path, "a0", hits={"ENISA": [1.0]},
+                          bridge=None, seed=42))
+        b = load_arm(_arm(tmp_path, "a1", hits={"ENISA": [0.0]},
+                          bridge="r2.jsonl", seed=43))
+        with pytest.raises(ValueError, match="differ in BOTH"):
             verify_alignment(a, b)
 
     def test_mismatched_firewall_is_refused(self, tmp_path: Path) -> None:

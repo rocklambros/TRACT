@@ -1,0 +1,25 @@
+{
+  "ci_high": 0.04728132387706856,
+  "ci_low": -0.2553191489361702,
+  "comparator": "results/phase1b/gate2_A0",
+  "comparator_bridge_sha256": null,
+  "delta_exposed": 0.0,
+  "delta_unexposed": 0.10638297872340426,
+  "did": -0.10638297872340426,
+  "label": "NOISE FLOOR (A0' vs A0, true effect = 0)",
+  "n_configurations": 2,
+  "n_exposed": 27,
+  "n_resamples": 10000,
+  "n_unexposed": 47,
+  "p_did_le_threshold": 0.9289,
+  "per_framework": {
+    "BIML": 0.11764705882352941,
+    "ENISA": 0.06060606060606061,
+    "ETSI": 0.041666666666666664
+  },
+  "pooled_delta": 0.06756756756756757,
+  "threshold": 0.0,
+  "treatment": "results/phase1b/gate2_A0P",
+  "treatment_bridge_sha256": null,
+  "verdict": "FAIL"
+}

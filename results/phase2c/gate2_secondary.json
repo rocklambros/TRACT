@@ -1,0 +1,25 @@
+{
+  "ci_high": 0.3120567375886525,
+  "ci_low": -0.005516154452324666,
+  "comparator": "results/phase1b/gate2_A0R",
+  "comparator_bridge_sha256": "5a9d0b67fa2f5313168217106ee604b298efb87fe944d4f8608651532aabb7e5",
+  "delta_exposed": 0.14814814814814814,
+  "delta_unexposed": 0.0,
+  "did": 0.14814814814814814,
+  "label": "SECONDARY (A1 vs A0R, judgement vs any positive)",
+  "n_configurations": 2,
+  "n_exposed": 27,
+  "n_resamples": 10000,
+  "n_unexposed": 47,
+  "p_did_le_threshold": 0.0313,
+  "per_framework": {
+    "BIML": 0.0,
+    "ENISA": 0.06060606060606061,
+    "ETSI": 0.08333333333333333
+  },
+  "pooled_delta": 0.05405405405405406,
+  "threshold": 0.0,
+  "treatment": "results/phase1b/gate2_A1",
+  "treatment_bridge_sha256": "9754b451b5b8ef3b8cd0f0a1a6839286c7c2e31c67ebbc0c8c3f3aedb6598bd7",
+  "verdict": "FAIL"
+}

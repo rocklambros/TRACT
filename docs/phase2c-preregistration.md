@@ -383,8 +383,14 @@ could not resolve the effect — rather than a FAIL.
 
 ## 1.4 — Arms, cost, and multiplicity
 
-§3 budgets "one retrain, ~$40." **Amended to four retrains at ~$160**: A0, A0′,
-A1, A0R. The justification is 1.2 and 1.3 — without the placebo a PASS is
+§3 budgets "one retrain, ~$40." **Amended to four retrains**: A0, A0′, A1, A0R.
+
+*Measured after the fact and corrected here: the four arms cost **~$12 total**,
+49 minutes each on a SECURE H100. The estimate above, and the "~$40" it
+inherited, were high by more than an order of magnitude. That matters because
+the inflated figure is what made a four-arm design look expensive enough to
+argue about, and it would have distorted the next scoping decision the same
+way.* The justification is 1.2 and 1.3 — without the placebo a PASS is
 near-tautological, and without the noise floor no delta is readable. There is no
 round-1 arm: the two corpora differ by 2 eval items of exposure, so the contrast
 buys nothing and carries two training-draw variances.
