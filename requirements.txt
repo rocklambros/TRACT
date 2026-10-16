@@ -42,7 +42,7 @@ packaging==26.3
 numpy==2.0.2
 safetensors==0.7.0
 wandb==0.26.1
-hdbscan==0.8.42
+hdbscan==0.8.44
 
 # Dev / CI
 # ruff and mypy must match requirements-lint.txt, which constrains against
