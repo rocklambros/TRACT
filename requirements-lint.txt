@@ -53,6 +53,6 @@ types-jsonschema==4.26.0.20260518
 # above: that block is for packages that ship py.typed and therefore buy real
 # checking, and an override would silence every openpyxl call site instead of
 # checking it.
-types-openpyxl==3.1.5.20260807
+types-openpyxl==3.1.5.20260827
 types-PyYAML==6.0.12.20260724
 types-requests==2.33.0.20260712
