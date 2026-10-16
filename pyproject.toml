@@ -44,7 +44,7 @@ llm = [
 ]
 dev = [
     "pytest>=8.0",
-    "mypy>=1.10",
+    "mypy>=2.3.1",
     "types-PyYAML",
     "types-beautifulsoup4",
     "types-requests",
